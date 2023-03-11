@@ -1,0 +1,49 @@
+{
+  "name": "toolbelt",
+  "version": "0.1.0",
+  "description": "Useful tools for TypeScript and JavaScript projects",
+  "keywords": [],
+  "homepage": "https://github.com/williamthorsen/toolbelt#readme",
+  "bugs": {
+    "url": "https://github.com/williamthorsen/toolbelt/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/williamthorsen/toolbelt.git"
+  },
+  "license": "UNLICENSED",
+  "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "audit": "pnpm run audit:prod && pnpm run audit:dev",
+    "audit:dev": "pnpm audit --dev",
+    "audit:prod": "pnpm audit --audit-level=high --prod",
+    "check": "pnpm run typecheck && pnpm run lint && pnpm test && pnpm run audit",
+    "lint": "pnpm eslint .",
+    "lint:fix": "pnpm eslint --fix .",
+    "outdated": "pnpm outdated --compatible --recursive",
+    "outdated:latest": "pnpm outdated --recursive",
+    "preinstall": "npx only-allow pnpm",
+    "test": "pnpm vitest",
+    "test:coverage": "pnpm vitest --coverage",
+    "test:watch": "pnpm vitest --watch",
+    "typecheck": "pnpm run --recursive typecheck",
+    "typecheck:root": "tsc --noEmit",
+    "update": "pnpm update --recursive",
+    "update:latest": "pnpm update --latest --recursive"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.0",
+    "@vitest/coverage-c8": "^0.29.2",
+    "@williamthorsen/eslint-config-typescript": "^0.10.5",
+    "c8": "^7.13.0",
+    "eslint": "^8.36.0",
+    "pnpm": "7.29.1",
+    "typescript": "^4.9.5",
+    "vitest": "^0.29.2"
+  },
+  "packageManager": "pnpm@7.29.1"
+}

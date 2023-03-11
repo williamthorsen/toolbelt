@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "noEmit": true, // ensure that nobody can accidentally use this config for a build
+  },
+  "include": [
+    "src/",
+    "*.ts",
+    "*.json",
+  ],
+}

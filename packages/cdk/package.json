@@ -1,0 +1,47 @@
+{
+  "name": "cdk",
+  "version": "0.2.1",
+  "type": "module",
+  "bin": {
+    "cdk": "src/bin/AppStack.cdk.js"
+  },
+  "scripts": {
+    "build": "pnpm run build:tsc && pnpm run build:cdk && pnpm run build:sam",
+    "build:cdk": "scripts/synth.sh",
+    "build:sam": "scripts/build-sam.sh",
+    "build:tsc": "tsc --build",
+    "cdk": "cdk",
+    "check": "pnpm run typecheck && pnpm run lint && pnpm test:run",
+    "clean": "rm -rf .cdk.out/*",
+    "deploy": "scripts/deploy.sh",
+    "destroy": "scripts/destroy.sh",
+    "dev": "pnpm run build && pnpm start",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "start": "sam local start-api --port 3001 --debug --profile skypilot --warm-containers EAGER",
+    "synth": "scripts/synth.sh",
+    "test": "pnpm vitest --config=vitest.standalone.config.ts --watch",
+    "test:coverage": "pnpm vitest --config=vitest.standalone.config.ts --coverage",
+    "test:integration": "pnpm vitest --config=vitest.integration.config.ts",
+    "test:run": "pnpm vitest --config=vitest.standalone.config.ts",
+    "typecheck": "tsc --noEmit",
+    "watch": "tsc --watch"
+  },
+  "dependencies": {
+    "@aws-sdk/client-lambda": "^3.289.0",
+    "@aws-sdk/client-s3": "^3.289.0",
+    "@aws-sdk/client-ssm": "^3.289.0",
+    "aws-cdk-lib": "2.68.0",
+    "constructs": "^10.1.274",
+    "source-map-support": "^0.5.21"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.111",
+    "@types/node": "^18.15.0",
+    "aws-cdk": "2.68.0",
+    "aws-sdk-client-mock": "^2.1.1",
+    "esbuild": "^0.17.11",
+    "pnpm": "^7.29.1",
+    "typescript": "^4.9.5"
+  }
+}

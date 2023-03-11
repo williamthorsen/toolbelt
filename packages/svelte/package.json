@@ -1,0 +1,41 @@
+{
+  "name": "svelte",
+  "version": "0.0.0",
+  "private": true,
+  "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm vite build",
+    "check": "pnpm run typecheck && pnpm run lint && pnpm run test:run",
+    "dev": "pnpm vite --host",
+    "lint": "pnpm eslint .",
+    "lint:fix": "pnpm eslint --fix .",
+    "preview": "pnpm vite preview",
+    "test": "pnpm vitest --watch",
+    "test:coverage": "pnpm vitest --coverage",
+    "test:run": "pnpm vitest",
+    "typecheck": "svelte-check"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
+    "@sveltejs/vite-plugin-svelte": "^2.0.3",
+    "@tsconfig/svelte": "^3.0.0",
+    "autoprefixer": "^10.4.14",
+    "cssnano": "^5.1.15",
+    "esbuild": "^0.17.11",
+    "eslint": "8.36.0",
+    "eslint-plugin-svelte3": "^4.0.0",
+    "postcss": "^8.4.21",
+    "postcss-load-config": "^4.0.1",
+    "rollup": "^3.19.1",
+    "rollup-plugin-node-polyfills": "^0.2.1",
+    "svelte": "^3.56.0",
+    "svelte-check": "^3.1.2",
+    "svelte-preprocess": "^5.0.1",
+    "tailwindcss": "^3.2.7",
+    "tslib": "^2.5.0",
+    "typescript": "^4.9.5",
+    "vite": "^4.1.4"
+  }
+}
