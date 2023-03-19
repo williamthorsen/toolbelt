@@ -1,0 +1,23 @@
+{
+  "name": "tools",
+  "version": "0.1.0",
+  "description": "API",
+  "keywords": [],
+  "license": "UNLICENSED",
+  "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "check": "pnpm run typecheck && pnpm run lint && pnpm run test:run",
+    "lint": "pnpm eslint .",
+    "lint:fix": "pnpm eslint --fix .",
+    "test": "pnpm vitest --config=vitest.standalone.config.ts --watch",
+    "test:coverage": "pnpm vitest --config=vitest.standalone.config.ts --coverage",
+    "test:integration": "pnpm vitest --config=vitest.integration.config.ts",
+    "test:run": "pnpm vitest --config=vitest.standalone.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  }
+}
