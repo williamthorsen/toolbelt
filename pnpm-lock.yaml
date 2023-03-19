@@ -22,7 +22,13 @@ importers:
       typescript: 4.9.5
       vitest: 0.29.2
 
-  packages/filesystem:
+  packages/node-tools:
+    specifiers:
+      typescript: ^4.9.5
+    devDependencies:
+      typescript: 4.9.5
+
+  packages/tools:
     specifiers:
       typescript: ^4.9.5
     devDependencies:

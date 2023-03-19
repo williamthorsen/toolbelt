@@ -24,7 +24,7 @@
     // "noPropertyAccessFromIndexSignature": true,
     "noLib": false,
     "paths": {
-      "~api/*": ["./packages/api/src/*"],
+      "~filesystem/*": ["./packages/filesystem/src/*"],
     },
     "removeComments": true,
     "resolveJsonModule": true,

@@ -5,7 +5,7 @@ import { defineConfig } from 'vitest/config';
 const config = defineConfig({
   resolve: {
     alias: {
-      '~api': path.resolve(__dirname, 'packages/api/src'),
+      '~filesystem': path.resolve(__dirname, 'packages/tools/src'),
     },
   },
   test: {

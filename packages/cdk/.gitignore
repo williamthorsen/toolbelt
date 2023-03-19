@@ -1,6 +1,0 @@
-# AWS SAM
-.aws-sam/
-
-# CDK asset staging directory
-.cdk.staging/
-.cdk.out/
