@@ -41,9 +41,10 @@
     "@williamthorsen/eslint-config-typescript": "^0.10.5",
     "c8": "^7.13.0",
     "eslint": "^8.36.0",
-    "pnpm": "7.29.3",
-    "typescript": "^5.0.2",
+    "pnpm": "8.6.0",
+    "rimraf": "^5.0.1",
+    "typescript": "^5.0.4",
     "vitest": "^0.29.3"
   },
-  "packageManager": "pnpm@7.29.1"
+  "packageManager": "pnpm@8.6.0"
 }
