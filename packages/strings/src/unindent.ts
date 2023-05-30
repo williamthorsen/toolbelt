@@ -1,22 +1,25 @@
-import { END_OF_LINE } from './core.constants.js';
+export const END_OF_LINE = '\n';
 
 /**
  * Convenience function to allow use of multi-line template strings in tests.
  * Removes the indent from each line, discards the first and last lines, and returns the result.
  */
-export function deindent(templateStrings: TemplateStringsArray): string {
-  const lines = templateStrings.join('').split(END_OF_LINE);
+export function unindent(templateStrings: TemplateStringsArray, ...values: unknown[]): string {
+  let fullString = '';
+  templateStrings.forEach((templateString, i) => {
+    fullString += templateString + (values[i] ?? '');
+  });
 
-  if (lines.length === 0) {
-    return '';
-  }
+  const lines = fullString.split(END_OF_LINE);
 
-  if (lines[0].trim() !== '') {
+  if (lines[0]?.trim() !== '') {
     throw new Error('The first line of the template string must be empty.');
   }
 
-  const lastLineIsEmpty = lines[lines.length - 1].trim() === '';
+  const lastLineIsEmpty = lines[lines.length - 1]?.trim() === '';
   const linesToDeindent = lines.slice(1, lastLineIsEmpty ? -1 : undefined);
+
+  console.info('linesToIndent:', linesToDeindent);
 
   const minimumIndent = linesToDeindent.reduce((indentSize, line) => {
     if (!line) {
