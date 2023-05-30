@@ -1,5 +1,5 @@
 {
-  "name": "tools",
+  "name": "@toolbelt/node-tools",
   "version": "0.1.0",
   "description": "API",
   "keywords": [],
@@ -8,16 +8,16 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "check": "pnpm run typecheck && pnpm run lint && pnpm run test:run",
+    "check": "pnpm run typecheck && pnpm run lint && pnpm run test:coverage",
     "lint": "pnpm eslint .",
     "lint:fix": "pnpm eslint --fix .",
-    "test": "pnpm vitest --config=vitest.standalone.config.ts --watch",
+    "test": "pnpm vitest --config=vitest.standalone.config.ts",
     "test:coverage": "pnpm vitest --config=vitest.standalone.config.ts --coverage",
     "test:integration": "pnpm vitest --config=vitest.integration.config.ts",
-    "test:run": "pnpm vitest --config=vitest.standalone.config.ts",
+    "test:watch": "pnpm vitest --config=vitest.standalone.config.ts --watch",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "typescript": "^4.9.5"
+    "typescript": "^5.0.4"
   }
 }
