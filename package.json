@@ -21,7 +21,7 @@
     "audit": "pnpm run audit:prod && pnpm run audit:dev",
     "audit:dev": "pnpm audit --dev",
     "audit:prod": "pnpm audit --audit-level=high --prod",
-    "check": "pnpm run typecheck && pnpm run lint && pnpm test && pnpm run audit",
+    "check": "pnpm run typecheck && pnpm run lint && pnpm test:coverage && pnpm run audit",
     "lint": "pnpm eslint .",
     "lint:fix": "pnpm eslint --fix .",
     "outdated": "pnpm outdated --compatible --recursive",
