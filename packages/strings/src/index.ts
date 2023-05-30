@@ -1,1 +1,1 @@
-export {};
+export { interpolate } from './interpolate.js';
