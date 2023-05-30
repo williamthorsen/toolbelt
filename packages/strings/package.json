@@ -1,0 +1,45 @@
+{
+  "name": "@toolbelt/strings",
+  "version": "0.1.0-beta.0",
+  "description": "String manipulation tools for TypeScript",
+  "keywords": ["string", "manipulation", "interpolation"],
+  "homepage": "https://github.com/williamthorsen/toolbelt#readme",
+  "bugs": {
+    "url": "https://github.com/williamthorsen/toolbelt/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/williamthorsen/toolbelt.git",
+    "directory": "packages/strings"
+  },
+  "license": "UNLICENSED",
+  "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "typesVersions": {
+    "*": {
+      "*": ["./dist/types"]
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "pnpm run clean && pnpm tsc --build tsconfig.build.json",
+    "check": "pnpm run typecheck && pnpm run lint && pnpm run test:coverage",
+    "clean": "pnpm rimraf dist",
+    "lint": "pnpm eslint .",
+    "lint:fix": "pnpm eslint --fix .",
+    "test": "pnpm vitest",
+    "test:coverage": "pnpm vitest --coverage",
+    "test:watch": "pnpm vitest --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.4"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  }
+}

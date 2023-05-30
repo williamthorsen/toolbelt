@@ -42,6 +42,12 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
 
+  packages/strings:
+    devDependencies:
+      typescript:
+        specifier: ^5.0.4
+        version: 5.0.4
+
   packages/tools:
     devDependencies:
       typescript:
