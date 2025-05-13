@@ -6,7 +6,7 @@
   },
   "exclude": [],
   "include": [
-    "src/",
+    "src/", //
     "eslint.config.js",
     "*.cjs",
     "*.json",

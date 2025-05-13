@@ -5,13 +5,5 @@
     "noEmit": true, // ensure that nobody can accidentally use this config for a build
   },
   "exclude": [],
-  "include": [
-    "src/",
-    "eslint.config.js",
-    "*.cjs",
-    "*.json",
-    "*.mjs",
-    "*.mts",
-    "*.ts",
-  ],
+  "include": ["src/", "eslint.config.js", "*.cjs", "*.json", "*.mjs", "*.mts", "*.ts"],
 }

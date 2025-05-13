@@ -5,14 +5,19 @@
 // it will report an error:
 //   Parsing error: "parserOptions.project" has been set for @typescript-eslint/parser.`
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "noEmit": true, // ensure that nobody can accidentally use this config for a build
   },
   // These files will be linted
+  // These files will be linted
   "include": [
+    "__tests__", //
+    "config/",
+    "scripts/",
     "eslint.config.js",
     "*.json",
-    "*.ts"
+    "*.ts",
   ],
 }

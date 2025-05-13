@@ -1,17 +1,4 @@
 {
   "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "lib": [
-      "es2020",
-    ],
-    "paths": {
-      "~tools/*": ["./src/*"],
-    },
-  },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.d.ts",
-    "src/**/*.tsx",
-    "*.ts"
-  ],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "*.ts"],
 }
