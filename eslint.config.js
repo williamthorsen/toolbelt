@@ -1,30 +1,50 @@
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import tseslint from 'typescript-eslint';
 
-import config from '@williamthorsen/eslint-config-typescript';
+const thisFilePath = fileURLToPath(import.meta.url);
+const thisDirPath = dirname(thisFilePath);
 
+import baseConfig, { createConfig, patterns } from '@williamthorsen/eslint-config-typescript';
+
+/**
+ * @type {import('eslint').Linter.FlatConfig[]}
+ */
 export default [
-  ...config,
+  ...baseConfig,
   {
     // Completely ignore these files
     ignores: [
-      '**/*.sh',
-      'packages/cdk/.*/**/*',
+      '**/*.sh', //
+      '**/coverage/**',
+      '**/dist/**',
+      '**/local/**',
     ],
   },
   {
-    files: ['**/*.mts', '**/*.ts', '**/*.tsx', '**/*.md/*.ts'],
+    files: patterns.codeFiles,
+    rules: {
+      'n/no-extraneous-import': 'off',
+      'n/no-missing-import': 'off',
+      'n/no-unpublished-import': 'off',
+    },
+  },
+  {
+    files: ['**/*.ts', '**/*.mts', '**/*.md/*.ts'],
     languageOptions: {
       parserOptions: {
-        project: [
-          './tsconfig.eslint.json',
-          './packages/*/tsconfig.eslint.json',
-        ],
-        tsconfigRootDir: __dirname,
+        project: ['./tsconfig.eslint.json', './packages/*/tsconfig.eslint.json'],
+        tsconfigRootDir: thisDirPath,
       },
     },
   },
+  ...tseslint.config({
+    extends: [createConfig.vitest()],
+    files: ['**/*.test.ts'],
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      'unicorn/no-null': 'off',
+    },
+  }),
 ];
