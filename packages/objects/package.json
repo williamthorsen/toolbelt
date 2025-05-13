@@ -1,0 +1,23 @@
+{
+  "name": "@williamthorsen/toolbelt.objects",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Template for new workspace",
+  "keywords": [],
+  "license": "UNLICENSED",
+  "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./mod.ts"
+    }
+  },
+  "scripts": {
+    "ws": "node --import tsx ../../scripts/run-workspace-script.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.17.0"
+  }
+}

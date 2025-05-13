@@ -11,7 +11,7 @@ import path from 'node:path';
 export function replaceFileExtension(
   filePath: string,
   newExtension: string,
-  options: ChangeFileExtensionOptions = {}
+  options: ChangeFileExtensionOptions = {},
 ): string {
   const { oldExtension = path.extname(filePath) } = options;
 
