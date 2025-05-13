@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { hasOwnProperty } from '../hasOwnProperty.js';
+import { hasOwnProperty } from '../hasOwnProperty.ts';
 
 describe('hasOwnProperty()', () => {
   // Functions to test that an inferred type is correct.

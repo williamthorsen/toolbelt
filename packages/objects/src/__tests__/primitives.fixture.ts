@@ -1,4 +1,4 @@
-import type { Scalar } from '../isScalar.js';
+import type { Scalar } from '../isScalar.ts';
 
 export const nonscalars = [
   ['an object literal', { a: 1 }],
