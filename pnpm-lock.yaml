@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@types/js-yaml':
+        specifier: 4.0.9
+        version: 4.0.9
       '@types/node':
         specifier: 22.15.17
         version: 22.15.17
@@ -35,6 +38,9 @@ importers:
       glob:
         specifier: 11.0.2
         version: 11.0.2
+      js-yaml:
+        specifier: 4.1.0
+        version: 4.1.0
       prettier:
         specifier: 3.5.3
         version: 3.5.3
@@ -453,6 +459,9 @@ packages:
 
   '@types/estree@1.0.7':
     resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
+
+  '@types/js-yaml@4.0.9':
+    resolution: {integrity: sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -2491,6 +2500,8 @@ snapshots:
   '@rtsao/scc@1.1.0': {}
 
   '@types/estree@1.0.7': {}
+
+  '@types/js-yaml@4.0.9': {}
 
   '@types/json-schema@7.0.15': {}
 
