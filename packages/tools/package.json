@@ -8,13 +8,9 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "check": "pnpm run typecheck && pnpm run lint && pnpm run test:run",
-    "lint": "pnpm eslint .",
-    "lint:fix": "pnpm eslint --fix .",
-    "test": "pnpm vitest --config=vitest.standalone.config.ts --watch",
-    "test:coverage": "pnpm vitest --config=vitest.standalone.config.ts --coverage",
-    "test:integration": "pnpm vitest --config=vitest.integration.config.ts",
-    "test:run": "pnpm vitest --config=vitest.standalone.config.ts",
-    "typecheck": "tsc --noEmit"
+    "ws": "node --import tsx ../../scripts/run-workspace-script.ts --int-test"
+  },
+  "engines": {
+    "node": ">=18.17.0"
   }
 }
