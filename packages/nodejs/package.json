@@ -1,9 +1,9 @@
 {
-  "name": "@toolbelt/node-tools",
+  "name": "@williamthorsen/toolbelt.nodejs",
   "version": "0.1.0",
   "description": "API",
   "keywords": [],
-  "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/node#readme",
+  "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/nodejs#readme",
   "bugs": {
     "url": "https://github.com/williamthorsen/toolbelt/issues"
   },
