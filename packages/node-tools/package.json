@@ -16,8 +16,5 @@
     "test:integration": "pnpm vitest --config=vitest.integration.config.ts",
     "test:watch": "pnpm vitest --config=vitest.standalone.config.ts --watch",
     "typecheck": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "typescript": "^5.0.4"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "tools",
+  "name": "@williamthorsen/toolbelt.tools",
   "version": "0.1.0",
   "description": "API",
   "keywords": [],
@@ -16,8 +16,5 @@
     "test:integration": "pnpm vitest --config=vitest.integration.config.ts",
     "test:run": "pnpm vitest --config=vitest.standalone.config.ts",
     "typecheck": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "typescript": "^5.0.4"
   }
 }
