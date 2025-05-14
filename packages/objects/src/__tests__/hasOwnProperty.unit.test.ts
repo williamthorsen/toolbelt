@@ -4,10 +4,8 @@ import { hasOwnProperty } from '../hasOwnProperty.ts';
 
 describe('hasOwnProperty()', () => {
   // Functions to test that an inferred type is correct.
-  /* eslint-disable unicorn/consistent-function-scoping */
   function numberFn(_value: number): void {}
   function stringFn(_value: string): void {}
-  /* eslint-enable unicorn/consistent-function-scoping */
 
   it('returns true if the object has the property', () => {
     const target = { a: 'a' };
@@ -35,7 +33,6 @@ describe('hasOwnProperty()', () => {
   });
 
   it('accepts a function as target', () => {
-    // eslint-disable-next-line unicorn/consistent-function-scoping
     function target() {}
     target.a = 'a';
 
@@ -75,7 +72,6 @@ describe('hasOwnProperty()', () => {
   it('correctly narrows the type', () => {
     const nDict = { n: 1 };
     const sDict = { s: 's' };
-    // eslint-disable-next-line unicorn/consistent-function-scoping
     function fn(value: { n: number } | { s: string }): void {
       // These lines will not compile unless the type is correctly narrowed.
       /* eslint-disable @typescript-eslint/no-unused-expressions */
