@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { random } from '../random.ts';
 
-describe('random()', () => {
+describe('random() with seed', () => {
   it('given the same seed, returns the same output', () => {
     const seed = 1234;
     const random1 = random({ seed });
@@ -33,17 +33,15 @@ describe('random()', () => {
   });
 });
 
-describe('random() with mocked Math.random', () => {
+describe(random, () => {
   // Backup of the original Math.random
   const originalRandom = Math.random;
 
   beforeEach(() => {
-    // Mock Math.random to return a known value
     Math.random = () => 0.5;
   });
 
   afterEach(() => {
-    // Restore the original Math.random after each test
     Math.random = originalRandom;
   });
 

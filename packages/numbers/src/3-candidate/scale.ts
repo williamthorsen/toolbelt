@@ -1,5 +1,3 @@
-import type { Integer } from './numbers.types.ts';
-
 /**
  * Scales a number from one range to another.
  */
@@ -15,7 +13,7 @@ export function scale(value: number, toRange: Range, fromRange: Partial<Range> =
   return toMin + (offset * toMagnitude) / fromMagnitude;
 }
 
-export function scaleInt(value: number, toRange: Range, fromRange: Partial<IntegerRange> = {}): Integer {
+export function scaleInt(value: number, toRange: Range, fromRange: Partial<IntegerRange> = {}): number {
   if (isNonInteger(toRange.min) || isNonInteger(toRange.max)) {
     throw new RangeError('Invalid range: min and max must be integers.');
   }
@@ -32,7 +30,10 @@ interface Range {
   max: number;
 }
 
+/**
+ * Represents a range of integers. Non-integer values should be truncated by the called function.
+ */
 interface IntegerRange {
-  min: Integer;
-  max: Integer;
+  min: number;
+  max: number;
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { SeededRng } from '../../3-candidate/seeded-rng.ts';
 import { createNumberGenerator } from '../createNumberGenerator.ts';
-import { SeededRng } from '../seeded-rng.ts';
 
 describe(createNumberGenerator, () => {
   it('returns a function', () => {

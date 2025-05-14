@@ -1,4 +1,4 @@
-import type { Seed } from './evaluateSeed.ts';
+import type { Seed } from '../internal/evaluateSeed.ts';
 import { random } from './random.ts';
 
 /**

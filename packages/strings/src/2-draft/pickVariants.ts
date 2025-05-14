@@ -1,4 +1,4 @@
-import type { Seed } from '@williamthorsen/toolbelt.numbers';
+import type { Seed } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { TextNode } from './TextNode.ts';
 /**

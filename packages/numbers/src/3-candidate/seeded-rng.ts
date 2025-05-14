@@ -1,11 +1,10 @@
-import type { Seed, SeededGenerator } from './evaluateSeed.ts';
-import { checkIsRngLike, evaluateSeed } from './evaluateSeed.ts';
-import { getFakeMathRandom } from './getFakeMathRandom.ts';
-import { IntegerSeed } from './IntegerSeed.ts';
-import type { EmptyObject } from './numbers.types.ts';
+import type { Seed, SeededGenerator } from '../internal/evaluateSeed.ts';
+import { checkIsRngLike, evaluateSeed } from '../internal/evaluateSeed.ts';
+import { getFakeMathRandom } from '../internal/getFakeMathRandom.ts';
+import { IntegerSeed } from '../internal/IntegerSeed.ts';
+import { wrapSum } from '../internal/wrapSum.ts';
 import { pickInteger } from './pickInteger.ts';
 import { scaleInt } from './scale.ts';
-import { wrapSum } from './wrapSum.ts';
 
 /**
  * Class that manages a pseudo-random number generator that behaves deterministically when given a seed.
@@ -168,6 +167,8 @@ export class Int32SeededRng extends SeededRng {
 // region | Types
 // deno-lint-ignore no-explicit-any
 type Constructor<T, Arguments extends unknown[] = unknown[]> = new (...arguments_: Arguments) => T;
+
+type EmptyObject = Record<string, never> | Record<number, never>;
 
 type OptionsWithSeed<O> = O & { seed?: Seed | undefined };
 

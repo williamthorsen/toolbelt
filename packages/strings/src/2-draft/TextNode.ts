@@ -1,5 +1,5 @@
 import { itemAt } from '@williamthorsen/toolbelt.arrays/candidate';
-import { IntSeededRng, pickInteger, type Seed } from '@williamthorsen/toolbelt.numbers';
+import { IntSeededRng, pickInteger, type Seed } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { segmentByDelimited } from '../internal/segmentByDelimited.ts';
 import { splitDelimited } from '../internal/splitDelimited.ts';

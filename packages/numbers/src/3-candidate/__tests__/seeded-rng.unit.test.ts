@@ -2,8 +2,8 @@
 
 import { describe, expect, it, vi } from 'vitest';
 
-import type { Seed, SeededGenerator } from '../evaluateSeed.ts';
-import { IntegerSeed } from '../IntegerSeed.ts';
+import type { Seed, SeededGenerator } from '../../internal/evaluateSeed.ts';
+import { IntegerSeed } from '../../internal/IntegerSeed.ts';
 import { pickInteger } from '../pickInteger.ts';
 import { Int32SeededRng, IntSeededRng, SeededRng } from '../seeded-rng.ts';
 

@@ -1,6 +1,6 @@
-import type { Seed } from './evaluateSeed.ts';
-import { evaluateSeed } from './evaluateSeed.ts';
-import { getFakeMathRandom } from './getFakeMathRandom.ts';
+import type { Seed } from '../internal/evaluateSeed.ts';
+import { evaluateSeed } from '../internal/evaluateSeed.ts';
+import { getFakeMathRandom } from '../internal/getFakeMathRandom.ts';
 import { scale } from './scale.ts';
 
 /**
