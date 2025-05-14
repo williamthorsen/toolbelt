@@ -23,10 +23,10 @@
     // Enable stricter transpilation for better output.
     "isolatedModules": true,
     "lib": ["ESNext"],
-    "module": "ES2022",
+    "module": "NodeNext",
     "moduleDetection": "force",
     // Enable node-style module resolution for things like NPM package imports.
-    "moduleResolution": "node",
+    "moduleResolution": "NodeNext",
     "noEmit": true,
     // Report errors for fallthrough cases in switch statements.
     "noFallthroughCasesInSwitch": true,
