@@ -28,6 +28,12 @@ export default [
       'n/no-extraneous-import': 'off',
       'n/no-missing-import': 'off',
       'n/no-unpublished-import': 'off',
+      'unicorn/no-instanceof-builtins': [
+        'warn',
+        {
+          exclude: ['Array'],
+        },
+      ],
     },
   },
   {
@@ -42,5 +48,11 @@ export default [
   ...tseslint.config({
     extends: [await createConfig.vitest()],
     files: ['**/*.test.ts'],
+    rules: {
+      'vitest/max-expects': 'off', // 🟠⚫
+      'vitest/padding-around-all': 'off', // 🟠⚫
+      'vitest/padding-around-expect-groups': 'off', // 🟠⚫
+      'vitest/prefer-lowercase-title': 'off', // 🟠⚫
+    },
   }),
 ];
