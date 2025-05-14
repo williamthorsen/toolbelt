@@ -40,11 +40,7 @@ export default [
     },
   },
   ...tseslint.config({
-    extends: [createConfig.vitest()],
+    extends: [await createConfig.vitest()],
     files: ['**/*.test.ts'],
-    rules: {
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      'unicorn/no-null': 'off',
-    },
   }),
 ];
