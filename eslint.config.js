@@ -49,6 +49,8 @@ export default [
     extends: [await createConfig.vitest()],
     files: ['**/*.test.ts'],
     rules: {
+      '@typescript-eslint/no-unused-expressions': 'off',
+      'unicorn/no-null': 'off',
       'vitest/max-expects': 'off', // 🟠⚫
       'vitest/padding-around-all': 'off', // 🟠⚫
       'vitest/padding-around-expect-groups': 'off', // 🟠⚫
