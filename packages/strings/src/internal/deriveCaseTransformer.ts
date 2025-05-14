@@ -7,6 +7,9 @@
  * Else if the placeholder is uppercase, returns a toUpperCase function.
  * Else if the placeholder is capitalized, return a toCapitalized function.
  * Else returns `null`.
+ *
+ * @experimental
+ * @stage candidate
  */
 export function deriveCaseTransformer(source: string, target: string): Transform | undefined {
   if (source === target) {

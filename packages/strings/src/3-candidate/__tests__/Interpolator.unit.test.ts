@@ -339,8 +339,10 @@ describe(Interpolator, () => {
   describe('setOptions()', () => {
     const template = 'Hello, {name}';
     const interpolable = new Interpolator(template);
-    for (const mapping of [new Map().set('0', 'World'), { 0: 'World' }, ['World']]) {
-      it('optionally stores ifMissing, mapping, and noAdaptCase in the instance', () => {
+
+    it.each([new Map().set('0', 'World'), { 0: 'World' }, ['World']])(
+      'optionally stores ifMissing, mapping, and noAdaptCase in the instance',
+      (mapping) => {
         const options = {
           ifMissing: 'THROW',
           mapping,
@@ -356,8 +358,8 @@ describe(Interpolator, () => {
         const actual = interpolable.setOptions(options);
 
         expect(toObjectLiteral(actual)).toStrictEqual(expected);
-      });
-    }
+      },
+    );
 
     it('if mapping has duplicate keys when case is ignored, throws an error', () => {
       const mapping = { KEY: 'value', key: 'value' };

@@ -2,12 +2,12 @@
  * Checks a target string against one or more string or RegExp patterns.
  * Returns true if the target string exactly matches a string pattern or matches any RegExp pattern, else false.
  * @experimental
+ * @stage candidate
  */
 export function isPatternMatch(pattern: Patterns, target: string): boolean {
   if (!target) return false;
 
   // The recommended `Array.isArray` call doesn't preserve the type.
-  // eslint-disable-next-line unicorn/no-instanceof-builtins
   const patterns = pattern instanceof Array ? pattern : [pattern];
 
   return patterns.some((p) => {

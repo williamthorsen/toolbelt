@@ -1,6 +1,6 @@
-import { itemAt } from '@williamthorsen/toolbelt.arrays';
+import { itemAt } from '@williamthorsen/toolbelt.arrays/candidate';
 
-import type { ValidationResult } from './strings.types.ts';
+import type { ValidationResult } from '../types/common.types.ts';
 
 /**
  * Validates that the given text has matching opening and closing delimiters.

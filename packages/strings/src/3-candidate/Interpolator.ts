@@ -1,8 +1,12 @@
-import { deriveCaseTransformer } from './deriveCaseTransformer.ts';
-import { setDifference, setIntersection } from './set-functions.ts';
-import type { StringMapping, ValidationResult } from './strings.types.ts';
-import { validateDelimiters } from './validateDelimiters.ts';
+import { deriveCaseTransformer } from '../internal/deriveCaseTransformer.ts';
+import { setDifference, setIntersection } from '../internal/set-functions.ts';
+import { validateDelimiters } from '../internal/validateDelimiters.ts';
+import type { ValidationResult } from '../types/common.types.ts';
 
+/**
+ * @experimental
+ * @stage candidate
+ */
 export class Interpolator {
   ifMissing: InterpolatorOptions['ifMissing'] = 'IGNORE';
   mapping: Map<RegExp | string, string> = new Map<string, string>();
@@ -229,17 +233,9 @@ export function createDelimitedMatcher(matcher: RegExp | string, options: Delimi
   return new RegExp(`\\{${matcherSource}\\}`, matcherFlags);
 }
 
+// region | Types
 interface DelimitedMatcherOptions {
   caseInsensitive?: boolean | undefined;
-}
-
-/**
- * Ignores regular expressions.
- */
-interface Sets {
-  matches: Set<string>;
-  unmatchedKeys: Set<string>;
-  unmatchedPlaceholders: Set<string>;
 }
 
 export interface InterpolatorOptions {
@@ -252,3 +248,19 @@ export interface InterpolatorOptions {
 export interface InterpolateOptions<T> extends InterpolatorOptions {
   mapping?: StringMapping<T> | undefined;
 }
+
+/**
+ * Ignores regular expressions.
+ */
+interface Sets {
+  matches: Set<string>;
+  unmatchedKeys: Set<string>;
+  unmatchedPlaceholders: Set<string>;
+}
+
+type StringIndexedMapping = Record<string, string> | string[];
+
+type StringInterfaceMapping<O> = O extends { [K in keyof O]: string } ? O : never;
+
+type StringMapping<T> = Map<RegExp | string, string> | StringIndexedMapping | StringInterfaceMapping<T>;
+// endregion | Types

@@ -1,3 +1,8 @@
+/**
+ * Transforms a string into a URL-friendly slug.
+ * @experimental
+ * @stage candidate
+ */
 export function slugify(input: string | number | ReadonlyArray<string | number>, options: SlugifyOptions = {}): string {
   const { separator = '-' } = options;
   // Limited to one character to support the `replace(new RegExp...)` below.
@@ -6,7 +11,6 @@ export function slugify(input: string | number | ReadonlyArray<string | number>,
   }
 
   // The recommended `Array.isArray` call doesn't preserve the type.
-  // eslint-disable-next-line unicorn/no-instanceof-builtins
   const inputArray = input instanceof Array ? input : [input];
 
   return inputArray

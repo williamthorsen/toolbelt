@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { END_OF_LINE } from '../core.constants.ts';
+import { END_OF_LINE } from '../../internal/constants.ts';
 import { unindent } from '../unindent.ts';
 
 describe(unindent, () => {

@@ -1,9 +1,9 @@
 import { itemAt } from '@williamthorsen/toolbelt.arrays/candidate';
 import { IntSeededRng, pickInteger, type Seed } from '@williamthorsen/toolbelt.numbers';
 
-import { segmentByDelimited } from './segmentByDelimited.ts';
-import { splitDelimited } from './splitDelimited.ts';
-import { validateDelimiters } from './validateDelimiters.ts';
+import { segmentByDelimited } from '../internal/segmentByDelimited.ts';
+import { splitDelimited } from '../internal/splitDelimited.ts';
+import { validateDelimiters } from '../internal/validateDelimiters.ts';
 
 const DELIMIT = {
   opening: '[',
@@ -14,6 +14,7 @@ const DELIMIT = {
 /**
  * Class for building an abstract syntax tree (AST) of static text nodes (tokens) and variants.
  * @experimental
+ * @stage draft
  */
 export abstract class TextNode {
   content: string;

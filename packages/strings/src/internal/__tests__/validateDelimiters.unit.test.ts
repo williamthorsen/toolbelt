@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import type { ValidationResult } from '../strings.types.js';
+import type { ValidationResult } from '../../types/common.types.ts';
 import { validateDelimiters } from '../validateDelimiters.ts';
 
 describe(validateDelimiters, () => {

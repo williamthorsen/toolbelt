@@ -6,6 +6,8 @@ interface JoinStringsOptions {
 /**
  * Joins an array of strings with a separator, omitting empty values and
  * optionally using a different separatorfor the last element.
+ * @experimental
+ * @stage candidate
  */
 export function joinStrings(
   strings: readonly (string | null | undefined)[],

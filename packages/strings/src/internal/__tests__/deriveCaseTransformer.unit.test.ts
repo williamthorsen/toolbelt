@@ -21,15 +21,16 @@ describe(deriveCaseTransformer, () => {
     expect(transform).toBeUndefined();
   });
 
-  for (const source of ['TEXT', 'Text', 'TeXt']) {
-    it(`if the source is not lowercase (case: "${source}") and does not match the target, returns null`, () => {
+  it.each(['TEXT', 'Text', 'TeXt'])(
+    `if the source is not lowercase (case: "%s") and does not match the target, returns null`,
+    (source) => {
       const target = 'texT';
 
       const transform = deriveCaseTransformer(source, target);
 
       expect(transform).toBeUndefined();
-    });
-  }
+    },
+  );
 
   it('if uppercase(source) is identical to the target, returns a toUpperCase function', () => {
     const source = 'text';
@@ -38,7 +39,7 @@ describe(deriveCaseTransformer, () => {
     const transform = deriveCaseTransformer(source, target);
 
     assertIsTruthy(transform);
-    expect(transform('abc'), 'ABC');
+    expect(transform('abc')).toBe('ABC');
   });
 
   it('if capitalize(source) is identical to the target, returns a toCapitalized function', () => {

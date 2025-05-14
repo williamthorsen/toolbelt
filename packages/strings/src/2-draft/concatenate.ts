@@ -1,3 +1,7 @@
+/**
+ * @experimental
+ * @stage draft
+ */
 export function concatenate(strings: string[], options: Options = {}): string {
   const { dualSeparator = ' and ', finalSeparator = ', and ', separator = ', ' } = options;
 

@@ -242,7 +242,7 @@ describe(TextNode, () => {
       const indices = [3];
       const ast = TextNode.create(input);
 
-      const throwingFn = vi.fn(() => ast.selectVariants(indices));
+      const throwingFn = vi.fn<() => string>(() => ast.selectVariants(indices));
 
       expect(throwingFn).toThrow(new RangeError('Variant index exceeds maximum index. Expected maximum of 2, got 3.'));
     });
@@ -252,7 +252,7 @@ describe(TextNode, () => {
       const indices = [0];
       const ast = TextNode.create(input);
 
-      const throwingFn = vi.fn(() => ast.selectVariants(indices));
+      const throwingFn = vi.fn<() => string>(() => ast.selectVariants(indices));
 
       expect(throwingFn).toThrow(new Error('Not enough indices to resolve all variants.'));
     });
@@ -262,7 +262,7 @@ describe(TextNode, () => {
       const indices = [1, 1];
       const ast = TextNode.create(input);
 
-      const throwingFn = vi.fn(() => ast.selectVariants(indices));
+      const throwingFn = vi.fn<() => string>(() => ast.selectVariants(indices));
 
       expect(throwingFn).toThrow(new Error('Unused variant indices. Received 2, leaving 1 unused.'));
     });

@@ -1,5 +1,7 @@
 /**
  * Returns a string in which all but an optional number of characters at its extremes are replaced with asterisks.
+ * @experimental
+ * @stage candidate
  */
 export function obfuscate(str: string, options: Options = {}): string {
   const { bookendSize = 0, fillChar = '*', fillSize } = options;
