@@ -200,6 +200,15 @@ export class Interpolator {
     return mapping instanceof Map ? mapping : new Map(Object.entries(mapping));
   }
 }
+
+export function interpolate<T>(
+  template: string,
+  substitutionMap: StringMapping<T>,
+  options?: InterpolatorOptions,
+): string {
+  return Interpolator.interpolate(template, substitutionMap, options);
+}
+
 /**
  * Encloses a matcher in braces, so that only delimited placeholders are matched.
  */
