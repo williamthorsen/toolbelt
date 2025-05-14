@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { scalars } from '../../3-candidate/primitives.fixture.ts';
 import { isPlainObject } from '../isPlainObject.ts';
-import { scalars } from './primitives.fixture.ts';
 
 describe('isPlainObject(value: unknown)', () => {
   describe('nonscalars', () => {
@@ -48,10 +48,8 @@ describe('isPlainObject(value: unknown)', () => {
       expect(isPlainObject(null)).toBe(false);
     });
 
-    for (const [label, value] of scalars) {
-      it(`returns false for ${label}`, () => {
-        expect(isPlainObject(value)).toBe(false);
-      });
-    }
+    it.each(scalars)('returns false for $label', ({ value }) => {
+      expect(isPlainObject(value)).toBe(false);
+    });
   });
 });

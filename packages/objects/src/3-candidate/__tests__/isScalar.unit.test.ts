@@ -1,15 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { isScalar } from '../isScalar.ts';
-import { nonscalars, scalars } from './primitives.fixture.ts';
+import { nonscalars, scalars } from '../primitives.fixture.ts';
 
 describe(isScalar, () => {
   describe('nonscalars', () => {
-    for (const [label, value] of nonscalars) {
-      it(`returns false for ${label}`, () => {
-        expect(isScalar(value)).toBe(false);
-      });
-    }
+    it.each(nonscalars)('returns false for $label', ({ value }) => {
+      expect(isScalar(value)).toBe(false);
+    });
 
     it('returns false for a function', () => {
       expect(isScalar(vi.fn)).toBe(false);
@@ -21,10 +19,8 @@ describe(isScalar, () => {
       expect(isScalar(null)).toBe(true);
     });
 
-    for (const [label, value] of scalars) {
-      it(`returns true for ${label}`, () => {
-        expect(isScalar(value)).toBe(true);
-      });
-    }
+    it.each(scalars)('returns true for $label', ({ value }) => {
+      expect(isScalar(value)).toBe(true);
+    });
   });
 });

@@ -1,12 +1,9 @@
+import { expectTypeOf } from 'expect-type';
 import { describe, expect, it } from 'vitest';
 
 import { hasOwnProperty } from '../hasOwnProperty.ts';
 
 describe('hasOwnProperty()', () => {
-  // Functions to test that an inferred type is correct.
-  function numberFn(_value: number): void {}
-  function stringFn(_value: string): void {}
-
   it('returns true if the object has the property', () => {
     const target = { a: 'a' };
 
@@ -57,6 +54,7 @@ describe('hasOwnProperty()', () => {
     }
   });
 
+  // eslint-disable-next-line vitest/prefer-each
   for (const value of [null, undefined, 1, true, Symbol('a')]) {
     it(`if the target is ${typeof value}, returns false`, () => {
       expect(hasOwnProperty(value, 'a')).toBe(false);
@@ -72,15 +70,20 @@ describe('hasOwnProperty()', () => {
   it('correctly narrows the type', () => {
     const nDict = { n: 1 };
     const sDict = { s: 's' };
-    function fn(value: { n: number } | { s: string }): void {
+    function fn(value: { n: number }): number;
+    function fn(value: { s: string }): string;
+    function fn(value: { n: number } | { s: string }): boolean | number | string {
       // These lines will not compile unless the type is correctly narrowed.
-      /* eslint-disable @typescript-eslint/no-unused-expressions */
-      hasOwnProperty(value, 'n') && numberFn(value.n);
-      hasOwnProperty(value, 's') && stringFn(value.s);
-      /* eslint-enable @typescript-eslint/no-unused-expressions */
+      if (hasOwnProperty(value, 'n')) {
+        return value.n;
+      }
+      if (hasOwnProperty(value, 's')) {
+        return value.s;
+      }
+      return false;
     }
-    fn(nDict);
-    fn(sDict);
+    expectTypeOf<number>(fn(nDict));
+    expectTypeOf<string>(fn(sDict));
   });
 
   it('can infer type when the key type is a superset of the object keys', () => {

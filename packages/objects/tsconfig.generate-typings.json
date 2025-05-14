@@ -5,7 +5,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "declaration": true,
-    "declarationDir": "./dist/types",
+    // "declarationDir": "./dist/types", // When this line is disabled, type files will be co-located with code files.
     "emitDeclarationOnly": true,
     "noEmit": false,
     "outDir": "./dist/esm",
