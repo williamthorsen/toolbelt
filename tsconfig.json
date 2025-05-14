@@ -23,10 +23,10 @@
     // Enable stricter transpilation for better output.
     "isolatedModules": true,
     "lib": ["ESNext"],
-    "module": "ES2022",
+    "module": "NodeNext",
     "moduleDetection": "force",
     // Enable node-style module resolution for things like NPM package imports.
-    "moduleResolution": "node",
+    "moduleResolution": "NodeNext",
     "noEmit": true,
     // Report errors for fallthrough cases in switch statements.
     "noFallthroughCasesInSwitch": true,
@@ -43,11 +43,6 @@
     "noUncheckedIndexedAccess": true,
     // Report an error when a variable is declared but never used.
     "noUnusedLocals": true,
-    "paths": {
-      "@repo/objects": ["./packages/objects/src/mod.ts"],
-      "@repo/node-tools": ["./packages/node-tools/src/mod.ts"],
-      "@repo/tools": ["./packages/tools/src/mod.ts"],
-    },
     "removeComments": true,
 
     // Enable JSON imports.

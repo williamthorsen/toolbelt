@@ -1,5 +1,3 @@
-/* eslint unicorn/no-useless-undefined: off */
-
 export const END_OF_LINE = '\n';
 
 /**

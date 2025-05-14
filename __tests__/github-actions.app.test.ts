@@ -57,6 +57,7 @@ export function getValueAtPathOrThrow(obj: unknown, path: unknown): unknown {
   let current: unknown = obj;
 
   for (const key of keys) {
+    // eslint-disable-next-line vitest/no-conditional-tests
     if (Array.isArray(current) && /^\d+$/.test(key)) {
       const index = Number(key);
       if (index in current) {

@@ -65,9 +65,22 @@ importers:
 
   packages/_template: {}
 
-  packages/node-tools: {}
+  packages/arrays: {}
+
+  packages/nodejs: {}
+
+  packages/numbers: {}
 
   packages/objects: {}
+
+  packages/strings:
+    dependencies:
+      '@williamthorsen/toolbelt.arrays':
+        specifier: workspace:*
+        version: link:../arrays
+      '@williamthorsen/toolbelt.numbers':
+        specifier: workspace:*
+        version: link:../numbers
 
   packages/tools: {}
 
