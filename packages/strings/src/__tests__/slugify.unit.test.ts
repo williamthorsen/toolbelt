@@ -1,15 +1,15 @@
-import { assertEquals, assertThrows, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
 
 import { slugify } from '../slugify.ts';
 
-describe('slugify()', () => {
+describe(slugify, () => {
   it('converts simple strings correctly', () => {
     const input = 'Hello, World';
     const expected = 'hello-world';
 
     const actual = slugify(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('handles diacritics and accented characters', () => {
@@ -18,7 +18,7 @@ describe('slugify()', () => {
 
     const actual = slugify(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('removes special characters', () => {
@@ -27,7 +27,7 @@ describe('slugify()', () => {
 
     const actual = slugify(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('replaces periods with default separator', () => {
@@ -36,7 +36,7 @@ describe('slugify()', () => {
 
     const actual = slugify(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('uses custom separator when provided', () => {
@@ -46,7 +46,7 @@ describe('slugify()', () => {
 
     const actual = slugify(input, options);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('handles numbers in input', () => {
@@ -55,7 +55,7 @@ describe('slugify()', () => {
 
     const actual = slugify(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('correctly processes array input', () => {
@@ -64,7 +64,7 @@ describe('slugify()', () => {
 
     const actual = slugify(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('ignores leading, trailing, and intervening spaces', () => {
@@ -73,7 +73,7 @@ describe('slugify()', () => {
 
     const actual = slugify(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('if separator is longer than one character, throws an error', () => {
@@ -82,10 +82,6 @@ describe('slugify()', () => {
 
     const throwingFn = () => slugify(input, options);
 
-    assertThrows(
-      throwingFn,
-      Error,
-      'Separator must be a single character.',
-    );
+    expect(throwingFn).toThrow('Separator must be a single character.');
   });
 });

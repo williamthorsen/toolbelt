@@ -1,15 +1,15 @@
-import { assertEquals, assertThrows, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
 
 import { obfuscate } from '../obfuscate.ts';
 
-describe('obfuscate()', () => {
+describe(obfuscate, () => {
   it('replaces all characters with asterisks', () => {
     const str = '1234';
     const expected = '****';
 
     const actual = obfuscate(str);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('if bookendSize > 0, reveals {bookendSize} characters at beginning and end', () => {
@@ -19,7 +19,7 @@ describe('obfuscate()', () => {
 
     const actual = obfuscate(str, options);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('hides at least {bookendSize} characters', () => {
@@ -29,7 +29,7 @@ describe('obfuscate()', () => {
 
     const actual = obfuscate(str, options);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('if bookendSize >= string length, obfuscates all characters', () => {
@@ -39,16 +39,14 @@ describe('obfuscate()', () => {
 
     const actual = obfuscate(str, options);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('if bookendSize < 0, throws an error', () => {
     const options = { bookendSize: -1 };
     const str = '1234';
 
-    const throwingFn = () => obfuscate(str, options);
-
-    assertThrows(throwingFn, Error, 'Minimum bookendSize is 0.');
+    expect(() => obfuscate(str, options)).toThrow('Minimum bookendSize is 0.');
   });
 
   it('if fillChar is given, uses it as the replacement character', () => {
@@ -58,25 +56,21 @@ describe('obfuscate()', () => {
 
     const actual = obfuscate(str, options);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('if fillChar is an empty string, throws an error', () => {
     const options = { bookendSize: 2, fillChar: '' };
     const str = '1234';
 
-    const throwingFn = () => obfuscate(str, options);
-
-    assertThrows(throwingFn, Error, 'fillChar must be a single character.');
+    expect(() => obfuscate(str, options)).toThrow('fillChar must be a single character.');
   });
 
   it('if fillChar is longer than one character, throws an error', () => {
     const options = { fillChar: '**' };
     const str = '1234';
 
-    const throwingFn = () => obfuscate(str, options);
-
-    assertThrows(throwingFn, Error, 'fillChar must be a single character.');
+    expect(() => obfuscate(str, options)).toThrow('fillChar must be a single character.');
   });
 
   it('if fillSize is given, display at most {fillSize} fill characters', () => {
@@ -86,24 +80,20 @@ describe('obfuscate()', () => {
 
     const actual = obfuscate(str, options);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('if fillSize < bookendSize, throws an error', () => {
     const options = { bookendSize: 4, fillSize: 2 };
     const str = '1234';
 
-    const throwingFn = () => obfuscate(str, options);
-
-    assertThrows(throwingFn, Error, 'fillSize cannot be less than bookendSize.');
+    expect(() => obfuscate(str, options)).toThrow('fillSize cannot be less than bookendSize.');
   });
 
   it('if fillSize < 1, throws an error', () => {
     const options = { fillSize: 0 };
     const str = '1234';
 
-    const throwingFn = () => obfuscate(str, options);
-
-    assertThrows(throwingFn, Error, 'Minimum fillSize is 1.');
+    expect(() => obfuscate(str, options)).toThrow('Minimum fillSize is 1.');
   });
 });

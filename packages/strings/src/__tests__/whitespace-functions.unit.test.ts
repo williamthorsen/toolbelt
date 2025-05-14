@@ -1,15 +1,15 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
 
 import { condenseWhitespace, removeWhitespace, trimWhitespace } from '../whitespace-functions.ts';
 
-describe('condenseWhitespace()', () => {
+describe(condenseWhitespace, () => {
   it('replaces any sequence of tabs & spaces with a single space', () => {
     const dirtyString = 'string\t\t  with tabs\t \t and spaces';
     const expected = 'string with tabs and spaces';
 
     const actual = condenseWhitespace(dirtyString);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('preserves up to one each of leading & trailing spaces', () => {
@@ -18,7 +18,7 @@ describe('condenseWhitespace()', () => {
 
     const actual = condenseWhitespace(dirtyString);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('works across newlines, preserving up to one space on a blank line', () => {
@@ -27,29 +27,29 @@ describe('condenseWhitespace()', () => {
 
     const actual = condenseWhitespace(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 });
 
-describe('removeWhitespace()', () => {
+describe(removeWhitespace, () => {
   it('removes all whitespace', () => {
     const input = ' \t string with \twhitespace  ';
     const expected = 'stringwithwhitespace';
 
     const actual = removeWhitespace(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 });
 
-describe('trimWhitespace()', () => {
+describe(trimWhitespace, () => {
   it('removes extra internal whitespace and all leading & trailing whitespace', () => {
     const input = ' \t string with   leading & trailing whitespace  ';
     const expected = 'string with leading & trailing whitespace';
 
     const actual = trimWhitespace(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('works across newlines', () => {
@@ -58,6 +58,6 @@ describe('trimWhitespace()', () => {
 
     const actual = trimWhitespace(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 });

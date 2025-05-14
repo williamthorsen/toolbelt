@@ -1,8 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import type { ValidationResult } from '../strings.types.js';
 import { validateDelimiters } from '../validateDelimiters.ts';
 
-describe('validateDelimiters()', () => {
+describe(validateDelimiters, () => {
   const params = { opening: '{', closing: '}' };
   const successResult = { isValid: true, errors: [] };
 
@@ -80,7 +81,7 @@ describe('validateDelimiters()', () => {
     const badParams = { opening: '{', closing: '{' };
     const expectedErrorMessage = 'Opening and closing delimiters must be different.';
 
-    const throwingFn = vi.fn(() => validateDelimiters(input, badParams));
+    const throwingFn = vi.fn<() => ValidationResult>(() => validateDelimiters(input, badParams));
 
     expect(throwingFn).toThrow(new Error(expectedErrorMessage));
   });
@@ -90,7 +91,7 @@ describe('validateDelimiters()', () => {
     const withErrorParams = { opening: '[', closing: ']', throwOnError: true };
     const expectedErrorMessage = 'Text has unmatched closing delimiter "]".';
 
-    const throwingFn = vi.fn(() => validateDelimiters(input, withErrorParams));
+    const throwingFn = vi.fn<() => ValidationResult>(() => validateDelimiters(input, withErrorParams));
 
     expect(throwingFn).toThrow(new Error(expectedErrorMessage));
   });

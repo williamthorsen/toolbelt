@@ -1,7 +1,8 @@
-import { assertEquals, assertThrows, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
+
 import { splitDelimited } from '../splitDelimited.ts';
 
-describe('splitDelimited', () => {
+describe(splitDelimited, () => {
   const params = { opening: '{', closing: '}', separator: '|' };
 
   it('removes the delimiters and splits on the separator', () => {
@@ -10,7 +11,7 @@ describe('splitDelimited', () => {
 
     const actual = splitDelimited(input, params);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('ignores separators in delimited substrings', () => {
@@ -19,14 +20,12 @@ describe('splitDelimited', () => {
 
     const actual = splitDelimited(input, params);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('given an undelimited string, throws an error', () => {
     const input = 'Hello, world!';
 
-    const throwingFn = () => splitDelimited(input, params);
-
-    assertThrows(throwingFn, Error, 'Expected a string delimited by "{" and "}".');
+    expect(() => splitDelimited(input, params)).toThrow('Expected a string delimited by "{" and "}".');
   });
 });

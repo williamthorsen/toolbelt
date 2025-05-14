@@ -1,58 +1,58 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
 
 import { toLowerCase, toUpperCase, trim, trimEnd, trimStart } from '../String-prototype-wrappers.ts';
 
-describe('toLowerCase()', () => {
+describe(toLowerCase, () => {
   it('converts all characters to lowercase', () => {
     const input = 'STRING';
     const expected = 'string';
 
     const actual = toLowerCase(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 });
 
-describe('toUpperCase()', () => {
+describe(toUpperCase, () => {
   it('converts all characters to uppercase', () => {
     const input = 'string';
     const expected = 'STRING';
 
     const actual = toUpperCase(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 });
 
-describe('trim()', () => {
+describe(trim, () => {
   it('removes all leading & trailing whitespace without changing internal whitespace', () => {
     const input = ' \t string with\t   leading & trailing whitespace  ';
     const expected = 'string with\t   leading & trailing whitespace';
 
     const actual = trim(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 });
 
-describe('trimEnd()', () => {
+describe(trimEnd, () => {
   it('removes all trailing whitespace', () => {
     const input = ' \t string\t  ';
     const expected = ' \t string';
 
     const actual = trimEnd(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 });
 
-describe('trimStart()', () => {
+describe(trimStart, () => {
   it('removes all leading whitespace', () => {
     const input = '   \tstring \t ';
     const expected = 'string \t ';
 
     const actual = trimStart(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 });

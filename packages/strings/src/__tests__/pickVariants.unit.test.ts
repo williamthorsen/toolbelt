@@ -1,13 +1,14 @@
-import { assertEquals, assertMatch, assertThrows, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
+
 import { pickVariants } from '../pickVariants.ts';
 
-describe('pickVariants()', () => {
+describe(pickVariants, () => {
   it('given a string without variants, returns the string', () => {
     const input = 'Hello, world!';
 
     const output = pickVariants(input);
 
-    assertEquals(output, input);
+    expect(output).toBe(input);
   });
 
   it('given a string with variants, returns a string with the variants replaced by a randomly picked one', () => {
@@ -16,7 +17,7 @@ describe('pickVariants()', () => {
 
     const output = pickVariants(input);
 
-    assertMatch(output, expected);
+    expect(output).toMatch(expected);
   });
 
   it('if an empty variant is picked, replaces the variants with an empty string', () => {
@@ -25,29 +26,21 @@ describe('pickVariants()', () => {
 
     const output = pickVariants(input);
 
-    assertEquals(output, expected);
+    expect(output).toBe(expected);
   });
 
   it('if delimiters are mismatched, throws an error', () => {
     const input = 'Hello, [name|world!';
 
     const throwingFn = () => pickVariants(input);
-    assertThrows(
-      throwingFn,
-      Error,
-      'Text has unmatched opening delimiter "[".',
-    );
+    expect(throwingFn).toThrow(new Error('Text has unmatched opening delimiter "[".'));
   });
 
   it('if delimiters are incorrectly nested, throws an error', () => {
     const input = 'Hello, ][!';
 
     const throwingFn = () => pickVariants(input);
-    assertThrows(
-      throwingFn,
-      Error,
-      'Text has unmatched closing delimiter "]".',
-    );
+    expect(throwingFn).toThrow(new Error('Text has unmatched closing delimiter "]".'));
   });
 
   it('if variants are nested, recursively picks variants', () => {
@@ -57,7 +50,7 @@ describe('pickVariants()', () => {
 
     const actual = pickVariants(input, { seed });
 
-    assertMatch(actual, expected);
+    expect(actual).toMatch(expected);
   });
 
   it('given the same seed, always returns the same output', () => {
@@ -67,6 +60,6 @@ describe('pickVariants()', () => {
     const result1 = pickVariants(input, { seed });
     const result2 = pickVariants(input, { seed });
 
-    assertEquals(result1, result2);
+    expect(result1).toBe(result2);
   });
 });

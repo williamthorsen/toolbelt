@@ -1,33 +1,26 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
+
 import { segmentByDelimited } from '../segmentByDelimited.ts';
 
-describe('segmentByDelimited()', () => {
+describe(segmentByDelimited, () => {
   const params = { opening: '[', closing: ']' };
 
   it('treats delimited substrings as segment boundaries and returns an array of segments', () => {
     const input = 'Warm [greetings|hello], [stranger|world]!';
-    const expected = [
-      'Warm ',
-      '[greetings|hello]',
-      ', ',
-      '[stranger|world]',
-      '!',
-    ];
+    const expected = ['Warm ', '[greetings|hello]', ', ', '[stranger|world]', '!'];
 
     const output = segmentByDelimited(input, params);
 
-    assertEquals(output, expected);
+    expect(output).toStrictEqual(expected);
   });
 
   it('does not treat nested delimited phrases as segment boundaries', () => {
     const input = '[[[despite nesting, this|forms]|a|single|segment]';
-    const expected = [
-      '[[[despite nesting, this|forms]|a|single|segment]',
-    ];
+    const expected = ['[[[despite nesting, this|forms]|a|single|segment]'];
 
     const output = segmentByDelimited(input, params);
 
-    assertEquals(output, expected);
+    expect(output).toStrictEqual(expected);
   });
 
   it('treats a string without delimiters as a single segment', () => {
@@ -36,7 +29,7 @@ describe('segmentByDelimited()', () => {
 
     const output = segmentByDelimited(input, params);
 
-    assertEquals(output, expected);
+    expect(output).toStrictEqual(expected);
   });
 
   it('allows empty delimiters', () => {
@@ -45,6 +38,6 @@ describe('segmentByDelimited()', () => {
 
     const output = segmentByDelimited(input, params);
 
-    assertEquals(output, expected);
+    expect(output).toStrictEqual(expected);
   });
 });

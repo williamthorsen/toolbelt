@@ -1,15 +1,15 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
 
 import { isPatternMatch } from '../isPatternMatch.ts';
 
-describe('isPatternMatch()', () => {
+describe(isPatternMatch, () => {
   it('returns true for an exact match with a string pattern', () => {
     const pattern = 'hello world';
     const str = 'hello world';
 
     const result = isPatternMatch(pattern, str);
 
-    assertEquals(result, true);
+    expect(result).toBe(true);
   });
 
   it('if match to string patterns is only partial, returns false', () => {
@@ -18,7 +18,7 @@ describe('isPatternMatch()', () => {
 
     const result = isPatternMatch(pattern, str);
 
-    assertEquals(result, false);
+    expect(result).toBe(false);
   });
 
   it('accepts RegExp patterns', () => {
@@ -26,8 +26,8 @@ describe('isPatternMatch()', () => {
     const matchingPattern = /world$/;
     const nonmatchingPattern = /^world/;
 
-    assertEquals(isPatternMatch(matchingPattern, input), true);
-    assertEquals(isPatternMatch(nonmatchingPattern, input), false);
+    expect(isPatternMatch(matchingPattern, input)).toBe(true);
+    expect(isPatternMatch(nonmatchingPattern, input)).toBe(false);
   });
 
   it('accepts a function that takes a string and returns a boolean', () => {
@@ -35,8 +35,8 @@ describe('isPatternMatch()', () => {
     const matchingPattern = (s: string) => s.endsWith('world');
     const nonmatchingPattern = (s: string) => s.startsWith('world');
 
-    assertEquals(isPatternMatch(matchingPattern, input), true);
-    assertEquals(isPatternMatch(nonmatchingPattern, input), false);
+    expect(isPatternMatch(matchingPattern, input)).toBe(true);
+    expect(isPatternMatch(nonmatchingPattern, input)).toBe(false);
   });
 
   it('returns true if any of the array patterns match', () => {
@@ -45,7 +45,7 @@ describe('isPatternMatch()', () => {
 
     const result = isPatternMatch(patterns, str);
 
-    assertEquals(result, true);
+    expect(result).toBe(true);
   });
 
   it('returns false if none of the array patterns match', () => {
@@ -54,7 +54,7 @@ describe('isPatternMatch()', () => {
 
     const result = isPatternMatch(patterns, str);
 
-    assertEquals(result, false);
+    expect(result).toBe(false);
   });
 
   it('handles mixed arrays of string and RegExp patterns', () => {
@@ -63,7 +63,7 @@ describe('isPatternMatch()', () => {
 
     const result = isPatternMatch(patterns, str);
 
-    assertEquals(result, true);
+    expect(result).toBe(true);
   });
 
   it('returns false for empty string even if pattern exists', () => {
@@ -72,6 +72,6 @@ describe('isPatternMatch()', () => {
 
     const result = isPatternMatch(pattern, str);
 
-    assertEquals(result, false);
+    expect(result).toBe(false);
   });
 });

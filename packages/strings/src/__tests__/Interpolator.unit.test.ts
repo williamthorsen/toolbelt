@@ -1,4 +1,5 @@
-import { assertEquals, assertObjectMatch, assertThrows, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
+
 import { interpolate, Interpolator } from '../Interpolator.ts';
 
 describe(Interpolator, () => {
@@ -11,8 +12,8 @@ describe(Interpolator, () => {
       const staticActual = Interpolator.interpolate(template, mapping);
       const fnActual = interpolate(template, mapping);
 
-      assertEquals(staticActual, expected);
-      assertEquals(fnActual, expected);
+      expect(staticActual).toBe(expected);
+      expect(fnActual).toBe(expected);
     });
   });
 
@@ -26,7 +27,7 @@ describe(Interpolator, () => {
 
       const actual = interpolable.getKeys({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toStrictEqual(expected);
     });
 
     it('if the mapping contains entries, returns a unique array of their keys in lower case', () => {
@@ -36,7 +37,7 @@ describe(Interpolator, () => {
 
       const actual = interpolable.getKeys();
 
-      assertEquals(actual, expected);
+      expect(actual).toStrictEqual(expected);
     });
   });
 
@@ -48,7 +49,7 @@ describe(Interpolator, () => {
 
       const actual = interpolable.getPlaceholders();
 
-      assertEquals(actual, expected);
+      expect(actual).toStrictEqual(expected);
     });
 
     it('if the template contains placeholders, returns a unique array of them in lower case', () => {
@@ -58,7 +59,7 @@ describe(Interpolator, () => {
 
       const actual = interpolable.getPlaceholders();
 
-      assertEquals(actual, expected);
+      expect(actual).toStrictEqual(expected);
     });
   });
 
@@ -75,7 +76,7 @@ describe(Interpolator, () => {
 
       const actual = interpolable.getSets({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toStrictEqual(expected);
     });
   });
 
@@ -87,7 +88,7 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).interpolate({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('when a placeholder does not match any key in the mapping, leaves the placeholder unchanged', () => {
@@ -97,7 +98,7 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).interpolate({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('when multiple occurrences of a placeholder match a key in the mapping, replaces all occurrences with the corresponding value', () => {
@@ -107,7 +108,7 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).interpolate({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('when a placeholder is empty, leaves the placeholder unchanged', () => {
@@ -117,7 +118,7 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).interpolate({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('when the template is an empty string, returns an empty string', () => {
@@ -127,7 +128,7 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).interpolate({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('when the mapping is empty, leaves all placeholders unchanged', () => {
@@ -137,7 +138,7 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).interpolate({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('accepts placeholders containing underscores', () => {
@@ -147,7 +148,7 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).interpolate({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('allows placeholders that start with a number', () => {
@@ -157,7 +158,7 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).interpolate({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('allows placeholders that include a space', () => {
@@ -167,7 +168,7 @@ describe(Interpolator, () => {
 
       const actual = Interpolator.interpolate(template, mapping);
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('works with a typed object not having a string index', () => {
@@ -180,7 +181,7 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).interpolate({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('works with a mapping that is missing keys that are optional in its type', () => {
@@ -194,17 +195,18 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).interpolate({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
-    for (const badTemplate of ['Hello, {name!', 'Hello, name}!', 'Hello, {name{}}!']) {
-      it('if delimiters are mismatched or nested, throws an error', () => {
+    it.each(['Hello, {name!', 'Hello, name}!', 'Hello, {name{}}!'])(
+      'if delimiters are mismatched or nested, throws an error',
+      (badTemplate) => {
         const mapping = { name: 'World' };
         const throwingFn = () => new Interpolator(badTemplate).interpolate({ mapping });
 
-        assertThrows(throwingFn, Error, 'Text has');
-      });
-    }
+        expect(throwingFn).toThrow('Text has');
+      },
+    );
 
     it('accepts a Map as mapping', () => {
       const template = '{greeting}, {planet}!';
@@ -213,7 +215,7 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).interpolate({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('accepts a string array as mapping', () => {
@@ -223,7 +225,7 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).interpolate({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('accepts a regular expression', () => {
@@ -233,7 +235,7 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).interpolate({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('does not partially match a regular expression', () => {
@@ -243,7 +245,7 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).interpolate({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it("if key is a regex, does not adapt the value to the placeholder's case", () => {
@@ -253,7 +255,7 @@ describe(Interpolator, () => {
 
       const actual = Interpolator.interpolate(template, mapping);
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('can use a catch-all to replace unmatched delimiters', () => {
@@ -266,7 +268,7 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).setMapping(mapping).interpolate();
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('if the transform can be identified, applies the transform to the value', () => {
@@ -276,7 +278,7 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).interpolate({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('applies case-transformation individually to each occurrence', () => {
@@ -287,7 +289,7 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).interpolate({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('if the transform cannot be identified, leaves the placeholder unchanged', () => {
@@ -297,7 +299,7 @@ describe(Interpolator, () => {
 
       const actual = new Interpolator(template).interpolate({ mapping });
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     describe('ifMissing options', () => {
@@ -311,7 +313,7 @@ describe(Interpolator, () => {
         const throwingFn = () => interpolable.interpolate({ ifMissing });
 
         // TODO: Inflect the error message to match the number of placeholders
-        assertThrows(throwingFn, Error, 'Text has unmatched placeholders: unmatched1, unmatched2');
+        expect(throwingFn).toThrow('Text has unmatched placeholders: unmatched1, unmatched2');
       });
 
       it('if ifMissing=USE_KEY, replaces any unmatched placeholder with the placeholder itself', () => {
@@ -320,7 +322,7 @@ describe(Interpolator, () => {
 
         const actual = interpolable.interpolate({ ifMissing });
 
-        assertEquals(actual, expected);
+        expect(actual).toBe(expected);
       });
 
       it('if ifMissing is a function, replaces any unmatched placeholder with the result of the function', () => {
@@ -329,7 +331,7 @@ describe(Interpolator, () => {
 
         const actual = interpolable.interpolate({ ifMissing });
 
-        assertEquals(actual, expected);
+        expect(actual).toBe(expected);
       });
     });
   });
@@ -348,11 +350,12 @@ describe(Interpolator, () => {
           ifMissing: 'THROW',
           mapping: new Map().set('0', 'World'),
           noAdaptCase: true,
+          template: 'Hello, {name}',
         };
 
         const actual = interpolable.setOptions(options);
 
-        assertObjectMatch(actual, expected);
+        expect(toObjectLiteral(actual)).toStrictEqual(expected);
       });
     }
 
@@ -361,7 +364,7 @@ describe(Interpolator, () => {
 
       const throwingFn = () => interpolable.setOptions({ mapping });
 
-      assertThrows(throwingFn, Error, 'Mapping keys must be unique, ignoring case.');
+      expect(throwingFn).toThrow('Mapping keys must be unique, ignoring case.');
     });
   });
 
@@ -370,24 +373,34 @@ describe(Interpolator, () => {
       const template = 'Hello, {name{foo}}';
       const expected = {
         isValid: false,
-        errors: [{ code: 'NESTED_DELIMITERS' }],
+        errors: [{ code: 'NESTED_DELIMITERS', message: 'Text has nested delimiters.' }],
       };
 
       const actual = Interpolator.validateTemplate(template);
 
-      assertObjectMatch(actual, expected);
+      expect(toObjectLiteral(actual)).toStrictEqual(expected);
     });
 
     it('if the template contains mismatched braces, returns failure', () => {
       const template = 'Hello, {name}{';
       const expected = {
         isValid: false,
-        errors: [{ code: 'UNMATCHED_OPENING_DELIMITER' }],
+        errors: [{ code: 'UNMATCHED_OPENING_DELIMITER', message: 'Text has unmatched opening brace.' }],
       };
 
       const actual = Interpolator.validateTemplate(template);
 
-      assertObjectMatch(actual, expected);
+      expect(toObjectLiteral(actual)).toStrictEqual(expected);
     });
   });
 });
+
+function toObjectLiteral(value: unknown): unknown {
+  if (value instanceof Array || value instanceof Map) {
+    return value;
+  }
+  if (typeof value === 'object' && value !== null) {
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, toObjectLiteral(v)]));
+  }
+  return value;
+}

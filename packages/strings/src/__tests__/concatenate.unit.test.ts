@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { concatenate } from '../concatenate.ts';
 
-describe('concatenate()', () => {
+describe(concatenate, () => {
   it('if array is empty, returns it', () => {
     const input: string[] = [];
     const expected = '';

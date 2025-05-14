@@ -1,15 +1,15 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
 
 import { toCamelCase } from '../toCamelCase.ts';
 
-describe('toCamelCase()', () => {
+describe(toCamelCase, () => {
   it('lowercases the first word and capitalizes every word thereafter', () => {
     const input = 'HELLO   WORLD I AM HERE';
     const expected = 'helloWorldIAmHere';
 
     const actual = toCamelCase(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('keeps single word strings in lowercase', () => {
@@ -18,7 +18,7 @@ describe('toCamelCase()', () => {
 
     const actual = toCamelCase(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('ignores leading, trailing, and intervening spaces', () => {
@@ -27,7 +27,7 @@ describe('toCamelCase()', () => {
 
     const actual = toCamelCase(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('works correctly with mixed case strings', () => {
@@ -36,7 +36,7 @@ describe('toCamelCase()', () => {
 
     const actual = toCamelCase(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('capitalizes the letter after kebab-case & snake_case separators and removes the separators', () => {
@@ -45,7 +45,7 @@ describe('toCamelCase()', () => {
 
     const actual = toCamelCase(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('does not preserve existing camel casing', () => {
@@ -54,6 +54,6 @@ describe('toCamelCase()', () => {
 
     const actual = toCamelCase(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 });
