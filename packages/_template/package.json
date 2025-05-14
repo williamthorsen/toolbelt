@@ -12,13 +12,30 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./src/mod.ts"
+      "import": "./dist/esm/4-release/index.js"
+    },
+    "./candidate": {
+      "import": "./dist/esm/3-candidate/index.js"
+    },
+    "./draft": {
+      "import": "./dist/esm/2-draft/index.js"
+    },
+    "./proposed": {
+      "import": "./dist/esm/1-proposed/index.js"
     }
   },
+  "files": [
+    "dist/*",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "ws": "node --import tsx ../../scripts/run-workspace-script.ts --int-test"
   },
   "engines": {
     "node": ">=18.17.0"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
   }
 }
