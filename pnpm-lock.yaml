@@ -35,6 +35,9 @@ importers:
       eslint-plugin-import:
         specifier: 2.31.0
         version: 2.31.0(eslint@9.26.0)
+      expect-type:
+        specifier: 1.2.1
+        version: 1.2.1
       glob:
         specifier: 11.0.2
         version: 11.0.2

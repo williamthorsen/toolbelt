@@ -55,6 +55,7 @@
     "esbuild": "0.25.4",
     "eslint": "9.26.0",
     "eslint-plugin-import": "2.31.0",
+    "expect-type": "1.2.1",
     "glob": "11.0.2",
     "js-yaml": "4.1.0",
     "prettier": "3.5.3",
