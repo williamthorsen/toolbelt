@@ -1,1 +1,1 @@
-export {};
+export { accumulateWeights } from './accumulateWeights.ts';

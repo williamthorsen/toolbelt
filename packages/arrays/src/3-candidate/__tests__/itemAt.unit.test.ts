@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { itemAt } from '../itemAt.ts';
 
-describe('itemAt()', () => {
+describe(itemAt, () => {
   it('returns the correct item at the specified index', () => {
     const arr = ['a', 'b', 'c', 'd'];
     const index = 2;
