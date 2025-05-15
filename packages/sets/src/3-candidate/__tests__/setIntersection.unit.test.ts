@@ -1,8 +1,8 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
 
 import { setIntersection } from '../setIntersection.ts';
 
-describe('setIntersection()', () => {
+describe(setIntersection, () => {
   it('returns a Set containing the common elements of sets A and B', () => {
     const aSet = new Set([1, 2]);
     const bSet = new Set([2, 3]);
@@ -10,7 +10,7 @@ describe('setIntersection()', () => {
 
     const actual = setIntersection(aSet, bSet);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('if there are no common elements, returns the empty set', () => {
@@ -20,7 +20,7 @@ describe('setIntersection()', () => {
 
     const actual = setIntersection(aSet, bSet);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('if both sets are empty, returns the empty set', () => {
@@ -30,7 +30,7 @@ describe('setIntersection()', () => {
 
     const actual = setIntersection(aSet, bSet);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('works with arrays', () => {
@@ -40,6 +40,6 @@ describe('setIntersection()', () => {
 
     const actual = setIntersection(aSet, bSet);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 });

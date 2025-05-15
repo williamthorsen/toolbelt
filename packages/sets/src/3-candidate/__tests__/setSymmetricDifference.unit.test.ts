@@ -1,8 +1,8 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
 
 import { setSymmetricDifference } from '../setSymmetricDifference.ts';
 
-describe('setSymmetricDifference()', () => {
+describe(setSymmetricDifference, () => {
   it('returns elements that are in set A or set B but not both', () => {
     const aSet = new Set([1, 2]);
     const bSet = new Set([2, 3]);
@@ -10,7 +10,7 @@ describe('setSymmetricDifference()', () => {
 
     const actual = setSymmetricDifference(aSet, bSet);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('if the sets are the identical, returns an empty set', () => {
@@ -20,7 +20,7 @@ describe('setSymmetricDifference()', () => {
 
     const actual = setSymmetricDifference(aSet, bSet);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('works with arrays', () => {
@@ -30,6 +30,6 @@ describe('setSymmetricDifference()', () => {
 
     const actual = setSymmetricDifference(aElements, bElements);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 });

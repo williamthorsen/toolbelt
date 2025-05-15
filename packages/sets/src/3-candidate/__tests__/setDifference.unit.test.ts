@@ -1,8 +1,8 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
 
 import { setDifference } from '../setDifference.ts';
 
-describe('setDifference(iterable1, iterable2)', () => {
+describe(setDifference, () => {
   it('returns set 1 when the two iterables have no elements in common', () => {
     const set1 = new Set([1, 2]);
     const set2 = new Set([3, 4]);
@@ -10,7 +10,7 @@ describe('setDifference(iterable1, iterable2)', () => {
 
     const actual = setDifference(set1, set2);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('returns an empty set when iterable 1 is a subset of iterable 2', () => {
@@ -20,7 +20,7 @@ describe('setDifference(iterable1, iterable2)', () => {
 
     const actual = setDifference(set1, set2);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('returns the elements exclusive to iterable 1 when the iterables intersect', () => {
@@ -30,7 +30,7 @@ describe('setDifference(iterable1, iterable2)', () => {
 
     const actual = setDifference(set1, set2);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('works with arrays', () => {
@@ -40,6 +40,6 @@ describe('setDifference(iterable1, iterable2)', () => {
 
     const actual = setDifference(array1, array2);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 });

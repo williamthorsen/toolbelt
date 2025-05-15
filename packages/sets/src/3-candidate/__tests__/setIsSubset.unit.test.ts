@@ -1,8 +1,8 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
 
 import { setIsSubset } from '../setIsSubset.ts';
 
-describe('setIsSubset()', () => {
+describe(setIsSubset, () => {
   it('returns true all elements in set A are in set B', () => {
     const aSet = new Set([1, 2]);
     const bSet = new Set([3, 2, 1]);
@@ -10,7 +10,7 @@ describe('setIsSubset()', () => {
 
     const actual = setIsSubset(aSet, bSet);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('returns true if the sets are identical', () => {
@@ -20,7 +20,7 @@ describe('setIsSubset()', () => {
 
     const actual = setIsSubset(aSet, bSet);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('returns true if set A is empty', () => {
@@ -30,7 +30,7 @@ describe('setIsSubset()', () => {
 
     const actual = setIsSubset(aSet, bSet);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('returns true if both sets are empty', () => {
@@ -40,7 +40,7 @@ describe('setIsSubset()', () => {
 
     const actual = setIsSubset(aSet, bSet);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('returns false if set B is empty and set A is not', () => {
@@ -51,7 +51,7 @@ describe('setIsSubset()', () => {
 
     const actual = setIsSubset(aSet, bSet);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('works with arrays', () => {
@@ -61,6 +61,6 @@ describe('setIsSubset()', () => {
 
     const actual = setIsSubset(aSet, bSet);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 });

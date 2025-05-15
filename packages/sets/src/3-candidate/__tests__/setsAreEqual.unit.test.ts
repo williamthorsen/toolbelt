@@ -1,8 +1,8 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
 
 import { setsAreEqual } from '../setsAreEqual.ts';
 
-describe('setsEqual()', () => {
+describe(setsAreEqual, () => {
   it('returns true if the sets are equal', () => {
     const aSet = new Set([1, 2]);
     const bSet = new Set([1, 2]);
@@ -10,7 +10,7 @@ describe('setsEqual()', () => {
 
     const actual = setsAreEqual(aSet, bSet);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('returns true if both sets are empty', () => {
@@ -20,21 +20,18 @@ describe('setsEqual()', () => {
 
     const actual = setsAreEqual(aSet, bSet);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
-  const useCases = [
-    ['the sets are of different size', [1], [1, 2]],
-    ['the sets have no elements in common', [1, 2], [3, 4]],
-    ['either of the sets is empty', [], [1, 2]],
-  ] as const;
-  useCases.forEach(([label, aElements, bElements]) => {
-    it(`returns false if ${label}`, () => {
-      const expected = false;
+  it.each([
+    { label: 'the sets are of different size', aElements: [1], bElements: [1, 2] },
+    { label: 'the sets have no elements in common', aElements: [1, 2], bElements: [3, 4] },
+    { label: 'either of the sets is empty', aElements: [], bElements: [1, 2] },
+  ])('returns false if $label', ({ aElements, bElements }) => {
+    const expected = false;
 
-      const actual = setsAreEqual(new Set(aElements), new Set(bElements));
+    const actual = setsAreEqual(new Set(aElements), new Set(bElements));
 
-      assertEquals(actual, expected);
-    });
+    expect(actual).toBe(expected);
   });
 });

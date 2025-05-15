@@ -1,7 +1,4 @@
-export function setDifference<T>(
-  aElements: Iterable<T>,
-  bElements: Iterable<T>,
-): Set<T> {
+export function setDifference<T>(aElements: Iterable<T>, bElements: Iterable<T>): Set<T> {
   const bSet = new Set(bElements);
   const differenceSet = new Set<T>();
 
