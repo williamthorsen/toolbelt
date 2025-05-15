@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { scalars } from '../../3-candidate/primitives.fixture.ts';
+import { scalars } from '../../internal/primitives.fixture.ts';
 import { isPlainObject } from '../isPlainObject.ts';
 
 describe('isPlainObject(value: unknown)', () => {

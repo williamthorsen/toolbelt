@@ -1,1 +1,1 @@
-export { isPlainObject, type PlainObject } from './isPlainObject.ts';
+export { isObject, isPlainObject, type PlainObject } from './is-object.ts';

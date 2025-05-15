@@ -1,4 +1,4 @@
-import type { Scalar } from './isScalar.ts';
+import type { Scalar } from '../3-candidate/isScalar.ts';
 
 export const nonscalars = [
   { label: 'an object literal', value: { a: 1 } },
