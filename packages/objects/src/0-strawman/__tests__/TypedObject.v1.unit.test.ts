@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { TypedObject } from '../TypedObject.v1.js';
+import { TypedObject } from '../TypedObject.v1.ts';
 
-describe('TypedObject class', () => {
+describe(TypedObject, () => {
   describe('static entries()', () => {
     it('returns type-safe Object.entries', () => {
       const input = { a: 1, b: 2 } as const;

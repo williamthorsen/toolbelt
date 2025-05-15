@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import { hasOwnProperty } from '../hasOwnProperty.ts';
 
-describe('hasOwnProperty()', () => {
+describe(hasOwnProperty, () => {
   it('returns true if the object has the property', () => {
     const target = { a: 'a' };
 

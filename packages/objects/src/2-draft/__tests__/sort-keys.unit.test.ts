@@ -1,55 +1,55 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
 
 import { sortKeys, sortObjectKeys } from '../sort-keys.ts';
 
-describe('sortKeys()', () => {
+describe(sortKeys, () => {
   it('sorts keys in a flat object', () => {
     const input = { z: 1, a: 2, m: 3 };
-    const expectedOutput = { a: 2, m: 3, z: 1 };
+    const expected = { a: 2, m: 3, z: 1 };
 
-    const actualOutput = sortKeys(input);
+    const actual = sortKeys(input);
 
-    assertEquals(actualOutput, expectedOutput);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('does not try to sort the keys of objects other than plain objects', () => {
     const input = new Date();
-    const expectedOutput = input;
+    const expected = input;
 
-    // deno-lint-ignore no-explicit-any
-    const actualOutput = sortKeys(input as any);
+    // @ts-expect-error - Unsupported use case
+    const actual = sortKeys(input);
 
-    assertEquals(actualOutput, expectedOutput);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('sorts with a custom compare function', () => {
-    const input = { z: 1, a: 2, m: 3 };
-    const expectedOutput = { z: 1, m: 3, a: 2 };
     const compare = (keyA: string, keyB: string) => keyB.localeCompare(keyA);
+    const input = { z: 1, a: 2, m: 3 };
+    const expected = { z: 1, m: 3, a: 2 };
 
-    const actualOutput = sortKeys(input, compare);
+    const actual = sortKeys(input, compare);
 
-    assertEquals(actualOutput, expectedOutput);
+    expect(actual).toStrictEqual(expected);
   });
 });
 
-describe('sortObjectKeys()', () => {
+describe(sortObjectKeys, () => {
   it('sorts keys in a flat object', () => {
     const input = { z: 1, a: 2, m: 3 };
-    const expectedOutput = { a: 2, m: 3, z: 1 };
+    const expected = { a: 2, m: 3, z: 1 };
 
-    const actualOutput = sortObjectKeys(input);
+    const actual = sortObjectKeys(input);
 
-    assertEquals(actualOutput, expectedOutput);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('recursively sorts keys in nested objects', () => {
     const input = { z: 1, a: 2, m: { y: 1, b: 2 } };
-    const expectedOutput = { a: 2, m: { b: 2, y: 1 }, z: 1 };
+    const expected = { a: 2, m: { b: 2, y: 1 }, z: 1 };
 
-    const actualOutput = sortObjectKeys(input);
+    const actual = sortObjectKeys(input);
 
-    assertEquals(actualOutput, expectedOutput);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('recursively sorts keys in objects within nested arrays', () => {
@@ -61,7 +61,7 @@ describe('sortObjectKeys()', () => {
       ],
       m: 3,
     };
-    const expectedOutput = {
+    const expected = {
       a: [
         { a: 1, z: 3 },
         { x: 3, y: 2 },
@@ -70,28 +70,28 @@ describe('sortObjectKeys()', () => {
       z: 1,
     };
 
-    const actualOutput = sortObjectKeys(input);
+    const actual = sortObjectKeys(input);
 
-    assertEquals(actualOutput, expectedOutput);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('does not try to sort the keys of objects other than plain objects', () => {
     const date = new Date();
     const input = { z: 1, a: 2, m: date };
-    const expectedOutput = { a: 2, m: date, z: 1 };
+    const expected = { a: 2, m: date, z: 1 };
 
-    const actualOutput = sortObjectKeys(input);
+    const actual = sortObjectKeys(input);
 
-    assertEquals(actualOutput, expectedOutput);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('sorts with custom compare function', () => {
-    const input = { z: 1, a: 2, m: 3 };
-    const expectedOutput = { z: 1, m: 3, a: 2 };
     const customCompareFn = (keyA: string, keyB: string) => keyB.localeCompare(keyA);
+    const input = { z: 1, a: 2, m: 3 };
+    const expected = { z: 1, m: 3, a: 2 };
 
-    const actualOutput = sortObjectKeys(input, customCompareFn);
+    const actual = sortObjectKeys(input, customCompareFn);
 
-    assertEquals(actualOutput, expectedOutput);
+    expect(actual).toStrictEqual(expected);
   });
 });

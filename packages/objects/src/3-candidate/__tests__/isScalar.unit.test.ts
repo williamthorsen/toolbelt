@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { isScalar } from '../isScalar.ts';
 import { nonscalars, scalars } from '../../internal/primitives.fixture.ts';
+import { isScalar } from '../isScalar.ts';
 
 describe(isScalar, () => {
   describe('nonscalars', () => {

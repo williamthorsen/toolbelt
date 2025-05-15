@@ -1,3 +1,6 @@
+/* eslint unicorn/no-array-reduce: off */
+/* eslint @typescript-eslint/consistent-type-assertions: off */
+
 /**
  * Given an object, returns an object with the same keys, omitting any keys whose values are null or undefined.
  */
@@ -27,6 +30,7 @@ export type DefinedProperties<T> = Pick<T, NonNeverKeys<T> & NonUndefinedKeys<T>
 // region | Types
 type IfNullish<T, Y, N> = [null, undefined] extends [T] ? Y : N;
 type IfNever<T, Y, N> = [T] extends [never] ? Y : N;
+type IfUndefined<T, Y, N> = [undefined] extends [T] ? Y : N;
 type NonNeverKeys<T> = { [K in keyof T]: IfNever<T[K], never, K> }[keyof T];
 type NonNullishKeys<T> = { [K in keyof T]: IfNullish<T[K], never, K> }[keyof T];
 type NonUndefinedKeys<T> = { [K in keyof T]: IfUndefined<T[K], never, K> }[keyof T];

@@ -1,15 +1,15 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
 
 import { objectSize } from '../objectSize.ts';
 
-describe('objectSize()', () => {
+describe(objectSize, () => {
   it('if the value is a nonempty object, returns the number of keys', () => {
     const input = { a: 1, b: 2, c: 3 };
     const expected = 3;
 
     const actual = objectSize(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('if the value is an empty object, returns 0', () => {
@@ -18,7 +18,7 @@ describe('objectSize()', () => {
 
     const actual = objectSize(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('if the value is null, returns 0', () => {
@@ -27,7 +27,7 @@ describe('objectSize()', () => {
 
     const actual = objectSize(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('if the value is an array, returns the length of the array', () => {
@@ -36,6 +36,6 @@ describe('objectSize()', () => {
 
     const actual = objectSize(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 });

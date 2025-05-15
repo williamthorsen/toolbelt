@@ -1,7 +1,11 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+/* eslint @typescript-eslint/no-confusing-void-expression: off */
+
+import { expectTypeOf } from 'expect-type';
+import { describe, expect, it } from 'vitest';
+
 import { get } from '../get.ts';
 
-describe('get()', () => {
+describe(get, () => {
   it('retrieves the value for the given key from the object', () => {
     const key = 'a';
     const obj = { a: 'apple', b: 'banana' };
@@ -10,7 +14,7 @@ describe('get()', () => {
     const expected = 'apple';
     const actual = getKey(obj);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('narrows the type to exclude undefined when undefined is not allowed', () => {
@@ -20,7 +24,7 @@ describe('get()', () => {
     const value = get(key)(obj);
 
     // `value.length` raises no type error because the return type is correctly constrained to `string[]`.
-    assertEquals(value.length, 1);
+    expect(value).toHaveLength(1);
   });
 
   it('returns undefined for a nonexistent key', () => {
@@ -30,7 +34,7 @@ describe('get()', () => {
 
     const actual = get(key)(obj);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('handles nested objects', () => {
@@ -40,7 +44,8 @@ describe('get()', () => {
 
     const actual = get(key)(obj);
 
-    assertEquals(actual, expected);
+    expectTypeOf<string>(actual.a);
+    expect(actual).toStrictEqual(expected);
   });
 
   describe('with default value', () => {
@@ -53,7 +58,7 @@ describe('get()', () => {
 
       const actual = getA(obj);
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('if the property does not exist, uses the default value', () => {
@@ -62,7 +67,7 @@ describe('get()', () => {
 
       const actual = getA(obj);
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('if the property is undefined, uses the default value', () => {
@@ -71,16 +76,17 @@ describe('get()', () => {
 
       const actual = getA(obj);
 
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
 
     it('the default value must be of the same type as the property', () => {
       const obj: { a: string | undefined } = { a: 'apple' };
+      const expected = 'apple';
 
       // @ts-expect-error Default value of `undefined` is not assignable to property of type 'string'.
       const actual = get('a', undefined)(obj);
 
-      assertEquals(actual, 'apple');
+      expect(actual).toBe(expected);
     });
   });
 });

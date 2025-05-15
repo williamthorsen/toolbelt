@@ -1,14 +1,15 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
+
 import { mapToObject } from '../mapToObject.ts';
 
-describe('mapToObject()', () => {
+describe(mapToObject, () => {
   it('returns an empty object when given an empty map', () => {
     const map = new Map<string, number>();
     const expected: Record<string, number> = {};
 
     const actual = mapToObject(map);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('converts a simple map to a corresponding object', () => {
@@ -25,7 +26,7 @@ describe('mapToObject()', () => {
 
     const actual = mapToObject(map);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('handles maps with mixed key types', () => {
@@ -43,7 +44,7 @@ describe('mapToObject()', () => {
 
     const actual = mapToObject(map);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('overwrites earlier entries in map with later ones with the same key', () => {
@@ -57,6 +58,6 @@ describe('mapToObject()', () => {
 
     const actual = mapToObject(map);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 });

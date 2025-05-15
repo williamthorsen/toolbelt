@@ -6,11 +6,9 @@ import { isPlainObject } from '../4-release/index.ts';
  */
 export function preciseTypeOf(value: unknown): PreciseType {
   // TODO: Remove the type assertion when TypeScript becomes capable of correctly narrowing the type
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return typeof value === 'object' ? preciseObjectTypeOf(value) : (typeof value as NonObjectJsPrimitive);
 }
-
-/** @deprecated Use `preciseTypeOf` instead. */
-export const preciseObjectTypeof = preciseTypeOf;
 
 /**
  * Returns

@@ -1,21 +1,24 @@
-import { isPlainObject, type PlainObject } from '../4-release/index.js';
+/* eslint @typescript-eslint/consistent-type-assertions: off */
+/* eslint @typescript-eslint/no-unsafe-return: off */
+
+import { isObject, isPlainObject, type PlainObject } from '../4-release/index.ts';
 
 /**
  * Returns a new object whose keys are sorted alphabetically or by a custom comparator function.
  */
 export function sortKeys<T extends PlainObject>(
-  data: T,
+  value: T,
   compare: CompareKeys = (keyA, keyB) => (keyA < keyB ? -1 : 1),
 ): T {
-  if (!isPlainObject(data)) {
-    return data;
+  if (!isPlainObject(value)) {
+    return value;
   }
 
-  const sortedEntries = Object.entries(data)
+  const sortedEntries = Object.entries(value)
     .sort(([keyA], [keyB]) => compare(keyA, keyB))
     .map(([key, value]) => [key, value]);
 
-  return Object.fromEntries(sortedEntries);
+  return Object.fromEntries(sortedEntries) as T;
 }
 
 /**
@@ -26,26 +29,28 @@ export function sortKeys<T extends PlainObject>(
  * input array's elements.
  * Otherwise, returns the input.
  *
+ * @FIXME Disallow objects with non-string keys.
+ *
  * The use case for this function is to allow comparison of serialized data structures that are expected to be
  * equivalent but whose keys may be in a different order.
  */
-export function sortObjectKeys<T>(data: T, compare: CompareKeys = (keyA, keyB) => (keyA < keyB ? -1 : 1)): T {
-  if (typeof data === 'object' && data !== null) {
-    if (Array.isArray(data)) {
-      return data.map((item) => sortObjectKeys(item, compare)) as T;
+export function sortObjectKeys<T>(value: T, compare: CompareKeys = (keyA, keyB) => (keyA < keyB ? -1 : 1)): T {
+  if (isObject(value)) {
+    if (value instanceof Array) {
+      return value.map((item: unknown) => sortObjectKeys(item, compare)) as T;
     }
-    if (isPlainObject(data)) {
-      const sortedEntries = Object.entries(data)
+    if (isPlainObject(value)) {
+      const sortedEntries = Object.entries(value)
         .sort(([keyA], [keyB]) => compare(keyA, keyB))
         .map(([key, value]) => {
           return [key, sortObjectKeys(value, compare)];
         });
 
-      return Object.fromEntries(sortedEntries);
+      return Object.fromEntries(sortedEntries) as T;
     }
   }
 
-  return data;
+  return value;
 }
 
 type CompareKeys = (keyA: string, keyB: string) => number;

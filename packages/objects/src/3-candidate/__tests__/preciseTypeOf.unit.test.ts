@@ -1,54 +1,58 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
+
 import { preciseTypeOf } from '../preciseTypeOf.ts';
 
-describe('preciseTypeOf()', () => {
+describe(preciseTypeOf, () => {
   it('returns "null" for null', () => {
     const input = null;
-    const expectedOutput = 'null';
+    const expected = 'null';
 
-    const actualOutput = preciseTypeOf(input);
+    const actual = preciseTypeOf(input);
 
-    assertEquals(actualOutput, expectedOutput);
+    expect(actual).toBe(expected);
   });
 
   it('returns "array" for arrays', () => {
     const input = [1, 2, 3];
-    const expectedOutput = 'array';
+    const expected = 'array';
 
-    const actualOutput = preciseTypeOf(input);
+    const actual = preciseTypeOf(input);
 
-    assertEquals(actualOutput, expectedOutput);
+    expect(actual).toBe(expected);
   });
 
   it('returns "plainobject" for plain objects', () => {
     const input = { a: 1, b: 2, c: 3 };
-    const expectedOutput = 'plainobject';
+    const expected = 'plainobject';
 
-    const actualOutput = preciseTypeOf(input);
+    const actual = preciseTypeOf(input);
 
-    assertEquals(actualOutput, expectedOutput);
+    expect(actual).toBe(expected);
   });
 
   it('returns "instance" for instances of built-in classes', () => {
+    // eslint-disable-next-line @typescript-eslint/no-extraneous-class
     class TestClass {}
     const input = new TestClass();
-    const expectedOutput = 'instance';
+    const expected = 'instance';
 
-    const actualOutput = preciseTypeOf(input);
+    const actual = preciseTypeOf(input);
 
-    assertEquals(actualOutput, expectedOutput);
+    expect(actual).toBe(expected);
   });
 
   it('returns "instance" for instances of custom classes', () => {
+    // eslint-disable-next-line @typescript-eslint/no-extraneous-class
     class TestClass {}
     const input = new TestClass();
-    const expectedOutput = 'instance';
+    const expected = 'instance';
 
-    const actualOutput = preciseTypeOf(input);
+    const actual = preciseTypeOf(input);
 
-    assertEquals(actualOutput, expectedOutput);
+    expect(actual).toBe(expected);
   });
 
+  // eslint-disable-next-line vitest/prefer-each
   for (const [input, expected] of [
     [undefined, 'undefined'],
     [() => {}, 'function'],
@@ -59,9 +63,10 @@ describe('preciseTypeOf()', () => {
     [1n, 'bigint'],
   ] as const) {
     const displayableValue = typeof input === 'string' ? `"${input}"` : String(input);
+
     it(`for non-objects, returns the usual typeof value; e.g.: "${expected}" for ${displayableValue}`, () => {
       const actual = preciseTypeOf(input);
-      assertEquals(actual, expected);
+      expect(actual).toBe(expected);
     });
   }
 });

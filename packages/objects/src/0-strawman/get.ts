@@ -8,9 +8,9 @@ export function get<TKey extends string>(
 export function get<TKey extends string, TDefault>(
   prop: TKey,
   defaultValue: TDefault,
-): <TObj extends Partial<Record<TKey, TDefault | undefined>>>(value: TObj) => TDefault;
+): (value: Partial<Record<TKey, TDefault | undefined>>) => TDefault;
 export function get<TKey extends string, TDefault>(prop: TKey, defaultValue?: TDefault) {
-  return function <TObj extends Partial<Record<TKey, TDefault | undefined>>>(value: TObj) {
+  return function (value: Partial<Record<TKey, TDefault | undefined>>): TDefault | undefined {
     const val = value[prop];
     return val === undefined ? defaultValue : val;
   };
