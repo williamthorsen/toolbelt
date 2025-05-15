@@ -68,7 +68,11 @@ importers:
 
   packages/_template: {}
 
-  packages/arrays: {}
+  packages/arrays:
+    dependencies:
+      '@williamthorsen/toolbelt.numbers':
+        specifier: workspace:*
+        version: link:../numbers
 
   packages/nodejs: {}
 
