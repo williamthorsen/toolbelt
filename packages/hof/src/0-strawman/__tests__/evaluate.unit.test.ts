@@ -1,35 +1,27 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
+
 import { evaluate } from '../evaluate.ts';
 
-describe('evaluate', () => {
+describe(evaluate, () => {
+  const testObject = {};
+  const testArray: unknown[] = [];
+
   it('should return the value if it is not a function', () => {
-    assertEquals(evaluate(1), 1);
-    assertEquals(evaluate('a'), 'a');
-    assertEquals(evaluate({}), {});
-    assertEquals(evaluate([]), []);
+    expect(evaluate(1)).toBe(1);
+    expect(evaluate('a')).toBe('a');
+    expect(evaluate(testArray)).toBe(testArray);
+    expect(evaluate(testObject)).toBe(testObject);
   });
 
   it('should call the function and return the result if the value is a function', () => {
-    assertEquals(
-      evaluate(() => 1),
-      1,
-    );
-    assertEquals(
-      evaluate(() => 'a'),
-      'a',
-    );
-    assertEquals(
-      evaluate(() => ({})),
-      {},
-    );
-    assertEquals(
-      evaluate(() => []),
-      [],
-    );
+    expect(evaluate(() => 1)).toBe(1);
+    expect(evaluate(() => 'a')).toBe('a');
+    expect(evaluate(() => testArray)).toBe(testArray);
+    expect(evaluate(() => testObject)).toBe(testObject);
   });
 
   it('can pass arguments to the function', () => {
     const fn = (a: number, b: number) => a + b;
-    assertEquals(evaluate(fn, 1, 2), 3);
+    expect(evaluate(fn, 1, 2)).toBe(3);
   });
 });

@@ -1,12 +1,13 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
+
 import { isNotPromise, isPromise } from '../isPromise.ts';
 
-describe('isPromise()', () => {
+describe(isPromise, () => {
   it('identifies native promises as promises', () => {
     const promise = new Promise<void>((resolve) => resolve());
 
-    assertEquals(isPromise(promise), true);
-    assertEquals(isNotPromise(promise), false);
+    expect(isPromise(promise)).toBe(true);
+    expect(isNotPromise(promise)).toBe(false);
   });
 
   it('identifies thenables as promises', () => {
@@ -14,7 +15,7 @@ describe('isPromise()', () => {
       then: (onfulfilled: (s: string) => void) => onfulfilled('resolved'),
     };
 
-    assertEquals(isPromise(thenable), true);
+    expect(isPromise(thenable)).toBe(true);
   });
 
   it('does not identify non-thenables as promises', () => {
@@ -22,24 +23,24 @@ describe('isPromise()', () => {
       notThen: () => 'not a promise',
     };
 
-    assertEquals(isPromise(notThenable), false);
+    expect(isPromise(notThenable)).toBe(false);
   });
 
   it('does not identify null values as promises', () => {
-    assertEquals(isPromise(null), false);
+    expect(isPromise(null)).toBe(false);
   });
 
   it('does not identify undefined values as promises', () => {
-    assertEquals(isPromise(undefined), false);
+    expect(isPromise(undefined)).toBe(false);
   });
 
   it('does not identify primitive values as promises', () => {
-    assertEquals(isPromise(123), false);
-    assertEquals(isPromise('string'), false);
-    assertEquals(isPromise(true), false);
+    expect(isPromise(123)).toBe(false);
+    expect(isPromise('string')).toBe(false);
+    expect(isPromise(true)).toBe(false);
   });
 
   it('does not identify objects without then methods as promises', () => {
-    assertEquals(isPromise({}), false);
+    expect(isPromise({})).toBe(false);
   });
 });

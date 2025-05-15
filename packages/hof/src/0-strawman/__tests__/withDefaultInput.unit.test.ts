@@ -1,7 +1,8 @@
-import { assertEquals, assertThrows, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
+
 import { withDefaultInput } from '../withDefaultInput.ts';
 
-describe('withDefaultInput()', () => {
+describe(withDefaultInput, () => {
   it('returns a new function that accepts an undefined value', () => {
     const double = (value: number) => value * 2;
     const doubleWithDefault = withDefaultInput(double, 1);
@@ -9,7 +10,7 @@ describe('withDefaultInput()', () => {
 
     const actualSum = doubleWithDefault(undefined);
 
-    assertEquals(actualSum, expectedSum);
+    expect(actualSum).toBe(expectedSum);
   });
 
   it('if the function has no parameters, throws an error', () => {
@@ -17,6 +18,6 @@ describe('withDefaultInput()', () => {
 
     const throwingFn = () => withDefaultInput(fn, 1);
 
-    assertThrows(throwingFn, Error, 'Invalid input. The function must have one parameter.');
+    expect(throwingFn).toThrow(new Error('Invalid input. The function must have one parameter.'));
   });
 });

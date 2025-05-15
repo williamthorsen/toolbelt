@@ -1,16 +1,18 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
+
 import { withDefaultItemValue } from '../withDefaultItemValue.ts';
 
-describe('withDefaultItemValue()', () => {
+describe(withDefaultItemValue, () => {
   const sum = (values: ReadonlyArray<number>) => values.reduce((a, b) => a + b, 0);
 
   it('returns a new function that accepts an array containing undefined items', () => {
     const sumWithDefault = withDefaultItemValue(sum, 2);
     const expectedSum = 6;
 
+    // @ts-expect-error - Fix legacy types
     const actualSum = sumWithDefault([1, undefined, 3]);
 
-    assertEquals(actualSum, expectedSum);
+    expect(actualSum).toBe(expectedSum);
   });
 
   it('uses the default value for all items when the entire array is undefined', () => {
@@ -19,7 +21,7 @@ describe('withDefaultItemValue()', () => {
 
     const actualSum = sumWithDefault([undefined, undefined, undefined]);
 
-    assertEquals(actualSum, expectedSum);
+    expect(actualSum).toBe(expectedSum);
   });
 
   it('handles empty arrays gracefully', () => {
@@ -28,7 +30,7 @@ describe('withDefaultItemValue()', () => {
 
     const actualSum = sumWithFallback([]);
 
-    assertEquals(actualSum, expectedSum);
+    expect(actualSum).toBe(expectedSum);
   });
 
   it('works with different types and fallback values', () => {
@@ -36,8 +38,9 @@ describe('withDefaultItemValue()', () => {
     const concatenateWithDefault = withDefaultItemValue(concatenate, 'X');
     const expectedResult = 'aXc';
 
+    // @ts-expect-error - Fix legacy types
     const actualResult = concatenateWithDefault(['a', undefined, 'c']);
 
-    assertEquals(actualResult, expectedResult);
+    expect(actualResult).toBe(expectedResult);
   });
 });

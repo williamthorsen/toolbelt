@@ -1,4 +1,5 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
+
 import { applyPipe, pipe } from '../pipe.ts';
 
 const double = (n: number) => n * 2;
@@ -9,20 +10,20 @@ const toString = (s: number) => s.toString();
 const upper = (str: string) => str.toUpperCase();
 const asyncUpper = async (s: string) => await new Promise<string>((resolve) => resolve(s.toUpperCase()));
 
-describe('pipe()', () => {
+describe(pipe, () => {
   it('correctly composes multiple functions together', () => {
     const fnPipe = pipe(double, toString, enclose);
     const expected = '|4|';
 
     const actual = fnPipe(2);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
   it('works with a single function', () => {
     const fnPipe = pipe(double);
 
-    assertEquals(fnPipe(3), 6);
+    expect(fnPipe(3)).toBe(6);
   });
 
   it('correctly types the returned function', () => {
@@ -31,7 +32,7 @@ describe('pipe()', () => {
     // Test will fail if TypeScript compilation fails due to type error.
     const result: string = fnPipe(5);
 
-    assertEquals(result, '10');
+    expect(result).toBe('10');
   });
 
   it('accepts a first function that requires more than one argument', () => {
@@ -40,24 +41,29 @@ describe('pipe()', () => {
 
     const actual = fnPipe(1, 2);
 
-    assertEquals(actual, expected);
+    expect(actual).toBe(expected);
   });
 
-  it('resolves an async function', () => {
+  it('resolves an async function', async () => {
     const fnPipe = pipe(asyncUpper, enclose);
 
-    return fnPipe('hello').then((result) => {
-      assertEquals(result, '|HELLO|');
-    });
+    await expect(fnPipe('hello')).resolves.toBe('|HELLO|');
   });
 
+  // TODO: Consider whether to add runtime checks for these cases.
   it('throws compilation errors', () => {
-    // @ts-expect-error - Cannot be called with no arguments
-    pipe();
-    // @ts-expect-error - Functions after the first must take exactly one argument
-    pipe(double, sum);
-    // @ts-expect-error - Cannot pipe a number into a function that expects a string
-    pipe(sum, upper);
+    expect(() => {
+      // @ts-expect-error - Cannot be called with no arguments
+      pipe();
+    }).not.toThrow();
+    expect(() => {
+      // @ts-expect-error - Functions after the first must take exactly one argument
+      pipe(double, sum);
+    }).not.toThrow();
+    expect(() => {
+      // @ts-expect-error - Cannot pipe a number into a function that expects a string
+      pipe(sum, upper);
+    }).not.toThrow();
   });
 });
 
@@ -65,6 +71,6 @@ describe('applyPipe()', () => {
   it('applies the first argument to the first function in the pipe', () => {
     const result = applyPipe(2, double, toString);
 
-    assertEquals(result, '4');
+    expect(result).toBe('4');
   });
 });

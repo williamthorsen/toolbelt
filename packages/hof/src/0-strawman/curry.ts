@@ -1,4 +1,8 @@
-// deno-lint-ignore-file no-explicit-any
+/* eslint @typescript-eslint/ban-ts-comment: off */
+/* eslint @typescript-eslint/consistent-type-assertions: off */
+/* eslint @typescript-eslint/no-explicit-any: off */
+/* eslint @typescript-eslint/no-unsafe-argument: off */
+// @ts-nocheck - Fix legacy types.
 
 /**
  * Transforms a given function into its curried version.
@@ -24,6 +28,7 @@ export function curry<TFn extends Func>(fn: TFn): Curry<TFn> {
     if (args.length >= fn.length) {
       return fn(...args);
     }
+    // eslint-disable-next-line unicorn/no-null
     return curry(fn.bind(null, ...args));
   } as Curry<TFn>;
 }

@@ -1,8 +1,8 @@
-import { assertEquals, describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
 
 import { map } from '../map.ts';
 
-describe('map()', () => {
+describe(map, () => {
   it('applies a function to each item in an array and returns a new array', () => {
     const fn = (x: number) => x * 2;
     const mapper = map(fn);
@@ -11,7 +11,7 @@ describe('map()', () => {
 
     const actual = mapper(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('passes the index to the provided function', () => {
@@ -22,7 +22,7 @@ describe('map()', () => {
 
     const actual = mapper(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('returns an empty array when given an empty array', () => {
@@ -33,7 +33,7 @@ describe('map()', () => {
 
     const actual = mapper(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 
   it('works with various types, not just numbers', () => {
@@ -44,6 +44,6 @@ describe('map()', () => {
 
     const actual = mapper(input);
 
-    assertEquals(actual, expected);
+    expect(actual).toStrictEqual(expected);
   });
 });

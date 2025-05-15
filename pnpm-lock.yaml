@@ -74,6 +74,16 @@ importers:
         specifier: workspace:*
         version: link:../numbers
 
+  packages/datetime: {}
+
+  packages/guards: {}
+
+  packages/hof:
+    dependencies:
+      '@williamthorsen/toolbelt.arrays':
+        specifier: workspace:*
+        version: link:../arrays
+
   packages/nodejs: {}
 
   packages/numbers: {}

@@ -1,3 +1,11 @@
+/* eslint @typescript-eslint/ban-ts-comment: off */
+/* eslint @typescript-eslint/consistent-type-assertions: off */
+/* eslint @typescript-eslint/no-explicit-any: off */
+/* eslint @typescript-eslint/no-unsafe-assignment: off */
+/* eslint @typescript-eslint/no-unsafe-call: off */
+/* eslint @typescript-eslint/no-unsafe-return: off */
+// @ts-nocheck - Fix legacy types.
+
 import { itemAt } from '@williamthorsen/toolbelt.arrays/candidate';
 
 import { isPromise } from './isPromise.ts';
@@ -32,7 +40,7 @@ export function pipe<T extends [Fn, ...Fn[]]>(...fns: PipeReturn<T> extends neve
  * applyPipe(2, double, square, half)  // -> 8
  * ```
  */
-export function applyPipe<Fns extends [Fn<[any], any>, ...Fn[]]>(
+export function applyPipe<Fns extends [Fn<[any]>, ...Fn[]]>(
   Fn: Parameters<Fns[0]>[0],
   ...fns: PipeReturn<Fns> extends never ? never : Fns
 ): PipeReturn<Fns> {

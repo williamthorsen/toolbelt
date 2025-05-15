@@ -1,15 +1,19 @@
-import { describe, it } from '../../dev_deps.ts';
+import { describe, expect, it } from 'vitest';
 
 import { noop } from '../noop.ts';
 
-describe('noop', () => {
+describe(noop, () => {
   it('can be invoked without arguments', () => {
-    noop();
+    expect(() => {
+      noop();
+    }).not.toThrow();
   });
 
   it('can be invoked with arguments', () => {
-    noop(1);
-    noop(1, 2);
-    noop(1, 2, 3);
+    expect(() => {
+      noop(1);
+      noop(1, 2);
+      noop(1, 2, 3);
+    }).not.toThrow();
   });
 });

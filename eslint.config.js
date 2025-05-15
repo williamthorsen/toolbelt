@@ -51,6 +51,8 @@ export default [
     rules: {
       '@typescript-eslint/no-unused-expressions': 'off',
       'unicorn/no-null': 'off',
+      'unicorn/no-thenable': 'off',
+      'unicorn/no-useless-undefined': 'off',
       'vitest/max-expects': 'off', // 🟠⚫
       'vitest/padding-around-all': 'off', // 🟠⚫
       'vitest/padding-around-expect-groups': 'off', // 🟠⚫

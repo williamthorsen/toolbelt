@@ -33,6 +33,9 @@
     "publish": "pnpm publish",
     "ws": "node --import tsx ../../scripts/run-workspace-script.ts --int-test"
   },
+  "dependencies": {
+    "@williamthorsen/toolbelt.arrays": "workspace:*"
+  },
   "engines": {
     "node": ">=18.17.0"
   },
