@@ -76,6 +76,12 @@ importers:
 
   packages/datetime: {}
 
+  packages/enums:
+    dependencies:
+      '@williamthorsen/toolbelt.arrays':
+        specifier: workspace:*
+        version: link:../arrays
+
   packages/guards: {}
 
   packages/hof:
@@ -89,6 +95,8 @@ importers:
   packages/numbers: {}
 
   packages/objects: {}
+
+  packages/sets: {}
 
   packages/strings:
     dependencies:
