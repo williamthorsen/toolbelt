@@ -1,1 +1,1 @@
-export {};
+export { assert } from './assert.ts';
