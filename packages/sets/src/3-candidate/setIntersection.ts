@@ -1,5 +1,5 @@
 /**
- * Returns a set containing the elements that are common to both sets.
+ * Returns a set containing the elements that are common to both collections.
  */
 export function setIntersection<T>(aElements: Iterable<T>, bElements: Iterable<T>): Set<T> {
   const setB = new Set(bElements);

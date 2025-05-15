@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { setIsSubset } from '../setIsSubset.ts';
+import { setIsSubset, setIsSuperset } from '../setIsSubset.ts';
 
 describe(setIsSubset, () => {
   it('returns true all elements in set A are in set B', () => {
@@ -9,8 +9,10 @@ describe(setIsSubset, () => {
     const expected = true;
 
     const actual = setIsSubset(aSet, bSet);
+    const reverse = setIsSuperset(bSet, aSet);
 
     expect(actual).toBe(expected);
+    expect(reverse).toBe(expected);
   });
 
   it('returns true if the sets are identical', () => {
@@ -19,8 +21,10 @@ describe(setIsSubset, () => {
     const expected = true;
 
     const actual = setIsSubset(aSet, bSet);
+    const reverse = setIsSuperset(bSet, aSet);
 
     expect(actual).toBe(expected);
+    expect(reverse).toBe(expected);
   });
 
   it('returns true if set A is empty', () => {
@@ -29,8 +33,10 @@ describe(setIsSubset, () => {
     const expected = true;
 
     const actual = setIsSubset(aSet, bSet);
+    const reverse = setIsSuperset(bSet, aSet);
 
     expect(actual).toBe(expected);
+    expect(reverse).toBe(expected);
   });
 
   it('returns true if both sets are empty', () => {
@@ -39,8 +45,10 @@ describe(setIsSubset, () => {
     const expected = true;
 
     const actual = setIsSubset(aSet, bSet);
+    const reverse = setIsSuperset(bSet, aSet);
 
     expect(actual).toBe(expected);
+    expect(reverse).toBe(expected);
   });
 
   it('returns false if set B is empty and set A is not', () => {
@@ -50,8 +58,10 @@ describe(setIsSubset, () => {
     const expected = false;
 
     const actual = setIsSubset(aSet, bSet);
+    const reverse = setIsSuperset(bSet, aSet);
 
     expect(actual).toBe(expected);
+    expect(reverse).toBe(expected);
   });
 
   it('works with arrays', () => {
@@ -60,7 +70,9 @@ describe(setIsSubset, () => {
     const expected = true;
 
     const actual = setIsSubset(aSet, bSet);
+    const reverse = setIsSuperset(bSet, aSet);
 
     expect(actual).toBe(expected);
+    expect(reverse).toBe(expected);
   });
 });
