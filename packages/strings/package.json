@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.strings",
-  "version": "0.1.0",
+  "version": "3.0.0",
   "description": "API",
   "keywords": [],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/strings#readme",
@@ -12,17 +12,37 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./src/mod.ts"
+      "import": "./dist/esm/4-release/index.js"
+    },
+    "./candidate": {
+      "import": "./dist/esm/3-candidate/index.js"
+    },
+    "./draft": {
+      "import": "./dist/esm/2-draft/index.js"
+    },
+    "./proposed": {
+      "import": "./dist/esm/1-proposed/index.js"
     }
   },
+  "files": [
+    "dist/*",
+    "CHANGELOG.md"
+  ],
   "scripts": {
+    "prepare": "pnpm run ws build",
+    "publish": "pnpm publish",
     "ws": "node --import tsx ../../scripts/run-workspace-script.ts --int-test"
   },
   "dependencies": {
     "@williamthorsen/toolbelt.arrays": "workspace:*",
-    "@williamthorsen/toolbelt.numbers": "workspace:*"
+    "@williamthorsen/toolbelt.numbers": "workspace:*",
+    "@williamthorsen/toolbelt.sets": "workspace:*"
   },
   "engines": {
     "node": ">=18.17.0"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
   }
 }

@@ -1,4 +1,5 @@
-import { hasOwnProperty, isPlainObject } from '../packages/objects/src/mod.ts';
+import { hasOwnProperty } from '../packages/objects/src/3-candidate/index.ts';
+import { isPlainObject } from '../packages/objects/src/4-release/index.ts';
 
 /**
  * Throws an error if the `scripts` field of the object does not conform to the `PackageJson` interface.

@@ -1,0 +1,11 @@
+export { capitalize } from './capitalize.ts';
+export { interpolate, Interpolator } from './Interpolator.ts';
+export { isPatternMatch } from './isPatternMatch.ts';
+export { joinStrings } from './joinStrings.ts';
+export { obfuscate } from './obfuscate.ts';
+export { pluralize, pluralizeWithCount } from './pluralize.ts';
+export { slugify } from './slugify.ts';
+export { toLowerCase, toUpperCase, trim, trimEnd, trimStart } from './String-prototype-wrappers.ts';
+export { toCamelCase } from './toCamelCase.ts';
+export { unindent } from './unindent.ts';
+export { condenseWhitespace, removeWhitespace, trimWhitespace } from './whitespace-functions.ts';
