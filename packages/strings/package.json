@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.strings",
-  "version": "0.1.0",
+  "version": "3.0.0",
   "description": "API",
   "keywords": [],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/strings#readme",
@@ -35,7 +35,8 @@
   },
   "dependencies": {
     "@williamthorsen/toolbelt.arrays": "workspace:*",
-    "@williamthorsen/toolbelt.numbers": "workspace:*"
+    "@williamthorsen/toolbelt.numbers": "workspace:*",
+    "@williamthorsen/toolbelt.sets": "workspace:*"
   },
   "engines": {
     "node": ">=18.17.0"

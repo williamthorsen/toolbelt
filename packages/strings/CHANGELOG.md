@@ -1,4 +1,59 @@
-# Strings library changelog
+# @williamthorsen/toolbelt.arrays changelog
+
+## 3.0.0
+
+### Breaking changes
+
+- Migrated to staged distribution of library functions.
+  For example, some functions have been moved to `/candidate` or `/draft`.
+
+### Features
+
+#### Stage 2: Draft
+
+- Added:
+  - `concatenate`
+  - `enclose`
+  - `pickVariants`
+  - `TextNode`
+  - `toOrdinal`
+
+#### Stage 3: Candidate
+
+- Added:
+  - `capitalize`
+  - `condenseWhitespace`
+  - `interpolate`
+  - `Interpolator`
+  - `isPatternMatch`
+  - `joinStrings`
+  - `obfuscate`
+  - `pluralize`
+  - `pluralizeWithCount`
+  - `removeWhitespace`
+  - `slugify`
+  - `toCamelCase`
+  - `toLowerCase`
+  - `toUpperCase`
+  - `trim`
+  - `trimEnd`
+  - `trimStart`
+  - `trimWhitespace`
+  - `unindent`
+
+#### Internal
+
+- Added:
+  - `deriveCaseTransformer`
+  - `segmentByDelimited`
+  - `splitDelimited`
+  - `validateDelimiters`
+
+### Dependencies
+
+- Updated dependencies
+  - @williamthorsen/toolbelt.arrays@3.0.0
+  - @williamthorsen/toolbelt.numbers@3.0.0
 
 ## 0.1.0
 

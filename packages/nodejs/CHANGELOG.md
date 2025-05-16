@@ -1,4 +1,4 @@
-# @williamthorsen/toolbelt.datetime changelog
+# @williamthorsen/toolbelt.nodejs
 
 ## 3.0.0
 
@@ -9,12 +9,8 @@
 
 ### Features
 
-#### Stage 2: Draft
+#### Stage 0: For discussion
 
-- Added:
-  - `Timestamp`
-  - `TimeUnit`
+Added:
 
-## 0.1.0
-
-Copied from v0.1.0 of the `_template` workspace.
+- `replaceFileExtension`
