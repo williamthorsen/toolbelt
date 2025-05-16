@@ -46,6 +46,7 @@
     "update:latest": "pnpm update --latest --recursive"
   },
   "devDependencies": {
+    "@changesets/cli": "2.29.4",
     "@types/js-yaml": "4.0.9",
     "@types/node": "22.15.18",
     "@vitest/coverage-v8": "3.1.3",
