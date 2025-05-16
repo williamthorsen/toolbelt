@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import { toPickWeightedItemFromDistribution } from '../toPickWeightedItemFromDistribution.ts';
+import { makePickWeightedItemFromDistribution } from '../makePickWeightedItemFromDistribution.ts';
 
-describe(toPickWeightedItemFromDistribution, () => {
+describe(makePickWeightedItemFromDistribution, () => {
   it('returns a function that picks an item based on weights', () => {
     const items = ['a', 'b', 'c'];
     const distribution = { a: 1, b: 2, c: 3 };
     const options = { getCategory: (item: string) => item };
 
-    const pickItem = toPickWeightedItemFromDistribution(items, distribution, options);
+    const pickItem = makePickWeightedItemFromDistribution(items, distribution, options);
 
     const pickedItem = pickItem();
     expect(typeof pickedItem).toBe('string');
@@ -20,7 +20,7 @@ describe(toPickWeightedItemFromDistribution, () => {
     const distribution = { a: 0, b: 0 };
     const options = { defaultWeight: 1, getCategory: (item: string) => item };
 
-    const pickItem = toPickWeightedItemFromDistribution(items, distribution, options);
+    const pickItem = makePickWeightedItemFromDistribution(items, distribution, options);
     const pickedItem = pickItem();
 
     expect(pickedItem).toBe('c');
@@ -32,7 +32,7 @@ describe(toPickWeightedItemFromDistribution, () => {
     const distribution = { a: 1, b: 0, c: -1 };
     const options = { getCategory: (item: string) => item };
 
-    const pickItem = toPickWeightedItemFromDistribution(items, distribution, options);
+    const pickItem = makePickWeightedItemFromDistribution(items, distribution, options);
     const pickedItem = pickItem();
 
     expect(pickedItem).toBe('a');
@@ -43,7 +43,7 @@ describe(toPickWeightedItemFromDistribution, () => {
     const distribution = { a: 1, b: 2, c: 3 };
     const options = { getCategory: (item: { name: string }) => item.name };
 
-    const pickItem = toPickWeightedItemFromDistribution(items, distribution, options);
+    const pickItem = makePickWeightedItemFromDistribution(items, distribution, options);
     const pickedItem = pickItem();
 
     expect(typeof pickedItem).toBe('object');
@@ -54,7 +54,7 @@ describe(toPickWeightedItemFromDistribution, () => {
     const distribution = { a: 1, b: 2, c: 3 };
     const options = { getCategory: (item: string) => item };
 
-    const pickItem = toPickWeightedItemFromDistribution(items, distribution, options);
+    const pickItem = makePickWeightedItemFromDistribution(items, distribution, options);
 
     const pickedItem = pickItem();
     expect(items).toContain(pickedItem);
@@ -65,7 +65,7 @@ describe(toPickWeightedItemFromDistribution, () => {
     const distribution = { a: 0, b: -1, c: -2 };
     const options = { getCategory: (item: string) => item };
 
-    const throwingFn = () => toPickWeightedItemFromDistribution(items, distribution, options);
+    const throwingFn = () => makePickWeightedItemFromDistribution(items, distribution, options);
 
     expect(throwingFn).toThrow(new Error('Cannot create function with an empty array.'));
   });
@@ -75,7 +75,7 @@ describe(toPickWeightedItemFromDistribution, () => {
     const distribution = { a: 1, b: 2, c: 3 };
     const options = { getCategory: (item: string) => item };
 
-    const throwingFn = () => toPickWeightedItemFromDistribution(items, distribution, options);
+    const throwingFn = () => makePickWeightedItemFromDistribution(items, distribution, options);
 
     expect(throwingFn).toThrow(new Error('Cannot create function with an empty array.'));
   });
@@ -86,7 +86,7 @@ describe(toPickWeightedItemFromDistribution, () => {
     const options = { getCategory: (item: string) => item };
     const pickOptions = { seed: 1234 };
 
-    const pickItem = toPickWeightedItemFromDistribution(items, distribution, options);
+    const pickItem = makePickWeightedItemFromDistribution(items, distribution, options);
 
     const pickedItem1 = pickItem(pickOptions);
     const pickedItem2 = pickItem(pickOptions);

@@ -1,6 +1,6 @@
-import { random, type Seed } from '@williamthorsen/toolbelt.numbers/candidate';
+import { generateRandom, type Seed } from '@williamthorsen/toolbelt.numbers/candidate';
 
-import { itemAt } from './itemAt.ts';
+import { getAtIndexOrThrow } from './getAtIndexOrThrow.ts';
 
 /**
  * Returns a random item from the array.
@@ -14,7 +14,7 @@ export function pickItem<T>(items: ReadonlyArray<T>, options: Options = {}): T {
   if (items.length === 0) {
     throw new Error('Cannot pick an item from an empty array.');
   }
-  return itemAt(items, Math.floor(random(options) * items.length));
+  return getAtIndexOrThrow(items, Math.floor(generateRandom(options) * items.length));
 }
 
 interface Options {

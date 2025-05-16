@@ -1,5 +1,6 @@
+import { setDifference, setIntersection } from '@williamthorsen/toolbelt.sets/candidate';
+
 import { deriveCaseTransformer } from '../internal/deriveCaseTransformer.ts';
-import { setDifference, setIntersection } from '../internal/set-functions.ts';
 import { validateDelimiters } from '../internal/validateDelimiters.ts';
 import type { ValidationResult } from '../types/common.types.ts';
 

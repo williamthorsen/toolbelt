@@ -67,7 +67,7 @@ describe(pipe, () => {
   });
 });
 
-describe('applyPipe()', () => {
+describe(applyPipe, () => {
   it('applies the first argument to the first function in the pipe', () => {
     const result = applyPipe(2, double, toString);
 

@@ -1,12 +1,18 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { generateRandom } from '../generateRandom.ts';
 import { pickInteger } from '../pickInteger.ts';
 
-describe('pickInteger()', () => {
-  const mathRandomSpy = vi.spyOn(Math, 'random');
+vi.mock('../generateRandom.ts');
+const generateRandomMock = vi.mocked(generateRandom);
+
+describe(pickInteger, () => {
+  beforeEach(() => {
+    generateRandomMock.mockReturnValue(0);
+  });
 
   afterEach(() => {
-    mathRandomSpy.mockRestore();
+    generateRandomMock.mockRestore();
   });
 
   it('returns an integer', () => {
@@ -19,7 +25,6 @@ describe('pickInteger()', () => {
   it('returns a value no less than the min', () => {
     const min = 1;
     const max = 1000;
-    vi.spyOn(Math, 'random').mockImplementation(() => 0);
 
     const randomInt = pickInteger({ min, max });
 
@@ -29,7 +34,7 @@ describe('pickInteger()', () => {
   it('returns a value no greater than the max', () => {
     const min = 1;
     const max = 1000;
-    vi.spyOn(Math, 'random').mockImplementation(() => 0.999_999);
+    generateRandomMock.mockReturnValue(0.999_999);
 
     const randomInt = pickInteger({ min, max });
 
@@ -40,11 +45,10 @@ describe('pickInteger()', () => {
     const min = 1.1;
     const max = 2.1;
 
-    vi.spyOn(Math, 'random').mockImplementation(() => 0);
     const minRandomInt = pickInteger({ min, max });
     expect(minRandomInt).toBe(Math.trunc(min));
 
-    vi.spyOn(Math, 'random').mockImplementation(() => 0.999_999);
+    generateRandomMock.mockReturnValue(0.999_999);
     const maxRandomInt = pickInteger({ min, max });
     expect(maxRandomInt).toBe(Math.trunc(max));
   });
@@ -63,16 +67,14 @@ describe('pickInteger()', () => {
     const max = 1.9;
     const expected = 1;
 
-    vi.spyOn(Math, 'random').mockImplementation(() => 0);
     expect(pickInteger({ min, max })).toBe(expected);
 
-    vi.spyOn(Math, 'random').mockImplementation(() => 0.999_999);
+    generateRandomMock.mockReturnValue(0.999_999);
     expect(pickInteger({ min, max })).toBe(expected);
   });
 
   it('if only max argument is given, sets min=0', () => {
     const max = 10;
-    vi.spyOn(Math, 'random').mockImplementation(() => 0);
 
     const randomInt = pickInteger({ max });
 

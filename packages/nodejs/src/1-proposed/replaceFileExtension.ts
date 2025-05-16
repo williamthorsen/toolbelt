@@ -6,7 +6,6 @@ import path from 'node:path';
  * @param filePath - String representing a file name or file path. The file name must come at the very end
  * @param newExtension - The new extension to use
  * @param options - Options
- * @param options.oldExtension? - The extension to replace; defaults to the value returned by Node's `path.extname`
  */
 export function replaceFileExtension(
   filePath: string,
@@ -27,5 +26,6 @@ export function replaceFileExtension(
 }
 
 interface ChangeFileExtensionOptions {
+  /* The extension to replace; defaults to the value returned by Node's `path.extname` */
   oldExtension?: string;
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { hasKeyAtPath } from '../has-key.ts';
+import { hasKeyAtPath } from '../hasKeyAtPath.ts';
 
 describe(hasKeyAtPath, () => {
   it('returns true when the top-level key exists', () => {

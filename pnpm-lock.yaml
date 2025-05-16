@@ -111,6 +111,9 @@ importers:
       '@williamthorsen/toolbelt.numbers':
         specifier: workspace:*
         version: link:../numbers
+      '@williamthorsen/toolbelt.sets':
+        specifier: workspace:*
+        version: link:../sets
 
   packages/tools: {}
 

@@ -4,7 +4,7 @@ import { getFakeMathRandom } from '../getFakeMathRandom.ts';
 
 // Added to demonstrate that these tests also pass in the distribution bundle after transpilation
 
-describe('getFakeMathRandom()', () => {
+describe(getFakeMathRandom, () => {
   const testCases = [
     { seed: 0.1, expected: 0.631_793_978_918_247_8 },
     { seed: 1, expected: 0.003_280_733_247_883_959_5 },

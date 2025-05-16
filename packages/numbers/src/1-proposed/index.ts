@@ -1,1 +1,1 @@
-export { createNumberGenerator } from './createNumberGenerator.ts';
+export { makeRng } from './makeRng.ts';

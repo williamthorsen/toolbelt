@@ -1,6 +1,6 @@
-import { random, type Seed, SeededRng } from '@williamthorsen/toolbelt.numbers/candidate';
+import { generateRandom, type Seed, SeededRng } from '@williamthorsen/toolbelt.numbers/candidate';
 
-import { itemAt } from './itemAt.ts';
+import { getAtIndexOrThrow } from './getAtIndexOrThrow.ts';
 
 /**
  * Returns a new array with the items shuffled.
@@ -28,8 +28,8 @@ export function shuffleInPlace(items: unknown[], options: Options = {}): void {
 
   // Fisher-Yates algorithm
   for (let i = items.length - 1; i > 0; i--) {
-    const j = Math.floor(random({ seed }) * (i + 1));
-    [items[i], items[j]] = [itemAt(items, j), itemAt(items, i)];
+    const j = Math.floor(generateRandom({ seed }) * (i + 1));
+    [items[i], items[j]] = [getAtIndexOrThrow(items, j), getAtIndexOrThrow(items, i)];
   }
 }
 

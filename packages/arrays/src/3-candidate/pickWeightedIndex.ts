@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 
-import { random, type Seed } from '@williamthorsen/toolbelt.numbers/candidate';
+import { generateRandom, type Seed } from '@williamthorsen/toolbelt.numbers/candidate';
 
+import { getAtIndexOrThrow } from './getAtIndexOrThrow.ts';
 import { getWeightedIndex } from './getWeightedIndex.ts';
-import { itemAt } from './itemAt.ts';
 
 /**
  * Returns a pseudo-random item from the cumulative weights, with odds reflecting the cumulative weights.
@@ -16,8 +16,8 @@ import { itemAt } from './itemAt.ts';
 export function pickWeightedIndex(cumulativeWeights: ReadonlyArray<number>, options: PickRandomOptions = {}): Integer {
   assertValidCumulativeWeights(cumulativeWeights);
 
-  const cumulativeWeight = itemAt(cumulativeWeights, cumulativeWeights.length - 1);
-  const randomValue = random(options);
+  const cumulativeWeight = getAtIndexOrThrow(cumulativeWeights, cumulativeWeights.length - 1);
+  const randomValue = generateRandom(options);
   const targetWeight = randomValue * cumulativeWeight;
 
   // Because the array is non-empty, the target weight is guaranteed to be within the range [0, cumulativeWeight).
@@ -49,7 +49,7 @@ export function assertValidCumulativeWeights(weights: ReadonlyArray<number>, nIt
  */
 function assertAscendingWeights(values: ReadonlyArray<number>): void | never {
   for (let i = 1; i < values.length; i++) {
-    if (itemAt(values, i) < itemAt(values, i - 1)) {
+    if (getAtIndexOrThrow(values, i) < getAtIndexOrThrow(values, i - 1)) {
       throw new Error('Cumulative weights must be in ascending order.');
     }
   }

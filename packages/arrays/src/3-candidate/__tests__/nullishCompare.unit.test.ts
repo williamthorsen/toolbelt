@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { createNullishComparer, nullishCompare } from '../nullishCompare.ts';
+import { makeNullishCompare, nullishCompare } from '../nullishCompare.ts';
 
-describe(createNullishComparer, () => {
+describe(makeNullishCompare, () => {
   // Original comparison function
   function compare(a: number, b: number): number {
     return a - b;
@@ -10,13 +10,13 @@ describe(createNullishComparer, () => {
 
   describe('nullishGreater=false (the default)', () => {
     it('returns negative value if a < b', () => {
-      const nullishCompare = createNullishComparer(compare);
+      const nullishCompare = makeNullishCompare(compare);
 
       expect(nullishCompare(-1, 1)).toBeLessThan(0);
     });
 
     it('returns positive value if a > b', () => {
-      const nullishCompare = createNullishComparer(compare);
+      const nullishCompare = makeNullishCompare(compare);
 
       expect(nullishCompare(1, -1)).toBeGreaterThan(0);
     });
@@ -25,7 +25,7 @@ describe(createNullishComparer, () => {
       const values = [2, 1, 4, 3];
       const expectedValues = [1, 2, 3, 4];
 
-      const nullishCompare = createNullishComparer(compare);
+      const nullishCompare = makeNullishCompare(compare);
       const actualValues = [...values].sort(nullishCompare);
 
       expect(actualValues).toStrictEqual(expectedValues);
@@ -38,7 +38,7 @@ describe(createNullishComparer, () => {
       const values = [1, -1, null, 2];
       const expectedValues = [-1, 1, 2, null];
 
-      const nullishCompare = createNullishComparer(compare, options);
+      const nullishCompare = makeNullishCompare(compare, options);
       const actualValues = [...values].sort(nullishCompare);
 
       expect(actualValues).toStrictEqual(expectedValues);

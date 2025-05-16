@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import { itemAt } from '../itemAt.ts';
+import { getAtIndexOrThrow } from '../getAtIndexOrThrow.ts';
 
-describe(itemAt, () => {
+describe(getAtIndexOrThrow, () => {
   it('returns the correct item at the specified index', () => {
     const arr = ['a', 'b', 'c', 'd'];
     const index = 2;
     const expectedItem = 'c';
 
-    const item = itemAt(arr, index);
+    const item = getAtIndexOrThrow(arr, index);
 
     expect(item).toBe(expectedItem);
   });
@@ -17,7 +17,7 @@ describe(itemAt, () => {
     const arr = ['a', 'b', 'c', 'd'];
     const index = -1;
 
-    const throwingFn = () => itemAt(arr, index);
+    const throwingFn = () => getAtIndexOrThrow(arr, index);
 
     expect(throwingFn).toThrow(new RangeError('Index -1 is out of bounds.'));
   });
@@ -26,7 +26,7 @@ describe(itemAt, () => {
     const arr = ['a', 'b', 'c', 'd'];
     const index = 4;
 
-    const throwingFn = () => itemAt(arr, index);
+    const throwingFn = () => getAtIndexOrThrow(arr, index);
 
     expect(throwingFn).toThrow(new RangeError('Index 4 is out of bounds.'));
   });
@@ -36,7 +36,7 @@ describe(itemAt, () => {
     const index = 0;
     const expectedItem = 'a';
 
-    const item = itemAt(arr, index);
+    const item = getAtIndexOrThrow(arr, index);
 
     expect(item).toBe(expectedItem);
   });
@@ -46,7 +46,7 @@ describe(itemAt, () => {
     const index = 3;
     const expectedItem = 'd';
 
-    const item = itemAt(arr, index);
+    const item = getAtIndexOrThrow(arr, index);
 
     expect(item).toBe(expectedItem);
   });

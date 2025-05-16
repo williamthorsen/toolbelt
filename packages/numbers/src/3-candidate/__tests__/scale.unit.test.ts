@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { scale, scaleInt } from '../scale.ts';
 
-describe('scale()', () => {
+describe(scale, () => {
   it('scales a number from default range [0, 1] to range [0, 100]', () => {
     const result = scale(0.5, { min: 0, max: 100 });
     expect(result).toBe(50);

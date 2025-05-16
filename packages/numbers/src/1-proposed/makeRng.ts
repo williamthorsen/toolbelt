@@ -7,7 +7,7 @@ import { getFakeMathRandom } from '../internal/getFakeMathRandom.ts';
  * series of numbers that deterministically depend on the initial seed (or pseudo-random if no seed is given).
  * This is not intended to be a cryptographically secure random number generator.
  */
-export function createNumberGenerator(seed?: Seed): () => number {
+export function makeRng(seed?: Seed): () => number {
   const inputSeed = evaluateSeed(seed);
   if (inputSeed === undefined) {
     return Math.random;

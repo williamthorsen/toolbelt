@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { wrapSum } from '../wrapSum.ts';
 
-describe('wrapSum()', () => {
+describe(wrapSum, () => {
   it('returns 0 when no addends are provided', () => {
     const max = 10;
     const expected = 0;

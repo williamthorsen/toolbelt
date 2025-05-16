@@ -6,7 +6,7 @@
 /* eslint @typescript-eslint/no-unsafe-return: off */
 // @ts-nocheck - Fix legacy types.
 
-import { itemAt } from '@williamthorsen/toolbelt.arrays/candidate';
+import { getAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 
 import { isPromise } from './isPromise.ts';
 
@@ -23,7 +23,7 @@ export function pipe<T extends [Fn, ...Fn[]]>(...fns: PipeReturn<T> extends neve
     let nextArgs: unknown[] = args;
 
     for (let i = 0; i < fns.length; i++) {
-      const [result] = (nextArgs = [itemAt(fns, i)(...nextArgs)]);
+      const [result] = (nextArgs = [getAtIndexOrThrow(fns, i)(...nextArgs)]);
       if (isPromise(result)) return resolveAsync(result, fns.slice(i + 1));
     }
 

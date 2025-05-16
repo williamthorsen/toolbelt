@@ -6,7 +6,7 @@ import { scale } from './scale.ts';
 /**
  * Returns a scaled random number in the range [min, max).
  */
-export function random(options: Options = {}): number {
+export function generateRandom(options: Options = {}): number {
   const { min = 0, max = 1 } = options;
 
   const seed = evaluateSeed(options.seed);

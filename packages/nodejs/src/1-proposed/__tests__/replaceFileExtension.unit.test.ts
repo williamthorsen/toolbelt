@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { replaceFileExtension } from '../replaceFileExtension.ts';
 
-describe('replaceFileExtension()', () => {
+describe(replaceFileExtension, () => {
   it('replaces the current file extension with the new extension and returns the result', () => {
     const filePath = './path/to/file.old';
     const newExtension = '.new';

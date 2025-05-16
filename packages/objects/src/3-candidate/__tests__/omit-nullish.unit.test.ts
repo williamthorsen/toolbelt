@@ -56,7 +56,7 @@ describe(omitNullish, () => {
   });
 });
 
-describe('omitUndefined()', () => {
+describe(omitUndefined, () => {
   it('removes properties with undefined values', () => {
     const obj = { a: 1, b: undefined, c: 3 };
     const expected = { a: 1, c: 3 };

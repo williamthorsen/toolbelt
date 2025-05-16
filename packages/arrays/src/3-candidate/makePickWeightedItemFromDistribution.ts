@@ -9,7 +9,7 @@ import { toCumulativeValues } from './toCumulativeValues.ts';
  * @experimental
  * @stage candidate
  */
-export function toPickWeightedItemFromDistribution<TItem, TCategory extends string>(
+export function makePickWeightedItemFromDistribution<TItem, TCategory extends string>(
   items: ReadonlyArray<TItem>,
   distribution: Partial<Distribution<TCategory>>,
   params: Params<TItem, TCategory>,

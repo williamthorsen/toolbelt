@@ -1,5 +1,5 @@
 import type { Seed } from '../internal/evaluateSeed.ts';
-import { random } from './random.ts';
+import { generateRandom } from './generateRandom.ts';
 
 /**
  * Returns a random integer between the bounds inclusive.
@@ -24,7 +24,7 @@ export function pickInteger(params: Params = {}): number {
   }
   const range = end - start + 1;
 
-  return start + Math.floor(random({ seed }) * range);
+  return start + Math.floor(generateRandom({ seed }) * range);
 }
 
 interface Params {

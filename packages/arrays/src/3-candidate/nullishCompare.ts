@@ -2,7 +2,7 @@
  * Accepts a comparison function and returns a new function that adds handling of nullish values and optional
  * comparison reversal.
  */
-export function createNullishComparer<T>(compare: (a: T, b: T) => number, options: Options = {}): NullishComparer<T> {
+export function makeNullishCompare<T>(compare: (a: T, b: T) => number, options: Options = {}): NullishComparer<T> {
   return function compareWithNullishHandling(a: T | null | undefined, b: T | null | undefined): number {
     return nullishCompare(compare, a, b, options);
   };
