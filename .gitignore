@@ -11,6 +11,7 @@
 # Generated files
 dist/
 dist-ssr/
+tsconfig.tsbuildinfo
 
 # Local-only directories & files
 local/

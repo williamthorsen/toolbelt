@@ -88,7 +88,7 @@ function getPackageJson() {
 
 function getScripts(useIntTests = false): Record<string, string | []> {
   const commonScripts: Record<string, string | string[]> = {
-    build: ['clean', 'compile', 'generate-typings'],
+    build: ['compile', 'generate-typings'],
     check: ['typecheck', 'fmt:check', 'lint:check', 'test'],
     'check:strict': ['typecheck', 'fmt:check', 'lint:strict', 'test:coverage'],
     clean: 'pnpm exec rimraf dist/*',

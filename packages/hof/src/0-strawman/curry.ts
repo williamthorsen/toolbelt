@@ -28,7 +28,6 @@ export function curry<TFn extends Func>(fn: TFn): Curry<TFn> {
     if (args.length >= fn.length) {
       return fn(...args);
     }
-    // eslint-disable-next-line unicorn/no-null
     return curry(fn.bind(null, ...args));
   } as Curry<TFn>;
 }
