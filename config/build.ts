@@ -1,27 +1,61 @@
-import fs from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { existsSync, readFileSync } from 'node:fs';
+import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
-import { build, type Plugin } from 'esbuild';
+import { build, type Format, type Platform, type Plugin } from 'esbuild';
 import { glob } from 'glob';
+
+const CACHE_FILE = 'dist/esm/.cache';
+const format: Format = 'esm';
+const platform: Platform = 'node';
+const target = 'es2022';
 
 const aliases = {
   '~src/': 'src/',
 };
-
+const dependencies = ['package.json'];
 const entryPoints = await glob(['src/**/*.ts'], {
   ignore: ['**/__tests__/**'],
 });
+const outputConfig = { format, platform, target: [target] };
 
-await build({
-  entryPoints,
-  outdir: 'dist/esm/',
-  format: 'esm',
-  bundle: false,
-  sourcemap: false,
-  platform: 'node',
-  target: ['es2022'],
-  plugins: [rewriteTsExtensions()],
-});
+if (await hashChanged()) {
+  await build({
+    entryPoints,
+    outdir: 'dist/esm/',
+    bundle: false,
+    sourcemap: false,
+    plugins: [rewriteTsExtensions()],
+    ...outputConfig,
+  });
+}
+
+// region | Helper functions
+async function hashChanged(): Promise<boolean> {
+  const previousHash = existsSync(CACHE_FILE) ? readFileSync(CACHE_FILE, 'utf8') : undefined;
+  const currentHash = await computeHash();
+
+  if (previousHash === currentHash) {
+    console.info('No changes detected. Skipping build.');
+    return false;
+  }
+
+  console.info('Changes detected.');
+  await writeFile(CACHE_FILE, currentHash);
+  return true;
+}
+
+async function computeHash(): Promise<string> {
+  const hash = createHash('sha256');
+  for (const file of [...entryPoints, ...dependencies]) {
+    const content = await readFile(file);
+    hash.update(content);
+  }
+
+  hash.update(JSON.stringify(outputConfig));
+  return hash.digest('hex');
+}
 
 function rewriteTsExtensions(): Plugin {
   return {
@@ -29,7 +63,7 @@ function rewriteTsExtensions(): Plugin {
     setup(build) {
       build.onLoad({ filter: /\.ts$/ }, async (args) => {
         const fileDir = path.dirname(args.path);
-        let code = await fs.readFile(args.path, 'utf8');
+        let code = await readFile(args.path, 'utf8');
 
         code = resolveAliasImports(code, fileDir, aliases);
         code = rewriteTsImportExtensions(code);
@@ -68,3 +102,4 @@ function resolveAliasImports(code: string, fileDir: string, aliasMap: Record<str
 function rewriteTsImportExtensions(code: string): string {
   return code.replaceAll(/(?<=from\s+['"])(\.{1,2}\/[^'"]+)\.ts(?=['"])/g, '$1.js');
 }
+// endregion | Helper functions

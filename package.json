@@ -24,6 +24,7 @@
     "check": "pnpm run typecheck && pnpm run fmt:check && pnpm run lint:check && pnpm run test",
     "check:strict": "pnpm run typecheck && pnpm run fmt:check && pnpm run lint:strict && pnpm run test:coverage && pnpm run audit",
     "ci": "pnpm run check:strict && pnpm --recursive run build",
+    "clean": "pnpm --recursive run ws clean",
     "fmt": "prettier --list-different --write .",
     "fmt:check": "prettier --check .",
     "lint": "pnpm run lint:root && pnpm --recursive run ws lint",
