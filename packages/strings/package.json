@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.strings",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "API",
   "keywords": [],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/strings#readme",
@@ -30,7 +30,7 @@
   ],
   "scripts": {
     "prepare": "pnpm run ws build",
-    "publish": "pnpm publish",
+    "publish:github": "pnpm publish",
     "ws": "node --import tsx ../../scripts/run-workspace-script.ts --int-test"
   },
   "dependencies": {

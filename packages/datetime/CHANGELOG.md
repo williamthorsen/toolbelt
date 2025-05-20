@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.datetime changelog
 
+## 3.0.1
+
+### Tooling
+
+- Renamed `publish` script to avoid recursion
+
 ## 3.0.0
 
 ### Breaking changes
