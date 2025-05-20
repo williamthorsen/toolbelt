@@ -1,6 +1,12 @@
 # @williamthorsen/toolbelt.numbers changelog
 
-## 3.0.0
+## 4.0.1
+
+### Tooling
+
+- Renamed `publish` script to avoid recursion
+
+## 4.0.0
 
 ### Breaking changes
 
