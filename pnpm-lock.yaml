@@ -73,6 +73,9 @@ importers:
 
   packages/arrays:
     dependencies:
+      '@williamthorsen/toolbelt.guards':
+        specifier: workspace:*
+        version: link:../guards
       '@williamthorsen/toolbelt.numbers':
         specifier: workspace:*
         version: link:../numbers
