@@ -1,5 +1,12 @@
 # @williamthorsen/toolbelt.arrays changelog
 
+## 3.0.2
+
+### Dependencies
+
+- Updated internal dependencies
+  - @williamthorsen/toolbelt.arrays@3.0.2
+
 ## 3.0.1
 
 ### Tooling

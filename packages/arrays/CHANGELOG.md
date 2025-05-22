@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.arrays changelog
 
+## 3.0.2
+
+### Fixes
+
+- Fixed the issue that code relies on Node.js `assert` but could be used in a browser environment
+
 ## 3.0.1
 
 ### Tooling
