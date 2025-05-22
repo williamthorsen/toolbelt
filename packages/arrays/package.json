@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.arrays",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "API",
   "keywords": [],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/arrays#readme",
@@ -34,6 +34,7 @@
     "ws": "node --import tsx ../../scripts/run-workspace-script.ts --int-test"
   },
   "dependencies": {
+    "@williamthorsen/toolbelt.guards": "workspace:*",
     "@williamthorsen/toolbelt.numbers": "workspace:*"
   },
   "engines": {

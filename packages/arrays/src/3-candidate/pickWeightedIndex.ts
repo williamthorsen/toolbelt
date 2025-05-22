@@ -1,5 +1,4 @@
-import assert from 'node:assert/strict';
-
+import { assert } from '@williamthorsen/toolbelt.guards';
 import { generateRandom, type Seed } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { getAtIndexOrThrow } from './getAtIndexOrThrow.ts';
@@ -22,7 +21,7 @@ export function pickWeightedIndex(cumulativeWeights: ReadonlyArray<number>, opti
 
   // Because the array is non-empty, the target weight is guaranteed to be within the range [0, cumulativeWeight).
   const pickedIndex = getWeightedIndex(cumulativeWeights, targetWeight);
-  assert.ok(pickedIndex !== undefined); // type guard only
+  assert(pickedIndex !== undefined); // type guard only
 
   return pickedIndex;
 }
