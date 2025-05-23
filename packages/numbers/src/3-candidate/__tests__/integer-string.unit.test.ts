@@ -65,4 +65,58 @@ describe(safeParseInteger, () => {
 
     expect(actual).toBe(expected);
   });
+
+  it('returns the fallback value when parsing fails', () => {
+    const value = 'abc';
+    const fallbackValue = 0;
+
+    const actual = safeParseInteger(value, fallbackValue);
+
+    expect(actual).toBe(fallbackValue);
+  });
+
+  it('returns the fallback value for null input', () => {
+    const value = null;
+    const fallbackValue = 100;
+
+    const actual = safeParseInteger(value, fallbackValue);
+
+    expect(actual).toBe(fallbackValue);
+  });
+
+  it('returns the fallback value for undefined input', () => {
+    const value = undefined;
+    const fallbackValue = -1;
+
+    const actual = safeParseInteger(value, fallbackValue);
+
+    expect(actual).toBe(fallbackValue);
+  });
+
+  it('parses a valid integer string even when a fallback value is provided', () => {
+    const value = '42';
+    const fallbackValue = 0;
+
+    const actual = safeParseInteger(value, fallbackValue);
+
+    expect(actual).toBe(42);
+  });
+
+  it('parses a negative integer string even when a fallback value is provided', () => {
+    const value = '-123';
+    const fallbackValue = 0;
+
+    const actual = safeParseInteger(value, fallbackValue);
+
+    expect(actual).toBe(-123);
+  });
+
+  it('returns the fallback value for a string with mixed characters', () => {
+    const value = '123abc';
+    const fallbackValue = 999;
+
+    const actual = safeParseInteger(value, fallbackValue);
+
+    expect(actual).toBe(fallbackValue);
+  });
 });
