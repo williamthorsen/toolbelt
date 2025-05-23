@@ -1,5 +1,12 @@
 # @williamthorsen/toolbelt.arrays changelog
 
+## 3.0.3
+
+### Dependencies
+
+- Updated internal dependencies:
+  - @williamthorsen/toolbelt.numbers@4.1.0
+
 ## 3.0.2
 
 ### Fixes
