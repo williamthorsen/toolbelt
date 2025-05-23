@@ -51,7 +51,7 @@
     "@types/js-yaml": "4.0.9",
     "@types/node": "22.15.21",
     "@vitest/coverage-v8": "3.1.4",
-    "@vitest/eslint-plugin": "1.2.0",
+    "@vitest/eslint-plugin": "1.2.1",
     "@williamthorsen/eslint-config-typescript": "5.6.0",
     "@williamthorsen/strict-lint": "5.3.0",
     "esbuild": "0.25.4",
