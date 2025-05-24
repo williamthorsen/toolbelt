@@ -15,24 +15,27 @@ export function isIntegerString(value: string | null | undefined): value is stri
 
 /**
  * Attempts to parse an integer from a string and returns the parsed integer.
- * If the input does not represent a valid integer, returns the fallback value.
+ * If the input does not represent a valid integer, returns the fallback value or throws the fallback error.
  *
  * @param value - The string to parse.
- * @param fallbackValue - The value to return if parsing fails.
+ * @param fallback - The value to return if parsing fails.
  * @returns The parsed integer or the fallback value.
  *
  * @category Type Guards
  * @experimental
  * @stage candidate
  */
-export function safeParseInteger(value: Maybe<string>, fallbackValue: number): number;
-export function safeParseInteger(value: Maybe<string>, fallbackValue?: undefined): number | undefined;
+export function safeParseInteger(value: Maybe<string>, fallback: number | Error): number;
+export function safeParseInteger(value: Maybe<string>, fallback?: undefined): number | undefined;
 export function safeParseInteger(
   value: Maybe<string>,
-  fallbackValue: number | undefined = undefined,
+  fallback: number | undefined | Error = undefined,
 ): number | undefined {
   if (!isIntegerString(value)) {
-    return fallbackValue;
+    if (fallback instanceof Error) {
+      throw fallback;
+    }
+    return fallback;
   }
 
   return Number.parseInt(value.trim(), 10);
