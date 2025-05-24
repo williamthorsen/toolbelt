@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.datetime changelog
 
+## 3.2.0
+
+### Features
+
+- `safeParseInteger` optionally accepts an error as the fallback
+
 ## 3.1.0
 
 ### Features

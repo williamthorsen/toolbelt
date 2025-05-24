@@ -1,5 +1,12 @@
 # @williamthorsen/toolbelt.enums changelog
 
+## 3.0.4
+
+### Dependencies
+
+- Updated internal dependencies:
+  - @williamthorsen/toolbelt.arrays@3.0.4
+
 ## 3.0.3
 
 ### Dependencies

@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.numbers changelog
 
+## 4.2.0
+
+### Minor Changes
+
+- Modified `safeParseInteger` to optionally accept an error as the fallback
+
 ## 4.1.0
 
 ### Features
