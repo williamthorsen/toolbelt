@@ -1,5 +1,13 @@
 # @williamthorsen/toolbelt.datetime changelog
 
+## 3.1.0
+
+### Features
+
+- Added features to get the decades for a range of years:
+  - `getDecadesContainingRange`
+  - 'getDecadesContainingYears'
+
 ## 3.0.1
 
 ### Tooling
