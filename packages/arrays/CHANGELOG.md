@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.arrays changelog
 
+## 3.1.0
+
+### Features
+
+- Added a `Range` class to generate and iterate over a range of numbers.
+
 ## 3.0.4
 
 ### Dependencies
