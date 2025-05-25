@@ -4,7 +4,7 @@ import { Range } from '../Range.ts';
 
 describe(Range, () => {
   describe('ascending ranges', () => {
-    const range = new Range({ start: 1, end: 5 });
+    const range = new Range(1, 5);
 
     it('has correct length', () => {
       expect(range).toHaveLength(5);
@@ -31,7 +31,7 @@ describe(Range, () => {
   });
 
   describe('descending ranges', () => {
-    const range = new Range({ start: 5, end: 1 });
+    const range = new Range(5, 1);
 
     it('has correct length', () => {
       expect(range).toHaveLength(5);
@@ -58,7 +58,7 @@ describe(Range, () => {
   });
 
   describe('single-value ranges', () => {
-    const range = new Range({ start: 7, end: 7 });
+    const range = new Range(7, 7);
 
     it('has length 1', () => {
       expect(range).toHaveLength(1);
