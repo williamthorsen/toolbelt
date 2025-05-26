@@ -1,8 +1,7 @@
 {
   "name": "@williamthorsen/toolbelt.objects",
-  "version": "3.0.1",
-  "private": true,
-  "description": "Template for new workspace",
+  "version": "3.0.2",
+  "description": "Utilities for working with objects in JavaScript and TypeScript.",
   "keywords": [],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/objects#readme",
   "bugs": {
@@ -38,7 +37,7 @@
     "node": ">=18.17.0"
   },
   "publishConfig": {
-    "access": "restricted",
+    "access": "public",
     "registry": "https://npm.pkg.github.com"
   }
 }

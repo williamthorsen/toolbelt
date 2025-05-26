@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.arrays changelog
 
+## 3.0.2
+
+### Tooling
+
+- Make package public
+
 ## 3.0.1
 
 ### Tooling
