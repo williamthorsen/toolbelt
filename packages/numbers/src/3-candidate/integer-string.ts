@@ -1,3 +1,5 @@
+import type { Maybe } from '../internal/internal.types.ts';
+
 /**
  * Returns true if the value is a string that represents a valid integer.
  *
@@ -40,5 +42,3 @@ export function safeParseInteger(
 
   return Number.parseInt(value.trim(), 10);
 }
-
-type Maybe<T> = T | null | undefined;
