@@ -7,7 +7,7 @@
  * @experimental
  * @stage candidate
  */
-export function getDuplicates<T>(items: Iterable<T>): T[] {
+export function getDuplicateItems<T>(items: Iterable<T>): T[] {
   const duplicates = new Set<T>();
   const seen = new Set<T>();
   for (const item of items) {
@@ -19,3 +19,6 @@ export function getDuplicates<T>(items: Iterable<T>): T[] {
   }
   return [...duplicates];
 }
+
+/** @deprecated Use `getDuplicateItems` instead. */
+export const getDuplicates = getDuplicateItems;
