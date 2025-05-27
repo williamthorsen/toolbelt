@@ -1,8 +1,14 @@
 # @williamthorsen/toolbelt.numbers changelog
 
+## 4.3.0
+
+### Features
+
+- Added `isNumericString` and `safeParseNumber`
+
 ## 4.2.0
 
-### Minor Changes
+### Features
 
 - Modified `safeParseInteger` to optionally accept an error as the fallback
 
