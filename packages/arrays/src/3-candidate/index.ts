@@ -3,6 +3,7 @@ export { extractWeights } from './extractWeights.ts';
 export { findOrThrow } from './findOrThrow.ts';
 export { getAtIndexOrThrow } from './getAtIndexOrThrow.ts';
 export { getDuplicateItems, getDuplicates } from './getDuplicateItems.ts';
+export { getUniqueItems } from './getUniqueItems.ts';
 export { getWeightedIndex } from './getWeightedIndex.ts';
 export { includes } from './includes.ts';
 export { makePickWeightedItemFromDistribution } from './makePickWeightedItemFromDistribution.ts';
