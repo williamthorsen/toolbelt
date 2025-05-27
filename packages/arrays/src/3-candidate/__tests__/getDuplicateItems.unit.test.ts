@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { getDuplicates } from '../getDuplicates.ts';
+import { getDuplicateItems } from '../getDuplicateItems.ts';
 
-describe(getDuplicates, () => {
+describe(getDuplicateItems, () => {
   it('should return an array containing one of each duplicate value', () => {
     const array = [1, 1, 2, 1];
     const expected = [1];
 
-    const duplicates = getDuplicates(array);
+    const duplicates = getDuplicateItems(array);
 
     expect(duplicates).toStrictEqual(expected);
   });
@@ -16,7 +16,7 @@ describe(getDuplicates, () => {
     const array = [1, 2, 3];
     const expected: number[] = [];
 
-    const duplicates = getDuplicates(array);
+    const duplicates = getDuplicateItems(array);
 
     expect(duplicates).toStrictEqual(expected);
   });
@@ -25,7 +25,7 @@ describe(getDuplicates, () => {
     const array = [] as const;
     const expected: number[] = [];
 
-    const duplicates = getDuplicates(array);
+    const duplicates = getDuplicateItems(array);
 
     expect(duplicates).toStrictEqual(expected);
   });
@@ -34,7 +34,7 @@ describe(getDuplicates, () => {
     const array = [1, 'a', false, null, undefined, null];
     const expected = [null];
 
-    const duplicates = getDuplicates(array);
+    const duplicates = getDuplicateItems(array);
 
     expect(duplicates).toStrictEqual(expected);
   });
@@ -48,7 +48,7 @@ describe(getDuplicates, () => {
     };
     const expected = [1];
 
-    const duplicates = getDuplicates(toGenerateInt());
+    const duplicates = getDuplicateItems(toGenerateInt());
 
     expect(duplicates).toStrictEqual(expected);
   });
