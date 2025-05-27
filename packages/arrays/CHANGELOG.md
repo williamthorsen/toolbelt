@@ -1,5 +1,12 @@
 # @williamthorsen/toolbelt.arrays changelog
 
+## 3.3.0
+
+### Features
+
+- Added `getUniqueItems`
+- Renamed `getDuplicates` to `getDuplicateItems` for consistency with other function names
+
 ## 3.2.0
 
 ### Features
