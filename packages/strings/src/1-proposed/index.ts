@@ -1,1 +1,1 @@
-export {};
+export { toSortableName } from './toSortableName.ts';
