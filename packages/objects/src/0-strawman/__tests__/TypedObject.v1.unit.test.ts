@@ -97,7 +97,6 @@ describe(TypedObject, () => {
     });
 
     it('given a class, throws an error', () => {
-      // eslint-disable-next-line @typescript-eslint/no-extraneous-class
       class TestClass {}
       const input = TestClass;
 
