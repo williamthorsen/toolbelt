@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.arrays changelog
 
+## 3.1.0
+
+### Features
+
+- Added `safeTrim` and `toSortableName`
+
 ## 3.0.8
 
 ### Dependencies

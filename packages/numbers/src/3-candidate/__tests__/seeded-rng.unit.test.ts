@@ -99,7 +99,6 @@ describe(SeededRng, () => {
       const input = undefined;
       const expected = undefined;
 
-      // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
       const actual = SeededRng.clone(input);
 
       expect(actual).toBe(expected);
@@ -166,7 +165,6 @@ describe(SeededRng, () => {
       const seed = undefined;
       const expected = undefined;
 
-      // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
       const actual = SeededRng.spawn(seed);
 
       expect(actual).toBe(expected);

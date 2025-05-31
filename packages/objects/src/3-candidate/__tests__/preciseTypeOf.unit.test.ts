@@ -31,7 +31,6 @@ describe(preciseTypeOf, () => {
   });
 
   it('returns "instance" for instances of built-in classes', () => {
-    // eslint-disable-next-line @typescript-eslint/no-extraneous-class
     class TestClass {}
     const input = new TestClass();
     const expected = 'instance';
@@ -42,7 +41,6 @@ describe(preciseTypeOf, () => {
   });
 
   it('returns "instance" for instances of custom classes', () => {
-    // eslint-disable-next-line @typescript-eslint/no-extraneous-class
     class TestClass {}
     const input = new TestClass();
     const expected = 'instance';
