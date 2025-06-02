@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.enums changelog
 
+## 3.1.0
+
+### Features
+
+- Added `enumEntries`, `enumKeys`, and `enumValues` to get type-safe keys and values from numeric and string enums
+
 ## 3.0.8
 
 ### Dependencies
