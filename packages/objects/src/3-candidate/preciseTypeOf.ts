@@ -1,4 +1,4 @@
-import { isPlainObject } from '../4-release/index.ts';
+import { isPlainObject } from '../4-release/is-object.ts';
 
 /**
  * Returns `typeof value`, except that the "object" type is replaced by more the precise types defined in
