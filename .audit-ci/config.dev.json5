@@ -1,0 +1,11 @@
+{
+  "$schema": "https://github.com/IBM/audit-ci/raw/main/docs/schema.json",
+  "moderate": true,
+  "allowlist": [
+    // esbuild enables any website to send any requests to the development server and read the response
+    // https://github.com/advisories/GHSA-67mh-4wv8-2f99
+    // "GHSA-67mh-4wv8-2f99",
+  ],
+  "extra-args": ["--dev"],
+  "report-type": "summary",
+}
