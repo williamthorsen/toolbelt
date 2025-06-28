@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.arrays changelog
 
+## 3.1.0
+
+### Minor Changes
+
+- Added getValueAtPathOrThrow to draft functions
+
 ## 3.0.2
 
 ### Tooling
