@@ -1,4 +1,4 @@
-import { isObject } from '../4-release/index.ts';
+import { isObject } from '../4-release/is-object.ts';
 
 /**
  * Checks whether a nested key exists within an object.

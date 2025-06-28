@@ -1,7 +1,7 @@
 /* eslint @typescript-eslint/consistent-type-assertions: off */
 /* eslint @typescript-eslint/no-unsafe-return: off */
 
-import { isObject, isPlainObject, type PlainObject } from '../4-release/index.ts';
+import { isObject, isPlainObject, type PlainObject } from '../4-release/is-object.ts';
 
 /**
  * Returns a new object whose keys are sorted alphabetically or by a custom comparator function.

@@ -1,4 +1,4 @@
-import { isObject } from '../4-release/index.ts';
+import { isObject } from '../4-release/is-object.ts';
 
 export function isObjectWithKey1<TValue, TKey extends PropertyKey>(
   value: TValue,
