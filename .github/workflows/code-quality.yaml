@@ -43,7 +43,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.10.0 # Match the version in .tool-versions
+          version: '10.12.4' # Match the version in .tool-versions
           run_install: false
 
       - name: Set up Node.js
