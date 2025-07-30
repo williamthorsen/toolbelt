@@ -221,7 +221,6 @@ export function createDelimitedMatcher(matcher: RegExp | string, options: Delimi
   const { caseInsensitive } = options;
 
   const matcherSource = typeof matcher === 'string' ? matcher : matcher.source;
-  // eslint-disable-next-line unicorn/prefer-spread
   const matcherFlagsSet = new Set(typeof matcher === 'string' ? [] : matcher.flags.split(''));
 
   matcherFlagsSet.add('g');
