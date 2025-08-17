@@ -17,6 +17,9 @@ importers:
       '@types/node':
         specifier: 22.15.34
         version: 22.15.34
+      '@typescript/native-preview':
+        specifier: 7.0.0-dev.20250816.1
+        version: 7.0.0-dev.20250816.1
       '@vitest/coverage-v8':
         specifier: 3.2.4
         version: 3.2.4(vitest@3.2.4(@types/node@22.15.34)(tsx@4.20.4)(yaml@2.7.1))
@@ -778,6 +781,53 @@ packages:
   '@typescript-eslint/visitor-keys@8.39.1':
     resolution: {integrity: sha512-W8FQi6kEh2e8zVhQ0eeRnxdvIoOkAp/CPAahcNio6nO9dsIwb9b34z90KOlheoyuVf6LSOEdjlkxSkapNEc+4A==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20250816.1':
+    resolution: {integrity: sha512-JM+b5qXA1M9G/NFmytUatwEFQSKz1JQDZBsHCLxHbWaGazbg+yJPTzsxKfSz+DW72hyGTldiQqeIdJKwg3G5uQ==}
+    engines: {node: '>=20.6.0'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20250816.1':
+    resolution: {integrity: sha512-jwhb6osHxniK+gv23uSjalfTN2XoMiF7X8eIslIRKQ6ICqxf5k8XtOJY0v2lf/t3HxIQQdG962kDVwiGaN3K6w==}
+    engines: {node: '>=20.6.0'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20250816.1':
+    resolution: {integrity: sha512-e9YXa8QJ2kxBE/eIIci0n906crKxw+C9exAoWysjEsShIsXghIyP3BedMMVRhp2ZigjAPD6pa2ibE1R637C60g==}
+    engines: {node: '>=20.6.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20250816.1':
+    resolution: {integrity: sha512-syEtVN8E5oOlTOm7CrE3vgoVveBPRKvBbkfShqzwlmq1mw51MWunwO3yDNB3tk9GC1w1VoISoYpe8xm/hUKqIQ==}
+    engines: {node: '>=20.6.0'}
+    cpu: [arm]
+    os: [linux]
+
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20250816.1':
+    resolution: {integrity: sha512-C1pGpcbR2KwAacOQ9e0pAEZeOIZOZ7+GGxQjFQBYxnFdZfT/AvrCP8rKbZhWUx0ghntskl4BejqhGGC3kTc8Cg==}
+    engines: {node: '>=20.6.0'}
+    cpu: [x64]
+    os: [linux]
+
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20250816.1':
+    resolution: {integrity: sha512-tHiD2c4/GQQeSl5kbnNMcjFx0JaC3blbKA9oPMH11hrio/eRnHVrvmatLe5Mo4KOuCS5EHgNUhUvhI43TD0lfw==}
+    engines: {node: '>=20.6.0'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20250816.1':
+    resolution: {integrity: sha512-4Gm8x1fjnPU441faBu9Mgf9xUWC/DTetulu1bXNcdcrmSkRCFNiIQFtM/IBz47ghDaec4+XiHlrYxkzcaN/avw==}
+    engines: {node: '>=20.6.0'}
+    cpu: [x64]
+    os: [win32]
+
+  '@typescript/native-preview@7.0.0-dev.20250816.1':
+    resolution: {integrity: sha512-du/e72VqzVXFQqbKuEc7W+W9pWvIgKg0SwydHxzvzQ6TiccBAP/Ar7FUBEuYkFGQ2rbo7pYLj/zkoUCy08QW5w==}
+    engines: {node: '>=20.6.0'}
+    hasBin: true
 
   '@vitest/coverage-v8@3.2.4':
     resolution: {integrity: sha512-EyF9SXU6kS5Ku/U82E259WSnvg6c8KTjppUncuNdm5QHpe17mwREHnjDzozC8x9MZ0xfBUFSaLkRv4TMA75ALQ==}
@@ -3138,6 +3188,37 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.39.1
       eslint-visitor-keys: 4.2.1
+
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20250816.1':
+    optional: true
+
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20250816.1':
+    optional: true
+
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20250816.1':
+    optional: true
+
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20250816.1':
+    optional: true
+
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20250816.1':
+    optional: true
+
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20250816.1':
+    optional: true
+
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20250816.1':
+    optional: true
+
+  '@typescript/native-preview@7.0.0-dev.20250816.1':
+    optionalDependencies:
+      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20250816.1
+      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20250816.1
+      '@typescript/native-preview-linux-arm': 7.0.0-dev.20250816.1
+      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20250816.1
+      '@typescript/native-preview-linux-x64': 7.0.0-dev.20250816.1
+      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20250816.1
+      '@typescript/native-preview-win32-x64': 7.0.0-dev.20250816.1
 
   '@vitest/coverage-v8@3.2.4(vitest@3.2.4(@types/node@22.15.34)(tsx@4.20.4)(yaml@2.7.1))':
     dependencies:
