@@ -1,5 +1,14 @@
 # @williamthorsen/toolbelt.arrays changelog
 
+## 3.2.1
+
+### Patch Changes
+
+- ## @williamthorsen/toolbelt.objects
+
+  ### Tooling
+  - Fix export of isKeyOf
+
 ## 3.2.0
 
 ### Minor Changes
