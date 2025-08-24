@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   categorizeChanges,
@@ -6,9 +6,26 @@ import {
   generateChangelogContent,
   getAffectedWorkspaces,
   type PackageChanges,
-  type ParsedCommit,
   parseCommitMessage,
+  type ParsedCommit,
 } from '../changeset-generator.ts';
+import { getWorkspacePackages } from '../workspace-discovery.ts';
+
+// Mock the workspace package discovery for tests
+vi.mock('../workspace-discovery.ts', () => ({
+  getWorkspacePackages: vi.fn(),
+}));
+
+const mockedGetWorkspacePackages = vi.mocked(getWorkspacePackages);
+
+beforeEach(() => {
+  // Setup mock to return test data
+  mockedGetWorkspacePackages.mockReturnValue({
+    'workspace1': '@williamthorsen/workspace1',
+    'workspace2': '@williamthorsen/workspace2',
+    'ts': '@williamthorsen/workspace1', // Map 'ts' to workspace1 for backward compatibility
+  });
+});
 
 describe(parseCommitMessage, () => {
   it('parses standard commit message correctly', () => {
@@ -71,15 +88,15 @@ describe(parseCommitMessage, () => {
 describe(categorizeChanges, () => {
   it('categorizes simple commits correctly', () => {
     const commits: Commit[] = [
-      { hash: 'abc123', message: 'ts|feat: Add new rule' },
-      { hash: 'def456', message: 'strict-lint|deps: Upgrade dependency' },
-      { hash: 'ghi789', message: 'ts|feat!: Remove old API' },
+      { hash: 'abc123', message: 'workspace1|feat: Add new rule' },
+      { hash: 'def456', message: 'workspace2|deps: Upgrade dependency' },
+      { hash: 'ghi789', message: 'workspace1|feat!: Remove old API' },
     ];
 
     const result = categorizeChanges(commits);
 
     expect(result).toStrictEqual({
-      '@williamthorsen/eslint-config-typescript': {
+      '@williamthorsen/workspace1': {
         breaking: [{ description: 'Remove old API', hash: 'ghi789' }],
         features: [
           { description: 'Add new rule', hash: 'abc123' },
@@ -94,7 +111,7 @@ describe(categorizeChanges, () => {
         ai: [],
         documentation: [],
       },
-      '@williamthorsen/strict-lint': {
+      '@williamthorsen/workspace2': {
         breaking: [],
         features: [],
         fixes: [],
@@ -135,7 +152,7 @@ describe(categorizeChanges, () => {
     const result = categorizeChanges(commits);
 
     expect(result).toStrictEqual({
-      '@williamthorsen/eslint-config-typescript': {
+      '@williamthorsen/workspace1': {
         breaking: [],
         features: [{ description: 'Valid change', hash: 'def456' }],
         fixes: [],
@@ -167,9 +184,9 @@ describe(getAffectedWorkspaces, () => {
   });
 
   it('returns specified workspace for specific workspace commits', () => {
-    const commit: Commit = { hash: 'def456', message: 'strict-lint|deps: Upgrade' };
+    const commit: Commit = { hash: 'def456', message: 'workspace2|deps: Upgrade' };
     const parsedCommit: ParsedCommit = {
-      workspace: 'strict-lint',
+      workspace: 'workspace2',
       workType: 'deps',
       isBreaking: false,
       description: 'Upgrade',
@@ -177,7 +194,7 @@ describe(getAffectedWorkspaces, () => {
 
     const result = getAffectedWorkspaces(commit, parsedCommit);
 
-    expect(result).toStrictEqual(['strict-lint']);
+    expect(result).toStrictEqual(['workspace2']);
   });
 
   // Note: Testing wildcard commits (*) would require mocking git commands
@@ -187,7 +204,7 @@ describe(getAffectedWorkspaces, () => {
 describe(generateChangelogContent, () => {
   it('generates correct changelog format', () => {
     const changes: Record<string, PackageChanges> = {
-      '@williamthorsen/eslint-config-typescript': {
+      '@williamthorsen/workspace1': {
         breaking: [{ description: 'Remove old API', hash: 'ghi789' }],
         features: [
           { description: 'Add new rule', hash: 'abc123' },
@@ -207,7 +224,7 @@ describe(generateChangelogContent, () => {
     const result = generateChangelogContent(changes);
 
     expect(result).toBe(
-      `## @williamthorsen/eslint-config-typescript
+      `## @williamthorsen/workspace1
 
 ### Breaking changes
 
@@ -228,7 +245,7 @@ describe(generateChangelogContent, () => {
 
   it('handles multiple packages', () => {
     const changes: Record<string, PackageChanges> = {
-      '@williamthorsen/eslint-config-typescript': {
+      '@williamthorsen/workspace1': {
         breaking: [],
         features: [{ description: 'Add rule', hash: 'abc123' }],
         fixes: [],
@@ -240,7 +257,7 @@ describe(generateChangelogContent, () => {
         ai: [],
         documentation: [],
       },
-      '@williamthorsen/strict-lint': {
+      '@williamthorsen/workspace2': {
         breaking: [],
         features: [],
         fixes: [{ description: 'Fix bug', hash: 'def456' }],
@@ -256,15 +273,15 @@ describe(generateChangelogContent, () => {
 
     const result = generateChangelogContent(changes);
 
-    expect(result).toContain('## @williamthorsen/eslint-config-typescript');
-    expect(result).toContain('## @williamthorsen/strict-lint');
+    expect(result).toContain('## @williamthorsen/workspace1');
+    expect(result).toContain('## @williamthorsen/workspace2');
     expect(result).toContain('### Features\n\n- Add rule');
     expect(result).toContain('### Fixes\n\n- Fix bug');
   });
 
   it('omits empty sections', () => {
     const changes: Record<string, PackageChanges> = {
-      '@williamthorsen/eslint-config-typescript': {
+      '@williamthorsen/workspace1': {
         breaking: [],
         features: [{ description: 'Add rule', hash: 'abc123' }],
         fixes: [],

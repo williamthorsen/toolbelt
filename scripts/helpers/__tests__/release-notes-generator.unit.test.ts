@@ -2,7 +2,7 @@ import assert from 'node:assert';
 
 import { describe, expect, it } from 'vitest';
 
-import { unindent } from '~/packages/strings/src/3-candidate/index.js';
+import { unindent } from '~/packages/strings/src/3-candidate/index.ts';
 
 import type { PackageChanges } from '../changeset-generator.ts';
 import { generateMonorepoReleaseNotes, generateReleaseNotes } from '../release-notes-generator.ts';

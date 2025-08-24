@@ -2,8 +2,13 @@ import { execSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { categorizeChanges, type Commit, generateChangelogContent } from './helpers/changeset-generator.js';
-import { generateReleaseNotes } from './helpers/release-notes-generator.js';
+import {
+  categorizeChanges,
+  type Commit,
+  generateChangelogContent,
+  type PackageChanges,
+} from './helpers/changeset-generator.ts';
+import { generateReleaseNotes } from './helpers/release-notes-generator.ts';
 
 /**
  * Generate automated changeset from commit messages since target commit
@@ -103,18 +108,30 @@ function getCommitsSinceTarget(targetCommit?: string): Commit[] {
   });
 }
 
-function createChangesetFile(content: string): string {
+function determineVersionBump(packageChanges: PackageChanges): 'major' | 'minor' | 'patch' {
+  if (packageChanges.breaking.length > 0) {
+    return 'major';
+  }
+  if (packageChanges.features.length > 0) {
+    return 'minor';
+  }
+  return 'patch';
+}
+
+function createChangesetFile(content: string, changes: Record<string, PackageChanges>): string {
   const timestamp = Date.now();
   const filename = `automated-changeset-${timestamp}.md`;
   const filepath = join('.changeset', filename);
 
-  // Create changeset content with frontmatter
-  const changesetContent = `---
-"@williamthorsen/eslint-config-typescript": patch
-"@williamthorsen/strict-lint": patch
----
+  // Generate frontmatter dynamically from actual package changes
+  const frontmatterEntries = Object.entries(changes).map(([packageName, packageChanges]) => {
+    const versionBump = determineVersionBump(packageChanges);
+    return `"${packageName}": ${versionBump}`;
+  });
 
-${content}`;
+  const frontmatter = frontmatterEntries.length > 0 ? `---\n${frontmatterEntries.join('\n')}\n---\n\n` : '';
+
+  const changesetContent = `${frontmatter}${content}`;
 
   writeFileSync(filepath, changesetContent);
   console.info(`Created changeset: ${filename}`);
@@ -143,7 +160,7 @@ function main(): void {
   }
 
   const content = generateChangelogContent(changes);
-  const changesetPath = createChangesetFile(content);
+  const changesetPath = createChangesetFile(content, changes);
 
   console.info('\nGenerated changeset content:');
   console.info('='.repeat(50));

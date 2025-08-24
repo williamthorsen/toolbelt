@@ -11,13 +11,10 @@ import { join } from 'node:path';
 import { isObject } from '~/packages/objects/src/4-release/is-object.ts';
 
 import rootPackageJson from '../package.json' with { type: 'json' };
+import { getWorkspacePackages } from './helpers/workspace-discovery.ts';
 
 type PackageJson = typeof rootPackageJson;
 
-/**
- * Published packages that should influence root version
- */
-const PUBLISHED_PACKAGES = ['@williamthorsen/eslint-config-typescript', '@williamthorsen/strict-lint'] as const;
 
 function isPackageJson(obj: unknown): obj is PackageJson {
   return isObject(obj) && typeof obj.version === 'string';
@@ -51,25 +48,19 @@ function writePackageJson(filepath: string, pkg: PackageJson): void {
 
 function getPublishedPackageVersions(): Record<string, string> {
   const versions: Record<string, string> = {};
+  const workspacePackages = getWorkspacePackages();
 
-  const packageMap = {
-    '@williamthorsen/eslint-config-typescript': 'packages/typescript',
-    '@williamthorsen/strict-lint': 'packages/strict-lint',
-  } as const;
-
-  for (const packageName of PUBLISHED_PACKAGES) {
-    const packageDir = packageMap[packageName];
-
-    const packageJsonPath = join(packageDir, 'package.json');
+  // Convert workspace->packageName mapping to packageName->packageDir mapping
+  for (const [workspaceDir, packageName] of Object.entries(workspacePackages)) {
+    const packageJsonPath = join('packages', workspaceDir, 'package.json');
 
     try {
       const pkg = readPackageJson(packageJsonPath);
       versions[packageName] = pkg.version;
       console.info(`Found ${packageName}@${pkg.version}`);
     } catch (error) {
-      console.warn(
-        `Could not read version for ${packageName}: ${error instanceof Error ? error.message : String(error)}`,
-      );
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.warn(`Could not read version for ${packageName}: ${errorMessage}`);
     }
   }
 
@@ -92,16 +83,16 @@ function compareVersions(a: string, b: string): number {
   return 0;
 }
 
-function getHighestVersion(versions: Record<string, string>): { version: string; packageName: string } | null {
+function getHighestVersion(versions: Record<string, string>): { version: string; packageName: string } | undefined {
   const entries = Object.entries(versions);
 
   if (entries.length === 0) {
-    return null;
+    return undefined;
   }
 
   const firstEntry = entries[0];
   if (!firstEntry) {
-    return null;
+    return undefined;
   }
 
   let highest = firstEntry;
