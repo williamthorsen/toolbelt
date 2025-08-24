@@ -1,4 +1,3 @@
-import { execSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -7,20 +6,13 @@ import {
   type Commit,
   generateChangelogContent,
   type PackageChanges,
-} from './helpers/changeset-generator.ts';
-import { generateReleaseNotes } from './helpers/release-notes-generator.ts';
+} from '~/scripts/helpers/changeset-generator.ts';
+import { execCommand } from '~/scripts/helpers/execCommand.ts';
+import { generateReleaseNotes } from '~/scripts/helpers/release-notes-generator.ts';
 
 /**
  * Generate automated changeset from commit messages since target commit
  */
-
-function execCommand(command: string): string {
-  try {
-    return execSync(command, { encoding: 'utf8', stdio: 'pipe' }).trim();
-  } catch (error) {
-    throw new Error(`Command failed: ${command}\n${error instanceof Error ? error.message : String(error)}`);
-  }
-}
 
 function getLastReleaseTag(): string {
   try {

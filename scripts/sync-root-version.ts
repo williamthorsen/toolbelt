@@ -15,7 +15,6 @@ import { getWorkspacePackages } from './helpers/workspace-discovery.ts';
 
 type PackageJson = typeof rootPackageJson;
 
-
 function isPackageJson(obj: unknown): obj is PackageJson {
   return isObject(obj) && typeof obj.version === 'string';
 }

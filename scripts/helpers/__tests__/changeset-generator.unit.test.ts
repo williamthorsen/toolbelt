@@ -1,15 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { type ParsedCommit } from '~/scripts/helpers/parseCommitMessage.ts';
+import { getWorkspacePackages } from '~/scripts/helpers/workspace-discovery.ts';
+
 import {
   categorizeChanges,
   type Commit,
   generateChangelogContent,
   getAffectedWorkspaces,
   type PackageChanges,
-  parseCommitMessage,
-  type ParsedCommit,
 } from '../changeset-generator.ts';
-import { getWorkspacePackages } from '../workspace-discovery.ts';
 
 // Mock the workspace package discovery for tests
 vi.mock('../workspace-discovery.ts', () => ({
@@ -18,74 +18,16 @@ vi.mock('../workspace-discovery.ts', () => ({
 
 const mockedGetWorkspacePackages = vi.mocked(getWorkspacePackages);
 
-beforeEach(() => {
-  // Setup mock to return test data
-  mockedGetWorkspacePackages.mockReturnValue({
-    'workspace1': '@williamthorsen/workspace1',
-    'workspace2': '@williamthorsen/workspace2',
-    'ts': '@williamthorsen/workspace1', // Map 'ts' to workspace1 for backward compatibility
-  });
-});
-
-describe(parseCommitMessage, () => {
-  it('parses standard commit message correctly', () => {
-    const result = parseCommitMessage('ts|feat: Add new linting rule');
-    expect(result).toStrictEqual({
-      workspace: 'ts',
-      workType: 'feat',
-      isBreaking: false,
-      description: 'Add new linting rule',
-    });
-  });
-
-  it('parses breaking change commit', () => {
-    const result = parseCommitMessage('ts|feat!: Remove deprecated API');
-    expect(result).toStrictEqual({
-      workspace: 'ts',
-      workType: 'feat',
-      isBreaking: true,
-      description: 'Remove deprecated API',
-    });
-  });
-
-  it('parses multi-workspace commit', () => {
-    const result = parseCommitMessage('*|deps: Upgrade all deps to latest version');
-    expect(result).toStrictEqual({
-      workspace: '*',
-      workType: 'deps',
-      isBreaking: false,
-      description: 'Upgrade all deps to latest version',
-    });
-  });
-
-  it('parses multi-type commit', () => {
-    const result = parseCommitMessage('ts|*: Modernize tooling and add tests');
-    expect(result).toStrictEqual({
-      workspace: 'ts',
-      workType: '*',
-      isBreaking: false,
-      description: 'Modernize tooling and add tests',
-    });
-  });
-
-  it('handles whitespace correctly', () => {
-    const result = parseCommitMessage(' root | tooling : Update build script ');
-    expect(result).toStrictEqual({
-      workspace: 'root',
-      workType: 'tooling',
-      isBreaking: false,
-      description: 'Update build script',
-    });
-  });
-
-  it('returns null for invalid format', () => {
-    expect(parseCommitMessage('Invalid commit message')).toBeNull();
-    expect(parseCommitMessage('feat: Missing workspace')).toBeNull();
-    expect(parseCommitMessage('ts|: Missing work type')).toBeNull();
-  });
-});
-
 describe(categorizeChanges, () => {
+  beforeEach(() => {
+    // Setup mock to return test data
+    mockedGetWorkspacePackages.mockReturnValue({
+      workspace1: '@williamthorsen/workspace1',
+      workspace2: '@williamthorsen/workspace2',
+      ts: '@williamthorsen/workspace1', // Map 'ts' to workspace1 for backward compatibility
+    });
+  });
+
   it('categorizes simple commits correctly', () => {
     const commits: Commit[] = [
       { hash: 'abc123', message: 'workspace1|feat: Add new rule' },

@@ -1,8 +1,8 @@
 import { execSync } from 'node:child_process';
 
 import { isKeyOf } from '~/packages/objects/src/3-candidate/isKeyOf.ts';
-
-import { getWorkspacePackages } from './workspace-discovery.ts';
+import { parseCommitMessage, type ParsedCommit } from '~/scripts/helpers/parseCommitMessage.ts';
+import { getWorkspacePackages } from '~/scripts/helpers/workspace-discovery.ts';
 
 /**
  * Helper functions for generating changesets from commit messages
@@ -11,13 +11,6 @@ import { getWorkspacePackages } from './workspace-discovery.ts';
 export interface Commit {
   hash: string;
   message: string;
-}
-
-export interface ParsedCommit {
-  workspace: string;
-  workType: string;
-  isBreaking: boolean;
-  description: string;
 }
 
 export interface ChangeEntry {
@@ -49,32 +42,12 @@ const WORK_TYPE_TO_CATEGORY = {
   tooling: 'Tooling',
 } as const;
 
-
 function execCommand(command: string): string {
   try {
     return execSync(command, { encoding: 'utf8', stdio: 'pipe' }).trim();
   } catch (error) {
     throw new Error(`Command failed: ${command}\n${error instanceof Error ? error.message : String(error)}`);
   }
-}
-
-export function parseCommitMessage(message: string): ParsedCommit | null {
-  const match = message.match(/^([^|]+)\|([^!:]+)(!?): (.+)$/);
-  if (!match) {
-    console.warn(`Warning: Commit message does not match format: ${message}`);
-    return null;
-  }
-
-  const [, workspace, workType, breakingFlag, description] = match;
-  if (!workspace || !workType || !description) {
-    return null;
-  }
-  return {
-    workspace: workspace.trim(),
-    workType: workType.trim(),
-    isBreaking: breakingFlag === '!',
-    description: description.trim(),
-  };
 }
 
 function getWorkspaceFromFilePath(filePath: string): string {

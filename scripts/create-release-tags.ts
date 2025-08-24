@@ -1,4 +1,4 @@
-import { execSync } from 'node:child_process';
+import { execCommand } from './helpers/execCommand.ts';
 
 /**
  * Create annotated tags for all "Release x.x.x" commits >= 1.0.0
@@ -8,14 +8,6 @@ interface ReleaseCommit {
   hash: string;
   version: string;
   message: string;
-}
-
-function execCommand(command: string): string {
-  try {
-    return execSync(command, { encoding: 'utf8', stdio: 'pipe' }).trim();
-  } catch (error) {
-    throw new Error(`Command failed: ${command}\n${error instanceof Error ? error.message : String(error)}`);
-  }
 }
 
 function getReleaseCommits(): ReleaseCommit[] {
