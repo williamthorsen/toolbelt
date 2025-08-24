@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.guards changelog
 
+## 3.1.0
+
+### Features
+
+Added primitive type-guard functions: `isBoolean`, `isNumber`, `isString`.
+
 ## 3.0.1
 
 ### Tooling
