@@ -34,6 +34,7 @@ export default [
           exclude: ['Array'],
         },
       ],
+      'unicorn/require-module-specifiers': 'off', // 🔴⚫ Too prescriptive: disallows placeholders.
     },
   },
   {
