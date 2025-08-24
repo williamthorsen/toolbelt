@@ -1,9 +1,13 @@
+import assert from 'node:assert';
+
 import { describe, expect, it } from 'vitest';
 
-import type { PackageChanges } from '../changeset-generator.js';
-import { generateMonorepoReleaseNotes, generateReleaseNotes } from '../release-notes-generator.js';
+import { unindent } from '~/packages/strings/src/3-candidate/index.js';
 
-describe('generateReleaseNotes', () => {
+import type { PackageChanges } from '../changeset-generator.ts';
+import { generateMonorepoReleaseNotes, generateReleaseNotes } from '../release-notes-generator.ts';
+
+describe(generateReleaseNotes, () => {
   it('generates release notes with consumer-facing changes', () => {
     const changes: Record<string, PackageChanges> = {
       '@williamthorsen/eslint-config-typescript': {
@@ -23,40 +27,40 @@ describe('generateReleaseNotes', () => {
       },
     };
 
-    const result = generateReleaseNotes(changes, '2.1.0');
+    const releaseNotes = generateReleaseNotes(changes, '2.1.0');
 
-    expect(result).toHaveLength(1);
+    expect(releaseNotes).toHaveLength(1);
 
-    const firstResult = result[0];
-    expect(firstResult).toBeDefined();
-    if (!firstResult) return;
+    const [firstNote] = releaseNotes;
 
-    expect(firstResult).toEqual({
+    expect(firstNote).toStrictEqual({
       packageName: '@williamthorsen/eslint-config-typescript',
       version: '2.1.0',
       hasBreakingChanges: true,
-      content: `## 🚨 Breaking Changes
+      content: unindent`
+        ## 🚨 Breaking Changes
 
-- Remove deprecated API
+        - Remove deprecated API
 
-## ✨ Features
+        ## ✨ Features
 
-- Add new linting rule
-- Improve error messages
+        - Add new linting rule
+        - Improve error messages
 
-## 🐛 Fixes
+        ## 🐛 Fixes
 
-- Fix rule configuration bug
+        - Fix rule configuration bug
 
-## 📦 Dependencies
+        ## 📦 Dependencies
 
-- Upgrade ESLint to v9`,
+        - Upgrade ESLint to v9
+      `,
     });
   });
 
   it('excludes internal changes from release notes', () => {
     const changes: Record<string, PackageChanges> = {
-      '@williamthorsen/strict-lint': {
+      '@williamthorsen/my-package': {
         breaking: [],
         features: [],
         fixes: [],
@@ -70,16 +74,13 @@ describe('generateReleaseNotes', () => {
       },
     };
 
-    const result = generateReleaseNotes(changes, '1.5.0');
+    const releaseNotes = generateReleaseNotes(changes, '1.5.0');
 
-    expect(result).toHaveLength(1);
+    expect(releaseNotes).toHaveLength(1);
 
-    const firstResult = result[0];
-    expect(firstResult).toBeDefined();
-    if (!firstResult) return;
-
-    expect(firstResult).toEqual({
-      packageName: '@williamthorsen/strict-lint',
+    const [firstNote] = releaseNotes;
+    expect(firstNote).toStrictEqual({
+      packageName: '@williamthorsen/my-package',
       version: '1.5.0',
       hasBreakingChanges: false,
       content: '## 🔧 Internal Changes\n\nThis release contains internal improvements and maintenance updates.',
@@ -102,19 +103,20 @@ describe('generateReleaseNotes', () => {
       },
     };
 
-    const result = generateReleaseNotes(changes, '3.0.0');
+    const releaseNotes = generateReleaseNotes(changes, '3.0.0');
 
-    const firstResult = result[0];
-    expect(firstResult).toBeDefined();
-    if (!firstResult) return;
+    const [firstResult] = releaseNotes;
+    assert.ok(firstResult);
 
-    expect(firstResult.content).toBe(`## ✨ Features
+    expect(firstResult.content).toBe(unindent`
+      ## ✨ Features
 
-- Add new rule
+      - Add new rule
 
-## 📦 Dependencies
+      ## 📦 Dependencies
 
-- Update dependency`);
+      - Update dependency
+    `);
     expect(firstResult.hasBreakingChanges).toBe(false);
   });
 
@@ -132,7 +134,7 @@ describe('generateReleaseNotes', () => {
         ai: [],
         documentation: [],
       },
-      '@williamthorsen/strict-lint': {
+      '@williamthorsen/my-package': {
         breaking: [],
         features: [],
         fixes: [{ description: 'Bug fix', hash: 'def456' }],
@@ -146,18 +148,15 @@ describe('generateReleaseNotes', () => {
       },
     };
 
-    const result = generateReleaseNotes(changes, '1.0.0');
+    const releaseNotes = generateReleaseNotes(changes, '1.0.0');
 
-    expect(result).toHaveLength(2);
+    expect(releaseNotes).toHaveLength(2);
 
-    const firstResult = result[0];
-    const secondResult = result[1];
-    expect(firstResult).toBeDefined();
-    expect(secondResult).toBeDefined();
-    if (!firstResult || !secondResult) return;
+    const [firstNote, secondNote] = releaseNotes;
+    assert.ok(firstNote && secondNote);
 
-    expect(firstResult.packageName).toBe('@williamthorsen/eslint-config-typescript');
-    expect(secondResult.packageName).toBe('@williamthorsen/strict-lint');
+    expect(firstNote.packageName).toBe('@williamthorsen/eslint-config-typescript');
+    expect(secondNote.packageName).toBe('@williamthorsen/my-package');
   });
 
   it('handles empty changes object', () => {
@@ -167,7 +166,7 @@ describe('generateReleaseNotes', () => {
   });
 });
 
-describe('generateMonorepoReleaseNotes', () => {
+describe(generateMonorepoReleaseNotes, () => {
   it('generates monorepo release notes for single package', () => {
     const packageReleaseNotes = [
       {
@@ -195,7 +194,7 @@ describe('generateMonorepoReleaseNotes', () => {
         hasBreakingChanges: false,
       },
       {
-        packageName: '@williamthorsen/strict-lint',
+        packageName: '@williamthorsen/my-package',
         version: '1.2.0',
         content: 'Content 2',
         hasBreakingChanges: false,
@@ -208,7 +207,7 @@ describe('generateMonorepoReleaseNotes', () => {
     expect(result).not.toContain('breaking changes');
     expect(result).toContain('Updated packages:');
     expect(result).toContain('- **@williamthorsen/eslint-config-typescript**');
-    expect(result).toContain('- **@williamthorsen/strict-lint**');
+    expect(result).toContain('- **@williamthorsen/my-package');
   });
 
   it('handles no package updates', () => {
@@ -225,14 +224,14 @@ describe('generateMonorepoReleaseNotes', () => {
         hasBreakingChanges: false,
       },
       {
-        packageName: '@williamthorsen/strict-lint',
+        packageName: '@williamthorsen/my-package',
         version: '2.0.0',
         content: 'Content',
         hasBreakingChanges: true,
       },
     ];
 
-    const result = generateMonorepoReleaseNotes(packageReleaseNotes, '2.0.0');
-    expect(result).toContain('⚠️ **This release contains breaking changes');
+    const releaseNotes = generateMonorepoReleaseNotes(packageReleaseNotes, '2.0.0');
+    expect(releaseNotes).toContain('⚠️ **This release contains breaking changes');
   });
 });

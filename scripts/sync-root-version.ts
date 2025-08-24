@@ -8,7 +8,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { isObject } from '@williamthorsen/toolbelt.objects';
+import { isObject } from '~/packages/objects/src/4-release/is-object.ts';
 
 import rootPackageJson from '../package.json' with { type: 'json' };
 
@@ -65,7 +65,7 @@ function getPublishedPackageVersions(): Record<string, string> {
     try {
       const pkg = readPackageJson(packageJsonPath);
       versions[packageName] = pkg.version;
-      console.log(`Found ${packageName}@${pkg.version}`);
+      console.info(`Found ${packageName}@${pkg.version}`);
     } catch (error) {
       console.warn(
         `Could not read version for ${packageName}: ${error instanceof Error ? error.message : String(error)}`,
@@ -122,33 +122,33 @@ function getHighestVersion(versions: Record<string, string>): { version: string;
 }
 
 function syncRootVersion(): void {
-  console.log('Synchronizing root package version...');
+  console.info('Synchronizing root package version...');
 
   // Get published package versions
   const publishedVersions = getPublishedPackageVersions();
 
   if (Object.keys(publishedVersions).length === 0) {
-    console.log('No published packages found, skipping synchronization');
+    console.info('No published packages found, skipping synchronization');
     return;
   }
 
   // Find highest version
   const highest = getHighestVersion(publishedVersions);
   if (!highest) {
-    console.log('Could not determine highest version');
+    console.info('Could not determine highest version');
     return;
   }
 
-  console.log(`Highest version: ${highest.version} from ${highest.packageName}`);
+  console.info(`Highest version: ${highest.version} from ${highest.packageName}`);
 
   // Use imported root package.json
   const currentRootVersion = rootPackageJson.version;
 
-  console.log(`Current root version: ${currentRootVersion}`);
+  console.info(`Current root version: ${currentRootVersion}`);
 
   // Check if update is needed
   if (currentRootVersion === highest.version) {
-    console.log('Root version is already up to date');
+    console.info('Root version is already up to date');
     return;
   }
 
@@ -156,7 +156,7 @@ function syncRootVersion(): void {
   const updatedPackageJson = { ...rootPackageJson, version: highest.version };
   writePackageJson('package.json', updatedPackageJson);
 
-  console.log(`✓ Updated root version: ${currentRootVersion} → ${highest.version}`);
+  console.info(`✓ Updated root version: ${currentRootVersion} → ${highest.version}`);
 }
 
 function main(): void {

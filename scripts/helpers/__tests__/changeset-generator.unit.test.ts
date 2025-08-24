@@ -4,14 +4,16 @@ import {
   categorizeChanges,
   type Commit,
   generateChangelogContent,
+  getAffectedWorkspaces,
   type PackageChanges,
+  type ParsedCommit,
   parseCommitMessage,
-} from '../changeset-generator.js';
+} from '../changeset-generator.ts';
 
-describe('parseCommitMessage', () => {
+describe(parseCommitMessage, () => {
   it('parses standard commit message correctly', () => {
     const result = parseCommitMessage('ts|feat: Add new linting rule');
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       workspace: 'ts',
       workType: 'feat',
       isBreaking: false,
@@ -21,7 +23,7 @@ describe('parseCommitMessage', () => {
 
   it('parses breaking change commit', () => {
     const result = parseCommitMessage('ts|feat!: Remove deprecated API');
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       workspace: 'ts',
       workType: 'feat',
       isBreaking: true,
@@ -31,7 +33,7 @@ describe('parseCommitMessage', () => {
 
   it('parses multi-workspace commit', () => {
     const result = parseCommitMessage('*|deps: Upgrade all deps to latest version');
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       workspace: '*',
       workType: 'deps',
       isBreaking: false,
@@ -41,7 +43,7 @@ describe('parseCommitMessage', () => {
 
   it('parses multi-type commit', () => {
     const result = parseCommitMessage('ts|*: Modernize tooling and add tests');
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       workspace: 'ts',
       workType: '*',
       isBreaking: false,
@@ -51,7 +53,7 @@ describe('parseCommitMessage', () => {
 
   it('handles whitespace correctly', () => {
     const result = parseCommitMessage(' root | tooling : Update build script ');
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       workspace: 'root',
       workType: 'tooling',
       isBreaking: false,
@@ -66,7 +68,7 @@ describe('parseCommitMessage', () => {
   });
 });
 
-describe('categorizeChanges', () => {
+describe(categorizeChanges, () => {
   it('categorizes simple commits correctly', () => {
     const commits: Commit[] = [
       { hash: 'abc123', message: 'ts|feat: Add new rule' },
@@ -76,7 +78,7 @@ describe('categorizeChanges', () => {
 
     const result = categorizeChanges(commits);
 
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       '@williamthorsen/eslint-config-typescript': {
         breaking: [{ description: 'Remove old API', hash: 'ghi789' }],
         features: [
@@ -132,7 +134,7 @@ describe('categorizeChanges', () => {
 
     const result = categorizeChanges(commits);
 
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       '@williamthorsen/eslint-config-typescript': {
         breaking: [],
         features: [{ description: 'Valid change', hash: 'def456' }],
@@ -149,7 +151,40 @@ describe('categorizeChanges', () => {
   });
 });
 
-describe('generateChangelogContent', () => {
+describe(getAffectedWorkspaces, () => {
+  it('returns specified workspace for non-wildcard commits', () => {
+    const commit: Commit = { hash: 'abc123', message: 'ts|feat: Add rule' };
+    const parsedCommit: ParsedCommit = {
+      workspace: 'ts',
+      workType: 'feat',
+      isBreaking: false,
+      description: 'Add rule',
+    };
+
+    const result = getAffectedWorkspaces(commit, parsedCommit);
+
+    expect(result).toStrictEqual(['ts']);
+  });
+
+  it('returns specified workspace for specific workspace commits', () => {
+    const commit: Commit = { hash: 'def456', message: 'strict-lint|deps: Upgrade' };
+    const parsedCommit: ParsedCommit = {
+      workspace: 'strict-lint',
+      workType: 'deps',
+      isBreaking: false,
+      description: 'Upgrade',
+    };
+
+    const result = getAffectedWorkspaces(commit, parsedCommit);
+
+    expect(result).toStrictEqual(['strict-lint']);
+  });
+
+  // Note: Testing wildcard commits (*) would require mocking git commands
+  // since it analyzes changed files, which is outside the scope of unit tests
+});
+
+describe(generateChangelogContent, () => {
   it('generates correct changelog format', () => {
     const changes: Record<string, PackageChanges> = {
       '@williamthorsen/eslint-config-typescript': {

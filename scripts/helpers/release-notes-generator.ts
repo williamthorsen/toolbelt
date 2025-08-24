@@ -2,7 +2,7 @@
  * Generate GitHub-style release notes from changeset data
  */
 
-import type { PackageChanges } from './changeset-generator.js';
+import type { PackageChanges } from './changeset-generator.ts';
 
 export interface ReleaseNotes {
   packageName: string;
