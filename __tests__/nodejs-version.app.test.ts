@@ -4,10 +4,9 @@ import fs from 'node:fs';
 import yaml from 'js-yaml';
 import { describe, expect, it } from 'vitest';
 
-import { isObject } from '../packages/objects/src/4-release/is-object.ts';
-import { GITHUB_ACTION_FILE, GITHUB_ACTION_FILE_PATH } from './config.ts';
-import { getRuntimeVersionFromAsdf } from './helpers/getRuntimeVersionFromAsdf.ts';
-import { getValueAtPathOrThrow } from './helpers/getValueAtPathOrThrow.ts';
+import { GITHUB_ACTION_FILE, GITHUB_ACTION_FILE_PATH } from '~/__tests__/config.ts';
+import { getRuntimeVersionFromAsdf } from '~/__tests__/helpers/getRuntimeVersionFromAsdf.ts';
+import { getValueAtPathOrThrow } from '~/__tests__/helpers/getValueAtPathOrThrow.ts';
 
 describe('Node.js version consistency', () => {
   it('version is the same in GitHub action and .tool-versions', async () => {
@@ -23,11 +22,9 @@ async function getNodeVersionFromAction() {
   const action = yaml.load(actionYaml);
   assert.ok(action, `Action not found in ${GITHUB_ACTION_FILE}`);
 
-  const steps = getValueAtPathOrThrow(action, 'jobs.code-quality.steps');
-  assert.ok(Array.isArray(steps), 'jobs.code-quality.steps is not an array');
+  const version = getValueAtPathOrThrow(action, 'jobs.code-quality.with.node-version');
 
-  const nodeStep = steps.find((step: unknown) => isObject(step) && step.name === 'Set up Node.js');
-  assert.ok(nodeStep, '"Set up Node.js" step not found in action');
+  assert.ok(typeof version === 'string' && version.length > 0, 'Node.js version not found in action');
 
-  return getValueAtPathOrThrow(nodeStep, 'with.node-version');
+  return version;
 }

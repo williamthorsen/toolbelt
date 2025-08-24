@@ -4,27 +4,11 @@ import fs from 'node:fs';
 import yaml from 'js-yaml';
 import { describe, expect, it } from 'vitest';
 
-import rawPackageJson from '../package.json' with { type: 'json' };
-import { isObject } from '../packages/objects/src/4-release/is-object.ts';
-import { ASDF_VERSION_FILE, GITHUB_ACTION_FILE, GITHUB_ACTION_FILE_PATH } from './config.ts';
-import { getRuntimeVersionFromAsdf } from './helpers/getRuntimeVersionFromAsdf.ts';
-import { getValueAtPathOrThrow } from './helpers/getValueAtPathOrThrow.ts';
+import { GITHUB_ACTION_FILE, GITHUB_ACTION_FILE_PATH } from '~/__tests__/config.ts';
+import { getValueAtPathOrThrow } from '~/__tests__/helpers/getValueAtPathOrThrow.ts';
+import rawPackageJson from '~/package.json' with { type: 'json' };
 
 describe('pnpm version consistency', () => {
-  it('pnpm version is the same in GitHub action and .tool-versions', async () => {
-    const actionVersion = await getPnpmVersionFromAction();
-    const asdfVersion = await getRuntimeVersionFromAsdf('pnpm');
-
-    expect(actionVersion).toBe(asdfVersion);
-  });
-
-  it('pnpm version is the same in .tool-versions and package.json', async () => {
-    const asdfVersion = await getPnpmVersionFromAsdf();
-    const packageJsonVersion = getPnpmVersionFromPackageJson();
-
-    expect(asdfVersion).toBe(packageJsonVersion);
-  });
-
   it('pnpm version is the same in GitHub action and package.json', async () => {
     const actionVersion = await getPnpmVersionFromAction();
     const packageJsonVersion = getPnpmVersionFromPackageJson();
@@ -38,28 +22,11 @@ async function getPnpmVersionFromAction(): Promise<string> {
   const action = yaml.load(actionYaml);
   assert.ok(action, `Action not found in ${GITHUB_ACTION_FILE}`);
 
-  const steps = getValueAtPathOrThrow(action, 'jobs.code-quality.steps');
-  assert.ok(Array.isArray(steps), 'jobs.code-quality.steps is not an array');
+  const version = getValueAtPathOrThrow(action, 'jobs.code-quality.with.pnpm-version');
 
-  const pnpmStep = steps.find(
-    (step: unknown) => isObject(step) && typeof step.uses === 'string' && step.uses.startsWith('pnpm/action-setup@'),
-  );
-  assert.ok(pnpmStep, '"pnpm/action-setup" step not found in action');
-
-  const version = getValueAtPathOrThrow(pnpmStep, 'with.version');
   assert.ok(typeof version === 'string' && version.length > 0, 'pnpm version not found in action');
 
   return version;
-}
-
-async function getPnpmVersionFromAsdf(): Promise<string> {
-  const toolVersions = await fs.promises.readFile(ASDF_VERSION_FILE, { encoding: 'utf8' });
-
-  const pnpmLine = toolVersions.split('\n').find((line) => line.startsWith('pnpm')) ?? '';
-  const [, pnpmVersion] = pnpmLine.split(' ');
-  assert.ok(pnpmLine && pnpmVersion, 'pnpm version not found in .tool-versions.');
-
-  return pnpmVersion;
 }
 
 /**

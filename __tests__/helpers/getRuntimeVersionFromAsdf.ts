@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import fs from 'node:fs';
 
-import { ASDF_VERSION_FILE } from '__tests__/config.ts';
+import { ASDF_VERSION_FILE } from '~/__tests__/config.ts';
 
 /**
  * Reads the .tool-versions file and returns the version for the specified runtime.

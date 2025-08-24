@@ -1,4 +1,4 @@
-import { isObject } from '../../packages/objects/src/4-release/is-object.ts';
+import { isObject } from '~/packages/objects/src/4-release/is-object.ts';
 
 /**
  * Retrieves a nested value from an object using a dot-separated path.
