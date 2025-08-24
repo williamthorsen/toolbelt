@@ -30,7 +30,7 @@
 - name: 'refactoring'
   color: 'edc287'
   description: 'Improvement to code without change in functionality'
-- name: 'utility'
+- name: 'internal'
   color: '1d76db'
   description: 'Changed internal functionality'
 - name: 'tests'

@@ -5,6 +5,9 @@ on: workflow_dispatch
 
 jobs:
   labeler:
+    permissions:
+      contents: read
+      issues: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -14,6 +17,6 @@ jobs:
         uses: crazy-max/ghaction-github-labeler@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          yaml-file: .github/labels.yml
+          yaml-file: .github/labels.yaml
           skip-delete: false
           dry-run: false
