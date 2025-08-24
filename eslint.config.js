@@ -28,6 +28,7 @@ export default [
       'n/no-extraneous-import': 'off',
       'n/no-missing-import': 'off',
       'n/no-unpublished-import': 'off',
+      'unicorn/no-array-callback-reference': 'off', // 🔴⚫ Overly prescriptive
       'unicorn/no-instanceof-builtins': [
         'warn',
         {
