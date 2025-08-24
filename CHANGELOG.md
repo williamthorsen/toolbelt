@@ -1,5 +1,11 @@
 # Toolbelt monorepo
 
+## 4.3.1
+
+### Tooling
+
+- Added changeset and release-note generation scripts
+
 ## 4.3.0
 
 ### Dependencies

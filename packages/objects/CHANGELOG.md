@@ -1,5 +1,14 @@
 # @williamthorsen/toolbelt.arrays changelog
 
+## 3.2.0
+
+### Minor Changes
+
+- ## @williamthorsen/toolbelt.objects
+
+  ### Features
+  - Added `isKeyOf` function
+
 ## 3.1.0
 
 ### Minor Changes

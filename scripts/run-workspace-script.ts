@@ -4,7 +4,7 @@ import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import process from 'node:process';
 
-import { assertIsPackageJson } from './assertIsPackageJson.js';
+import { assertIsPackageJson } from './assertIsPackageJson.ts';
 
 const OK_CODE = 0;
 const ERROR_CODE = 1;
