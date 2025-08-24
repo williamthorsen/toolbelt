@@ -33,6 +33,7 @@
     "lint:strict": "pnpm --recursive run ws lint:strict",
     "outdated": "pnpm outdated --compatible --recursive",
     "outdated:latest": "pnpm outdated --recursive",
+    "postinstall": "tsx scripts/report-overrides.ts",
     "preinstall": "npx only-allow pnpm",
     "root:lint": "eslint --fix --ignore-pattern 'packages/**' .",
     "root:lint:check": "eslint --ignore-pattern 'packages/**' .",
