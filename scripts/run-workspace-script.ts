@@ -102,7 +102,7 @@ function getScripts(useIntTests = false): Record<string, string | []> {
     test: 'vitest',
     'test:coverage': 'vitest --coverage',
     'test:watch': 'vitest --watch',
-    typecheck: 'tsc --noEmit',
+    typecheck: 'tsgo --noEmit',
     'view-coverage': 'open coverage/index.html',
   };
 

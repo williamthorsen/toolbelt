@@ -6,9 +6,6 @@
     "module": "NodeNext",
     "moduleDetection": "force",
     "moduleResolution": "NodeNext",
-    "paths": {
-      "~src/*": ["src/*"],
-    },
   },
   "include": [
     "src/", //
