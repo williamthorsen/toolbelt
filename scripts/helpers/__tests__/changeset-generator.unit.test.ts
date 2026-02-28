@@ -13,7 +13,7 @@ import {
 
 // Mock the workspace package discovery for tests
 vi.mock('../workspace-discovery.ts', () => ({
-  getWorkspacePackages: vi.fn(),
+  getWorkspacePackages: vi.fn<() => Record<string, string>>(),
 }));
 
 const mockedGetWorkspacePackages = vi.mocked(getWorkspacePackages);
