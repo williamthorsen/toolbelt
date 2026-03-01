@@ -47,7 +47,7 @@ export function determineBumpType(
     if (bump === undefined) {
       continue;
     }
-    const priority = isKeyOf(bump, RELEASE_PRIORITY) ? RELEASE_PRIORITY[bump] : 0;
+    const priority = RELEASE_PRIORITY[bump];
 
     if (priority > highestPriority) {
       highestPriority = priority;

@@ -41,19 +41,14 @@ export function parseCommitMessage(
 
   const breaking = breakingMarker === '!' || message.includes('BREAKING CHANGE:');
 
-  const parsed: ParsedCommit = {
+  return {
     message,
     hash,
     type: resolvedType,
     description,
     breaking,
+    ...(workspace !== undefined && { workspace }),
   };
-
-  if (workspace !== undefined) {
-    parsed.workspace = workspace;
-  }
-
-  return parsed;
 }
 
 /**
