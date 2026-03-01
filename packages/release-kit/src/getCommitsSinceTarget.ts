@@ -1,4 +1,4 @@
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 
 import type { Commit } from './types.ts';
 
@@ -27,7 +27,7 @@ function errorMessage(err: unknown): string {
  */
 function findLatestTag(tagPrefix: string): string | undefined {
   try {
-    const tagResult = execSync(`git describe --tags --abbrev=0 --match="${tagPrefix}*"`, {
+    const tagResult = execFileSync('git', ['describe', '--tags', '--abbrev=0', `--match=${tagPrefix}*`], {
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'pipe'],
     }).trim();
@@ -78,7 +78,7 @@ export function getCommitsSinceTarget(tagPrefix: string): { tag: string | undefi
 
   let logOutput: string;
   try {
-    logOutput = execSync(`git log ${range} --pretty=format:"${format}"`, {
+    logOutput = execFileSync('git', ['log', range, `--pretty=format:${format}`], {
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'pipe'],
     }).trim();

@@ -25,11 +25,6 @@ function isPackageJson(value: unknown): value is PackageJson {
  * @throws If any package.json does not contain a valid `version` field.
  */
 export function bumpAllVersions(packageFiles: readonly string[], releaseType: ReleaseType, dryRun: boolean): string {
-  if (packageFiles.length === 0) {
-    throw new Error('No package files specified');
-  }
-
-  // Read the version from the first file to determine the current version
   const firstFile = packageFiles[0];
   if (firstFile === undefined) {
     throw new Error('No package files specified');

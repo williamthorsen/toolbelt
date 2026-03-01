@@ -51,4 +51,11 @@ export interface ReleaseConfig {
   formatCommand?: string;
   /** Path to the cliff.toml file; defaults to 'cliff.toml' when absent. */
   cliffConfigPath?: string;
+  /**
+   * Maps workspace shorthand names to their canonical names.
+   * When a commit uses `shorthand|type: description`, the shorthand is resolved
+   * to the canonical workspace name before the parsed commit is returned.
+   * Example: `{ api: 'backend-api', web: 'frontend-web' }`.
+   */
+  workspaceAliases?: Record<string, string>;
 }

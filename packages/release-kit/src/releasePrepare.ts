@@ -40,7 +40,7 @@ export function releasePrepare(config: ReleaseConfig, options: ReleasePrepareOpt
 
   if (bumpOverride === undefined) {
     const parsedCommits = commits
-      .map((c) => parseCommitMessage(c.message, c.hash, config.workTypes))
+      .map((c) => parseCommitMessage(c.message, c.hash, config.workTypes, config.workspaceAliases))
       .filter((c): c is NonNullable<typeof c> => c !== undefined);
 
     console.info(`  Parsed ${parsedCommits.length} typed commits`);

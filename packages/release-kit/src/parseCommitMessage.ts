@@ -5,17 +5,20 @@ import type { ParsedCommit, WorkTypeConfig } from './types.ts';
  *
  * Supports both `type: description` and `workspace|type: description` formats.
  * Resolves aliases (e.g., 'feature' -> 'feat') using the provided work type configs.
+ * Resolves workspace aliases when a `workspaceAliases` map is provided.
  * Detects breaking changes via `type!:` or `BREAKING CHANGE:` in the message.
  *
  * @param message - The commit message (first line).
  * @param hash - The commit hash.
  * @param workTypes - The list of work type configurations to match against.
+ * @param workspaceAliases - Optional map of workspace shorthand names to canonical names.
  * @returns A parsed commit, or undefined if the message does not match a known format.
  */
 export function parseCommitMessage(
   message: string,
   hash: string,
   workTypes: readonly WorkTypeConfig[],
+  workspaceAliases?: Record<string, string>,
 ): ParsedCommit | undefined {
   // Match both `type: desc` and `workspace|type: desc` formats
   // The `!` before `:` indicates a breaking change
@@ -41,13 +44,17 @@ export function parseCommitMessage(
 
   const breaking = breakingMarker === '!' || message.includes('BREAKING CHANGE:');
 
+  // Resolve workspace alias to canonical name if a mapping is provided
+  const resolvedWorkspace =
+    workspace !== undefined && workspaceAliases !== undefined ? (workspaceAliases[workspace] ?? workspace) : workspace;
+
   return {
     message,
     hash,
     type: resolvedType,
     description,
     breaking,
-    ...(workspace !== undefined && { workspace }),
+    ...(resolvedWorkspace !== undefined && { workspace: resolvedWorkspace }),
   };
 }
 

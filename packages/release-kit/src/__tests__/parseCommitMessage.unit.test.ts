@@ -128,4 +128,59 @@ describe(parseCommitMessage, () => {
       breaking: true,
     });
   });
+
+  describe('workspace alias resolution', () => {
+    const aliases: Record<string, string> = {
+      api: 'backend-api',
+      web: 'frontend-web',
+    };
+
+    it('resolves a workspace alias to its canonical name', () => {
+      const result = parseCommitMessage('api|fix: fix timeout', 'ws1', workTypes, aliases);
+      expect(result).toStrictEqual({
+        message: 'api|fix: fix timeout',
+        hash: 'ws1',
+        type: 'fix',
+        description: 'fix timeout',
+        workspace: 'backend-api',
+        breaking: false,
+      });
+    });
+
+    it('passes through an unknown workspace unchanged', () => {
+      const result = parseCommitMessage('mobile|feat: add splash screen', 'ws2', workTypes, aliases);
+      expect(result).toStrictEqual({
+        message: 'mobile|feat: add splash screen',
+        hash: 'ws2',
+        type: 'feat',
+        description: 'add splash screen',
+        workspace: 'mobile',
+        breaking: false,
+      });
+    });
+
+    it('does not resolve workspace aliases when no alias map is provided', () => {
+      const result = parseCommitMessage('api|fix: fix timeout', 'ws3', workTypes);
+      expect(result).toStrictEqual({
+        message: 'api|fix: fix timeout',
+        hash: 'ws3',
+        type: 'fix',
+        description: 'fix timeout',
+        workspace: 'api',
+        breaking: false,
+      });
+    });
+
+    it('resolves workspace alias with breaking change marker', () => {
+      const result = parseCommitMessage('web|feat!: redesign layout', 'ws4', workTypes, aliases);
+      expect(result).toStrictEqual({
+        message: 'web|feat!: redesign layout',
+        hash: 'ws4',
+        type: 'feat',
+        description: 'redesign layout',
+        workspace: 'frontend-web',
+        breaking: true,
+      });
+    });
+  });
 });

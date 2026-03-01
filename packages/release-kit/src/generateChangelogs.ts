@@ -1,11 +1,12 @@
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 
 import type { ReleaseConfig } from './types.ts';
 
 /**
  * Generates changelogs using git-cliff for each configured changelog path.
  *
- * Invokes the `git-cliff` binary via `execSync`. The `git-cliff` tool and a
+ * Invokes the `git-cliff` binary via `execFileSync` with an argument array,
+ * avoiding shell interpretation of paths. The `git-cliff` tool and a
  * `cliff.toml` configuration file must be available in the environment.
  *
  * @param config - The release configuration containing changelog paths and optional cliff config path.
@@ -17,16 +18,16 @@ export function generateChangelogs(config: ReleaseConfig, tag: string, dryRun: b
 
   for (const changelogPath of config.changelogPaths) {
     const outputFile = `${changelogPath}/CHANGELOG.md`;
-    const cmd = ['git-cliff', `--config "${cliffConfigPath}"`, `--output "${outputFile}"`, `--tag "${tag}"`].join(' ');
+    const args = ['--config', cliffConfigPath, '--output', outputFile, '--tag', tag];
 
     if (dryRun) {
-      console.info(`  [dry-run] Would run: ${cmd}`);
+      console.info(`  [dry-run] Would run: git-cliff ${args.join(' ')}`);
       continue;
     }
 
     console.info(`  Generating changelog: ${outputFile}`);
     try {
-      execSync(cmd, { stdio: 'inherit' });
+      execFileSync('git-cliff', args, { stdio: 'inherit' });
     } catch (error: unknown) {
       throw new Error(
         `Failed to generate changelog for ${outputFile}: ${error instanceof Error ? error.message : String(error)}`,
