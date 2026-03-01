@@ -27,8 +27,8 @@ importers:
         specifier: 1.6.9
         version: 1.6.9(eslint@9.39.3)(typescript@5.9.3)(vitest@3.2.4(@types/node@22.19.13)(tsx@4.21.0)(yaml@2.7.1))
       '@williamthorsen/eslint-config-typescript':
-        specifier: 5.12.1
-        version: 5.12.1(eslint@9.39.3)(typescript@5.9.3)
+        specifier: 5.12.2
+        version: 5.12.2(eslint@9.39.3)(typescript@5.9.3)
       '@williamthorsen/strict-lint':
         specifier: 5.3.7
         version: 5.3.7(eslint@9.39.3)
@@ -947,8 +947,8 @@ packages:
   '@vitest/utils@3.2.4':
     resolution: {integrity: sha512-fB2V0JFrQSMsCo9HiSq3Ezpdv4iYaXRG1Sx8edX3MwxfyNn83mKiGzOcH+Fkxt4MHxr3y42fQi1oeAInqgX2QA==}
 
-  '@williamthorsen/eslint-config-typescript@5.12.1':
-    resolution: {integrity: sha512-AkuCmTyAITN4cv3abxIFnW95A0doRNtfTp1s1EZ1CJLw/czskEH8dbLI8wwd6azpX1IxbSRfWRY/i3WJEschKg==, tarball: https://npm.pkg.github.com/download/@williamthorsen/eslint-config-typescript/5.12.1/9d76f210126ca378c63015bccbc37bd48ea4a38b}
+  '@williamthorsen/eslint-config-typescript@5.12.2':
+    resolution: {integrity: sha512-S2EJEdp/WCnM2go6d5iYSW4IAVC3Sy6wn+N3dbMeF6GdNC34grS0v6vuDqfXgJU2dyWO3D5SBlKxiiqhT0WqwQ==, tarball: https://npm.pkg.github.com/download/@williamthorsen/eslint-config-typescript/5.12.2/d8798829ef54509ab0d3ce91531781686915c91d}
     engines: {node: '>=18'}
     peerDependencies:
       eslint: '>=9'
@@ -3338,7 +3338,7 @@ snapshots:
       loupe: 3.1.4
       tinyrainbow: 2.0.0
 
-  '@williamthorsen/eslint-config-typescript@5.12.1(eslint@9.39.3)(typescript@5.9.3)':
+  '@williamthorsen/eslint-config-typescript@5.12.2(eslint@9.39.3)(typescript@5.9.3)':
     dependencies:
       eslint: 9.39.3
       eslint-plugin-eslint-comments: 3.2.0(eslint@9.39.3)

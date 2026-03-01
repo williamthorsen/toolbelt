@@ -29,10 +29,7 @@ export function isIntegerString(value: string | null | undefined): value is stri
  */
 export function safeParseInteger(value: Maybe<string>, fallback: number | Error): number;
 export function safeParseInteger(value: Maybe<string>, fallback?: undefined): number | undefined;
-export function safeParseInteger(
-  value: Maybe<string>,
-  fallback: number | undefined | Error = undefined,
-): number | undefined {
+export function safeParseInteger(value: Maybe<string>, fallback?: number | Error): number | undefined {
   if (!isIntegerString(value)) {
     if (fallback instanceof Error) {
       throw fallback;

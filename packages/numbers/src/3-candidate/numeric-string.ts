@@ -36,10 +36,7 @@ export function isNumericString(value: string | null | undefined): value is stri
  */
 export function safeParseNumber(value: Maybe<string>, fallback: number | Error): number;
 export function safeParseNumber(value: Maybe<string>, fallback?: undefined): number | undefined;
-export function safeParseNumber(
-  value: Maybe<string>,
-  fallback: number | undefined | Error = undefined,
-): number | undefined {
+export function safeParseNumber(value: Maybe<string>, fallback?: number | Error): number | undefined {
   if (!isNumericString(value)) {
     if (fallback instanceof Error) throw fallback;
     return fallback;

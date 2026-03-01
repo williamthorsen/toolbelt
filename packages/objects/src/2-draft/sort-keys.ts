@@ -15,7 +15,7 @@ export function sortKeys<T extends PlainObject>(
   }
 
   const sortedEntries = Object.entries(value)
-    .sort(([keyA], [keyB]) => compare(keyA, keyB))
+    .toSorted(([keyA], [keyB]) => compare(keyA, keyB))
     .map(([key, value]) => [key, value]);
 
   return Object.fromEntries(sortedEntries) as T;
@@ -41,7 +41,7 @@ export function sortObjectKeys<T>(value: T, compare: CompareKeys = (keyA, keyB) 
     }
     if (isPlainObject(value)) {
       const sortedEntries = Object.entries(value)
-        .sort(([keyA], [keyB]) => compare(keyA, keyB))
+        .toSorted(([keyA], [keyB]) => compare(keyA, keyB))
         .map(([key, value]) => {
           return [key, sortObjectKeys(value, compare)];
         });

@@ -13,7 +13,7 @@
  *  ]
  */
 export function getDecadesContainingYears(years: number[]): Decade[] {
-  const uniqueYears = [...new Set(years)].sort((a, b) => a - b);
+  const uniqueYears = [...new Set(years)].toSorted((a, b) => a - b);
   const decadesMap = new Map<number, { start: number; end: number; label: string }>();
 
   const [firstYear] = uniqueYears;

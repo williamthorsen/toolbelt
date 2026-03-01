@@ -15,7 +15,7 @@ describe(setUnion, () => {
 
   it('if one set is empty, returns the other set', () => {
     const aSet = new Set([1, 2]);
-    const bSet = new Set([]);
+    const bSet = new Set();
     const expected = new Set([1, 2]);
 
     const actual = setUnion(aSet, bSet);
@@ -24,9 +24,9 @@ describe(setUnion, () => {
   });
 
   it('if both sets are empty, returns the empty set', () => {
-    const aSet = new Set([]);
-    const bSet = new Set([]);
-    const expected = new Set([]);
+    const aSet = new Set();
+    const bSet = new Set();
+    const expected = new Set();
 
     const actual = setUnion(aSet, bSet);
 

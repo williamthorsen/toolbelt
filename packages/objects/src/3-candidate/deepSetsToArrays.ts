@@ -7,7 +7,7 @@ export function deepSetsToArrays(value: unknown): unknown {
   if (isObject(value)) {
     if (value instanceof Set) {
       const asArray = [...value];
-      return asArray.map(deepSetsToArrays).sort();
+      return asArray.map(deepSetsToArrays).toSorted();
     }
 
     if (Array.isArray(value)) {

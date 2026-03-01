@@ -16,7 +16,7 @@ describe(setDifference, () => {
   it('returns an empty set when iterable 1 is a subset of iterable 2', () => {
     const set1 = new Set([1, 2]);
     const set2 = new Set([1, 2, 3]);
-    const expected = new Set([]);
+    const expected = new Set();
 
     const actual = setDifference(set1, set2);
 
