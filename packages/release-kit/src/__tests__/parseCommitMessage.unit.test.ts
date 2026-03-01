@@ -1,0 +1,82 @@
+import { describe, expect, it } from 'vitest';
+
+import { parseCommitMessage } from '../parseCommitMessage.ts';
+import type { WorkTypeConfig } from '../types.ts';
+
+const workTypes: WorkTypeConfig[] = [
+  { type: 'fix', header: 'Bug fixes', bump: 'patch', aliases: ['bugfix'] },
+  { type: 'feat', header: 'Features', bump: 'minor', aliases: ['feature'] },
+  { type: 'refactor', header: 'Refactoring', bump: 'patch' },
+  { type: 'docs', header: 'Documentation', bump: 'patch', aliases: ['doc'] },
+];
+
+describe(parseCommitMessage, () => {
+  it('parses a simple "type: description" message', () => {
+    const result = parseCommitMessage('feat: add login page', 'abc123', workTypes);
+    expect(result).toStrictEqual({
+      message: 'feat: add login page',
+      hash: 'abc123',
+      type: 'feat',
+      description: 'add login page',
+      breaking: false,
+    });
+  });
+
+  it('parses a "workspace|type: description" message', () => {
+    const result = parseCommitMessage('web|fix: resolve navbar bug', 'def456', workTypes);
+    expect(result).toStrictEqual({
+      message: 'web|fix: resolve navbar bug',
+      hash: 'def456',
+      type: 'fix',
+      description: 'resolve navbar bug',
+      workspace: 'web',
+      breaking: false,
+    });
+  });
+
+  it('resolves an alias to its canonical type', () => {
+    const result = parseCommitMessage('feature: new dashboard', 'ghi789', workTypes);
+    expect(result).toBeDefined();
+    expect(result?.type).toBe('feat');
+  });
+
+  it('resolves an alias in workspace format', () => {
+    const result = parseCommitMessage('api|bugfix: fix timeout', 'jkl012', workTypes);
+    expect(result).toBeDefined();
+    expect(result?.type).toBe('fix');
+    expect(result?.workspace).toBe('api');
+  });
+
+  it('detects a breaking change via ! marker', () => {
+    const result = parseCommitMessage('feat!: redesign API', 'mno345', workTypes);
+    expect(result).toBeDefined();
+    expect(result?.breaking).toBe(true);
+  });
+
+  it('detects a breaking change via BREAKING CHANGE in message', () => {
+    const result = parseCommitMessage('feat: new API BREAKING CHANGE: removed old endpoint', 'pqr678', workTypes);
+    expect(result).toBeDefined();
+    expect(result?.breaking).toBe(true);
+  });
+
+  it('returns undefined for an unrecognized type', () => {
+    const result = parseCommitMessage('unknown: some change', 'stu901', workTypes);
+    expect(result).toBeUndefined();
+  });
+
+  it('returns undefined for a message without a type prefix', () => {
+    const result = parseCommitMessage('just a plain message', 'vwx234', workTypes);
+    expect(result).toBeUndefined();
+  });
+
+  it('returns undefined for an empty message', () => {
+    const result = parseCommitMessage('', 'yz5678', workTypes);
+    expect(result).toBeUndefined();
+  });
+
+  it('handles doc alias', () => {
+    const result = parseCommitMessage('doc: update README', 'abc999', workTypes);
+    expect(result).toBeDefined();
+    expect(result?.type).toBe('docs');
+  });
+});

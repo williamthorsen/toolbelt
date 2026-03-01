@@ -1,0 +1,38 @@
+{
+  "name": "@williamthorsen/release-kit",
+  "version": "0.1.0",
+  "description": "Version-bumping and changelog-generation toolkit for release workflows",
+  "keywords": [],
+  "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/release-kit#readme",
+  "bugs": {
+    "url": "https://github.com/williamthorsen/toolbelt/issues"
+  },
+  "license": "UNLICENSED",
+  "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js"
+    }
+  },
+  "files": [
+    "dist/*",
+    "cliff.toml.template",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "prepare": "pnpm run ws build",
+    "publish:github": "pnpm publish",
+    "ws": "node --import tsx ../../scripts/run-workspace-script.ts --int-test"
+  },
+  "dependencies": {
+    "@williamthorsen/toolbelt.objects": "workspace:*"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  }
+}
