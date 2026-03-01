@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { generateRandom } from '../generateRandom.ts';
 import { pickInteger } from '../pickInteger.ts';
 
-vi.mock('../generateRandom.ts');
+vi.mock(import('../generateRandom.ts'));
 const generateRandomMock = vi.mocked(generateRandom);
 
 describe(pickInteger, () => {

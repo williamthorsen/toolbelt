@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { makePickWeightedItemFromDistribution } from '../makePickWeightedItemFromDistribution.ts';
 
@@ -11,7 +11,7 @@ describe(makePickWeightedItemFromDistribution, () => {
     const pickItem = makePickWeightedItemFromDistribution(items, distribution, options);
 
     const pickedItem = pickItem();
-    expect(typeof pickedItem).toBe('string');
+    expectTypeOf(pickedItem).toBeString();
     expect(items).toContain(pickedItem);
   });
 
@@ -46,7 +46,8 @@ describe(makePickWeightedItemFromDistribution, () => {
     const pickItem = makePickWeightedItemFromDistribution(items, distribution, options);
     const pickedItem = pickItem();
 
-    expect(typeof pickedItem).toBe('object');
+    expectTypeOf(pickedItem).toBeObject();
+    expect(pickedItem).toHaveProperty('name');
   });
 
   it('accepts read-only arrays', () => {
