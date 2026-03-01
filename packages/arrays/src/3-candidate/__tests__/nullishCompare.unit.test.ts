@@ -26,7 +26,7 @@ describe(makeNullishCompare, () => {
       const expectedValues = [1, 2, 3, 4];
 
       const nullishCompare = makeNullishCompare(compare);
-      const actualValues = [...values].sort(nullishCompare);
+      const actualValues = [...values].toSorted(nullishCompare);
 
       expect(actualValues).toStrictEqual(expectedValues);
     });
@@ -39,7 +39,7 @@ describe(makeNullishCompare, () => {
       const expectedValues = [-1, 1, 2, null];
 
       const nullishCompare = makeNullishCompare(compare, options);
-      const actualValues = [...values].sort(nullishCompare);
+      const actualValues = [...values].toSorted(nullishCompare);
 
       expect(actualValues).toStrictEqual(expectedValues);
     });

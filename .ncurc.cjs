@@ -27,7 +27,7 @@ function filterResults(packageName, versioningMetadata) {
  *
  * @todo: When can `versionRanges` can have more than one element?
  */
-function reject(packageName, versionRanges) {
+function reject(_packageName, versionRanges) {
   const [versionRange] = versionRanges;
 
   if (!versionRange) return false;

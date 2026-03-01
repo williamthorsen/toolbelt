@@ -230,7 +230,7 @@ export function createDelimitedMatcher(matcher: RegExp | string, options: Delimi
   }
   const matcherFlags = [...matcherFlagsSet].join('');
 
-  return new RegExp(`\\{${matcherSource}\\}`, matcherFlags);
+  return new RegExp(String.raw`\{${matcherSource}\}`, matcherFlags);
 }
 
 // region | Types

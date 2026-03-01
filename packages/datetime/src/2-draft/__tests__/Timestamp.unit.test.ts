@@ -159,7 +159,7 @@ describe(Timestamp, () => {
     it('if timeUnit=hours, throws an error', () => {
       const throwingFn = () => timestamp.toHumaneUtcString({ timeUnit: TimeUnit.Hours });
 
-      expect(throwingFn).toThrow(new Error('Method does not support TimeUnit.Hours time unit.'));
+      expect(throwingFn).toThrowError(new Error('Method does not support TimeUnit.Hours time unit.'));
     });
   });
 
@@ -181,11 +181,12 @@ describe(Timestamp, () => {
   describe('toLocaleDateTimeString()', () => {
     it('should return a formatted date-time string', () => {
       const timestamp = new Timestamp(isoDateTime);
-      const expectedDateString = timestamp.toDate().toLocaleDateString();
-      const expectedTimeString = timestamp.toDate().toLocaleTimeString();
+      const locale = 'en-US';
+      const expectedDateString = timestamp.toDate().toLocaleDateString(locale);
+      const expectedTimeString = timestamp.toDate().toLocaleTimeString(locale);
       const expectedDateTimeString = expectedDateString + ' ' + expectedTimeString;
 
-      const result = timestamp.toLocaleDateTimeString('en-US');
+      const result = timestamp.toLocaleDateTimeString(locale);
 
       expect(result).toBe(expectedDateTimeString);
     });

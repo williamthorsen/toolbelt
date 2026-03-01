@@ -18,7 +18,7 @@ describe(findOrThrow, () => {
 
     const throwingFn = () => findOrThrow(items, predicate);
 
-    expect(throwingFn).toThrow(new Error('Could not find item.'));
+    expect(throwingFn).toThrowError(new Error('Could not find item.'));
   });
 
   it('if the array is empty, throws an error', () => {
@@ -27,7 +27,7 @@ describe(findOrThrow, () => {
 
     const throwingFn = () => findOrThrow(items, predicate);
 
-    expect(throwingFn).toThrow(new Error('Could not find item.'));
+    expect(throwingFn).toThrowError(new Error('Could not find item.'));
   });
 
   it('if a label is given in the options, uses the label in the error message', () => {
@@ -35,6 +35,6 @@ describe(findOrThrow, () => {
 
     const throwingFn = () => findOrThrow([], () => false, options);
 
-    expect(throwingFn).toThrow(new Error('Could not find element.'));
+    expect(throwingFn).toThrowError(new Error('Could not find element.'));
   });
 });

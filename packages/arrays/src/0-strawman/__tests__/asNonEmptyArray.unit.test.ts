@@ -34,13 +34,13 @@ describe(asNonEmptyArray, () => {
     /* eslint-enable @typescript-eslint/no-unsafe-call */
     /* eslint-enable @typescript-eslint/no-unsafe-return */
 
-    expect(throwingFn).toThrow(/Cannot add property 1, object is not extensible/);
+    expect(throwingFn).toThrowError(/Cannot add property 1, object is not extensible/);
   });
 
   it('if the array is empty, throws an error', () => {
     const throwingFn = () => asNonEmptyArray([]);
 
-    expect(throwingFn).toThrow(new Error('Invalid input. Array cannot be empty.'));
+    expect(throwingFn).toThrowError(new Error('Invalid input. Array cannot be empty.'));
   });
 
   it('accepts a tuple', () => {
@@ -67,7 +67,7 @@ describe(assertFrozenArray, () => {
 
     const throwingFn = () => assertFrozenArray(mutableItems); // no compilation error
 
-    expect(throwingFn).toThrow(new Error('Invalid input. Array cannot be mutable.'));
+    expect(throwingFn).toThrowError(new Error('Invalid input. Array cannot be mutable.'));
   });
 
   it('guarantees immunity from side effects', () => {
@@ -79,7 +79,7 @@ describe(assertFrozenArray, () => {
 
     const throwingFn = () => expectFrozenArray(['item']);
 
-    expect(throwingFn).toThrow(new Error('Invalid input. Array cannot be mutable.'));
+    expect(throwingFn).toThrowError(new Error('Invalid input. Array cannot be mutable.'));
   });
 });
 
@@ -99,7 +99,7 @@ describe(assertNonEmptyArray, () => {
     /* eslint-enable @typescript-eslint/no-unsafe-call */
     /* eslint-enable @typescript-eslint/no-unsafe-return */
 
-    expect(throwingFn).toThrow(/Cannot delete property/);
+    expect(throwingFn).toThrowError(/Cannot delete property/);
   });
 
   it('if array is immutable and empty, throws an error', () => {
@@ -107,7 +107,7 @@ describe(assertNonEmptyArray, () => {
 
     const throwingFn = () => assertNonEmptyArray(items);
 
-    expect(throwingFn).toThrow(new Error('Invalid input. Array cannot be empty.'));
+    expect(throwingFn).toThrowError(new Error('Invalid input. Array cannot be empty.'));
   });
 
   // eslint-disable-next-line vitest/expect-expect

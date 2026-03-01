@@ -99,6 +99,6 @@ describe(safeParseNumber, () => {
 
   it('throws an error when parsing fails and the fallback value is an error', () => {
     const fallback = new Error('Parsing failed');
-    expect(() => safeParseNumber('oops', fallback)).toThrow(fallback);
+    expect(() => safeParseNumber('oops', fallback)).toThrowError(fallback);
   });
 });

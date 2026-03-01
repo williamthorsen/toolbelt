@@ -204,7 +204,7 @@ describe(Interpolator, () => {
         const mapping = { name: 'World' };
         const throwingFn = () => new Interpolator(badTemplate).interpolate({ mapping });
 
-        expect(throwingFn).toThrow('Text has');
+        expect(throwingFn).toThrowError('Text has');
       },
     );
 
@@ -313,7 +313,7 @@ describe(Interpolator, () => {
         const throwingFn = () => interpolable.interpolate({ ifMissing });
 
         // TODO: Inflect the error message to match the number of placeholders
-        expect(throwingFn).toThrow('Text has unmatched placeholders: unmatched1, unmatched2');
+        expect(throwingFn).toThrowError('Text has unmatched placeholders: unmatched1, unmatched2');
       });
 
       it('if ifMissing=USE_KEY, replaces any unmatched placeholder with the placeholder itself', () => {
@@ -366,7 +366,7 @@ describe(Interpolator, () => {
 
       const throwingFn = () => interpolable.setOptions({ mapping });
 
-      expect(throwingFn).toThrow('Mapping keys must be unique, ignoring case.');
+      expect(throwingFn).toThrowError('Mapping keys must be unique, ignoring case.');
     });
   });
 

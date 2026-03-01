@@ -12,8 +12,8 @@ import {
 } from '../changeset-generator.ts';
 
 // Mock the workspace package discovery for tests
-vi.mock('../workspace-discovery.ts', () => ({
-  getWorkspacePackages: vi.fn(),
+vi.mock(import('../workspace-discovery.ts'), () => ({
+  getWorkspacePackages: vi.fn<() => Record<string, string>>(),
 }));
 
 const mockedGetWorkspacePackages = vi.mocked(getWorkspacePackages);

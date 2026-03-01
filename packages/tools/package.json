@@ -19,6 +19,6 @@
     "ws": "node --import tsx ../../scripts/run-workspace-script.ts --int-test"
   },
   "engines": {
-    "node": ">=18.17.0"
+    "node": ">=24.0.0"
   }
 }

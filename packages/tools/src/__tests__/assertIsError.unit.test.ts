@@ -7,13 +7,13 @@ describe(assertIsError, () => {
     const error = new Error('this is a valid error');
     expect(() => {
       assertIsError(error);
-    }).not.toThrow();
+    }).not.toThrowError();
   });
 
   it('re-throws the error when the input is not an instance of Error', () => {
     const errMessage = 'This is not an Error object';
     expect(() => {
       assertIsError(errMessage);
-    }).toThrow(errMessage);
+    }).toThrowError(errMessage);
   });
 });

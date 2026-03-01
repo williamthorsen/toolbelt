@@ -93,7 +93,7 @@ describe(TypedObject, () => {
 
       const throwingFn = () => TypedObject.entries(input);
 
-      expect(throwingFn).toThrow(new TypeError('Method does not support functions. Use Object.entries instead.'));
+      expect(throwingFn).toThrowError(new TypeError('Method does not support functions. Use Object.entries instead.'));
     });
 
     it('given a class, throws an error', () => {
@@ -102,14 +102,14 @@ describe(TypedObject, () => {
 
       const throwingFn = () => TypedObject.entries(input);
 
-      expect(throwingFn).toThrow(new TypeError('Method does not support functions. Use Object.entries instead.'));
+      expect(throwingFn).toThrowError(new TypeError('Method does not support functions. Use Object.entries instead.'));
     });
 
     it('given an invalid value, throws an error', () => {
       // @ts-expect-error - `Object.entries` does not accept `null`
-      expect(() => TypedObject.entries(null)).toThrow(new TypeError('Cannot convert undefined or null to object'));
+      expect(() => TypedObject.entries(null)).toThrowError(new TypeError('Cannot convert undefined or null to object'));
       // @ts-expect-error - `Object.entries` does not accept `undefined`
-      expect(() => TypedObject.entries()).toThrow('def');
+      expect(() => TypedObject.entries()).toThrowError('def');
     });
 
     it('given an object without a prototype, throws an error', () => {
@@ -117,7 +117,7 @@ describe(TypedObject, () => {
 
       const throwingFn = () => TypedObject.entries(input);
 
-      expect(throwingFn).toThrow(
+      expect(throwingFn).toThrowError(
         new Error('Method does not support objects with no prototype. Use Object.entries instead.'),
       );
     });

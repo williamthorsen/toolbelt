@@ -49,6 +49,6 @@ describe(getDecadesContainingYears, () => {
   });
 
   it('throws a RangeError when any years are negative', () => {
-    expect(() => getDecadesContainingYears([-1, 1980])).toThrow(RangeError);
+    expect(() => getDecadesContainingYears([-1, 1980])).toThrowError(RangeError);
   });
 });

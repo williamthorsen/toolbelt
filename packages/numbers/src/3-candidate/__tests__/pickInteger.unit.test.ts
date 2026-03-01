@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { generateRandom } from '../generateRandom.ts';
 import { pickInteger } from '../pickInteger.ts';
 
-vi.mock('../generateRandom.ts');
+vi.mock(import('../generateRandom.ts'));
 const generateRandomMock = vi.mocked(generateRandom);
 
 describe(pickInteger, () => {
@@ -59,7 +59,7 @@ describe(pickInteger, () => {
 
     const throwingFn = vi.fn<() => number>(() => pickInteger({ min, max }));
 
-    expect(throwingFn).toThrow(new RangeError('Invalid range: min must be less than or equal to max.'));
+    expect(throwingFn).toThrowError(new RangeError('Invalid range: min must be less than or equal to max.'));
   });
 
   it('if min and max truncate to the same integer, returns their truncated value', () => {
@@ -110,7 +110,7 @@ describe(pickInteger, () => {
 
     const throwingFn = vi.fn<() => number>(() => pickInteger({ min, max }));
 
-    expect(throwingFn).toThrow(new RangeError('Invalid range: min and max must be finite.'));
+    expect(throwingFn).toThrowError(new RangeError('Invalid range: min and max must be finite.'));
   });
 
   it('if max is infinite, throws an error', () => {
@@ -119,6 +119,6 @@ describe(pickInteger, () => {
 
     const throwingFn = vi.fn<() => number>(() => pickInteger({ min, max }));
 
-    expect(throwingFn).toThrow(new RangeError('Invalid range: min and max must be finite.'));
+    expect(throwingFn).toThrowError(new RangeError('Invalid range: min and max must be finite.'));
   });
 });

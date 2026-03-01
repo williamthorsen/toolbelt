@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { makePickWeightedItemFromDistribution } from '../makePickWeightedItemFromDistribution.ts';
 
@@ -11,7 +11,7 @@ describe(makePickWeightedItemFromDistribution, () => {
     const pickItem = makePickWeightedItemFromDistribution(items, distribution, options);
 
     const pickedItem = pickItem();
-    expect(typeof pickedItem).toBe('string');
+    expectTypeOf(pickedItem).toBeString();
     expect(items).toContain(pickedItem);
   });
 
@@ -46,7 +46,8 @@ describe(makePickWeightedItemFromDistribution, () => {
     const pickItem = makePickWeightedItemFromDistribution(items, distribution, options);
     const pickedItem = pickItem();
 
-    expect(typeof pickedItem).toBe('object');
+    expectTypeOf(pickedItem).toBeObject();
+    expect(pickedItem).toHaveProperty('name');
   });
 
   it('accepts read-only arrays', () => {
@@ -67,7 +68,7 @@ describe(makePickWeightedItemFromDistribution, () => {
 
     const throwingFn = () => makePickWeightedItemFromDistribution(items, distribution, options);
 
-    expect(throwingFn).toThrow(new Error('Cannot create function with an empty array.'));
+    expect(throwingFn).toThrowError(new Error('Cannot create function with an empty array.'));
   });
 
   it('throws an error if the items array is empty', () => {
@@ -77,7 +78,7 @@ describe(makePickWeightedItemFromDistribution, () => {
 
     const throwingFn = () => makePickWeightedItemFromDistribution(items, distribution, options);
 
-    expect(throwingFn).toThrow(new Error('Cannot create function with an empty array.'));
+    expect(throwingFn).toThrowError(new Error('Cannot create function with an empty array.'));
   });
 
   it('accepts and uses options when picking an item', () => {

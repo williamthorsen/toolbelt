@@ -16,7 +16,7 @@ describe(setIntersection, () => {
   it('if there are no common elements, returns the empty set', () => {
     const aSet = new Set([1]);
     const bSet = new Set([2]);
-    const expected = new Set([]);
+    const expected = new Set();
 
     const actual = setIntersection(aSet, bSet);
 
@@ -24,9 +24,9 @@ describe(setIntersection, () => {
   });
 
   it('if both sets are empty, returns the empty set', () => {
-    const aSet = new Set([]);
-    const bSet = new Set([]);
-    const expected = new Set([]);
+    const aSet = new Set();
+    const bSet = new Set();
+    const expected = new Set();
 
     const actual = setIntersection(aSet, bSet);
 
