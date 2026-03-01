@@ -36,15 +36,25 @@ describe(parseCommitMessage, () => {
 
   it('resolves an alias to its canonical type', () => {
     const result = parseCommitMessage('feature: new dashboard', 'ghi789', workTypes);
-    expect(result).toBeDefined();
-    expect(result?.type).toBe('feat');
+    expect(result).toStrictEqual({
+      message: 'feature: new dashboard',
+      hash: 'ghi789',
+      type: 'feat',
+      description: 'new dashboard',
+      breaking: false,
+    });
   });
 
   it('resolves an alias in workspace format', () => {
     const result = parseCommitMessage('api|bugfix: fix timeout', 'jkl012', workTypes);
-    expect(result).toBeDefined();
-    expect(result?.type).toBe('fix');
-    expect(result?.workspace).toBe('api');
+    expect(result).toStrictEqual({
+      message: 'api|bugfix: fix timeout',
+      hash: 'jkl012',
+      type: 'fix',
+      description: 'fix timeout',
+      workspace: 'api',
+      breaking: false,
+    });
   });
 
   it('detects a breaking change via ! marker', () => {
@@ -76,7 +86,46 @@ describe(parseCommitMessage, () => {
 
   it('handles doc alias', () => {
     const result = parseCommitMessage('doc: update README', 'abc999', workTypes);
-    expect(result).toBeDefined();
-    expect(result?.type).toBe('docs');
+    expect(result).toStrictEqual({
+      message: 'doc: update README',
+      hash: 'abc999',
+      type: 'docs',
+      description: 'update README',
+      breaking: false,
+    });
+  });
+
+  it('resolves an uppercase type to its canonical lowercase form', () => {
+    const result = parseCommitMessage('FEAT: add login', 'upper1', workTypes);
+    expect(result).toStrictEqual({
+      message: 'FEAT: add login',
+      hash: 'upper1',
+      type: 'feat',
+      description: 'add login',
+      breaking: false,
+    });
+  });
+
+  it('resolves a mixed-case alias to its canonical type', () => {
+    const result = parseCommitMessage('Feature: new dashboard', 'upper2', workTypes);
+    expect(result).toStrictEqual({
+      message: 'Feature: new dashboard',
+      hash: 'upper2',
+      type: 'feat',
+      description: 'new dashboard',
+      breaking: false,
+    });
+  });
+
+  it('parses a workspace prefix combined with a breaking change marker', () => {
+    const result = parseCommitMessage('api|feat!: redesign endpoint', 'combo1', workTypes);
+    expect(result).toStrictEqual({
+      message: 'api|feat!: redesign endpoint',
+      hash: 'combo1',
+      type: 'feat',
+      description: 'redesign endpoint',
+      workspace: 'api',
+      breaking: true,
+    });
   });
 });

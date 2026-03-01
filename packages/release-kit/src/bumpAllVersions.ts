@@ -35,13 +35,7 @@ export function bumpAllVersions(packageFiles: readonly string[], releaseType: Re
     throw new Error('No package files specified');
   }
 
-  const firstContent = readFileSync(firstFile, 'utf8');
-  const firstPkg: unknown = JSON.parse(firstContent);
-
-  if (!isPackageJson(firstPkg)) {
-    throw new Error(`No valid 'version' field found in ${firstFile}`);
-  }
-
+  const firstPkg = readPackageJson(firstFile);
   const currentVersion = firstPkg.version;
   const newVersion = bumpVersion(currentVersion, releaseType);
   console.info(`Bumping version: ${currentVersion} -> ${newVersion} (${releaseType})`);
@@ -52,17 +46,44 @@ export function bumpAllVersions(packageFiles: readonly string[], releaseType: Re
       continue;
     }
 
-    const content = readFileSync(filePath, 'utf8');
-    const pkg: unknown = JSON.parse(content);
+    const pkg = readPackageJson(filePath);
+    pkg.version = newVersion;
 
-    if (!isPackageJson(pkg)) {
-      throw new Error(`No valid 'version' field found in ${filePath}`);
+    try {
+      writeFileSync(filePath, JSON.stringify(pkg, null, 2) + '\n', 'utf8');
+    } catch (error: unknown) {
+      throw new Error(`Failed to write ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
     }
 
-    pkg.version = newVersion;
-    writeFileSync(filePath, JSON.stringify(pkg, null, 2) + '\n', 'utf8');
     console.info(`  Bumped ${filePath}`);
   }
 
   return newVersion;
+}
+
+/**
+ * Reads and parses a package.json file, returning a validated object with a `version` field.
+ *
+ * @throws If the file cannot be read, contains invalid JSON, or lacks a `version` field.
+ */
+function readPackageJson(filePath: string): PackageJson {
+  let content: string;
+  try {
+    content = readFileSync(filePath, 'utf8');
+  } catch (error: unknown) {
+    throw new Error(`Failed to read ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(content);
+  } catch (error: unknown) {
+    throw new Error(`Failed to parse JSON in ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
+  }
+
+  if (!isPackageJson(parsed)) {
+    throw new Error(`No valid 'version' field found in ${filePath}`);
+  }
+
+  return parsed;
 }

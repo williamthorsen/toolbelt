@@ -67,4 +67,16 @@ describe(determineBumpType, () => {
     const result = determineBumpType(commits, workTypes);
     expect(result).toBe('patch');
   });
+
+  it('returns major immediately when the first commit is a breaking change', () => {
+    const commits = [makeCommit({ type: 'feat', breaking: true }), makeCommit({ type: 'fix' })];
+    const result = determineBumpType(commits, workTypes);
+    expect(result).toBe('major');
+  });
+
+  it('returns undefined when workTypes is empty', () => {
+    const commits = [makeCommit({ type: 'feat' })];
+    const result = determineBumpType(commits, []);
+    expect(result).toBeUndefined();
+  });
 });

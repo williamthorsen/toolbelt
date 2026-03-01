@@ -25,6 +25,12 @@ export function generateChangelogs(config: ReleaseConfig, tag: string, dryRun: b
     }
 
     console.info(`  Generating changelog: ${outputFile}`);
-    execSync(cmd, { stdio: 'inherit' });
+    try {
+      execSync(cmd, { stdio: 'inherit' });
+    } catch (error: unknown) {
+      throw new Error(
+        `Failed to generate changelog for ${outputFile}: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
   }
 }

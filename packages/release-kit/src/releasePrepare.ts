@@ -70,7 +70,13 @@ export function releasePrepare(config: ReleaseConfig, options: ReleasePrepareOpt
       console.info(`  [dry-run] Would run format command: ${config.formatCommand}`);
     } else {
       console.info(`  Running format command: ${config.formatCommand}`);
-      execSync(config.formatCommand, { stdio: 'inherit' });
+      try {
+        execSync(config.formatCommand, { stdio: 'inherit' });
+      } catch (error: unknown) {
+        throw new Error(
+          `Format command failed ('${config.formatCommand}'): ${error instanceof Error ? error.message : String(error)}`,
+        );
+      }
     }
   }
 
