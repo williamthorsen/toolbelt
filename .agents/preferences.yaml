@@ -5,7 +5,10 @@ editors:
 integrations:
   jira:
     enabled: false
+project:
+  slug: toolbelt
+  ticket_prefix: '#'
 repository:
   default_remote:
     - name: origin
-      default_branch: next
+      default_branch: main
