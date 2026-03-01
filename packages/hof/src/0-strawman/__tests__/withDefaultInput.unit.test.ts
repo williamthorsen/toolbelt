@@ -18,6 +18,6 @@ describe(withDefaultInput, () => {
 
     const throwingFn = () => withDefaultInput(fn, 1);
 
-    expect(throwingFn).toThrow(new Error('Invalid input. The function must have one parameter.'));
+    expect(throwingFn).toThrowError(new Error('Invalid input. The function must have one parameter.'));
   });
 });

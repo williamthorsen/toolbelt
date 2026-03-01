@@ -6,7 +6,7 @@ describe(assertIsNonNullable, () => {
   it('throws an error if the value is nullable', () => {
     expect(() => {
       assertIsNonNullable(null);
-    }).toThrow(new Error('Value must not be null or undefined.'));
+    }).toThrowError(new Error('Value must not be null or undefined.'));
   });
 });
 

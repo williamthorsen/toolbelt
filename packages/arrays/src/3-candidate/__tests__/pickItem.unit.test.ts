@@ -26,7 +26,7 @@ describe(pickItem, () => {
   it('if the array is empty, throws an error', () => {
     const throwingFn = () => pickItem([]);
 
-    expect(throwingFn).toThrow(new Error('Cannot pick an item from an empty array.'));
+    expect(throwingFn).toThrowError(new Error('Cannot pick an item from an empty array.'));
   });
 
   it('given the same seed, returns the same item', () => {

@@ -159,7 +159,7 @@ describe(Timestamp, () => {
     it('if timeUnit=hours, throws an error', () => {
       const throwingFn = () => timestamp.toHumaneUtcString({ timeUnit: TimeUnit.Hours });
 
-      expect(throwingFn).toThrow(new Error('Method does not support TimeUnit.Hours time unit.'));
+      expect(throwingFn).toThrowError(new Error('Method does not support TimeUnit.Hours time unit.'));
     });
   });
 

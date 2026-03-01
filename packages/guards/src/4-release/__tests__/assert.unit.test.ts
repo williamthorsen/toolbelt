@@ -9,13 +9,13 @@ describe(assert, () => {
   it('does not throw if the condition is true', () => {
     expect(() => {
       assert(true);
-    }).not.toThrow();
+    }).not.toThrowError();
   });
 
   it('throws if the condition is false', () => {
     expect(() => {
       assert(false);
-    }).toThrow(new Error(DEFAULT_MESSAGE));
+    }).toThrowError(new Error(DEFAULT_MESSAGE));
   });
 
   it('throws with a custom message if given', () => {
@@ -23,7 +23,7 @@ describe(assert, () => {
 
     expect(() => {
       assert(false, customMessage);
-    }).toThrow(new Error(customMessage));
+    }).toThrowError(new Error(customMessage));
   });
 
   it('throws with a custom Error if given', () => {
@@ -31,7 +31,7 @@ describe(assert, () => {
 
     expect(() => {
       assert(false, customError);
-    }).toThrow(customError);
+    }).toThrowError(customError);
   });
 
   it('narrows the type if the condition is a type guard', () => {
@@ -40,6 +40,6 @@ describe(assert, () => {
       expectTypeOf<string>(value);
     }
 
-    expect(() => checkType('test')).not.toThrow();
+    expect(() => checkType('test')).not.toThrowError();
   });
 });

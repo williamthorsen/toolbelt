@@ -69,7 +69,7 @@ describe(replaceFileExtension, () => {
     const oldExtension = '.ext';
     const newExtension = '';
 
-    expect(() => replaceFileExtension(filePath, newExtension, { oldExtension })).toThrow(
+    expect(() => replaceFileExtension(filePath, newExtension, { oldExtension })).toThrowError(
       /File path ".*" does not end with extension/,
     );
   });

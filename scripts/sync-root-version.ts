@@ -29,7 +29,7 @@ function readPackageJson(filepath: string): PackageJson {
     return parsed;
   } catch (error) {
     throw new Error(
-      `Failed to read package.json: ${filepath}\\n${error instanceof Error ? error.message : String(error)}`,
+      String.raw`Failed to read package.json: ${filepath}\n${error instanceof Error ? error.message : String(error)}`,
     );
   }
 }
@@ -40,7 +40,7 @@ function writePackageJson(filepath: string, pkg: PackageJson): void {
     writeFileSync(filepath, content);
   } catch (error) {
     throw new Error(
-      `Failed to write package.json: ${filepath}\\n${error instanceof Error ? error.message : String(error)}`,
+      String.raw`Failed to write package.json: ${filepath}\n${error instanceof Error ? error.message : String(error)}`,
     );
   }
 }

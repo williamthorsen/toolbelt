@@ -25,6 +25,6 @@ describe(clamp, () => {
   it('throws an error if min is greater than max', () => {
     const throwingFn = () => clamp(5, { min: 10, max: 0 });
 
-    expect(throwingFn).toThrow(new RangeError('Minimum value cannot be greater than maximum value'));
+    expect(throwingFn).toThrowError(new RangeError('Minimum value cannot be greater than maximum value'));
   });
 });

@@ -83,7 +83,7 @@ describe(validateDelimiters, () => {
 
     const throwingFn = vi.fn<() => ValidationResult>(() => validateDelimiters(input, badParams));
 
-    expect(throwingFn).toThrow(new Error(expectedErrorMessage));
+    expect(throwingFn).toThrowError(new Error(expectedErrorMessage));
   });
 
   it('if throwOnError=true, throws an error containing the first error message', () => {
@@ -93,7 +93,7 @@ describe(validateDelimiters, () => {
 
     const throwingFn = vi.fn<() => ValidationResult>(() => validateDelimiters(input, withErrorParams));
 
-    expect(throwingFn).toThrow(new Error(expectedErrorMessage));
+    expect(throwingFn).toThrowError(new Error(expectedErrorMessage));
   });
 
   describe('disallowNested option with correct nesting', () => {

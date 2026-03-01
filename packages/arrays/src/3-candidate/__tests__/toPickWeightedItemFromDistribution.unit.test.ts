@@ -67,7 +67,7 @@ describe(makePickWeightedItemFromDistribution, () => {
 
     const throwingFn = () => makePickWeightedItemFromDistribution(items, distribution, options);
 
-    expect(throwingFn).toThrow(new Error('Cannot create function with an empty array.'));
+    expect(throwingFn).toThrowError(new Error('Cannot create function with an empty array.'));
   });
 
   it('throws an error if the items array is empty', () => {
@@ -77,7 +77,7 @@ describe(makePickWeightedItemFromDistribution, () => {
 
     const throwingFn = () => makePickWeightedItemFromDistribution(items, distribution, options);
 
-    expect(throwingFn).toThrow(new Error('Cannot create function with an empty array.'));
+    expect(throwingFn).toThrowError(new Error('Cannot create function with an empty array.'));
   });
 
   it('accepts and uses options when picking an item', () => {

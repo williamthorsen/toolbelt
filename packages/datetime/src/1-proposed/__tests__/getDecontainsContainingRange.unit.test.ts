@@ -29,7 +29,7 @@ describe(getDecadesContainingRange, () => {
   });
 
   it('throws a RangeError when the range includes negative years', () => {
-    expect(() => getDecadesContainingRange({ start: -25, end: 5 })).toThrow(RangeError);
+    expect(() => getDecadesContainingRange({ start: -25, end: 5 })).toThrowError(RangeError);
   });
 
   it('returns only the start decade when end is exactly at the start decade boundary', () => {

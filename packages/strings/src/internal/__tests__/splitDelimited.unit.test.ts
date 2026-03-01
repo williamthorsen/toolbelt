@@ -26,6 +26,6 @@ describe(splitDelimited, () => {
   it('given an undelimited string, throws an error', () => {
     const input = 'Hello, world!';
 
-    expect(() => splitDelimited(input, params)).toThrow('Expected a string delimited by "{" and "}".');
+    expect(() => splitDelimited(input, params)).toThrowError('Expected a string delimited by "{" and "}".');
   });
 });

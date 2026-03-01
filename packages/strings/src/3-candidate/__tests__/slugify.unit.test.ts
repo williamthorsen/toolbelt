@@ -82,6 +82,6 @@ describe(slugify, () => {
 
     const throwingFn = () => slugify(input, options);
 
-    expect(throwingFn).toThrow('Separator must be a single character.');
+    expect(throwingFn).toThrowError('Separator must be a single character.');
   });
 });
