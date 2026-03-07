@@ -1,25 +1,22 @@
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { defineConfig, mergeConfig } from 'vitest/config';
+import { mergeConfig } from 'vitest/config';
 
-export const baseConfig = defineConfig({
+export const baseConfig = {
   plugins: [tsconfigPaths()],
   test: {
     coverage: {
-      all: true, // include untested files in the report
       enabled: false, // don't check coverage unless the `--coverage` flag is passed
       exclude: ['**/__tests__/*', '**/index.ts', '**/*.d.ts', '**/*.types.ts'],
       include: ['**/src/**/*.{ts,tsx}'],
-      provider: 'v8',
+      provider: 'v8' as const,
     },
     exclude: ['**/node_modules/**'],
     watch: false, // don't enter watch mode unless the `--watch` flag is passed
   },
-});
+};
 
-const config = defineConfig({
+export default mergeConfig(baseConfig, {
   test: {
     include: ['**/__tests__/**/*.test.{ts,tsx}'],
   },
 });
-
-export default mergeConfig(baseConfig, config);
