@@ -1,0 +1,275 @@
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+/* eslint-disable vitest/require-mock-type-parameters -- mocks are used loosely across overloads */
+const mockExecFileSync = vi.hoisted(() => vi.fn());
+const mockExecSync = vi.hoisted(() => vi.fn());
+const mockReadFileSync = vi.hoisted(() => vi.fn());
+const mockWriteFileSync = vi.hoisted(() => vi.fn());
+/* eslint-enable vitest/require-mock-type-parameters */
+
+// eslint-disable-next-line vitest/prefer-import-in-mock -- string path avoids strict type-checking issues with partial mocks
+vi.mock('node:child_process', () => ({
+  execFileSync: mockExecFileSync,
+  execSync: mockExecSync,
+}));
+
+// eslint-disable-next-line vitest/prefer-import-in-mock -- string path avoids strict type-checking issues with partial mocks
+vi.mock('node:fs', () => ({
+  readFileSync: mockReadFileSync,
+  writeFileSync: mockWriteFileSync,
+}));
+
+import { releasePrepareMono } from '../releasePrepareMono.ts';
+import type { MonorepoReleaseConfig, WorkTypeConfig } from '../types.ts';
+
+const workTypes: WorkTypeConfig[] = [
+  { type: 'feat', header: 'Features', bump: 'minor' },
+  { type: 'fix', header: 'Bug fixes', bump: 'patch' },
+];
+
+function makeConfig(overrides?: Partial<MonorepoReleaseConfig>): MonorepoReleaseConfig {
+  return {
+    components: [],
+    workTypes,
+    ...overrides,
+  };
+}
+
+/** Find the first git-cliff call's args from the mock call history. */
+function findCliffCallArgs(): readonly unknown[] {
+  for (const call of mockExecFileSync.mock.calls) {
+    if (call[0] === 'git-cliff' && Array.isArray(call[1])) {
+      return call[1];
+    }
+  }
+  throw new Error('No git-cliff call found in mock history');
+}
+
+/** Count how many git-cliff calls occurred. */
+function countCliffCalls(): number {
+  return mockExecFileSync.mock.calls.filter((call: unknown[]) => call[0] === 'git-cliff').length;
+}
+
+describe(releasePrepareMono, () => {
+  afterEach(() => {
+    mockExecFileSync.mockReset();
+    mockExecSync.mockReset();
+    mockReadFileSync.mockReset();
+    mockWriteFileSync.mockReset();
+  });
+
+  it('processes a component that has commits', () => {
+    const config = makeConfig({
+      components: [
+        {
+          tagPrefix: 'arrays-v',
+          packageFiles: ['packages/arrays/package.json'],
+          changelogPaths: ['packages/arrays'],
+          paths: ['packages/arrays/**'],
+        },
+      ],
+    });
+
+    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
+      if (cmd === 'git' && args[0] === 'describe') {
+        return 'arrays-v1.0.0\n';
+      }
+      if (cmd === 'git' && args[0] === 'log') {
+        return 'feat: add utility\u0000abc123';
+      }
+      return '';
+    });
+    mockReadFileSync.mockReturnValue(JSON.stringify({ version: '1.0.0' }));
+
+    releasePrepareMono(config, { dryRun: false });
+
+    // Verify bumpAllVersions wrote a new version
+    expect(mockWriteFileSync).toHaveBeenCalledWith(
+      'packages/arrays/package.json',
+      expect.stringContaining('"version": "1.1.0"'),
+      'utf8',
+    );
+
+    // Verify git-cliff was called for the component's changelog path
+    const cliffArgs = findCliffCallArgs();
+    expect(cliffArgs).toContain('--output');
+    expect(cliffArgs).toContain('packages/arrays/CHANGELOG.md');
+    expect(cliffArgs).toContain('--include-path');
+    expect(cliffArgs).toContain('packages/arrays/**');
+  });
+
+  it('skips a component with no commits', () => {
+    const config = makeConfig({
+      components: [
+        {
+          tagPrefix: 'arrays-v',
+          packageFiles: ['packages/arrays/package.json'],
+          changelogPaths: ['packages/arrays'],
+          paths: ['packages/arrays/**'],
+        },
+      ],
+    });
+
+    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
+      if (cmd === 'git' && args[0] === 'describe') {
+        return 'arrays-v1.0.0\n';
+      }
+      if (cmd === 'git' && args[0] === 'log') {
+        return '';
+      }
+      return '';
+    });
+
+    releasePrepareMono(config, { dryRun: false });
+
+    expect(mockWriteFileSync).not.toHaveBeenCalled();
+    expect(countCliffCalls()).toBe(0);
+  });
+
+  it('processes only components with commits when multiple are configured', () => {
+    const config = makeConfig({
+      components: [
+        {
+          tagPrefix: 'arrays-v',
+          packageFiles: ['packages/arrays/package.json'],
+          changelogPaths: ['packages/arrays'],
+          paths: ['packages/arrays/**'],
+        },
+        {
+          tagPrefix: 'strings-v',
+          packageFiles: ['packages/strings/package.json'],
+          changelogPaths: ['packages/strings'],
+          paths: ['packages/strings/**'],
+        },
+      ],
+    });
+
+    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
+      if (cmd === 'git' && args[0] === 'describe') {
+        const matchArg = args.find((a: string) => a.startsWith('--match='));
+        if (matchArg?.includes('arrays-v')) {
+          return 'arrays-v1.0.0\n';
+        }
+        if (matchArg?.includes('strings-v')) {
+          return 'strings-v2.0.0\n';
+        }
+      }
+      if (cmd === 'git' && args[0] === 'log') {
+        const hasArraysPath = args.includes('packages/arrays/**');
+        if (hasArraysPath) {
+          return 'fix: fix array bug\u0000def456';
+        }
+        return '';
+      }
+      return '';
+    });
+
+    mockReadFileSync.mockReturnValue(JSON.stringify({ version: '1.0.0' }));
+
+    releasePrepareMono(config, { dryRun: false });
+
+    // Only arrays package.json should be written
+    expect(mockWriteFileSync).toHaveBeenCalledTimes(1);
+    expect(mockWriteFileSync).toHaveBeenCalledWith('packages/arrays/package.json', expect.any(String), 'utf8');
+
+    // Only arrays changelog should be generated
+    expect(countCliffCalls()).toBe(1);
+    const cliffArgs = findCliffCallArgs();
+    expect(cliffArgs).toContain('packages/arrays/CHANGELOG.md');
+  });
+
+  it('does not write files when dryRun is true', () => {
+    const config = makeConfig({
+      components: [
+        {
+          tagPrefix: 'arrays-v',
+          packageFiles: ['packages/arrays/package.json'],
+          changelogPaths: ['packages/arrays'],
+          paths: ['packages/arrays/**'],
+        },
+      ],
+    });
+
+    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
+      if (cmd === 'git' && args[0] === 'describe') {
+        return 'arrays-v1.0.0\n';
+      }
+      if (cmd === 'git' && args[0] === 'log') {
+        return 'feat: add feature\u0000abc123';
+      }
+      return '';
+    });
+    mockReadFileSync.mockReturnValue(JSON.stringify({ version: '1.0.0' }));
+
+    releasePrepareMono(config, { dryRun: true });
+
+    expect(mockWriteFileSync).not.toHaveBeenCalled();
+    expect(countCliffCalls()).toBe(0);
+  });
+
+  it('runs formatCommand once after all components are processed', () => {
+    const config = makeConfig({
+      formatCommand: 'pnpm run fmt',
+      components: [
+        {
+          tagPrefix: 'arrays-v',
+          packageFiles: ['packages/arrays/package.json'],
+          changelogPaths: ['packages/arrays'],
+          paths: ['packages/arrays/**'],
+        },
+        {
+          tagPrefix: 'strings-v',
+          packageFiles: ['packages/strings/package.json'],
+          changelogPaths: ['packages/strings'],
+          paths: ['packages/strings/**'],
+        },
+      ],
+    });
+
+    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
+      if (cmd === 'git' && args[0] === 'describe') {
+        const matchArg = args.find((a: string) => a.startsWith('--match='));
+        if (matchArg?.includes('arrays-v')) return 'arrays-v1.0.0\n';
+        if (matchArg?.includes('strings-v')) return 'strings-v1.0.0\n';
+      }
+      if (cmd === 'git' && args[0] === 'log') {
+        return 'feat: add feature\u0000abc123';
+      }
+      return '';
+    });
+    mockReadFileSync.mockReturnValue(JSON.stringify({ version: '1.0.0' }));
+
+    releasePrepareMono(config, { dryRun: false });
+
+    expect(mockExecSync).toHaveBeenCalledTimes(1);
+    expect(mockExecSync).toHaveBeenCalledWith('pnpm run fmt', { stdio: 'inherit' });
+  });
+
+  it('does not run formatCommand when no components have commits', () => {
+    const config = makeConfig({
+      formatCommand: 'pnpm run fmt',
+      components: [
+        {
+          tagPrefix: 'arrays-v',
+          packageFiles: ['packages/arrays/package.json'],
+          changelogPaths: ['packages/arrays'],
+          paths: ['packages/arrays/**'],
+        },
+      ],
+    });
+
+    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
+      if (cmd === 'git' && args[0] === 'describe') {
+        return 'arrays-v1.0.0\n';
+      }
+      if (cmd === 'git' && args[0] === 'log') {
+        return '';
+      }
+      return '';
+    });
+
+    releasePrepareMono(config, { dryRun: false });
+
+    expect(mockExecSync).not.toHaveBeenCalled();
+  });
+});

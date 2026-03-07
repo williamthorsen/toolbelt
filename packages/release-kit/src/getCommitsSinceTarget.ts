@@ -69,16 +69,28 @@ function parseLogOutput(logOutput: string): Commit[] {
  * If no target is found, returns all commits.
  *
  * @param tagPrefix - The tag prefix to search for (e.g., 'v').
+ * @param paths - Optional glob patterns to filter commits by path (appended after `--` in `git log`).
+ *   Path patterns use POSIX-style forward slashes; Windows compatibility is not guaranteed.
  * @returns An object with the found tag (if any) and the list of commits.
  */
-export function getCommitsSinceTarget(tagPrefix: string): { tag: string | undefined; commits: Commit[] } {
+export function getCommitsSinceTarget(
+  tagPrefix: string,
+  paths?: string[],
+): { tag: string | undefined; commits: Commit[] } {
   const tag = findLatestTag(tagPrefix);
   const range = tag === undefined ? 'HEAD' : `${tag}..HEAD`;
   const format = `%s${FIELD_SEPARATOR}%H`;
 
+  const args = ['log', range, `--pretty=format:${format}`];
+
+  // Append path filters after the `--` separator when provided.
+  if (paths !== undefined && paths.length > 0) {
+    args.push('--', ...paths);
+  }
+
   let logOutput: string;
   try {
-    logOutput = execFileSync('git', ['log', range, `--pretty=format:${format}`], {
+    logOutput = execFileSync('git', args, {
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'pipe'],
     }).trim();

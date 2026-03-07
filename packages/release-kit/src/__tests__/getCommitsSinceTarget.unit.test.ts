@@ -1,0 +1,114 @@
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+// eslint-disable-next-line vitest/require-mock-type-parameters -- mock is used loosely across overloads
+const mockExecFileSync = vi.hoisted(() => vi.fn());
+
+// eslint-disable-next-line vitest/prefer-import-in-mock -- string path avoids strict type-checking issues with partial mocks
+vi.mock('node:child_process', () => ({
+  execFileSync: mockExecFileSync,
+}));
+
+import { getCommitsSinceTarget } from '../getCommitsSinceTarget.ts';
+
+/** Find the `git log` call args from the mock call history. */
+function findLogCallArgs(): readonly unknown[] {
+  for (const call of mockExecFileSync.mock.calls) {
+    if (call[0] === 'git' && Array.isArray(call[1]) && call[1][0] === 'log') {
+      return call[1];
+    }
+  }
+  throw new Error('No git log call found in mock history');
+}
+
+describe(getCommitsSinceTarget, () => {
+  afterEach(() => {
+    mockExecFileSync.mockReset();
+  });
+
+  it('does not append -- when called without paths', () => {
+    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
+      if (cmd === 'git' && args[0] === 'describe') {
+        return 'v1.0.0\n';
+      }
+      return '';
+    });
+
+    getCommitsSinceTarget('v');
+
+    expect(findLogCallArgs()).not.toContain('--');
+  });
+
+  it('does not append -- when called with an empty paths array', () => {
+    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
+      if (cmd === 'git' && args[0] === 'describe') {
+        return 'v1.0.0\n';
+      }
+      return '';
+    });
+
+    getCommitsSinceTarget('v', []);
+
+    expect(findLogCallArgs()).not.toContain('--');
+  });
+
+  it('appends -- and the path when called with a single path', () => {
+    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
+      if (cmd === 'git' && args[0] === 'describe') {
+        return 'arrays-v1.0.0\n';
+      }
+      return '';
+    });
+
+    getCommitsSinceTarget('arrays-v', ['packages/arrays/**']);
+
+    const logArgs = findLogCallArgs();
+    const separatorIndex = logArgs.indexOf('--');
+    expect(separatorIndex).toBeGreaterThan(0);
+    expect(logArgs.slice(separatorIndex)).toStrictEqual(['--', 'packages/arrays/**']);
+  });
+
+  it('appends all paths after -- when called with multiple paths', () => {
+    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
+      if (cmd === 'git' && args[0] === 'describe') {
+        return 'lib-v2.0.0\n';
+      }
+      return '';
+    });
+
+    getCommitsSinceTarget('lib-v', ['packages/arrays/**', 'packages/strings/**']);
+
+    const logArgs = findLogCallArgs();
+    const separatorIndex = logArgs.indexOf('--');
+    expect(separatorIndex).toBeGreaterThan(0);
+    expect(logArgs.slice(separatorIndex)).toStrictEqual(['--', 'packages/arrays/**', 'packages/strings/**']);
+  });
+
+  it('returns the tag and parsed commits when paths is undefined', () => {
+    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
+      if (cmd === 'git' && args[0] === 'describe') {
+        return 'v1.0.0\n';
+      }
+      return 'feat: add feature\u0000abc123';
+    });
+
+    const result = getCommitsSinceTarget('v');
+
+    expect(result.tag).toBe('v1.0.0');
+    expect(result.commits).toStrictEqual([{ message: 'feat: add feature', hash: 'abc123' }]);
+  });
+
+  it('returns all commits when no matching tag exists', () => {
+    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
+      if (cmd === 'git' && args[0] === 'describe') {
+        const error = Object.assign(new Error('No tag found'), { status: 128 });
+        throw error;
+      }
+      return 'fix: patch\u0000def456';
+    });
+
+    const result = getCommitsSinceTarget('v');
+
+    expect(result.tag).toBeUndefined();
+    expect(result.commits).toStrictEqual([{ message: 'fix: patch', hash: 'def456' }]);
+  });
+});

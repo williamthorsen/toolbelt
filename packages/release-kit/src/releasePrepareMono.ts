@@ -1,0 +1,106 @@
+import { execSync } from 'node:child_process';
+
+import { bumpAllVersions } from './bumpAllVersions.ts';
+import { determineBumpType } from './determineBumpType.ts';
+import { generateChangelog } from './generateChangelogs.ts';
+import { getCommitsSinceTarget } from './getCommitsSinceTarget.ts';
+import { parseCommitMessage } from './parseCommitMessage.ts';
+import type { ReleasePrepareOptions } from './releasePrepare.ts';
+import type { MonorepoReleaseConfig, ReleaseType } from './types.ts';
+
+/**
+ * Orchestrates release preparation for a monorepo with multiple components.
+ *
+ * For each component in the configuration:
+ * 1. Gets path-filtered commits since the last component-specific tag.
+ * 2. Determines the bump type from those commits (or uses the override).
+ * 3. Bumps all configured package.json version fields.
+ * 4. Generates changelogs via git-cliff with `--include-path` filtering.
+ *
+ * After all components are processed, runs the optional format command once.
+ *
+ * Note: Each component has its own tag prefix (e.g., 'arrays-v') to isolate its
+ * version tags from other components. All components share the same git history,
+ * so a commit may appear in multiple components' ranges if it is not filtered by paths.
+ *
+ * @param config - The monorepo release configuration.
+ * @param options - Options controlling dry-run mode and optional bump override.
+ */
+export function releasePrepareMono(config: MonorepoReleaseConfig, options: ReleasePrepareOptions): void {
+  const { dryRun, bumpOverride } = options;
+  let anyComponentProcessed = false;
+
+  for (const component of config.components) {
+    console.info(`\nProcessing component: ${component.tagPrefix}`);
+
+    // 1. Get path-filtered commits since last tag
+    console.info('  Finding commits since last release...');
+    const { tag, commits } = getCommitsSinceTarget(component.tagPrefix, component.paths);
+    console.info(`  Found ${commits.length} commits since ${tag ?? 'the beginning'}`);
+
+    // Skip components with no changes. "No changes" means no commits touched
+    // paths matching the component's glob patterns. Root-level or cross-cutting
+    // commits not captured by the component's path globs are not counted and
+    // may cause a skip even when those changes semantically apply.
+    if (commits.length === 0) {
+      console.info(`  No changes for ${component.tagPrefix}. Skipping.`);
+      continue;
+    }
+
+    // 2. Determine bump type
+    let releaseType: ReleaseType | undefined;
+
+    if (bumpOverride === undefined) {
+      const parsedCommits = commits
+        .map((c) => parseCommitMessage(c.message, c.hash, config.workTypes, config.workspaceAliases))
+        .filter((c): c is NonNullable<typeof c> => c !== undefined);
+
+      console.info(`  Parsed ${parsedCommits.length} typed commits`);
+      releaseType = determineBumpType(parsedCommits, config.workTypes);
+    } else {
+      releaseType = bumpOverride;
+      console.info(`  Using bump override: ${releaseType}`);
+    }
+
+    if (releaseType === undefined) {
+      console.info(`  No release-worthy changes for ${component.tagPrefix}. Skipping.`);
+      continue;
+    }
+
+    // 3. Bump all versions for this component
+    console.info(`  Bumping versions (${releaseType})...`);
+    const newVersion = bumpAllVersions(component.packageFiles, releaseType, dryRun);
+    const newTag = `${component.tagPrefix}${newVersion}`;
+
+    // 4. Generate changelogs for each configured path with include-path filtering
+    console.info('  Generating changelogs...');
+    for (const changelogPath of component.changelogPaths) {
+      generateChangelog(config, changelogPath, newTag, dryRun, { includePaths: component.paths });
+    }
+
+    anyComponentProcessed = true;
+    console.info(`  Component release prepared: ${newTag}`);
+  }
+
+  // 5. Run format command once after all components are processed
+  if (anyComponentProcessed && config.formatCommand !== undefined) {
+    if (dryRun) {
+      console.info(`\n  [dry-run] Would run format command: ${config.formatCommand}`);
+    } else {
+      console.info(`\n  Running format command: ${config.formatCommand}`);
+      try {
+        execSync(config.formatCommand, { stdio: 'inherit' });
+      } catch (error: unknown) {
+        throw new Error(
+          `Format command failed ('${config.formatCommand}'): ${error instanceof Error ? error.message : String(error)}`,
+        );
+      }
+    }
+  }
+
+  if (anyComponentProcessed) {
+    console.info('\nMonorepo release preparation complete.');
+  } else {
+    console.info('\nNo components had release-worthy changes.');
+  }
+}

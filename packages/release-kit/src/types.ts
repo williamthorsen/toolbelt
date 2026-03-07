@@ -37,6 +37,37 @@ export interface ParsedCommit {
   breaking: boolean;
 }
 
+/** Per-component configuration for monorepo releases. */
+export interface ComponentConfig {
+  /** The git tag prefix for this component (e.g., 'arrays-v'). */
+  tagPrefix: string;
+  /** Paths to package.json files to bump. */
+  packageFiles: string[];
+  /** Directories in which to generate changelogs. */
+  changelogPaths: string[];
+  /** Glob patterns passed to `git log -- <paths>` for commit filtering. */
+  paths: string[];
+}
+
+/** Configuration for a monorepo release workflow with multiple components. */
+export interface MonorepoReleaseConfig {
+  /** Ordered list of component configurations. */
+  components: ComponentConfig[];
+  /** Ordered list of work type configurations shared across all components. */
+  workTypes: WorkTypeConfig[];
+  /** Shell command to run after all changelogs are generated (e.g., 'pnpm run fmt'). */
+  formatCommand?: string;
+  /** Path to the cliff.toml file; defaults to 'cliff.toml' when absent. */
+  cliffConfigPath?: string;
+  /**
+   * Maps workspace shorthand names to their canonical names.
+   * When a commit uses `shorthand|type: description`, the shorthand is resolved
+   * to the canonical workspace name before the parsed commit is returned.
+   * Example: `{ api: 'backend-api', web: 'frontend-web' }`.
+   */
+  workspaceAliases?: Record<string, string>;
+}
+
 /** Configuration for the release workflow. */
 export interface ReleaseConfig {
   /** The git tag prefix used to identify version tags (e.g., 'v'). */
