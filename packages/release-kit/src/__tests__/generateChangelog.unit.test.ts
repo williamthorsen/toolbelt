@@ -76,6 +76,18 @@ describe(generateChangelog, () => {
     );
   });
 
+  it('does not append --include-path flags when includePaths is an empty array', () => {
+    const config = { cliffConfigPath: 'cliff.toml' };
+
+    generateChangelog(config, 'packages/arrays', 'v1.0.0', false, { includePaths: [] });
+
+    expect(mockExecFileSync).toHaveBeenCalledWith(
+      'git-cliff',
+      ['--config', 'cliff.toml', '--output', 'packages/arrays/CHANGELOG.md', '--tag', 'v1.0.0'],
+      { stdio: 'inherit' },
+    );
+  });
+
   it('does not call execFileSync when dryRun is true', () => {
     const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => undefined);
     const config = { cliffConfigPath: 'cliff.toml' };

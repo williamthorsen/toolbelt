@@ -95,8 +95,7 @@ export function getCommitsSinceTarget(
       stdio: ['pipe', 'pipe', 'pipe'],
     }).trim();
   } catch (error: unknown) {
-    console.error(`git log failed for range '${range}':`, errorMessage(error));
-    return { tag, commits: [] };
+    throw new Error(`Failed to run 'git log' for range '${range}': ${errorMessage(error)}`);
   }
 
   if (logOutput === '') {

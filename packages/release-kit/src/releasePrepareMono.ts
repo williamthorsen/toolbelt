@@ -71,14 +71,13 @@ export function releasePrepareMono(config: MonorepoReleaseConfig, options: Relea
     console.info(`  Bumping versions (${releaseType})...`);
     const newVersion = bumpAllVersions(component.packageFiles, releaseType, dryRun);
     const newTag = `${component.tagPrefix}${newVersion}`;
+    anyComponentProcessed = true;
 
     // 4. Generate changelogs for each configured path with include-path filtering
     console.info('  Generating changelogs...');
     for (const changelogPath of component.changelogPaths) {
       generateChangelog(config, changelogPath, newTag, dryRun, { includePaths: component.paths });
     }
-
-    anyComponentProcessed = true;
     console.info(`  Component release prepared: ${newTag}`);
   }
 

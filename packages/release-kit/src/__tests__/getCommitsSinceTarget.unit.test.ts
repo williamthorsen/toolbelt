@@ -110,5 +110,9 @@ describe(getCommitsSinceTarget, () => {
 
     expect(result.tag).toBeUndefined();
     expect(result.commits).toStrictEqual([{ message: 'fix: patch', hash: 'def456' }]);
+
+    // Verify git log uses 'HEAD' (not 'undefined..HEAD') when no tag exists
+    const logArgs = findLogCallArgs();
+    expect(logArgs[1]).toBe('HEAD');
   });
 });

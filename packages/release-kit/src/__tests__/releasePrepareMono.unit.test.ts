@@ -178,8 +178,9 @@ describe(releasePrepareMono, () => {
     expect(cliffArgs).toContain('packages/arrays/CHANGELOG.md');
   });
 
-  it('does not write files when dryRun is true', () => {
+  it('does not write files or run formatCommand when dryRun is true', () => {
     const config = makeConfig({
+      formatCommand: 'pnpm run fmt',
       components: [
         {
           tagPrefix: 'arrays-v',
@@ -205,6 +206,7 @@ describe(releasePrepareMono, () => {
 
     expect(mockWriteFileSync).not.toHaveBeenCalled();
     expect(countCliffCalls()).toBe(0);
+    expect(mockExecSync).not.toHaveBeenCalled();
   });
 
   it('runs formatCommand once after all components are processed', () => {
@@ -243,6 +245,72 @@ describe(releasePrepareMono, () => {
 
     expect(mockExecSync).toHaveBeenCalledTimes(1);
     expect(mockExecSync).toHaveBeenCalledWith('pnpm run fmt', { stdio: 'inherit' });
+  });
+
+  it('uses bumpOverride instead of commit-derived bump type', () => {
+    const config = makeConfig({
+      components: [
+        {
+          tagPrefix: 'arrays-v',
+          packageFiles: ['packages/arrays/package.json'],
+          changelogPaths: ['packages/arrays'],
+          paths: ['packages/arrays/**'],
+        },
+      ],
+    });
+
+    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
+      if (cmd === 'git' && args[0] === 'describe') {
+        return 'arrays-v1.0.0\n';
+      }
+      if (cmd === 'git' && args[0] === 'log') {
+        return 'fix: small patch\u0000abc123';
+      }
+      return '';
+    });
+    mockReadFileSync.mockReturnValue(JSON.stringify({ version: '1.0.0' }));
+
+    releasePrepareMono(config, { dryRun: false, bumpOverride: 'minor' });
+
+    // Should use the override (minor) rather than the commit-derived type (patch)
+    expect(mockWriteFileSync).toHaveBeenCalledWith(
+      'packages/arrays/package.json',
+      expect.stringContaining('"version": "1.1.0"'),
+      'utf8',
+    );
+
+    const cliffArgs = findCliffCallArgs();
+    expect(cliffArgs).toContain('--tag');
+    expect(cliffArgs).toContain('arrays-v1.1.0');
+  });
+
+  it('skips a component when commits exist but none are release-worthy', () => {
+    const config = makeConfig({
+      components: [
+        {
+          tagPrefix: 'arrays-v',
+          packageFiles: ['packages/arrays/package.json'],
+          changelogPaths: ['packages/arrays'],
+          paths: ['packages/arrays/**'],
+        },
+      ],
+    });
+
+    // Return a commit whose type (chore) is not in workTypes (only feat, fix)
+    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
+      if (cmd === 'git' && args[0] === 'describe') {
+        return 'arrays-v1.0.0\n';
+      }
+      if (cmd === 'git' && args[0] === 'log') {
+        return 'chore: update deps\u0000abc123';
+      }
+      return '';
+    });
+
+    releasePrepareMono(config, { dryRun: false });
+
+    expect(mockWriteFileSync).not.toHaveBeenCalled();
+    expect(countCliffCalls()).toBe(0);
   });
 
   it('does not run formatCommand when no components have commits', () => {
