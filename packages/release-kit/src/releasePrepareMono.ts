@@ -6,7 +6,7 @@ import { generateChangelog } from './generateChangelogs.ts';
 import { getCommitsSinceTarget } from './getCommitsSinceTarget.ts';
 import { parseCommitMessage } from './parseCommitMessage.ts';
 import type { ReleasePrepareOptions } from './releasePrepare.ts';
-import type { MonorepoReleaseConfig, ReleaseType } from './types.ts';
+import type { MonorepoReleaseConfig, ParsedCommit, ReleaseType } from './types.ts';
 
 /**
  * Orchestrates release preparation for a monorepo with multiple components.
@@ -53,7 +53,7 @@ export function releasePrepareMono(config: MonorepoReleaseConfig, options: Relea
     if (bumpOverride === undefined) {
       const parsedCommits = commits
         .map((c) => parseCommitMessage(c.message, c.hash, config.workTypes, config.workspaceAliases))
-        .filter((c): c is NonNullable<typeof c> => c !== undefined);
+        .filter((c): c is ParsedCommit => c !== undefined);
 
       console.info(`  Parsed ${parsedCommits.length} typed commits`);
       releaseType = determineBumpType(parsedCommits, config.workTypes);
@@ -97,9 +97,8 @@ export function releasePrepareMono(config: MonorepoReleaseConfig, options: Relea
     }
   }
 
-  if (anyComponentProcessed) {
-    console.info('\nMonorepo release preparation complete.');
-  } else {
-    console.info('\nNo components had release-worthy changes.');
-  }
+  const summary = anyComponentProcessed
+    ? 'Monorepo release preparation complete.'
+    : 'No components had release-worthy changes.';
+  console.info(`\n${summary}`);
 }

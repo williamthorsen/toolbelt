@@ -50,9 +50,7 @@ function parseLogOutput(logOutput: string): Commit[] {
       continue;
     }
 
-    const parts = trimmedLine.split(FIELD_SEPARATOR);
-    const message = parts[0];
-    const hash = parts[1];
+    const [message, hash] = trimmedLine.split(FIELD_SEPARATOR);
 
     if (message !== undefined && hash !== undefined) {
       commits.push({ message, hash });

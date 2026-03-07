@@ -20,18 +20,21 @@ function findLogCallArgs(): readonly unknown[] {
   throw new Error('No git log call found in mock history');
 }
 
+/** Configure the mock so that `git describe` returns the given tag and `git log` returns empty output. */
+function setupDescribeMock(tag: string): void {
+  mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
+    if (cmd === 'git' && args[0] === 'describe') return `${tag}\n`;
+    return '';
+  });
+}
+
 describe(getCommitsSinceTarget, () => {
   afterEach(() => {
     mockExecFileSync.mockReset();
   });
 
   it('does not append -- when called without paths', () => {
-    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
-      if (cmd === 'git' && args[0] === 'describe') {
-        return 'v1.0.0\n';
-      }
-      return '';
-    });
+    setupDescribeMock('v1.0.0');
 
     getCommitsSinceTarget('v');
 
@@ -39,12 +42,7 @@ describe(getCommitsSinceTarget, () => {
   });
 
   it('does not append -- when called with an empty paths array', () => {
-    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
-      if (cmd === 'git' && args[0] === 'describe') {
-        return 'v1.0.0\n';
-      }
-      return '';
-    });
+    setupDescribeMock('v1.0.0');
 
     getCommitsSinceTarget('v', []);
 
@@ -52,12 +50,7 @@ describe(getCommitsSinceTarget, () => {
   });
 
   it('appends -- and the path when called with a single path', () => {
-    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
-      if (cmd === 'git' && args[0] === 'describe') {
-        return 'arrays-v1.0.0\n';
-      }
-      return '';
-    });
+    setupDescribeMock('arrays-v1.0.0');
 
     getCommitsSinceTarget('arrays-v', ['packages/arrays/**']);
 
@@ -68,12 +61,7 @@ describe(getCommitsSinceTarget, () => {
   });
 
   it('appends all paths after -- when called with multiple paths', () => {
-    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
-      if (cmd === 'git' && args[0] === 'describe') {
-        return 'lib-v2.0.0\n';
-      }
-      return '';
-    });
+    setupDescribeMock('lib-v2.0.0');
 
     getCommitsSinceTarget('lib-v', ['packages/arrays/**', 'packages/strings/**']);
 

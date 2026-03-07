@@ -33,10 +33,8 @@ export function generateChangelog(
   const args = ['--config', cliffConfigPath, '--output', outputFile, '--tag', tag];
 
   // Append --include-path flags when path filtering is requested.
-  if (options?.includePaths !== undefined && options.includePaths.length > 0) {
-    for (const includePath of options.includePaths) {
-      args.push('--include-path', includePath);
-    }
+  for (const includePath of options?.includePaths ?? []) {
+    args.push('--include-path', includePath);
   }
 
   if (dryRun) {
@@ -55,11 +53,7 @@ export function generateChangelog(
 }
 
 /**
- * Generates changelogs using git-cliff for each configured changelog path.
- *
- * Invokes the `git-cliff` binary via `execFileSync` with an argument array,
- * avoiding shell interpretation of paths. The `git-cliff` tool and a
- * `cliff.toml` configuration file must be available in the environment.
+ * Generates changelogs for each configured changelog path by delegating to `generateChangelog`.
  *
  * @param config - The release configuration containing changelog paths and optional cliff config path.
  * @param tag - The git tag to generate the changelog up to (e.g., 'v1.2.3').
