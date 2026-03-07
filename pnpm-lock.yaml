@@ -107,11 +107,7 @@ importers:
 
   packages/objects: {}
 
-  packages/release-kit:
-    dependencies:
-      '@williamthorsen/toolbelt.objects':
-        specifier: workspace:*
-        version: link:../objects
+  packages/release-kit: {}
 
   packages/sets: {}
 

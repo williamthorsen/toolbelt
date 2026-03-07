@@ -1,5 +1,3 @@
-import { isKeyOf } from '@williamthorsen/toolbelt.objects/candidate';
-
 import type { ParsedCommit, ReleaseType, WorkTypeConfig } from './types.ts';
 
 /** Priority of release types, from highest to lowest. */
@@ -56,4 +54,9 @@ export function determineBumpType(
   }
 
   return result;
+}
+
+/** Returns true if the object has the specified key. Narrows the type. */
+function isKeyOf<T extends object>(key: PropertyKey, obj: T): key is keyof T {
+  return Object.hasOwn(obj, key);
 }

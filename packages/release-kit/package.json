@@ -25,9 +25,6 @@
     "publish:github": "pnpm publish",
     "ws": "node --import tsx ../../scripts/run-workspace-script.ts --int-test"
   },
-  "dependencies": {
-    "@williamthorsen/toolbelt.objects": "workspace:*"
-  },
   "engines": {
     "node": ">=18.17.0"
   },
