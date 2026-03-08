@@ -75,7 +75,7 @@ describe(releasePrepareMono, () => {
         return 'arrays-v1.0.0\n';
       }
       if (cmd === 'git' && args[0] === 'log') {
-        return 'feat: add utility\u0000abc123';
+        return 'feat: add utility\u001Fabc123';
       }
       return '';
     });
@@ -157,7 +157,7 @@ describe(releasePrepareMono, () => {
       if (cmd === 'git' && args[0] === 'log') {
         const hasArraysPath = args.includes('packages/arrays/**');
         if (hasArraysPath) {
-          return 'fix: fix array bug\u0000def456';
+          return 'fix: fix array bug\u001Fdef456';
         }
         return '';
       }
@@ -196,7 +196,7 @@ describe(releasePrepareMono, () => {
         return 'arrays-v1.0.0\n';
       }
       if (cmd === 'git' && args[0] === 'log') {
-        return 'feat: add feature\u0000abc123';
+        return 'feat: add feature\u001Fabc123';
       }
       return '';
     });
@@ -235,7 +235,7 @@ describe(releasePrepareMono, () => {
         if (matchArg?.includes('strings-v')) return 'strings-v1.0.0\n';
       }
       if (cmd === 'git' && args[0] === 'log') {
-        return 'feat: add feature\u0000abc123';
+        return 'feat: add feature\u001Fabc123';
       }
       return '';
     });
@@ -264,7 +264,7 @@ describe(releasePrepareMono, () => {
         return 'arrays-v1.0.0\n';
       }
       if (cmd === 'git' && args[0] === 'log') {
-        return 'fix: small patch\u0000abc123';
+        return 'fix: small patch\u001Fabc123';
       }
       return '';
     });
@@ -302,7 +302,7 @@ describe(releasePrepareMono, () => {
         return 'arrays-v1.0.0\n';
       }
       if (cmd === 'git' && args[0] === 'log') {
-        return 'chore: update deps\u0000abc123';
+        return 'chore: update deps\u001Fabc123';
       }
       return '';
     });

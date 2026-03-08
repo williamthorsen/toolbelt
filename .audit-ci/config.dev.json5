@@ -6,12 +6,6 @@
     // https://github.com/advisories/GHSA-5j98-mcp5-4vw2
     "GHSA-5j98-mcp5-4vw2",
 
-    // js-yaml
-    // prototype pollution in merge (transitive: @changesets/cli → @manypkg/get-packages → read-yaml-file → js-yaml)
-    // Patched in >=3.14.2; read-yaml-file allows ^3.13.0 but pnpm lockfile pins 3.14.1
-    // https://github.com/advisories/GHSA-mh29-5h37-fv8m
-    "GHSA-mh29-5h37-fv8m",
-
     // minimatch
     // ReDoS via repeated wildcards (transitive: eslint → @eslint/config-array → minimatch)
     // Blocked until ESLint 10, which moves to minimatch ^10.2.1

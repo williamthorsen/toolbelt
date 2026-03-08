@@ -2,8 +2,13 @@ import { execFileSync } from 'node:child_process';
 
 import type { Commit } from './types.ts';
 
-/** Null-byte separator that cannot appear in commit subject lines. */
-const FIELD_SEPARATOR = '\u0000';
+/**
+ * Unit separator (U+001F) used to delimit fields in `git log` output.
+ * Node.js v24+ rejects null bytes in child-process arguments, so we use
+ * this ASCII control character instead. It cannot appear in commit
+ * subject lines produced by git.
+ */
+const FIELD_SEPARATOR = '\u001F';
 
 /**
  * Checks whether an error is the expected "no matching tag" failure from `git describe`.
