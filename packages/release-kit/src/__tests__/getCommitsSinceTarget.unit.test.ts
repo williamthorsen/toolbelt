@@ -76,7 +76,7 @@ describe(getCommitsSinceTarget, () => {
       if (cmd === 'git' && args[0] === 'describe') {
         return 'v1.0.0\n';
       }
-      return 'feat: add feature\u0000abc123';
+      return 'feat: add feature\u001Fabc123';
     });
 
     const result = getCommitsSinceTarget('v');
@@ -91,7 +91,7 @@ describe(getCommitsSinceTarget, () => {
         const error = Object.assign(new Error('No tag found'), { status: 128 });
         throw error;
       }
-      return 'fix: patch\u0000def456';
+      return 'fix: patch\u001Fdef456';
     });
 
     const result = getCommitsSinceTarget('v');
