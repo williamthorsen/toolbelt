@@ -89,10 +89,15 @@ function main(): void {
     effectiveConfig = { ...config, components: filtered };
   }
 
-  releasePrepareMono(effectiveConfig, {
-    dryRun,
-    ...(bumpOverride === undefined ? {} : { bumpOverride }),
-  });
+  try {
+    releasePrepareMono(effectiveConfig, {
+      dryRun,
+      ...(bumpOverride === undefined ? {} : { bumpOverride }),
+    });
+  } catch (error: unknown) {
+    console.error('Error preparing release:', error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  }
 }
 
 // Check if this file is being run directly
