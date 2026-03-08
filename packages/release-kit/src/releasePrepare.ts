@@ -5,7 +5,7 @@ import { determineBumpType } from './determineBumpType.ts';
 import { generateChangelogs } from './generateChangelogs.ts';
 import { getCommitsSinceTarget } from './getCommitsSinceTarget.ts';
 import { parseCommitMessage } from './parseCommitMessage.ts';
-import type { ReleaseConfig, ReleaseType } from './types.ts';
+import type { ParsedCommit, ReleaseConfig, ReleaseType } from './types.ts';
 
 /** Options for the release preparation workflow. */
 export interface ReleasePrepareOptions {
@@ -41,7 +41,7 @@ export function releasePrepare(config: ReleaseConfig, options: ReleasePrepareOpt
   if (bumpOverride === undefined) {
     const parsedCommits = commits
       .map((c) => parseCommitMessage(c.message, c.hash, config.workTypes, config.workspaceAliases))
-      .filter((c): c is NonNullable<typeof c> => c !== undefined);
+      .filter((c): c is ParsedCommit => c !== undefined);
 
     console.info(`  Parsed ${parsedCommits.length} typed commits`);
     releaseType = determineBumpType(parsedCommits, config.workTypes);
