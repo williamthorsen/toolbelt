@@ -5,7 +5,7 @@ This document covers the release workflow for the toolbelt monorepo.
 ## Prerequisites
 
 - **git-cliff** — Installed automatically via `devDependencies`. Verify with `pnpm exec git-cliff --version`.
-- **GitHub PAT** — A `GH_PACKAGES_TOKEN` secret must be configured in the repository for CI dependency installation.
+- **GitHub token** — The workflow uses the built-in `GITHUB_TOKEN` (no additional secrets required).
 
 ## Releasing via GitHub Actions (recommended)
 
