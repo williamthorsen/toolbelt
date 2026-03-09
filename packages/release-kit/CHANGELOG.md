@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [release-kit-v0.2.1] - 2026-03-09
+
+### Tooling
+
+- Root|tooling: Make release-kit public
+
 ## [release-kit-v0.2.0] - 2026-03-09
 
 ### Documentation
