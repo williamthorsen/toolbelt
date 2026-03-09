@@ -7,7 +7,7 @@ This package extracts the shared release-preparation logic from the `skypilot-si
 ## Installation
 
 ```bash
-pnpm add @williamthorsen/release-kit
+pnpm add -D @williamthorsen/release-kit git-cliff
 ```
 
 Since this package is published to GitHub Packages, configure your `.npmrc`:
@@ -16,47 +16,19 @@ Since this package is published to GitHub Packages, configure your `.npmrc`:
 @williamthorsen:registry=https://npm.pkg.github.com
 ```
 
-## ReleaseConfig reference
+## Quick start
 
-| Field             | Type               | Required | Description                                                               |
-| ----------------- | ------------------ | -------- | ------------------------------------------------------------------------- |
-| `tagPrefix`       | `string`           | Yes      | Git tag prefix used to identify version tags (e.g., `'v'`).               |
-| `packageFiles`    | `string[]`         | Yes      | Paths to `package.json` files to bump.                                    |
-| `changelogPaths`  | `string[]`         | Yes      | Paths to directories in which to generate changelogs.                     |
-| `workTypes`       | `WorkTypeConfig[]` | Yes      | Ordered list of work type configurations for commit categorization.       |
-| `formatCommand`   | `string`           | No       | Shell command to run after changelog generation (e.g., `'pnpm run fmt'`). |
-| `cliffConfigPath` | `string`           | No       | Path to the `cliff.toml` file. Defaults to `'cliff.toml'`.                |
+1. Install `@williamthorsen/release-kit` and `git-cliff` as dev dependencies
+2. Create `scripts/release-prepare.ts` and `scripts/release.config.ts` (see examples below)
+3. Add `release:prepare` scripts to `package.json`
+4. Copy `cliff.toml.template` to your repo root as `cliff.toml`
+5. Add the GitHub Actions release workflow
 
-## Usage
+## Configuration
 
-### Minimal consuming-repo wrapper
+### Single-package repo
 
-Create a `scripts/release-prepare.ts` in your repo:
-
-```typescript
-import { releasePrepare } from '@williamthorsen/release-kit';
-import type { ReleaseType } from '@williamthorsen/release-kit';
-import { config } from './release.config.ts';
-
-function parseArgs(): { dryRun: boolean; bumpOverride?: ReleaseType } {
-  const args = process.argv.slice(2);
-  return {
-    dryRun: args.includes('--dry-run'),
-    bumpOverride: args.find((a) => ['major', 'minor', 'patch'].includes(a)) as ReleaseType | undefined,
-  };
-}
-
-const { dryRun, bumpOverride } = parseArgs();
-
-if (!dryRun && !process.env.CI) {
-  console.error('Error: must be run in CI. Use --dry-run for local preview.');
-  process.exit(1);
-}
-
-releasePrepare(config, { dryRun, bumpOverride });
-```
-
-### release.config.ts pattern
+Create `scripts/release.config.ts`:
 
 ```typescript
 import { DEFAULT_WORK_TYPES } from '@williamthorsen/release-kit';
@@ -67,70 +39,154 @@ export const config: ReleaseConfig = {
   packageFiles: ['package.json'],
   changelogPaths: ['.'],
   workTypes: [...DEFAULT_WORK_TYPES],
-  formatCommand: 'pnpm run fmt', // optional
-  cliffConfigPath: 'cliff.toml', // optional, this is the default
+  formatCommand: 'pnpm run fmt',
 };
 ```
 
-## Migration from skypilot-site
+### Monorepo
 
-1. Add `@williamthorsen/release-kit` as a dependency.
-2. Delete the following files from `scripts/lib/`:
-   - `types.ts`
-   - `defaults.ts`
-   - `bumpVersion.ts`
-   - `parseCommitMessage.ts`
-   - `determineBumpType.ts`
-   - `getCommitsSinceTarget.ts`
-   - `bumpAllVersions.ts`
-   - `generateChangelogs.ts`
-   - `utils.ts` (the `isKeyOf` helper)
-3. Delete test files from `scripts/lib/__tests__/`:
-   - `bumpVersion.test.ts`
-   - `parseCommitMessage.test.ts`
-   - `determineBumpType.test.ts`
-4. Replace `scripts/release-prepare.ts` with the minimal wrapper pattern shown above.
-5. Create `scripts/release.config.ts` with your project-specific configuration.
-6. Copy `cliff.toml.template` from this package to your repo root as `cliff.toml` (or keep your existing `cliff.toml`).
+Create `scripts/release.config.ts`:
 
-## Migration from AFG
+```typescript
+import { DEFAULT_WORK_TYPES } from '@williamthorsen/release-kit';
+import type { MonorepoReleaseConfig } from '@williamthorsen/release-kit';
 
-1. Add `@williamthorsen/release-kit` as a dependency.
-2. Delete the following files from `scripts/`:
-   - `release-prepare.ts` (the full implementation)
-   - Any local type/utility files used by the release script
-3. Replace with the minimal wrapper pattern shown above.
-4. In your `release.config.ts`, set `formatCommand: 'pnpm run fmt'` to replicate the AFG post-changelog formatting step.
-5. Set `cliffConfigPath` if your `cliff.toml` is not at the repo root.
-6. Copy `cliff.toml.template` from this package to your repo root as `cliff.toml`, or keep your existing configuration.
+function component(dir: string) {
+  return {
+    tagPrefix: `${dir}-v`,
+    packageFiles: [`packages/${dir}/package.json`],
+    changelogPaths: [`packages/${dir}`],
+    paths: [`packages/${dir}/**`],
+  };
+}
 
-## External dependencies
-
-This package shells out to two external tools:
-
-- **`git`** -- must be available on `PATH`. Used to find tags and retrieve commit history.
-- **`git-cliff`** -- must be available on `PATH`. Used to generate changelogs. Install via `cargo install git-cliff` or your package manager.
-
-### Using cliff.toml.template
-
-The package includes a `cliff.toml.template` file with a generic git-cliff configuration that:
-
-- Strips issue-ticket prefixes matching `^[A-Z]+-\d+\s+` (e.g., `TOOL-123 `, `AFG-456 `)
-- Handles both `type: description` and `workspace|type: description` commit formats
-- Groups commits by work type into changelog sections
-
-To use it:
-
-```bash
-cp node_modules/@williamthorsen/release-kit/cliff.toml.template cliff.toml
+export const config: MonorepoReleaseConfig = {
+  components: [component('my-lib'), component('my-cli')],
+  workTypes: [...DEFAULT_WORK_TYPES],
+  formatCommand: 'pnpm run fmt',
+};
 ```
 
-Then customize as needed for your project.
+### ReleaseConfig reference
+
+| Field             | Type               | Required | Description                                                        |
+| ----------------- | ------------------ | -------- | ------------------------------------------------------------------ |
+| `tagPrefix`       | `string`           | Yes      | Git tag prefix for version tags (e.g., `'v'`)                      |
+| `packageFiles`    | `string[]`         | Yes      | Paths to `package.json` files to bump                              |
+| `changelogPaths`  | `string[]`         | Yes      | Directories in which to generate changelogs                        |
+| `workTypes`       | `WorkTypeConfig[]` | Yes      | Ordered list of work type configurations for commit categorization |
+| `formatCommand`   | `string`           | No       | Shell command to run after changelog generation                    |
+| `cliffConfigPath` | `string`           | No       | Path to `cliff.toml` (defaults to `'cliff.toml'`)                  |
+
+### MonorepoReleaseConfig reference
+
+| Field           | Type                | Required | Description                                           |
+| --------------- | ------------------- | -------- | ----------------------------------------------------- |
+| `components`    | `ComponentConfig[]` | Yes      | Per-component config (tagPrefix, packageFiles, paths) |
+| `workTypes`     | `WorkTypeConfig[]`  | Yes      | Shared work type configurations                       |
+| `formatCommand` | `string`            | No       | Shell command to run after changelog generation       |
+
+## Release script
+
+Create `scripts/release-prepare.ts`:
+
+### Single-package version
+
+```typescript
+import { releasePrepare } from '@williamthorsen/release-kit';
+import type { ReleaseType } from '@williamthorsen/release-kit';
+import { config } from './release.config.ts';
+
+const VALID_BUMP_TYPES: readonly string[] = ['major', 'minor', 'patch'];
+
+function parseArgs(): { dryRun: boolean; bumpOverride?: ReleaseType } {
+  const args = process.argv.slice(2);
+  let dryRun = false;
+  let bumpOverride: ReleaseType | undefined;
+
+  for (const arg of args) {
+    if (arg === '--dry-run') dryRun = true;
+    else if (arg.startsWith('--bump=')) {
+      const value = arg.slice('--bump='.length);
+      if (!VALID_BUMP_TYPES.includes(value)) {
+        console.error(`Invalid bump type "${value}". Must be: ${VALID_BUMP_TYPES.join(', ')}`);
+        process.exit(1);
+      }
+      bumpOverride = value as ReleaseType;
+    }
+  }
+
+  return { dryRun, bumpOverride };
+}
+
+const { dryRun, bumpOverride } = parseArgs();
+releasePrepare(config, { dryRun, ...(bumpOverride ? { bumpOverride } : {}) });
+```
+
+### Monorepo version
+
+```typescript
+import { releasePrepareMono } from '@williamthorsen/release-kit';
+import type { ReleaseType } from '@williamthorsen/release-kit';
+import { config } from './release.config.ts';
+
+const VALID_BUMP_TYPES: readonly string[] = ['major', 'minor', 'patch'];
+
+function parseArgs(): { dryRun: boolean; bumpOverride?: ReleaseType; only?: string[] } {
+  const args = process.argv.slice(2);
+  let dryRun = false;
+  let bumpOverride: ReleaseType | undefined;
+  let only: string[] | undefined;
+
+  for (const arg of args) {
+    if (arg === '--dry-run') dryRun = true;
+    else if (arg.startsWith('--bump=')) {
+      const value = arg.slice('--bump='.length);
+      if (!VALID_BUMP_TYPES.includes(value)) {
+        console.error(`Invalid bump type "${value}". Must be: ${VALID_BUMP_TYPES.join(', ')}`);
+        process.exit(1);
+      }
+      bumpOverride = value as ReleaseType;
+    } else if (arg.startsWith('--only=')) {
+      only = arg.slice('--only='.length).split(',');
+    }
+  }
+
+  return { dryRun, bumpOverride, only };
+}
+
+const { dryRun, bumpOverride, only } = parseArgs();
+
+let effectiveConfig = config;
+if (only) {
+  const filtered = config.components.filter((c) => {
+    const name = c.tagPrefix.replace(/-v$/, '');
+    return only.includes(name);
+  });
+  effectiveConfig = { ...config, components: filtered };
+}
+
+releasePrepareMono(effectiveConfig, { dryRun, ...(bumpOverride ? { bumpOverride } : {}) });
+```
+
+### package.json scripts
+
+```json
+{
+  "scripts": {
+    "release:prepare": "tsx scripts/release-prepare.ts",
+    "release:prepare:dry": "tsx scripts/release-prepare.ts --dry-run"
+  }
+}
+```
 
 ## GitHub Actions workflow
 
+### Single-package repo
+
 ```yaml
-name: Release prepare
+# .github/workflows/release.yaml
+name: Release
 
 on:
   workflow_dispatch:
@@ -145,40 +201,195 @@ on:
           - minor
           - major
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Full history needed for git log and git-cliff
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: pnpm
+          node-version: '24'
+          cache: 'pnpm'
 
-      - name: Install git-cliff
-        run: cargo install git-cliff
-
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install
 
       - name: Run release preparation
-        env:
-          CI: true
+        id: prepare
         run: |
           ARGS=""
-          if [ -n "${{ github.event.inputs.bump }}" ]; then
-            ARGS="${{ github.event.inputs.bump }}"
+          if [ -n "${{ inputs.bump }}" ]; then
+            ARGS="--bump=${{ inputs.bump }}"
           fi
-          pnpm tsx scripts/release-prepare.ts $ARGS
+          pnpm run release:prepare $ARGS
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Create pull request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          title: 'chore: release preparation'
-          branch: release/prepare
-          commit-message: 'chore: bump versions and update changelogs'
+      - name: Check for changes
+        id: check
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No release-worthy changes found."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit, tag, and push
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "release: v${{ steps.prepare.outputs.version }}"
+          git tag "v${{ steps.prepare.outputs.version }}"
+          git push origin main "v${{ steps.prepare.outputs.version }}"
 ```
+
+### Monorepo
+
+```yaml
+# .github/workflows/release.yaml
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Components to release (comma-separated, leave empty for all)'
+        required: false
+        type: string
+      bump:
+        description: 'Override bump type (leave empty to auto-detect)'
+        required: false
+        type: choice
+        options:
+          - ''
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - run: pnpm install
+
+      - name: Run release preparation
+        run: |
+          ARGS=""
+          if [ -n "${{ inputs.only }}" ]; then
+            ARGS="$ARGS --only=${{ inputs.only }}"
+          fi
+          if [ -n "${{ inputs.bump }}" ]; then
+            ARGS="$ARGS --bump=${{ inputs.bump }}"
+          fi
+          pnpm run release:prepare $ARGS
+
+      - name: Check for changes
+        id: check
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No release-worthy changes found."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Determine release tags
+        if: steps.check.outputs.changed == 'true'
+        id: tags
+        run: |
+          TAGS=""
+          for pkg in $(git diff --name-only -- 'packages/*/package.json'); do
+            DIR=$(echo "$pkg" | cut -d/ -f2)
+            VERSION=$(node -p "require('./$pkg').version")
+            TAGS="$TAGS ${DIR}-v${VERSION}"
+          done
+          echo "tags=$TAGS" >> "$GITHUB_OUTPUT"
+          echo "Releasing:$TAGS"
+
+      - name: Commit, tag, and push
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "release: ${{ steps.tags.outputs.tags }}"
+          for TAG in ${{ steps.tags.outputs.tags }}; do
+            git tag "$TAG"
+          done
+          git push origin main ${{ steps.tags.outputs.tags }}
+```
+
+## Triggering a release
+
+```sh
+# Single-package repo
+gh workflow run release.yaml
+gh workflow run release.yaml -f bump=minor
+
+# Monorepo: all components
+gh workflow run release.yaml
+
+# Monorepo: specific component(s)
+gh workflow run release.yaml -f only=my-lib
+gh workflow run release.yaml -f only=my-lib,my-cli -f bump=minor
+```
+
+## cliff.toml setup
+
+The package includes a `cliff.toml.template` with a generic git-cliff configuration that:
+
+- Strips issue-ticket prefixes matching `^[A-Z]+-\d+\s+` (e.g., `TOOL-123 `, `AFG-456 `)
+- Handles both `type: description` and `workspace|type: description` commit formats
+- Groups commits by work type into changelog sections
+
+Copy it to your repo root:
+
+```bash
+cp node_modules/@williamthorsen/release-kit/cliff.toml.template cliff.toml
+```
+
+Then customize as needed for your project.
+
+## External dependencies
+
+This package shells out to two external tools:
+
+- **`git`** — must be available on `PATH`. Used to find tags and retrieve commit history.
+- **`git-cliff`** — must be available on `PATH`. Add `git-cliff` as a dev dependency to make it available in CI.
+
+## Migration from changesets
+
+1. Add `@williamthorsen/release-kit` and `git-cliff` as dev dependencies.
+2. Remove `@changesets/cli` from dev dependencies.
+3. Delete the `.changeset/` directory.
+4. Create `scripts/release-prepare.ts` and `scripts/release.config.ts` (see examples above).
+5. Replace `changeset:*` scripts in `package.json` with `release:prepare` scripts.
+6. Copy `cliff.toml.template` to your repo root as `cliff.toml`.
+7. Add the GitHub Actions release workflow.
+8. Create an initial version tag for each package (e.g., `git tag v1.0.0` or `git tag my-lib-v1.0.0`).
