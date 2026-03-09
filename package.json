@@ -28,7 +28,6 @@
     "clean": "pnpm --recursive run ws clean",
     "fmt": "prettier --list-different --write .",
     "fmt:check": "prettier --check .",
-    "preinstall": "npx only-allow pnpm",
     "postinstall": "tsx scripts/report-overrides.ts",
     "lint": "pnpm run root:lint && pnpm --recursive run ws lint",
     "lint:check": "pnpm run root:lint:check && pnpm --recursive run ws lint:check",
@@ -73,5 +72,5 @@
     "vite-tsconfig-paths": "6.1.1",
     "vitest": "4.0.18"
   },
-  "packageManager": "pnpm@10.31.0"
+  "packageManager": "pnpm@10.30.3"
 }
