@@ -23,6 +23,8 @@
   "scripts": {
     "prepare": "pnpm run ws build",
     "publish:github": "pnpm publish",
+    "release:prepare": "tsx ../../scripts/release-prepare.ts --only=release-kit",
+    "release:prepare:dry": "tsx ../../scripts/release-prepare.ts --only=release-kit --dry-run",
     "ws": "node --import tsx ../../scripts/run-workspace-script.ts --int-test"
   },
   "engines": {
