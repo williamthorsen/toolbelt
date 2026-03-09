@@ -5,18 +5,48 @@ This document covers the release workflow for the toolbelt monorepo.
 ## Prerequisites
 
 - **git-cliff** — Installed automatically via `devDependencies`. Verify with `pnpm exec git-cliff --version`.
-- **GitHub PAT** — Required for publishing to GitHub Package Registry. Configure in `~/.npmrc`:
-  ```
-  //npm.pkg.github.com/:_authToken=ghp_YOUR_TOKEN
-  ```
+- **GitHub PAT** — A `GH_PACKAGES_TOKEN` secret must be configured in the repository for CI dependency installation.
 
-## Preparing a release
+## Releasing via GitHub Actions (recommended)
 
-The release-preparation script detects commits since the last release tag, determines the bump type, updates `package.json` versions, and generates changelogs.
+The release workflow runs on `main` and handles everything: version bump, changelog generation, commit, tag, and push.
 
-### 1. Dry run
+### Trigger a release
 
-Always start with a dry run to preview changes:
+```sh
+# Release all components with changes
+gh workflow run release.yaml
+
+# Release a specific component
+gh workflow run release.yaml -f only=release-kit
+
+# Release with a forced bump type
+gh workflow run release.yaml -f only=release-kit -f bump=minor
+
+# Release multiple specific components
+gh workflow run release.yaml -f only=arrays,strings
+```
+
+Or use the GitHub UI: Actions → Release → Run workflow.
+
+### What the workflow does
+
+1. Checks out `main` with full history
+2. Runs `release:prepare` (detects commits, bumps versions, generates changelogs)
+3. Commits the changes
+4. Creates a tag per component (e.g., `release-kit-v0.2.0`)
+5. Pushes the commit and tags to `main`
+
+### Workflow inputs
+
+| Input  | Description                                                            |
+| ------ | ---------------------------------------------------------------------- |
+| `only` | Components to release (comma-separated, empty = all)                   |
+| `bump` | Override bump type: `patch`, `minor`, or `major` (empty = auto-detect) |
+
+## Local dry run
+
+Preview what a release would do before triggering the workflow:
 
 ```sh
 # All components
@@ -24,7 +54,6 @@ pnpm run release:prepare:dry
 
 # Specific component(s)
 pnpm run release:prepare:dry -- --only=release-kit
-pnpm run release:prepare:dry -- --only=arrays,strings
 
 # With a forced bump type
 pnpm run release:prepare:dry -- --only=release-kit --bump=minor
@@ -37,21 +66,7 @@ cd packages/release-kit
 pnpm run release:prepare:dry
 ```
 
-### 2. Prepare the release
-
-Once the dry run looks correct, run without `--dry-run`:
-
-```sh
-pnpm run release:prepare -- --only=release-kit
-```
-
-This modifies files in place:
-
-- Bumps the version in `package.json`
-- Generates or updates `CHANGELOG.md`
-- Runs the formatter (`pnpm run fmt`)
-
-## CLI flags
+## CLI flags (release:prepare)
 
 | Flag                         | Description                                         |
 | ---------------------------- | --------------------------------------------------- |
@@ -61,34 +76,3 @@ This modifies files in place:
 | `--help`                     | Show usage information                              |
 
 Component names match the package directory name (e.g., `arrays`, `release-kit`, `strings`).
-
-## Publishing to GitHub Package Registry
-
-After preparing the release, publish from the package directory:
-
-```sh
-cd packages/release-kit
-pnpm publish
-```
-
-Each package's `publishConfig` targets `https://npm.pkg.github.com`.
-
-## Post-publish steps
-
-1. **Commit** the version bump and changelog:
-
-   ```sh
-   git add packages/release-kit/package.json packages/release-kit/CHANGELOG.md
-   git commit -m "release-kit|release: v0.2.0"
-   ```
-
-2. **Tag** the release:
-
-   ```sh
-   git tag release-kit-v0.2.0
-   ```
-
-3. **Push** the commit and tag:
-   ```sh
-   git push && git push --tags
-   ```
