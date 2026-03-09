@@ -18,6 +18,9 @@ on:
           - minor
           - major
 
+permissions:
+  contents: write
+
 jobs:
   release:
     uses: williamthorsen/.github/.github/workflows/release-pnpm.yaml@v1
