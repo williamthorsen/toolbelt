@@ -10,12 +10,6 @@ This package extracts the shared release-preparation logic from the `skypilot-si
 pnpm add -D @williamthorsen/release-kit git-cliff
 ```
 
-Since this package is published to GitHub Packages, configure your `.npmrc`:
-
-```ini
-@williamthorsen:registry=https://npm.pkg.github.com
-```
-
 ## Quick start
 
 1. Install `@williamthorsen/release-kit` and `git-cliff` as dev dependencies
