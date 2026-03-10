@@ -61,4 +61,10 @@ export default [
       'vitest/prefer-lowercase-title': 'off', // 🟠⚫
     },
   }),
+  {
+    files: ['**/scripts/**/*'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
 ];

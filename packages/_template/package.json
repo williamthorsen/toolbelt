@@ -2,7 +2,7 @@
   "name": "workspace-template",
   "version": "3.0.0",
   "private": true,
-  "description": "API",
+  "description": "Tempate for new workspace",
   "keywords": [],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/template#readme",
   "bugs": {
@@ -34,9 +34,5 @@
   },
   "engines": {
     "node": ">=24.0.0"
-  },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
   }
 }
