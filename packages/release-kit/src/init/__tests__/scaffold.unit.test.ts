@@ -11,18 +11,18 @@ const mockPrintSkip = vi.hoisted(() => vi.fn());
 const mockPrintSuccess = vi.hoisted(() => vi.fn());
 /* eslint-enable vitest/require-mock-type-parameters */
 
-vi.mock('node:fs', () => ({
+vi.mock(import('node:fs'), () => ({
   existsSync: mockExistsSync,
   mkdirSync: mockMkdirSync,
   readFileSync: mockReadFileSync,
   writeFileSync: mockWriteFileSync,
 }));
 
-vi.mock('node:url', () => ({
+vi.mock(import('node:url'), () => ({
   fileURLToPath: mockFileURLToPath,
 }));
 
-vi.mock('../prompt.ts', () => ({
+vi.mock(import('../prompt.ts'), () => ({
   printError: mockPrintError,
   printSkip: mockPrintSkip,
   printSuccess: mockPrintSuccess,
@@ -52,21 +52,9 @@ describe('scaffold', () => {
 
       expect(mockMkdirSync).toHaveBeenCalledWith('.github/scripts', { recursive: true });
       expect(mockMkdirSync).toHaveBeenCalledWith('.github/workflows', { recursive: true });
-      expect(mockWriteFileSync).toHaveBeenCalledWith(
-        '.github/scripts/release-prepare.ts',
-        expect.any(String),
-        'utf8',
-      );
-      expect(mockWriteFileSync).toHaveBeenCalledWith(
-        '.github/scripts/release.config.ts',
-        expect.any(String),
-        'utf8',
-      );
-      expect(mockWriteFileSync).toHaveBeenCalledWith(
-        '.github/workflows/release.yaml',
-        expect.any(String),
-        'utf8',
-      );
+      expect(mockWriteFileSync).toHaveBeenCalledWith('.github/scripts/release-prepare.ts', expect.any(String), 'utf8');
+      expect(mockWriteFileSync).toHaveBeenCalledWith('.github/scripts/release.config.ts', expect.any(String), 'utf8');
+      expect(mockWriteFileSync).toHaveBeenCalledWith('.github/workflows/release.yaml', expect.any(String), 'utf8');
     });
 
     it('skips files that already exist when overwrite is false', () => {
@@ -98,21 +86,9 @@ describe('scaffold', () => {
       scaffoldFiles({ repoType: 'single-package', dryRun: false, overwrite: true });
 
       // Should write files even though they exist
-      expect(mockWriteFileSync).toHaveBeenCalledWith(
-        '.github/scripts/release-prepare.ts',
-        expect.any(String),
-        'utf8',
-      );
-      expect(mockWriteFileSync).toHaveBeenCalledWith(
-        '.github/scripts/release.config.ts',
-        expect.any(String),
-        'utf8',
-      );
-      expect(mockWriteFileSync).toHaveBeenCalledWith(
-        '.github/workflows/release.yaml',
-        expect.any(String),
-        'utf8',
-      );
+      expect(mockWriteFileSync).toHaveBeenCalledWith('.github/scripts/release-prepare.ts', expect.any(String), 'utf8');
+      expect(mockWriteFileSync).toHaveBeenCalledWith('.github/scripts/release.config.ts', expect.any(String), 'utf8');
+      expect(mockWriteFileSync).toHaveBeenCalledWith('.github/workflows/release.yaml', expect.any(String), 'utf8');
       expect(mockPrintSkip).not.toHaveBeenCalled();
     });
 
@@ -166,9 +142,7 @@ describe('scaffold', () => {
       scaffoldFiles({ repoType: 'single-package', dryRun: false, overwrite: false });
 
       // No writeFileSync call for package.json
-      const pkgWriteCall = mockWriteFileSync.mock.calls.find(
-        (call: unknown[]) => call[0] === 'package.json',
-      );
+      const pkgWriteCall = mockWriteFileSync.mock.calls.find((call: unknown[]) => call[0] === 'package.json');
       expect(pkgWriteCall).toBeUndefined();
       expect(mockPrintSuccess).toHaveBeenCalledWith('package.json scripts already configured');
     });
@@ -193,7 +167,21 @@ describe('scaffold', () => {
       expect(mockPrintError).toHaveBeenCalledWith('Failed to parse package.json');
     });
 
-    it('prints an error when mkdirSync or writeFileSync fails', () => {
+    it('prints an error when package.json cannot be written', () => {
+      mockExistsSync.mockReturnValue(false);
+      mockReadFileSync.mockReturnValue(JSON.stringify({ name: 'test' }));
+      mockWriteFileSync.mockImplementation((path: string) => {
+        if (path === 'package.json') {
+          throw new Error('EACCES: permission denied');
+        }
+      });
+
+      scaffoldFiles({ repoType: 'single-package', dryRun: false, overwrite: false });
+
+      expect(mockPrintError).toHaveBeenCalledWith(expect.stringContaining('Failed to write package.json'));
+    });
+
+    it('prints an error when mkdirSync fails for scaffold files', () => {
       mockExistsSync.mockReturnValue(false);
       mockReadFileSync.mockReturnValue(JSON.stringify({ name: 'test' }));
       mockMkdirSync.mockImplementation(() => {
@@ -202,9 +190,7 @@ describe('scaffold', () => {
 
       scaffoldFiles({ repoType: 'single-package', dryRun: false, overwrite: false });
 
-      expect(mockPrintError).toHaveBeenCalledWith(
-        expect.stringContaining('Failed to write'),
-      );
+      expect(mockPrintError).toHaveBeenCalledWith(expect.stringContaining('Failed to create directory for'));
     });
   });
 

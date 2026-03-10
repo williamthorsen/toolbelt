@@ -18,6 +18,18 @@ interface FileToWrite {
   content: string;
 }
 
+/** Attempt to write a file, printing a user-friendly error on failure. Returns true on success. */
+function tryWriteFile(filePath: string, content: string): boolean {
+  try {
+    writeFileSync(filePath, content, 'utf8');
+    return true;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    printError(`Failed to write ${filePath}: ${message}`);
+    return false;
+  }
+}
+
 /** Write a file, creating parent directories as needed. Skips if the file already exists and overwrite is false. */
 function writeIfAbsent(filePath: string, content: string, dryRun: boolean, overwrite: boolean): void {
   if (existsSync(filePath) && !overwrite) {
@@ -32,13 +44,15 @@ function writeIfAbsent(filePath: string, content: string, dryRun: boolean, overw
 
   try {
     mkdirSync(dirname(filePath), { recursive: true });
-    writeFileSync(filePath, content, 'utf8');
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
-    printError(`Failed to write ${filePath}: ${message}`);
+    printError(`Failed to create directory for ${filePath}: ${message}`);
     return;
   }
-  printSuccess(`Created ${filePath}`);
+
+  if (tryWriteFile(filePath, content)) {
+    printSuccess(`Created ${filePath}`);
+  }
 }
 
 /** Copy the bundled cliff.toml.template to cliff.toml in the target repo. */
@@ -79,22 +93,30 @@ export function scaffoldFiles({ repoType, dryRun, overwrite }: ScaffoldOptions):
   updatePackageJsonScripts(dryRun);
 }
 
-/** Add release:prepare and release:prepare:dry scripts to package.json if absent. */
-function updatePackageJsonScripts(dryRun: boolean): void {
-  const pkgPath = 'package.json';
-
+/** Read and parse package.json, returning undefined on failure. */
+function readPackageJson(pkgPath: string): Record<string, unknown> | undefined {
   let raw: string;
   try {
     raw = readFileSync(pkgPath, 'utf8');
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     printError(`Failed to read ${pkgPath}: ${message}`);
-    return;
+    return undefined;
   }
 
   const pkg = parseJsonRecord(raw);
   if (pkg === undefined) {
     printError('Failed to parse package.json');
+  }
+  return pkg;
+}
+
+/** Add release:prepare and release:prepare:dry scripts to package.json if absent. */
+function updatePackageJsonScripts(dryRun: boolean): void {
+  const pkgPath = 'package.json';
+
+  const pkg = readPackageJson(pkgPath);
+  if (pkg === undefined) {
     return;
   }
 
@@ -127,6 +149,8 @@ function updatePackageJsonScripts(dryRun: boolean): void {
   }
 
   pkg.scripts = scripts;
-  writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`, 'utf8');
-  printSuccess('Added release:prepare scripts to package.json');
+
+  if (tryWriteFile(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`)) {
+    printSuccess('Added release:prepare scripts to package.json');
+  }
 }
