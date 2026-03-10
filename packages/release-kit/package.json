@@ -20,6 +20,9 @@
       "import": "./dist/esm/index.js"
     }
   },
+  "bin": {
+    "release-kit": "./dist/esm/bin/release-kit.js"
+  },
   "files": [
     "dist/*",
     "cliff.toml.template",
@@ -28,8 +31,8 @@
   "scripts": {
     "prepare": "pnpm run ws build",
     "publish:github": "pnpm publish",
-    "release:prepare": "tsx ../../scripts/release-prepare.ts --only=release-kit",
-    "release:prepare:dry": "tsx ../../scripts/release-prepare.ts --only=release-kit --dry-run",
+    "release:prepare": "tsx ../../.github/scripts/release-prepare.ts --only=release-kit",
+    "release:prepare:dry": "tsx ../../.github/scripts/release-prepare.ts --only=release-kit --dry-run",
     "ws": "node --import tsx ../../scripts/run-workspace-script.ts --int-test"
   },
   "engines": {
