@@ -1,124 +1,95 @@
-# @williamthorsen/toolbelt.arrays changelog
+# Changelog
 
-## 3.1.0
+All notable changes to this project will be documented in this file.
+
+## [strings-v3.1.1] - 2026-03-10
+
+### Dependencies
+
+- Root|deps: Upgrade all deps to latest version
+- #6 deps: Adapt to dependency upgrades and bump Node engine to >=24 (#8)
+
+Upgrades all dependencies to their latest versions, bumps the Node.js engine requirement from >=18.17.0 to >=24.0.0 across all 13 workspace packages, and adapts source code to satisfy new lint rules introduced by the upgraded ESLint plugins. Also upgrades `@williamthorsen/eslint-config-typescript` from 5.12.1 to 5.12.2 to fix ESM import issues in the compiled output.
+
+Commit details:
+
+- root|deps: Upgrade all deps to latest version
+
+- root|refactor: Fix lint
+
+- root|deps: Upgrade all deps to latest minor version
+
+- root|deps: Allow unpatchable vulns in dev deps
+
+- root|refactor: Adapt to dependency upgrades and bump Node engine to >=24
+
+* Upgrade eslint-config-typescript to 5.12.2 (fixes ESM import issues, removes need for pnpm patch)
+* Bump engines.node from >=18.17.0 to >=24.0.0 across all packages
+* Update CI to Node 24.14.0 and pnpm 10.30.3
+* Replace .sort() with .toSorted() to satisfy unicorn/no-array-sort
+* Fix lint errors: remove useless default assignments, redundant type constituents, deprecated re-exports, and empty array args to Set constructor
+
+- datetime|tests: Fix locale mismatch in Timestamp test
+
+Pass the same 'en-US' locale to both the expected-value computation and
+the method under test. Previously the test used the system default locale
+for the expected value but explicit 'en-US' for the actual call, which
+diverged under Node 24's updated Intl formatting.
+
+- root|refactor: Replace toThrow with toThrowError across all tests
+
+The vitest/no-alias-methods rule in strict-lint requires the canonical
+toThrowError() name instead of the toThrow() alias.
+
+- root|refactor: Fix remaining strict-lint errors
+
+* Use import() in vi.mock for vitest/prefer-import-in-mock
+* Replace expect(typeof x).toBe() with expectTypeOf for vitest/prefer-expect-type-of
+* Use String.raw for regex escapes for unicorn/prefer-string-raw
+
+- root|tooling: Use ws runner to fix recursive build command
+
+The build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.
 
 ### Features
 
-- Added `safeTrim` and `toSortableName`
+- Strings|feat: Can create a sortable string from a name or title
 
-## 3.0.8
+Added `toSortableName`
 
-### Dependencies
+- Strings|feat: Can trim strings and ignore other values
 
-- Updated internal dependencies:
-  - @williamthorsen/toolbelt.numbers@4.3.0
-  - @williamthorsen/toolbelt.arrays@3.3.1
-
-## 3.0.7
-
-### Dependencies
-
-- Updated internal dependencies;
-  - @williamthorsen/toolbelt.arrays@3.3.0
-
-## 3.0.6
-
-### Dependencies
-
-- Updated internal dependencies:
-  - @williamthorsen/toolbelt.arrays@3.2.0
-
-## 3.0.5
-
-### Dependencies
-
-- Updated internal dependencies:
-  - @williamthorsen/toolbelt.arrays@3.1.0
-
-## 3.0.4
-
-### Dependencies
-
-- Updated internal dependencies:
-  - @williamthorsen/toolbelt.numbers@4.2.0
-  - @williamthorsen/toolbelt.arrays@3.0.4
-
-## 3.0.3
-
-### Dependencies
-
-- Updated internal dependencies:
-  - @williamthorsen/toolbelt.numbers@4.1.0
-  - @williamthorsen/toolbelt.arrays@3.0.3
-
-## 3.0.2
-
-### Dependencies
-
-- Updated internal dependencies
-  - @williamthorsen/toolbelt.arrays@3.0.2
-
-## 3.0.1
+Added `safeTrim` to toolbelt.strings/proposed.
 
 ### Tooling
 
-- Renamed `publish` script to avoid recursion
+- \*|tooling: Change package registry from github to npmjs
 
-## 3.0.0
+## [3.0.1] - 2025-05-20
 
-### Breaking changes
+### Tooling
 
-- Migrated to staged distribution of library functions.
-  For example, some functions have been moved to `/candidate` or `/draft`.
+- \*|tooling: Enable incremental type generation
+- \*|tooling: Rename publish script to avoid recursion
+
+## [3.0.0] - 2025-05-16
 
 ### Features
 
-#### Stage 2: Draft
+- Strings|feat: Add string functions
+- Strings|feat: Add pluralize functions
 
-- Added:
-  - `concatenate`
-  - `enclose`
-  - `pickVariants`
-  - `TextNode`
-  - `toOrdinal`
+### Refactoring
 
-#### Stage 3: Candidate
+- \*|refactor: Rename functions
 
-- Added:
-  - `capitalize`
-  - `condenseWhitespace`
-  - `interpolate`
-  - `Interpolator`
-  - `isPatternMatch`
-  - `joinStrings`
-  - `obfuscate`
-  - `pluralize`
-  - `pluralizeWithCount`
-  - `removeWhitespace`
-  - `slugify`
-  - `toCamelCase`
-  - `toLowerCase`
-  - `toUpperCase`
-  - `trim`
-  - `trimEnd`
-  - `trimStart`
-  - `trimWhitespace`
-  - `unindent`
+### Tests
 
-#### Internal
+- Strings|tests: ⛔ Add Deno tests for strings library
+- Strings|tests: Adapt Deno tests to Vitest
 
-- Added:
-  - `deriveCaseTransformer`
-  - `segmentByDelimited`
-  - `splitDelimited`
-  - `validateDelimiters`
+### Tooling
 
-### Dependencies
+- Strings|tooling: Scaffold the strings workspace
 
-- Updated dependencies
-  - @williamthorsen/toolbelt.arrays@3.0.0
-  - @williamthorsen/toolbelt.numbers@3.0.0
-
-## 0.1.0
-
-Copied from v0.1.0 of the `_template` workspace.
+<!-- generated by git-cliff -->

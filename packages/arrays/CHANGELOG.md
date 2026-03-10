@@ -1,98 +1,104 @@
-# @williamthorsen/toolbelt.arrays changelog
+# Changelog
 
-## 3.3.1
+All notable changes to this project will be documented in this file.
 
-### Dependencies
-
-- Updated internal dependencies:
-  - @williamthorsen/toolbelt.numbers@4.3.0
-
-## 3.3.0
-
-### Features
-
-- Added `getUniqueItems`
-- Renamed `getDuplicates` to `getDuplicateItems` for consistency with other function names
-
-## 3.2.0
-
-### Features
-
-- Added `map` and `forEach` methods to `Range` class
-- Simplified `Range` class to accept two arguments instead of object
-
-## 3.1.0
-
-### Features
-
-- Added a `Range` class to generate and iterate over a range of numbers.
-
-## 3.0.4
+## [arrays-v3.3.2] - 2026-03-10
 
 ### Dependencies
 
-- Updated internal dependencies:
-  - @williamthorsen/toolbelt.numbers@4.2.0
+- #6 deps: Adapt to dependency upgrades and bump Node engine to >=24 (#8)
 
-## 3.0.3
+Upgrades all dependencies to their latest versions, bumps the Node.js engine requirement from >=18.17.0 to >=24.0.0 across all 13 workspace packages, and adapts source code to satisfy new lint rules introduced by the upgraded ESLint plugins. Also upgrades `@williamthorsen/eslint-config-typescript` from 5.12.1 to 5.12.2 to fix ESM import issues in the compiled output.
 
-### Dependencies
+Commit details:
 
-- Updated internal dependencies:
-  - @williamthorsen/toolbelt.numbers@4.1.0
+- root|deps: Upgrade all deps to latest version
 
-## 3.0.2
+- root|refactor: Fix lint
 
-### Fixes
+- root|deps: Upgrade all deps to latest minor version
 
-- Fixed the issue that code relies on Node.js `assert` but could be used in a browser environment
+- root|deps: Allow unpatchable vulns in dev deps
 
-## 3.0.1
+- root|refactor: Adapt to dependency upgrades and bump Node engine to >=24
+
+* Upgrade eslint-config-typescript to 5.12.2 (fixes ESM import issues, removes need for pnpm patch)
+* Bump engines.node from >=18.17.0 to >=24.0.0 across all packages
+* Update CI to Node 24.14.0 and pnpm 10.30.3
+* Replace .sort() with .toSorted() to satisfy unicorn/no-array-sort
+* Fix lint errors: remove useless default assignments, redundant type constituents, deprecated re-exports, and empty array args to Set constructor
+
+- datetime|tests: Fix locale mismatch in Timestamp test
+
+Pass the same 'en-US' locale to both the expected-value computation and
+the method under test. Previously the test used the system default locale
+for the expected value but explicit 'en-US' for the actual call, which
+diverged under Node 24's updated Intl formatting.
+
+- root|refactor: Replace toThrow with toThrowError across all tests
+
+The vitest/no-alias-methods rule in strict-lint requires the canonical
+toThrowError() name instead of the toThrow() alias.
+
+- root|refactor: Fix remaining strict-lint errors
+
+* Use import() in vi.mock for vitest/prefer-import-in-mock
+* Replace expect(typeof x).toBe() with expectTypeOf for vitest/prefer-expect-type-of
+* Use String.raw for regex escapes for unicorn/prefer-string-raw
+
+- root|tooling: Use ws runner to fix recursive build command
+
+The build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.
+
+### Features
+
+- Arrays|feat: Range class
+- Arrays|feat: Simplify Range API
+- Arrays|feat: Add getUniqueItems
+
+### Refactoring
+
+- Arrays|refactor: Rename getDuplicates to getDuplicateItems
 
 ### Tooling
 
-- Renamed `publish` script to avoid recursion
+- \*|tooling: Change package registry from github to npmjs
 
-## 3.0.0
+## [3.0.2] - 2025-05-22
 
-### Breaking changes
+### Bug fixes
 
-- Migrated to staged distribution of library functions.
-  For example, some functions have been moved to `/candidate` or `/draft`.
+- Arrays|fix: Replace Node.js assert with library assert
 
-### Features
+## [3.0.1] - 2025-05-20
 
-#### Stage 1: Proposed
+### Tooling
 
-- Added:
-  - `accumulateWeights`
+- \*|tooling: Enable incremental type generation
+- \*|tooling: Rename publish script to avoid recursion
 
-#### Stage 3: Candidate
-
-- Added:
-  - `arraify`
-  - `extractWeights`
-  - `findOrThrow`
-  - `getAtIndexOrThrow`
-  - `getDuplicates`
-  - `getWeightedIndex`
-  - `includes`
-  - `makeNullishCompare`
-  - `makePickWeightedItemFromDistribution`
-  - `nullishCompare`
-  - `pickItem`
-  - `pickItems`
-  - `pickWeightedIndex`
-  - `pickWeightedItem`
-  - `shuffle`
-  - `shuffleInPlace`
-  - `toCumulativeValues`
+## [3.0.0] - 2025-05-16
 
 ### Dependencies
 
-- Added dependencies:
-  - @williamthorsen/toolbelt.numbers@3.0.0
+- Arrays|deps: Add toolbelt.numbers to prod deps
 
-## 0.1.0
+### Features
 
-Copied from v0.1.0 of the `_template` workspace.
+- Strings|feat: Add string functions
+- Arrays|feat: Migrate from toolbelt-deno
+- Objects|feat: Add legacy TypedObject and objectMap
+
+### Refactoring
+
+- \*|refactor: Rename functions
+
+### Tests
+
+- Strings|tests: Adapt Deno tests to Vitest
+
+### Tooling
+
+- Arrays|tooling: Scaffold the arrays workspace
+
+<!-- generated by git-cliff -->
