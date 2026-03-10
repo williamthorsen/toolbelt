@@ -1,6 +1,7 @@
 {
   "name": "workspace-template",
   "version": "3.0.0",
+  "private": true,
   "description": "API",
   "keywords": [],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/template#readme",
@@ -35,7 +36,6 @@
     "node": ">=24.0.0"
   },
   "publishConfig": {
-    "access": "restricted",
     "registry": "https://npm.pkg.github.com"
   }
 }
