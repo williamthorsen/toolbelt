@@ -904,14 +904,14 @@ packages:
     resolution: {integrity: sha512-msMRKLMVLWygpK3u2Hybgi4MNjcYJvwTb0Ru09+fOyCXIgT5raYP041DRRdiJiI3k/2U6SEbAETB3YtBrUkCFA==}
 
   '@williamthorsen/eslint-config-typescript@5.12.2':
-    resolution: {integrity: sha512-S2EJEdp/WCnM2go6d5iYSW4IAVC3Sy6wn+N3dbMeF6GdNC34grS0v6vuDqfXgJU2dyWO3D5SBlKxiiqhT0WqwQ==}
+    resolution: {integrity: sha512-S2EJEdp/WCnM2go6d5iYSW4IAVC3Sy6wn+N3dbMeF6GdNC34grS0v6vuDqfXgJU2dyWO3D5SBlKxiiqhT0WqwQ==, tarball: https://npm.pkg.github.com/download/@williamthorsen/eslint-config-typescript/5.12.2/d8798829ef54509ab0d3ce91531781686915c91d}
     engines: {node: '>=18'}
     peerDependencies:
       eslint: '>=9'
       typescript: '>=5'
 
   '@williamthorsen/strict-lint@5.3.7':
-    resolution: {integrity: sha512-PLYfLkDYiH0MQ3wVmOZHwK+cqifv5e9MMAmHzBGKn05b2N91qs27msUq0RQEVB2qOn+C34UMfYVJMndZ+a8vbA==}
+    resolution: {integrity: sha512-PLYfLkDYiH0MQ3wVmOZHwK+cqifv5e9MMAmHzBGKn05b2N91qs27msUq0RQEVB2qOn+C34UMfYVJMndZ+a8vbA==, tarball: https://npm.pkg.github.com/download/@williamthorsen/strict-lint/5.3.7/a8cd179a125ee8450a89f36e28130c1b92566ed7}
     hasBin: true
     peerDependencies:
       eslint: '>=9'
