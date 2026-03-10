@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [release-kit-v0.2.2] - 2026-03-10
+
+### Tooling
+
+- \*|tooling: Change package registry from github to npmjs
+
 ## [release-kit-v0.2.1] - 2026-03-09
 
 ### Tooling

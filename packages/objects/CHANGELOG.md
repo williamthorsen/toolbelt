@@ -1,86 +1,140 @@
-# @williamthorsen/toolbelt.arrays changelog
+# Changelog
 
-## 3.2.1
+All notable changes to this project will be documented in this file.
 
-### Patch Changes
+## [objects-v3.2.3] - 2026-03-10
 
-- ## @williamthorsen/toolbelt.objects
+### Dependencies
 
-  ### Tooling
-  - Fix export of isKeyOf
+- #6 deps: Adapt to dependency upgrades and bump Node engine to >=24 (#8)
 
-## 3.2.0
+Upgrades all dependencies to their latest versions, bumps the Node.js engine requirement from >=18.17.0 to >=24.0.0 across all 13 workspace packages, and adapts source code to satisfy new lint rules introduced by the upgraded ESLint plugins. Also upgrades `@williamthorsen/eslint-config-typescript` from 5.12.1 to 5.12.2 to fix ESM import issues in the compiled output.
 
-### Minor Changes
+Commit details:
 
-- ## @williamthorsen/toolbelt.objects
+- root|deps: Upgrade all deps to latest version
 
-  ### Features
-  - Added `isKeyOf` function
+- root|refactor: Fix lint
 
-## 3.1.0
+- root|deps: Upgrade all deps to latest minor version
 
-### Minor Changes
+- root|deps: Allow unpatchable vulns in dev deps
 
-- Added getValueAtPathOrThrow to draft functions
+- root|refactor: Adapt to dependency upgrades and bump Node engine to >=24
 
-## 3.0.2
+* Upgrade eslint-config-typescript to 5.12.2 (fixes ESM import issues, removes need for pnpm patch)
+* Bump engines.node from >=18.17.0 to >=24.0.0 across all packages
+* Update CI to Node 24.14.0 and pnpm 10.30.3
+* Replace .sort() with .toSorted() to satisfy unicorn/no-array-sort
+* Fix lint errors: remove useless default assignments, redundant type constituents, deprecated re-exports, and empty array args to Set constructor
 
-### Tooling
+- datetime|tests: Fix locale mismatch in Timestamp test
 
-- Make package public
+Pass the same 'en-US' locale to both the expected-value computation and
+the method under test. Previously the test used the system default locale
+for the expected value but explicit 'en-US' for the actual call, which
+diverged under Node 24's updated Intl formatting.
 
-## 3.0.1
+- root|refactor: Replace toThrow with toThrowError across all tests
 
-### Tooling
+The vitest/no-alias-methods rule in strict-lint requires the canonical
+toThrowError() name instead of the toThrow() alias.
 
-- Renamed `publish` script to avoid recursion
+- root|refactor: Fix remaining strict-lint errors
 
-## 3.0.0
+* Use import() in vi.mock for vitest/prefer-import-in-mock
+* Replace expect(typeof x).toBe() with expectTypeOf for vitest/prefer-expect-type-of
+* Use String.raw for regex escapes for unicorn/prefer-string-raw
 
-### Breaking changes
+- root|tooling: Use ws runner to fix recursive build command
 
-- Migrated to staged distribution of library functions.
-  For example, some functions have been moved to `/candidate` or `/draft`.
+The build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.
+
+### Documentation
+
+- \*|docs: Fix lint
+- Objects|docs: Refine function description
 
 ### Features
 
-#### Stage 0: For discussion
+- Objects|feat: Add getValueAtPathOrThrow
+- Objects|feat: Add isKeyOf function
+- \*|feat: Add isKeyOf function to objects library (#3)
 
-- Added:
-  - `get`
-  - `hasKey`
+## What
 
-#### Stage 1: Proposed
+Adds `isKeyOf` function to the objects package to provide type-safe property key validation.
 
-- Added:
-  - `hasKeyAtPath`
+Also includes tooling improvements for automated changeset generation and monorepo management.
 
-#### Stage 2: Draft
+## Details
 
-- Added:
-  - `mapToObject`
-  - `sortKeys`
-  - `sortObjectKeys`
+### Features
 
-#### Stage 3: Candidate
+Added `isKeyOf` function in the objects package that safely checks if a key exists as an own property of an object and provides proper type narrowing.
 
-- Added:
-  - `hasOwnProperty`
-  - `isEqual`
-  - `isScalar`
-  - `objectFromKeys`
-  - `objectSize`
-  - `omitNullish`
-  - `omitUndefined`
-  - `preciseTypeOf`
+### Tooling
 
-#### Stage 4: Release
+- Added automated changeset generation scripts with commit message parsing
+- Created release notes generator for monorepo releases
+- Added scripts for creating release tags and syncing versions
+- Configured post-install hook to report package overrides
+- Updated ESLint configuration to disable overly prescriptive array callback rule
 
-- Added:
-  - `isObject`
-  - `isPlainObject`
+### Dependencies
 
-## 0.1.0
+Updated package versions:
 
-Added from `_workspace` template v1.2.3.
+- Root package version bumped to 4.3.1
+- Objects package version bumped to 3.2.0
+
+### Refactoring
+
+- Objects|refactor: Replace barrel imports with direct imports
+
+### Tooling
+
+- Objects|tooling: Make package public
+- Root|tooling: Use tsgo for type-checking
+- Root|tooling: Upgrade AI rules, configs & deps
+- Objects|tooling: Fix export of isKeyOf
+- Objects|tooling: Fix export of isKeyOf (#4)
+
+Fixes the export of `isKeyOf`, which had not been added to the candidate release index.
+
+- \*|tooling: Change package registry from github to npmjs
+
+## [3.0.1] - 2025-05-20
+
+### Tooling
+
+- \*|tooling: Enable incremental type generation
+- \*|tooling: Rename publish script to avoid recursion
+
+## [3.0.0] - 2025-05-16
+
+### Documentation
+
+- Objects|docs: Fix lint
+
+### Features
+
+- \*|feat: Modernize code & workspace structure
+- Objects|feat: Add legacy TypedObject and objectMap
+- Objects|feat: ⛔ Migrate from toolbelt-deno
+- Objects|feat: Add isEqual & objectFromKeys functions
+
+### Refactoring
+
+- \*|refactor: Migrate to ESBuild
+- \*|refactor: Rename functions
+
+### Tests
+
+- Objects|tests: Convert object tests to Vitest
+
+### Tooling
+
+- \*|tooling: Configure Prettier
+
+<!-- generated by git-cliff -->
