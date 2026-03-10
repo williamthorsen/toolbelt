@@ -13,6 +13,7 @@
   // These files will be linted
   // These files will be linted
   "include": [
+    ".github/scripts/",
     "__tests__", //
     "config/",
     "scripts/",

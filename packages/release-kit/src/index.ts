@@ -23,3 +23,4 @@ export { getCommitsSinceTarget } from './getCommitsSinceTarget.ts';
 export { parseCommitMessage } from './parseCommitMessage.ts';
 export { releasePrepare } from './releasePrepare.ts';
 export { releasePrepareMono } from './releasePrepareMono.ts';
+export { runReleasePrepare } from './runReleasePrepare.ts';

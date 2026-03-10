@@ -1,10 +1,8 @@
 /* eslint n/no-process-exit: off */
 /* eslint unicorn/no-process-exit: off */
 
-import type { ReleaseType } from '~/packages/release-kit/src/index.ts';
-import { releasePrepareMono } from '~/packages/release-kit/src/index.ts';
-
-import { config } from './release.config.ts';
+import { releasePrepareMono } from './releasePrepareMono.ts';
+import type { MonorepoReleaseConfig, ReleaseType } from './types.ts';
 
 const VALID_BUMP_TYPES: readonly string[] = ['major', 'minor', 'patch'];
 
@@ -14,7 +12,9 @@ function isReleaseType(value: string): value is ReleaseType {
 
 function showHelp(): void {
   console.info(`
-Usage: tsx scripts/release-prepare.ts [options]
+Usage: runReleasePrepare [options]
+
+This script is designed for CI use via: gh workflow run release.yaml
 
 Options:
   --dry-run             Run without modifying any files
@@ -23,19 +23,22 @@ Options:
   --help                Show this help message
 
 Examples:
-  tsx scripts/release-prepare.ts --dry-run
-  tsx scripts/release-prepare.ts --bump=minor
-  tsx scripts/release-prepare.ts --only=arrays,strings --dry-run
+  tsx .github/scripts/release-prepare.ts --dry-run
+  tsx .github/scripts/release-prepare.ts --bump=minor
+  tsx .github/scripts/release-prepare.ts --only=arrays,strings --dry-run
 `);
 }
 
-function parseArgs(): { dryRun: boolean; bumpOverride: ReleaseType | undefined; only: string[] | undefined } {
-  const args = process.argv.slice(2);
+function parseArgs(argv: string[]): {
+  dryRun: boolean;
+  bumpOverride: ReleaseType | undefined;
+  only: string[] | undefined;
+} {
   let dryRun = false;
   let bumpOverride: ReleaseType | undefined;
   let only: string[] | undefined;
 
-  for (const arg of args) {
+  for (const arg of argv) {
     if (arg === '--dry-run') {
       dryRun = true;
     } else if (arg.startsWith('--bump=')) {
@@ -64,8 +67,19 @@ function parseArgs(): { dryRun: boolean; bumpOverride: ReleaseType | undefined; 
   return { dryRun, bumpOverride, only };
 }
 
-function main(): void {
-  const { dryRun, bumpOverride, only } = parseArgs();
+/**
+ * CLI runner for monorepo release preparation.
+ *
+ * Parses `process.argv` for `--dry-run`, `--bump=<type>`, `--only=<names>`, and `--help`,
+ * validates inputs against the provided config, filters components when `--only` is used,
+ * and delegates to `releasePrepareMono`.
+ *
+ * Designed for CI use via `gh workflow run release.yaml`.
+ *
+ * @param config - The monorepo release configuration.
+ */
+export function runReleasePrepare(config: MonorepoReleaseConfig): void {
+  const { dryRun, bumpOverride, only } = parseArgs(process.argv.slice(2));
 
   let effectiveConfig = config;
 
@@ -76,7 +90,6 @@ function main(): void {
       return only.includes(name);
     });
 
-    // Validate that all requested names match known components
     for (const name of only) {
       const matchesKnown = knownPrefixes.includes(`${name}-v`);
       if (!matchesKnown) {
@@ -98,9 +111,4 @@ function main(): void {
     console.error('Error preparing release:', error instanceof Error ? error.message : String(error));
     process.exit(1);
   }
-}
-
-// Check if this file is being run directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  main();
 }

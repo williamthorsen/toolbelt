@@ -62,7 +62,7 @@ export default [
     },
   }),
   {
-    files: ['**/scripts/**/*'],
+    files: ['**/.github/scripts/**/*', '**/scripts/**/*'],
     rules: {
       'no-console': 'off',
     },
