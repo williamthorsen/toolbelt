@@ -7,13 +7,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  * Returns `undefined` if parsing fails or the result is not a plain object.
  */
 export function parseJsonRecord(raw: string): Record<string, unknown> | undefined {
+  let parsed: unknown;
   try {
-    const parsed: unknown = JSON.parse(raw);
-    if (isRecord(parsed)) {
-      return parsed;
-    }
+    parsed = JSON.parse(raw);
   } catch {
-    // Invalid JSON
+    return undefined;
   }
-  return undefined;
+  return isRecord(parsed) ? parsed : undefined;
 }

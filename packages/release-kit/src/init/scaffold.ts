@@ -4,12 +4,13 @@ import { fileURLToPath } from 'node:url';
 
 import type { RepoType } from './detectRepoType.ts';
 import { parseJsonRecord } from './parseJsonRecord.ts';
-import { printError, printSuccess } from './prompt.ts';
+import { printError, printSkip, printSuccess } from './prompt.ts';
 import { releaseConfigScript, releasePrepareScript, releaseWorkflow } from './templates.ts';
 
 interface ScaffoldOptions {
   repoType: RepoType;
   dryRun: boolean;
+  overwrite: boolean;
 }
 
 interface FileToWrite {
@@ -17,10 +18,10 @@ interface FileToWrite {
   content: string;
 }
 
-/** Write a file, creating parent directories as needed. Skips if the file already exists. */
-function writeIfAbsent(filePath: string, content: string, dryRun: boolean): void {
-  if (existsSync(filePath)) {
-    printError(`Skipping ${filePath} (already exists)`);
+/** Write a file, creating parent directories as needed. Skips if the file already exists and overwrite is false. */
+function writeIfAbsent(filePath: string, content: string, dryRun: boolean, overwrite: boolean): void {
+  if (existsSync(filePath) && !overwrite) {
+    printSkip(`${filePath} (already exists)`);
     return;
   }
 
@@ -29,8 +30,14 @@ function writeIfAbsent(filePath: string, content: string, dryRun: boolean): void
     return;
   }
 
-  mkdirSync(dirname(filePath), { recursive: true });
-  writeFileSync(filePath, content, 'utf8');
+  try {
+    mkdirSync(dirname(filePath), { recursive: true });
+    writeFileSync(filePath, content, 'utf8');
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    printError(`Failed to write ${filePath}: ${message}`);
+    return;
+  }
   printSuccess(`Created ${filePath}`);
 }
 
@@ -46,12 +53,19 @@ export function copyCliffTemplate(dryRun: boolean): void {
     return;
   }
 
-  const content = readFileSync(templatePath, 'utf8');
-  writeIfAbsent('cliff.toml', content, dryRun);
+  let content: string;
+  try {
+    content = readFileSync(templatePath, 'utf8');
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    printError(`Failed to read cliff.toml.template: ${message}`);
+    return;
+  }
+  writeIfAbsent('cliff.toml', content, dryRun, false);
 }
 
 /** Scaffold all release-kit files for the target repo. */
-export function scaffoldFiles({ repoType, dryRun }: ScaffoldOptions): void {
+export function scaffoldFiles({ repoType, dryRun, overwrite }: ScaffoldOptions): void {
   const files: FileToWrite[] = [
     { path: '.github/scripts/release-prepare.ts', content: releasePrepareScript() },
     { path: '.github/scripts/release.config.ts', content: releaseConfigScript(repoType) },
@@ -59,7 +73,7 @@ export function scaffoldFiles({ repoType, dryRun }: ScaffoldOptions): void {
   ];
 
   for (const file of files) {
-    writeIfAbsent(file.path, file.content, dryRun);
+    writeIfAbsent(file.path, file.content, dryRun, overwrite);
   }
 
   updatePackageJsonScripts(dryRun);
@@ -69,7 +83,15 @@ export function scaffoldFiles({ repoType, dryRun }: ScaffoldOptions): void {
 function updatePackageJsonScripts(dryRun: boolean): void {
   const pkgPath = 'package.json';
 
-  const raw = readFileSync(pkgPath, 'utf8');
+  let raw: string;
+  try {
+    raw = readFileSync(pkgPath, 'utf8');
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    printError(`Failed to read ${pkgPath}: ${message}`);
+    return;
+  }
+
   const pkg = parseJsonRecord(raw);
   if (pkg === undefined) {
     printError('Failed to parse package.json');

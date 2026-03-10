@@ -18,13 +18,18 @@ function runRequiredCheck(label: string, result: CheckResult): boolean {
   return false;
 }
 
-/** Run all eligibility checks. Returns `'pass'`, `'abort'`, or `'fail'`. */
-async function checkEligibility(dryRun: boolean): Promise<'pass' | 'abort' | 'fail'> {
+interface EligibilityResult {
+  status: 'pass' | 'abort' | 'fail';
+  overwrite: boolean;
+}
+
+/** Run all eligibility checks. Returns the check status and whether overwrite was confirmed. */
+async function checkEligibility(dryRun: boolean): Promise<EligibilityResult> {
   printStep('Checking eligibility');
 
-  if (!runRequiredCheck('Git repository detected', isGitRepo())) return 'fail';
-  if (!runRequiredCheck('package.json found', hasPackageJson())) return 'fail';
-  if (!runRequiredCheck('pnpm detected', usesPnpm())) return 'fail';
+  if (!runRequiredCheck('Git repository detected', isGitRepo())) return { status: 'fail', overwrite: false };
+  if (!runRequiredCheck('package.json found', hasPackageJson())) return { status: 'fail', overwrite: false };
+  if (!runRequiredCheck('pnpm detected', usesPnpm())) return { status: 'fail', overwrite: false };
 
   const cliffCheck = hasCliffToml();
   if (cliffCheck.ok) {
@@ -36,7 +41,7 @@ async function checkEligibility(dryRun: boolean): Promise<'pass' | 'abort' | 'fa
       copyCliffTemplate(dryRun);
     } else {
       printError('cliff.toml is required for changelog generation. Aborting.');
-      return 'fail';
+      return { status: 'fail', overwrite: false };
     }
   }
 
@@ -46,11 +51,12 @@ async function checkEligibility(dryRun: boolean): Promise<'pass' | 'abort' | 'fa
     const shouldOverwrite = await confirm('release-kit appears to be already initialized. Overwrite existing files?');
     if (!shouldOverwrite) {
       console.info('Aborting.');
-      return 'abort';
+      return { status: 'abort', overwrite: false };
     }
+    return { status: 'pass', overwrite: true };
   }
 
-  return 'pass';
+  return { status: 'pass', overwrite: false };
 }
 
 /**
@@ -65,8 +71,8 @@ export async function initCommand({ dryRun }: InitOptions): Promise<number> {
   }
 
   const eligibility = await checkEligibility(dryRun);
-  if (eligibility === 'fail') return 1;
-  if (eligibility === 'abort') return 0;
+  if (eligibility.status === 'fail') return 1;
+  if (eligibility.status === 'abort') return 0;
 
   // Detect repo type
   printStep('Detecting repo type');
@@ -75,7 +81,7 @@ export async function initCommand({ dryRun }: InitOptions): Promise<number> {
 
   // Scaffold files
   printStep('Scaffolding files');
-  scaffoldFiles({ repoType, dryRun });
+  scaffoldFiles({ repoType, dryRun, overwrite: eligibility.overwrite });
 
   // Print next steps
   printStep('Next steps');

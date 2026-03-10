@@ -45,7 +45,7 @@ if (command === 'init') {
     process.exit(0);
   }
 
-  const unknownFlags = flags.filter((f) => f !== '--dry-run');
+  const unknownFlags = flags.filter((f) => f !== '--dry-run' && f !== '--help' && f !== '-h');
   if (unknownFlags.length > 0) {
     console.error(`Error: Unknown option: ${unknownFlags[0]}`);
     process.exit(1);

@@ -21,6 +21,11 @@ export function printSuccess(message: string): void {
   console.info(`  [ok] ${message}`);
 }
 
+/** Print a skip message to stdout. */
+export function printSkip(message: string): void {
+  console.info(`  [skip] ${message}`);
+}
+
 /** Print an error message to stderr. */
 export function printError(message: string): void {
   console.error(`  [error] ${message}`);
