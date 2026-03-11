@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: Code quality checks
 
 # Note: This workflow will be automatically skipped if the commit message includes
