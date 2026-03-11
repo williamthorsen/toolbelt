@@ -2,7 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
-## [release-kit-v0.2.3] - 2026-03-10
+## [release-kit-v0.3.0] - 2026-03-11
+
+### Features
+
+- Release-kit|feat: Extract CLI runner into release-kit and co-locate scripts with workflow
+
+Move release script logic (arg parsing, validation, component filtering) into a reusable `runReleasePrepare` function in the release-kit package. Consuming repos now provide only their config and call `runReleasePrepare(config)`.
+
+Relocate release-prepare.ts and release.config.ts from scripts/ to .github/scripts/ so they live alongside the workflow they serve.
+
+- #20 release-kit|feat: Add release-kit init CLI command for automated repo setup (#22)
+
+Add an interactive `npx release-kit init` CLI command that checks repo eligibility, detects monorepo vs single-package layout, scaffolds workflow/scripts/config files, and updates `package.json` with release scripts.
+
+Also expand `runReleasePrepare` to polymorphically handle both `MonorepoReleaseConfig` and `ReleaseConfig`, and update the esbuild plugin to preserve shebangs during compilation.
+
+- #24 release-kit|feat: Return computed tags from release prepare and write .release-tags (#27)
+
+`releasePrepare` and `releasePrepareMono` now return `string[]` of computed tag names instead of `void`. `runReleasePrepare` writes these tags to a `.release-tags` file (one tag per line) so the CI workflow can read them instead of independently deriving tag names from `git diff`. In dry-run mode the file is not written. This makes `tagPrefix` the single source of truth for tag names, eliminating the mismatch between TypeScript-computed tags and workflow-derived tags.
+
+## [strings-v3.1.1] - 2026-03-10
 
 ### Tooling
 
