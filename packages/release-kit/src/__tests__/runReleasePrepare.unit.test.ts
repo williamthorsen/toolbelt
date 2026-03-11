@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 /* eslint-disable vitest/require-mock-type-parameters -- mocks are used loosely across overloads */
 const mockReleasePrepareMono = vi.hoisted(() => vi.fn());
 const mockReleasePrepare = vi.hoisted(() => vi.fn());
+const mockWriteFileSync = vi.hoisted(() => vi.fn());
 /* eslint-enable vitest/require-mock-type-parameters */
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- string path avoids strict type-checking issues with partial mocks
@@ -15,7 +16,12 @@ vi.mock('../releasePrepare.ts', () => ({
   releasePrepare: mockReleasePrepare,
 }));
 
-import { runReleasePrepare } from '../runReleasePrepare.ts';
+// eslint-disable-next-line vitest/prefer-import-in-mock -- string path avoids strict type-checking issues with partial mocks
+vi.mock('node:fs', () => ({
+  writeFileSync: mockWriteFileSync,
+}));
+
+import { RELEASE_TAGS_FILE, runReleasePrepare } from '../runReleasePrepare.ts';
 import type { MonorepoReleaseConfig, ReleaseConfig, WorkTypeConfig } from '../types.ts';
 
 const workTypes: WorkTypeConfig[] = [
@@ -44,6 +50,16 @@ function makeConfig(overrides?: Partial<MonorepoReleaseConfig>): MonorepoRelease
   };
 }
 
+function makeSingleConfig(overrides?: Partial<ReleaseConfig>): ReleaseConfig {
+  return {
+    tagPrefix: 'v',
+    packageFiles: ['package.json'],
+    changelogPaths: ['.'],
+    workTypes,
+    ...overrides,
+  };
+}
+
 /** Sentinel error thrown by the mocked process.exit. */
 class ExitError extends Error {
   constructor(public readonly code: number | undefined) {
@@ -56,6 +72,9 @@ describe(runReleasePrepare, () => {
 
   beforeEach(() => {
     originalArgv = process.argv;
+    // Default return values: no tags (empty release)
+    mockReleasePrepare.mockReturnValue([]);
+    mockReleasePrepareMono.mockReturnValue([]);
     // Mock process.exit to throw so we can assert on it
     vi.spyOn(process, 'exit').mockImplementation((code) => {
       throw new ExitError(typeof code === 'number' ? code : undefined);
@@ -68,6 +87,7 @@ describe(runReleasePrepare, () => {
     process.argv = originalArgv;
     mockReleasePrepareMono.mockReset();
     mockReleasePrepare.mockReset();
+    mockWriteFileSync.mockReset();
     vi.restoreAllMocks();
   });
 
@@ -191,17 +211,45 @@ describe(runReleasePrepare, () => {
     expect(console.error).toHaveBeenCalledWith(expect.stringContaining('--only requires'));
   });
 
-  describe('single-package config', () => {
-    function makeSingleConfig(overrides?: Partial<ReleaseConfig>): ReleaseConfig {
-      return {
-        tagPrefix: 'v',
-        packageFiles: ['package.json'],
-        changelogPaths: ['.'],
-        workTypes,
-        ...overrides,
-      };
-    }
+  describe('release-tags file', () => {
+    it('writes .release-tags after a monorepo release', () => {
+      process.argv = ['node', 'script.ts'];
+      mockReleasePrepareMono.mockReturnValue(['arrays-v1.1.0', 'strings-v2.0.1']);
 
+      runReleasePrepare(makeConfig());
+
+      expect(mockWriteFileSync).toHaveBeenCalledWith(RELEASE_TAGS_FILE, 'arrays-v1.1.0\nstrings-v2.0.1', 'utf8');
+    });
+
+    it('writes .release-tags after a single-package release', () => {
+      process.argv = ['node', 'script.ts'];
+      mockReleasePrepare.mockReturnValue(['v1.2.0']);
+
+      runReleasePrepare(makeSingleConfig());
+
+      expect(mockWriteFileSync).toHaveBeenCalledWith(RELEASE_TAGS_FILE, 'v1.2.0', 'utf8');
+    });
+
+    it('does not write .release-tags when no tags are produced', () => {
+      process.argv = ['node', 'script.ts'];
+      mockReleasePrepareMono.mockReturnValue([]);
+
+      runReleasePrepare(makeConfig());
+
+      expect(mockWriteFileSync).not.toHaveBeenCalled();
+    });
+
+    it('does not write .release-tags in dry-run mode', () => {
+      process.argv = ['node', 'script.ts', '--dry-run'];
+      mockReleasePrepareMono.mockReturnValue(['arrays-v1.1.0']);
+
+      runReleasePrepare(makeConfig());
+
+      expect(mockWriteFileSync).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('single-package config', () => {
     it('calls releasePrepare for a single-package config', () => {
       process.argv = ['node', 'script.ts'];
 

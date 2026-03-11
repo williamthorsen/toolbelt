@@ -27,7 +27,7 @@ export interface ReleasePrepareOptions {
  * @param config - The release configuration.
  * @param options - Options controlling dry-run mode and optional bump override.
  */
-export function releasePrepare(config: ReleaseConfig, options: ReleasePrepareOptions): void {
+export function releasePrepare(config: ReleaseConfig, options: ReleasePrepareOptions): string[] {
   const { dryRun, bumpOverride } = options;
 
   // 1. Get commits since last tag
@@ -52,7 +52,7 @@ export function releasePrepare(config: ReleaseConfig, options: ReleasePrepareOpt
 
   if (releaseType === undefined) {
     console.info('No release-worthy changes found. Skipping.');
-    return;
+    return [];
   }
 
   // 3. Bump all versions
@@ -81,4 +81,5 @@ export function releasePrepare(config: ReleaseConfig, options: ReleasePrepareOpt
   }
 
   console.info(`Release preparation complete: ${newTag}`);
+  return [newTag];
 }

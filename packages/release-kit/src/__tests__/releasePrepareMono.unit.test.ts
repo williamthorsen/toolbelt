@@ -81,7 +81,9 @@ describe(releasePrepareMono, () => {
     });
     mockReadFileSync.mockReturnValue(JSON.stringify({ version: '1.0.0' }));
 
-    releasePrepareMono(config, { dryRun: false });
+    const result = releasePrepareMono(config, { dryRun: false });
+
+    expect(result).toStrictEqual(['arrays-v1.1.0']);
 
     // Verify bumpAllVersions wrote a new version
     expect(mockWriteFileSync).toHaveBeenCalledWith(
@@ -120,8 +122,9 @@ describe(releasePrepareMono, () => {
       return '';
     });
 
-    releasePrepareMono(config, { dryRun: false });
+    const result = releasePrepareMono(config, { dryRun: false });
 
+    expect(result).toStrictEqual([]);
     expect(mockWriteFileSync).not.toHaveBeenCalled();
     expect(countCliffCalls()).toBe(0);
   });
@@ -166,7 +169,9 @@ describe(releasePrepareMono, () => {
 
     mockReadFileSync.mockReturnValue(JSON.stringify({ version: '1.0.0' }));
 
-    releasePrepareMono(config, { dryRun: false });
+    const result = releasePrepareMono(config, { dryRun: false });
+
+    expect(result).toStrictEqual(['arrays-v1.0.1']);
 
     // Only arrays package.json should be written
     expect(mockWriteFileSync).toHaveBeenCalledTimes(1);
@@ -202,8 +207,9 @@ describe(releasePrepareMono, () => {
     });
     mockReadFileSync.mockReturnValue(JSON.stringify({ version: '1.0.0' }));
 
-    releasePrepareMono(config, { dryRun: true });
+    const result = releasePrepareMono(config, { dryRun: true });
 
+    expect(result).toStrictEqual(['arrays-v1.1.0']);
     expect(mockWriteFileSync).not.toHaveBeenCalled();
     expect(countCliffCalls()).toBe(0);
     expect(mockExecSync).not.toHaveBeenCalled();
@@ -270,7 +276,9 @@ describe(releasePrepareMono, () => {
     });
     mockReadFileSync.mockReturnValue(JSON.stringify({ version: '1.0.0' }));
 
-    releasePrepareMono(config, { dryRun: false, bumpOverride: 'minor' });
+    const result = releasePrepareMono(config, { dryRun: false, bumpOverride: 'minor' });
+
+    expect(result).toStrictEqual(['arrays-v1.1.0']);
 
     // Should use the override (minor) rather than the commit-derived type (patch)
     expect(mockWriteFileSync).toHaveBeenCalledWith(
@@ -307,8 +315,9 @@ describe(releasePrepareMono, () => {
       return '';
     });
 
-    releasePrepareMono(config, { dryRun: false });
+    const result = releasePrepareMono(config, { dryRun: false });
 
+    expect(result).toStrictEqual([]);
     expect(mockWriteFileSync).not.toHaveBeenCalled();
     expect(countCliffCalls()).toBe(0);
   });
@@ -336,8 +345,9 @@ describe(releasePrepareMono, () => {
       return '';
     });
 
-    releasePrepareMono(config, { dryRun: false });
+    const result = releasePrepareMono(config, { dryRun: false });
 
+    expect(result).toStrictEqual([]);
     expect(mockExecSync).not.toHaveBeenCalled();
   });
 });

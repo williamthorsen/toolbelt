@@ -26,9 +26,9 @@ import type { MonorepoReleaseConfig, ParsedCommit, ReleaseType } from './types.t
  * @param config - The monorepo release configuration.
  * @param options - Options controlling dry-run mode and optional bump override.
  */
-export function releasePrepareMono(config: MonorepoReleaseConfig, options: ReleasePrepareOptions): void {
+export function releasePrepareMono(config: MonorepoReleaseConfig, options: ReleasePrepareOptions): string[] {
   const { dryRun, bumpOverride } = options;
-  let anyComponentProcessed = false;
+  const tags: string[] = [];
 
   for (const component of config.components) {
     console.info(`\nProcessing component: ${component.tagPrefix}`);
@@ -71,7 +71,7 @@ export function releasePrepareMono(config: MonorepoReleaseConfig, options: Relea
     console.info(`  Bumping versions (${releaseType})...`);
     const newVersion = bumpAllVersions(component.packageFiles, releaseType, dryRun);
     const newTag = `${component.tagPrefix}${newVersion}`;
-    anyComponentProcessed = true;
+    tags.push(newTag);
 
     // 4. Generate changelogs for each configured path with include-path filtering
     console.info('  Generating changelogs...');
@@ -82,7 +82,7 @@ export function releasePrepareMono(config: MonorepoReleaseConfig, options: Relea
   }
 
   // 5. Run format command once after all components are processed
-  if (anyComponentProcessed && config.formatCommand !== undefined) {
+  if (tags.length > 0 && config.formatCommand !== undefined) {
     if (dryRun) {
       console.info(`\n  [dry-run] Would run format command: ${config.formatCommand}`);
     } else {
@@ -97,8 +97,8 @@ export function releasePrepareMono(config: MonorepoReleaseConfig, options: Relea
     }
   }
 
-  const summary = anyComponentProcessed
-    ? 'Monorepo release preparation complete.'
-    : 'No components had release-worthy changes.';
+  const summary =
+    tags.length > 0 ? 'Monorepo release preparation complete.' : 'No components had release-worthy changes.';
   console.info(`\n${summary}`);
+  return tags;
 }
