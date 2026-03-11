@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 /* eslint-disable vitest/require-mock-type-parameters -- mocks are used loosely across overloads */
 const mockReleasePrepareMono = vi.hoisted(() => vi.fn());
+const mockReleasePrepare = vi.hoisted(() => vi.fn());
 /* eslint-enable vitest/require-mock-type-parameters */
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- string path avoids strict type-checking issues with partial mocks
@@ -9,8 +10,13 @@ vi.mock('../releasePrepareMono.ts', () => ({
   releasePrepareMono: mockReleasePrepareMono,
 }));
 
+// eslint-disable-next-line vitest/prefer-import-in-mock -- string path avoids strict type-checking issues with partial mocks
+vi.mock('../releasePrepare.ts', () => ({
+  releasePrepare: mockReleasePrepare,
+}));
+
 import { runReleasePrepare } from '../runReleasePrepare.ts';
-import type { MonorepoReleaseConfig, WorkTypeConfig } from '../types.ts';
+import type { MonorepoReleaseConfig, ReleaseConfig, WorkTypeConfig } from '../types.ts';
 
 const workTypes: WorkTypeConfig[] = [
   { type: 'feat', header: 'Features', bump: 'minor' },
@@ -61,6 +67,7 @@ describe(runReleasePrepare, () => {
   afterEach(() => {
     process.argv = originalArgv;
     mockReleasePrepareMono.mockReset();
+    mockReleasePrepare.mockReset();
     vi.restoreAllMocks();
   });
 
@@ -182,5 +189,56 @@ describe(runReleasePrepare, () => {
     expect(() => runReleasePrepare(makeConfig())).toThrowError(ExitError);
     expect(process.exit).toHaveBeenCalledWith(1);
     expect(console.error).toHaveBeenCalledWith(expect.stringContaining('--only requires'));
+  });
+
+  describe('single-package config', () => {
+    function makeSingleConfig(overrides?: Partial<ReleaseConfig>): ReleaseConfig {
+      return {
+        tagPrefix: 'v',
+        packageFiles: ['package.json'],
+        changelogPaths: ['.'],
+        workTypes,
+        ...overrides,
+      };
+    }
+
+    it('calls releasePrepare for a single-package config', () => {
+      process.argv = ['node', 'script.ts'];
+
+      runReleasePrepare(makeSingleConfig());
+
+      expect(mockReleasePrepare).toHaveBeenCalledWith(expect.objectContaining({ tagPrefix: 'v' }), { dryRun: false });
+      expect(mockReleasePrepareMono).not.toHaveBeenCalled();
+    });
+
+    it('passes dryRun and bumpOverride to releasePrepare', () => {
+      process.argv = ['node', 'script.ts', '--dry-run', '--bump=minor'];
+
+      runReleasePrepare(makeSingleConfig());
+
+      expect(mockReleasePrepare).toHaveBeenCalledWith(expect.any(Object), {
+        dryRun: true,
+        bumpOverride: 'minor',
+      });
+    });
+
+    it('exits with code 1 when --only is used with a single-package config', () => {
+      process.argv = ['node', 'script.ts', '--only=foo'];
+
+      expect(() => runReleasePrepare(makeSingleConfig())).toThrowError(ExitError);
+      expect(process.exit).toHaveBeenCalledWith(1);
+      expect(console.error).toHaveBeenCalledWith(expect.stringContaining('--only is only supported for monorepo'));
+    });
+
+    it('exits with code 1 when releasePrepare throws', () => {
+      process.argv = ['node', 'script.ts'];
+      mockReleasePrepare.mockImplementation(() => {
+        throw new Error('single-package error');
+      });
+
+      expect(() => runReleasePrepare(makeSingleConfig())).toThrowError(ExitError);
+      expect(process.exit).toHaveBeenCalledWith(1);
+      expect(console.error).toHaveBeenCalledWith('Error preparing release:', 'single-package error');
+    });
   });
 });

@@ -1,13 +1,19 @@
 /* eslint n/no-process-exit: off */
 /* eslint unicorn/no-process-exit: off */
 
+import { releasePrepare } from './releasePrepare.ts';
 import { releasePrepareMono } from './releasePrepareMono.ts';
-import type { MonorepoReleaseConfig, ReleaseType } from './types.ts';
+import type { MonorepoReleaseConfig, ReleaseConfig, ReleaseType } from './types.ts';
 
 const VALID_BUMP_TYPES: readonly string[] = ['major', 'minor', 'patch'];
 
 function isReleaseType(value: string): value is ReleaseType {
   return VALID_BUMP_TYPES.includes(value);
+}
+
+/** Check whether the config is a monorepo config by looking for the `components` property. */
+function isMonorepoConfig(config: MonorepoReleaseConfig | ReleaseConfig): config is MonorepoReleaseConfig {
+  return 'components' in config;
 }
 
 function showHelp(): void {
@@ -19,7 +25,7 @@ This script is designed for CI use via: gh workflow run release.yaml
 Options:
   --dry-run             Run without modifying any files
   --bump=major|minor|patch  Override the bump type for all components
-  --only=name1,name2    Only process the named components (comma-separated)
+  --only=name1,name2    Only process the named components (comma-separated, monorepo only)
   --help                Show this help message
 
 Examples:
@@ -68,18 +74,37 @@ function parseArgs(argv: string[]): {
 }
 
 /**
- * CLI runner for monorepo release preparation.
+ * CLI runner for release preparation that handles both monorepo and single-package configs.
  *
  * Parses `process.argv` for `--dry-run`, `--bump=<type>`, `--only=<names>`, and `--help`,
- * validates inputs against the provided config, filters components when `--only` is used,
- * and delegates to `releasePrepareMono`.
+ * validates inputs against the provided config, and delegates to the appropriate handler.
+ *
+ * For monorepo configs (containing `components`), delegates to `releasePrepareMono`.
+ * For single-package configs (containing `tagPrefix`), delegates to `releasePrepare`.
+ * The `--only` flag is only valid with monorepo configs.
  *
  * Designed for CI use via `gh workflow run release.yaml`.
  *
- * @param config - The monorepo release configuration.
+ * @param config - A monorepo or single-package release configuration.
  */
-export function runReleasePrepare(config: MonorepoReleaseConfig): void {
+export function runReleasePrepare(config: MonorepoReleaseConfig | ReleaseConfig): void {
   const { dryRun, bumpOverride, only } = parseArgs(process.argv.slice(2));
+  const options = { dryRun, ...(bumpOverride === undefined ? {} : { bumpOverride }) };
+
+  if (!isMonorepoConfig(config)) {
+    if (only !== undefined) {
+      console.error('Error: --only is only supported for monorepo configurations');
+      process.exit(1);
+    }
+
+    try {
+      releasePrepare(config, options);
+    } catch (error: unknown) {
+      console.error('Error preparing release:', error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+    return;
+  }
 
   let effectiveConfig = config;
 
@@ -103,10 +128,7 @@ export function runReleasePrepare(config: MonorepoReleaseConfig): void {
   }
 
   try {
-    releasePrepareMono(effectiveConfig, {
-      dryRun,
-      ...(bumpOverride === undefined ? {} : { bumpOverride }),
-    });
+    releasePrepareMono(effectiveConfig, options);
   } catch (error: unknown) {
     console.error('Error preparing release:', error instanceof Error ? error.message : String(error));
     process.exit(1);
