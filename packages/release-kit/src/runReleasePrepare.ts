@@ -1,9 +1,14 @@
 /* eslint n/no-process-exit: off */
 /* eslint unicorn/no-process-exit: off */
 
+import { writeFileSync } from 'node:fs';
+
 import { releasePrepare } from './releasePrepare.ts';
 import { releasePrepareMono } from './releasePrepareMono.ts';
 import type { MonorepoReleaseConfig, ReleaseConfig, ReleaseType } from './types.ts';
+
+/** File written by the release preparation step, containing one tag per line. */
+export const RELEASE_TAGS_FILE = '.release-tags';
 
 const VALID_BUMP_TYPES: readonly string[] = ['major', 'minor', 'patch'];
 
@@ -98,7 +103,8 @@ export function runReleasePrepare(config: MonorepoReleaseConfig | ReleaseConfig)
     }
 
     try {
-      releasePrepare(config, options);
+      const tags = releasePrepare(config, options);
+      writeReleaseTags(tags, dryRun);
     } catch (error: unknown) {
       console.error('Error preparing release:', error instanceof Error ? error.message : String(error));
       process.exit(1);
@@ -128,9 +134,28 @@ export function runReleasePrepare(config: MonorepoReleaseConfig | ReleaseConfig)
   }
 
   try {
-    releasePrepareMono(effectiveConfig, options);
+    const tags = releasePrepareMono(effectiveConfig, options);
+    writeReleaseTags(tags, dryRun);
   } catch (error: unknown) {
     console.error('Error preparing release:', error instanceof Error ? error.message : String(error));
     process.exit(1);
   }
+}
+
+/**
+ * Write computed tags to the `.release-tags` file so the CI workflow can read them
+ * instead of deriving tag names independently.
+ */
+function writeReleaseTags(tags: string[], dryRun: boolean): void {
+  if (tags.length === 0) {
+    return;
+  }
+
+  if (dryRun) {
+    console.info(`  [dry-run] Would write ${RELEASE_TAGS_FILE}: ${tags.join(' ')}`);
+    return;
+  }
+
+  writeFileSync(RELEASE_TAGS_FILE, tags.join('\n'), 'utf8');
+  console.info(`  Wrote ${RELEASE_TAGS_FILE}: ${tags.join(' ')}`);
 }
