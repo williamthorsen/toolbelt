@@ -30,9 +30,7 @@
   ],
   "scripts": {
     "prepare": "pnpm run ws build",
-    "publish:github": "pnpm publish",
-    "release:prepare": "tsx ../../.github/scripts/release-prepare.ts --only=release-kit",
-    "release:prepare:dry": "tsx ../../.github/scripts/release-prepare.ts --only=release-kit --dry-run",
+    "prepublishOnly": "pnpm run ws build",
     "ws": "node --import tsx ../../scripts/run-workspace-script.ts --int-test"
   },
   "dependencies": {

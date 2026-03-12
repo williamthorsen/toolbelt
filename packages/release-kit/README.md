@@ -51,6 +51,12 @@ Options:
 
 Component names for `--only` match the package directory name (e.g., `arrays`, `release-kit`).
 
+**Self-hosting note**: in a repo where `release-kit` is a workspace package (e.g., this monorepo), `npx` and `pnpm exec` may not resolve the binary. Run the built entry point directly:
+
+```bash
+node packages/release-kit/dist/esm/bin/release-kit.js prepare --dry-run
+```
+
 ### `release-kit init`
 
 Initialize release-kit in the current repository. Scaffolds a GitHub Actions workflow and an optional config file.

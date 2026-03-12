@@ -35,8 +35,6 @@
     "lint:strict": "pnpm --recursive run ws lint:strict",
     "outdated": "pnpm outdated --compatible --recursive",
     "outdated:latest": "pnpm outdated --recursive",
-    "release:prepare": "tsx .github/scripts/release-prepare.ts",
-    "release:prepare:dry": "tsx .github/scripts/release-prepare.ts --dry-run",
     "root:lint": "eslint --fix --ignore-pattern 'packages/**' .",
     "root:lint:check": "eslint --ignore-pattern 'packages/**' .",
     "root:lint:strict": "echo \"Error: Not enabled for the workspace root until a pattern is accepted as an argument\" && exit 1",
