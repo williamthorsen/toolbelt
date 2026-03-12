@@ -62,6 +62,7 @@ describe(releasePrepareMono, () => {
     const config = makeConfig({
       components: [
         {
+          dir: 'arrays',
           tagPrefix: 'arrays-v',
           packageFiles: ['packages/arrays/package.json'],
           changelogPaths: ['packages/arrays'],
@@ -104,6 +105,7 @@ describe(releasePrepareMono, () => {
     const config = makeConfig({
       components: [
         {
+          dir: 'arrays',
           tagPrefix: 'arrays-v',
           packageFiles: ['packages/arrays/package.json'],
           changelogPaths: ['packages/arrays'],
@@ -133,12 +135,14 @@ describe(releasePrepareMono, () => {
     const config = makeConfig({
       components: [
         {
+          dir: 'arrays',
           tagPrefix: 'arrays-v',
           packageFiles: ['packages/arrays/package.json'],
           changelogPaths: ['packages/arrays'],
           paths: ['packages/arrays/**'],
         },
         {
+          dir: 'strings',
           tagPrefix: 'strings-v',
           packageFiles: ['packages/strings/package.json'],
           changelogPaths: ['packages/strings'],
@@ -188,6 +192,7 @@ describe(releasePrepareMono, () => {
       formatCommand: 'pnpm run fmt',
       components: [
         {
+          dir: 'arrays',
           tagPrefix: 'arrays-v',
           packageFiles: ['packages/arrays/package.json'],
           changelogPaths: ['packages/arrays'],
@@ -220,12 +225,14 @@ describe(releasePrepareMono, () => {
       formatCommand: 'pnpm run fmt',
       components: [
         {
+          dir: 'arrays',
           tagPrefix: 'arrays-v',
           packageFiles: ['packages/arrays/package.json'],
           changelogPaths: ['packages/arrays'],
           paths: ['packages/arrays/**'],
         },
         {
+          dir: 'strings',
           tagPrefix: 'strings-v',
           packageFiles: ['packages/strings/package.json'],
           changelogPaths: ['packages/strings'],
@@ -257,6 +264,7 @@ describe(releasePrepareMono, () => {
     const config = makeConfig({
       components: [
         {
+          dir: 'arrays',
           tagPrefix: 'arrays-v',
           packageFiles: ['packages/arrays/package.json'],
           changelogPaths: ['packages/arrays'],
@@ -296,6 +304,7 @@ describe(releasePrepareMono, () => {
     const config = makeConfig({
       components: [
         {
+          dir: 'arrays',
           tagPrefix: 'arrays-v',
           packageFiles: ['packages/arrays/package.json'],
           changelogPaths: ['packages/arrays'],
@@ -327,6 +336,7 @@ describe(releasePrepareMono, () => {
       formatCommand: 'pnpm run fmt',
       components: [
         {
+          dir: 'arrays',
           tagPrefix: 'arrays-v',
           packageFiles: ['packages/arrays/package.json'],
           changelogPaths: ['packages/arrays'],

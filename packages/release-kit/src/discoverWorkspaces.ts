@@ -10,9 +10,9 @@ import { load } from 'js-yaml';
  * Returns an array of workspace-relative directory paths (e.g., `['packages/arrays', 'packages/strings']`).
  * Only directories containing a `package.json` are included.
  *
- * Note: The returned paths are full relative paths from the repo root (e.g., `packages/arrays`),
- * not bare directory names. Callers that need bare names (e.g., for `component()`) should
- * use `path.basename()` to strip the prefix.
+ * Note: The returned paths are full relative paths from the repo root (e.g., `packages/arrays`,
+ * `libs/core`). These paths are passed directly to `component()`, which uses them for all
+ * file path construction and derives the display name via `path.basename()`.
  *
  * @returns The discovered workspace paths, or `undefined` if no workspace config is found.
  */

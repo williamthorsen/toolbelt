@@ -1,5 +1,4 @@
 import { existsSync } from 'node:fs';
-import { basename } from 'node:path';
 
 import { component } from './component.ts';
 import { DEFAULT_VERSION_PATTERNS, DEFAULT_WORK_TYPES } from './defaults.ts';
@@ -57,10 +56,7 @@ export function mergeMonorepoConfig(
   userConfig: ReleaseKitConfig | undefined,
 ): MonorepoReleaseConfig {
   // Build default components from discovered paths
-  let components: ComponentConfig[] = discoveredPaths.map((dirPath) => {
-    const name = basename(dirPath);
-    return component(name);
-  });
+  let components: ComponentConfig[] = discoveredPaths.map((workspacePath) => component(workspacePath));
 
   // Apply component overrides from user config
   if (userConfig?.components !== undefined) {
@@ -68,15 +64,13 @@ export function mergeMonorepoConfig(
 
     components = components
       .filter((c) => {
-        const name = c.tagPrefix.replace(/-v$/, '');
-        const override = overrides.get(name);
+        const override = overrides.get(c.dir);
         return override?.shouldExclude !== true;
       })
       .map((c) => {
-        const name = c.tagPrefix.replace(/-v$/, '');
-        const override = overrides.get(name);
+        const override = overrides.get(c.dir);
         if (override?.tagPrefix !== undefined) {
-          return component(name, override.tagPrefix);
+          return { ...c, tagPrefix: override.tagPrefix };
         }
         return c;
       });

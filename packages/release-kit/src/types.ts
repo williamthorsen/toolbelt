@@ -83,6 +83,8 @@ export interface ParsedCommit {
 
 /** Per-component configuration for monorepo releases. */
 export interface ComponentConfig {
+  /** The package directory name (e.g., 'arrays'). Used for display and `--only` matching. */
+  dir: string;
   /** The git tag prefix for this component (e.g., 'arrays-v'). */
   tagPrefix: string;
   /** Paths to package.json files to bump. */

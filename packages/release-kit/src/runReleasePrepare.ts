@@ -120,22 +120,17 @@ export function runReleasePrepare(config: MonorepoReleaseConfig | ReleaseConfig)
   let effectiveConfig = config;
 
   if (only !== undefined) {
-    const knownPrefixes = config.components.map((c) => c.tagPrefix);
+    const knownNames = config.components.map((c) => c.dir);
 
     // Validate all names before computing filtered list
     for (const name of only) {
-      const matchesKnown = knownPrefixes.includes(`${name}-v`);
-      if (!matchesKnown) {
-        const knownNames = knownPrefixes.map((p) => p.replace(/-v$/, '')).join(', ');
-        console.error(`Error: Unknown component "${name}". Known components: ${knownNames}`);
+      if (!knownNames.includes(name)) {
+        console.error(`Error: Unknown component "${name}". Known components: ${knownNames.join(', ')}`);
         process.exit(1);
       }
     }
 
-    const filtered = config.components.filter((c) => {
-      const name = c.tagPrefix.replace(/-v$/, '');
-      return only.includes(name);
-    });
+    const filtered = config.components.filter((c) => only.includes(c.dir));
 
     effectiveConfig = { ...config, components: filtered };
   }

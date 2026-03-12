@@ -34,7 +34,7 @@ export function releasePrepareMono(config: MonorepoReleaseConfig, options: Relea
   const tags: string[] = [];
 
   for (const component of config.components) {
-    const name = component.tagPrefix.replace(/-v$/, '');
+    const name = component.dir;
     console.info(`\nProcessing component: ${name}`);
 
     // 1. Get path-filtered commits since last tag

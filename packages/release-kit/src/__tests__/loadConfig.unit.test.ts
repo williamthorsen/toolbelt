@@ -35,21 +35,21 @@ describe(loadConfig, () => {
     mockExistsSync.mockReturnValue(true);
     mockJitiImport.mockResolvedValue('not-an-object');
 
-    await expect(loadConfig()).rejects.toThrow('Config file must export an object, got string');
+    await expect(loadConfig()).rejects.toThrowError('Config file must export an object, got string');
   });
 
   it('throws when jiti returns an array', async () => {
     mockExistsSync.mockReturnValue(true);
     mockJitiImport.mockResolvedValue([1, 2, 3]);
 
-    await expect(loadConfig()).rejects.toThrow('Config file must export an object, got array');
+    await expect(loadConfig()).rejects.toThrowError('Config file must export an object, got array');
   });
 
   it('throws when the exported record has no default or config export', async () => {
     mockExistsSync.mockReturnValue(true);
     mockJitiImport.mockResolvedValue({ unrelated: true });
 
-    await expect(loadConfig()).rejects.toThrow('must have a default export or a named `config` export');
+    await expect(loadConfig()).rejects.toThrowError('must have a default export or a named `config` export');
   });
 
   it('returns the default export when present', async () => {
@@ -92,10 +92,24 @@ describe(mergeMonorepoConfig, () => {
 
     expect(result.components).toHaveLength(2);
     expect(result.components[0]).toStrictEqual({
+      dir: 'arrays',
       tagPrefix: 'arrays-v',
       packageFiles: ['packages/arrays/package.json'],
       changelogPaths: ['packages/arrays'],
       paths: ['packages/arrays/**'],
+    });
+  });
+
+  it('builds components from non-standard workspace paths', () => {
+    const result = mergeMonorepoConfig(['libs/core', 'apps/web'], undefined);
+
+    expect(result.components).toHaveLength(2);
+    expect(result.components[0]).toStrictEqual({
+      dir: 'core',
+      tagPrefix: 'core-v',
+      packageFiles: ['libs/core/package.json'],
+      changelogPaths: ['libs/core'],
+      paths: ['libs/core/**'],
     });
   });
 

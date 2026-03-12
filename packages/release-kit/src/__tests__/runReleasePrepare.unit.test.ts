@@ -37,12 +37,14 @@ function makeConfig(overrides?: Partial<MonorepoReleaseConfig>): MonorepoRelease
   return {
     components: [
       {
+        dir: 'arrays',
         tagPrefix: 'arrays-v',
         packageFiles: ['packages/arrays/package.json'],
         changelogPaths: ['packages/arrays'],
         paths: ['packages/arrays/**'],
       },
       {
+        dir: 'strings',
         tagPrefix: 'strings-v',
         packageFiles: ['packages/strings/package.json'],
         changelogPaths: ['packages/strings'],
