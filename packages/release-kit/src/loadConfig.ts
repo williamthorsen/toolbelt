@@ -1,4 +1,5 @@
 import { existsSync } from 'node:fs';
+import path from 'node:path';
 
 import { component } from './component.ts';
 import { DEFAULT_VERSION_PATTERNS, DEFAULT_WORK_TYPES } from './defaults.ts';
@@ -14,13 +15,15 @@ export const CONFIG_FILE_PATH = '.config/release-kit.config.ts';
  * @throws If the file exists but cannot be loaded or does not have a default export.
  */
 export async function loadConfig(): Promise<unknown> {
-  if (!existsSync(CONFIG_FILE_PATH)) {
+  const absoluteConfigPath = path.resolve(process.cwd(), CONFIG_FILE_PATH);
+
+  if (!existsSync(absoluteConfigPath)) {
     return undefined;
   }
 
   const { createJiti } = await import('jiti');
   const jiti = createJiti(import.meta.url);
-  const imported: unknown = await jiti.import(CONFIG_FILE_PATH);
+  const imported: unknown = await jiti.import(absoluteConfigPath);
 
   if (!isRecord(imported)) {
     throw new Error(`Config file must export an object, got ${Array.isArray(imported) ? 'array' : typeof imported}`);
