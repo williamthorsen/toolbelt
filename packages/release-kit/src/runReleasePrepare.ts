@@ -121,11 +121,8 @@ export function runReleasePrepare(config: MonorepoReleaseConfig | ReleaseConfig)
 
   if (only !== undefined) {
     const knownPrefixes = config.components.map((c) => c.tagPrefix);
-    const filtered = config.components.filter((c) => {
-      const name = c.tagPrefix.replace(/-v$/, '');
-      return only.includes(name);
-    });
 
+    // Validate all names before computing filtered list
     for (const name of only) {
       const matchesKnown = knownPrefixes.includes(`${name}-v`);
       if (!matchesKnown) {
@@ -134,6 +131,11 @@ export function runReleasePrepare(config: MonorepoReleaseConfig | ReleaseConfig)
         process.exit(1);
       }
     }
+
+    const filtered = config.components.filter((c) => {
+      const name = c.tagPrefix.replace(/-v$/, '');
+      return only.includes(name);
+    });
 
     effectiveConfig = { ...config, components: filtered };
   }

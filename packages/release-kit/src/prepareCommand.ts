@@ -77,11 +77,8 @@ export async function prepareCommand(argv: string[]): Promise<void> {
 
     if (only !== undefined) {
       const knownPrefixes = config.components.map((c) => c.tagPrefix);
-      const filtered = config.components.filter((c) => {
-        const name = c.tagPrefix.replace(/-v$/, '');
-        return only.includes(name);
-      });
 
+      // Validate all names before mutating config
       for (const name of only) {
         const matchesKnown = knownPrefixes.includes(`${name}-v`);
         if (!matchesKnown) {
@@ -91,7 +88,10 @@ export async function prepareCommand(argv: string[]): Promise<void> {
         }
       }
 
-      config.components = filtered;
+      config.components = config.components.filter((c) => {
+        const name = c.tagPrefix.replace(/-v$/, '');
+        return only.includes(name);
+      });
     }
 
     try {

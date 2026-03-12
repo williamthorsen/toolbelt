@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 /* eslint-disable vitest/require-mock-type-parameters -- mocks are used loosely across overloads */
 const mockExistsSync = vi.hoisted(() => vi.fn());
@@ -19,10 +19,15 @@ vi.mock('glob', () => ({
 import { discoverWorkspaces } from '../discoverWorkspaces.ts';
 
 describe(discoverWorkspaces, () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   afterEach(() => {
     mockExistsSync.mockReset();
     mockReadFileSync.mockReset();
     mockGlob.mockReset();
+    vi.restoreAllMocks();
   });
 
   it('returns undefined when pnpm-workspace.yaml does not exist', async () => {
@@ -101,11 +106,21 @@ describe(discoverWorkspaces, () => {
     expect(result).toBeUndefined();
   });
 
-  it('returns undefined when readFileSync throws', async () => {
+  it('returns undefined and logs a warning when readFileSync throws', async () => {
     mockExistsSync.mockReturnValue(true);
     mockReadFileSync.mockImplementation(() => {
       throw new Error('EACCES');
     });
+
+    const result = await discoverWorkspaces();
+
+    expect(result).toBeUndefined();
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('EACCES'));
+  });
+
+  it('returns undefined when packages array is empty', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockReadFileSync.mockReturnValue('packages: []\n');
 
     const result = await discoverWorkspaces();
 

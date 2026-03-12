@@ -124,11 +124,18 @@ describe(prepareCommand, () => {
     expect(console.error).toHaveBeenCalledWith(expect.stringContaining('--only is only supported'));
   });
 
+  it('exits with error for --only with an unknown component name in monorepo mode', async () => {
+    await expect(prepareCommand(['--only=arrays,nonexistent'])).rejects.toThrowError(ExitError);
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('nonexistent'));
+    expect(mockReleasePrepareMono).not.toHaveBeenCalled();
+  });
+
   it('exits with error when config is invalid', async () => {
     mockLoadConfig.mockResolvedValue({ unknownField: true });
 
     await expect(prepareCommand([])).rejects.toThrowError(ExitError);
     expect(console.error).toHaveBeenCalledWith('Invalid config:');
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('unknownField'));
   });
 
   it('writes release tags after successful preparation', async () => {

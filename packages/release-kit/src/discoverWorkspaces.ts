@@ -26,7 +26,8 @@ export async function discoverWorkspaces(): Promise<string[] | undefined> {
   let content: string;
   try {
     content = readFileSync(workspaceFile, 'utf8');
-  } catch {
+  } catch (error: unknown) {
+    console.warn(`Warning: Failed to read ${workspaceFile}: ${error instanceof Error ? error.message : String(error)}`);
     return undefined;
   }
 

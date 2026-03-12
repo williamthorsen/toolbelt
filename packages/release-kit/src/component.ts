@@ -5,7 +5,10 @@ import type { ComponentConfig } from './types.ts';
  *
  * Derives all fields from the single directory name so that the same rule governs both tag creation and tag lookup.
  *
- * @param dir - The package directory name (e.g., 'basic'). Assumed to be under `packages/`.
+ * Note: This function assumes the workspace lives under `packages/`. All generated paths
+ * (`packageFiles`, `changelogPaths`, `paths`) use `packages/${dir}/...` as the base.
+ *
+ * @param dir - The package directory name (e.g., 'basic'). Must be non-empty.
  * @param tagPrefix - Optional custom tag prefix. Defaults to `${dir}-v`.
  */
 export function component(dir: string, tagPrefix?: string): ComponentConfig {

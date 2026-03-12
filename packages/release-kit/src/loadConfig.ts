@@ -21,10 +21,25 @@ export async function loadConfig(): Promise<unknown> {
 
   const { createJiti } = await import('jiti');
   const jiti = createJiti(import.meta.url);
-  const configModule: Record<string, unknown> = await jiti.import(CONFIG_FILE_PATH);
+  const imported: unknown = await jiti.import(CONFIG_FILE_PATH);
+
+  if (!isRecord(imported)) {
+    throw new Error(`Config file must export an object, got ${Array.isArray(imported) ? 'array' : typeof imported}`);
+  }
 
   // Support both default export and named `config` export
-  return configModule.default ?? configModule.config;
+  const resolved = imported.default ?? imported.config;
+  if (resolved === undefined) {
+    throw new Error(
+      'Config file must have a default export or a named `config` export (e.g., `export default { ... }` or `export const config = { ... }`)',
+    );
+  }
+
+  return resolved;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 /**

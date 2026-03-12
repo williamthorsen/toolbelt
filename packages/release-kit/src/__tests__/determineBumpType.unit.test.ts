@@ -93,4 +93,11 @@ describe(determineBumpType, () => {
     const result = determineBumpType(commits, customTypes, customPatterns);
     expect(result).toBe('minor');
   });
+
+  it('does not treat a breaking commit as major when "!" is absent from versionPatterns.major', () => {
+    const customPatterns: VersionPatterns = { major: ['breaking-change'], minor: ['feat'] };
+    const commits = [makeCommit({ type: 'fix', breaking: true })];
+    const result = determineBumpType(commits, workTypes, customPatterns);
+    expect(result).toBe('patch');
+  });
 });

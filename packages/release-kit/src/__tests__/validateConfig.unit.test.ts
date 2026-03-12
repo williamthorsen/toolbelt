@@ -67,6 +67,22 @@ describe(validateConfig, () => {
       });
       expect(errors).toContain('versionPatterns.minor: expected string array');
     });
+
+    it('returns an error and does not set config.versionPatterns when only major is valid', () => {
+      const { config, errors } = validateConfig({
+        versionPatterns: { major: ['!'], minor: 'invalid' },
+      });
+      expect(errors).toContain('versionPatterns.minor: expected string array');
+      expect(config.versionPatterns).toBeUndefined();
+    });
+
+    it('returns an error and does not set config.versionPatterns when only minor is valid', () => {
+      const { config, errors } = validateConfig({
+        versionPatterns: { major: 123, minor: ['feat'] },
+      });
+      expect(errors).toContain('versionPatterns.major: expected string array');
+      expect(config.versionPatterns).toBeUndefined();
+    });
   });
 
   describe('workTypes', () => {

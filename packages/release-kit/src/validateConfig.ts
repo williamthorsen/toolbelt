@@ -172,6 +172,9 @@ function validateWorkspaceAliases(value: unknown, config: ReleaseKitConfig, erro
       valid = false;
     }
   }
+  // All-or-nothing: only assign aliases when every entry is valid.
+  // Unlike `validateComponents`, partial results are not useful for aliases
+  // because the mapping is consumed as a complete lookup table.
   if (valid) {
     config.workspaceAliases = aliases;
   }
