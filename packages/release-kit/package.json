@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/release-kit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Version-bumping and changelog-generation toolkit for release workflows",
   "keywords": [],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/release-kit#readme",

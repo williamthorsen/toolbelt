@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [release-kit-v1.0.1] - 2026-03-12
+
+### Bug fixes
+
+- #34 release-kit|fix: Fix failure to find consumer's config (#35)
+
+Resolves the config file path to an absolute path using `process.cwd()` before passing it to both `existsSync` and `jiti.import()`. Previously, `jiti.import()` received a bare relative path which it resolved against `import.meta.url` (the package's install location), making it impossible for consumers to load their config files. Also fixes root tsconfig includes to cover `.config/` and removes a stale duplicate comment.
+
 ## [release-kit-v1.0.0] - 2026-03-12
 
 ### Features
