@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [release-kit-v1.0.0] - 2026-03-12
+
+### Features
+
+- #28 release-kit|feat!: Migrate to CLI-driven release preparation with auto-discovery (#31)
+
+Replaces release-kit's script-based release preparation with a self-contained CLI (`npx @williamthorsen/release-kit prepare`) that auto-discovers workspaces from `pnpm-workspace.yaml`. Adds workspace auto-discovery, TypeScript config loading via jiti, config validation, and a `component()` factory that accepts full workspace-relative paths. Refactors the type system: `WorkTypeConfig` becomes a record keyed by type name, version-bump rules move to a separate `VersionPatterns` structure, and `ComponentConfig` gains a `dir` field for canonical directory identity.
+
+### Refactoring
+
+- #28 release-kit|refactor: Adjust location of config & tags file
+
+### Tooling
+
+- #28 release-kit|tooling: Remove legacy release-kit scripts
+
 ## [release-kit-v0.3.0] - 2026-03-11
 
 ### Features
