@@ -55,6 +55,8 @@ export async function prepareCommand(argv: string[]): Promise<void> {
   }
 
   // 4. Determine mode and merge config
+  let tags: string[] = [];
+
   if (discoveredPaths === undefined) {
     // Single-package mode
     if (only !== undefined) {
@@ -65,7 +67,7 @@ export async function prepareCommand(argv: string[]): Promise<void> {
     const config = mergeSinglePackageConfig(userConfig);
 
     try {
-      const tags = releasePrepare(config, options);
+      tags = releasePrepare(config, options);
       writeReleaseTags(tags, dryRun);
     } catch (error: unknown) {
       console.error('Error preparing release:', error instanceof Error ? error.message : String(error));
@@ -95,7 +97,7 @@ export async function prepareCommand(argv: string[]): Promise<void> {
     }
 
     try {
-      const tags = releasePrepareMono(config, options);
+      tags = releasePrepareMono(config, options);
       writeReleaseTags(tags, dryRun);
     } catch (error: unknown) {
       console.error('Error preparing release:', error instanceof Error ? error.message : String(error));
@@ -103,5 +105,7 @@ export async function prepareCommand(argv: string[]): Promise<void> {
     }
   }
 
-  console.info(`\nRelease tags file: ${RELEASE_TAGS_FILE}`);
+  if (tags.length > 0) {
+    console.info(`\nRelease tags file: ${RELEASE_TAGS_FILE}`);
+  }
 }

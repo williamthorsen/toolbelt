@@ -154,6 +154,22 @@ describe(prepareCommand, () => {
     expect(mockWriteReleaseTags).toHaveBeenCalledWith(['arrays-v1.0.0'], false);
   });
 
+  it('prints release tags file path when tags are produced', async () => {
+    mockReleasePrepareMono.mockReturnValue(['arrays-v1.0.0']);
+
+    await prepareCommand([]);
+
+    expect(console.info).toHaveBeenCalledWith(expect.stringContaining('Release tags file:'));
+  });
+
+  it('does not print release tags file path when no tags are produced', async () => {
+    mockReleasePrepareMono.mockReturnValue([]);
+
+    await prepareCommand([]);
+
+    expect(console.info).not.toHaveBeenCalledWith(expect.stringContaining('Release tags file:'));
+  });
+
   it('applies component exclusion from config', async () => {
     mockLoadConfig.mockResolvedValue({
       components: [{ dir: 'strings', shouldExclude: true }],
