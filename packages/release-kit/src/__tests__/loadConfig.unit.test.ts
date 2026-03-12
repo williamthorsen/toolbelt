@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 /* eslint-disable vitest/require-mock-type-parameters -- mocks are used loosely across overloads */
@@ -15,7 +17,7 @@ vi.mock('jiti', () => ({
 }));
 
 import { DEFAULT_VERSION_PATTERNS, DEFAULT_WORK_TYPES } from '../defaults.ts';
-import { loadConfig, mergeMonorepoConfig, mergeSinglePackageConfig } from '../loadConfig.ts';
+import { CONFIG_FILE_PATH, loadConfig, mergeMonorepoConfig, mergeSinglePackageConfig } from '../loadConfig.ts';
 
 describe(loadConfig, () => {
   afterEach(() => {
@@ -29,6 +31,17 @@ describe(loadConfig, () => {
     const result = await loadConfig();
 
     expect(result).toBeUndefined();
+  });
+
+  it('resolves the config path against process.cwd()', async () => {
+    const expectedPath = path.resolve(process.cwd(), CONFIG_FILE_PATH);
+    mockExistsSync.mockReturnValue(true);
+    mockJitiImport.mockResolvedValue({ default: {} });
+
+    await loadConfig();
+
+    expect(mockExistsSync).toHaveBeenCalledWith(expectedPath);
+    expect(mockJitiImport).toHaveBeenCalledWith(expectedPath);
   });
 
   it('throws when jiti returns a non-object value', async () => {
