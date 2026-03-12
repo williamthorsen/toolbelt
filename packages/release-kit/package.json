@@ -35,6 +35,14 @@
     "release:prepare:dry": "tsx ../../.github/scripts/release-prepare.ts --only=release-kit --dry-run",
     "ws": "node --import tsx ../../scripts/run-workspace-script.ts --int-test"
   },
+  "dependencies": {
+    "glob": "13.0.6",
+    "jiti": "2.6.1",
+    "js-yaml": "4.1.1"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "4.0.9"
+  },
   "engines": {
     "node": ">=18.17.0"
   },

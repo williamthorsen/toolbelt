@@ -1,6 +1,7 @@
 import { execSync } from 'node:child_process';
 
 import { bumpAllVersions } from './bumpAllVersions.ts';
+import { DEFAULT_VERSION_PATTERNS, DEFAULT_WORK_TYPES } from './defaults.ts';
 import { determineBumpType } from './determineBumpType.ts';
 import { generateChangelogs } from './generateChangelogs.ts';
 import { getCommitsSinceTarget } from './getCommitsSinceTarget.ts';
@@ -29,6 +30,8 @@ export interface ReleasePrepareOptions {
  */
 export function releasePrepare(config: ReleaseConfig, options: ReleasePrepareOptions): string[] {
   const { dryRun, bumpOverride } = options;
+  const workTypes = config.workTypes ?? { ...DEFAULT_WORK_TYPES };
+  const versionPatterns = config.versionPatterns ?? { ...DEFAULT_VERSION_PATTERNS };
 
   // 1. Get commits since last tag
   console.info('Finding commits since last release...');
@@ -40,11 +43,11 @@ export function releasePrepare(config: ReleaseConfig, options: ReleasePrepareOpt
 
   if (bumpOverride === undefined) {
     const parsedCommits = commits
-      .map((c) => parseCommitMessage(c.message, c.hash, config.workTypes, config.workspaceAliases))
+      .map((c) => parseCommitMessage(c.message, c.hash, workTypes, config.workspaceAliases))
       .filter((c): c is ParsedCommit => c !== undefined);
 
     console.info(`  Parsed ${parsedCommits.length} typed commits`);
-    releaseType = determineBumpType(parsedCommits, config.workTypes);
+    releaseType = determineBumpType(parsedCommits, workTypes, versionPatterns);
   } else {
     releaseType = bumpOverride;
     console.info(`  Using bump override: ${releaseType}`);

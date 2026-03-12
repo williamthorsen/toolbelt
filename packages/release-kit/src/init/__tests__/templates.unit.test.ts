@@ -1,56 +1,46 @@
 import { describe, expect, it } from 'vitest';
 
-import { releaseConfigScript, releasePrepareScript, releaseWorkflow } from '../templates.ts';
-
-describe(releasePrepareScript, () => {
-  it('imports runReleasePrepare from release-kit', () => {
-    const script = releasePrepareScript();
-
-    expect(script).toContain("import { runReleasePrepare } from '@williamthorsen/release-kit'");
-  });
-
-  it('imports the config from release.config.ts', () => {
-    const script = releasePrepareScript();
-
-    expect(script).toContain("import { config } from './release.config.ts'");
-  });
-
-  it('calls runReleasePrepare with the config', () => {
-    const script = releasePrepareScript();
-
-    expect(script).toContain('runReleasePrepare(config)');
-  });
-});
+import { releaseConfigScript, releaseWorkflow } from '../templates.ts';
 
 describe(releaseConfigScript, () => {
-  it('generates a MonorepoReleaseConfig for monorepo type', () => {
+  it('generates a ReleaseKitConfig for monorepo type', () => {
     const script = releaseConfigScript('monorepo');
 
-    expect(script).toContain('MonorepoReleaseConfig');
-    expect(script).toContain('DEFAULT_WORK_TYPES');
-    expect(script).toContain('component(');
+    expect(script).toContain('ReleaseKitConfig');
     expect(script).toContain('components:');
-    expect(script).toContain('// TODO:');
+    expect(script).toContain('shouldExclude');
+    expect(script).toContain('workTypes:');
+    expect(script).toContain("header: 'Performance'");
+    expect(script).toContain('export default config');
   });
 
-  it('generates a ReleaseConfig for single-package type', () => {
+  it('generates a ReleaseKitConfig for single-package type', () => {
     const script = releaseConfigScript('single-package');
 
-    expect(script).toContain('ReleaseConfig');
-    expect(script).toContain('DEFAULT_WORK_TYPES');
-    expect(script).toContain("tagPrefix: 'v'");
-    expect(script).toContain('// TODO:');
-    expect(script).not.toContain('MonorepoReleaseConfig');
+    expect(script).toContain('ReleaseKitConfig');
+    expect(script).toContain('workTypes:');
+    expect(script).toContain("header: 'Performance'");
+    expect(script).toContain('export default config');
     expect(script).not.toContain('components');
+  });
+
+  it('uses header field for work type labels', () => {
+    const mono = releaseConfigScript('monorepo');
+    const single = releaseConfigScript('single-package');
+
+    expect(mono).toContain('header:');
+    expect(single).toContain('header:');
+    expect(mono).not.toContain('heading:');
+    expect(single).not.toContain('heading:');
   });
 });
 
 describe(releaseWorkflow, () => {
-  it('generates a monorepo workflow with only input and monorepo flag', () => {
+  it('generates a monorepo workflow with only input but no monorepo flag', () => {
     const workflow = releaseWorkflow('monorepo');
 
     expect(workflow).toContain('release-pnpm.yaml@v1');
-    expect(workflow).toContain('monorepo: true');
+    expect(workflow).not.toContain('monorepo:');
     expect(workflow).toContain('only:');
     expect(workflow).toContain('inputs.only');
   });

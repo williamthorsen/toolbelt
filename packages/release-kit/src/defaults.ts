@@ -1,15 +1,21 @@
-import type { WorkTypeConfig } from './types.ts';
+import type { VersionPatterns, WorkTypeConfig } from './types.ts';
 
 /** Default work types ordered by priority, matching the skypilot-site convention. */
-export const DEFAULT_WORK_TYPES: readonly WorkTypeConfig[] = [
-  { type: 'fix', header: 'Bug fixes', bump: 'patch', aliases: ['bugfix'] },
-  { type: 'feat', header: 'Features', bump: 'minor', aliases: ['feature'] },
-  { type: 'internal', header: 'Internal', bump: 'patch' },
-  { type: 'refactor', header: 'Refactoring', bump: 'patch' },
-  { type: 'tests', header: 'Tests', bump: 'patch', aliases: ['test'] },
-  { type: 'tooling', header: 'Tooling', bump: 'patch' },
-  { type: 'ci', header: 'CI', bump: 'patch' },
-  { type: 'deps', header: 'Dependencies', bump: 'patch', aliases: ['dep'] },
-  { type: 'docs', header: 'Documentation', bump: 'patch', aliases: ['doc'] },
-  { type: 'fmt', header: 'Formatting', bump: 'patch' },
-] as const;
+export const DEFAULT_WORK_TYPES: Record<string, WorkTypeConfig> = {
+  fix: { header: 'Bug fixes', aliases: ['bugfix'] },
+  feat: { header: 'Features', aliases: ['feature'] },
+  internal: { header: 'Internal' },
+  refactor: { header: 'Refactoring' },
+  tests: { header: 'Tests', aliases: ['test'] },
+  tooling: { header: 'Tooling' },
+  ci: { header: 'CI' },
+  deps: { header: 'Dependencies', aliases: ['dep'] },
+  docs: { header: 'Documentation', aliases: ['doc'] },
+  fmt: { header: 'Formatting' },
+};
+
+/** Default version bump patterns. */
+export const DEFAULT_VERSION_PATTERNS: VersionPatterns = {
+  major: ['!'],
+  minor: ['feat', 'feature'],
+};

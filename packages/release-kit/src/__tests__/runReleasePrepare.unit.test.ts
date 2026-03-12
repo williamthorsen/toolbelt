@@ -1,9 +1,12 @@
+import assert from 'node:assert';
+
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 /* eslint-disable vitest/require-mock-type-parameters -- mocks are used loosely across overloads */
 const mockReleasePrepareMono = vi.hoisted(() => vi.fn());
 const mockReleasePrepare = vi.hoisted(() => vi.fn());
 const mockWriteFileSync = vi.hoisted(() => vi.fn());
+const mockMkdirSync = vi.hoisted(() => vi.fn());
 /* eslint-enable vitest/require-mock-type-parameters */
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- string path avoids strict type-checking issues with partial mocks
@@ -18,27 +21,30 @@ vi.mock('../releasePrepare.ts', () => ({
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- string path avoids strict type-checking issues with partial mocks
 vi.mock('node:fs', () => ({
+  mkdirSync: mockMkdirSync,
   writeFileSync: mockWriteFileSync,
 }));
 
 import { RELEASE_TAGS_FILE, runReleasePrepare } from '../runReleasePrepare.ts';
 import type { MonorepoReleaseConfig, ReleaseConfig, WorkTypeConfig } from '../types.ts';
 
-const workTypes: WorkTypeConfig[] = [
-  { type: 'feat', header: 'Features', bump: 'minor' },
-  { type: 'fix', header: 'Bug fixes', bump: 'patch' },
-];
+const workTypes: Record<string, WorkTypeConfig> = {
+  feat: { header: 'Features' },
+  fix: { header: 'Bug fixes' },
+};
 
 function makeConfig(overrides?: Partial<MonorepoReleaseConfig>): MonorepoReleaseConfig {
   return {
     components: [
       {
+        dir: 'arrays',
         tagPrefix: 'arrays-v',
         packageFiles: ['packages/arrays/package.json'],
         changelogPaths: ['packages/arrays'],
         paths: ['packages/arrays/**'],
       },
       {
+        dir: 'strings',
         tagPrefix: 'strings-v',
         packageFiles: ['packages/strings/package.json'],
         changelogPaths: ['packages/strings'],
@@ -87,6 +93,7 @@ describe(runReleasePrepare, () => {
     process.argv = originalArgv;
     mockReleasePrepareMono.mockReset();
     mockReleasePrepare.mockReset();
+    mockMkdirSync.mockReset();
     mockWriteFileSync.mockReset();
     vi.restoreAllMocks();
   });
@@ -212,6 +219,26 @@ describe(runReleasePrepare, () => {
   });
 
   describe('release-tags file', () => {
+    it('writes to the cache directory, not the project root', () => {
+      expect(RELEASE_TAGS_FILE).toMatch(/^node_modules\/.cache\//);
+    });
+
+    it('creates the parent directory before writing', () => {
+      process.argv = ['node', 'script.ts'];
+      mockReleasePrepareMono.mockReturnValue(['arrays-v1.1.0']);
+
+      runReleasePrepare(makeConfig());
+
+      expect(mockMkdirSync).toHaveBeenCalledWith('node_modules/.cache/release-kit', { recursive: true });
+
+      // Verify mkdir was called before writeFileSync
+      const mkdirOrder = mockMkdirSync.mock.invocationCallOrder[0];
+      const writeOrder = mockWriteFileSync.mock.invocationCallOrder[0];
+      assert.ok(mkdirOrder, 'mkdirSync was not called');
+      assert.ok(writeOrder, 'writeFileSync was not called');
+      expect(mkdirOrder).toBeLessThan(writeOrder);
+    });
+
     it('writes .release-tags after a monorepo release', () => {
       process.argv = ['node', 'script.ts'];
       mockReleasePrepareMono.mockReturnValue(['arrays-v1.1.0', 'strings-v2.0.1']);

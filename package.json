@@ -56,8 +56,8 @@
     "@typescript/native-preview": "7.0.0-dev.20260309.1",
     "@vitest/coverage-v8": "4.0.18",
     "@vitest/eslint-plugin": "1.6.10",
-    "@williamthorsen/eslint-config-typescript": "5.12.3",
-    "@williamthorsen/strict-lint": "5.3.9",
+    "@williamthorsen/eslint-config-typescript": "5.14.0",
+    "@williamthorsen/strict-lint": "6.1.1",
     "esbuild": "0.27.3",
     "eslint": "9.39.4",
     "eslint-plugin-import": "2.32.0",
@@ -74,5 +74,5 @@
     "vitest": "4.0.18",
     "zod": "4.3.6"
   },
-  "packageManager": "pnpm@10.32.0"
+  "packageManager": "pnpm@10.32.1"
 }

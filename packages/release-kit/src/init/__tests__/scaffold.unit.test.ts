@@ -45,145 +45,49 @@ describe('scaffold', () => {
   describe(scaffoldFiles, () => {
     it('creates scaffold files when they do not exist', () => {
       mockExistsSync.mockReturnValue(false);
-      // readFileSync for package.json in updatePackageJsonScripts
-      mockReadFileSync.mockReturnValue(JSON.stringify({ name: 'test' }));
 
       scaffoldFiles({ repoType: 'single-package', dryRun: false, overwrite: false });
 
-      expect(mockMkdirSync).toHaveBeenCalledWith('.github/scripts', { recursive: true });
+      expect(mockMkdirSync).toHaveBeenCalledWith('.config', { recursive: true });
       expect(mockMkdirSync).toHaveBeenCalledWith('.github/workflows', { recursive: true });
-      expect(mockWriteFileSync).toHaveBeenCalledWith('.github/scripts/release-prepare.ts', expect.any(String), 'utf8');
-      expect(mockWriteFileSync).toHaveBeenCalledWith('.github/scripts/release.config.ts', expect.any(String), 'utf8');
+      expect(mockWriteFileSync).toHaveBeenCalledWith('.config/release-kit.ts', expect.any(String), 'utf8');
       expect(mockWriteFileSync).toHaveBeenCalledWith('.github/workflows/release.yaml', expect.any(String), 'utf8');
     });
 
     it('skips files that already exist when overwrite is false', () => {
       mockExistsSync.mockReturnValue(true);
-      // readFileSync for updatePackageJsonScripts
-      mockReadFileSync.mockReturnValue(
-        JSON.stringify({
-          name: 'test',
-          scripts: { 'release:prepare': 'existing', 'release:prepare:dry': 'existing' },
-        }),
-      );
 
       scaffoldFiles({ repoType: 'single-package', dryRun: false, overwrite: false });
 
       // writeIfAbsent should skip, not write
       expect(mockWriteFileSync).not.toHaveBeenCalled();
-      expect(mockPrintSkip).toHaveBeenCalledTimes(3);
+      expect(mockPrintSkip).toHaveBeenCalledTimes(2);
     });
 
     it('overwrites existing files when overwrite is true', () => {
       mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue(
-        JSON.stringify({
-          name: 'test',
-          scripts: { 'release:prepare': 'existing', 'release:prepare:dry': 'existing' },
-        }),
-      );
 
       scaffoldFiles({ repoType: 'single-package', dryRun: false, overwrite: true });
 
       // Should write files even though they exist
-      expect(mockWriteFileSync).toHaveBeenCalledWith('.github/scripts/release-prepare.ts', expect.any(String), 'utf8');
-      expect(mockWriteFileSync).toHaveBeenCalledWith('.github/scripts/release.config.ts', expect.any(String), 'utf8');
+      expect(mockWriteFileSync).toHaveBeenCalledWith('.config/release-kit.ts', expect.any(String), 'utf8');
       expect(mockWriteFileSync).toHaveBeenCalledWith('.github/workflows/release.yaml', expect.any(String), 'utf8');
       expect(mockPrintSkip).not.toHaveBeenCalled();
     });
 
     it('logs but does not write in dry-run mode', () => {
       mockExistsSync.mockReturnValue(false);
-      mockReadFileSync.mockReturnValue(JSON.stringify({ name: 'test' }));
 
       scaffoldFiles({ repoType: 'single-package', dryRun: true, overwrite: false });
 
       // mkdirSync and writeFileSync should not be called for the scaffold files
       expect(mockMkdirSync).not.toHaveBeenCalled();
-      // writeFileSync should not be called at all (dry-run skips package.json writes too)
       expect(mockWriteFileSync).not.toHaveBeenCalled();
       expect(mockPrintSuccess).toHaveBeenCalledWith(expect.stringContaining('[dry-run]'));
     });
 
-    it('adds release:prepare scripts to package.json when absent', () => {
-      mockExistsSync.mockReturnValue(false);
-      mockReadFileSync.mockReturnValue(JSON.stringify({ name: 'test', scripts: { test: 'vitest' } }));
-
-      scaffoldFiles({ repoType: 'single-package', dryRun: false, overwrite: false });
-
-      // Verify package.json was written with the expected scripts
-      const expectedPkg = {
-        name: 'test',
-        scripts: {
-          test: 'vitest',
-          'release:prepare': 'tsx .github/scripts/release-prepare.ts',
-          'release:prepare:dry': 'tsx .github/scripts/release-prepare.ts --dry-run',
-        },
-      };
-      expect(mockWriteFileSync).toHaveBeenCalledWith(
-        'package.json',
-        `${JSON.stringify(expectedPkg, null, 2)}\n`,
-        'utf8',
-      );
-    });
-
-    it('skips package.json update when scripts already exist', () => {
-      mockExistsSync.mockReturnValue(false);
-      mockReadFileSync.mockReturnValue(
-        JSON.stringify({
-          name: 'test',
-          scripts: {
-            'release:prepare': 'tsx .github/scripts/release-prepare.ts',
-            'release:prepare:dry': 'tsx .github/scripts/release-prepare.ts --dry-run',
-          },
-        }),
-      );
-
-      scaffoldFiles({ repoType: 'single-package', dryRun: false, overwrite: false });
-
-      // No writeFileSync call for package.json
-      const pkgWriteCall = mockWriteFileSync.mock.calls.find((call: unknown[]) => call[0] === 'package.json');
-      expect(pkgWriteCall).toBeUndefined();
-      expect(mockPrintSuccess).toHaveBeenCalledWith('package.json scripts already configured');
-    });
-
-    it('prints an error when package.json cannot be read', () => {
-      mockExistsSync.mockReturnValue(false);
-      mockReadFileSync.mockImplementation(() => {
-        throw new Error('ENOENT: no such file or directory');
-      });
-
-      scaffoldFiles({ repoType: 'single-package', dryRun: false, overwrite: false });
-
-      expect(mockPrintError).toHaveBeenCalledWith(expect.stringContaining('Failed to read package.json'));
-    });
-
-    it('prints an error when package.json contains invalid JSON', () => {
-      mockExistsSync.mockReturnValue(false);
-      mockReadFileSync.mockReturnValue('{not valid json}');
-
-      scaffoldFiles({ repoType: 'single-package', dryRun: false, overwrite: false });
-
-      expect(mockPrintError).toHaveBeenCalledWith('Failed to parse package.json');
-    });
-
-    it('prints an error when package.json cannot be written', () => {
-      mockExistsSync.mockReturnValue(false);
-      mockReadFileSync.mockReturnValue(JSON.stringify({ name: 'test' }));
-      mockWriteFileSync.mockImplementation((path: string) => {
-        if (path === 'package.json') {
-          throw new Error('EACCES: permission denied');
-        }
-      });
-
-      scaffoldFiles({ repoType: 'single-package', dryRun: false, overwrite: false });
-
-      expect(mockPrintError).toHaveBeenCalledWith(expect.stringContaining('Failed to write package.json'));
-    });
-
     it('prints an error when mkdirSync fails for scaffold files', () => {
       mockExistsSync.mockReturnValue(false);
-      mockReadFileSync.mockReturnValue(JSON.stringify({ name: 'test' }));
       mockMkdirSync.mockImplementation(() => {
         throw new Error('EACCES: permission denied');
       });

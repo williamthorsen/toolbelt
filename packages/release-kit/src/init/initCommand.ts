@@ -86,12 +86,9 @@ export async function initCommand({ dryRun }: InitOptions): Promise<number> {
   // Print next steps
   printStep('Next steps');
   console.info(`
-  1. Customize .github/scripts/release.config.ts for your project
-  2. Set the correct node-version and pnpm-version in .github/workflows/release.yaml
-  3. Install required dev dependencies: pnpm add --save-dev tsx @williamthorsen/release-kit
-  4. Install git-cliff if not already installed: https://git-cliff.org/docs/installation
-  5. Create an initial version tag (e.g., git tag v0.0.0)
-  6. Test with a dry run: pnpm run release:prepare:dry
+  1. (Optional) Customize .config/release-kit.ts to exclude components, override version patterns, add custom work types, etc.
+  2. Test by running: npx @williamthorsen/release-kit prepare --dry-run
+  3. Commit the generated workflow file (and config file if created).
 `);
 
   return 0;

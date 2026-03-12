@@ -85,6 +85,39 @@ describe(getCommitsSinceTarget, () => {
     expect(result.commits).toStrictEqual([{ message: 'feat: add feature', hash: 'abc123' }]);
   });
 
+  it('filters out release commits from the result', () => {
+    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
+      if (cmd === 'git' && args[0] === 'describe') {
+        return 'v1.0.0\n';
+      }
+      return [
+        'feat: add feature\u001Fabc123',
+        'release: arrays-v1.1.0 strings-v2.0.1\u001Fdef456',
+        'fix: patch bug\u001Fghi789',
+      ].join('\n');
+    });
+
+    const result = getCommitsSinceTarget('v');
+
+    expect(result.commits).toStrictEqual([
+      { message: 'feat: add feature', hash: 'abc123' },
+      { message: 'fix: patch bug', hash: 'ghi789' },
+    ]);
+  });
+
+  it('returns empty commits when all commits are release commits', () => {
+    mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
+      if (cmd === 'git' && args[0] === 'describe') {
+        return 'v1.0.0\n';
+      }
+      return 'release: v1.0.1\u001Fabc123';
+    });
+
+    const result = getCommitsSinceTarget('v');
+
+    expect(result.commits).toStrictEqual([]);
+  });
+
   it('returns all commits when no matching tag exists', () => {
     mockExecFileSync.mockImplementation((cmd: string, args: string[]) => {
       if (cmd === 'git' && args[0] === 'describe') {

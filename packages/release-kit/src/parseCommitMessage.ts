@@ -10,14 +10,14 @@ import type { ParsedCommit, WorkTypeConfig } from './types.ts';
  *
  * @param message - The commit message (first line).
  * @param hash - The commit hash.
- * @param workTypes - The list of work type configurations to match against.
+ * @param workTypes - Record of work type configurations keyed by canonical type name.
  * @param workspaceAliases - Optional map of workspace shorthand names to canonical names.
  * @returns A parsed commit, or undefined if the message does not match a known format.
  */
 export function parseCommitMessage(
   message: string,
   hash: string,
-  workTypes: readonly WorkTypeConfig[],
+  workTypes: Record<string, WorkTypeConfig>,
   workspaceAliases?: Record<string, string>,
 ): ParsedCommit | undefined {
   // Match both `type: desc` and `workspace|type: desc` formats
@@ -59,19 +59,19 @@ export function parseCommitMessage(
 }
 
 /**
- * Resolves a raw type string to its canonical type name using aliases.
+ * Resolves a raw type string to its canonical type name using the record keys and aliases.
  */
-function resolveType(rawType: string, workTypes: readonly WorkTypeConfig[]): string | undefined {
+function resolveType(rawType: string, workTypes: Record<string, WorkTypeConfig>): string | undefined {
   const lowered = rawType.toLowerCase();
 
-  for (const config of workTypes) {
-    if (config.type === lowered) {
-      return config.type;
+  for (const [key, config] of Object.entries(workTypes)) {
+    if (key === lowered) {
+      return key;
     }
     if (config.aliases !== undefined) {
       for (const alias of config.aliases) {
         if (alias === lowered) {
-          return config.type;
+          return key;
         }
       }
     }
