@@ -130,6 +130,14 @@ describe(prepareCommand, () => {
     expect(mockReleasePrepareMono).not.toHaveBeenCalled();
   });
 
+  it('exits with error when loadConfig throws', async () => {
+    mockLoadConfig.mockRejectedValue(new Error('parse error'));
+
+    await expect(prepareCommand([])).rejects.toThrowError(ExitError);
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Error loading config'));
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('parse error'));
+  });
+
   it('exits with error when config is invalid', async () => {
     mockLoadConfig.mockResolvedValue({ unknownField: true });
 

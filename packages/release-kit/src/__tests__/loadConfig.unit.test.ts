@@ -1,7 +1,88 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+/* eslint-disable vitest/require-mock-type-parameters -- mocks are used loosely across overloads */
+const mockExistsSync = vi.hoisted(() => vi.fn());
+const mockJitiImport = vi.hoisted(() => vi.fn());
+/* eslint-enable vitest/require-mock-type-parameters */
+
+vi.mock(import('node:fs'), () => ({
+  existsSync: mockExistsSync,
+}));
+
+// eslint-disable-next-line vitest/prefer-import-in-mock -- string path avoids strict type-checking issues with partial mocks
+vi.mock('jiti', () => ({
+  createJiti: () => ({ import: mockJitiImport }),
+}));
 
 import { DEFAULT_VERSION_PATTERNS, DEFAULT_WORK_TYPES } from '../defaults.ts';
-import { mergeMonorepoConfig, mergeSinglePackageConfig } from '../loadConfig.ts';
+import { loadConfig, mergeMonorepoConfig, mergeSinglePackageConfig } from '../loadConfig.ts';
+
+describe(loadConfig, () => {
+  afterEach(() => {
+    mockExistsSync.mockReset();
+    mockJitiImport.mockReset();
+  });
+
+  it('returns undefined when the config file does not exist', async () => {
+    mockExistsSync.mockReturnValue(false);
+
+    const result = await loadConfig();
+
+    expect(result).toBeUndefined();
+  });
+
+  it('throws when jiti returns a non-object value', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockJitiImport.mockResolvedValue('not-an-object');
+
+    await expect(loadConfig()).rejects.toThrow('Config file must export an object, got string');
+  });
+
+  it('throws when jiti returns an array', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockJitiImport.mockResolvedValue([1, 2, 3]);
+
+    await expect(loadConfig()).rejects.toThrow('Config file must export an object, got array');
+  });
+
+  it('throws when the exported record has no default or config export', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockJitiImport.mockResolvedValue({ unrelated: true });
+
+    await expect(loadConfig()).rejects.toThrow('must have a default export or a named `config` export');
+  });
+
+  it('returns the default export when present', async () => {
+    const configObject = { workTypes: { perf: { header: 'Performance' } } };
+    mockExistsSync.mockReturnValue(true);
+    mockJitiImport.mockResolvedValue({ default: configObject });
+
+    const result = await loadConfig();
+
+    expect(result).toBe(configObject);
+  });
+
+  it('returns the named config export when no default is present', async () => {
+    const configObject = { formatCommand: 'pnpm run fmt' };
+    mockExistsSync.mockReturnValue(true);
+    mockJitiImport.mockResolvedValue({ config: configObject });
+
+    const result = await loadConfig();
+
+    expect(result).toBe(configObject);
+  });
+
+  it('prefers the default export over the named config export', async () => {
+    const defaultConfig = { formatCommand: 'default' };
+    const namedConfig = { formatCommand: 'named' };
+    mockExistsSync.mockReturnValue(true);
+    mockJitiImport.mockResolvedValue({ default: defaultConfig, config: namedConfig });
+
+    const result = await loadConfig();
+
+    expect(result).toBe(defaultConfig);
+  });
+});
 
 describe(mergeMonorepoConfig, () => {
   const discoveredPaths = ['packages/arrays', 'packages/strings'];
