@@ -5,10 +5,10 @@ import { DEFAULT_VERSION_PATTERNS, DEFAULT_WORK_TYPES } from './defaults.ts';
 import type { ComponentConfig, MonorepoReleaseConfig, ReleaseConfig, ReleaseKitConfig } from './types.ts';
 
 /** The path where the consumer-facing config file is expected. */
-export const CONFIG_FILE_PATH = '.config/release-kit.ts';
+export const CONFIG_FILE_PATH = '.config/release-kit.config.ts';
 
 /**
- * Loads the config file at `.config/release-kit.ts` using jiti for TypeScript loading.
+ * Loads the config file at `.config/release-kit.config.ts` using jiti for TypeScript loading.
  *
  * @returns The raw config object, or `undefined` if the file does not exist.
  * @throws If the file exists but cannot be loaded or does not have a default export.

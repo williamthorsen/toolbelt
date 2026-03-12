@@ -196,7 +196,7 @@ describe(runReleasePrepare, () => {
 
     expect(() => runReleasePrepare(makeConfig())).toThrowError(ExitError);
     expect(process.exit).toHaveBeenCalledWith(0);
-    expect(console.info).toHaveBeenCalledWith(expect.stringContaining('gh workflow run release.yaml'));
+    expect(console.info).toHaveBeenCalledWith(expect.stringContaining('npx @williamthorsen/release-kit prepare'));
   });
 
   it('exits with code 1 when releasePrepareMono throws', () => {
@@ -219,8 +219,8 @@ describe(runReleasePrepare, () => {
   });
 
   describe('release-tags file', () => {
-    it('writes to the cache directory, not the project root', () => {
-      expect(RELEASE_TAGS_FILE).toMatch(/^node_modules\/.cache\//);
+    it('writes to /tmp, not the project root', () => {
+      expect(RELEASE_TAGS_FILE).toMatch(/^\/tmp\//);
     });
 
     it('creates the parent directory before writing', () => {
@@ -229,7 +229,7 @@ describe(runReleasePrepare, () => {
 
       runReleasePrepare(makeConfig());
 
-      expect(mockMkdirSync).toHaveBeenCalledWith('node_modules/.cache/release-kit', { recursive: true });
+      expect(mockMkdirSync).toHaveBeenCalledWith('/tmp/release-kit', { recursive: true });
 
       // Verify mkdir was called before writeFileSync
       const mkdirOrder = mockMkdirSync.mock.invocationCallOrder[0];

@@ -10,9 +10,9 @@ import type { MonorepoReleaseConfig, ReleaseConfig, ReleaseType } from './types.
 
 /**
  * File written by the release preparation step, containing one tag per line.
- * Located inside `node_modules/.cache/` so it is already gitignored.
+ * Located in `/tmp` because it only needs to survive within a single CI job.
  */
-export const RELEASE_TAGS_FILE = 'node_modules/.cache/release-kit/.release-tags';
+export const RELEASE_TAGS_FILE = '/tmp/release-kit/.release-tags';
 
 const VALID_BUMP_TYPES: readonly string[] = ['major', 'minor', 'patch'];
 
@@ -29,18 +29,14 @@ function showHelp(): void {
   console.info(`
 Usage: runReleasePrepare [options]
 
-This script is designed for CI use via: gh workflow run release.yaml
+Legacy entry point for release preparation. Prefer the CLI:
+  npx @williamthorsen/release-kit prepare
 
 Options:
   --dry-run             Run without modifying any files
   --bump=major|minor|patch  Override the bump type for all components
   --only=name1,name2    Only process the named components (comma-separated, monorepo only)
   --help                Show this help message
-
-Examples:
-  tsx .github/scripts/release-prepare.ts --dry-run
-  tsx .github/scripts/release-prepare.ts --bump=minor
-  tsx .github/scripts/release-prepare.ts --only=arrays,strings --dry-run
 `);
 }
 

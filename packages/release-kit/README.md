@@ -23,15 +23,15 @@ npx @williamthorsen/release-kit prepare --dry-run
 cp node_modules/@williamthorsen/release-kit/cliff.toml.template cliff.toml
 ```
 
-That's it for most repos. The CLI auto-discovers workspaces and applies sensible defaults. Customize only what you need via `.config/release-kit.ts`.
+That's it for most repos. The CLI auto-discovers workspaces and applies sensible defaults. Customize only what you need via `.config/release-kit.config.ts`.
 
 ## How it works
 
 1. **Workspace discovery**: reads `pnpm-workspace.yaml` and resolves its `packages` globs to find workspace directories. Each directory containing a `package.json` becomes a component. If no workspace file is found, the repo is treated as a single-package project.
-2. **Config loading**: loads `.config/release-kit.ts` (if present) via [jiti](https://github.com/unjs/jiti) and merges it with discovered defaults.
+2. **Config loading**: loads `.config/release-kit.config.ts` (if present) via [jiti](https://github.com/unjs/jiti) and merges it with discovered defaults.
 3. **Commit analysis**: for each component, finds commits since the last version tag, parses them for type and scope, and determines the appropriate version bump.
 4. **Version bump + changelog**: bumps `package.json` versions and generates changelogs via `git-cliff`.
-5. **Release tags file**: writes computed tags to `node_modules/.cache/release-kit/.release-tags` for CI consumption.
+5. **Release tags file**: writes computed tags to `/tmp/release-kit/.release-tags` for CI consumption.
 
 ## CLI reference
 
@@ -65,13 +65,13 @@ Options:
 
 Scaffolded files:
 
-- `.config/release-kit.ts` — starter config with commented-out customization examples
+- `.config/release-kit.config.ts` — starter config with commented-out customization examples
 - `.github/workflows/release.yaml` — workflow that delegates to a reusable release workflow
 - `cliff.toml` — copied from the bundled template (prompted if missing)
 
 ## Configuration
 
-Configuration is optional. The CLI works out of the box by auto-discovering workspaces and applying defaults. Create `.config/release-kit.ts` only when you need to customize behavior.
+Configuration is optional. The CLI works out of the box by auto-discovering workspaces and applying defaults. Create `.config/release-kit.config.ts` only when you need to customize behavior.
 
 ### Config file
 
@@ -82,14 +82,14 @@ const config: ReleaseKitConfig = {
   // Exclude a component from release processing
   components: [{ dir: 'internal-tools', shouldExclude: true }],
 
+  // Run a formatter after changelog generation
+  formatCommand: 'pnpm run fmt',
+
   // Override the default version patterns
   versionPatterns: { major: ['!'], minor: ['feat', 'feature'] },
 
   // Add or override work types (merged with defaults by key)
   workTypes: { perf: { header: 'Performance' } },
-
-  // Run a formatter after changelog generation
-  formatCommand: 'pnpm run fmt',
 };
 
 export default config;
@@ -101,12 +101,12 @@ The config file supports both `export default config` and `export const config =
 
 | Field              | Type                             | Description                                                  |
 | ------------------ | -------------------------------- | ------------------------------------------------------------ |
-| `components`       | `ComponentOverride[]`            | Override or exclude discovered components (matched by `dir`) |
-| `versionPatterns`  | `VersionPatterns`                | Rules for which commit types trigger major/minor bumps       |
-| `workTypes`        | `Record<string, WorkTypeConfig>` | Work type definitions, merged with defaults by key           |
-| `formatCommand`    | `string`                         | Shell command to run after changelog generation              |
 | `cliffConfigPath`  | `string`                         | Path to `cliff.toml` (defaults to `'cliff.toml'`)            |
+| `components`       | `ComponentOverride[]`            | Override or exclude discovered components (matched by `dir`) |
+| `formatCommand`    | `string`                         | Shell command to run after changelog generation              |
+| `versionPatterns`  | `VersionPatterns`                | Rules for which commit types trigger major/minor bumps       |
 | `workspaceAliases` | `Record<string, string>`         | Maps shorthand workspace names to canonical names in commits |
+| `workTypes`        | `Record<string, WorkTypeConfig>` | Work type definitions, merged with defaults by key           |
 
 All fields are optional.
 
@@ -258,7 +258,7 @@ jobs:
         if: steps.check.outputs.changed == 'true'
         id: tags
         run: |
-          TAGS=$(cat node_modules/.cache/release-kit/.release-tags | tr '\n' ' ')
+          TAGS=$(cat /tmp/release-kit/.release-tags | tr '\n' ' ')
           echo "tags=$TAGS" >> "$GITHUB_OUTPUT"
           echo "Releasing: $TAGS"
 
@@ -296,7 +296,7 @@ And the tag step with:
   if: steps.check.outputs.changed == 'true'
   id: tags
   run: |
-    TAG=$(cat node_modules/.cache/release-kit/.release-tags)
+    TAG=$(cat /tmp/release-kit/.release-tags)
     echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 ```
 

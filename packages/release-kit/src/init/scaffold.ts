@@ -80,7 +80,7 @@ export function copyCliffTemplate(dryRun: boolean): void {
 /** Scaffold all release-kit files for the target repo. */
 export function scaffoldFiles({ repoType, dryRun, overwrite }: ScaffoldOptions): void {
   const files: FileToWrite[] = [
-    { path: '.config/release-kit.ts', content: releaseConfigScript(repoType) },
+    { path: '.config/release-kit.config.ts', content: releaseConfigScript(repoType) },
     { path: '.github/workflows/release.yaml', content: releaseWorkflow(repoType) },
   ];
 

@@ -86,7 +86,7 @@ export async function initCommand({ dryRun }: InitOptions): Promise<number> {
   // Print next steps
   printStep('Next steps');
   console.info(`
-  1. (Optional) Customize .config/release-kit.ts to exclude components, override version patterns, add custom work types, etc.
+  1. (Optional) Customize .config/release-kit.config.ts to exclude components, override version patterns, add custom work types, etc.
   2. Test by running: npx @williamthorsen/release-kit prepare --dry-run
   3. Commit the generated workflow file (and config file if created).
 `);

@@ -22,7 +22,7 @@ export interface VersionPatterns {
 }
 
 /**
- * Consumer-facing config file shape (`.config/release-kit.ts`).
+ * Consumer-facing config file shape (`.config/release-kit.config.ts`).
  * All fields are optional; defaults are applied during config merging.
  */
 export interface ReleaseKitConfig {

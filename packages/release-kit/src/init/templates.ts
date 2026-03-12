@@ -1,7 +1,7 @@
 import type { RepoType } from './detectRepoType.ts';
 
 /**
- * Generate the `.config/release-kit.ts` starter config with TODOs for customization.
+ * Generate the `.config/release-kit.config.ts` starter config with TODOs for customization.
  *
  * Uses the new `ReleaseKitConfig` shape with `header` field for work type labels.
  */
@@ -70,11 +70,11 @@ permissions:
 
 jobs:
   release:
-    uses: williamthorsen/.github/.github/workflows/release-pnpm.yaml@v1
+    uses: williamthorsen/.github/.github/workflows/release-pnpm.yaml@v2
     with:
       # TODO: Set the Node.js and pnpm versions for your project
-      node-version: '22.0.0'
-      pnpm-version: '10.0.0'
+      node-version: '24'
+      pnpm-version: '10.32.1'
       only: \${{ inputs.only }}
       bump: \${{ inputs.bump }}
 `;
@@ -102,11 +102,11 @@ permissions:
 
 jobs:
   release:
-    uses: williamthorsen/.github/.github/workflows/release-pnpm.yaml@v1
+    uses: williamthorsen/.github/.github/workflows/release-pnpm.yaml@v2
     with:
       # TODO: Set the Node.js and pnpm versions for your project
-      node-version: '22.0.0'
-      pnpm-version: '10.0.0'
+      node-version: '24'
+      pnpm-version: '10.32.1'
       bump: \${{ inputs.bump }}
 `;
 }

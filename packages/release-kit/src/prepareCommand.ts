@@ -13,7 +13,7 @@ import { validateConfig } from './validateConfig.ts';
  * Orchestrates the CLI `prepare` command.
  *
  * 1. Discovers workspaces from `pnpm-workspace.yaml`.
- * 2. Loads and validates `.config/release-kit.ts` (if present).
+ * 2. Loads and validates `.config/release-kit.config.ts` (if present).
  * 3. Merges discovered defaults with user config.
  * 4. Delegates to `releasePrepare` or `releasePrepareMono`.
  * 5. Writes `.release-tags` for CI consumption.

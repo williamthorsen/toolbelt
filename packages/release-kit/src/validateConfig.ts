@@ -1,7 +1,7 @@
 import type { ReleaseKitConfig } from './types.ts';
 
 /**
- * Validates a raw config object loaded from `.config/release-kit.ts`.
+ * Validates a raw config object loaded from `.config/release-kit.config.ts`.
  *
  * Returns an array of validation error messages. An empty array means the config is valid.
  * Uses hand-coded type guards rather than a schema library.

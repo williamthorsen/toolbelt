@@ -50,7 +50,7 @@ describe('scaffold', () => {
 
       expect(mockMkdirSync).toHaveBeenCalledWith('.config', { recursive: true });
       expect(mockMkdirSync).toHaveBeenCalledWith('.github/workflows', { recursive: true });
-      expect(mockWriteFileSync).toHaveBeenCalledWith('.config/release-kit.ts', expect.any(String), 'utf8');
+      expect(mockWriteFileSync).toHaveBeenCalledWith('.config/release-kit.config.ts', expect.any(String), 'utf8');
       expect(mockWriteFileSync).toHaveBeenCalledWith('.github/workflows/release.yaml', expect.any(String), 'utf8');
     });
 
@@ -70,7 +70,7 @@ describe('scaffold', () => {
       scaffoldFiles({ repoType: 'single-package', dryRun: false, overwrite: true });
 
       // Should write files even though they exist
-      expect(mockWriteFileSync).toHaveBeenCalledWith('.config/release-kit.ts', expect.any(String), 'utf8');
+      expect(mockWriteFileSync).toHaveBeenCalledWith('.config/release-kit.config.ts', expect.any(String), 'utf8');
       expect(mockWriteFileSync).toHaveBeenCalledWith('.github/workflows/release.yaml', expect.any(String), 'utf8');
       expect(mockPrintSkip).not.toHaveBeenCalled();
     });

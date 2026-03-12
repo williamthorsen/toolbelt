@@ -60,7 +60,7 @@ export function hasCliffToml(): CheckResult {
 /** Verify that release-kit has not already been initialized. */
 export function notAlreadyInitialized(): CheckResult {
   // Check both old and new config locations
-  if (!existsSync('.config/release-kit.ts') && !existsSync('.github/scripts/release.config.ts')) {
+  if (!existsSync('.config/release-kit.config.ts') && !existsSync('.github/scripts/release.config.ts')) {
     return { ok: true };
   }
   return {
