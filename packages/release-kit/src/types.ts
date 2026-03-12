@@ -3,14 +3,58 @@ export type ReleaseType = 'major' | 'minor' | 'patch';
 
 /** Configuration for a single work type used in commit categorization. */
 export interface WorkTypeConfig {
-  /** The work type identifier (e.g., 'feat', 'fix', 'refactor'). */
-  type: string;
   /** Human-readable label for the section heading in changelogs. */
   header: string;
-  /** The release bump this work type triggers. */
-  bump: ReleaseType;
   /** Optional aliases that map to this work type (e.g., 'feature' -> 'feat'). */
   aliases?: string[];
+}
+
+/**
+ * Defines which commit types trigger major or minor version bumps.
+ * Any recognized commit type not listed defaults to a patch bump.
+ * The sentinel `'!'` in `major` means "any breaking commit triggers a major bump".
+ */
+export interface VersionPatterns {
+  /** Patterns that trigger a major bump. Use `'!'` for any breaking change. */
+  major: string[];
+  /** Commit types that trigger a minor bump. */
+  minor: string[];
+}
+
+/**
+ * Consumer-facing config file shape (`.config/release-kit.ts`).
+ * All fields are optional; defaults are applied during config merging.
+ */
+export interface ReleaseKitConfig {
+  /**
+   * Component overrides. Each entry matches a discovered workspace by `dir`.
+   * Use `shouldExclude: true` to remove a component from release processing.
+   */
+  components?: ComponentOverride[];
+  /** Version bump patterns. Replaces defaults entirely when provided. */
+  versionPatterns?: VersionPatterns;
+  /** Work type overrides. Merged with defaults by key. */
+  workTypes?: Record<string, WorkTypeConfig>;
+  /** Shell command to run after all changelogs are generated (e.g., 'pnpm run fmt'). */
+  formatCommand?: string;
+  /** Path to the cliff.toml file; defaults to 'cliff.toml' when absent. */
+  cliffConfigPath?: string;
+  /**
+   * Maps workspace shorthand names to their canonical names.
+   * When a commit uses `shorthand|type: description`, the shorthand is resolved
+   * to the canonical workspace name before the parsed commit is returned.
+   */
+  workspaceAliases?: Record<string, string>;
+}
+
+/** Override for a single component in the config file. */
+export interface ComponentOverride {
+  /** The package directory name (e.g., 'arrays'). */
+  dir: string;
+  /** Custom git tag prefix. Defaults to `${dir}-v`. */
+  tagPrefix?: string;
+  /** If true, exclude this component from release processing. */
+  shouldExclude?: boolean;
 }
 
 /** A raw commit from the git log. */
@@ -53,8 +97,10 @@ export interface ComponentConfig {
 export interface MonorepoReleaseConfig {
   /** Ordered list of component configurations. */
   components: ComponentConfig[];
-  /** Ordered list of work type configurations shared across all components. */
-  workTypes: WorkTypeConfig[];
+  /** Work type configurations shared across all components. Defaults to `DEFAULT_WORK_TYPES`. */
+  workTypes?: Record<string, WorkTypeConfig>;
+  /** Version bump patterns. Defaults to `DEFAULT_VERSION_PATTERNS`. */
+  versionPatterns?: VersionPatterns;
   /** Shell command to run after all changelogs are generated (e.g., 'pnpm run fmt'). */
   formatCommand?: string;
   /** Path to the cliff.toml file; defaults to 'cliff.toml' when absent. */
@@ -63,7 +109,6 @@ export interface MonorepoReleaseConfig {
    * Maps workspace shorthand names to their canonical names.
    * When a commit uses `shorthand|type: description`, the shorthand is resolved
    * to the canonical workspace name before the parsed commit is returned.
-   * Example: `{ api: 'backend-api', web: 'frontend-web' }`.
    */
   workspaceAliases?: Record<string, string>;
 }
@@ -76,8 +121,10 @@ export interface ReleaseConfig {
   packageFiles: string[];
   /** Paths to directories in which to generate changelogs. */
   changelogPaths: string[];
-  /** Ordered list of work type configurations. */
-  workTypes: WorkTypeConfig[];
+  /** Work type configurations. Defaults to `DEFAULT_WORK_TYPES`. */
+  workTypes?: Record<string, WorkTypeConfig>;
+  /** Version bump patterns. Defaults to `DEFAULT_VERSION_PATTERNS`. */
+  versionPatterns?: VersionPatterns;
   /** Shell command to run after changelog generation (e.g., 'pnpm run fmt'). */
   formatCommand?: string;
   /** Path to the cliff.toml file; defaults to 'cliff.toml' when absent. */
@@ -86,7 +133,6 @@ export interface ReleaseConfig {
    * Maps workspace shorthand names to their canonical names.
    * When a commit uses `shorthand|type: description`, the shorthand is resolved
    * to the canonical workspace name before the parsed commit is returned.
-   * Example: `{ api: 'backend-api', web: 'frontend-web' }`.
    */
   workspaceAliases?: Record<string, string>;
 }

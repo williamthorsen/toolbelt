@@ -3,12 +3,12 @@ import { describe, expect, it } from 'vitest';
 import { parseCommitMessage } from '../parseCommitMessage.ts';
 import type { WorkTypeConfig } from '../types.ts';
 
-const workTypes: WorkTypeConfig[] = [
-  { type: 'fix', header: 'Bug fixes', bump: 'patch', aliases: ['bugfix'] },
-  { type: 'feat', header: 'Features', bump: 'minor', aliases: ['feature'] },
-  { type: 'refactor', header: 'Refactoring', bump: 'patch' },
-  { type: 'docs', header: 'Documentation', bump: 'patch', aliases: ['doc'] },
-];
+const workTypes: Record<string, WorkTypeConfig> = {
+  fix: { header: 'Bug fixes', aliases: ['bugfix'] },
+  feat: { header: 'Features', aliases: ['feature'] },
+  refactor: { header: 'Refactoring' },
+  docs: { header: 'Documentation', aliases: ['doc'] },
+};
 
 describe(parseCommitMessage, () => {
   it('parses a simple "type: description" message', () => {

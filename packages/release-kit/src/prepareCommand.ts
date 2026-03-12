@@ -1,0 +1,107 @@
+/* eslint n/no-process-exit: off */
+/* eslint unicorn/no-process-exit: off */
+
+import { discoverWorkspaces } from './discoverWorkspaces.ts';
+import { loadConfig, mergeMonorepoConfig, mergeSinglePackageConfig } from './loadConfig.ts';
+import { releasePrepare } from './releasePrepare.ts';
+import { releasePrepareMono } from './releasePrepareMono.ts';
+import { parseArgs, RELEASE_TAGS_FILE, writeReleaseTags } from './runReleasePrepare.ts';
+import type { ReleaseKitConfig } from './types.ts';
+import { validateConfig } from './validateConfig.ts';
+
+/**
+ * Orchestrates the CLI `prepare` command.
+ *
+ * 1. Discovers workspaces from `pnpm-workspace.yaml`.
+ * 2. Loads and validates `.config/release-kit.ts` (if present).
+ * 3. Merges discovered defaults with user config.
+ * 4. Delegates to `releasePrepare` or `releasePrepareMono`.
+ * 5. Writes `.release-tags` for CI consumption.
+ */
+export async function prepareCommand(argv: string[]): Promise<void> {
+  const { dryRun, bumpOverride, only } = parseArgs(argv);
+  const options = { dryRun, ...(bumpOverride === undefined ? {} : { bumpOverride }) };
+
+  // 1. Load config file
+  let rawConfig: unknown;
+  try {
+    rawConfig = await loadConfig();
+  } catch (error: unknown) {
+    console.error(`Error loading config: ${error instanceof Error ? error.message : String(error)}`);
+    process.exit(1);
+  }
+
+  // 2. Validate config
+  let userConfig: ReleaseKitConfig | undefined;
+  if (rawConfig !== undefined) {
+    const { config, errors } = validateConfig(rawConfig);
+    if (errors.length > 0) {
+      console.error('Invalid config:');
+      for (const err of errors) {
+        console.error(`  - ${err}`);
+      }
+      process.exit(1);
+    }
+    userConfig = config;
+  }
+
+  // 3. Discover workspaces
+  let discoveredPaths: string[] | undefined;
+  try {
+    discoveredPaths = await discoverWorkspaces();
+  } catch (error: unknown) {
+    console.error(`Error discovering workspaces: ${error instanceof Error ? error.message : String(error)}`);
+    process.exit(1);
+  }
+
+  // 4. Determine mode and merge config
+  if (discoveredPaths === undefined) {
+    // Single-package mode
+    if (only !== undefined) {
+      console.error('Error: --only is only supported for monorepo configurations');
+      process.exit(1);
+    }
+
+    const config = mergeSinglePackageConfig(userConfig);
+
+    try {
+      const tags = releasePrepare(config, options);
+      writeReleaseTags(tags, dryRun);
+    } catch (error: unknown) {
+      console.error('Error preparing release:', error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  } else {
+    // Monorepo mode
+    const config = mergeMonorepoConfig(discoveredPaths, userConfig);
+
+    if (only !== undefined) {
+      const knownPrefixes = config.components.map((c) => c.tagPrefix);
+      const filtered = config.components.filter((c) => {
+        const name = c.tagPrefix.replace(/-v$/, '');
+        return only.includes(name);
+      });
+
+      for (const name of only) {
+        const matchesKnown = knownPrefixes.includes(`${name}-v`);
+        if (!matchesKnown) {
+          const knownNames = knownPrefixes.map((p) => p.replace(/-v$/, '')).join(', ');
+          console.error(`Error: Unknown component "${name}". Known components: ${knownNames}`);
+          process.exit(1);
+        }
+      }
+
+      config.components = filtered;
+    }
+
+    try {
+      const tags = releasePrepareMono(config, options);
+      writeReleaseTags(tags, dryRun);
+    } catch (error: unknown) {
+      console.error('Error preparing release:', error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  }
+
+  console.info(`\nRelease tags file: ${RELEASE_TAGS_FILE}`);
+}

@@ -57,13 +57,14 @@ export function hasCliffToml(): CheckResult {
   return { ok: false, message: 'No cliff.toml found. This file is required for changelog generation.' };
 }
 
-/** Verify that release-kit has not already been initialized (no release.config.ts). */
+/** Verify that release-kit has not already been initialized. */
 export function notAlreadyInitialized(): CheckResult {
-  if (!existsSync('.github/scripts/release.config.ts')) {
+  // Check both old and new config locations
+  if (!existsSync('.config/release-kit.ts') && !existsSync('.github/scripts/release.config.ts')) {
     return { ok: true };
   }
   return {
     ok: false,
-    message: 'release-kit appears to be already initialized (.github/scripts/release.config.ts exists).',
+    message: 'release-kit appears to be already initialized.',
   };
 }

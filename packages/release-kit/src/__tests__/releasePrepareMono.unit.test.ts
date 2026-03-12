@@ -22,10 +22,10 @@ vi.mock('node:fs', () => ({
 import { releasePrepareMono } from '../releasePrepareMono.ts';
 import type { MonorepoReleaseConfig, WorkTypeConfig } from '../types.ts';
 
-const workTypes: WorkTypeConfig[] = [
-  { type: 'feat', header: 'Features', bump: 'minor' },
-  { type: 'fix', header: 'Bug fixes', bump: 'patch' },
-];
+const workTypes: Record<string, WorkTypeConfig> = {
+  feat: { header: 'Features' },
+  fix: { header: 'Bug fixes' },
+};
 
 function makeConfig(overrides?: Partial<MonorepoReleaseConfig>): MonorepoReleaseConfig {
   return {

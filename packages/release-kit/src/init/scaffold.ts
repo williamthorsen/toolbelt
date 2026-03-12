@@ -3,9 +3,8 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import type { RepoType } from './detectRepoType.ts';
-import { parseJsonRecord } from './parseJsonRecord.ts';
 import { printError, printSkip, printSuccess } from './prompt.ts';
-import { releaseConfigScript, releasePrepareScript, releaseWorkflow } from './templates.ts';
+import { releaseConfigScript, releaseWorkflow } from './templates.ts';
 
 interface ScaffoldOptions {
   repoType: RepoType;
@@ -81,76 +80,11 @@ export function copyCliffTemplate(dryRun: boolean): void {
 /** Scaffold all release-kit files for the target repo. */
 export function scaffoldFiles({ repoType, dryRun, overwrite }: ScaffoldOptions): void {
   const files: FileToWrite[] = [
-    { path: '.github/scripts/release-prepare.ts', content: releasePrepareScript() },
-    { path: '.github/scripts/release.config.ts', content: releaseConfigScript(repoType) },
+    { path: '.config/release-kit.ts', content: releaseConfigScript(repoType) },
     { path: '.github/workflows/release.yaml', content: releaseWorkflow(repoType) },
   ];
 
   for (const file of files) {
     writeIfAbsent(file.path, file.content, dryRun, overwrite);
-  }
-
-  updatePackageJsonScripts(dryRun);
-}
-
-/** Read and parse package.json, returning undefined on failure. */
-function readPackageJson(pkgPath: string): Record<string, unknown> | undefined {
-  let raw: string;
-  try {
-    raw = readFileSync(pkgPath, 'utf8');
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : String(error);
-    printError(`Failed to read ${pkgPath}: ${message}`);
-    return undefined;
-  }
-
-  const pkg = parseJsonRecord(raw);
-  if (pkg === undefined) {
-    printError('Failed to parse package.json');
-  }
-  return pkg;
-}
-
-/** Add release:prepare and release:prepare:dry scripts to package.json if absent. */
-function updatePackageJsonScripts(dryRun: boolean): void {
-  const pkgPath = 'package.json';
-
-  const pkg = readPackageJson(pkgPath);
-  if (pkg === undefined) {
-    return;
-  }
-
-  const existingScripts = pkg.scripts;
-  const scripts: Record<string, unknown> =
-    typeof existingScripts === 'object' && existingScripts !== null && !Array.isArray(existingScripts)
-      ? { ...existingScripts }
-      : {};
-
-  let changed = false;
-
-  if (!('release:prepare' in scripts)) {
-    scripts['release:prepare'] = 'tsx .github/scripts/release-prepare.ts';
-    changed = true;
-  }
-
-  if (!('release:prepare:dry' in scripts)) {
-    scripts['release:prepare:dry'] = 'tsx .github/scripts/release-prepare.ts --dry-run';
-    changed = true;
-  }
-
-  if (!changed) {
-    printSuccess('package.json scripts already configured');
-    return;
-  }
-
-  if (dryRun) {
-    printSuccess('[dry-run] Would add release:prepare scripts to package.json');
-    return;
-  }
-
-  pkg.scripts = scripts;
-
-  if (tryWriteFile(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`)) {
-    printSuccess('Added release:prepare scripts to package.json');
   }
 }

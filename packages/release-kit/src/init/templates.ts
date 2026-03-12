@@ -1,59 +1,43 @@
 import type { RepoType } from './detectRepoType.ts';
 
 /**
- * Generate the release-prepare.ts thin runner script.
+ * Generate the `.config/release-kit.ts` starter config with TODOs for customization.
  *
- * This script is identical for both repo types because `runReleasePrepare` is polymorphic.
+ * Uses the new `ReleaseKitConfig` shape with `header` field for work type labels.
  */
-export function releasePrepareScript(): string {
-  return `import { runReleasePrepare } from '@williamthorsen/release-kit';
-
-import { config } from './release.config.ts';
-
-runReleasePrepare(config);
-`;
-}
-
-/** Generate the release.config.ts starter config with TODOs for customization. */
 export function releaseConfigScript(repoType: RepoType): string {
   if (repoType === 'monorepo') {
-    return `import type { MonorepoReleaseConfig } from '@williamthorsen/release-kit';
-import { DEFAULT_WORK_TYPES } from '@williamthorsen/release-kit';
+    return `import type { ReleaseKitConfig } from '@williamthorsen/release-kit';
 
-// TODO: Replace with your actual component directories
-function component(dir: string) {
-  return {
-    tagPrefix: \`\${dir}-v\`,
-    packageFiles: [\`packages/\${dir}/package.json\`],
-    changelogPaths: [\`packages/\${dir}\`],
-    paths: [\`packages/\${dir}/**\`],
-  };
-}
-
-export const config: MonorepoReleaseConfig = {
-  components: [
-    // TODO: Add your components here
-    // component('my-package'),
-  ],
-  workTypes: [...DEFAULT_WORK_TYPES],
+const config: ReleaseKitConfig = {
+  // Uncomment to exclude components from release processing:
+  // components: [
+  //   { dir: 'my-package', shouldExclude: true },
+  // ],
+  // Uncomment to override the default version patterns:
+  // versionPatterns: { major: ['!'], minor: ['feat', 'feature'] },
+  // Uncomment to add custom work types (merged with defaults):
+  // workTypes: { perf: { header: 'Performance' } },
   // TODO: Uncomment and adjust if you have a format command
   // formatCommand: 'pnpm run fmt',
 };
+
+export default config;
 `;
   }
 
-  return `import type { ReleaseConfig } from '@williamthorsen/release-kit';
-import { DEFAULT_WORK_TYPES } from '@williamthorsen/release-kit';
+  return `import type { ReleaseKitConfig } from '@williamthorsen/release-kit';
 
-export const config: ReleaseConfig = {
-  // TODO: Adjust the tag prefix if needed (e.g., 'v' for tags like v1.2.3)
-  tagPrefix: 'v',
-  packageFiles: ['package.json'],
-  changelogPaths: ['.'],
-  workTypes: [...DEFAULT_WORK_TYPES],
+const config: ReleaseKitConfig = {
+  // Uncomment to override the default version patterns:
+  // versionPatterns: { major: ['!'], minor: ['feat', 'feature'] },
+  // Uncomment to add custom work types (merged with defaults):
+  // workTypes: { perf: { header: 'Performance' } },
   // TODO: Uncomment and adjust if you have a format command
   // formatCommand: 'pnpm run fmt',
 };
+
+export default config;
 `;
 }
 
@@ -91,7 +75,6 @@ jobs:
       # TODO: Set the Node.js and pnpm versions for your project
       node-version: '22.0.0'
       pnpm-version: '10.0.0'
-      monorepo: true
       only: \${{ inputs.only }}
       bump: \${{ inputs.bump }}
 `;

@@ -3,12 +3,14 @@
 /* eslint unicorn/no-process-exit: off */
 
 import { initCommand } from '../init/initCommand.ts';
+import { prepareCommand } from '../prepareCommand.ts';
 
 function showUsage(): void {
   console.info(`
 Usage: release-kit <command> [options]
 
 Commands:
+  prepare       Run release preparation (auto-discovers workspaces)
   init          Initialize release-kit in the current repository
 
 Options:
@@ -22,11 +24,25 @@ function showInitHelp(): void {
 Usage: release-kit init [options]
 
 Initialize release-kit in the current repository.
-Scaffolds workflow, scripts, and config files.
+Scaffolds workflow and config files.
 
 Options:
   --dry-run     Preview changes without writing files
   --help, -h    Show this help message
+`);
+}
+
+function showPrepareHelp(): void {
+  console.info(`
+Usage: release-kit prepare [options]
+
+Run release preparation with automatic workspace discovery.
+
+Options:
+  --dry-run             Run without modifying any files
+  --bump=major|minor|patch  Override the bump type for all components
+  --only=name1,name2    Only process the named components (comma-separated, monorepo only)
+  --help, -h            Show this help message
 `);
 }
 
@@ -36,6 +52,16 @@ const flags = args.slice(1);
 
 if (command === '--help' || command === '-h' || command === undefined) {
   showUsage();
+  process.exit(0);
+}
+
+if (command === 'prepare') {
+  if (flags.some((f) => f === '--help' || f === '-h')) {
+    showPrepareHelp();
+    process.exit(0);
+  }
+
+  await prepareCommand(flags);
   process.exit(0);
 }
 

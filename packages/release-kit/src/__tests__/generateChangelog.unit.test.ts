@@ -122,7 +122,7 @@ describe(generateChangelogs, () => {
       tagPrefix: 'v',
       packageFiles: [],
       changelogPaths: ['packages/arrays', 'packages/strings'],
-      workTypes: [],
+      workTypes: {},
       cliffConfigPath: 'cliff.toml',
     } satisfies ReleaseConfig;
 

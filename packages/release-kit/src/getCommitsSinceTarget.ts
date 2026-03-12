@@ -45,7 +45,13 @@ function findLatestTag(tagPrefix: string): string | undefined {
   }
 }
 
-/** Parses the raw `git log` output into an array of commits. */
+/**
+ * Prefix used by the release workflow's commit message (e.g., `release: arrays-v1.0.0`).
+ * Commits with this prefix are filtered out so they never influence bump decisions.
+ */
+const RELEASE_COMMIT_PREFIX = 'release:';
+
+/** Parses the raw `git log` output into an array of commits, excluding release commits. */
 function parseLogOutput(logOutput: string): Commit[] {
   const commits: Commit[] = [];
 
@@ -57,7 +63,7 @@ function parseLogOutput(logOutput: string): Commit[] {
 
     const [message, hash] = trimmedLine.split(FIELD_SEPARATOR);
 
-    if (message !== undefined && hash !== undefined) {
+    if (message !== undefined && hash !== undefined && !message.startsWith(RELEASE_COMMIT_PREFIX)) {
       commits.push({ message, hash });
     }
   }

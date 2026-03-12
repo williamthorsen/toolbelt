@@ -1,6 +1,7 @@
 import { execSync } from 'node:child_process';
 
 import { bumpAllVersions } from './bumpAllVersions.ts';
+import { DEFAULT_VERSION_PATTERNS, DEFAULT_WORK_TYPES } from './defaults.ts';
 import { determineBumpType } from './determineBumpType.ts';
 import { generateChangelog } from './generateChangelogs.ts';
 import { getCommitsSinceTarget } from './getCommitsSinceTarget.ts';
@@ -28,22 +29,26 @@ import type { MonorepoReleaseConfig, ParsedCommit, ReleaseType } from './types.t
  */
 export function releasePrepareMono(config: MonorepoReleaseConfig, options: ReleasePrepareOptions): string[] {
   const { dryRun, bumpOverride } = options;
+  const workTypes = config.workTypes ?? { ...DEFAULT_WORK_TYPES };
+  const versionPatterns = config.versionPatterns ?? { ...DEFAULT_VERSION_PATTERNS };
   const tags: string[] = [];
 
   for (const component of config.components) {
-    console.info(`\nProcessing component: ${component.tagPrefix}`);
+    const name = component.tagPrefix.replace(/-v$/, '');
+    console.info(`\nProcessing component: ${name}`);
 
     // 1. Get path-filtered commits since last tag
     console.info('  Finding commits since last release...');
     const { tag, commits } = getCommitsSinceTarget(component.tagPrefix, component.paths);
-    console.info(`  Found ${commits.length} commits since ${tag ?? 'the beginning'}`);
+    const since = tag === undefined ? '(no previous release found)' : `since ${tag}`;
+    console.info(`  Found ${commits.length} commits ${since}`);
 
     // Skip components with no changes. "No changes" means no commits touched
     // paths matching the component's glob patterns. Root-level or cross-cutting
     // commits not captured by the component's path globs are not counted and
     // may cause a skip even when those changes semantically apply.
     if (commits.length === 0) {
-      console.info(`  No changes for ${component.tagPrefix}. Skipping.`);
+      console.info(`  No changes for ${name} ${since}. Skipping.`);
       continue;
     }
 
@@ -52,18 +57,18 @@ export function releasePrepareMono(config: MonorepoReleaseConfig, options: Relea
 
     if (bumpOverride === undefined) {
       const parsedCommits = commits
-        .map((c) => parseCommitMessage(c.message, c.hash, config.workTypes, config.workspaceAliases))
+        .map((c) => parseCommitMessage(c.message, c.hash, workTypes, config.workspaceAliases))
         .filter((c): c is ParsedCommit => c !== undefined);
 
       console.info(`  Parsed ${parsedCommits.length} typed commits`);
-      releaseType = determineBumpType(parsedCommits, config.workTypes);
+      releaseType = determineBumpType(parsedCommits, workTypes, versionPatterns);
     } else {
       releaseType = bumpOverride;
       console.info(`  Using bump override: ${releaseType}`);
     }
 
     if (releaseType === undefined) {
-      console.info(`  No release-worthy changes for ${component.tagPrefix}. Skipping.`);
+      console.info(`  No release-worthy changes for ${name} ${since}. Skipping.`);
       continue;
     }
 

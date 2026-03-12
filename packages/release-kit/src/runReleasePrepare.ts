@@ -1,14 +1,18 @@
 /* eslint n/no-process-exit: off */
 /* eslint unicorn/no-process-exit: off */
 
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { dirname } from 'node:path';
 
 import { releasePrepare } from './releasePrepare.ts';
 import { releasePrepareMono } from './releasePrepareMono.ts';
 import type { MonorepoReleaseConfig, ReleaseConfig, ReleaseType } from './types.ts';
 
-/** File written by the release preparation step, containing one tag per line. */
-export const RELEASE_TAGS_FILE = '.release-tags';
+/**
+ * File written by the release preparation step, containing one tag per line.
+ * Located inside `node_modules/.cache/` so it is already gitignored.
+ */
+export const RELEASE_TAGS_FILE = 'node_modules/.cache/release-kit/.release-tags';
 
 const VALID_BUMP_TYPES: readonly string[] = ['major', 'minor', 'patch'];
 
@@ -40,7 +44,8 @@ Examples:
 `);
 }
 
-function parseArgs(argv: string[]): {
+/** Parse CLI arguments into structured options. */
+export function parseArgs(argv: string[]): {
   dryRun: boolean;
   bumpOverride: ReleaseType | undefined;
   only: string[] | undefined;
@@ -146,7 +151,7 @@ export function runReleasePrepare(config: MonorepoReleaseConfig | ReleaseConfig)
  * Write computed tags to the `.release-tags` file so the CI workflow can read them
  * instead of deriving tag names independently.
  */
-function writeReleaseTags(tags: string[], dryRun: boolean): void {
+export function writeReleaseTags(tags: string[], dryRun: boolean): void {
   if (tags.length === 0) {
     return;
   }
@@ -156,6 +161,7 @@ function writeReleaseTags(tags: string[], dryRun: boolean): void {
     return;
   }
 
+  mkdirSync(dirname(RELEASE_TAGS_FILE), { recursive: true });
   writeFileSync(RELEASE_TAGS_FILE, tags.join('\n'), 'utf8');
   console.info(`  Wrote ${RELEASE_TAGS_FILE}: ${tags.join(' ')}`);
 }
