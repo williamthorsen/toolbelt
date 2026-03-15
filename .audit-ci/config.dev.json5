@@ -2,10 +2,6 @@
   "$schema": "https://github.com/IBM/audit-ci/raw/main/docs/schema.json",
   "moderate": true,
   "allowlist": [
-    // glob
-    // https://github.com/advisories/GHSA-5j98-mcp5-4vw2
-    "GHSA-5j98-mcp5-4vw2",
-
     // minimatch
     // ReDoS via repeated wildcards (transitive: eslint → @eslint/config-array → minimatch)
     // Blocked until ESLint 10, which moves to minimatch ^10.2.1
