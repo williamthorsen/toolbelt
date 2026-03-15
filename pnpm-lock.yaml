@@ -26,6 +26,9 @@ importers:
       '@williamthorsen/eslint-config-typescript':
         specifier: 5.14.0
         version: 5.14.0(@types/estree@1.0.8)(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
+      '@williamthorsen/release-kit':
+        specifier: 1.0.1
+        version: 1.0.1
       '@williamthorsen/strict-lint':
         specifier: 6.1.1
         version: 6.1.1(eslint@9.39.4(jiti@2.6.1))
@@ -109,22 +112,6 @@ importers:
   packages/numbers: {}
 
   packages/objects: {}
-
-  packages/release-kit:
-    dependencies:
-      glob:
-        specifier: 13.0.6
-        version: 13.0.6
-      jiti:
-        specifier: 2.6.1
-        version: 2.6.1
-      js-yaml:
-        specifier: 4.1.1
-        version: 4.1.1
-    devDependencies:
-      '@types/js-yaml':
-        specifier: 4.0.9
-        version: 4.0.9
 
   packages/sets: {}
 
@@ -930,6 +917,11 @@ packages:
       eslint: '>=9'
       typescript: '>=5'
 
+  '@williamthorsen/release-kit@1.0.1':
+    resolution: {integrity: sha512-ZF1ik6MK/6xqOO5OCxgQuGYQrLIMR8xpuayGfAEkEQkFdDaKhgUFGT3fsycPDvXVEln75y5A2I+2mvoyZtHmwA==}
+    engines: {node: '>=18.17.0'}
+    hasBin: true
+
   '@williamthorsen/strict-lint@6.1.1':
     resolution: {integrity: sha512-HExb4g9UVljQIpX2NozNoCwAS79VXkz6ufyLu4dGzd+q2hTDZTPUSOhK/AlUViTZkF2Lyu0leLSAkioW0N5XOg==}
     hasBin: true
@@ -1412,8 +1404,8 @@ packages:
     resolution: {integrity: sha512-f7ccFPK3SXFHpx15UIGyRJ/FJQctuKZ0zVuN3frBo4HnK3cay9VEW0R6yPYFHC0AgqhukPzKjq22t5DmAyqGyw==}
     engines: {node: '>=16'}
 
-  flatted@3.3.3:
-    resolution: {integrity: sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==}
+  flatted@3.4.1:
+    resolution: {integrity: sha512-IxfVbRFVlV8V/yRaGzk0UVIcsKKHMSfYw66T/u4nTwlWteQePsxe//LjudR1AMX4tZW3WFCh3Zqa/sjlqpbURQ==}
 
   for-each@0.3.5:
     resolution: {integrity: sha512-dKx12eRCVIzqCxFGplyFKJMPvLEWgmNtUrpTiJIR5u97zEhRG8ySrtboPHZXx7daLxQVrl643cTzbab2tkQjxg==}
@@ -2996,6 +2988,12 @@ snapshots:
       - '@types/estree'
       - supports-color
 
+  '@williamthorsen/release-kit@1.0.1':
+    dependencies:
+      glob: 13.0.6
+      jiti: 2.6.1
+      js-yaml: 4.1.1
+
   '@williamthorsen/strict-lint@6.1.1(eslint@9.39.4(jiti@2.6.1))':
     dependencies:
       eslint: 9.39.4(jiti@2.6.1)
@@ -3713,10 +3711,10 @@ snapshots:
 
   flat-cache@4.0.1:
     dependencies:
-      flatted: 3.3.3
+      flatted: 3.4.1
       keyv: 4.5.4
 
-  flatted@3.3.3: {}
+  flatted@3.4.1: {}
 
   for-each@0.3.5:
     dependencies:
