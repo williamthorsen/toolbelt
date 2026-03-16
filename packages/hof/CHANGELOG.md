@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [hof-v3.0.9] - 2026-03-10
+## [strings-v3.1.1] - 2026-03-10
 
 ### Dependencies
 

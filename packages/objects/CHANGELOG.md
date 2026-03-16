@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [objects-v3.2.3] - 2026-03-10
+## [tools-v3.0.1] - 2026-03-10
 
 ### Dependencies
 
