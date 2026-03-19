@@ -1,6 +1,7 @@
 {
   "name": "@williamthorsen/toolbelt.nodejs",
   "version": "3.0.2",
+  "private": true,
   "description": "API",
   "keywords": [],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/nodejs#readme",
