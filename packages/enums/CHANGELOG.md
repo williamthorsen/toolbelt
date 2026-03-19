@@ -12,41 +12,41 @@ Upgrades all dependencies to their latest versions, bumps the Node.js engine req
 
 Commit details:
 
-- root|deps: Upgrade all deps to latest version
+* root|deps: Upgrade all deps to latest version
 
-- root|refactor: Fix lint
+* root|refactor: Fix lint
 
-- root|deps: Upgrade all deps to latest minor version
+* root|deps: Upgrade all deps to latest minor version
 
-- root|deps: Allow unpatchable vulns in dev deps
+* root|deps: Allow unpatchable vulns in dev deps
 
-- root|refactor: Adapt to dependency upgrades and bump Node engine to >=24
+* root|refactor: Adapt to dependency upgrades and bump Node engine to >=24
 
-* Upgrade eslint-config-typescript to 5.12.2 (fixes ESM import issues, removes need for pnpm patch)
-* Bump engines.node from >=18.17.0 to >=24.0.0 across all packages
-* Update CI to Node 24.14.0 and pnpm 10.30.3
-* Replace .sort() with .toSorted() to satisfy unicorn/no-array-sort
-* Fix lint errors: remove useless default assignments, redundant type constituents, deprecated re-exports, and empty array args to Set constructor
+- Upgrade eslint-config-typescript to 5.12.2 (fixes ESM import issues, removes need for pnpm patch)
+- Bump engines.node from >=18.17.0 to >=24.0.0 across all packages
+- Update CI to Node 24.14.0 and pnpm 10.30.3
+- Replace .sort() with .toSorted() to satisfy unicorn/no-array-sort
+- Fix lint errors: remove useless default assignments, redundant type constituents, deprecated re-exports, and empty array args to Set constructor
 
-- datetime|tests: Fix locale mismatch in Timestamp test
+* datetime|tests: Fix locale mismatch in Timestamp test
 
 Pass the same 'en-US' locale to both the expected-value computation and
 the method under test. Previously the test used the system default locale
 for the expected value but explicit 'en-US' for the actual call, which
 diverged under Node 24's updated Intl formatting.
 
-- root|refactor: Replace toThrow with toThrowError across all tests
+* root|refactor: Replace toThrow with toThrowError across all tests
 
 The vitest/no-alias-methods rule in strict-lint requires the canonical
 toThrowError() name instead of the toThrow() alias.
 
-- root|refactor: Fix remaining strict-lint errors
+* root|refactor: Fix remaining strict-lint errors
 
-* Use import() in vi.mock for vitest/prefer-import-in-mock
-* Replace expect(typeof x).toBe() with expectTypeOf for vitest/prefer-expect-type-of
-* Use String.raw for regex escapes for unicorn/prefer-string-raw
+- Use import() in vi.mock for vitest/prefer-import-in-mock
+- Replace expect(typeof x).toBe() with expectTypeOf for vitest/prefer-expect-type-of
+- Use String.raw for regex escapes for unicorn/prefer-string-raw
 
-- root|tooling: Use ws runner to fix recursive build command
+* root|tooling: Use ws runner to fix recursive build command
 
 The build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.
 
@@ -56,14 +56,14 @@ The build script used `pnpm --recursive run build` but no workspace package defi
 
 ### Tooling
 
-- \*|tooling: Change package registry from github to npmjs
+- *|tooling: Change package registry from github to npmjs
 
 ## [3.0.1] - 2025-05-20
 
 ### Tooling
 
-- \*|tooling: Enable incremental type generation
-- \*|tooling: Rename publish script to avoid recursion
+- *|tooling: Enable incremental type generation
+- *|tooling: Rename publish script to avoid recursion
 
 ## [3.0.0] - 2025-05-16
 
