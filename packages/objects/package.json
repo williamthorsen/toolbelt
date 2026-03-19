@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.objects",
-  "version": "3.2.5",
+  "version": "3.2.6",
   "description": "Utilities for working with objects in JavaScript and TypeScript.",
   "keywords": [],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/objects#readme",
