@@ -76,3 +76,22 @@ Shortcut to run typechecking, linting, and tests:
 ```shell
 pnpm run check
 ```
+
+### Publishing
+
+Use `publish:local` to publish packages. It cleans all `dist/` directories and rebuilds before publishing to avoid stale artifacts. The full build always runs even when filtering, because packages have cross-dependencies.
+
+```shell
+# Publish all packages
+pnpm run publish:local
+
+# Publish specific packages (short or full names)
+pnpm run publish:local -- --filter arrays
+pnpm run publish:local -- --filter arrays,strings
+
+# Dry run to preview without publishing
+pnpm run publish:local -- --dry-run
+
+# Skip git working-tree checks
+pnpm run publish:local -- --no-git-checks
+```

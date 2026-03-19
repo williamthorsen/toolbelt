@@ -30,6 +30,7 @@
     "fmt": "prettier --list-different --write .",
     "fmt:check": "prettier --check .",
     "postinstall": "tsx scripts/report-overrides.ts",
+    "publish:local": "tsx scripts/publish.ts",
     "lint": "pnpm run root:lint && pnpm --recursive run ws lint",
     "lint:check": "pnpm run root:lint:check && pnpm --recursive run ws lint:check",
     "lint:strict": "pnpm --recursive run ws lint:strict",
