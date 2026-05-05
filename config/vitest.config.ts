@@ -11,6 +11,7 @@ export const baseConfig = {
       provider: 'v8' as const,
     },
     exclude: ['**/node_modules/**'],
+    silent: 'passed-only', // see logs from failing tests only
     watch: false, // don't enter watch mode unless the `--watch` flag is passed
   },
 };
