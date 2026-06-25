@@ -14,28 +14,29 @@ This is a PNPM monorepo containing TypeScript utility libraries organized by dom
 ### Workspace Management
 
 - `pnpm install` - Install all dependencies (run from anywhere in the project)
-- `pnpm run ws {script}` - Run a script in a specific package workspace
-- `pnpm run ws --int-test {script}` - Run with integration test configuration
+- `nmr {script}` - Run a script via the nmr runner: from the repo root for the whole monorepo, or from a package directory for that package
 
 ### Development Commands
 
-- `pnpm run check` - Run all quality checks (typecheck, format check, lint check, tests)
-- `pnpm run check:strict` - Run strict quality checks including coverage and audit
-- `pnpm run build` - Build all packages
-- `pnpm run typecheck` - Type checking across all packages
-- `pnpm run lint` - Lint and fix issues across all packages
-- `pnpm run lint:check` - Lint check without fixing
-- `pnpm run test` - Run all tests
-- `pnpm run test:coverage` - Run tests with coverage reports
+- `nmr check` - Run all quality checks (typecheck, format check, lint check, tests)
+- `nmr check:strict` - Run strict quality checks including coverage and agent-file sync
+- `nmr ci` - Build, then run strict checks and the dependency audit (the full CI gate)
+- `nmr build` - Build all packages
+- `nmr typecheck` - Type checking across all packages
+- `nmr lint` - Lint and fix issues across all packages
+- `nmr lint:check` - Lint check without fixing
+- `nmr test` - Run all tests
+- `nmr test:coverage` - Run tests with coverage reports
+- `nmr audit` - Run the dependency vulnerability audit via `v11y`
 
 ### Individual Package Commands
 
 From within a package directory (e.g., `cd packages/arrays`):
 
-- `pnpm run ws build` - Build this package
-- `pnpm run ws test` - Run tests for this package
-- `pnpm run ws typecheck` - Type check this package
-- `pnpm run ws lint` - Lint this package
+- `nmr build` - Build this package
+- `nmr test` - Run tests for this package
+- `nmr typecheck` - Type check this package
+- `nmr lint` - Lint this package
 
 ## Package Architecture
 
@@ -78,7 +79,7 @@ Packages export at multiple maturity levels:
 Uses Vitest for testing with multiple configurations:
 
 - `vitest.config.ts` - Standard unit tests
-- `vitest.standalone.config.ts` - Standalone tests (used with `--int-test`)
+- `vitest.standalone.config.ts` - Unit tests, excluding integration patterns
 - `vitest.integration.config.ts` - Integration tests
 
 ## Build System

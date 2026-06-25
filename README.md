@@ -34,64 +34,50 @@ pnpm install
 
 ---
 
-These commands can be run at the project level or at the level of an individual package (i.e., the simulator API or the Svelte app).
+These commands are run through the `nmr` runner. They can be run at the project level or at the level of an individual package.
 
-To run at the project level, run the command from the project root. To run at a package level, change to the package's directory. Example: `cd packages/svelte`.
+To run at the project level, run the command from the project root. To run at a package level, change to the package's directory. Example: `cd packages/arrays`.
 
 Run all code checks:
 
 ```shell
-pnpm run check
+nmr check
 ```
 
 Run the typechecker
 
 ```shell
-pnpm run typecheck
+nmr typecheck
 ```
 
 Run the linter:
 
 ```shell
-pnpm run lint
-# OR check for lint and fix issues that can be automatically
-pnpm run lint:fix
+# Check for lint issues
+nmr lint:check
+# OR fix automatically-fixable issues
+nmr lint
 ```
 
 Run tests:
 
 ```shell
 # Test and watch for changes
-pnpm test
+nmr test:watch
 
 # Run tests once
-pnpm run test:run
+nmr test
 
 # Run coverage checker
-pnpm run test:coverage
+nmr test:coverage
 ```
 
 Shortcut to run typechecking, linting, and tests:
 
 ```shell
-pnpm run check
+nmr check
 ```
 
 ### Publishing
 
-Use `publish:local` to publish packages. It cleans all `dist/` directories and rebuilds before publishing to avoid stale artifacts. The full build always runs even when filtering, because packages have cross-dependencies.
-
-```shell
-# Publish all packages
-pnpm run publish:local
-
-# Publish specific packages (short or full names)
-pnpm run publish:local -- --filter arrays
-pnpm run publish:local -- --filter arrays,strings
-
-# Dry run to preview without publishing
-pnpm run publish:local -- --dry-run
-
-# Skip git working-tree checks
-pnpm run publish:local -- --no-git-checks
-```
+Packages are published from CI by the release workflow (`.github/workflows/release.yaml`); there is no local publish command. Trigger a release from the workflow's manual `workflow_dispatch`, optionally scoping it with the `only` and `bump` inputs.
