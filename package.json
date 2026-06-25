@@ -19,33 +19,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "pnpm --recursive run ws build",
-    "check": "pnpm run typecheck && pnpm run fmt:check && pnpm run lint:check && pnpm run test",
-    "check:strict": "pnpm run typecheck && pnpm run fmt:check && pnpm run lint:strict && pnpm run test:coverage && pnpm run audit",
-    "ci": "pnpm run check:strict && pnpm run build",
-    "clean": "pnpm --recursive run ws clean",
-    "fmt": "prettier --list-different --write .",
-    "fmt:check": "prettier --check .",
-    "postinstall": "tsx scripts/report-overrides.ts",
-    "prepare": "lefthook install",
-    "publish:local": "tsx scripts/publish.ts",
-    "lint": "pnpm run root:lint && pnpm --recursive run ws lint",
-    "lint:check": "pnpm run root:lint:check && pnpm --recursive run ws lint:check",
-    "lint:strict": "pnpm --recursive run ws lint:strict",
-    "outdated": "pnpm outdated --compatible --recursive",
-    "outdated:latest": "pnpm outdated --recursive",
-    "root:lint": "eslint --fix --ignore-pattern 'packages/**' .",
-    "root:lint:check": "eslint --ignore-pattern 'packages/**' .",
-    "root:lint:strict": "echo \"Error: Not enabled for the workspace root until a pattern is accepted as an argument\" && exit 1",
-    "root:test": "vitest --config ./vitest.root.config.ts",
-    "root:typecheck": "tsgo --noEmit",
-    "test": "pnpm run root:test && pnpm --recursive run ws test",
-    "test:coverage": "pnpm --recursive run ws test:coverage",
-    "test:watch": "vitest --watch",
-    "typecheck": "pnpm run typecheck:root && pnpm --recursive run ws typecheck",
-    "typecheck:root": "tsgo --noEmit",
-    "update": "pnpm update --recursive",
-    "update:latest": "pnpm update --latest --recursive"
+    "postinstall": "nmr report-overrides --quiet",
+    "prepare": "lefthook install"
   },
   "devDependencies": {
     "@types/js-yaml": "4.0.9",
@@ -72,5 +47,6 @@
     "vite-tsconfig-paths": "6.1.1",
     "vitest": "4.0.18",
     "zod": "4.3.6"
-  }
+  },
+  "packageManager": "pnpm@10.34.4"
 }

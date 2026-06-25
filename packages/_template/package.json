@@ -30,7 +30,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "ws": "node --import tsx ../../scripts/run-workspace-script.ts --int-test"
+    "build": ":"
   },
   "engines": {
     "node": ">=24.0.0"
