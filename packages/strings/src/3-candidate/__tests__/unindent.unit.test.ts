@@ -69,7 +69,7 @@ describe(unindent, () => {
   });
 
   it('if the first line is not empty, throws an error', () => {
-    expect(() => unindent`not empty`).toThrowError(/first line/);
+    expect(() => unindent`not empty`).toThrow(/first line/);
   });
 
   it('if the string contains embedded expressions, replaces the expressions with the results of their evaluation', () => {

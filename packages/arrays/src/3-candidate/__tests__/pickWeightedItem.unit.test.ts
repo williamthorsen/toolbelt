@@ -34,7 +34,7 @@ describe(pickWeightedItem, () => {
   it('if the array is empty, throws an error', () => {
     const throwingFn = () => pickWeightedItem([], []);
 
-    expect(throwingFn).toThrowError(new Error('Cannot pick an item from an empty array.'));
+    expect(throwingFn).toThrow(new Error('Cannot pick an item from an empty array.'));
   });
 
   it('throws an error if weights array and items array are of different lengths', () => {
@@ -43,7 +43,7 @@ describe(pickWeightedItem, () => {
 
     const throwingFn = () => pickWeightedItem(items, weights);
 
-    expect(throwingFn).toThrowError(new Error('The number of weights must match the number of items.'));
+    expect(throwingFn).toThrow(new Error('The number of weights must match the number of items.'));
   });
 
   it('allows a seed in options to produce deterministic results', () => {

@@ -62,6 +62,14 @@ export default [
     },
   }),
   {
+    // App/consistency tests (e.g. version-alignment) call helpers that register their own
+    // describe/it blocks, so the top-level call is legitimate despite vitest/require-hook.
+    files: ['**/*.app.test.ts'],
+    rules: {
+      'vitest/require-hook': 'off',
+    },
+  },
+  {
     files: ['**/.github/scripts/**/*', '**/scripts/**/*'],
     rules: {
       'no-console': 'off',

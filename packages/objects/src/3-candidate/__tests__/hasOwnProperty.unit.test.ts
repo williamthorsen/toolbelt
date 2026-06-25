@@ -63,7 +63,7 @@ describe(hasOwnProperty, () => {
 
   it('accepts any non-object value as input', () => {
     for (const value of [null, undefined, 1, true, Symbol('a')]) {
-      expect(() => hasOwnProperty(value, 'key')).not.toThrowError();
+      expect(() => hasOwnProperty(value, 'key')).not.toThrow();
     }
   });
 

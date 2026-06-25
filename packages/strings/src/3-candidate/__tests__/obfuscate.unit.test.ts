@@ -46,7 +46,7 @@ describe(obfuscate, () => {
     const options = { bookendSize: -1 };
     const str = '1234';
 
-    expect(() => obfuscate(str, options)).toThrowError('Minimum bookendSize is 0.');
+    expect(() => obfuscate(str, options)).toThrow('Minimum bookendSize is 0.');
   });
 
   it('if fillChar is given, uses it as the replacement character', () => {
@@ -63,14 +63,14 @@ describe(obfuscate, () => {
     const options = { bookendSize: 2, fillChar: '' };
     const str = '1234';
 
-    expect(() => obfuscate(str, options)).toThrowError('fillChar must be a single character.');
+    expect(() => obfuscate(str, options)).toThrow('fillChar must be a single character.');
   });
 
   it('if fillChar is longer than one character, throws an error', () => {
     const options = { fillChar: '**' };
     const str = '1234';
 
-    expect(() => obfuscate(str, options)).toThrowError('fillChar must be a single character.');
+    expect(() => obfuscate(str, options)).toThrow('fillChar must be a single character.');
   });
 
   it('if fillSize is given, display at most {fillSize} fill characters', () => {
@@ -87,13 +87,13 @@ describe(obfuscate, () => {
     const options = { bookendSize: 4, fillSize: 2 };
     const str = '1234';
 
-    expect(() => obfuscate(str, options)).toThrowError('fillSize cannot be less than bookendSize.');
+    expect(() => obfuscate(str, options)).toThrow('fillSize cannot be less than bookendSize.');
   });
 
   it('if fillSize < 1, throws an error', () => {
     const options = { fillSize: 0 };
     const str = '1234';
 
-    expect(() => obfuscate(str, options)).toThrowError('Minimum fillSize is 1.');
+    expect(() => obfuscate(str, options)).toThrow('Minimum fillSize is 1.');
   });
 });

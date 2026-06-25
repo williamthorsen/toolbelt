@@ -33,14 +33,14 @@ describe(pickVariants, () => {
     const input = 'Hello, [name|world!';
 
     const throwingFn = () => pickVariants(input);
-    expect(throwingFn).toThrowError(new Error('Text has unmatched opening delimiter "[".'));
+    expect(throwingFn).toThrow(new Error('Text has unmatched opening delimiter "[".'));
   });
 
   it('if delimiters are incorrectly nested, throws an error', () => {
     const input = 'Hello, ][!';
 
     const throwingFn = () => pickVariants(input);
-    expect(throwingFn).toThrowError(new Error('Text has unmatched closing delimiter "]".'));
+    expect(throwingFn).toThrow(new Error('Text has unmatched closing delimiter "]".'));
   });
 
   it('if variants are nested, recursively picks variants', () => {

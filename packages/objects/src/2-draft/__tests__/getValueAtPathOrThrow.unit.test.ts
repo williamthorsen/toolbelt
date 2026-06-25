@@ -30,36 +30,34 @@ describe(getValueAtPathOrThrow, () => {
 
   it('throws when the top-level key does not exist', () => {
     const obj = { a: 1 };
-    expect(() => getValueAtPathOrThrow(obj, 'b')).toThrowError('Missing key "b" in path "b"');
+    expect(() => getValueAtPathOrThrow(obj, 'b')).toThrow('Missing key "b" in path "b"');
   });
 
   it('throws when a nested key does not exist', () => {
     const obj = { a: { b: {} } };
-    expect(() => getValueAtPathOrThrow(obj, 'a.b.c')).toThrowError('Missing key "c" in path "a.b.c"');
+    expect(() => getValueAtPathOrThrow(obj, 'a.b.c')).toThrow('Missing key "c" in path "a.b.c"');
   });
 
   it('throws when an array index is out of bounds', () => {
     const obj = { list: [1, 2, 3] };
-    expect(() => getValueAtPathOrThrow(obj, 'list[5]')).toThrowError(
-      'Array index out of bounds: "5" in path "list[5]"',
-    );
+    expect(() => getValueAtPathOrThrow(obj, 'list[5]')).toThrow('Array index out of bounds: "5" in path "list[5]"');
   });
 
   it('throws when given a non-integer array index', () => {
     const obj = { list: [1, 2, 3] };
-    expect(() => getValueAtPathOrThrow(obj, 'list[foo]')).toThrowError(
+    expect(() => getValueAtPathOrThrow(obj, 'list[foo]')).toThrow(
       'Expected array index at segment "foo" in path "list[foo]"',
     );
   });
 
   it('throws when the path hits a primitive unexpectedly', () => {
     const obj = { a: 42 };
-    expect(() => getValueAtPathOrThrow(obj, 'a.b')).toThrowError(
+    expect(() => getValueAtPathOrThrow(obj, 'a.b')).toThrow(
       'Unexpected non-object/non-array at segment "b" in path "a.b"',
     );
   });
 
   it('throws if the root is not an object', () => {
-    expect(() => getValueAtPathOrThrow(null, 'a')).toThrowError('Expected an object as root value.');
+    expect(() => getValueAtPathOrThrow(null, 'a')).toThrow('Expected an object as root value.');
   });
 });

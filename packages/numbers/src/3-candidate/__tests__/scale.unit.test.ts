@@ -58,7 +58,7 @@ describe('scaleInt()', () => {
     (range) => {
       const throwingFn = () => scaleInt(0.5, range);
 
-      expect(throwingFn).toThrowError(new RangeError('Invalid range: min and max must be integers.'));
+      expect(throwingFn).toThrow(new RangeError('Invalid range: min and max must be integers.'));
     },
   );
 });
