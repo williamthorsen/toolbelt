@@ -2,43 +2,7 @@
   "$schema": "https://github.com/williamthorsen/node-monorepo-tools/raw/v11y-check-v0.7.1/packages/v11y-check/schemas/config.json",
   "dev": {
     "severityThreshold": "moderate",
-    "allowlist": [
-      {
-        "addedAt": "2026-06-25T21:09:04.175Z",
-        "id": "1109135",
-        "path": ".>vite-tsconfig-paths>vite",
-        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
-        "url": "https://github.com/advisories/GHSA-93m4-6634-74q7"
-      },
-      {
-        "addedAt": "2026-06-25T21:09:04.175Z",
-        "id": "1116229",
-        "path": ".>vite-tsconfig-paths>vite",
-        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
-        "url": "https://github.com/advisories/GHSA-4w7w-66w2-5vf9"
-      },
-      {
-        "addedAt": "2026-06-25T21:09:04.175Z",
-        "id": "1116234",
-        "path": ".>vite-tsconfig-paths>vite",
-        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
-        "url": "https://github.com/advisories/GHSA-p9ff-h696-f583"
-      },
-      {
-        "addedAt": "2026-06-25T21:09:04.175Z",
-        "id": "1120784",
-        "path": ".>vite-tsconfig-paths>vite",
-        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
-        "url": "https://github.com/advisories/GHSA-v6wh-96g9-6wx3"
-      },
-      {
-        "addedAt": "2026-06-25T21:09:04.175Z",
-        "id": "1120789",
-        "path": ".>vite-tsconfig-paths>vite",
-        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
-        "url": "https://github.com/advisories/GHSA-fx2h-pf6j-xcff"
-      }
-    ]
+    "allowlist": []
   },
   "prod": {
     "severityThreshold": "low",
