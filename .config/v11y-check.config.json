@@ -1,0 +1,145 @@
+{
+  "$schema": "https://github.com/williamthorsen/node-monorepo-tools/raw/v11y-check-v0.7.1/packages/v11y-check/schemas/config.json",
+  "dev": {
+    "severityThreshold": "moderate",
+    "allowlist": [
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1109135",
+        "path": ".>vite-tsconfig-paths>vite",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-93m4-6634-74q7"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1113459",
+        "path": ".>eslint-plugin-import>minimatch",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-3ppc-4f35-3m26"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1113515",
+        "path": ".>vite-tsconfig-paths>vite>rollup",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-mw96-cpmx-2vgc"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1113538",
+        "path": ".>eslint-plugin-import>minimatch",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-7r86-cg39-jmmj"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1113546",
+        "path": ".>eslint-plugin-import>minimatch",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-23c5-xmqv-rm74"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1115357",
+        "path": ".>eslint>file-entry-cache>flat-cache>flatted",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-rf6f-7fwh-wjgh"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1115540",
+        "path": ".>eslint>minimatch>brace-expansion",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-f886-m6hf-6m8v"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1115543",
+        "path": ".>@vitest/eslint-plugin>@typescript-eslint/utils>@typescript-eslint/typescript-estree>minimatch>brace-expansion",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-f886-m6hf-6m8v"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1115551",
+        "path": ".>@vitest/eslint-plugin>@typescript-eslint/utils>@typescript-eslint/typescript-estree>tinyglobby>picomatch",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-3v7f-55p6-f55p"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1115554",
+        "path": ".>@vitest/eslint-plugin>@typescript-eslint/utils>@typescript-eslint/typescript-estree>tinyglobby>picomatch",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-c2c7-rcm5-vvqj"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1115556",
+        "path": ".>@williamthorsen/eslint-config-typescript>yaml-eslint-parser>yaml",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-48c2-rrv3-qjmp"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1116229",
+        "path": ".>vite-tsconfig-paths>vite",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-4w7w-66w2-5vf9"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1116234",
+        "path": ".>vite-tsconfig-paths>vite",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-p9ff-h696-f583"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1117015",
+        "path": ".>vite-tsconfig-paths>vite>postcss",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-qx2v-qp2m-jg93"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1120127",
+        "path": ".>vitest",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-5xrq-8626-4rwp"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1120311",
+        "path": ".>@vitest/eslint-plugin>@typescript-eslint/utils>@typescript-eslint/typescript-estree>minimatch>brace-expansion",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-jxxr-4gwj-5jf2"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1120784",
+        "path": ".>vite-tsconfig-paths>vite",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-v6wh-96g9-6wx3"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1120789",
+        "path": ".>vite-tsconfig-paths>vite",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-fx2h-pf6j-xcff"
+      },
+      {
+        "addedAt": "2026-06-25T21:09:04.175Z",
+        "id": "1120792",
+        "path": ".>js-yaml",
+        "reason": "Added by v11y sync at 2026-06-25 21:09:04 UTC",
+        "url": "https://github.com/advisories/GHSA-h67p-54hq-rp68"
+      }
+    ]
+  },
+  "prod": {
+    "severityThreshold": "low",
+    "allowlist": []
+  }
+}
