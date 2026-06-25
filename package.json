@@ -23,7 +23,6 @@
     "prepare": "lefthook install"
   },
   "devDependencies": {
-    "@types/js-yaml": "4.0.9",
     "@types/node": "24.12.0",
     "@typescript/native-preview": "7.0.0-dev.20260624.1",
     "@vitest/coverage-v8": "4.1.9",
@@ -36,7 +35,6 @@
     "eslint-plugin-import": "2.32.0",
     "expect-type": "1.4.0",
     "glob": "13.0.6",
-    "js-yaml": "4.2.0",
     "lefthook": "2.1.9",
     "prettier": "3.8.4",
     "rimraf": "6.1.3",
