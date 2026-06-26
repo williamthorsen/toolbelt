@@ -19,7 +19,7 @@ describe(getAtIndexOrThrow, () => {
 
     const throwingFn = () => getAtIndexOrThrow(arr, index);
 
-    expect(throwingFn).toThrowError(new RangeError('Index -1 is out of bounds.'));
+    expect(throwingFn).toThrow(new RangeError('Index -1 is out of bounds.'));
   });
 
   it('throws a RangeError if the index is greater than or equal to the array length', () => {
@@ -28,7 +28,7 @@ describe(getAtIndexOrThrow, () => {
 
     const throwingFn = () => getAtIndexOrThrow(arr, index);
 
-    expect(throwingFn).toThrowError(new RangeError('Index 4 is out of bounds.'));
+    expect(throwingFn).toThrow(new RangeError('Index 4 is out of bounds.'));
   });
 
   it('returns the correct item for the first index in the array', () => {

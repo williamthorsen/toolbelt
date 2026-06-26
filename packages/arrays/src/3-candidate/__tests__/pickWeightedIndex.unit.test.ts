@@ -40,13 +40,13 @@ describe(pickWeightedIndex, () => {
   it('if the cumulative weights array is empty, throws an error', () => {
     const throwingFn = () => pickWeightedIndex([]);
 
-    expect(throwingFn).toThrowError(new Error('Cannot pick an item from an empty array.'));
+    expect(throwingFn).toThrow(new Error('Cannot pick an item from an empty array.'));
   });
 
   it('if the total weight is 0, throws an error', () => {
     const throwingFn = () => pickWeightedIndex([0, 0]);
 
-    expect(throwingFn).toThrowError(new Error('Cannot pick an item from an array with total weight 0.'));
+    expect(throwingFn).toThrow(new Error('Cannot pick an item from an array with total weight 0.'));
   });
 
   it('allows a seed in options to produce deterministic results', () => {
@@ -81,13 +81,13 @@ describe(assertValidCumulativeWeights, () => {
 
     const throwingFn = () => assertValidCumulativeWeights(weights, items.length);
 
-    expect(throwingFn).toThrowError(new Error('The number of weights must match the number of items.'));
+    expect(throwingFn).toThrow(new Error('The number of weights must match the number of items.'));
   });
 
   it('if the weights array is empty, throws an error', () => {
     const throwingFn = () => assertValidCumulativeWeights([]);
 
-    expect(throwingFn).toThrowError(new Error('Cannot pick an item from an empty array.'));
+    expect(throwingFn).toThrow(new Error('Cannot pick an item from an empty array.'));
   });
 
   it('if the weights array has a negative weight, throws an error', () => {
@@ -95,7 +95,7 @@ describe(assertValidCumulativeWeights, () => {
 
     const throwingFn = () => assertValidCumulativeWeights(badWeights);
 
-    expect(throwingFn).toThrowError(new Error('Weights cannot be negative.'));
+    expect(throwingFn).toThrow(new Error('Weights cannot be negative.'));
   });
 
   it('if the weights are not ascending, throws an error', () => {
@@ -103,6 +103,6 @@ describe(assertValidCumulativeWeights, () => {
 
     const throwingFn = () => assertValidCumulativeWeights(badWeights);
 
-    expect(throwingFn).toThrowError(new Error('Cumulative weights must be in ascending order.'));
+    expect(throwingFn).toThrow(new Error('Cumulative weights must be in ascending order.'));
   });
 });

@@ -29,9 +29,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "prepare": "pnpm run ws build",
-    "publish:github": "pnpm publish",
-    "ws": "node --import tsx ../../scripts/run-workspace-script.ts --int-test"
+    "prepublishOnly": "nmr build"
   },
   "dependencies": {
     "@williamthorsen/toolbelt.arrays": "workspace:*",

@@ -55,15 +55,15 @@ describe(pipe, () => {
     expect(() => {
       // @ts-expect-error - Cannot be called with no arguments
       pipe();
-    }).not.toThrowError();
+    }).not.toThrow();
     expect(() => {
       // @ts-expect-error - Functions after the first must take exactly one argument
       pipe(double, sum);
-    }).not.toThrowError();
+    }).not.toThrow();
     expect(() => {
       // @ts-expect-error - Cannot pipe a number into a function that expects a string
       pipe(sum, upper);
-    }).not.toThrowError();
+    }).not.toThrow();
   });
 });
 

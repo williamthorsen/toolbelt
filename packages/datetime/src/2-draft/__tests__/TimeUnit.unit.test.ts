@@ -30,7 +30,7 @@ describe(TimeUnit, () => {
 
       const throwingFn = () => TimeUnit.convert(1, TimeUnit.Minutes, TimeUnit.Hours, options);
 
-      expect(throwingFn).toThrowError(new Error('1 minute cannot be converted into a whole number of hours.'));
+      expect(throwingFn).toThrow(new Error('1 minute cannot be converted into a whole number of hours.'));
     });
   });
 

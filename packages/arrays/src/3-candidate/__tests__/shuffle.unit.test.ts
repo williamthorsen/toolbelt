@@ -34,7 +34,7 @@ describe(shuffleInPlace, () => {
   it('does not throw error when given empty array', () => {
     expect(() => {
       shuffleInPlace([]);
-    }).not.toThrowError();
+    }).not.toThrow();
   });
 
   it('does not modify array when given single-item array', () => {

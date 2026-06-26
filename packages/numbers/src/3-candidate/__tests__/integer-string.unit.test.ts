@@ -126,6 +126,6 @@ describe(safeParseInteger, () => {
 
     const throwingFn = () => safeParseInteger(value, fallback);
 
-    expect(throwingFn).toThrowError(fallback);
+    expect(throwingFn).toThrow(fallback);
   });
 });

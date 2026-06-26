@@ -6,7 +6,7 @@ describe(noop, () => {
   it('can be invoked without arguments', () => {
     expect(() => {
       noop();
-    }).not.toThrowError();
+    }).not.toThrow();
   });
 
   it('can be invoked with arguments', () => {
@@ -14,6 +14,6 @@ describe(noop, () => {
       noop(1);
       noop(1, 2);
       noop(1, 2, 3);
-    }).not.toThrowError();
+    }).not.toThrow();
   });
 });
