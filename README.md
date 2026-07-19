@@ -80,4 +80,30 @@ nmr check
 
 ### Publishing
 
-Packages are published from CI by the release workflow (`.github/workflows/release.yaml`); there is no local publish command. Trigger a release from the workflow's manual `workflow_dispatch`, optionally scoping it with the `only` and `bump` inputs.
+Publishing is automated via npm [trusted publishing](https://docs.npmjs.com/trusted-publishers/) (OIDC) — there is no local publish command, and the repo holds no `NPM_TOKEN`.
+
+Cut a release by running `release-kit` locally and pushing the tags it creates:
+
+```shell
+# Bump versions, write changelogs, and create the release tags
+npx @williamthorsen/release-kit prepare
+npx @williamthorsen/release-kit commit
+npx @williamthorsen/release-kit tag
+
+# Push the commit and the new tags — the tag push is what triggers publishing
+git push
+git push --tags
+```
+
+Each pushed release tag (`{package}-v{version}`) triggers:
+
+- `.github/workflows/publish.yaml` — publishes the tagged package(s) to npm with provenance attestations.
+- `.github/workflows/create-github-release.yaml` — creates the matching GitHub Release.
+
+Tags must be pushed from a developer machine, not by the dispatch `release.yaml` workflow: GitHub does not trigger workflows for tags pushed with the built-in `GITHUB_TOKEN`, so a bot-pushed tag would publish nothing.
+
+**One-time setup (per published package):** register the package as a trusted publisher on npm, bound to `publish.yaml`. Requires npm ≥ 11.15.0 and account-level 2FA:
+
+```shell
+npm trust github @williamthorsen/toolbelt.arrays --file publish.yaml --repo williamthorsen/toolbelt --allow-publish
+```
