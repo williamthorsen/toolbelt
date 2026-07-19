@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       only:
-        description: 'Components to release (comma-separated, leave empty for all)'
+        description: 'Workspaces to release (comma-separated, leave empty for all)'
         required: false
         type: string
       bump:
@@ -18,7 +18,7 @@ on:
           - minor
           - major
       force:
-        description: 'Force release even if no changes are detected'
+        description: 'Force a release even when no commits or no bump-worthy commits exist (defaults to patch; combine with --bump for a different level)'
         required: false
         type: boolean
         default: false
@@ -29,7 +29,7 @@ permissions:
 
 jobs:
   release:
-    uses: williamthorsen/node-monorepo-tools/.github/workflows/release-workflow.yaml@release-workflow-v1
+    uses: williamthorsen/node-monorepo-tools/.github/workflows/release.reusable.yaml@workflow/release-v1
     with:
       only: ${{ inputs.only }}
       bump: ${{ inputs.bump }}
