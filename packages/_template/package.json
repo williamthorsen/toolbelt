@@ -8,6 +8,11 @@
   "bugs": {
     "url": "https://github.com/williamthorsen/toolbelt/issues"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/williamthorsen/toolbelt.git",
+    "directory": "packages/_template"
+  },
   "license": "UNLICENSED",
   "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
   "type": "module",
