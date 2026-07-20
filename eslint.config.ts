@@ -1,17 +1,9 @@
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-import tseslint from 'typescript-eslint';
-
-const thisFilePath = fileURLToPath(import.meta.url);
-const thisDirPath = dirname(thisFilePath);
-
 import baseConfig, { createConfig, patterns } from '@williamthorsen/eslint-config-typescript';
+import { defineConfig } from 'eslint/config';
 
-/**
- * @type {import('eslint').Linter.FlatConfig[]}
- */
-export default [
+import { deferredUnicornRules } from './.config/deferred-unicorn-rules.ts';
+
+const config = defineConfig([
   ...baseConfig,
   {
     // Completely ignore these files
@@ -39,15 +31,19 @@ export default [
     },
   },
   {
+    files: patterns.codeFiles,
+    rules: deferredUnicornRules,
+  },
+  {
     files: ['**/*.ts', '**/*.mts', '**/*.md/*.ts'],
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.eslint.json', './packages/*/tsconfig.eslint.json'],
-        tsconfigRootDir: thisDirPath,
+        // Anchor the project service (enabled by the base config) at the repo root.
+        tsconfigRootDir: import.meta.dirname,
       },
     },
   },
-  ...tseslint.config({
+  ...defineConfig({
     extends: [await createConfig.vitest()],
     files: ['**/*.test.ts'],
     rules: {
@@ -75,4 +71,6 @@ export default [
       'no-console': 'off',
     },
   },
-];
+]);
+
+export default config;

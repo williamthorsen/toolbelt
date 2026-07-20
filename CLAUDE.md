@@ -86,6 +86,6 @@ Uses Vitest for testing with multiple configurations:
 
 ## Build System
 
-- ESBuild for compilation via `config/build.ts`
-- TypeScript for type generation
+- `nmr build` runs `nmr-compile`, which uses the TypeScript compiler API to emit each package's `src` to `dist/esm` as both `.js` and `.d.ts` in one pass, rewriting relative `.ts`→`.js` import specifiers and tsconfig `paths` aliases
+- Typecheck runs separately via `tsgo` (native-preview), independent of the `typescript` package
 - Uses workspace dependencies between packages
