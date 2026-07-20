@@ -1,0 +1,125 @@
+[
+  {
+    "version": "3.3.6",
+    "date": "2026-07-20",
+    "sections": [
+      {
+        "title": "Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Migrate to the nmr toolchain and resolve dependency vulnerabilities (#45)",
+            "body": "Every monorepo task (build, test, lint, and audit) now runs through the shared `nmr` toolchain instead of the repository's previous hand-rolled scripts, bringing it into line with other repositories.",
+            "hash": "8fa704b57e6933f87ba15f92247daa339e77fd4e"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "version": "3.3.5",
+    "date": "2026-03-19",
+    "sections": [
+      {
+        "title": "Formatting",
+        "audience": "all",
+        "items": [{ "description": "Format changelogs", "hash": "ad732cb42e9310dc122b18401651ef818cc9a4a1" }]
+      }
+    ]
+  },
+  {
+    "version": "3.3.2",
+    "date": "2026-03-10",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add string functions",
+            "hash": "a6416d4e626b9e151e447e510ab7ef0996f0359f"
+          },
+          {
+            "description": "Migrate from toolbelt-deno",
+            "hash": "f24e707b9f0ba9f182d797c9b9715c36b5d9156a"
+          },
+          {
+            "description": "Add legacy TypedObject and objectMap",
+            "hash": "bba071b3e2959034c7f8bfbcb28a1237874037fa"
+          },
+          { "description": "Range class", "hash": "ff4932ef47fa0107945b531535b339515a2b8a0b" },
+          { "description": "Simplify Range API", "hash": "430ce86f29d45acb53bcf829d9acd356e03b27b5" },
+          { "description": "Add getUniqueItems", "hash": "a91e5cd41e8ce278de9b65b07e62c8487e6be0c6" }
+        ]
+      },
+      {
+        "title": "Bug fixes",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Replace Node.js assert with library assert",
+            "hash": "546fac12aa1964d4abad5999b19758e5b95faf03"
+          }
+        ]
+      },
+      {
+        "title": "Refactoring",
+        "audience": "dev",
+        "items": [
+          { "description": "Rename functions", "hash": "65d98a6e9f3ccca17a50c22e65da1a810de406e0" },
+          {
+            "description": "Rename getDuplicates to getDuplicateItems",
+            "hash": "3cd77c59fac422d99633a93f8e383a17bd7ef9b7"
+          }
+        ]
+      },
+      {
+        "title": "Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Adapt Deno tests to Vitest",
+            "hash": "187af3f3a19d576ddae130023aaa69053572eca5"
+          }
+        ]
+      },
+      {
+        "title": "Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Scaffold the arrays workspace",
+            "hash": "1275b10548d845a09b5d4b21da10a71fbdd83f31"
+          },
+          {
+            "description": "Enable incremental type generation",
+            "hash": "de828b21a3c74cb91e7e4ef6dbf452469882abc3"
+          },
+          {
+            "description": "Rename publish script to avoid recursion",
+            "hash": "b03c4612d577e8018d79c2753bdd3dddc16b976e"
+          },
+          {
+            "description": "Change package registry from github to npmjs",
+            "hash": "b82608a360b91906ee8cc0ab040835f9ad76e58a"
+          }
+        ]
+      },
+      {
+        "title": "Dependencies",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Add toolbelt.numbers to prod deps",
+            "hash": "dd0b8dce45d438a28282e2a7f32b2160382d81bd"
+          },
+          {
+            "description": "Adapt to dependency upgrades and bump Node engine to >=24 (#8)",
+            "body": "Upgrades all dependencies to their latest versions, bumps the Node.js engine requirement from >=18.17.0 to >=24.0.0 across all 13 workspace packages, and adapts source code to satisfy new lint rules introduced by the upgraded ESLint plugins. Also upgrades `@williamthorsen/eslint-config-typescript` from 5.12.1 to 5.12.2 to fix ESM import issues in the compiled output.\n\nCommit details:\n\n* root|deps: Upgrade all deps to latest version\n\n* root|refactor: Fix lint\n\n* root|deps: Upgrade all deps to latest minor version\n\n* root|deps: Allow unpatchable vulns in dev deps\n\n* root|refactor: Adapt to dependency upgrades and bump Node engine to >=24\n\n- Upgrade eslint-config-typescript to 5.12.2 (fixes ESM import issues, removes need for pnpm patch)\n- Bump engines.node from >=18.17.0 to >=24.0.0 across all packages\n- Update CI to Node 24.14.0 and pnpm 10.30.3\n- Replace .sort() with .toSorted() to satisfy unicorn/no-array-sort\n- Fix lint errors: remove useless default assignments, redundant type constituents, deprecated re-exports, and empty array args to Set constructor\n\n* datetime|tests: Fix locale mismatch in Timestamp test\n\nPass the same 'en-US' locale to both the expected-value computation and\nthe method under test. Previously the test used the system default locale\nfor the expected value but explicit 'en-US' for the actual call, which\ndiverged under Node 24's updated Intl formatting.\n\n* root|refactor: Replace toThrow with toThrowError across all tests\n\nThe vitest/no-alias-methods rule in strict-lint requires the canonical\ntoThrowError() name instead of the toThrow() alias.\n\n* root|refactor: Fix remaining strict-lint errors\n\n- Use import() in vi.mock for vitest/prefer-import-in-mock\n- Replace expect(typeof x).toBe() with expectTypeOf for vitest/prefer-expect-type-of\n- Use String.raw for regex escapes for unicorn/prefer-string-raw\n\n* root|tooling: Use ws runner to fix recursive build command\n\nThe build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.",
+            "hash": "ec37d5de397a51ce589d3fb73e6b0a66773e6b22"
+          }
+        ]
+      }
+    ]
+  }
+]

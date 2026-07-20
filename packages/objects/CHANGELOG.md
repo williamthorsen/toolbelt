@@ -2,145 +2,128 @@
 
 All notable changes to this project will be documented in this file.
 
-## [objects-v3.2.6] - 2026-03-19
+## 3.2.7 — 2026-07-20
+
+### Tooling
+
+- Migrate to the nmr toolchain and resolve dependency vulnerabilities (#45)
+
+  Every monorepo task (build, test, lint, and audit) now runs through the shared `nmr` toolchain instead of the repository's previous hand-rolled scripts, bringing it into line with other repositories.
+
+## 3.2.6 — 2026-03-19
 
 ### Formatting
 
-- Fmt: Format changelogs
+- Format changelogs
 
-## [tools-v3.0.1] - 2026-03-10
-
-### Dependencies
-
-- #6 deps: Adapt to dependency upgrades and bump Node engine to >=24 (#8)
-
-Upgrades all dependencies to their latest versions, bumps the Node.js engine requirement from >=18.17.0 to >=24.0.0 across all 13 workspace packages, and adapts source code to satisfy new lint rules introduced by the upgraded ESLint plugins. Also upgrades `@williamthorsen/eslint-config-typescript` from 5.12.1 to 5.12.2 to fix ESM import issues in the compiled output.
-
-Commit details:
-
-- root|deps: Upgrade all deps to latest version
-
-- root|refactor: Fix lint
-
-- root|deps: Upgrade all deps to latest minor version
-
-- root|deps: Allow unpatchable vulns in dev deps
-
-- root|refactor: Adapt to dependency upgrades and bump Node engine to >=24
-
-* Upgrade eslint-config-typescript to 5.12.2 (fixes ESM import issues, removes need for pnpm patch)
-* Bump engines.node from >=18.17.0 to >=24.0.0 across all packages
-* Update CI to Node 24.14.0 and pnpm 10.30.3
-* Replace .sort() with .toSorted() to satisfy unicorn/no-array-sort
-* Fix lint errors: remove useless default assignments, redundant type constituents, deprecated re-exports, and empty array args to Set constructor
-
-- datetime|tests: Fix locale mismatch in Timestamp test
-
-Pass the same 'en-US' locale to both the expected-value computation and
-the method under test. Previously the test used the system default locale
-for the expected value but explicit 'en-US' for the actual call, which
-diverged under Node 24's updated Intl formatting.
-
-- root|refactor: Replace toThrow with toThrowError across all tests
-
-The vitest/no-alias-methods rule in strict-lint requires the canonical
-toThrowError() name instead of the toThrow() alias.
-
-- root|refactor: Fix remaining strict-lint errors
-
-* Use import() in vi.mock for vitest/prefer-import-in-mock
-* Replace expect(typeof x).toBe() with expectTypeOf for vitest/prefer-expect-type-of
-* Use String.raw for regex escapes for unicorn/prefer-string-raw
-
-- root|tooling: Use ws runner to fix recursive build command
-
-The build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.
-
-### Documentation
-
-- \*|docs: Fix lint
-- Objects|docs: Refine function description
+## 3.2.3 — 2026-03-10
 
 ### Features
 
-- Objects|feat: Add getValueAtPathOrThrow
-- Objects|feat: Add isKeyOf function
-- \*|feat: Add isKeyOf function to objects library (#3)
+- Modernize code & workspace structure
+- Add legacy TypedObject and objectMap
+- ⛔ Migrate from toolbelt-deno
+- Add isEqual & objectFromKeys functions
+- Add getValueAtPathOrThrow
+- Add isKeyOf function
+- Add isKeyOf function to objects library (#3)
 
-## What
+  ## What
 
-Adds `isKeyOf` function to the objects package to provide type-safe property key validation.
+  Adds `isKeyOf` function to the objects package to provide type-safe property key validation.
 
-Also includes tooling improvements for automated changeset generation and monorepo management.
+  Also includes tooling improvements for automated changeset generation and monorepo management.
 
-## Details
+  ## Details
 
-### Features
+  ### Features
 
-Added `isKeyOf` function in the objects package that safely checks if a key exists as an own property of an object and provides proper type narrowing.
+  Added `isKeyOf` function in the objects package that safely checks if a key exists as an own property of an object and provides proper type narrowing.
 
-### Tooling
+  ### Tooling
+  - Added automated changeset generation scripts with commit message parsing
+  - Created release notes generator for monorepo releases
+  - Added scripts for creating release tags and syncing versions
+  - Configured post-install hook to report package overrides
+  - Updated ESLint configuration to disable overly prescriptive array callback rule
 
-- Added automated changeset generation scripts with commit message parsing
-- Created release notes generator for monorepo releases
-- Added scripts for creating release tags and syncing versions
-- Configured post-install hook to report package overrides
-- Updated ESLint configuration to disable overly prescriptive array callback rule
+  ### Dependencies
 
-### Dependencies
-
-Updated package versions:
-
-- Root package version bumped to 4.3.1
-- Objects package version bumped to 3.2.0
+  Updated package versions:
+  - Root package version bumped to 4.3.1
+  - Objects package version bumped to 3.2.0
 
 ### Refactoring
 
-- Objects|refactor: Replace barrel imports with direct imports
-
-### Tooling
-
-- Objects|tooling: Make package public
-- Root|tooling: Use tsgo for type-checking
-- Root|tooling: Upgrade AI rules, configs & deps
-- Objects|tooling: Fix export of isKeyOf
-- Objects|tooling: Fix export of isKeyOf (#4)
-
-Fixes the export of `isKeyOf`, which had not been added to the candidate release index.
-
-- \*|tooling: Change package registry from github to npmjs
-
-## [3.0.1] - 2025-05-20
-
-### Tooling
-
-- \*|tooling: Enable incremental type generation
-- \*|tooling: Rename publish script to avoid recursion
-
-## [3.0.0] - 2025-05-16
-
-### Documentation
-
-- Objects|docs: Fix lint
-
-### Features
-
-- \*|feat: Modernize code & workspace structure
-- Objects|feat: Add legacy TypedObject and objectMap
-- Objects|feat: ⛔ Migrate from toolbelt-deno
-- Objects|feat: Add isEqual & objectFromKeys functions
-
-### Refactoring
-
-- \*|refactor: Migrate to ESBuild
-- \*|refactor: Rename functions
+- Migrate to ESBuild
+- Rename functions
+- Replace barrel imports with direct imports
 
 ### Tests
 
-- Objects|tests: Convert object tests to Vitest
+- Convert object tests to Vitest
 
 ### Tooling
 
-- \*|tooling: Configure Prettier
+- Configure Prettier
+- Enable incremental type generation
+- Rename publish script to avoid recursion
+- Make package public
+- Use tsgo for type-checking
+- Upgrade AI rules, configs & deps
+- Fix export of isKeyOf
+- Fix export of isKeyOf (#4)
 
-<!-- generated by git-cliff -->
+  Fixes the export of `isKeyOf`, which had not been added to the candidate release index.
+
+- Change package registry from github to npmjs
+
+### Dependencies
+
+- Adapt to dependency upgrades and bump Node engine to >=24 (#8)
+
+  Upgrades all dependencies to their latest versions, bumps the Node.js engine requirement from >=18.17.0 to >=24.0.0 across all 13 workspace packages, and adapts source code to satisfy new lint rules introduced by the upgraded ESLint plugins. Also upgrades `@williamthorsen/eslint-config-typescript` from 5.12.1 to 5.12.2 to fix ESM import issues in the compiled output.
+
+  Commit details:
+
+  - root|deps: Upgrade all deps to latest version
+
+  - root|refactor: Fix lint
+
+  - root|deps: Upgrade all deps to latest minor version
+
+  - root|deps: Allow unpatchable vulns in dev deps
+
+  - root|refactor: Adapt to dependency upgrades and bump Node engine to >=24
+  * Upgrade eslint-config-typescript to 5.12.2 (fixes ESM import issues, removes need for pnpm patch)
+  * Bump engines.node from >=18.17.0 to >=24.0.0 across all packages
+  * Update CI to Node 24.14.0 and pnpm 10.30.3
+  * Replace .sort() with .toSorted() to satisfy unicorn/no-array-sort
+  * Fix lint errors: remove useless default assignments, redundant type constituents, deprecated re-exports, and empty array args to Set constructor
+  - datetime|tests: Fix locale mismatch in Timestamp test
+
+  Pass the same 'en-US' locale to both the expected-value computation and
+  the method under test. Previously the test used the system default locale
+  for the expected value but explicit 'en-US' for the actual call, which
+  diverged under Node 24's updated Intl formatting.
+
+  - root|refactor: Replace toThrow with toThrowError across all tests
+
+  The vitest/no-alias-methods rule in strict-lint requires the canonical
+  toThrowError() name instead of the toThrow() alias.
+
+  - root|refactor: Fix remaining strict-lint errors
+  * Use import() in vi.mock for vitest/prefer-import-in-mock
+  * Replace expect(typeof x).toBe() with expectTypeOf for vitest/prefer-expect-type-of
+  * Use String.raw for regex escapes for unicorn/prefer-string-raw
+  - root|tooling: Use ws runner to fix recursive build command
+
+  The build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.
+
+### Documentation
+
+- Fix lint
+- Fix lint
+- Refine function description
+
+<!-- Generated by release-kit. Do not edit this file. Use .meta/changelog-overrides.json to override entries. -->

@@ -1,0 +1,79 @@
+[
+  {
+    "version": "3.0.6",
+    "date": "2026-07-20",
+    "sections": [
+      {
+        "title": "Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Migrate to the nmr toolchain and resolve dependency vulnerabilities (#45)",
+            "body": "Every monorepo task (build, test, lint, and audit) now runs through the shared `nmr` toolchain instead of the repository's previous hand-rolled scripts, bringing it into line with other repositories.",
+            "hash": "8fa704b57e6933f87ba15f92247daa339e77fd4e"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "version": "3.0.5",
+    "date": "2026-03-19",
+    "sections": [
+      {
+        "title": "Formatting",
+        "audience": "all",
+        "items": [{ "description": "Format changelogs", "hash": "ad732cb42e9310dc122b18401651ef818cc9a4a1" }]
+      }
+    ]
+  },
+  {
+    "version": "3.0.2",
+    "date": "2026-03-10",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add debounce & delay functions",
+            "hash": "a658e6725157d6e08eb6d0eba2cc13b1f4d44a24"
+          }
+        ]
+      },
+      {
+        "title": "Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Scaffold the async workspace",
+            "hash": "b10b1b4bc59dd03860148235662f5cf4430a60e0"
+          },
+          {
+            "description": "Enable incremental type generation",
+            "hash": "de828b21a3c74cb91e7e4ef6dbf452469882abc3"
+          },
+          {
+            "description": "Rename publish script to avoid recursion",
+            "hash": "b03c4612d577e8018d79c2753bdd3dddc16b976e"
+          },
+          {
+            "description": "Change package registry from github to npmjs",
+            "hash": "b82608a360b91906ee8cc0ab040835f9ad76e58a"
+          }
+        ]
+      },
+      {
+        "title": "Dependencies",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Adapt to dependency upgrades and bump Node engine to >=24 (#8)",
+            "body": "Upgrades all dependencies to their latest versions, bumps the Node.js engine requirement from >=18.17.0 to >=24.0.0 across all 13 workspace packages, and adapts source code to satisfy new lint rules introduced by the upgraded ESLint plugins. Also upgrades `@williamthorsen/eslint-config-typescript` from 5.12.1 to 5.12.2 to fix ESM import issues in the compiled output.\n\nCommit details:\n\n* root|deps: Upgrade all deps to latest version\n\n* root|refactor: Fix lint\n\n* root|deps: Upgrade all deps to latest minor version\n\n* root|deps: Allow unpatchable vulns in dev deps\n\n* root|refactor: Adapt to dependency upgrades and bump Node engine to >=24\n\n- Upgrade eslint-config-typescript to 5.12.2 (fixes ESM import issues, removes need for pnpm patch)\n- Bump engines.node from >=18.17.0 to >=24.0.0 across all packages\n- Update CI to Node 24.14.0 and pnpm 10.30.3\n- Replace .sort() with .toSorted() to satisfy unicorn/no-array-sort\n- Fix lint errors: remove useless default assignments, redundant type constituents, deprecated re-exports, and empty array args to Set constructor\n\n* datetime|tests: Fix locale mismatch in Timestamp test\n\nPass the same 'en-US' locale to both the expected-value computation and\nthe method under test. Previously the test used the system default locale\nfor the expected value but explicit 'en-US' for the actual call, which\ndiverged under Node 24's updated Intl formatting.\n\n* root|refactor: Replace toThrow with toThrowError across all tests\n\nThe vitest/no-alias-methods rule in strict-lint requires the canonical\ntoThrowError() name instead of the toThrow() alias.\n\n* root|refactor: Fix remaining strict-lint errors\n\n- Use import() in vi.mock for vitest/prefer-import-in-mock\n- Replace expect(typeof x).toBe() with expectTypeOf for vitest/prefer-expect-type-of\n- Use String.raw for regex escapes for unicorn/prefer-string-raw\n\n* root|tooling: Use ws runner to fix recursive build command\n\nThe build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.",
+            "hash": "ec37d5de397a51ce589d3fb73e6b0a66773e6b22"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,156 @@
+[
+  {
+    "version": "3.2.7",
+    "date": "2026-07-20",
+    "sections": [
+      {
+        "title": "Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Migrate to the nmr toolchain and resolve dependency vulnerabilities (#45)",
+            "body": "Every monorepo task (build, test, lint, and audit) now runs through the shared `nmr` toolchain instead of the repository's previous hand-rolled scripts, bringing it into line with other repositories.",
+            "hash": "8fa704b57e6933f87ba15f92247daa339e77fd4e"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "version": "3.2.6",
+    "date": "2026-03-19",
+    "sections": [
+      {
+        "title": "Formatting",
+        "audience": "all",
+        "items": [{ "description": "Format changelogs", "hash": "ad732cb42e9310dc122b18401651ef818cc9a4a1" }]
+      }
+    ]
+  },
+  {
+    "version": "3.2.3",
+    "date": "2026-03-10",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Modernize code & workspace structure",
+            "hash": "ed21c41a88e18060d66332fb42aaccd724c50c2a"
+          },
+          {
+            "description": "Add legacy TypedObject and objectMap",
+            "hash": "bba071b3e2959034c7f8bfbcb28a1237874037fa"
+          },
+          {
+            "description": "⛔ Migrate from toolbelt-deno",
+            "hash": "960d46e156622c10f68d397ec2cc8599ca1f7fa3"
+          },
+          {
+            "description": "Add isEqual & objectFromKeys functions",
+            "hash": "0cadf85149f20b52be8716e40f675c06210214c0"
+          },
+          {
+            "description": "Add getValueAtPathOrThrow",
+            "hash": "225d598b1f5606805d2c9d81dde89f74a3c35457"
+          },
+          {
+            "description": "Add isKeyOf function",
+            "hash": "c969583c59b83a8822243d1bdb403cdd7a0a84d8"
+          },
+          {
+            "description": "Add isKeyOf function to objects library (#3)",
+            "body": "## What\n\nAdds `isKeyOf` function to the objects package to provide type-safe property key validation.\n\nAlso includes tooling improvements for automated changeset generation and monorepo management.\n\n## Details\n\n### Features\n\nAdded `isKeyOf` function in the objects package that safely checks if a key exists as an own property of an object and provides proper type narrowing.\n\n### Tooling\n\n- Added automated changeset generation scripts with commit message parsing\n- Created release notes generator for monorepo releases  \n- Added scripts for creating release tags and syncing versions\n- Configured post-install hook to report package overrides\n- Updated ESLint configuration to disable overly prescriptive array callback rule\n\n### Dependencies\n\nUpdated package versions:\n- Root package version bumped to 4.3.1\n- Objects package version bumped to 3.2.0",
+            "hash": "4366c5364e537feacc24905c74b5befd634a4a97"
+          }
+        ]
+      },
+      {
+        "title": "Refactoring",
+        "audience": "dev",
+        "items": [
+          { "description": "Migrate to ESBuild", "hash": "54b3fccebd7d705d193d054970ac5d4b33a2339e" },
+          { "description": "Rename functions", "hash": "65d98a6e9f3ccca17a50c22e65da1a810de406e0" },
+          {
+            "description": "Replace barrel imports with direct imports",
+            "hash": "581ffd28f8a70072fb26fe194bfb19254bc08076"
+          }
+        ]
+      },
+      {
+        "title": "Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Convert object tests to Vitest",
+            "hash": "bde991669c01b248cefe01944c2b5875d4da914f"
+          }
+        ]
+      },
+      {
+        "title": "Tooling",
+        "audience": "dev",
+        "items": [
+          { "description": "Configure Prettier", "hash": "a977850c22c5c1db8f00a01bfd11c7f017ea3fed" },
+          {
+            "description": "Enable incremental type generation",
+            "hash": "de828b21a3c74cb91e7e4ef6dbf452469882abc3"
+          },
+          {
+            "description": "Rename publish script to avoid recursion",
+            "hash": "b03c4612d577e8018d79c2753bdd3dddc16b976e"
+          },
+          {
+            "description": "Make package public",
+            "hash": "6c5f234f901e5a3aab40d34978a41187983fd78f"
+          },
+          {
+            "description": "Use tsgo for type-checking",
+            "hash": "97a3332f0cf97f914b99becae1934f4446c9fa33"
+          },
+          {
+            "description": "Upgrade AI rules, configs & deps",
+            "hash": "35e7b2338dc4359bc34fc69857976eaa5f558e6b"
+          },
+          {
+            "description": "Fix export of isKeyOf",
+            "hash": "bccf463594df8ea3caa81b58d92b8fced06e2e4e"
+          },
+          {
+            "description": "Fix export of isKeyOf (#4)",
+            "body": "Fixes the export of `isKeyOf`, which had not been added to the candidate release index.",
+            "hash": "e4cee6c2198bd6403fc6827e777f02ab9b848999"
+          },
+          {
+            "description": "Change package registry from github to npmjs",
+            "hash": "2e4602a2f56c096f0a78770ff6e8bda195509c43"
+          }
+        ]
+      },
+      {
+        "title": "Dependencies",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Adapt to dependency upgrades and bump Node engine to >=24 (#8)",
+            "body": "Upgrades all dependencies to their latest versions, bumps the Node.js engine requirement from >=18.17.0 to >=24.0.0 across all 13 workspace packages, and adapts source code to satisfy new lint rules introduced by the upgraded ESLint plugins. Also upgrades `@williamthorsen/eslint-config-typescript` from 5.12.1 to 5.12.2 to fix ESM import issues in the compiled output.\n\nCommit details:\n\n* root|deps: Upgrade all deps to latest version\n\n* root|refactor: Fix lint\n\n* root|deps: Upgrade all deps to latest minor version\n\n* root|deps: Allow unpatchable vulns in dev deps\n\n* root|refactor: Adapt to dependency upgrades and bump Node engine to >=24\n\n- Upgrade eslint-config-typescript to 5.12.2 (fixes ESM import issues, removes need for pnpm patch)\n- Bump engines.node from >=18.17.0 to >=24.0.0 across all packages\n- Update CI to Node 24.14.0 and pnpm 10.30.3\n- Replace .sort() with .toSorted() to satisfy unicorn/no-array-sort\n- Fix lint errors: remove useless default assignments, redundant type constituents, deprecated re-exports, and empty array args to Set constructor\n\n* datetime|tests: Fix locale mismatch in Timestamp test\n\nPass the same 'en-US' locale to both the expected-value computation and\nthe method under test. Previously the test used the system default locale\nfor the expected value but explicit 'en-US' for the actual call, which\ndiverged under Node 24's updated Intl formatting.\n\n* root|refactor: Replace toThrow with toThrowError across all tests\n\nThe vitest/no-alias-methods rule in strict-lint requires the canonical\ntoThrowError() name instead of the toThrow() alias.\n\n* root|refactor: Fix remaining strict-lint errors\n\n- Use import() in vi.mock for vitest/prefer-import-in-mock\n- Replace expect(typeof x).toBe() with expectTypeOf for vitest/prefer-expect-type-of\n- Use String.raw for regex escapes for unicorn/prefer-string-raw\n\n* root|tooling: Use ws runner to fix recursive build command\n\nThe build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.",
+            "hash": "ec37d5de397a51ce589d3fb73e6b0a66773e6b22"
+          }
+        ]
+      },
+      {
+        "title": "Documentation",
+        "audience": "dev",
+        "items": [
+          { "description": "Fix lint", "hash": "480e6f98a5fbcca2d279b2e422eeb071cbda86b5" },
+          { "description": "Fix lint", "hash": "30b519e04b566e0ae21a06ebc39e9b6390010320" },
+          {
+            "description": "Refine function description",
+            "hash": "f5eb3840aa2d70308c3ea8513a029fe74618d9eb"
+          }
+        ]
+      }
+    ]
+  }
+]

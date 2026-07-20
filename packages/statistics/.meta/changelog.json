@@ -1,0 +1,19 @@
+[
+  {
+    "version": "0.5.0",
+    "date": "2026-07-20",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add dstructs and statistics packages (#58)",
+            "body": "The toolbelt monorepo gains two more packages: `@williamthorsen/toolbelt.dstructs`, a first-in-first-out queue, and `@williamthorsen/toolbelt.statistics`, normal-distribution and cumulative-sum utilities with no third-party runtime dependency. Both reproduce the API from their earlier GitHub Packages releases and expose it at the candidate subpath (`@williamthorsen/toolbelt.{pkg}/candidate`).",
+            "hash": "9879e83e6a695f5c78efd82db91aedade522bf74"
+          }
+        ]
+      }
+    ]
+  }
+]
