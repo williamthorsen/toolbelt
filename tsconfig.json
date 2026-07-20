@@ -61,6 +61,8 @@
 
     // Enable top-level `await` and other modern ESM features.
     "target": "ES2022",
+    // Explicitly load Node types; TS 6 changed the omitted-`types` default from "all @types" to none.
+    "types": ["node"],
     // "useDefineForClassFields": true, // implied by target >= ES2022 (including ESNext)
   },
   "exclude": ["node_modules"],
@@ -70,5 +72,7 @@
     "__tests__/",
     "config/",
     "scripts/",
+    // Root-level TS files (e.g. vitest.*.config.ts) so the ESLint project service resolves them.
+    "*.ts",
   ],
 }

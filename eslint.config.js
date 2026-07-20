@@ -8,6 +8,8 @@ const thisDirPath = dirname(thisFilePath);
 
 import baseConfig, { createConfig, patterns } from '@williamthorsen/eslint-config-typescript';
 
+import { deferredUnicornRules } from './.config/deferred-unicorn-rules.js';
+
 /**
  * @type {import('eslint').Linter.FlatConfig[]}
  */
@@ -39,10 +41,13 @@ export default [
     },
   },
   {
+    files: patterns.codeFiles,
+    rules: deferredUnicornRules,
+  },
+  {
     files: ['**/*.ts', '**/*.mts', '**/*.md/*.ts'],
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.eslint.json', './packages/*/tsconfig.eslint.json'],
         tsconfigRootDir: thisDirPath,
       },
     },
