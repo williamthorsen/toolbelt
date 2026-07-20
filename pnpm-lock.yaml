@@ -26,6 +26,9 @@ importers:
       '@williamthorsen/nmr':
         specifier: 0.18.2
         version: 0.18.2(typescript@5.9.3)
+      '@williamthorsen/release-kit':
+        specifier: 8.0.1
+        version: 8.0.1
       '@williamthorsen/strict-lint':
         specifier: 6.3.2
         version: 6.3.2(eslint@9.39.5(jiti@2.7.0))
@@ -819,6 +822,11 @@ packages:
     hasBin: true
     peerDependencies:
       typescript: '>=5.7.0'
+
+  '@williamthorsen/release-kit@8.0.1':
+    resolution: {integrity: sha512-9RXkhvTdQiFo+txj9UY2Ry3BklyKwTT4HJIoLsjx7epKL2B8IHvJFpys8UC9VBdr5FMlnHwXbn/eWW3ntls1qA==}
+    engines: {node: '>=18.17.0'}
+    hasBin: true
 
   '@williamthorsen/strict-lint@6.3.2':
     resolution: {integrity: sha512-TWPhUYvCR1ZUVwOgZZ/cVAqlJcZQYxnMEXlmnl5FOxVjHxJKPtakVc09Edb6sQ4bD91z4IlzCzXCv4fUjQpTUQ==}
@@ -1619,6 +1627,9 @@ packages:
   json-stable-stringify-without-jsonify@1.0.1:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
 
+  json-stringify-pretty-compact@4.0.0:
+    resolution: {integrity: sha512-3CNZ2DnrpByG9Nqj6Xo8vqbjT4F6N+tb4Gb28ESAZjYZ5yqvmc56J+/kuIwkaAMOyblTQhUW7PxMkUb8Q36N3Q==}
+
   json5@1.0.2:
     resolution: {integrity: sha512-g1MWMLBiz8FKi1e4w0UyVL3w+iJceWAFBAaBnnGKOpNa5f8TLktkbre1+s6oICydWAm+HRUGTmI+//xv2hvXYA==}
     hasBin: true
@@ -2013,6 +2024,11 @@ packages:
 
   semver@7.7.4:
     resolution: {integrity: sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==}
+    engines: {node: '>=10'}
+    hasBin: true
+
+  semver@7.8.5:
+    resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -3061,6 +3077,16 @@ snapshots:
       yaml: 2.9.0
       zod: 4.4.3
 
+  '@williamthorsen/release-kit@8.0.1':
+    dependencies:
+      '@williamthorsen/nmr-core': 0.7.0
+      glob: 13.0.6
+      jiti: 2.7.0
+      json-stringify-pretty-compact: 4.0.0
+      semver: 7.8.5
+      yaml: 2.9.0
+      zod: 4.4.3
+
   '@williamthorsen/strict-lint@6.3.2(eslint@9.39.5(jiti@2.7.0))':
     dependencies:
       eslint: 9.39.5(jiti@2.7.0)
@@ -4050,6 +4076,8 @@ snapshots:
 
   json-stable-stringify-without-jsonify@1.0.1: {}
 
+  json-stringify-pretty-compact@4.0.0: {}
+
   json5@1.0.2:
     dependencies:
       minimist: 1.2.8
@@ -4427,6 +4455,8 @@ snapshots:
   semver@6.3.1: {}
 
   semver@7.7.4: {}
+
+  semver@7.8.5: {}
 
   set-function-length@1.2.2:
     dependencies:
