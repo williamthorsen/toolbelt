@@ -2,26 +2,19 @@
 
 ## Getting started
 
-This project uses [pnpm](https://github.com/pnpm/pnpm) and NodeJS. The versions of each are set in `.tool-versions`.
+This project uses [pnpm](https://github.com/pnpm/pnpm) and Node.js. The Node.js version is pinned in `.tool-versions`; the pnpm version is pinned by the `packageManager` field in `package.json` and activated by [corepack](https://nodejs.org/api/corepack.html) (bundled with Node.js).
 
-If you don't have PNPM installed, it is recommended that you use the [ASDF runtime manager](https://asdf-vm.com/) to install it. For alternative methods, see the [pnpm installation instructions](https://pnpm.io/installation).
-
-```shell
-# Install ASDF runtime-version manager
-git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.10.2
-# OR (not tested)
-brew install asdf
-
-# Install PNPM
-asdf plugin add pnpm
-asdf install pnpm 7.21.0
-```
-
-You can also use ASDF to install the correct version of Node:
+Install the pinned Node.js version — for example with the [asdf](https://asdf-vm.com/) runtime manager, which reads `.tool-versions`:
 
 ```shell
 asdf plugin add nodejs
-asdf install nodejs 18.12.1
+asdf install nodejs
+```
+
+Then enable corepack so `pnpm` resolves to the version pinned in `package.json`:
+
+```shell
+corepack enable
 ```
 
 ## Scripts
