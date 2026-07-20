@@ -1,5 +1,33 @@
 [
   {
+    "version": "3.2.8",
+    "date": "2026-07-20",
+    "sections": [
+      {
+        "title": "Bug fixes",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add repository field to package manifests for npm provenance (#65)",
+            "body": "Fixes an issue that prevented every package from publishing to npm. Each package now links to its source repository from its npm page.",
+            "hash": "0c87d163363c06bb1d61d40472bb0322837e7272"
+          }
+        ]
+      },
+      {
+        "title": "Dependencies",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Upgrade ESLint packages and migrate to TypeScript 6 (#67)",
+            "body": "Upgrades the toolchain to TypeScript 6 and ESLint 10.",
+            "hash": "d8dc697a2cfc6b0e905f095dbc74811fe323c43a"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "3.2.7",
     "date": "2026-07-20",
     "sections": [

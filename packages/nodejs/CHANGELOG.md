@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.0.5 — 2026-07-20
+
+### Bug fixes
+
+- Add repository field to package manifests for npm provenance (#65)
+
+  Fixes an issue that prevented every package from publishing to npm. Each package now links to its source repository from its npm page.
+
+### Dependencies
+
+- Upgrade ESLint packages and migrate to TypeScript 6 (#67)
+
+  Upgrades the toolchain to TypeScript 6 and ESLint 10.
+
 ## 3.0.4 — 2026-07-20
 
 ### Tooling
