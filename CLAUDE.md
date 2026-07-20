@@ -64,6 +64,7 @@ Packages export at multiple maturity levels:
 - `arrays` - Array manipulation utilities
 - `async` - Asynchronous utilities (debounce, delay, etc.)
 - `datetime` - Date and time utilities
+- `dstructs` - Data-structure utilities (queues, etc.)
 - `enums` - Enum manipulation utilities
 - `guards` - Type guards and assertions
 - `hof` - Higher-order functions
@@ -71,6 +72,7 @@ Packages export at multiple maturity levels:
 - `numbers` - Number manipulation and generation utilities
 - `objects` - Object manipulation utilities
 - `sets` - Set operations and utilities
+- `statistics` - Statistics and probability-distribution utilities
 - `strings` - String manipulation and formatting utilities
 - `tools` - Core utilities and constants
 
