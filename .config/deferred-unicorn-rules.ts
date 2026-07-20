@@ -1,5 +1,5 @@
-// unicorn rules newly enforced by the eslint-plugin-unicorn v63 → v72 bump, kept as warnings pending a
-// deliberate adoption pass rather than adopted now (several require behavior changes).
+// `@williamthorsen/eslint-config-typescript` v6 added new unicorn rules, surfacing new violations in existing code.
+// Errors are downgraded to warnings here until a decision is made whether to remove the rule or fix the violations.
 export const deferredUnicornRules = {
   'unicorn/class-reference-in-static-methods': 'warn',
   'unicorn/consistent-class-member-order': 'warn',
@@ -30,4 +30,4 @@ export const deferredUnicornRules = {
   'unicorn/prefer-string-repeat': 'warn',
   'unicorn/prefer-unicode-code-point-escapes': 'warn',
   'unicorn/require-array-sort-compare': 'warn',
-};
+} as const;
