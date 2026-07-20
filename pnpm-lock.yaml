@@ -87,6 +87,8 @@ importers:
 
   packages/datetime: {}
 
+  packages/dstructs: {}
+
   packages/enums:
     dependencies:
       '@williamthorsen/toolbelt.arrays':
@@ -108,6 +110,15 @@ importers:
   packages/objects: {}
 
   packages/sets: {}
+
+  packages/statistics:
+    dependencies:
+      '@williamthorsen/toolbelt.arrays':
+        specifier: workspace:*
+        version: link:../arrays
+      '@williamthorsen/toolbelt.numbers':
+        specifier: workspace:*
+        version: link:../numbers
 
   packages/strings:
     dependencies:

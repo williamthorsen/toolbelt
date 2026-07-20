@@ -1,0 +1,45 @@
+{
+  "name": "@williamthorsen/toolbelt.statistics",
+  "version": "0.4.3",
+  "description": "Statistics utilities",
+  "keywords": [],
+  "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/statistics#readme",
+  "bugs": {
+    "url": "https://github.com/williamthorsen/toolbelt/issues"
+  },
+  "license": "UNLICENSED",
+  "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/4-release/index.js"
+    },
+    "./candidate": {
+      "import": "./dist/esm/3-candidate/index.js"
+    },
+    "./draft": {
+      "import": "./dist/esm/2-draft/index.js"
+    },
+    "./proposed": {
+      "import": "./dist/esm/1-proposed/index.js"
+    }
+  },
+  "files": [
+    "dist/*",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "prepublishOnly": "nmr build"
+  },
+  "dependencies": {
+    "@williamthorsen/toolbelt.arrays": "workspace:*",
+    "@williamthorsen/toolbelt.numbers": "workspace:*"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
+}
