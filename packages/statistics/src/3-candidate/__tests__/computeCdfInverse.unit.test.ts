@@ -31,6 +31,11 @@ describe(computeCdfInverse, () => {
     expect(computeCdfInverse(1, { mean: 0, standardDeviation: 1 })).toBe(Number.POSITIVE_INFINITY);
   });
 
+  it('uses the standard deviation as the variance, so sigma is its square root', () => {
+    // variance 4 => sigma 2, so the 0.9 quantile is twice the standard-normal 0.9 quantile
+    expect(computeCdfInverse(0.9, { mean: 0, standardDeviation: 4 })).toBeCloseTo(2 * lastDecile, 4);
+  });
+
   it('throws an error if given an invalid standard deviation', () => {
     const throwingFn = () => computeCdfInverse(0.5, { mean: 0, standardDeviation: 0 });
 
