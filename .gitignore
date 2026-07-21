@@ -44,9 +44,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Symbolic links
-.agents/shared
-
 # Testing
 coverage/
 .vitest-result.json
