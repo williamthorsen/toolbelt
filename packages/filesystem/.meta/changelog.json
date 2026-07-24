@@ -1,0 +1,19 @@
+[
+  {
+    "version": "0.2.0",
+    "date": "2026-07-24",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add the filesystem package with bounded cascading config discovery (#71)",
+            "body": "Adds a new package, `@williamthorsen/toolbelt.filesystem`, and its first functions: `findProjectRoot`, which locates a project's root directory, and `loadConfigCascade`, which loads the configuration files layered across the directories between a starting point and that root.",
+            "hash": "07037688e07ab3afae2389683f325157dc5ea692"
+          }
+        ]
+      }
+    ]
+  }
+]

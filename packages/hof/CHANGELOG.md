@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.0.15 — 2026-07-24
+
+### Tooling
+
+- Configure release-kit & repo labels
+
 ## 3.0.14 — 2026-07-20
 
 ### Bug fixes

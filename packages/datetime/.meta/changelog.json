@@ -1,5 +1,21 @@
 [
   {
+    "version": "3.2.7",
+    "date": "2026-07-24",
+    "sections": [
+      {
+        "title": "Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Configure release-kit & repo labels",
+            "hash": "92a5ab3fd679690fbe697fb81e06f4aafed8cb61"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "3.2.6",
     "date": "2026-07-20",
     "sections": [

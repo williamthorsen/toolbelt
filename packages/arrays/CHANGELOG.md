@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.3.8 — 2026-07-24
+
+### Tooling
+
+- Configure release-kit & repo labels
+
 ## 3.3.7 — 2026-07-20
 
 ### Bug fixes

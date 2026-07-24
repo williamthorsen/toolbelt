@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.2 — 2026-07-24
+
+### Tooling
+
+- Configure release-kit & repo labels
+
 ## 0.2.1 — 2026-07-20
 
 ### Bug fixes
