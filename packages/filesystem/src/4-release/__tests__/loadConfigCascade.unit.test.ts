@@ -1,10 +1,9 @@
-import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { loadConfigCascade } from '../loadConfigCascade.ts';
+import { createTempTree, removeTempTrees } from './__fixtures__/createTempTree.ts';
 
 /** A module that fails loudly if it is ever imported, proving the loader skipped it rather than discarded it. */
 const POISONED_MODULE = "throw new Error('imported a config the cascade should have skipped');\n";
@@ -13,15 +12,8 @@ interface LabelledConfig {
   level: string;
 }
 
-const tempTrees: string[] = [];
-
 describe(loadConfigCascade, () => {
-  afterEach(() => {
-    for (const treeDir of tempTrees) {
-      fs.rmSync(treeDir, { force: true, recursive: true });
-    }
-    tempTrees.length = 0;
-  });
+  afterEach(removeTempTrees);
 
   it('returns the configs from the start directory to the project root, nearest first', async () => {
     const treeDir = createTempTree({
@@ -167,6 +159,48 @@ describe(loadConfigCascade, () => {
     await expect(resultPromise).rejects.toThrow(/has no default export/);
   });
 
+  it('rejects a file name that would ascend above its level', async () => {
+    const treeDir = createTempTree({
+      'project/.git/': '',
+      'shared.config.mjs': POISONED_MODULE,
+    });
+
+    const resultPromise = loadConfigCascade<LabelledConfig>({
+      fileNames: ['../shared.config.mjs'],
+      startDir: path.join(treeDir, 'project'),
+    });
+
+    await expect(resultPromise).rejects.toThrow(/must not ascend above its directory level/);
+  });
+
+  it('rejects an absolute file name', async () => {
+    const treeDir = createTempTree({
+      '.git/': '',
+      'stack.config.mjs': exportDefault({ level: 'root' }),
+    });
+
+    const resultPromise = loadConfigCascade<LabelledConfig>({
+      fileNames: [path.join(treeDir, 'stack.config.mjs')],
+      startDir: treeDir,
+    });
+
+    await expect(resultPromise).rejects.toThrow(/must be relative to its directory level/);
+  });
+
+  it('given `..` segments that resolve back within the level, loads the config', async () => {
+    const treeDir = createTempTree({
+      '.git/': '',
+      'stack.config.mjs': exportDefault({ level: 'root' }),
+    });
+
+    const result = await loadConfigCascade<LabelledConfig>({
+      fileNames: ['nested/../stack.config.mjs'],
+      startDir: treeDir,
+    });
+
+    expect(result.entries.map((entry) => entry.config.level)).toStrictEqual(['root']);
+  });
+
   it('loads a TypeScript config module', async () => {
     const treeDir = createTempTree({
       '.git/': '',
@@ -185,30 +219,4 @@ describe(loadConfigCascade, () => {
 /** Renders a module whose default export is the given value. */
 function exportDefault(value: unknown): string {
   return `export default ${JSON.stringify(value)};\n`;
-}
-
-/**
- * Creates a throwaway directory tree and returns its real path. Each key is a path relative to the tree
- * root: one ending in `/` becomes a directory, and any other becomes a file holding the mapped contents.
- *
- * The path is realpath-resolved because `os.tmpdir()` is a symlink on macOS, whereas the cascade resolves
- * without following symlinks.
- */
-function createTempTree(files: Record<string, string>): string {
-  const treeDirPrefix = path.join(os.tmpdir(), 'toolbelt-filesystem-');
-  const treeDir = fs.realpathSync(fs.mkdtempSync(treeDirPrefix));
-  tempTrees.push(treeDir);
-
-  for (const [entry, contents] of Object.entries(files)) {
-    const entryPath = path.join(treeDir, entry);
-
-    if (entry.endsWith('/')) {
-      fs.mkdirSync(entryPath, { recursive: true });
-    } else {
-      fs.mkdirSync(path.dirname(entryPath), { recursive: true });
-      fs.writeFileSync(entryPath, contents);
-    }
-  }
-
-  return treeDir;
 }

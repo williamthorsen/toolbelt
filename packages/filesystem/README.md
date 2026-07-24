@@ -14,6 +14,8 @@ pnpm add @williamthorsen/toolbelt.filesystem
 
 Both functions reach the filesystem through `node:` builtins, so they run under Node.js 24 or later, Bun, and Deno. They do not run in browsers, nor in edge runtimes that expose no filesystem.
 
+`loadConfigCascade` imports each config through the host runtime, so a `.ts` config is subject to whatever that runtime does with TypeScript. Node strips types rather than compiling them, which admits erasable syntax alone: an `enum`, a `namespace`, or a parameter property in a config file fails to parse. A `.mjs` or `.js` config sidesteps the question.
+
 ## `findProjectRoot`
 
 ```ts
@@ -67,7 +69,7 @@ loadConfigCascade<TConfig>(options: {
 
 Loads every config file between `startDir` and its project root, nearest first, and reads nothing above that root.
 
-At each level from `startDir` up to and including the root, the first of `fileNames` that exists becomes that level's config; a level holding none contributes nothing. Each name is a path relative to the level, so a nested location such as `.config/stack.config.mjs` works. The project root is resolved by `findProjectRoot`, and `markers` is forwarded to it.
+At each level from `startDir` up to and including the root, the first of `fileNames` that exists becomes that level's config; a level holding none contributes nothing. Each name is a path relative to the level, so a nested location such as `.config/stack.config.mjs` works. A name that would leave its level (an absolute path, or one whose `..` segments escape it) is rejected before any file is read, since following it would breach the bound the cascade exists to enforce. The project root is resolved by `findProjectRoot`, and `markers` is forwarded to it.
 
 The matched files are then imported one at a time, and `shouldStopAscent` is consulted after each. Once it returns true, the ascent halts and no farther file is imported at all, rather than being loaded and discarded:
 
