@@ -44,6 +44,9 @@ importers:
       prettier:
         specifier: 3.9.6
         version: 3.9.6
+      readyup:
+        specifier: 0.21.2
+        version: 0.21.2(esbuild@0.28.1)
       rimraf:
         specifier: 6.1.3
         version: 6.1.3
@@ -1965,6 +1968,16 @@ packages:
   readline-transform@1.0.0:
     resolution: {integrity: sha512-7KA6+N9IGat52d83dvxnApAWN+MtVb1MiVuMR/cf1O4kYsJG+g/Aav0AHcHKsb6StinayfPLne0+fMX2sOzAKg==}
     engines: {node: '>=6'}
+
+  readyup@0.21.2:
+    resolution: {integrity: sha512-QbnpcYCLwP+ZCQZWh15Ql1bpEL5+t9ehyKe4lMWRj5fB8msMfJ1KZngGO7HwwTRFyCrIXGSh2mT3h1eXR/vdQQ==}
+    engines: {node: '>=20.6.0'}
+    hasBin: true
+    peerDependencies:
+      esbuild: '>=0.28.1'
+    peerDependenciesMeta:
+      esbuild:
+        optional: true
 
   reflect.getprototypeof@1.0.10:
     resolution: {integrity: sha512-00o4I+DVrefhv+nX0ulyi3biSHCPDe+yLv5o/p6d/UVlirijB8E16FtfwSAi4g3tcqrQ4lRAqQSoFEZJehYEcw==}
@@ -4315,6 +4328,14 @@ snapshots:
       util-deprecate: 1.0.2
 
   readline-transform@1.0.0: {}
+
+  readyup@0.21.2(esbuild@0.28.1):
+    dependencies:
+      jiti: 2.7.0
+      picomatch: 4.0.4
+      zod: 4.4.3
+    optionalDependencies:
+      esbuild: 0.28.1
 
   reflect.getprototypeof@1.0.10:
     dependencies:
