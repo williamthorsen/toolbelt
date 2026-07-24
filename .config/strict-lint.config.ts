@@ -1,9 +1,9 @@
 import type { StrictLintConfig } from '@williamthorsen/strict-lint';
 
-import { deferredUnicornRules } from './deferred-unicorn-rules.ts';
+import { deferredLintRules } from './eslint/deferred-lint-rules.ts';
 
 const config: StrictLintConfig = {
-  maxSeverity: deferredUnicornRules,
+  maxSeverity: deferredLintRules,
 };
 
 export default config;

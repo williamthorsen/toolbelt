@@ -1,6 +1,6 @@
 // `@williamthorsen/eslint-config-typescript` v6 added new unicorn rules, surfacing new violations in existing code.
 // Errors are downgraded to warnings here until a decision is made whether to remove the rule or fix the violations.
-export const deferredUnicornRules = {
+export const deferredLintRules = {
   'unicorn/class-reference-in-static-methods': 'warn',
   'unicorn/consistent-class-member-order': 'warn',
   'unicorn/no-array-from-fill': 'warn',

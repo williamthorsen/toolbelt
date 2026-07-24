@@ -1,7 +1,7 @@
 import baseConfig, { createConfig, patterns } from '@williamthorsen/eslint-config-typescript';
 import { defineConfig } from 'eslint/config';
 
-import { deferredUnicornRules } from './.config/deferred-unicorn-rules.ts';
+import { deferredLintRules } from './.config/eslint/deferred-lint-rules.ts';
 
 const config = defineConfig([
   ...baseConfig,
@@ -32,7 +32,7 @@ const config = defineConfig([
   },
   {
     files: patterns.codeFiles,
-    rules: deferredUnicornRules,
+    rules: deferredLintRules,
   },
   {
     files: ['**/*.ts', '**/*.mts', '**/*.md/*.ts'],

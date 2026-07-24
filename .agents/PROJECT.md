@@ -48,6 +48,6 @@ Runner conventions (discovery, invocation, root vs. package registries, hooks) c
 - **`4-release` is empty for most packages.** Only `enums`, `guards`, and `objects` export anything from the default entry point. `arrays`, `strings`, `numbers`, `sets`, and the rest hold `export {}` there, with the real API in `3-candidate`. Import from `/candidate` unless you have confirmed the symbol is promoted.
 - **Promoting an API is a move plus three edits**: relocate the file, update both tiers' `index.ts`, and update the `@stage` tag.
 - **`nmr test` runs unit, integration, and app tests.** `vitest.standalone.config.ts` is the unit-only config (it excludes `*.int.test.ts`); the default config includes everything.
-- **`strict-lint` downgrades some rules to warnings.** See `.config/deferred-unicorn-rules.ts` for the current set. Violations of those rules do not fail `check:strict`.
+- **`strict-lint` downgrades some rules to warnings.** See `../.config/eslint/deferred-lint-rules.ts` for the current set. Violations of those rules do not fail `check:strict`.
 - **The Node version is pinned in both `.tool-versions` and `.github/workflows/code-quality.yaml`.** `__tests__/version-alignment.app.test.ts` fails when they diverge; bump both.
 - **pnpm enforces a release soak before newly published third-party versions install.** See `minimumReleaseAge` in `pnpm-workspace.yaml` for the window and the first-party exclusions.
