@@ -89,6 +89,8 @@ importers:
         specifier: workspace:*
         version: link:../arrays
 
+  packages/filesystem: {}
+
   packages/guards: {}
 
   packages/hof:

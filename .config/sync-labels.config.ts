@@ -9,6 +9,7 @@ const config: SyncLabelsConfig = {
     { name: 'scope:datetime', color: '00ff96', description: 'datetime package' },
     { name: 'scope:dstructs', color: '00ff96', description: 'dstructs package' },
     { name: 'scope:enums', color: '00ff96', description: 'enums package' },
+    { name: 'scope:filesystem', color: '00ff96', description: 'filesystem package' },
     { name: 'scope:guards', color: '00ff96', description: 'guards package' },
     { name: 'scope:hof', color: '00ff96', description: 'hof package' },
     { name: 'scope:nodejs', color: '00ff96', description: 'nodejs package' },
