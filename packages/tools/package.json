@@ -13,7 +13,7 @@
     "url": "git+https://github.com/williamthorsen/toolbelt.git",
     "directory": "packages/tools"
   },
-  "license": "UNLICENSED",
+  "license": "ISC",
   "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
   "type": "module",
   "exports": {
