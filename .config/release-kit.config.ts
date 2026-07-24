@@ -1,12 +1,14 @@
 import type { ReleaseKitConfig } from '@williamthorsen/release-kit';
 
-// Historical tags predate the `toolbelt.`-scoped package names, so their prefixes
-// (`arrays-v`, …) no longer match the prefixes release-kit derives from the names
-// (`toolbelt.arrays-v`). Declare each prior prefix so release-kit resolves a baseline
-// tag and scans only post-release commits instead of rescanning full history.
+// Historical tags predate the `toolbelt.`-scoped package names, so their prefixes (`arrays-v`, …) no longer match the
+// prefixes release-kit derives from the names (`toolbelt.arrays-v`). Declare each prior prefix so release-kit resolves
+// a baseline tag and scans only post-release commits instead of rescanning full history.
 const config: ReleaseKitConfig = {
+  releaseNotes: {
+    shouldInjectIntoReadme: true,
+  },
   workspaces: [
-    // Private scaffolding template — exclude from release processing entirely.
+    // Private scaffolding template: Exclude from release processing entirely.
     { dir: '_template', shouldExclude: true },
     { dir: 'arrays', legacyIdentities: [{ name: '@williamthorsen/toolbelt.arrays', tagPrefix: 'arrays-v' }] },
     { dir: 'async', legacyIdentities: [{ name: '@williamthorsen/toolbelt.async', tagPrefix: 'async-v' }] },
@@ -19,7 +21,11 @@ const config: ReleaseKitConfig = {
     { dir: 'objects', legacyIdentities: [{ name: '@williamthorsen/toolbelt.objects', tagPrefix: 'objects-v' }] },
     { dir: 'sets', legacyIdentities: [{ name: '@williamthorsen/toolbelt.sets', tagPrefix: 'sets-v' }] },
     { dir: 'strings', legacyIdentities: [{ name: '@williamthorsen/toolbelt.strings', tagPrefix: 'strings-v' }] },
-    { dir: 'tools', legacyIdentities: [{ name: '@williamthorsen/toolbelt.tools', tagPrefix: 'tools-v' }] },
+    {
+      dir: 'tools',
+      legacyIdentities: [{ name: '@williamthorsen/toolbelt.tools', tagPrefix: 'tools-v' }],
+      shouldExclude: true,
+    },
   ],
   // release-kit was born in this repo (release-kit-v0.1–0.2) before extraction to its own repo.
   retiredPackages: [{ name: '@williamthorsen/release-kit', tagPrefix: 'release-kit-v' }],
