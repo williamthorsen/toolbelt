@@ -1,5 +1,31 @@
 [
   {
+    "version": "3.1.8",
+    "date": "2026-07-27",
+    "sections": [
+      {
+        "title": "Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Normalize Vitest, and lint configs",
+            "hash": "6a07c1f03d240f7e29fd9ba1f027ea6159ceb4ea"
+          }
+        ]
+      },
+      {
+        "title": "Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Change license to ISC",
+            "hash": "425d9fb0adba5eebb68fa5499861a0d29239bcc4"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "3.1.7",
     "date": "2026-07-24",
     "sections": [

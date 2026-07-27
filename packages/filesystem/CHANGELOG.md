@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.1 — 2026-07-27
+
+### Tooling
+
+- Normalize Vitest, and lint configs
+
+### Documentation
+
+- Change license to ISC
+
 ## 0.2.0 — 2026-07-24
 
 ### Features
