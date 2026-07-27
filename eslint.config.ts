@@ -17,22 +17,14 @@ const config = defineConfig([
   {
     files: patterns.codeFiles,
     rules: {
-      'n/no-extraneous-import': 'off',
-      'n/no-missing-import': 'off',
-      'n/no-unpublished-import': 'off',
-      'unicorn/no-array-callback-reference': 'off', // 🔴⚫ Overly prescriptive
+      ...deferredLintRules,
       'unicorn/no-instanceof-builtins': [
         'warn',
         {
           exclude: ['Array'],
         },
       ],
-      'unicorn/require-module-specifiers': 'off', // 🔴⚫ Too prescriptive: disallows placeholders.
     },
-  },
-  {
-    files: patterns.codeFiles,
-    rules: deferredLintRules,
   },
   {
     files: ['**/*.ts', '**/*.mts', '**/*.md/*.ts'],
@@ -57,14 +49,6 @@ const config = defineConfig([
       'vitest/prefer-lowercase-title': 'off', // 🟠⚫
     },
   }),
-  {
-    // App/consistency tests (e.g. version-alignment) call helpers that register their own
-    // describe/it blocks, so the top-level call is legitimate despite vitest/require-hook.
-    files: ['**/*.app.test.ts'],
-    rules: {
-      'vitest/require-hook': 'off',
-    },
-  },
   {
     files: ['**/.github/scripts/**/*', '**/scripts/**/*'],
     rules: {

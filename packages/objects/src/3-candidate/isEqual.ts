@@ -1,4 +1,4 @@
-import { sortObjectKeys } from '../2-draft/index.js';
+import { sortObjectKeys } from '../2-draft/index.ts';
 import { deepSetsToArrays } from './deepSetsToArrays.ts';
 
 export function isEqual(a: unknown, b: unknown): boolean {

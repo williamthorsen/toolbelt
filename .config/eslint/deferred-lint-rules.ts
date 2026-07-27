@@ -13,7 +13,6 @@ export const deferredLintRules = {
   'unicorn/no-unsafe-string-replacement': 'warn',
   'unicorn/no-useless-else': 'warn',
   'unicorn/no-useless-recursion': 'warn',
-  'unicorn/numeric-separators-style': 'warn',
   'unicorn/operator-assignment': 'warn',
   'unicorn/prefer-boolean-return': 'warn',
   'unicorn/prefer-early-return': 'warn',
@@ -29,5 +28,4 @@ export const deferredLintRules = {
   'unicorn/prefer-split-limit': 'warn',
   'unicorn/prefer-string-repeat': 'warn',
   'unicorn/prefer-unicode-code-point-escapes': 'warn',
-  'unicorn/require-array-sort-compare': 'warn',
 } as const;
