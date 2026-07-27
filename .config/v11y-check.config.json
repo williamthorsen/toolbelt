@@ -2,7 +2,22 @@
   "$schema": "https://github.com/williamthorsen/node-monorepo-tools/raw/v11y-check-v0.7.1/packages/v11y-check/schemas/config.json",
   "dev": {
     "severityThreshold": "moderate",
-    "allowlist": []
+    "allowlist": [
+      {
+        "addedAt": "2026-07-27T05:17:54.177Z",
+        "id": "1124288",
+        "path": ".>@vitest/coverage-v8>vitest>vite>postcss",
+        "reason": "Added by v11y sync at 2026-07-27 05:17:54 UTC",
+        "url": "https://github.com/advisories/GHSA-r28c-9q8g-f849"
+      },
+      {
+        "addedAt": "2026-07-27T05:17:54.177Z",
+        "id": "1124334",
+        "path": ".>@williamthorsen/eslint-config-typescript>eslint-plugin-import>minimatch>brace-expansion",
+        "reason": "Added by v11y sync at 2026-07-27 05:17:54 UTC",
+        "url": "https://github.com/advisories/GHSA-mh99-v99m-4gvg"
+      }
+    ]
   },
   "prod": {
     "severityThreshold": "low",
