@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { findMonorepoRoot } from '@williamthorsen/nmr/tests';
+import { findMonorepoRoot } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
 const EXCLUDED_DIRS = new Set(['__tests__', 'dist', 'node_modules']);
