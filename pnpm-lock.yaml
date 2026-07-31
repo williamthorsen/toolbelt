@@ -99,8 +99,6 @@ importers:
         specifier: workspace:*
         version: link:../arrays
 
-  packages/nodejs: {}
-
   packages/numbers: {}
 
   packages/objects: {}

@@ -73,4 +73,54 @@ describe(replaceFileExtension, () => {
       /File path ".*" does not end with extension/,
     );
   });
+
+  it('if the specified previous extension matches only as a raw suffix, throws an error', () => {
+    // A bare extension is dot-prefixed before matching, so a raw-suffix match is not an extension match.
+    const filePath = 'afoo';
+    const oldExtension = 'foo';
+    const newExtension = '.x';
+
+    expect(() => replaceFileExtension(filePath, newExtension, { oldExtension })).toThrow(
+      /does not end with extension "\.foo"/,
+    );
+  });
+
+  it('if the new extension omits its leading period, treats the period as present', () => {
+    const filePath = 'a.ts';
+    const newExtension = 'js';
+    const expected = 'a.js';
+
+    const result = replaceFileExtension(filePath, newExtension);
+
+    expect(result).toBe(expected);
+  });
+
+  it('if the specified previous extension omits its leading period, treats the period as present', () => {
+    const filePath = 'a.ts';
+    const oldExtension = 'ts';
+    const newExtension = '.js';
+    const expected = 'a.js';
+
+    const result = replaceFileExtension(filePath, newExtension, { oldExtension });
+
+    expect(result).toBe(expected);
+  });
+
+  it('if the path ends with a separator, throws an error naming that as the problem', () => {
+    const filePath = './a/dir.old/';
+    const newExtension = '.new';
+
+    expect(() => replaceFileExtension(filePath, newExtension)).toThrow(/ends with a path separator/);
+  });
+
+  it('replaces a multi-part extension that path.extname reports only in part', () => {
+    const filePath = 'src/main.d.ts';
+    const oldExtension = '.d.ts';
+    const newExtension = '.js';
+    const expected = 'src/main.js';
+
+    const result = replaceFileExtension(filePath, newExtension, { oldExtension });
+
+    expect(result).toBe(expected);
+  });
 });

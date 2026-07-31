@@ -8,7 +8,7 @@ PNPM monorepo of TypeScript utility libraries, each published to npm as `@willia
 
 ## Project structure
 
-- `packages/{domain}/`: one published library per domain (arrays, async, datetime, dstructs, enums, guards, hof, nodejs, numbers, objects, sets, statistics, strings, tools).
+- `packages/{domain}/`: one published library per domain (arrays, async, datetime, dstructs, enums, filesystem, guards, hof, numbers, objects, sets, statistics, strings, tools).
 - `packages/_template/`: private scaffold for new packages, excluded from release processing in `.config/release-kit.config.ts`.
 - `packages/{domain}/src/{0-strawman,1-proposed,2-draft,3-candidate,4-release}/`: maturity tiers, each with an `index.ts` re-exporting that tier's public surface. `src/internal/` and `src/types/` sit outside the tiers and are not exported.
 - `.config/`: tool configs (nmr, release-kit, strict-lint, v11y, worktrunk). Vitest config lives outside it, in exactly two root files: `vitest.config.ts` and `vitest.root.config.ts`, each a bare call to a `@williamthorsen/nmr/vitest` factory.
@@ -45,7 +45,7 @@ Runner conventions (discovery, invocation, root vs. package registries, hooks) c
 
 ## Gotchas
 
-- **`4-release` is empty for most packages.** Only `enums`, `guards`, and `objects` export anything from the default entry point. `arrays`, `strings`, `numbers`, `sets`, and the rest hold `export {}` there, with the real API in `3-candidate`. Import from `/candidate` unless you have confirmed the symbol is promoted.
+- **`4-release` is empty for most packages.** Only `enums`, `filesystem`, `guards`, and `objects` export anything from the default entry point. `arrays`, `strings`, `numbers`, `sets`, and the rest hold `export {}` there, with the real API in `3-candidate`. Import from `/candidate` unless you have confirmed the symbol is promoted.
 - **Promoting an API is a move plus three edits**: relocate the file, update both tiers' `index.ts`, and update the `@stage` tag.
 - **Suites are Vitest projects selected by filename suffix, not by config file.** `*.app.test.ts` lands in `app`, `*.int.test.ts` in `integration`, everything else in `unit`. `nmr test` is `--project '!integration'` (unit plus app); `nmr test:all` runs everything. Misname an integration test and it silently joins the unit project.
 - **`passWithNoTests` is set on every project, not just `integration`.** A suite with no matching files exits green instead of failing, so `nmr test:integration` always passes (the repo has no `*.int.test.ts` files) and a package that loses its tests passes just as quietly. The placeholder `todo` test in `packages/_template` is what keeps a freshly scaffolded package from being the first such case.

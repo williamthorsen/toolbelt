@@ -88,9 +88,6 @@
 - name: scope:hof
   color: 00ff96
   description: ''
-- name: scope:nodejs
-  color: 00ff96
-  description: ''
 - name: scope:numbers
   color: 00ff96
   description: ''
