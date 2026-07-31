@@ -1,3 +1,3 @@
 import { defineRootVitestConfig } from '@williamthorsen/nmr/vitest';
 
-export default defineRootVitestConfig();
+export default defineRootVitestConfig({ startDir: import.meta.dirname });
