@@ -74,6 +74,17 @@ describe(replaceFileExtension, () => {
     );
   });
 
+  it('if the specified previous extension matches only as a raw suffix, throws an error', () => {
+    // A bare extension is dot-prefixed before matching, so a raw-suffix match is not an extension match.
+    const filePath = 'afoo';
+    const oldExtension = 'foo';
+    const newExtension = '.x';
+
+    expect(() => replaceFileExtension(filePath, newExtension, { oldExtension })).toThrow(
+      /does not end with extension "\.foo"/,
+    );
+  });
+
   it('if the new extension omits its leading period, treats the period as present', () => {
     const filePath = 'a.ts';
     const newExtension = 'js';

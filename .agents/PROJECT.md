@@ -45,7 +45,7 @@ Runner conventions (discovery, invocation, root vs. package registries, hooks) c
 
 ## Gotchas
 
-- **`4-release` is empty for most packages.** Only `enums`, `guards`, and `objects` export anything from the default entry point. `arrays`, `strings`, `numbers`, `sets`, and the rest hold `export {}` there, with the real API in `3-candidate`. Import from `/candidate` unless you have confirmed the symbol is promoted.
+- **`4-release` is empty for most packages.** Only `enums`, `filesystem`, `guards`, and `objects` export anything from the default entry point. `arrays`, `strings`, `numbers`, `sets`, and the rest hold `export {}` there, with the real API in `3-candidate`. Import from `/candidate` unless you have confirmed the symbol is promoted.
 - **Promoting an API is a move plus three edits**: relocate the file, update both tiers' `index.ts`, and update the `@stage` tag.
 - **Suites are Vitest projects selected by filename suffix, not by config file.** `*.app.test.ts` lands in `app`, `*.int.test.ts` in `integration`, everything else in `unit`. `nmr test` is `--project '!integration'` (unit plus app); `nmr test:all` runs everything. Misname an integration test and it silently joins the unit project.
 - **`passWithNoTests` is set on every project, not just `integration`.** A suite with no matching files exits green instead of failing, so `nmr test:integration` always passes (the repo has no `*.int.test.ts` files) and a package that loses its tests passes just as quietly. The placeholder `todo` test in `packages/_template` is what keeps a freshly scaffolded package from being the first such case.
