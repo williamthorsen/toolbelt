@@ -11,7 +11,7 @@ PNPM monorepo of TypeScript utility libraries, each published to npm as `@willia
 - `packages/{domain}/`: one published library per domain (arrays, async, datetime, dstructs, enums, guards, hof, nodejs, numbers, objects, sets, statistics, strings, tools).
 - `packages/_template/`: private scaffold for new packages, excluded from release processing in `.config/release-kit.config.ts`.
 - `packages/{domain}/src/{0-strawman,1-proposed,2-draft,3-candidate,4-release}/`: maturity tiers, each with an `index.ts` re-exporting that tier's public surface. `src/internal/` and `src/types/` sit outside the tiers and are not exported.
-- `.config/`: tool configs (nmr, release-kit, strict-lint, v11y, worktrunk). The root `vitest.*.config.ts` files are one-line re-exports of `config/vitest.*.config.ts`.
+- `.config/`: tool configs (nmr, release-kit, strict-lint, v11y, worktrunk). Vitest config lives outside it, in exactly two root files: `vitest.config.ts` and `vitest.root.config.ts`, each a bare call to a `@williamthorsen/nmr/vitest` factory.
 
 Versions are independent per package. `dstructs` and `statistics` are pre-1.0; the rest are 3.x to 4.x.
 
@@ -47,7 +47,8 @@ Runner conventions (discovery, invocation, root vs. package registries, hooks) c
 
 - **`4-release` is empty for most packages.** Only `enums`, `guards`, and `objects` export anything from the default entry point. `arrays`, `strings`, `numbers`, `sets`, and the rest hold `export {}` there, with the real API in `3-candidate`. Import from `/candidate` unless you have confirmed the symbol is promoted.
 - **Promoting an API is a move plus three edits**: relocate the file, update both tiers' `index.ts`, and update the `@stage` tag.
-- **`nmr test` runs unit, integration, and app tests.** `vitest.standalone.config.ts` is the unit-only config (it excludes `*.int.test.ts`); the default config includes everything.
+- **Suites are Vitest projects selected by filename suffix, not by config file.** `*.app.test.ts` lands in `app`, `*.int.test.ts` in `integration`, everything else in `unit`. `nmr test` is `--project '!integration'` (unit plus app); `nmr test:all` runs everything. Misname an integration test and it silently joins the unit project.
+- **`passWithNoTests` is set on every project, not just `integration`.** A suite with no matching files exits green instead of failing, so `nmr test:integration` always passes (the repo has no `*.int.test.ts` files) and a package that loses its tests passes just as quietly. The placeholder `todo` test in `packages/_template` is what keeps a freshly scaffolded package from being the first such case.
+- **Packages carry no Vitest config.** Vitest walks up from the run directory to the root `vitest.config.ts` while keeping `root` at the cwd, so `nmr test` inside a package collects that package's tests alone. A per-package config re-adds a file that changes nothing.
 - **`strict-lint` downgrades some rules to warnings.** See `../.config/eslint/deferred-lint-rules.ts` for the current set. Violations of those rules do not fail `check:strict`.
-- **The Node version is pinned in both `.tool-versions` and `.github/workflows/code-quality.yaml`.** `__tests__/version-alignment.app.test.ts` fails when they diverge; bump both.
 - **pnpm enforces a release soak before newly published third-party versions install.** See `minimumReleaseAge` in `pnpm-workspace.yaml` for the window and the first-party exclusions.

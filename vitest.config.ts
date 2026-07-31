@@ -1,1 +1,3 @@
-export { default } from './.config/vitest/vitest.config.ts';
+import { defineVitestConfig } from '@williamthorsen/nmr/vitest';
+
+export default defineVitestConfig();
