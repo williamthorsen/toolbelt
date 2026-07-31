@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/williamthorsen/node-monorepo-tools/raw/release-kit-v9.1.0/packages/release-kit/schemas/label-map.json",
+  "types": {
+    "ai": "ai",
+    "ci": "ci",
+    "deprecate": "deprecate",
+    "deps": "dependencies",
+    "docs": "documentation",
+    "feat": "feature",
+    "fix": "fix",
+    "fmt": "formatting",
+    "internal": "internal",
+    "perf": "performance",
+    "refactor": "refactoring",
+    "sec": "security",
+    "tests": "tests",
+    "tooling": "tooling"
+  },
+  "scopes": {
+    "_template": "scope:_template",
+    "arrays": "scope:arrays",
+    "async": "scope:async",
+    "datetime": "scope:datetime",
+    "dstructs": "scope:dstructs",
+    "enums": "scope:enums",
+    "filesystem": "scope:filesystem",
+    "guards": "scope:guards",
+    "hof": "scope:hof",
+    "nodejs": "scope:nodejs",
+    "numbers": "scope:numbers",
+    "objects": "scope:objects",
+    "sets": "scope:sets",
+    "statistics": "scope:statistics",
+    "strings": "scope:strings",
+    "testing": "scope:testing",
+    "tools": "scope:tools",
+    "root": "scope:root"
+  }
+}
