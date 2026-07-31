@@ -12,7 +12,7 @@ pnpm add @williamthorsen/toolbelt.filesystem
 
 ## Runtime requirements
 
-Both functions reach the filesystem through `node:` builtins, so they run under Node.js 24 or later, Bun, and Deno. They do not run in browsers, nor in edge runtimes that expose no filesystem.
+`findProjectRoot` and `loadConfigCascade` reach the filesystem through `node:` builtins, so they run under Node.js 24 or later, Bun, and Deno. They do not run in browsers, nor in edge runtimes that expose no filesystem. `replaceFileExtension` performs no I/O and is bound by neither constraint.
 
 `loadConfigCascade` imports each config through the host runtime, so a `.ts` config is subject to whatever that runtime does with TypeScript. Node strips types rather than compiling them, which admits erasable syntax alone: an `enum`, a `namespace`, or a parameter property in a config file fails to parse. A `.mjs` or `.js` config sidesteps the question.
 
@@ -107,3 +107,31 @@ const { entries, projectRoot, stopReason } = await loadConfigCascade<StackConfig
 ```
 
 `projectRoot` and `stopReason` are provenance for the caller to surface, so a user can see which directory bounded the cascade and what ended it.
+
+## `replaceFileExtension`
+
+Proposed tier: imported from `@williamthorsen/toolbelt.filesystem/proposed` rather than the package root, and subject to change.
+
+```ts
+replaceFileExtension(filePath: string, newExtension: string, options?: { oldExtension?: string }): string;
+```
+
+Returns `filePath` with its extension replaced. It manipulates the string alone and touches no filesystem.
+
+```ts
+import { replaceFileExtension } from '@williamthorsen/toolbelt.filesystem/proposed';
+
+replaceFileExtension('src/main.ts', '.js'); // 'src/main.js'
+replaceFileExtension('src/main.ts', 'js'); // 'src/main.js' -- the leading period is optional
+replaceFileExtension('src/main.ts', ''); // 'src/main' -- an empty replacement removes the extension
+```
+
+The extension being replaced defaults to whatever `path.extname` reports, which is the substring from the final period in the file name. That is wrong for a multi-part extension: `path.extname('src/main.d.ts')` returns `.ts`, so the default would yield `src/main.d.js`. Declare the whole extension through `oldExtension` to replace it entire:
+
+```ts
+replaceFileExtension('src/main.d.ts', '.js', { oldExtension: '.d.ts' }); // 'src/main.js'
+```
+
+Which extension is meant is genuinely ambiguous, since `archive.tar.gz` could reasonably end in `.gz` or in `.tar.gz`, so the caller declares it rather than the function guessing.
+
+Two inputs throw rather than returning a path that would quietly be wrong: a `filePath` ending in a separator, which names a directory rather than a file, and a `filePath` that does not end with a declared `oldExtension`.
