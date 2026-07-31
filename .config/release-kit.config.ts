@@ -1,12 +1,33 @@
-import type { ReleaseKitConfig } from '@williamthorsen/release-kit';
+import { defineConfig } from '@williamthorsen/release-kit';
 
-// Historical tags predate the `toolbelt.`-scoped package names, so their prefixes (`arrays-v`, …) no longer match the
-// prefixes release-kit derives from the names (`toolbelt.arrays-v`). Declare each prior prefix so release-kit resolves
-// a baseline tag and scans only post-release commits instead of rescanning full history.
-const config: ReleaseKitConfig = {
+const config = defineConfig({
   releaseNotes: {
     shouldInjectIntoReadme: true,
   },
+  repoLabels: {
+    extends: ['common'],
+    labels: {
+      'scope:root': { color: '00ff96', description: '' },
+      'scope:arrays': { color: '00ff96', description: '' },
+      'scope:async': { color: '00ff96', description: '' },
+      'scope:datetime': { color: '00ff96', description: '' },
+      'scope:dstructs': { color: '00ff96', description: '' },
+      'scope:enums': { color: '00ff96', description: '' },
+      'scope:filesystem': { color: '00ff96', description: '' },
+      'scope:guards': { color: '00ff96', description: '' },
+      'scope:hof': { color: '00ff96', description: '' },
+      'scope:nodejs': { color: '00ff96', description: '' },
+      'scope:numbers': { color: '00ff96', description: '' },
+      'scope:objects': { color: '00ff96', description: '' },
+      'scope:sets': { color: '00ff96', description: '' },
+      'scope:statistics': { color: '00ff96', description: '' },
+      'scope:strings': { color: '00ff96', description: '' },
+      'scope:tools': { color: '00ff96', description: '' },
+    },
+  },
+  // Historical tags predate the `toolbelt.`-scoped package names, so their prefixes (`arrays-v`, …) no longer match the
+  // prefixes release-kit derives from the names (`toolbelt.arrays-v`). Declare each prior prefix so release-kit resolves
+  // a baseline tag and scans only post-release commits instead of rescanning full history.
   workspaces: [
     // Private scaffolding template: Exclude from release processing entirely.
     { dir: '_template', shouldExclude: true },
@@ -29,6 +50,6 @@ const config: ReleaseKitConfig = {
   ],
   // release-kit was born in this repo (release-kit-v0.1–0.2) before extraction to its own repo.
   retiredPackages: [{ name: '@williamthorsen/release-kit', tagPrefix: 'release-kit-v' }],
-};
+});
 
 export default config;
