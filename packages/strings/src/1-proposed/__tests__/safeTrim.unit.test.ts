@@ -23,7 +23,7 @@ describe(safeTrim, () => {
   });
 
   it('returns an empty string if the input is only whitespace', () => {
-    const input = '   ';
+    const input = ' '.repeat(3);
     const expected = '';
 
     const actual = safeTrim(input);

@@ -12,7 +12,7 @@ export function clamp(value: number, { min, max }: ClampParams): number {
   }
 
   const minValue = min ?? Number.NEGATIVE_INFINITY;
-  const maxValue = max ?? Number.POSITIVE_INFINITY;
+  const maxValue = max ?? Infinity;
 
   return Math.max(minValue, Math.min(maxValue, value));
 }

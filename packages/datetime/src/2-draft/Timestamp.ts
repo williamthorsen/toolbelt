@@ -67,7 +67,7 @@ export class Timestamp {
    * Returns the date & time in the format `YYYYMMDD-HHMM[SS[.sss]]` (depending on the time unit). UTC is implied.
    */
   toCompactString(options: Options = {}): string {
-    const [datePart = '', timePart = ''] = this.toIsoString(options).split('T');
+    const [datePart = '', timePart = ''] = this.toIsoString(options).split('T', 2);
     const formattedDatePart = datePart.replaceAll(/[-Z]/g, '');
     const formattedTimePart = timePart.replaceAll(/[:Z]/g, '');
 
@@ -109,7 +109,7 @@ export class Timestamp {
       case TimeUnit.Hours:
         return isoDateTime.replace(/:\d{2}:\d{2}\.\d{3}Z$/, 'Z');
       case TimeUnit.Days: {
-        const [datePart] = isoDateTime.split('T');
+        const [datePart] = isoDateTime.split('T', 1);
         return `${datePart}Z`;
       }
       // eslint-disable-next-line unicorn/no-useless-switch-case

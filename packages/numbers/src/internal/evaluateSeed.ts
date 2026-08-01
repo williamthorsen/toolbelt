@@ -1,10 +1,11 @@
 export function evaluateSeed(seed: Seed | undefined): number | undefined {
   if (typeof seed === 'number') {
     return seed;
-  } else if (checkIsRngLike(seed)) {
+  }
+  if (checkIsRngLike(seed)) {
     return seed.next();
-    // eslint-disable-next-line unicorn/no-instanceof-builtins
-  } else if (seed instanceof Function) {
+  }
+  if (typeof seed === 'function') {
     return seed();
   }
   return undefined;

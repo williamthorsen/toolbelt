@@ -20,7 +20,7 @@ describe(isNumber, () => {
   });
 
   it('returns false when value is NaN', () => {
-    expect(isNumber(Number.NaN)).toBe(false);
+    expect(isNumber(NaN)).toBe(false);
   });
 
   it('returns true when value is a numeric enum member', () => {

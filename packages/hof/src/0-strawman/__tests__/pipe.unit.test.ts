@@ -8,7 +8,7 @@ const enclose = (s: string) => `|${s}|`;
 
 const toString = (s: number) => s.toString();
 const upper = (str: string) => str.toUpperCase();
-const asyncUpper = async (s: string) => await new Promise<string>((resolve) => resolve(s.toUpperCase()));
+const asyncUpper = async (s: string) => await Promise.try(() => s.toUpperCase());
 
 describe(pipe, () => {
   it('correctly composes multiple functions together', () => {
