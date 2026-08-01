@@ -29,7 +29,7 @@ function toIntegerSeed(value: number): number {
   })();
 
   // Constrain the integer to the range [1, MAX_INTEGER]
-  integer = integer % MAX_INTEGER;
+  integer %= MAX_INTEGER;
   if (integer <= 0) {
     integer += MAX_INTEGER;
   }

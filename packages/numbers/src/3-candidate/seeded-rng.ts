@@ -86,7 +86,6 @@ export class SeededRng implements SeededGenerator {
 
   // Returns a function that successively returns a deterministic sequence of numbers based on this instance's seed
   get rng(): () => number {
-    // eslint-disable-next-line unicorn/consistent-function-scoping -- arrow captures `this`
     return () => this.next();
   }
 

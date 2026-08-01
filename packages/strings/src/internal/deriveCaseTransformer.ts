@@ -1,12 +1,12 @@
 /**
  * Identifies and returns the function that can transform a lowercase string to match the case of another string.
- * Returns `null` if the transformation is impossible or cannot be identified.
+ * Returns `undefined` if the transformation is impossible or cannot be identified.
  *
  * If the source and the target are already identical, returns an identity function.
- * Else if the source is not lowercase, returns `null`.
+ * Else if the source is not lowercase, returns `undefined`.
  * Else if the placeholder is uppercase, returns a toUpperCase function.
  * Else if the placeholder is capitalized, return a toCapitalized function.
- * Else returns `null`.
+ * Else returns `undefined`.
  *
  * @experimental
  * @stage candidate
@@ -29,13 +29,15 @@ export function deriveCaseTransformer(source: string, target: string): Transform
   // If the target string is uppercase, return a toUpperCase function
   if (target === source.toUpperCase()) {
     return (text: string) => text.toUpperCase();
-  } // If the target string is capitalized, return a toCapitalized function
-  else if (target === source.charAt(0).toUpperCase() + source.slice(1)) {
-    return (text: string) => text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-  } // Give up and return undefined
-  else {
-    return undefined;
   }
+
+  // If the target string is capitalized, return a toCapitalized function
+  if (target === source.charAt(0).toUpperCase() + source.slice(1)) {
+    return (text: string) => text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  }
+
+  // Give up and return undefined
+  return undefined;
 }
 
 function identity<T>(value: T): T {

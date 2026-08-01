@@ -11,8 +11,8 @@ export function clamp(value: number, { min, max }: ClampParams): number {
     throw new RangeError('Minimum value cannot be greater than maximum value');
   }
 
-  const minValue = min ?? Number.NEGATIVE_INFINITY;
-  const maxValue = max ?? Number.POSITIVE_INFINITY;
+  const minValue = min ?? -Infinity;
+  const maxValue = max ?? Infinity;
 
   return Math.max(minValue, Math.min(maxValue, value));
 }

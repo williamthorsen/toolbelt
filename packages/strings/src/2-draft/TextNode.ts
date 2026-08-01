@@ -39,7 +39,7 @@ export abstract class TextNode {
 
     // Remove the trailing seed, if any
     // TODO: `deseededIndices` shouldn't need a default value, but TS later treats it as possibly undefined. Why?
-    const [deseededIndices = '', _seed] = encodedIndices.split(':');
+    const [deseededIndices = '', _seed] = encodedIndices.split(':', 2);
 
     const regex = /\d+/g;
     const indices = [];
@@ -83,7 +83,7 @@ export abstract class TextNode {
 
   static fromContent(content: string): TextNode | string {
     if (TokenNode.isDelimited(content)) return new VariantNode(content);
-    else if (TokenNode.hasDelimited(content)) return new TokenNode(content);
+    if (TokenNode.hasDelimited(content)) return new TokenNode(content);
     return content;
   }
 

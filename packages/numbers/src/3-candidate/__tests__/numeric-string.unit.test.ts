@@ -28,7 +28,7 @@ describe(isNumericString, () => {
   });
 
   it('returns false for a string with only spaces', () => {
-    expect(isNumericString('   ')).toBe(false);
+    expect(isNumericString(' '.repeat(3))).toBe(false);
   });
 
   it('returns false for an empty string', () => {

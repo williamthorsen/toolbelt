@@ -27,8 +27,8 @@ describe(computeCdfInverse, () => {
   });
 
   it('returns -Infinity for a probability of 0 and Infinity for a probability of 1', () => {
-    expect(computeCdfInverse(0, { mean: 0, standardDeviation: 1 })).toBe(Number.NEGATIVE_INFINITY);
-    expect(computeCdfInverse(1, { mean: 0, standardDeviation: 1 })).toBe(Number.POSITIVE_INFINITY);
+    expect(computeCdfInverse(0, { mean: 0, standardDeviation: 1 })).toBe(-Infinity);
+    expect(computeCdfInverse(1, { mean: 0, standardDeviation: 1 })).toBe(Infinity);
   });
 
   it('uses the standard deviation as the variance, so sigma is its square root', () => {

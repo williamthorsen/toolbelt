@@ -14,7 +14,7 @@ export function getFakeMathRandom(seed: number): number {
   for (const char of strSeed) {
     const code = char.codePointAt(0) ?? 0;
     hash = (hash << 5) - hash + code;
-    hash = hash | 0; // Ensure a 32-bit integer
+    hash |= 0; // Ensure a 32-bit integer
   }
 
   // Mix the bits a little
