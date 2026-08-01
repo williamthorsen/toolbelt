@@ -31,6 +31,7 @@
     "@williamthorsen/nmr": "0.22.0",
     "@williamthorsen/release-kit": "9.1.0",
     "@williamthorsen/strict-lint": "9.0.1",
+    "@williamthorsen/tsconfig": "0.1.1",
     "eslint": "10.7.0",
     "expect-type": "1.4.0",
     "jiti": "2.7.0",

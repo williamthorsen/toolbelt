@@ -57,7 +57,7 @@ function extractTier(filePath: string): string | undefined {
   const tierSegment = segments[srcIndex + 1];
   if (tierSegment === undefined) return undefined;
 
-  return TIER_DIR_PATTERN.exec(tierSegment)?.groups?.tier;
+  return TIER_DIR_PATTERN.exec(tierSegment)?.groups?.['tier'];
 }
 
 /**
