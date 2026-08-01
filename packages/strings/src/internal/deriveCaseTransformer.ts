@@ -29,13 +29,15 @@ export function deriveCaseTransformer(source: string, target: string): Transform
   // If the target string is uppercase, return a toUpperCase function
   if (target === source.toUpperCase()) {
     return (text: string) => text.toUpperCase();
-  } // If the target string is capitalized, return a toCapitalized function
-  else if (target === source.charAt(0).toUpperCase() + source.slice(1)) {
-    return (text: string) => text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-  } // Give up and return undefined
-  else {
-    return undefined;
   }
+
+  // If the target string is capitalized, return a toCapitalized function
+  if (target === source.charAt(0).toUpperCase() + source.slice(1)) {
+    return (text: string) => text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  }
+
+  // Give up and return undefined
+  return undefined;
 }
 
 function identity<T>(value: T): T {

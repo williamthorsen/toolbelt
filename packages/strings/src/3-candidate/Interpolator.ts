@@ -119,9 +119,11 @@ export class Interpolator {
         // The simplest case is that the placeholder is a case-sensitive match. No transformation is needed.
         if (isMatch) {
           return value;
-        } // If the placeholder is not the same as the key, check whether its lowercase version is.
+        }
+
+        // If the placeholder is not the same as the key, check whether its lowercase version is.
         // We don't try to automate any other conversions.
-        else if (!noAdaptCase && typeof key === 'string' && isInsensitiveMatch) {
+        if (!noAdaptCase && typeof key === 'string' && isInsensitiveMatch) {
           // Identify the transformation that transforms the mapping key to have the same case as the placeholder.
           // We can then apply the same function to the mapping value.
           const transform = deriveCaseTransformer(key, placeholder);
