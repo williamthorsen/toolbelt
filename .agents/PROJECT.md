@@ -23,6 +23,8 @@ Runner conventions (discovery, invocation, root vs. package registries, hooks) c
 
 **Build.** There is no repo-local build script: `nmr build` delegates to the managed `nmr-compile`. Typechecking is separate, via `tsgo` (`@typescript/native-preview`), independent of the `typescript` package.
 
+**Compiler options.** Root `tsconfig.json` extends `@williamthorsen/tsconfig` (`@tsconfig/strictest` inlined, plus a Node-only layer at ES2025) and keeps only `types`, `paths`, and `include` locally; packages extend the root.
+
 **Exports.** `package.json` maps each maturity tier to its own subpath:
 
 - default: `4-release`
