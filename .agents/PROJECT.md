@@ -4,7 +4,7 @@
 
 ## Overview
 
-PNPM monorepo of TypeScript utility libraries, each published to npm as `@williamthorsen/toolbelt.{domain}`. Every package organizes its source by API maturity and exposes each tier as a separate export subpath, so consumers opt in to the stability they want. Node >= 24, ESM only, no runtime dependencies outside the workspace.
+PNPM monorepo of TypeScript utility libraries, each published to npm as `@williamthorsen/toolbelt.{domain}`. Every package organizes its source by API maturity and exposes each tier as a separate export subpath, so consumers opt in to the stability they want. Node >= 24, ESM only. Runtime dependencies outside the workspace are avoided rather than forbidden: reach for one only where hand-rolling would be worse, and prefer a workspace helper where one fits. `objects` depends on `@sindresorhus/is`; no other package does.
 
 ## Project structure
 
@@ -22,6 +22,8 @@ Runner conventions (discovery, invocation, root vs. package registries, hooks) c
 ## Architecture
 
 **Build.** There is no repo-local build script: `nmr build` delegates to the managed `nmr-compile`. Typechecking is separate, via `tsgo` (`@typescript/native-preview`), independent of the `typescript` package.
+
+**Compiler options.** Root `tsconfig.json` extends `@williamthorsen/tsconfig` (`@tsconfig/strictest` inlined, plus a Node-only layer at ES2025) and keeps only `types`, `paths`, and `include` locally; packages extend the root.
 
 **Exports.** `package.json` maps each maturity tier to its own subpath:
 

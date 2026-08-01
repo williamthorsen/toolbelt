@@ -1,6 +1,8 @@
 /* eslint @typescript-eslint/consistent-type-assertions: off */
 /* eslint @typescript-eslint/no-unsafe-return: off */
 
+import { isArray } from '@sindresorhus/is';
+
 import { isObject, isPlainObject, type PlainObject } from '../4-release/is-object.ts';
 
 /**
@@ -36,7 +38,7 @@ export function sortKeys<T extends PlainObject>(
  */
 export function sortObjectKeys<T>(value: T, compare: CompareKeys = (keyA, keyB) => (keyA < keyB ? -1 : 1)): T {
   if (isObject(value)) {
-    if (value instanceof Array) {
+    if (isArray(value)) {
       return value.map((item: unknown) => sortObjectKeys(item, compare)) as T;
     }
     if (isPlainObject(value)) {

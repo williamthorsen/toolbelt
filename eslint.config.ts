@@ -18,10 +18,14 @@ const config = defineConfig([
     files: patterns.codeFiles,
     rules: {
       ...deferredLintRules,
-      'unicorn/no-instanceof-builtins': [
+      'unicorn/numeric-separators-style': [
         'warn',
         {
-          exclude: ['Array'],
+          onlyIfContainsSeparator: false,
+          hexadecimal: { minimumDigits: 0, groupLength: 4 },
+          binary: { minimumDigits: 0, groupLength: 4 },
+          octal: { minimumDigits: 0, groupLength: 4 },
+          number: { minimumDigits: 5, groupLength: 3, fractionGroupLength: Infinity },
         },
       ],
     },
@@ -43,10 +47,6 @@ const config = defineConfig([
       'unicorn/no-null': 'off',
       'unicorn/no-thenable': 'off',
       'unicorn/no-useless-undefined': 'off',
-      'vitest/max-expects': 'off', // 🟠⚫
-      'vitest/padding-around-all': 'off', // 🟠⚫
-      'vitest/padding-around-expect-groups': 'off', // 🟠⚫
-      'vitest/prefer-lowercase-title': 'off', // 🟠⚫
     },
   }),
   {

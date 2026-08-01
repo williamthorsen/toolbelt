@@ -1,3 +1,4 @@
+import is from '@sindresorhus/is';
 import { describe, expect, it } from 'vitest';
 
 import { interpolate, Interpolator } from '../Interpolator.ts';
@@ -398,7 +399,7 @@ describe(Interpolator, () => {
 });
 
 function toObjectLiteral(value: unknown): unknown {
-  if (value instanceof Array || value instanceof Map) {
+  if (is.array(value) || is.map(value)) {
     return value;
   }
   if (typeof value === 'object' && value !== null) {

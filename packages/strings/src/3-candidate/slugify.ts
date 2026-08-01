@@ -1,3 +1,5 @@
+import { arraify } from '@williamthorsen/toolbelt.arrays/candidate';
+
 /**
  * Transforms a string into a URL-friendly slug.
  * @experimental
@@ -10,14 +12,11 @@ export function slugify(input: string | number | ReadonlyArray<string | number>,
     throw new Error('Separator must be a single character.');
   }
 
-  // The recommended `Array.isArray` call doesn't preserve the type.
-  const inputArray = input instanceof Array ? input : [input];
-
-  return inputArray
+  return arraify(input)
     .map((item) => item.toString())
     .join(' ')
     .normalize('NFD')
-    .replaceAll(/[\u0300-\u036F]/g, '') // replace diacritics
+    .replaceAll(/[\u{300}-\u{36F}]/gu, '') // replace diacritics
     .toLowerCase()
     .trim()
     .replaceAll(/[._-]/g, separator) // replace common separators with separator
