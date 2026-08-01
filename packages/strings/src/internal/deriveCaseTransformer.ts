@@ -1,12 +1,12 @@
 /**
  * Identifies and returns the function that can transform a lowercase string to match the case of another string.
- * Returns `null` if the transformation is impossible or cannot be identified.
+ * Returns `undefined` if the transformation is impossible or cannot be identified.
  *
  * If the source and the target are already identical, returns an identity function.
- * Else if the source is not lowercase, returns `null`.
+ * Else if the source is not lowercase, returns `undefined`.
  * Else if the placeholder is uppercase, returns a toUpperCase function.
  * Else if the placeholder is capitalized, return a toCapitalized function.
- * Else returns `null`.
+ * Else returns `undefined`.
  *
  * @experimental
  * @stage candidate
