@@ -47,6 +47,16 @@ describe(mapToObject, () => {
     expect(actual).toStrictEqual(expected);
   });
 
+  it('converts a __proto__ key to an own property, leaving the prototype intact', () => {
+    const map = new Map<string, unknown>([['__proto__', { polluted: true }]]);
+
+    const actual = mapToObject(map);
+
+    // `toStrictEqual` cannot distinguish an own `__proto__` property from a reassigned prototype; both are checked directly.
+    expect(Object.hasOwn(actual, '__proto__')).toBe(true);
+    expect(Object.getPrototypeOf(actual)).toBe(Object.prototype);
+  });
+
   it('overwrites earlier entries in map with later ones with the same key', () => {
     const map = new Map([
       ['a', 1],
