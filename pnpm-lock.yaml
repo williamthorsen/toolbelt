@@ -101,7 +101,11 @@ importers:
 
   packages/numbers: {}
 
-  packages/objects: {}
+  packages/objects:
+    dependencies:
+      '@sindresorhus/is':
+        specifier: 8.1.0
+        version: 8.1.0
 
   packages/sets: {}
 
@@ -125,6 +129,10 @@ importers:
       '@williamthorsen/toolbelt.sets':
         specifier: workspace:*
         version: link:../sets
+    devDependencies:
+      '@sindresorhus/is':
+        specifier: 8.1.0
+        version: 8.1.0
 
   packages/tools: {}
 
@@ -396,6 +404,10 @@ packages:
 
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
+
+  '@sindresorhus/is@8.1.0':
+    resolution: {integrity: sha512-2SX/1jW6CIMAiebvVv5ZInoCEuWQmMyBoJXXGC6Vjakjp/fpxP5eHs7/V6WKuPEIbuK06+VpjH+vjLQhr98rDQ==}
+    engines: {node: '>=22'}
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -2497,6 +2509,8 @@ snapshots:
   '@rolldown/pluginutils@1.0.1': {}
 
   '@rtsao/scc@1.1.0': {}
+
+  '@sindresorhus/is@8.1.0': {}
 
   '@standard-schema/spec@1.1.0': {}
 

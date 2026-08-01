@@ -14,5 +14,6 @@
  * @stage candidate
  */
 export function arraify<T>(value: T | ReadonlyArray<T>): T[] {
+  // eslint-disable-next-line unicorn/no-instanceof-builtins
   return value instanceof Array ? [...value] : [value];
 }

@@ -41,6 +41,9 @@
     "@williamthorsen/toolbelt.numbers": "workspace:*",
     "@williamthorsen/toolbelt.sets": "workspace:*"
   },
+  "devDependencies": {
+    "@sindresorhus/is": "8.1.0"
+  },
   "engines": {
     "node": ">=24.0.0"
   },
