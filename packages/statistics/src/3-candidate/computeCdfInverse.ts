@@ -21,7 +21,7 @@ export function computeCdfInverse(probability: number, options: Options): number
  * Returns -Infinity at 0 and Infinity at 1.
  */
 function standardNormalInverse(p: number): number {
-  if (p <= 0) return Number.NEGATIVE_INFINITY;
+  if (p <= 0) return -Infinity;
   if (p >= 1) return Infinity;
 
   const a = [
