@@ -16,12 +16,12 @@
 export function toOrdinal(int: number): string {
   const absInt = Math.abs(int);
   const lastTwoDigits = absInt % 100;
-  const lastDigit = absInt % 10;
 
   if (lastTwoDigits >= 11 && lastTwoDigits <= 13) {
     return `${int}th`;
   }
 
+  const lastDigit = absInt % 10;
   const endingsMap: Record<number, string> = {
     1: 'st',
     2: 'nd',

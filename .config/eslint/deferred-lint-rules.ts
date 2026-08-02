@@ -2,7 +2,6 @@
 // Errors are downgraded to warnings here until a decision is made whether to remove the rule or fix the violations.
 export const deferredLintRules = {
   'unicorn/no-array-from-fill': 'warn',
-  'unicorn/no-declarations-before-early-exit': 'warn',
   'unicorn/no-duplicate-loops': 'warn',
   'unicorn/no-return-array-push': 'warn',
   'unicorn/no-unreadable-array-destructuring': 'warn',

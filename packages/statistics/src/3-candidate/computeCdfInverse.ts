@@ -39,7 +39,6 @@ function standardNormalInverse(p: number): number {
   const d = [7.784_695_709_041_462e-3, 3.224_671_290_700_398e-1, 2.445_134_137_142_996, 3.754_408_661_907_416] as const;
 
   const pLow = 0.024_25;
-  const pHigh = 1 - pLow;
 
   if (p < pLow) {
     const q = Math.sqrt(-2 * Math.log(p));
@@ -49,6 +48,7 @@ function standardNormalInverse(p: number): number {
     );
   }
 
+  const pHigh = 1 - pLow;
   if (p <= pHigh) {
     const q = p - 0.5;
     const r = q * q;
