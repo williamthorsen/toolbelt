@@ -2,6 +2,7 @@ import { isObject } from '../4-release/is-object.ts';
 
 /**
  * Retrieves a nested value from an object using dot and bracket notation.
+ * Only own properties are traversed; inherited members are treated as missing.
  *
  * Examples:
  *   path: 'foo.bar[0].baz'
@@ -36,7 +37,7 @@ export function getValueAtPathOrThrow(obj: unknown, path: string): unknown {
         throw new Error(`Array index out of bounds: "${key}" in path "${path}"`);
       }
     } else if (isObject(current)) {
-      if (!(key in current)) {
+      if (!Object.hasOwn(current, key)) {
         throw new Error(`Missing key "${key}" in path "${path}"`);
       }
       current = current[key];

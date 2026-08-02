@@ -38,6 +38,25 @@ describe(getValueAtPathOrThrow, () => {
     expect(() => getValueAtPathOrThrow(obj, 'a.b.c')).toThrow('Missing key "c" in path "a.b.c"');
   });
 
+  it('throws when the key is inherited from Object.prototype', () => {
+    const obj = { a: 1 };
+    expect(() => getValueAtPathOrThrow(obj, 'toString')).toThrow('Missing key "toString" in path "toString"');
+  });
+
+  it('resolves own fields of a class instance but not its prototype members', () => {
+    class Config {
+      name = 'root';
+
+      get label(): string {
+        return `<${this.name}>`;
+      }
+    }
+    const instance = new Config();
+
+    expect(getValueAtPathOrThrow(instance, 'name')).toBe('root');
+    expect(() => getValueAtPathOrThrow(instance, 'label')).toThrow('Missing key "label" in path "label"');
+  });
+
   it('throws when an array index is out of bounds', () => {
     const obj = { list: [1, 2, 3] };
     expect(() => getValueAtPathOrThrow(obj, 'list[5]')).toThrow('Array index out of bounds: "5" in path "list[5]"');

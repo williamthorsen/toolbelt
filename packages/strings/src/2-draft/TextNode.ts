@@ -66,8 +66,8 @@ export abstract class TextNode {
       if (typeof element === 'number') {
         encodedIndices += element.toString();
       } else if (Array.isArray(element)) {
-        let encodedChildIndices = TextNode.encodeIndices(element, depth + 1);
-        if (depth) encodedChildIndices = TextNode.delimit(encodedChildIndices);
+        let encodedChildIndices = this.encodeIndices(element, depth + 1);
+        if (depth) encodedChildIndices = this.delimit(encodedChildIndices);
         encodedIndices += encodedChildIndices;
       }
       const isNotLastElement = i < indices.length - 1;
@@ -124,8 +124,8 @@ export abstract class TextNode {
 
     return {
       content,
-      encodedIndices: TokenNode.encodeIndices(indices),
-      fingerprint: TokenNode.fingerprint(initialSeed, TokenNode.encodeIndices(indices)),
+      encodedIndices: TextNode.encodeIndices(indices),
+      fingerprint: TextNode.fingerprint(initialSeed, TextNode.encodeIndices(indices)),
       indices,
       seed: initialSeed,
     };

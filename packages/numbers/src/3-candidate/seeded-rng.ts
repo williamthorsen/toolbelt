@@ -66,6 +66,7 @@ export class SeededRng implements SeededGenerator {
     fn: (options?: OptionsWithSeed<TOptions> | OptionsWithSeed<EmptyObject>) => R,
     seed: Seed | undefined,
   ) {
+    // eslint-disable-next-line unicorn/class-reference-in-static-methods
     const spawnedRng = SeededRng.spawn(seed); // stored outside the function to create a closure
     return function (options?: TOptions): R {
       return fn({ ...options, seed: spawnedRng });

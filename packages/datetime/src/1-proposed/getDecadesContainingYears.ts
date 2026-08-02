@@ -35,7 +35,7 @@ export function getDecadesContainingYears(years: number[]): Decade[] {
     }
   }
 
-  return [...decadesMap.values()];
+  return decadesMap.values().toArray();
 }
 
 export interface Decade {

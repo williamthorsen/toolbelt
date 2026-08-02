@@ -1,7 +1,5 @@
 /**
  * Type-safe replacement for `Object.prototype.hasOwnProperty.call(target, property)`
- *
- * @TODO Compare this with the `hasKey` function in this library.
  */
 export function hasOwnProperty<T, K extends PropertyKey>(
   target: T,
