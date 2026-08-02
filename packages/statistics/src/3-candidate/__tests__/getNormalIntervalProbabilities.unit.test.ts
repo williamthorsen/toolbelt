@@ -42,7 +42,13 @@ describe(getNormalIntervalProbabilities, () => {
   it('throws an error if nIntervals is not an integer', () => {
     const throwingFn = () => getNormalIntervalProbabilities({ mean: 0, standardDeviation: 1, nIntervals: 1.5 });
 
-    expect(throwingFn).toThrow('nIntervals must be an integer.');
+    expect(throwingFn).toThrow('nIntervals must be a safe integer.');
+  });
+
+  it('throws an error if nIntervals exceeds safe-integer precision', () => {
+    const throwingFn = () => getNormalIntervalProbabilities({ mean: 0, standardDeviation: 1, nIntervals: 2 ** 53 + 2 });
+
+    expect(throwingFn).toThrow('nIntervals must be a safe integer.');
   });
 
   it('throws an error if nIntervals is less than 1', () => {

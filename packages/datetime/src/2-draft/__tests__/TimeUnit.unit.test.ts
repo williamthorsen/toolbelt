@@ -30,7 +30,26 @@ describe(TimeUnit, () => {
 
       const throwingFn = () => TimeUnit.convert(1, TimeUnit.Minutes, TimeUnit.Hours, options);
 
-      expect(throwingFn).toThrow(new Error('1 minute cannot be converted into a whole number of hours.'));
+      expect(throwingFn).toThrow(new Error('1 minute cannot be converted into an exact whole number of hours.'));
+    });
+
+    it('if throwOnFractional=true and the result exceeds safe-integer precision, throws an error', () => {
+      const options: TimeUnitConversionOptions = { throwOnFractional: true };
+
+      const throwingFn = () => TimeUnit.convert(1e18, TimeUnit.Seconds, TimeUnit.Millis, options);
+
+      expect(throwingFn).toThrow(
+        new Error('1000000000000000000 seconds cannot be converted into an exact whole number of milliseconds.'),
+      );
+    });
+
+    it('if throwOnFractional=true and the result is the largest representable duration, returns it', () => {
+      const options: TimeUnitConversionOptions = { throwOnFractional: true };
+      const expected = 8_640_000_000_000_000; // 100 million days, the documented ceiling
+
+      const actual = TimeUnit.convert(100_000_000, TimeUnit.Days, TimeUnit.Millis, options);
+
+      expect(actual).toBe(expected);
     });
   });
 

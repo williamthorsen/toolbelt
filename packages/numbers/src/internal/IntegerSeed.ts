@@ -21,8 +21,8 @@ export const IntegerSeed = {
  */
 function toIntegerSeed(value: number): number {
   let integer = (() => {
-    // If the value is already an integer, we can use it directly
-    if (Number.isInteger(value)) return value;
+    // If the value is already a safe integer, we can use it directly
+    if (Number.isSafeInteger(value)) return value;
 
     // Otherwise, get a deterministic integer from the value
     return Math.floor(getFakeMathRandom(value) * MAX_INTEGER);

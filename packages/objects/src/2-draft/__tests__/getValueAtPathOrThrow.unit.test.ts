@@ -69,6 +69,13 @@ describe(getValueAtPathOrThrow, () => {
     );
   });
 
+  it('throws when an array index exceeds safe-integer precision', () => {
+    const obj = { list: [1, 2, 3] };
+    expect(() => getValueAtPathOrThrow(obj, 'list[9007199254740993]')).toThrow(
+      new TypeError('Expected array index at segment "9007199254740993" in path "list[9007199254740993]"'),
+    );
+  });
+
   it('throws when the path hits a primitive unexpectedly', () => {
     const obj = { a: 42 };
     expect(() => getValueAtPathOrThrow(obj, 'a.b')).toThrow(

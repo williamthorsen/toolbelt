@@ -36,9 +36,9 @@ export class TimeUnit {
 
     const value = amount * multiplier;
 
-    if (!Number.isInteger(value) && throwOnFractional) {
+    if (!Number.isSafeInteger(value) && throwOnFractional) {
       throw new Error(
-        `${fromUnit.getLabeledCount(amount)} cannot be converted into a whole number of ${toUnit.plural}.`,
+        `${fromUnit.getLabeledCount(amount)} cannot be converted into an exact whole number of ${toUnit.plural}.`,
       );
     }
 
@@ -69,6 +69,7 @@ export class TimeUnit {
  * Options for how to convert time to a different unit.
  */
 export interface TimeUnitConversionOptions {
+  /** Throws when the conversion cannot be represented as an exact whole number. */
   readonly throwOnFractional?: boolean | undefined;
   readonly decimalPlaces?: Integer | undefined;
 }

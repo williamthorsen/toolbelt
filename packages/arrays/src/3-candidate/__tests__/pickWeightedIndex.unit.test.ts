@@ -14,7 +14,7 @@ describe(pickWeightedIndex, () => {
     const cumulativeWeights = [1, 2, 3, 4];
     const index = pickWeightedIndex(cumulativeWeights);
 
-    expect(Number.isInteger(index)).toBe(true);
+    expect(Number.isSafeInteger(index)).toBe(true);
     expect(index).toBe(3);
   });
 
@@ -23,7 +23,7 @@ describe(pickWeightedIndex, () => {
 
     const index = pickWeightedIndex(cumulativeWeights);
 
-    expect(Number.isInteger(index)).toBe(true);
+    expect(Number.isSafeInteger(index)).toBe(true);
     expect(index).toBe(0);
   });
 
@@ -33,7 +33,7 @@ describe(pickWeightedIndex, () => {
 
     const index = pickWeightedIndex(cumulativeWeights);
 
-    expect(Number.isInteger(index)).toBe(true);
+    expect(Number.isSafeInteger(index)).toBe(true);
     expect(index).toBe(2);
   });
 

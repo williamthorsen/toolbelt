@@ -51,14 +51,15 @@ describe('scaleInt()', () => {
   const testCases = [
     { min: 0.5, max: 100 },
     { min: 0, max: 100.5 },
+    { min: 0, max: 2 ** 53 + 2 }, // an integer, but beyond safe-integer precision
   ] as const;
 
   it.each(testCases)(
-    'if any range value is given but not an integer (range: [$min, $max]), throws an error',
+    'if any range value is given but not a safe integer (range: [$min, $max]), throws an error',
     (range) => {
       const throwingFn = () => scaleInt(0.5, range);
 
-      expect(throwingFn).toThrow(new RangeError('Invalid range: min and max must be integers.'));
+      expect(throwingFn).toThrow(new RangeError('Invalid range: min and max must be safe integers.'));
     },
   );
 });

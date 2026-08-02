@@ -18,7 +18,7 @@ describe(pickInteger, () => {
   it('returns an integer', () => {
     const randomInt = pickInteger();
 
-    expect(Number.isInteger(randomInt)).toBe(true);
+    expect(Number.isSafeInteger(randomInt)).toBe(true);
     expect(Number.MAX_SAFE_INTEGER).toBe(9_007_199_254_740_991);
   });
 
