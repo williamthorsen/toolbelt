@@ -19,7 +19,7 @@ export function joinStrings(
     return '';
   }
 
-  if (nonEmptyStrings.length === 1 || lastSeparator === separator) {
+  if (lastSeparator === separator || nonEmptyStrings.length === 1) {
     return nonEmptyStrings.join(separator);
   }
 

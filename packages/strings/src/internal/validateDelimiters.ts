@@ -18,7 +18,7 @@ export function validateDelimiters(text: string, params: Params): ValidationResu
     for (const char of text) {
       if (char === opening) {
         openedCount++;
-        if (openedCount > 1 && disallowNested) {
+        if (disallowNested && openedCount > 1) {
           return {
             isValid: false,
             errors: [

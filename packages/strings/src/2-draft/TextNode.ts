@@ -71,7 +71,7 @@ export abstract class TextNode {
         encodedIndices += encodedChildIndices;
       }
       const isNotLastElement = i < indices.length - 1;
-      if (isNotLastElement && (!Array.isArray(indices[i + 1]) || depth === 0)) encodedIndices += DELIMIT.separator;
+      if (isNotLastElement && (depth === 0 || !Array.isArray(indices[i + 1]))) encodedIndices += DELIMIT.separator;
     }
 
     return encodedIndices;

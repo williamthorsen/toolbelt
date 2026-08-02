@@ -10,5 +10,4 @@ export const deferredLintRules = {
   'unicorn/no-useless-recursion': 'warn',
   'unicorn/prefer-math-constants': 'warn',
   'unicorn/prefer-private-class-fields': 'warn',
-  'unicorn/prefer-simple-condition-first': 'warn',
 } as const;
