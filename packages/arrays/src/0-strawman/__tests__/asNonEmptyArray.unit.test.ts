@@ -28,11 +28,11 @@ describe(asNonEmptyArray, () => {
     const immutableItems = asNonEmptyArray(items);
 
     /* eslint-disable @typescript-eslint/no-unsafe-call */
-    /* eslint-disable @typescript-eslint/no-unsafe-return */
-    // @ts-expect-error - Not compilable: An immutable array does not have a `push` method
-    const throwingFn = () => immutableItems.push('cannot be added');
+    const throwingFn = () => {
+      // @ts-expect-error - Not compilable: An immutable array does not have a `push` method
+      immutableItems.push('cannot be added');
+    };
     /* eslint-enable @typescript-eslint/no-unsafe-call */
-    /* eslint-enable @typescript-eslint/no-unsafe-return */
 
     expect(throwingFn).toThrow(/Cannot add property 1, object is not extensible/);
   });
@@ -132,7 +132,9 @@ describe(assertNonEmptyArray, () => {
       expect([...array]).toStrictEqual([...copy]);
       pushToArray();
       expect([...array]).not.toStrictEqual([...copy]);
-    })(items, () => items.push(2));
+    })(items, () => {
+      items.push(2);
+    });
   });
 });
 
