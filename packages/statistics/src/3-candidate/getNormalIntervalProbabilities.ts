@@ -44,8 +44,8 @@ export function getNormalIntervalProbabilities(params: Params): IntervalProbabil
 }
 
 export function assertPositiveInteger(value: number, label: string): void {
-  if (!Number.isInteger(value)) {
-    throw new TypeError(`${label} must be an integer.`);
+  if (!Number.isSafeInteger(value)) {
+    throw new TypeError(`${label} must be a safe integer.`);
   }
   if (value < 1) {
     throw new Error(`${label} must be greater than 0.`);
