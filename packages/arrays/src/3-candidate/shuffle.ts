@@ -1,4 +1,4 @@
-import { generateRandom, type Seed, SeededRng } from '@williamthorsen/toolbelt.numbers/candidate';
+import { pickInteger, type Seed, SeededRng } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { getAtIndexOrThrow } from './getAtIndexOrThrow.ts';
 
@@ -10,9 +10,9 @@ import { getAtIndexOrThrow } from './getAtIndexOrThrow.ts';
  * @stage candidate
  */
 export function shuffle<T>(items: ReadonlyArray<T>, options: Options = {}): T[] {
-  const tempItems = [...items];
-  shuffleInPlace(tempItems, options);
-  return tempItems;
+  const shuffled = [...items];
+  shuffleInPlace(shuffled, options);
+  return shuffled;
 }
 
 /**
@@ -26,10 +26,12 @@ export function shuffle<T>(items: ReadonlyArray<T>, options: Options = {}): T[] 
 export function shuffleInPlace(items: unknown[], options: Options = {}): void {
   const seed = SeededRng.spawn(options.seed);
 
-  // Fisher-Yates algorithm
+  // Fisher-Yates: walk backward, swapping each item with a randomly chosen item at or before it.
   for (let i = items.length - 1; i > 0; i--) {
-    const j = Math.floor(generateRandom({ seed }) * (i + 1));
-    [items[i], items[j]] = [getAtIndexOrThrow(items, j), getAtIndexOrThrow(items, i)];
+    const j = pickInteger({ max: i, seed });
+    const swapped = getAtIndexOrThrow(items, i);
+    items[i] = getAtIndexOrThrow(items, j);
+    items[j] = swapped;
   }
 }
 

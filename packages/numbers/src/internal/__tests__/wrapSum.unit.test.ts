@@ -54,7 +54,7 @@ describe(wrapSum, () => {
 
   it('can handle large series of addends', () => {
     const max = 10;
-    const addends = Array.from<number>({ length: 1000 }).fill(5); // [5, 5, 5, ...]
+    const addends = Array.from({ length: 1000 }, () => 5); // [5, 5, 5, ...]
     const expected = 0; // Because (5 * 1000) % 10 = 0
 
     const actual = wrapSum(max, ...addends);
