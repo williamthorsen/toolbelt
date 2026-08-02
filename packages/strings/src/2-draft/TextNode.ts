@@ -66,8 +66,8 @@ export abstract class TextNode {
       if (typeof element === 'number') {
         encodedIndices += element.toString();
       } else if (Array.isArray(element)) {
-        let encodedChildIndices = TextNode.encodeIndices(element, depth + 1);
-        if (depth) encodedChildIndices = TextNode.delimit(encodedChildIndices);
+        let encodedChildIndices = this.encodeIndices(element, depth + 1);
+        if (depth) encodedChildIndices = this.delimit(encodedChildIndices);
         encodedIndices += encodedChildIndices;
       }
       const isNotLastElement = i < indices.length - 1;
