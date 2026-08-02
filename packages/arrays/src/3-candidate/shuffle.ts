@@ -23,7 +23,7 @@ export function shuffle<T>(items: ReadonlyArray<T>, options: Options = {}): T[] 
  * @experimental
  * @stage candidate
  */
-export function shuffleInPlace<T>(items: T[], options: Options = {}): void {
+export function shuffleInPlace(items: unknown[], options: Options = {}): void {
   const seed = SeededRng.spawn(options.seed);
 
   // Fisher-Yates: walk backward, swapping each item with a randomly chosen item at or before it.
