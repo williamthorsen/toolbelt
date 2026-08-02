@@ -13,7 +13,7 @@ import { isObject } from '../4-release/is-object.ts';
  */
 export function hasKeyAtPath(obj: unknown, keys: readonly string[]): boolean {
   const [head, ...tail] = keys;
-  if (!isObject(obj) || head === undefined || !Object.hasOwn(obj, head)) {
+  if (head === undefined || !isObject(obj) || !Object.hasOwn(obj, head)) {
     return false;
   }
 

@@ -71,7 +71,7 @@ export abstract class TextNode {
         encodedIndices += encodedChildIndices;
       }
       const isNotLastElement = i < indices.length - 1;
-      if (isNotLastElement && (!Array.isArray(indices[i + 1]) || depth === 0)) encodedIndices += DELIMIT.separator;
+      if (isNotLastElement && (depth === 0 || !Array.isArray(indices[i + 1]))) encodedIndices += DELIMIT.separator;
     }
 
     return encodedIndices;
@@ -157,10 +157,13 @@ class TokenNode extends TextNode {
   pickIndices(options: { seed?: Seed | undefined } = {}): VariantIndices {
     const seed = IntSeededRng.spawn(options.seed);
 
+    const children = this.children || [];
     const indices: VariantIndices = [];
 
-    for (const variant of (this.children || []).filter((child): child is VariantNode => child instanceof VariantNode)) {
-      const childIndices = variant.pickIndices({ seed });
+    for (const child of children) {
+      if (!(child instanceof VariantNode)) continue;
+
+      const childIndices = child.pickIndices({ seed });
       indices.push(childIndices.length === 1 ? getAtIndexOrThrow(childIndices, 0) : childIndices);
     }
 

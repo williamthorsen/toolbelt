@@ -19,6 +19,12 @@ const config = defineConfig([
     rules: deferredLintRules,
   },
   {
+    files: patterns.codeFiles,
+    rules: {
+      'unicorn/consistent-class-member-order': 'off', // use `@typescript-eslint/member-ordering` instead
+    },
+  },
+  {
     files: ['**/*.ts', '**/*.mts', '**/*.md/*.ts'],
     languageOptions: {
       parserOptions: {

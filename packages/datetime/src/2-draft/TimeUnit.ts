@@ -36,7 +36,7 @@ export class TimeUnit {
 
     const value = amount * multiplier;
 
-    if (!Number.isSafeInteger(value) && throwOnFractional) {
+    if (throwOnFractional && !Number.isSafeInteger(value)) {
       throw new Error(
         `${fromUnit.getLabeledCount(amount)} cannot be converted into an exact whole number of ${toUnit.plural}.`,
       );
