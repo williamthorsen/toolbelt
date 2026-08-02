@@ -7,10 +7,8 @@ export const deferredLintRules = {
   'unicorn/no-duplicate-loops': 'warn',
   'unicorn/no-return-array-push': 'warn',
   'unicorn/no-unreadable-array-destructuring': 'warn',
-  'unicorn/no-unsafe-string-replacement': 'warn',
   'unicorn/no-useless-recursion': 'warn',
   'unicorn/prefer-math-constants': 'warn',
-  'unicorn/prefer-number-is-safe-integer': 'warn',
   'unicorn/prefer-private-class-fields': 'warn',
   'unicorn/prefer-simple-condition-first': 'warn',
 } as const;
