@@ -1,21 +1,16 @@
 // `@williamthorsen/eslint-config-typescript` v6 added new unicorn rules, surfacing new violations in existing code.
 // Errors are downgraded to warnings here until a decision is made whether to remove the rule or fix the violations.
 export const deferredLintRules = {
-  'unicorn/class-reference-in-static-methods': 'warn',
   'unicorn/consistent-class-member-order': 'warn',
   'unicorn/no-array-from-fill': 'warn',
-  'unicorn/no-computed-property-existence-check': 'warn',
   'unicorn/no-declarations-before-early-exit': 'warn',
   'unicorn/no-duplicate-loops': 'warn',
   'unicorn/no-return-array-push': 'warn',
   'unicorn/no-unreadable-array-destructuring': 'warn',
   'unicorn/no-unsafe-string-replacement': 'warn',
   'unicorn/no-useless-recursion': 'warn',
-  'unicorn/prefer-iterator-to-array': 'warn',
   'unicorn/prefer-math-constants': 'warn',
   'unicorn/prefer-number-is-safe-integer': 'warn',
   'unicorn/prefer-private-class-fields': 'warn',
-  'unicorn/prefer-set-methods': 'warn',
   'unicorn/prefer-simple-condition-first': 'warn',
-  'unicorn/prefer-unicode-code-point-escapes': 'warn',
 } as const;
