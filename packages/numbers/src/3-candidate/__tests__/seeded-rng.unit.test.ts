@@ -321,6 +321,7 @@ describe(SeededRng, () => {
         return options?.seed;
       }
 
+      expect(SeededRng.withSeed(captureSeed, 1234)()).toBeInstanceOf(SeededRng);
       expect(SeededRng.withSeed(captureSeed, 1234)()).not.toBeInstanceOf(IntSeededRng);
       expect(IntSeededRng.withSeed(captureSeed, 1234)()).toBeInstanceOf(IntSeededRng);
     });
