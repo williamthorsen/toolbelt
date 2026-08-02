@@ -7,5 +7,4 @@ export const deferredLintRules = {
   // Defer to #56, which reimplements the rule's only violation (`findDistributionByIntervalProbability`).
   'unicorn/no-useless-recursion': 'warn',
   'unicorn/prefer-math-constants': 'warn',
-  'unicorn/prefer-private-class-fields': 'warn',
 } as const;
