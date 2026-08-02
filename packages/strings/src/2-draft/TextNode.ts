@@ -124,8 +124,8 @@ export abstract class TextNode {
 
     return {
       content,
-      encodedIndices: TokenNode.encodeIndices(indices),
-      fingerprint: TokenNode.fingerprint(initialSeed, TokenNode.encodeIndices(indices)),
+      encodedIndices: TextNode.encodeIndices(indices),
+      fingerprint: TextNode.fingerprint(initialSeed, TextNode.encodeIndices(indices)),
       indices,
       seed: initialSeed,
     };
