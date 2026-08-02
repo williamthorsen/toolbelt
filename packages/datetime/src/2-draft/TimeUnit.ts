@@ -69,6 +69,7 @@ export class TimeUnit {
  * Options for how to convert time to a different unit.
  */
 export interface TimeUnitConversionOptions {
+  /** Throws when the conversion cannot be represented as an exact whole number. */
   readonly throwOnFractional?: boolean | undefined;
   readonly decimalPlaces?: Integer | undefined;
 }
