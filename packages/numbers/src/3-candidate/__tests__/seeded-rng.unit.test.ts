@@ -315,6 +315,15 @@ describe(SeededRng, () => {
 
       expect(letters1).toStrictEqual(letters2);
     });
+
+    it('supplies a generator of the class the method is called on', () => {
+      function captureSeed(options?: { seed?: Seed | undefined }): Seed | undefined {
+        return options?.seed;
+      }
+
+      expect(SeededRng.withSeed(captureSeed, 1234)()).not.toBeInstanceOf(IntSeededRng);
+      expect(IntSeededRng.withSeed(captureSeed, 1234)()).toBeInstanceOf(IntSeededRng);
+    });
   });
 });
 

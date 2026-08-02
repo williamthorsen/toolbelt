@@ -60,13 +60,14 @@ export class SeededRng implements SeededGenerator {
   }
 
   /**
-   * Given a seed-acception function and an optional seed, returns a new function that passes the seed to the function.
+   * Given a seed-accepting function and an optional seed, returns a new function that passes the seed to the function.
+   * The spawned generator is an instance of the class the method is called on, so subclasses supply their own sequence.
    */
   static withSeed<TOptions extends object, R>(
     fn: (options?: OptionsWithSeed<TOptions> | OptionsWithSeed<EmptyObject>) => R,
     seed: Seed | undefined,
   ) {
-    const spawnedRng = SeededRng.spawn(seed); // stored outside the function to create a closure
+    const spawnedRng = this.spawn(seed); // stored outside the function to create a closure
     return function (options?: TOptions): R {
       return fn({ ...options, seed: spawnedRng });
     };
