@@ -354,13 +354,13 @@ for (const [preset, Rng, max] of [
 
       it('generates an integer seed', () => {
         const rng = new Rng();
-        expect(Number.isInteger(rng.seed)).toBe(true);
+        expect(Number.isSafeInteger(rng.seed)).toBe(true);
       });
 
       it('always generates integer values', () => {
         const seed = new Rng(1234.5);
-        expect(Number.isInteger(seed.next())).toBe(true);
-        expect(Number.isInteger(seed.next())).toBe(true);
+        expect(Number.isSafeInteger(seed.next())).toBe(true);
+        expect(Number.isSafeInteger(seed.next())).toBe(true);
       });
 
       it(`if the input seed exceeds max (${max}), uses modulo max`, () => {
@@ -398,7 +398,7 @@ for (const [preset, Rng, max] of [
         const rng = new Rng(1234.5);
         const oldSeed = rng.seed;
 
-        expect(Number.isInteger(rng.next())).toBe(true);
+        expect(Number.isSafeInteger(rng.next())).toBe(true);
         expect(rng.seed).not.toBe(oldSeed);
       });
     });
