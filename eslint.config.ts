@@ -22,6 +22,16 @@ const config = defineConfig([
     files: patterns.codeFiles,
     rules: {
       'unicorn/consistent-class-member-order': 'off', // use `@typescript-eslint/member-ordering` instead
+      'unicorn/numeric-separators-style': [
+        'error',
+        {
+          onlyIfContainsSeparator: false,
+          hexadecimal: { minimumDigits: 0, groupLength: 4 },
+          binary: { minimumDigits: 0, groupLength: 4 },
+          octal: { minimumDigits: 0, groupLength: 4 },
+          number: { minimumDigits: 5, groupLength: 3, fractionGroupLength: 3 },
+        },
+      ], // 🔴🟠
     },
   },
   {

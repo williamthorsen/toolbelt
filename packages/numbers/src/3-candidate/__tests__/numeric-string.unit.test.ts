@@ -12,11 +12,11 @@ describe(isNumericString, () => {
   });
 
   it('returns true for a float string', () => {
-    expect(isNumericString('3.14')).toBe(true);
+    expect(isNumericString('3.45')).toBe(true);
   });
 
   it('returns true for a negative float string', () => {
-    expect(isNumericString('-3.14')).toBe(true);
+    expect(isNumericString('-3.45')).toBe(true);
   });
 
   it('returns true for a scientific notation string', () => {
@@ -46,7 +46,7 @@ describe(isNumericString, () => {
 
 describe(safeParseNumber, () => {
   it('parses a valid float string', () => {
-    expect(safeParseNumber('3.14')).toBe(3.14);
+    expect(safeParseNumber('3.45')).toBe(3.45);
   });
 
   it('parses a valid integer string', () => {
@@ -54,7 +54,7 @@ describe(safeParseNumber, () => {
   });
 
   it('parses a negative float string', () => {
-    expect(safeParseNumber('-3.14')).toBe(-3.14);
+    expect(safeParseNumber('-3.45')).toBe(-3.45);
   });
 
   it('parses a negative integer string', () => {

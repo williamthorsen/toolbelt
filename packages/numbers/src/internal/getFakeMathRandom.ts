@@ -25,5 +25,5 @@ export function getFakeMathRandom(seed: number): number {
   hash += hash << 15;
 
   // Convert to a number in the range [0, 1)
-  return (hash & 0x7f_ff_ff_ff) / 0x7f_ff_ff_ff;
+  return (hash & 0x7fff_ffff) / 0x7fff_ffff;
 }
