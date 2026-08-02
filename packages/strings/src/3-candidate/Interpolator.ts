@@ -119,8 +119,7 @@ export class Interpolator {
           return value;
         }
 
-        const isInsensitiveMatch =
-          typeof key === 'string' ? placeholder.toLowerCase() === key : delimitedPlaceholder.match(insensitiveMatcher);
+        const isInsensitiveMatch = typeof key === 'string' && placeholder.toLowerCase() === key;
 
         // If the placeholder is not the same as the key, check whether its lowercase version is.
         // We don't try to automate any other conversions.
