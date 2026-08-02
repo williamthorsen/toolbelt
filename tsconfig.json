@@ -1,5 +1,3 @@
-// TSConfig for monorepo root. Packages have their own tsconfig.json files that extend this one.
-// Shared options come from @williamthorsen/tsconfig; keep only what the base leaves to consumers.
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@williamthorsen/tsconfig/tsconfig.base.json",

@@ -1,13 +1,13 @@
 import { advisoryRuleSeverities } from '@williamthorsen/eslint-config-typescript';
-import type { StrictLintConfig } from '@williamthorsen/strict-lint';
+import { defineConfig } from '@williamthorsen/strict-lint/config';
 
 import { deferredLintRules } from './eslint/deferred-lint-rules.ts';
 
-const config: StrictLintConfig = {
+const config = defineConfig({
   maxSeverity: {
     ...advisoryRuleSeverities,
     ...deferredLintRules,
   },
-};
+});
 
 export default config;
