@@ -28,7 +28,7 @@ export function getValueAtPathOrThrow(obj: unknown, path: string): unknown {
   for (const key of keys) {
     if (Array.isArray(current)) {
       const index = Number(key);
-      if (!Number.isInteger(index)) {
+      if (!Number.isSafeInteger(index)) {
         throw new TypeError(`Expected array index at segment "${key}" in path "${path}"`);
       }
       if (index >= 0 && index < current.length) {
