@@ -7,7 +7,7 @@ import { arraify } from '@williamthorsen/toolbelt.arrays/candidate';
  */
 export function slugify(input: string | number | ReadonlyArray<string | number>, options: SlugifyOptions = {}): string {
   const { separator = '-' } = options;
-  // Limited to one character to support the `replace(new RegExp...)` below.
+  // Limited to one character because the character class below preserves the separator per character, not as a sequence.
   if (separator.length !== 1) {
     throw new Error('Separator must be a single character.');
   }
@@ -19,9 +19,9 @@ export function slugify(input: string | number | ReadonlyArray<string | number>,
     .replaceAll(/[\u{300}-\u{36F}]/gu, '') // replace diacritics
     .toLowerCase()
     .trim()
-    .replaceAll(/[._-]/g, separator) // replace common separators with separator
-    .replaceAll(new RegExp(`[^\\${separator}a-z0-9 ]`, 'g'), '') // remove all chars except letters, numbers, spaces
-    .replaceAll(/\s+/g, separator); // replace spaces with separator
+    .replaceAll(/[._-]/g, () => separator) // replace common separators with separator
+    .replaceAll(new RegExp(`[^${RegExp.escape(separator)}a-z0-9 ]`, 'g'), '') // remove all chars except letters, numbers, spaces
+    .replaceAll(/\s+/g, () => separator); // replace spaces with separator
 }
 
 interface SlugifyOptions {

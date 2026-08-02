@@ -76,6 +76,26 @@ describe(slugify, () => {
     expect(actual).toBe(expected);
   });
 
+  it('given a letter separator, still removes special characters', () => {
+    const input = 'Hello, Wörld! #42';
+    const options = { separator: 'c' };
+    const expected = 'hellocworldc42';
+
+    const actual = slugify(input, options);
+
+    expect(actual).toBe(expected);
+  });
+
+  it('given a regex-special separator, inserts it literally', () => {
+    const input = 'Hello, World';
+    const options = { separator: '.' };
+    const expected = 'hello.world';
+
+    const actual = slugify(input, options);
+
+    expect(actual).toBe(expected);
+  });
+
   it('if separator is longer than one character, throws an error', () => {
     const input = 'Hello, World';
     const options = { separator: '!!' };

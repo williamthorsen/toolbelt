@@ -185,7 +185,7 @@ describe(TextNode, () => {
 
       const { seed } = textNode.pickWithFingerprint();
 
-      expect(Number.isInteger(seed)).toBe(true);
+      expect(Number.isSafeInteger(seed)).toBe(true);
     });
 
     it('given a non-integer seed, generates a deterministic integer from it and returns it', () => {
@@ -197,7 +197,7 @@ describe(TextNode, () => {
 
       expect(outputSeed).not.toBe(inputSeed); // not the same as the input seed
       expect(outputSeed).toBe(outputSeed2); // but deterministically determined
-      expect(Number.isInteger(outputSeed)).toBe(true);
+      expect(Number.isSafeInteger(outputSeed)).toBe(true);
     });
   });
 
