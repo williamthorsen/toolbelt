@@ -17,7 +17,7 @@ Versions are independent per package. `dstructs` and `statistics` are pre-1.0; t
 
 ## Commands
 
-Runner conventions (discovery, invocation, root vs. package registries, hooks) come from `.agents/nmr/AGENTS.md`, imported at the top of this file. CI runs `pnpm exec nmr build && pnpm exec nmr check:strict` (`.github/workflows/code-quality.yaml`); locally, `nmr ci` adds the dependency audit on top of those.
+Runner conventions (discovery, invocation, root vs. package registries, hooks) come from `.agents/nmr/AGENTS.md`, imported at the top of this file. CI runs `pnpm exec nmr ci` (`.github/workflows/code-quality.yaml`); a dependency audit runs separately, on pull requests and daily (`.github/workflows/audit.yaml`).
 
 ## Architecture
 
@@ -42,15 +42,15 @@ Runner conventions (discovery, invocation, root vs. package registries, hooks) c
 
 - Intra-package imports carry an explicit `.ts` extension (`./shuffle.ts`). `allowImportingTsExtensions` is on and `nmr-compile` rewrites it at build time.
 - Exported functions carry JSDoc `@category` and `@stage {maturity}`, plus `@experimental` where applicable. Keep `@stage` in sync with the containing folder; `__tests__/stage-tag-alignment.app.unit.test.ts` enforces this.
-- Tests live in `__tests__/` beside the source, named `{subject}.{unit|int|app}.test.ts`. `describe()` takes the function reference, not a string: `describe(shuffle, () => ...)`.
+- Tests live in `__tests__/` beside the source, named `{subject}.{tier}.test.ts`. `describe()` takes the function reference, not a string: `describe(shuffle, () => ...)`.
 - Dependency versions are pinned exactly (`savePrefix: ''` in `pnpm-workspace.yaml`).
 
 ## Gotchas
 
 - **`4-release` is empty for most packages.** Only `enums`, `filesystem`, `guards`, and `objects` export anything from the default entry point. `arrays`, `strings`, `numbers`, `sets`, and the rest hold `export {}` there, with the real API in `3-candidate`. Import from `/candidate` unless you have confirmed the symbol is promoted.
 - **Promoting an API is a move plus three edits**: relocate the file, update both tiers' `index.ts`, and update the `@stage` tag.
-- **Suites are Vitest projects selected by filename suffix, not by config file.** `*.app.test.ts` lands in `app`, `*.int.test.ts` in `integration`, everything else in `unit`. `nmr test` is `--project '!integration'` (unit plus app); `nmr test:all` runs everything. Misname an integration test and it silently joins the unit project.
-- **`passWithNoTests` is set on every project, not just `integration`.** A suite with no matching files exits green instead of failing, so `nmr test:integration` always passes (the repo has no `*.int.test.ts` files) and a package that loses its tests passes just as quietly. The placeholder `todo` test in `packages/_template` is what keeps a freshly scaffolded package from being the first such case.
+- **Suites are Vitest projects selected by filename, not by config file.** The projects are the isolation ladder `unit`, `tool`, `localhost`, and `remote`, named for the furthest thing a test reaches and matched on the segment immediately before `.test.ts`. `unit` is the residual: any other segment lands there, which is why `stage-tag-alignment.app.unit.test.ts` carries its tier in the tail and leaves `app` as documentation. `nmr test` runs `unit` and `tool`; `nmr test:all` runs everything. The repo has no test above `unit`.
+- **`passWithNoTests` is set on every project.** A suite with no matching files exits green instead of failing, so `nmr test:tool` always passes (the repo has no `*.tool.test.ts` files) and a package that loses its tests passes just as quietly. The placeholder `todo` test in `packages/_template` is what keeps a freshly scaffolded package from being the first such case.
 - **Packages carry no Vitest config.** Vitest walks up from the run directory to the root `vitest.config.ts` while keeping `root` at the cwd, so `nmr test` inside a package collects that package's tests alone. A per-package config re-adds a file that changes nothing.
 - **`strict-lint` downgrades some rules to warnings.** See `../.config/eslint/deferred-lint-rules.ts` for the current set. Violations of those rules do not fail `check:strict`.
 - **pnpm enforces a release soak before newly published third-party versions install.** See `minimumReleaseAge` in `pnpm-workspace.yaml` for the window and the first-party exclusions.
