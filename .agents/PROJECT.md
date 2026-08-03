@@ -41,7 +41,7 @@ Runner conventions (discovery, invocation, root vs. package registries, hooks) c
 ## Code style
 
 - Intra-package imports carry an explicit `.ts` extension (`./shuffle.ts`). `allowImportingTsExtensions` is on and `nmr-compile` rewrites it at build time.
-- Exported functions carry JSDoc `@category` and `@stage {maturity}`, plus `@experimental` where applicable. Keep `@stage` in sync with the containing folder; `__tests__/stage-tag-alignment.app.test.ts` enforces this.
+- Exported functions carry JSDoc `@category` and `@stage {maturity}`, plus `@experimental` where applicable. Keep `@stage` in sync with the containing folder; `__tests__/stage-tag-alignment.app.unit.test.ts` enforces this.
 - Tests live in `__tests__/` beside the source, named `{subject}.{unit|int|app}.test.ts`. `describe()` takes the function reference, not a string: `describe(shuffle, () => ...)`.
 - Dependency versions are pinned exactly (`savePrefix: ''` in `pnpm-workspace.yaml`).
 
