@@ -41,14 +41,14 @@ function selectComponents(milliseconds: number, maxUnits: number): DurationCompo
   let leadingIndex = selectLeadingIndex(milliseconds);
 
   for (;;) {
-    const finestIndex = Math.min(leadingIndex + maxUnits - 1, FINEST_INDEX);
-    const rounded = roundToUnit(milliseconds, unitAt(finestIndex));
+    const shownUnits = TimeUnit.coarsestFirst.slice(leadingIndex, leadingIndex + maxUnits);
+    const rounded = roundToFinest(milliseconds, shownUnits);
 
     // Rounding can carry the duration past a unit boundary. A lower index is a coarser unit, so
     // continuing only while the leading unit coarsens both resolves the carry and terminates.
     const carriedIndex = selectLeadingIndex(rounded);
     if (carriedIndex >= leadingIndex) {
-      return decompose(rounded, leadingIndex, finestIndex);
+      return decompose(rounded, shownUnits);
     }
     leadingIndex = carriedIndex;
   }
@@ -64,25 +64,29 @@ function selectLeadingIndex(milliseconds: number): number {
   return index === -1 ? FINEST_INDEX : index;
 }
 
-/** Rounds a duration to a whole number of the given unit, returning the result in milliseconds. */
-function roundToUnit(milliseconds: number, unit: TimeUnit): number {
-  return Math.round(milliseconds / unit.inMillis) * unit.inMillis;
+/**
+ * Rounds a duration to a whole number of the finest unit shown, returning the result in
+ * milliseconds. The finest unit is the one spanning the fewest milliseconds.
+ */
+function roundToFinest(milliseconds: number, shownUnits: ReadonlyArray<TimeUnit>): number {
+  const finestInMillis = Math.min(...shownUnits.map((unit) => unit.inMillis));
+
+  return Math.round(milliseconds / finestInMillis) * finestInMillis;
 }
 
 /**
  * Splits an exact multiple of the finest unit into whole counts. Both operands of every division
  * are whole numbers of milliseconds, so no quotient or remainder loses precision.
  */
-function decompose(milliseconds: number, leadingIndex: number, finestIndex: number): DurationComponent[] {
+function decompose(milliseconds: number, shownUnits: ReadonlyArray<TimeUnit>): DurationComponent[] {
   const components: DurationComponent[] = [];
   let remainder = milliseconds;
 
-  for (let index = leadingIndex; index <= finestIndex; index += 1) {
-    const unit = unitAt(index);
+  for (const [index, unit] of shownUnits.entries()) {
     const count = Math.floor(remainder / unit.inMillis);
     remainder -= count * unit.inMillis;
 
-    if (count > 0 || index === leadingIndex) {
+    if (index === 0 || count > 0) {
       components.push({ count, unit });
     }
   }
@@ -90,21 +94,11 @@ function decompose(milliseconds: number, leadingIndex: number, finestIndex: numb
   return components;
 }
 
-/** Reads a unit from the ladder, guarding the index its callers are responsible for bounding. */
-function unitAt(index: number): TimeUnit {
-  const unit = TimeUnit.coarsestFirst[index];
-  if (unit === undefined) {
-    throw new RangeError(`No time unit at index ${index}.`);
-  }
-
-  return unit;
-}
-
 function assertValidArguments(milliseconds: number, maxUnits: number): void | never {
   if (!Number.isFinite(milliseconds) || milliseconds < 0) {
     throw new RangeError(`Duration must be a non-negative finite number of milliseconds, but was ${milliseconds}.`);
   }
-  if (!Number.isInteger(maxUnits) || maxUnits < 1) {
+  if (!Number.isSafeInteger(maxUnits) || maxUnits < 1) {
     throw new RangeError(`maxUnits must be a positive integer, but was ${maxUnits}.`);
   }
 }

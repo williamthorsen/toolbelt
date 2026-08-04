@@ -46,12 +46,14 @@ describe(TimeUnit, () => {
             // Express `count` whole `toUnit`s as an amount of `fromUnit`s, skipping the pairs that
             // cannot be said in whole `fromUnit`s.
             const amount = (count * toUnit.inMillis) / fromUnit.inMillis;
-            if (!Number.isInteger(amount)) continue;
+            if (!Number.isSafeInteger(amount)) continue;
 
             comparisons += 1;
             const converted = Math.floor(TimeUnit.convert(amount, fromUnit, toUnit));
             if (converted !== count) {
-              misconversions.push(`${amount} ${fromUnit} floors to ${converted} ${toUnit}, expected ${count}`);
+              misconversions.push(
+                `${amount} ${fromUnit.plural} floors to ${converted} ${toUnit.plural}, expected ${count}`,
+              );
             }
           }
         }

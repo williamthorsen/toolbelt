@@ -89,8 +89,8 @@ describe(formatDuration, () => {
   describe('invalid arguments', () => {
     it.each([
       { label: 'a negative duration', act: () => formatDuration(-1) },
-      { label: 'a NaN duration', act: () => formatDuration(Number.NaN) },
-      { label: 'an infinite duration', act: () => formatDuration(Number.POSITIVE_INFINITY) },
+      { label: 'a NaN duration', act: () => formatDuration(NaN) },
+      { label: 'an infinite duration', act: () => formatDuration(Infinity) },
       { label: 'a zero maxUnits', act: () => formatDuration(1000, { maxUnits: 0 }) },
       { label: 'a negative maxUnits', act: () => formatDuration(1000, { maxUnits: -1 }) },
       { label: 'a fractional maxUnits', act: () => formatDuration(1000, { maxUnits: 1.5 }) },
