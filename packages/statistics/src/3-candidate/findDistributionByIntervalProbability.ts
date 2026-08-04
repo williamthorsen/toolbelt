@@ -1,7 +1,9 @@
 import { getAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 import { round } from '@williamthorsen/toolbelt.numbers/candidate';
 
-import { assertPositiveInteger, getNormalIntervalProbabilities } from './getNormalIntervalProbabilities.ts';
+import { assertFinite } from '../internal/assertFinite.ts';
+import { assertPositiveInteger } from '../internal/assertPositiveInteger.ts';
+import { getNormalIntervalProbabilities } from './getNormalIntervalProbabilities.ts';
 
 const MAX_ITERATIONS = 50;
 const SD_MAX = 20;
@@ -21,8 +23,13 @@ export function findDistributionByIntervalProbability(params: Params, options: O
   const { maxIterations = MAX_ITERATIONS, sdMax = SD_MAX, sdMin = SD_MIN, tolerance = TOLERANCE } = options;
 
   assertPositiveInteger(nIntervals, 'nIntervals');
+  assertPositiveInteger(maxIterations, 'maxIterations');
+  assertFinite(target, 'probability');
+  assertFinite(sdMax, 'sdMax');
+  assertFinite(sdMin, 'sdMin');
+  assertFinite(tolerance, 'tolerance');
 
-  if (!Number.isFinite(target) || target <= 0) {
+  if (target <= 0) {
     throw new Error('Probability must be greater than 0.');
   }
   if (sdMin <= 0) {
@@ -31,15 +38,15 @@ export function findDistributionByIntervalProbability(params: Params, options: O
   if (sdMin >= sdMax) {
     throw new Error('Maximum standard deviation (sdMax) must be greater than minimum (sdMin).');
   }
-  assertPositiveInteger(maxIterations, 'maxIterations');
 
-  function getFirstIntervalProbability(standardDeviation: number): number {
-    return getAtIndexOrThrow(getNormalIntervalProbabilities({ halfWidth, nIntervals, standardDeviation }).additive, 0);
+  function getIntervalProbabilities(standardDeviation: number): IntervalProbabilities {
+    return getNormalIntervalProbabilities({ halfWidth, nIntervals, standardDeviation });
   }
 
   // Confirm the target lies between the probabilities the range's endpoints can produce.
-  const minProbability = getFirstIntervalProbability(sdMin);
-  const maxProbability = getFirstIntervalProbability(sdMax);
+  let intervalProbabilities = getIntervalProbabilities(sdMin);
+  const minProbability = toFirstProbability(intervalProbabilities);
+  const maxProbability = toFirstProbability(getIntervalProbabilities(sdMax));
   const range = `standard deviation in range [${sdMin}, ${sdMax}]`;
 
   if (target < minProbability) {
@@ -63,7 +70,8 @@ export function findDistributionByIntervalProbability(params: Params, options: O
   while (iterations < maxIterations) {
     iterations += 1;
     standardDeviation = (low + high) / 2;
-    probability = getFirstIntervalProbability(standardDeviation);
+    intervalProbabilities = getIntervalProbabilities(standardDeviation);
+    probability = toFirstProbability(intervalProbabilities);
 
     if (Math.abs(probability / target - 1) < tolerance) {
       converged = true;
@@ -80,16 +88,22 @@ export function findDistributionByIntervalProbability(params: Params, options: O
   return {
     converged,
     divergenceFromTarget: probability / target - 1,
-    intervalProbabilities: getNormalIntervalProbabilities({ halfWidth, nIntervals, standardDeviation }),
+    intervalProbabilities,
     iterations,
     standardDeviation,
   };
 }
 
+function toFirstProbability(intervalProbabilities: IntervalProbabilities): number {
+  return getAtIndexOrThrow(intervalProbabilities.additive, 0);
+}
+
+type IntervalProbabilities = ReturnType<typeof getNormalIntervalProbabilities>;
+
 interface NormalDistribution {
   converged: boolean;
   divergenceFromTarget: number;
-  intervalProbabilities: ReturnType<typeof getNormalIntervalProbabilities>;
+  intervalProbabilities: IntervalProbabilities;
   iterations: number;
   standardDeviation: number;
 }

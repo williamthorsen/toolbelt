@@ -129,6 +129,24 @@ describe(getNormalIntervalProbabilities, () => {
 
     expect(throwingFn).toThrow('Standard deviation cannot be negative.');
   });
+
+  it.each([Infinity, -Infinity, NaN])('throws an error if the standard deviation is %p', (standardDeviation) => {
+    const throwingFn = () => getNormalIntervalProbabilities({ nIntervals: 5, standardDeviation });
+
+    expect(throwingFn).toThrow('standardDeviation must be a finite number.');
+  });
+
+  it.each([Infinity, -Infinity, NaN])('throws an error if halfWidth is %p', (halfWidth) => {
+    const throwingFn = () => getNormalIntervalProbabilities({ halfWidth, nIntervals: 5 });
+
+    expect(throwingFn).toThrow('halfWidth must be a finite number.');
+  });
+
+  it.each([Infinity, -Infinity, NaN])('throws an error if the mean is %p', (mean) => {
+    const throwingFn = () => getNormalIntervalProbabilities({ mean, nIntervals: 5 });
+
+    expect(throwingFn).toThrow('mean must be a finite number.');
+  });
 });
 
 /**

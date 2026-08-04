@@ -107,4 +107,39 @@ describe(findDistributionByIntervalProbability, () => {
 
     expect(throwingFn).toThrow('Probability must be greater than 0.');
   });
+
+  it.each([Infinity, -Infinity, NaN])('throws an error if the probability is %p', (probability) => {
+    const throwingFn = () => findDistributionByIntervalProbability({ nIntervals: 5, probability });
+
+    expect(throwingFn).toThrow('probability must be a finite number.');
+  });
+
+  it.each([Infinity, -Infinity, NaN])('throws an error if sdMin is %p', (sdMin) => {
+    const throwingFn = () => findDistributionByIntervalProbability({ nIntervals: 5, probability: 0.05 }, { sdMin });
+
+    expect(throwingFn).toThrow('sdMin must be a finite number.');
+  });
+
+  it.each([Infinity, -Infinity, NaN])('throws an error if sdMax is %p', (sdMax) => {
+    const throwingFn = () => findDistributionByIntervalProbability({ nIntervals: 5, probability: 0.05 }, { sdMax });
+
+    expect(throwingFn).toThrow('sdMax must be a finite number.');
+  });
+
+  it('throws an error if the tolerance is not a finite number', () => {
+    const throwingFn = () =>
+      findDistributionByIntervalProbability({ nIntervals: 5, probability: 0.05 }, { tolerance: NaN });
+
+    expect(throwingFn).toThrow('tolerance must be a finite number.');
+  });
+
+  it('evaluates the returned distribution once, so it matches the reported divergence', () => {
+    const { divergenceFromTarget, intervalProbabilities, standardDeviation } = findDistributionByIntervalProbability({
+      nIntervals: 5,
+      probability: 0.05,
+    });
+
+    expect(getAtIndexOrThrow(intervalProbabilities.additive, 0) / 0.05 - 1).toBeCloseTo(divergenceFromTarget, 15);
+    expect(intervalProbabilities).toStrictEqual(getNormalIntervalProbabilities({ nIntervals: 5, standardDeviation }));
+  });
 });

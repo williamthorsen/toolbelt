@@ -1,5 +1,7 @@
 import { getAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 
+import { assertFinite } from '../internal/assertFinite.ts';
+import { assertPositiveInteger } from '../internal/assertPositiveInteger.ts';
 import { computeCdf } from './computeCdf.ts';
 import { toCumulativeSumsFromAddends } from './toCumulativeSumsFromAddends.ts';
 
@@ -18,6 +20,9 @@ export function getNormalIntervalProbabilities(params: Params): IntervalProbabil
   const { halfWidth = 3, mean = 0, nIntervals, standardDeviation = 1 } = params;
 
   assertPositiveInteger(nIntervals, 'nIntervals');
+  assertFinite(halfWidth, 'halfWidth');
+  assertFinite(mean, 'mean');
+  assertFinite(standardDeviation, 'standardDeviation');
 
   if (halfWidth <= 0) {
     throw new Error('halfWidth must be greater than 0.');
@@ -32,15 +37,6 @@ export function getNormalIntervalProbabilities(params: Params): IntervalProbabil
       : toNormalProbabilities({ halfWidth, mean, nIntervals, standardDeviation });
 
   return { additive, cumulative: toCumulativeSumsFromAddends(additive) };
-}
-
-export function assertPositiveInteger(value: number, label: string): void {
-  if (!Number.isSafeInteger(value)) {
-    throw new TypeError(`${label} must be a safe integer.`);
-  }
-  if (value < 1) {
-    throw new Error(`${label} must be greater than 0.`);
-  }
 }
 
 function sum(array: number[]): number {
