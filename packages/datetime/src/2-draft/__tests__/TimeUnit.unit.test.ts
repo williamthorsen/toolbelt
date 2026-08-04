@@ -3,6 +3,20 @@ import { describe, expect, it } from 'vitest';
 import { TimeUnit, type TimeUnitConversionOptions } from '../TimeUnit.ts';
 
 describe(TimeUnit, () => {
+  describe('coarsestFirst', () => {
+    it('runs from the coarsest unit to the finest', () => {
+      const expected = [TimeUnit.Days, TimeUnit.Hours, TimeUnit.Minutes, TimeUnit.Seconds, TimeUnit.Millis];
+
+      expect(TimeUnit.coarsestFirst).toStrictEqual(expected);
+    });
+
+    it('holds every unit the class declares', () => {
+      const declaredUnits = Object.values(TimeUnit).filter((value) => value instanceof TimeUnit);
+
+      expect(new Set(TimeUnit.coarsestFirst)).toStrictEqual(new Set(declaredUnits));
+    });
+  });
+
   describe('convert()', () => {
     it('should return the same amount if from and to units are the same', () => {
       const result = TimeUnit.convert(10, TimeUnit.Hours, TimeUnit.Hours);
@@ -14,6 +28,38 @@ describe(TimeUnit, () => {
       const result = TimeUnit.convert(1, TimeUnit.Seconds, TimeUnit.Millis);
 
       expect(result).toBe(1000);
+    });
+
+    it('converts a whole number of milliseconds to a whole number of hours', () => {
+      const result = TimeUnit.convert(3_600_000, TimeUnit.Millis, TimeUnit.Hours);
+
+      expect(result).toBe(1);
+    });
+
+    it('floors to the exact whole count for every ordered pair of units', () => {
+      const misconversions: string[] = [];
+      let comparisons = 0;
+
+      for (const fromUnit of TimeUnit.coarsestFirst) {
+        for (const toUnit of TimeUnit.coarsestFirst) {
+          for (let count = 1; count <= 1000; count += 1) {
+            // Express `count` whole `toUnit`s as an amount of `fromUnit`s, skipping the pairs that
+            // cannot be said in whole `fromUnit`s.
+            const amount = (count * toUnit.inMillis) / fromUnit.inMillis;
+            if (!Number.isInteger(amount)) continue;
+
+            comparisons += 1;
+            const converted = Math.floor(TimeUnit.convert(amount, fromUnit, toUnit));
+            if (converted !== count) {
+              misconversions.push(`${amount} ${fromUnit} floors to ${converted} ${toUnit}, expected ${count}`);
+            }
+          }
+        }
+      }
+
+      expect(misconversions).toStrictEqual([]);
+      // Guard against a vacuous pass: a broken loop would report no misconversions either.
+      expect(comparisons).toBeGreaterThan(0);
     });
 
     it('rounds to the specified number of decimal places', () => {
