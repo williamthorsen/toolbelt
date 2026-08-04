@@ -12,6 +12,9 @@ const TOLERANCE = 0.0001; // probability is accepted when it diverges from the t
  * Given a probability and a number of intervals, finds the normal distribution placing the requested
  * probability in its first and last intervals. Bisects the standard-deviation range, across which
  * the first interval's probability increases monotonically.
+ *
+ * @category Statistics
+ * @stage candidate
  */
 export function findDistributionByIntervalProbability(params: Params, options: Options = {}): NormalDistribution {
   const { halfWidth, nIntervals, probability: target } = params;

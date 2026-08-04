@@ -10,6 +10,9 @@ import { toCumulativeSumsFromAddends } from './toCumulativeSumsFromAddends.ts';
  *
  * The window is fixed independently of the standard deviation: a small standard deviation
  * concentrates mass in the middle intervals, and a large one spreads it toward uniformity.
+ *
+ * @category Statistics
+ * @stage candidate
  */
 export function getNormalIntervalProbabilities(params: Params): IntervalProbabilities {
   const { halfWidth = 3, mean = 0, nIntervals, standardDeviation = 1 } = params;

@@ -1,5 +1,8 @@
 /**
  * Returns the cumulative distribution function (CDF) for a normal distribution.
+ *
+ * @category Statistics
+ * @stage candidate
  */
 export function computeCdf(params: Params): number {
   const { mean = 0, standardDeviation = 1, value } = params;

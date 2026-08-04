@@ -2,6 +2,9 @@ import { getAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 
 /**
  * Given an array of cumulative weights, returns the weights for each interval.
+ *
+ * @category Statistics
+ * @stage candidate
  */
 export function toAddendsFromCumulativeSums(cumulativeSums: number[]): number[] {
   if (cumulativeSums.length === 0) {

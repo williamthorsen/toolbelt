@@ -1,5 +1,8 @@
 /**
  * Returns the inverse of the cumulative distribution function (CDF) for a normal distribution.
+ *
+ * @category Statistics
+ * @stage candidate
  */
 export function computeCdfInverse(probability: number, options: Options): number {
   const { mean = 0, standardDeviation = 1 } = options;
