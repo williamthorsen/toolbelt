@@ -15,9 +15,14 @@ describe(computeCdf, () => {
     expect(computeCdf({ mean: 0, standardDeviation: 1, value: 10_000 })).toBeCloseTo(1, 4);
   });
 
-  it('uses the standard deviation as the variance, so sigma is its square root', () => {
-    // variance 4 => sigma 2, so value 2 is one sigma above the mean: Phi(1) ~ 0.8413447
-    expect(computeCdf({ mean: 0, standardDeviation: 4, value: 2 })).toBeCloseTo(0.841_344_7, 4);
+  it('treats the standard deviation as sigma rather than the variance', () => {
+    // Value 2 is one sigma above the mean: Phi(1).
+    expect(computeCdf({ mean: 0, standardDeviation: 2, value: 2 })).toBeCloseTo(0.841_344_746_069, 6);
+  });
+
+  it('scales a non-unit standard deviation about a non-zero mean', () => {
+    // Value 7 is two sigma above the mean: Phi(2).
+    expect(computeCdf({ mean: 1, standardDeviation: 3, value: 7 })).toBeCloseTo(0.977_249_868_052, 6);
   });
 
   it('throws an error if given an invalid standard deviation', () => {
