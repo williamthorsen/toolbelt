@@ -5,6 +5,18 @@ export class TimeUnit {
   static readonly Hours = new TimeUnit(3_600_000, { singular: 'hour', abbrev: 'h' });
   static readonly Days = new TimeUnit(86_400_000, { singular: 'day', abbrev: 'd' });
 
+  /**
+   * Every unit, ordered from the coarsest to the finest. A consumer that walks the units reads the
+   * order from here rather than assembling its own, so a unit added above participates in it.
+   */
+  static readonly coarsestFirst: ReadonlyArray<TimeUnit> = [
+    TimeUnit.Days,
+    TimeUnit.Hours,
+    TimeUnit.Minutes,
+    TimeUnit.Seconds,
+    TimeUnit.Millis,
+  ];
+
   readonly abbrev: string;
   readonly plural: string;
   readonly singular: string;
@@ -13,9 +25,9 @@ export class TimeUnit {
     public readonly inMillis: number,
     options: TimeUnitOptions,
   ) {
-    // MAX_SAFE_INTEGER is 2^53, so by representing our duration in fromMilliseconds (the lowest
+    // MAX_SAFE_INTEGER is 2^53, so by representing our duration in milliseconds (the lowest
     // common unit) the highest duration we can represent is
-    // 2^53 / 86*10^6 ~= 104 * 10^6 fromDays (about 100 million fromDays).
+    // 2^53 / 86*10^6 ~= 104 * 10^6 days (about 100 million days).
     this.abbrev = options.abbrev;
     this.singular = options.singular;
     this.plural = `${options.singular}s`;
@@ -32,9 +44,13 @@ export class TimeUnit {
     if (fromUnit.inMillis === toUnit.inMillis) {
       return amount;
     }
-    const multiplier = fromUnit.inMillis / toUnit.inMillis;
-
-    const value = amount * multiplier;
+    // Keep the ratio a whole number by multiplying when converting to a finer unit and dividing
+    // when converting to a coarser one. Multiplying by an inexact reciprocal loses precision:
+    // 3_600_000 milliseconds would convert to 0.9999999999999999 hours, which floors to zero.
+    const value =
+      fromUnit.inMillis > toUnit.inMillis
+        ? amount * (fromUnit.inMillis / toUnit.inMillis)
+        : amount / (toUnit.inMillis / fromUnit.inMillis);
 
     if (throwOnFractional && !Number.isSafeInteger(value)) {
       throw new Error(
