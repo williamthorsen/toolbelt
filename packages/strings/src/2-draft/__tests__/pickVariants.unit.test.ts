@@ -44,7 +44,7 @@ describe(pickVariants, () => {
   });
 
   it('if variants are nested, recursively picks variants', () => {
-    const seed = 1234;
+    const seed = 1_234;
     const input = 'Hello, [Lord [Mars|Ares]|Lady [Venus|Aphrodite]] to Planet [Terra|Gaia]!';
     const expected = /^Hello, (Lord (Mars|Ares)|Lady (Venus|Aphrodite)) to Planet (Terra|Gaia)!$/;
 
@@ -54,7 +54,7 @@ describe(pickVariants, () => {
   });
 
   it('given the same seed, always returns the same output', () => {
-    const seed = 1234;
+    const seed = 1_234;
     const input = '[1[a[1|2]|b[3|4]]|2[d[5|6]|e[7|8]]]';
 
     const result1 = pickVariants(input, { seed });

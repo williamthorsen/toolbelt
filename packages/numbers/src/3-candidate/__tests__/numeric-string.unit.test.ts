@@ -62,7 +62,7 @@ describe(safeParseNumber, () => {
   });
 
   it('parses a string in scientific notation', () => {
-    expect(safeParseNumber('1e3')).toBe(1000);
+    expect(safeParseNumber('1e3')).toBe(1_000);
   });
 
   it.each([null, undefined])('returns undefined for %s', (value) => {

@@ -1,6 +1,6 @@
 export class TimeUnit {
   static readonly Millis = new TimeUnit(1, { singular: 'millisecond', abbrev: 'ms' });
-  static readonly Seconds = new TimeUnit(1000, { singular: 'second', abbrev: 's' });
+  static readonly Seconds = new TimeUnit(1_000, { singular: 'second', abbrev: 's' });
   static readonly Minutes = new TimeUnit(60_000, { singular: 'minute', abbrev: 'm' });
   static readonly Hours = new TimeUnit(3_600_000, { singular: 'hour', abbrev: 'h' });
   static readonly Days = new TimeUnit(86_400_000, { singular: 'day', abbrev: 'd' });

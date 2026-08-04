@@ -62,16 +62,16 @@ describe(shuffleInPlace, () => {
     const original = [1, 2, 3];
     const duplicate = [...original];
 
-    shuffleInPlace(original, { seed: 1234 });
-    shuffleInPlace(duplicate, { seed: 1234 });
+    shuffleInPlace(original, { seed: 1_234 });
+    shuffleInPlace(duplicate, { seed: 1_234 });
 
     expect(original).toStrictEqual(duplicate);
   });
 
   it('given a SeededRng instance with a given seed, deterministically shuffles the ray', () => {
     // This snapshot is intended to confirm that, despite any code changes, seeds produce consistent results.
-    const seedFn1 = new SeededRng(1234.5).rng;
-    const seedFn2 = new SeededRng(1234.5).rng;
+    const seedFn1 = new SeededRng(1_234.5).rng;
+    const seedFn2 = new SeededRng(1_234.5).rng;
     const original = [1, 2, 3, 4, 5];
     const duplicate = [...original];
     const snapshot = [5, 1, 3, 2, 4];

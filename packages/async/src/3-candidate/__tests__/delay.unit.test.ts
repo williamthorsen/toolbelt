@@ -14,13 +14,13 @@ describe(delay, () => {
 
   it('resolves when the delay elapses', async () => {
     const onComplete = vi.fn<() => void>();
-    const promise = delay(1000);
+    const promise = delay(1_000);
     void (async () => {
       await promise;
       onComplete();
     })();
 
-    vi.advanceTimersByTime(1000);
+    vi.advanceTimersByTime(1_000);
     await flushMicrotasks();
 
     expect(onComplete).toHaveBeenCalledTimes(1);
@@ -29,7 +29,7 @@ describe(delay, () => {
   it('resolves if cancel is called before the delay completes', async () => {
     const onComplete = vi.fn<() => void>();
     const onError = vi.fn<(error: unknown) => void>();
-    const promise = delay(1000);
+    const promise = delay(1_000);
     void (async () => {
       try {
         await promise;
@@ -41,7 +41,7 @@ describe(delay, () => {
 
     promise.cancel();
 
-    vi.advanceTimersByTime(1000);
+    vi.advanceTimersByTime(1_000);
     await flushMicrotasks();
 
     expect(onComplete).toHaveBeenCalledTimes(1);

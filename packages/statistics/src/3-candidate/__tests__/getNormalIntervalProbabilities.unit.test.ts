@@ -24,7 +24,11 @@ describe(getNormalIntervalProbabilities, () => {
 
   it('returns a cumulative probability of approximately 1', () => {
     const nIntervals = 2;
-    const { additive, cumulative } = getNormalIntervalProbabilities({ mean: 0, standardDeviation: 0.8968, nIntervals });
+    const { additive, cumulative } = getNormalIntervalProbabilities({
+      mean: 0,
+      standardDeviation: 0.896_8,
+      nIntervals,
+    });
 
     expect(getAtIndexOrThrow(cumulative, nIntervals - 1)).toBeCloseTo(1, 4);
     expect(sum(additive)).toBeCloseTo(1, 4);

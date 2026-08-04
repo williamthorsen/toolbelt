@@ -8,7 +8,7 @@ import { getNormalIntervalProbabilities } from './getNormalIntervalProbabilities
 const MAX_ITERATIONS = 50;
 const SD_MAX = 20;
 const SD_MIN = 0.01;
-const TOLERANCE = 0.0001; // probability is accepted when it diverges from the target by no more than this fraction
+const TOLERANCE = 0.000_1; // probability is accepted when it diverges from the target by no more than this fraction
 
 /**
  * Given a probability and a number of intervals, finds the normal distribution placing the requested

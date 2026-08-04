@@ -59,7 +59,7 @@ describe(slugify, () => {
   });
 
   it('correctly processes array input', () => {
-    const input = ['Hello', 2023, 'World'];
+    const input = ['Hello', 2_023, 'World'];
     const expected = 'hello-2023-world';
 
     const actual = slugify(input);

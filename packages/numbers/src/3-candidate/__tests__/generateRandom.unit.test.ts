@@ -4,7 +4,7 @@ import { generateRandom } from '../generateRandom.ts';
 
 describe('generateRandom() with seed', () => {
   it('given the same seed, returns the same output', () => {
-    const seed = 1234;
+    const seed = 1_234;
     const random1 = generateRandom({ seed });
     const random2 = generateRandom({ seed });
 
@@ -13,8 +13,8 @@ describe('generateRandom() with seed', () => {
   });
 
   it('accepts a function as a seed', () => {
-    const seed = 1234;
-    const seedFn = () => 1234;
+    const seed = 1_234;
+    const seedFn = () => 1_234;
 
     const random1 = generateRandom({ seed });
     const random2 = generateRandom({ seed: seedFn });
@@ -25,7 +25,7 @@ describe('generateRandom() with seed', () => {
   // These values are copied from trial runs of the original Deno code to ensure that the behavior is preserved.
   it.each([
     { seed: 0.387_782_332_202_318_3, max: 9_007_199_254_740_991, expected: 2_928_838_066_884_486 },
-    { seed: 1234, expected: 0.067_474_613_463_261_45 },
+    { seed: 1_234, expected: 0.067_474_613_463_261_45 },
   ])('returns expected value $expected for seed $seed', ({ seed, max, expected }) => {
     const actual = generateRandom({ seed, max });
 

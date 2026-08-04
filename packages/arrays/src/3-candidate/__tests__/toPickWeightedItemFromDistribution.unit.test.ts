@@ -85,7 +85,7 @@ describe(makePickWeightedItemFromDistribution, () => {
     const items = ['a', 'b', 'c'];
     const distribution = { a: 1, b: 2, c: 3 };
     const options = { getCategory: (item: string) => item };
-    const pickOptions = { seed: 1234 };
+    const pickOptions = { seed: 1_234 };
 
     const pickItem = makePickWeightedItemFromDistribution(items, distribution, options);
 

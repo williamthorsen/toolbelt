@@ -16,7 +16,7 @@ describe(debounce, () => {
   });
 
   it('delays the execution of the function', () => {
-    debouncedFn = debounce(fn, 1000);
+    debouncedFn = debounce(fn, 1_000);
 
     debouncedFn();
 
@@ -42,7 +42,7 @@ describe(debounce, () => {
   });
 
   it('cancels the function if cancel() is called', () => {
-    debouncedFn = debounce(fn, 1000);
+    debouncedFn = debounce(fn, 1_000);
     debouncedFn();
 
     debouncedFn.cancel();
@@ -53,7 +53,7 @@ describe(debounce, () => {
   });
 
   it('executes the function immediately if noInitialDelay is true', () => {
-    debouncedFn = debounce(fn, 1000, { noInitialDelay: true });
+    debouncedFn = debounce(fn, 1_000, { noInitialDelay: true });
 
     debouncedFn(1);
     expect(fn).toHaveBeenCalledWith(1);

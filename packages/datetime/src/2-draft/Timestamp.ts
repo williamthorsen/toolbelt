@@ -14,7 +14,7 @@ export class Timestamp {
   }
 
   static fromSeconds(seconds: number): Timestamp {
-    return new Timestamp(new Date(seconds * 1000), { timeUnit: TimeUnit.Seconds });
+    return new Timestamp(new Date(seconds * 1_000), { timeUnit: TimeUnit.Seconds });
   }
 
   static now(options: TimestampOptions = {}): Timestamp {

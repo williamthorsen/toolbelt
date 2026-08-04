@@ -68,7 +68,7 @@ describe(pickWeightedItem, () => {
   });
 
   it('given an identical seed, always returns the same result', () => {
-    const items = Array.from({ length: 1000 }, (_, index) => index);
+    const items = Array.from({ length: 1_000 }, (_, index) => index);
     const weights = items; // use item values as weights, since we care only about consistency
     const seeds = Array.from({ length: 5 }, (_, index) => index);
     const snapshot = [928, 57, 371, 530, 661];

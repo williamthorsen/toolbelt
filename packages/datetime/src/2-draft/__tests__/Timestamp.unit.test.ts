@@ -17,9 +17,9 @@ describe(Timestamp, () => {
 
   describe('static fromMilliseconds()', () => {
     it('returns a Timestamp initialized with given milliseconds', () => {
-      const result = Timestamp.fromMillis(1000);
+      const result = Timestamp.fromMillis(1_000);
 
-      expect(result.millis).toBe(1000);
+      expect(result.millis).toBe(1_000);
     });
   });
 
@@ -27,7 +27,7 @@ describe(Timestamp, () => {
     it('returns a Timestamp initialized with given seconds', () => {
       const result = Timestamp.fromSeconds(1);
 
-      expect(result.millis).toBe(1000);
+      expect(result.millis).toBe(1_000);
     });
   });
 
@@ -53,21 +53,21 @@ describe(Timestamp, () => {
 
       const result = new Timestamp(timestamp);
 
-      expect(result.millis).toBe(1000);
+      expect(result.millis).toBe(1_000);
     });
   });
 
   describe('milliseconds properties', () => {
     it('returns the timestamp value in milliseconds', () => {
-      const timestamp = new Timestamp(new Date(1000));
+      const timestamp = new Timestamp(new Date(1_000));
 
-      expect(timestamp.millis).toBe(1000);
+      expect(timestamp.millis).toBe(1_000);
     });
   });
 
   describe('seconds property', () => {
     it('returns the timestamp value in seconds', () => {
-      const timestamp = new Timestamp(new Date(1000));
+      const timestamp = new Timestamp(new Date(1_000));
 
       expect(timestamp.seconds).toBe(1);
     });
@@ -75,16 +75,16 @@ describe(Timestamp, () => {
 
   describe('clone()', () => {
     it('returns a clone of the timestamp', () => {
-      const original = new Timestamp(new Date(1000));
+      const original = new Timestamp(new Date(1_000));
 
       const clone = original.clone();
 
-      expect(clone.millis).toBe(1000);
+      expect(clone.millis).toBe(1_000);
       expect(clone).not.toBe(original);
     });
 
     it('given a timeUnit, returns a clone that uses that time unit', () => {
-      const original = new Timestamp(new Date(1000), { timeUnit: TimeUnit.Millis });
+      const original = new Timestamp(new Date(1_000), { timeUnit: TimeUnit.Millis });
 
       const clone = original.clone({ timeUnit: TimeUnit.Seconds });
 
@@ -95,7 +95,7 @@ describe(Timestamp, () => {
 
   describe('setOptions()', () => {
     it('optionally sets the default format', () => {
-      const timestamp = new Timestamp(new Date(1000));
+      const timestamp = new Timestamp(new Date(1_000));
       const format = 'humane';
 
       timestamp.setOptions({ format });
@@ -104,7 +104,7 @@ describe(Timestamp, () => {
     });
 
     it("optionally sets the instance's time unit; does not change the stored point in time", () => {
-      const timestamp = new Timestamp(new Date(1000));
+      const timestamp = new Timestamp(new Date(1_000));
       const millis = timestamp.millis;
 
       timestamp.setOptions({ timeUnit: TimeUnit.Seconds });
@@ -134,12 +134,12 @@ describe(Timestamp, () => {
 
   describe('toDate()', () => {
     it('returns a Date object representing point in time stored in the Timestamp', () => {
-      const timestamp = new Timestamp(new Date(1000));
+      const timestamp = new Timestamp(new Date(1_000));
 
       const actual = timestamp.toDate();
 
       expect(actual).toBeInstanceOf(Date);
-      expect(actual.getTime()).toBe(1000);
+      expect(actual.getTime()).toBe(1_000);
     });
   });
 

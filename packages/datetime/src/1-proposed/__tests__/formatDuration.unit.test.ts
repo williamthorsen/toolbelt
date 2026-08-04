@@ -8,7 +8,7 @@ describe(formatDuration, () => {
       { milliseconds: 0, expected: '0ms' },
       { milliseconds: 1, expected: '1ms' },
       { milliseconds: 999, expected: '999ms' },
-      { milliseconds: 1000, expected: '1s' },
+      { milliseconds: 1_000, expected: '1s' },
       { milliseconds: 59_000, expected: '59s' },
       { milliseconds: 60_000, expected: '1m' },
       { milliseconds: 3_600_000, expected: '1h' },
@@ -28,7 +28,7 @@ describe(formatDuration, () => {
 
   describe('rounding', () => {
     it('rounds at the only unit shown', () => {
-      expect(formatDuration(1500)).toBe('2s');
+      expect(formatDuration(1_500)).toBe('2s');
     });
 
     it('rounds at the finest unit shown, leaving the coarser ones exact', () => {
@@ -80,7 +80,7 @@ describe(formatDuration, () => {
     });
 
     it('renders every unit at once', () => {
-      const milliseconds = 86_400_000 + 3_600_000 + 60_000 + 1000 + 1;
+      const milliseconds = 86_400_000 + 3_600_000 + 60_000 + 1_000 + 1;
 
       expect(formatDuration(milliseconds, { maxUnits: 5 })).toBe('1d 1h 1m 1s 1ms');
     });
@@ -91,15 +91,15 @@ describe(formatDuration, () => {
       { label: 'a negative duration', act: () => formatDuration(-1) },
       { label: 'a NaN duration', act: () => formatDuration(NaN) },
       { label: 'an infinite duration', act: () => formatDuration(Infinity) },
-      { label: 'a zero maxUnits', act: () => formatDuration(1000, { maxUnits: 0 }) },
-      { label: 'a negative maxUnits', act: () => formatDuration(1000, { maxUnits: -1 }) },
-      { label: 'a fractional maxUnits', act: () => formatDuration(1000, { maxUnits: 1.5 }) },
+      { label: 'a zero maxUnits', act: () => formatDuration(1_000, { maxUnits: 0 }) },
+      { label: 'a negative maxUnits', act: () => formatDuration(1_000, { maxUnits: -1 }) },
+      { label: 'a fractional maxUnits', act: () => formatDuration(1_000, { maxUnits: 1.5 }) },
     ])('throws a RangeError for $label', ({ act }) => {
       expect(act).toThrow(RangeError);
     });
 
     it('accepts a fractional duration', () => {
-      expect(formatDuration(1500.7, { maxUnits: 2 })).toBe('1s 501ms');
+      expect(formatDuration(1_500.7, { maxUnits: 2 })).toBe('1s 501ms');
     });
   });
 });

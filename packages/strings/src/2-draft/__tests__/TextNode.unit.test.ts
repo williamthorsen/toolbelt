@@ -8,7 +8,7 @@ describe(TextNode, () => {
     input: '1:[A[1[a|b]|2[c|d]]|B] | 2:[C|D[1|2][a|b]|E]',
     output: '1:A2c | 2:D1b',
     fingerprint: '0[1[0]]|1[0|1]:1236',
-    seed: 1236,
+    seed: 1_236,
     encodedIndices: '0[1[0]]|1[0|1]',
     flatIndices: [0, 1, 0, 1, 0, 1],
     nestedIndices: [
@@ -189,7 +189,7 @@ describe(TextNode, () => {
     });
 
     it('given a non-integer seed, generates a deterministic integer from it and returns it', () => {
-      const inputSeed = 0.1234;
+      const inputSeed = 0.123_4;
       const textNode = TextNode.create(testCase.input);
 
       const outputSeed = textNode.pickWithFingerprint({ seed: inputSeed }).seed;

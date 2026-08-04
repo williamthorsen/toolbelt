@@ -14,40 +14,40 @@ describe(startTimer, () => {
   });
 
   it('reports the milliseconds elapsed since the timer started', () => {
-    let monotonicNow = 1000;
+    let monotonicNow = 1_000;
     performanceNowSpy.mockImplementation(() => monotonicNow);
 
     const readElapsed = startTimer();
-    monotonicNow = 1250;
+    monotonicNow = 1_250;
 
     expect(readElapsed()).toBe(250);
   });
 
   it('rounds a fractional elapsed time to whole milliseconds', () => {
-    let monotonicNow = 1000;
+    let monotonicNow = 1_000;
     performanceNowSpy.mockImplementation(() => monotonicNow);
 
     const readElapsed = startTimer();
-    monotonicNow = 1250.6;
+    monotonicNow = 1_250.6;
 
     expect(readElapsed()).toBe(251);
   });
 
   it('reads the elapsed time at each call rather than stopping the timer', () => {
-    let monotonicNow = 1000;
+    let monotonicNow = 1_000;
     performanceNowSpy.mockImplementation(() => monotonicNow);
 
     const readElapsed = startTimer();
-    monotonicNow = 1100;
+    monotonicNow = 1_100;
     const firstReading = readElapsed();
-    monotonicNow = 1400;
+    monotonicNow = 1_400;
 
     expect(firstReading).toBe(100);
     expect(readElapsed()).toBe(400);
   });
 
   it('if the wall clock steps backwards mid-span, reports a positive duration', () => {
-    let monotonicNow = 1000;
+    let monotonicNow = 1_000;
     let wallClockNow = 10_000;
     performanceNowSpy.mockImplementation(() => monotonicNow);
     dateNowSpy.mockImplementation(() => wallClockNow);
@@ -55,8 +55,8 @@ describe(startTimer, () => {
     const readElapsed = startTimer();
     // Advance the monotonic clock while the wall clock steps back past the start of the span. An
     // implementation reading Date.now() would report -4000.
-    monotonicNow = 1500;
-    wallClockNow = 6000;
+    monotonicNow = 1_500;
+    wallClockNow = 6_000;
 
     expect(readElapsed()).toBe(500);
   });

@@ -24,7 +24,7 @@ describe(pickInteger, () => {
 
   it('returns a value no less than the min', () => {
     const min = 1;
-    const max = 1000;
+    const max = 1_000;
 
     const randomInt = pickInteger({ min, max });
 
@@ -33,7 +33,7 @@ describe(pickInteger, () => {
 
   it('returns a value no greater than the max', () => {
     const min = 1;
-    const max = 1000;
+    const max = 1_000;
     generateRandomMock.mockReturnValue(0.999_999);
 
     const randomInt = pickInteger({ min, max });
@@ -95,8 +95,8 @@ describe(pickInteger, () => {
   });
 
   it('accepts a function as a seed', () => {
-    const seed = 1234;
-    const seedFn = vi.fn<() => number>(() => 1234);
+    const seed = 1_234;
+    const seedFn = vi.fn<() => number>(() => 1_234);
 
     const randomInt1 = pickInteger({ max: 10, seed });
     const randomInt2 = pickInteger({ max: 10, seed: seedFn });

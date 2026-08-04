@@ -5,7 +5,7 @@ import { IntegerSeed } from '../IntegerSeed.ts';
 describe('IntegerSeed', () => {
   describe('static toInt()', () => {
     it('given an integer within range, returns it', () => {
-      const input = 1234;
+      const input = 1_234;
       const expected = input;
 
       const actual = IntegerSeed.toInt(input);
@@ -23,7 +23,7 @@ describe('IntegerSeed', () => {
     });
 
     it('converts a fractional number to an integer', () => {
-      const input = 0.1234;
+      const input = 0.123_4;
 
       const output = IntegerSeed.toInt(input);
 

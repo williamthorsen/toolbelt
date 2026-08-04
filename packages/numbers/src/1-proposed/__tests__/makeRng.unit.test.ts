@@ -21,8 +21,8 @@ describe(makeRng, () => {
   });
 
   it('given a number generator created with the same seed, returns the same series of number', () => {
-    const generator1 = makeRng(new SeededRng(1234).rng);
-    const generator2 = makeRng(new SeededRng(1234).rng);
+    const generator1 = makeRng(new SeededRng(1_234).rng);
+    const generator2 = makeRng(new SeededRng(1_234).rng);
 
     const values1 = [generator1(), generator1(), generator1()];
     const values2 = [generator2(), generator2(), generator2()];

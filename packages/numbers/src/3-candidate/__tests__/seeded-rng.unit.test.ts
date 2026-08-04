@@ -10,7 +10,7 @@ import { Int32SeededRng, IntSeededRng, SeededRng } from '../seeded-rng.ts';
 describe(SeededRng, () => {
   // Argument for clone is that it always leaves the seed of the parent unchanged.
   describe('static clone()', () => {
-    const SEED_NUMBER = 1234;
+    const SEED_NUMBER = 1_234;
     const SEED_NUMBER_RNG = 0.067_474_613_463_261_45;
 
     function getRngLike(): SeededGenerator & { peek(): number } {
@@ -105,7 +105,7 @@ describe(SeededRng, () => {
     });
 
     it('given a function, invokes the function and returns an RNG that uses its result to create a seed', () => {
-      const seed = 1234.5;
+      const seed = 1_234.5;
       const seedFn = vi.fn<() => number>(() => seed);
       // TODO: This is under-the-hood knowledge. Test in a way that doesn't rely on implementation details.
       const expected = IntegerSeed.toInt(seed);
@@ -134,7 +134,7 @@ describe(SeededRng, () => {
 
   describe('static cloneOrCreate()', () => {
     it('if a seed is given, returns an RNG that uses the same seed', () => {
-      const seed = 1234;
+      const seed = 1_234;
       const expectedSeed = seed;
 
       const actualSeed = SeededRng.cloneOrCreate(seed).seed;
@@ -152,7 +152,7 @@ describe(SeededRng, () => {
 
   describe('static spawn()', () => {
     it('given a numeric seed, returns an RNG that uses the number as its seed', () => {
-      const seed = 1234;
+      const seed = 1_234;
 
       const rng1 = SeededRng.spawn(seed);
       const rng2 = SeededRng.spawn(seed);
@@ -212,7 +212,7 @@ describe(SeededRng, () => {
     });
 
     it('accepts as the seed a function that returns a number', () => {
-      const seedFn = vi.fn<() => number>(() => 1234);
+      const seedFn = vi.fn<() => number>(() => 1_234);
       const rng1 = new SeededRng(seedFn);
       const rng2 = new SeededRng(seedFn);
 
@@ -230,8 +230,8 @@ describe(SeededRng, () => {
 
   describe('get rng', () => {
     it('returns a function that successively returns values from the instance', () => {
-      const rng1 = new SeededRng(1234);
-      const rng2 = new SeededRng(1234);
+      const rng1 = new SeededRng(1_234);
+      const rng2 = new SeededRng(1_234);
 
       const generate1 = rng1.rng;
       const generate2 = rng2.rng;
@@ -243,8 +243,8 @@ describe(SeededRng, () => {
     });
 
     it('the function shares state with its instance', () => {
-      const rng1 = new SeededRng(1234);
-      const rng2 = new SeededRng(1234);
+      const rng1 = new SeededRng(1_234);
+      const rng2 = new SeededRng(1_234);
 
       // Gets a value from rng1, changing its next value relative to rng2.
       const generate1 = rng1.rng;
@@ -297,7 +297,7 @@ describe(SeededRng, () => {
 
     // Returns a random letter of the alphabet.
     it('returns a function that uses the SeededRng to produce deterministic pseudorandom outputs', () => {
-      const getNextLetter = SeededRng.withSeed(pickLetter, 1234);
+      const getNextLetter = SeededRng.withSeed(pickLetter, 1_234);
 
       const letter1 = getNextLetter();
       const actual = [letter1, getNextLetter(), getNextLetter()];
@@ -306,7 +306,7 @@ describe(SeededRng, () => {
     });
 
     it('returns a function that successively produces the same outputs when given the same seed', () => {
-      const seed = 1234;
+      const seed = 1_234;
       const fn1 = SeededRng.withSeed(pickLetter, seed);
       const fn2 = SeededRng.withSeed(pickLetter, seed);
 
@@ -321,9 +321,9 @@ describe(SeededRng, () => {
         return options?.seed;
       }
 
-      expect(SeededRng.withSeed(captureSeed, 1234)()).toBeInstanceOf(SeededRng);
-      expect(SeededRng.withSeed(captureSeed, 1234)()).not.toBeInstanceOf(IntSeededRng);
-      expect(IntSeededRng.withSeed(captureSeed, 1234)()).toBeInstanceOf(IntSeededRng);
+      expect(SeededRng.withSeed(captureSeed, 1_234)()).toBeInstanceOf(SeededRng);
+      expect(SeededRng.withSeed(captureSeed, 1_234)()).not.toBeInstanceOf(IntSeededRng);
+      expect(IntSeededRng.withSeed(captureSeed, 1_234)()).toBeInstanceOf(IntSeededRng);
     });
   });
 });
@@ -337,7 +337,7 @@ for (const [preset, Rng, max] of [
   describe(`${className} class`, () => {
     describe('static clone()', () => {
       it('returns a new instance of the same class', () => {
-        const rng = new Rng(1234.5);
+        const rng = new Rng(1_234.5);
 
         const clone = Rng.clone(rng);
 
@@ -358,7 +358,7 @@ for (const [preset, Rng, max] of [
       });
 
       it('always generates integer values', () => {
-        const seed = new Rng(1234.5);
+        const seed = new Rng(1_234.5);
         expect(Number.isSafeInteger(seed.next())).toBe(true);
         expect(Number.isSafeInteger(seed.next())).toBe(true);
       });
@@ -395,7 +395,7 @@ for (const [preset, Rng, max] of [
 
     describe('next()', () => {
       it('generates integer values', () => {
-        const rng = new Rng(1234.5);
+        const rng = new Rng(1_234.5);
         const oldSeed = rng.seed;
 
         expect(Number.isSafeInteger(rng.next())).toBe(true);

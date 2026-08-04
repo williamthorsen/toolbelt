@@ -27,7 +27,7 @@ describe(TimeUnit, () => {
     it('correctly converts seconds to milliseconds', () => {
       const result = TimeUnit.convert(1, TimeUnit.Seconds, TimeUnit.Millis);
 
-      expect(result).toBe(1000);
+      expect(result).toBe(1_000);
     });
 
     it('converts a whole number of milliseconds to a whole number of hours', () => {
@@ -42,7 +42,7 @@ describe(TimeUnit, () => {
 
       for (const fromUnit of TimeUnit.coarsestFirst) {
         for (const toUnit of TimeUnit.coarsestFirst) {
-          for (let count = 1; count <= 1000; count += 1) {
+          for (let count = 1; count <= 1_000; count += 1) {
             // Express `count` whole `toUnit`s as an amount of `fromUnit`s, skipping the pairs that
             // cannot be said in whole `fromUnit`s.
             const amount = (count * toUnit.inMillis) / fromUnit.inMillis;
