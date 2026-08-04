@@ -1,59 +1,83 @@
 import { getAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 
+import { assertFinite } from '../internal/assertFinite.ts';
+import { assertPositiveInteger } from '../internal/assertPositiveInteger.ts';
 import { computeCdf } from './computeCdf.ts';
 import { toCumulativeSumsFromAddends } from './toCumulativeSumsFromAddends.ts';
 
 /**
- * Returns the additive & cumulative percentages of data points falling within each interval of a normal distribution
- * defined by the given mean & standard deviation.
+ * Returns the additive & cumulative probabilities that a normal distribution places in each of
+ * `nIntervals` equal intervals spanning `mean ± halfWidth`. Mass falling outside that window is
+ * excluded, so the probabilities describe the truncated distribution and sum to 1.
+ *
+ * The window is fixed independently of the standard deviation: a small standard deviation
+ * concentrates mass in the middle intervals, and a large one spreads it toward uniformity.
+ *
+ * @category Statistics
+ * @stage candidate
  */
 export function getNormalIntervalProbabilities(params: Params): IntervalProbabilities {
-  const { mean = 0, nIntervals, standardDeviation = 1 } = params;
+  const { halfWidth = 3, mean = 0, nIntervals, standardDeviation = 1 } = params;
 
   assertPositiveInteger(nIntervals, 'nIntervals');
+  assertFinite(halfWidth, 'halfWidth');
+  assertFinite(mean, 'mean');
+  assertFinite(standardDeviation, 'standardDeviation');
 
-  if (standardDeviation === 0) {
-    const uniformProbability = 1 / nIntervals;
-    const additive = Array.from({ length: nIntervals }, () => uniformProbability);
-    const cumulative = toCumulativeSumsFromAddends(additive);
-    return { additive, cumulative };
+  if (halfWidth <= 0) {
+    throw new Error('halfWidth must be greater than 0.');
+  }
+  if (standardDeviation < 0) {
+    throw new Error('Standard deviation cannot be negative.');
   }
 
-  // Define the interval boundaries spanning the distribution.
-  const zRange = 3 * standardDeviation;
-  const zScores = Array.from({ length: nIntervals + 1 }, (_, i) => -zRange + (2 * zRange * i) / nIntervals);
+  const additive =
+    standardDeviation === 0
+      ? toPointMassProbabilities(nIntervals)
+      : toNormalProbabilities({ halfWidth, mean, nIntervals, standardDeviation });
 
-  // Convert boundaries to values based on the given mean and standard deviation.
-  const values = zScores.map((z) => mean + z * standardDeviation);
+  return { additive, cumulative: toCumulativeSumsFromAddends(additive) };
+}
 
-  // Compute the CDF at each boundary (one more than the number of intervals).
-  const cumulativeWeights = values.map((value) => computeCdf({ value, mean, standardDeviation }));
+function sum(array: number[]): number {
+  return array.reduce((a, b) => a + b, 0);
+}
+
+/**
+ * Returns the share of the distribution's in-window mass falling in each interval.
+ */
+function toNormalProbabilities(params: WindowParams): number[] {
+  const { halfWidth, mean, nIntervals, standardDeviation } = params;
+
+  // Space the interval boundaries evenly across the window.
+  const boundaries = Array.from(
+    { length: nIntervals + 1 },
+    (_, i) => mean - halfWidth + (2 * halfWidth * i) / nIntervals,
+  );
+
+  const cumulativeWeights = boundaries.map((value) => computeCdf({ mean, standardDeviation, value }));
 
   const weights: number[] = [];
   for (let i = 1; i < cumulativeWeights.length; i++) {
     weights.push(getAtIndexOrThrow(cumulativeWeights, i) - getAtIndexOrThrow(cumulativeWeights, i - 1));
   }
 
-  const probabilities = toProbabilitiesFromWeights(weights);
-  const cumulativeProbabilities = toCumulativeSumsFromAddends(probabilities);
-
-  return {
-    additive: probabilities,
-    cumulative: cumulativeProbabilities,
-  };
+  return toProbabilitiesFromWeights(weights);
 }
 
-export function assertPositiveInteger(value: number, label: string): void {
-  if (!Number.isSafeInteger(value)) {
-    throw new TypeError(`${label} must be a safe integer.`);
+/**
+ * Returns the limiting probabilities as the standard deviation approaches 0: all mass sits at the
+ * mean, which falls inside the middle interval when their count is odd and on the boundary between
+ * the two central intervals when it is even.
+ */
+function toPointMassProbabilities(nIntervals: number): number[] {
+  if (nIntervals % 2 === 1) {
+    const middleIndex = (nIntervals - 1) / 2;
+    return Array.from({ length: nIntervals }, (_, i) => (i === middleIndex ? 1 : 0));
   }
-  if (value < 1) {
-    throw new Error(`${label} must be greater than 0.`);
-  }
-}
 
-function sum(array: number[]): number {
-  return array.reduce((a, b) => a + b, 0);
+  const lowerMiddleIndex = nIntervals / 2 - 1;
+  return Array.from({ length: nIntervals }, (_, i) => (i === lowerMiddleIndex || i === lowerMiddleIndex + 1 ? 0.5 : 0));
 }
 
 function toProbabilitiesFromWeights(weights: number[]): number[] {
@@ -62,9 +86,17 @@ function toProbabilitiesFromWeights(weights: number[]): number[] {
 }
 
 interface Params {
+  halfWidth?: number | undefined;
   mean?: number | undefined;
   nIntervals: number;
   standardDeviation?: number | undefined;
+}
+
+interface WindowParams {
+  halfWidth: number;
+  mean: number;
+  nIntervals: number;
+  standardDeviation: number;
 }
 
 interface IntervalProbabilities {

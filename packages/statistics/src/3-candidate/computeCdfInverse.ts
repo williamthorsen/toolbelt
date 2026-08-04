@@ -1,5 +1,8 @@
 /**
  * Returns the inverse of the cumulative distribution function (CDF) for a normal distribution.
+ *
+ * @category Statistics
+ * @stage candidate
  */
 export function computeCdfInverse(probability: number, options: Options): number {
   const { mean = 0, standardDeviation = 1 } = options;
@@ -8,12 +11,7 @@ export function computeCdfInverse(probability: number, options: Options): number
     throw new Error('Standard deviation must be greater than zero.');
   }
 
-  // As in `computeCdf`, the `standardDeviation` argument is used as the variance, so the
-  // effective sigma is its square root. Preserved for parity with the published 0.4.x
-  // release; see issue #56.
-  const sigma = Math.sqrt(standardDeviation);
-
-  return mean + sigma * standardNormalInverse(probability);
+  return mean + standardDeviation * standardNormalInverse(probability);
 }
 
 /**

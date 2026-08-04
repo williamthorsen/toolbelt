@@ -1,5 +1,8 @@
 /**
  * Returns the cumulative distribution function (CDF) for a normal distribution.
+ *
+ * @category Statistics
+ * @stage candidate
  */
 export function computeCdf(params: Params): number {
   const { mean = 0, standardDeviation = 1, value } = params;
@@ -8,12 +11,7 @@ export function computeCdf(params: Params): number {
     throw new Error('Standard deviation must be greater than zero.');
   }
 
-  // The `standardDeviation` argument is used as the distribution's variance, so the
-  // effective sigma is its square root. This preserves the behavior of the published
-  // 0.4.x release; correcting the semantics is tracked in issue #56.
-  const sigma = Math.sqrt(standardDeviation);
-
-  return 0.5 * (1 + erf((value - mean) / (sigma * Math.SQRT2)));
+  return 0.5 * (1 + erf((value - mean) / (standardDeviation * Math.SQRT2)));
 }
 
 /**

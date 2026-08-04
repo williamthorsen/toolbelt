@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { computeCdf } from '../computeCdf.ts';
 import { computeCdfInverse } from '../computeCdfInverse.ts';
 
 describe(computeCdfInverse, () => {
@@ -31,9 +32,15 @@ describe(computeCdfInverse, () => {
     expect(computeCdfInverse(1, { mean: 0, standardDeviation: 1 })).toBe(Infinity);
   });
 
-  it('uses the standard deviation as the variance, so sigma is its square root', () => {
-    // variance 4 => sigma 2, so the 0.9 quantile is twice the standard-normal 0.9 quantile
-    expect(computeCdfInverse(0.9, { mean: 0, standardDeviation: 4 })).toBeCloseTo(2 * lastDecile, 4);
+  it('treats the standard deviation as sigma rather than the variance', () => {
+    // Sigma 2 puts the 0.9 quantile at twice the standard-normal 0.9 quantile.
+    expect(computeCdfInverse(0.9, { mean: 0, standardDeviation: 2 })).toBeCloseTo(2 * lastDecile, 4);
+  });
+
+  it('round-trips a non-unit standard deviation through computeCdf', () => {
+    const options = { mean: 1, standardDeviation: 3 };
+
+    expect(computeCdfInverse(computeCdf({ ...options, value: 7 }), options)).toBeCloseTo(7, 4);
   });
 
   it('throws an error if given an invalid standard deviation', () => {
