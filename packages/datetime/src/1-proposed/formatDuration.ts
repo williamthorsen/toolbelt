@@ -17,6 +17,7 @@ const FINEST_INDEX = TimeUnit.coarsestFirst.length - 1;
  * @category DateTime
  * @experimental
  * @stage proposed
+ * @throws If the duration is negative, `NaN`, or infinite, or if `maxUnits` is not a positive integer.
  */
 export function formatDuration(milliseconds: number, options: FormatDurationOptions = {}): string {
   const { maxUnits = 1 } = options;
