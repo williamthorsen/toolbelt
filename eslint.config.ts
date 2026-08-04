@@ -1,8 +1,6 @@
 import baseConfig, { createConfig, patterns } from '@williamthorsen/eslint-config-typescript';
 import { defineConfig } from 'eslint/config';
 
-import { deferredLintRules } from './.config/eslint/deferred-lint-rules.ts';
-
 const config = defineConfig([
   ...baseConfig,
   {
@@ -13,10 +11,6 @@ const config = defineConfig([
       '**/dist/**',
       '**/local/**',
     ],
-  },
-  {
-    files: patterns.codeFiles,
-    rules: deferredLintRules,
   },
   {
     files: patterns.codeFiles,
