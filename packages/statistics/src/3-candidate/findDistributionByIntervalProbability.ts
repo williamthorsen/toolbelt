@@ -19,7 +19,7 @@ export function findDistributionByIntervalProbability(params: Params, options: O
 
   assertPositiveInteger(nIntervals, 'nIntervals');
 
-  if (!(target > 0)) {
+  if (!Number.isFinite(target) || target <= 0) {
     throw new Error('Probability must be greater than 0.');
   }
   if (sdMin <= 0) {
@@ -30,8 +30,9 @@ export function findDistributionByIntervalProbability(params: Params, options: O
   }
   assertPositiveInteger(maxIterations, 'maxIterations');
 
-  const getFirstIntervalProbability = (standardDeviation: number): number =>
-    getAtIndexOrThrow(getNormalIntervalProbabilities({ halfWidth, nIntervals, standardDeviation }).additive, 0);
+  function getFirstIntervalProbability(standardDeviation: number): number {
+    return getAtIndexOrThrow(getNormalIntervalProbabilities({ halfWidth, nIntervals, standardDeviation }).additive, 0);
+  }
 
   // Confirm the target lies between the probabilities the range's endpoints can produce.
   const minProbability = getFirstIntervalProbability(sdMin);

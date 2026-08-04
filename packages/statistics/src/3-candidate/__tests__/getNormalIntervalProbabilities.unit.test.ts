@@ -40,39 +40,45 @@ describe(getNormalIntervalProbabilities, () => {
   it('returns the expected probabilities for a unit standard deviation', () => {
     const { additive } = getNormalIntervalProbabilities({ nIntervals: 5, standardDeviation: 1 });
 
-    expectCloseTo(additive, [0.034_674_033_9, 0.238_967_963_4, 0.452_716_005_4, 0.238_967_963_4, 0.034_674_033_9]);
+    expect(additive).toStrictEqual(
+      buildCloseMatchers([0.034_674_033_9, 0.238_967_963_4, 0.452_716_005_4, 0.238_967_963_4, 0.034_674_033_9]),
+    );
   });
 
   it('spreads mass toward the outer intervals as the standard deviation grows', () => {
     const { additive } = getNormalIntervalProbabilities({ nIntervals: 5, standardDeviation: 2 });
 
-    expectCloseTo(additive, [0.135_335_726_3, 0.228_568_495_4, 0.272_191_556_6, 0.228_568_495_4, 0.135_335_726_3]);
+    expect(additive).toStrictEqual(
+      buildCloseMatchers([0.135_335_726_3, 0.228_568_495_4, 0.272_191_556_6, 0.228_568_495_4, 0.135_335_726_3]),
+    );
   });
 
   it('concentrates mass in the middle intervals as the standard deviation shrinks', () => {
     const { additive } = getNormalIntervalProbabilities({ nIntervals: 5, standardDeviation: 0.5 });
 
-    expectCloseTo(additive, [0.000_159_107_6, 0.114_910_561_9, 0.769_860_661_1, 0.114_910_561_9, 0.000_159_107_6]);
+    expect(additive).toStrictEqual(
+      buildCloseMatchers([0.000_159_107_6, 0.114_910_561_9, 0.769_860_661_1, 0.114_910_561_9, 0.000_159_107_6]),
+    );
   });
 
   it('returns the expected probabilities for an even interval count', () => {
     const { additive } = getNormalIntervalProbabilities({ nIntervals: 4, standardDeviation: 1 });
 
-    expectCloseTo(additive, [0.065_634_503, 0.434_365_497, 0.434_365_497, 0.065_634_503]);
+    expect(additive).toStrictEqual(buildCloseMatchers([0.065_634_503, 0.434_365_497, 0.434_365_497, 0.065_634_503]));
   });
 
   it('depends only on the ratio of halfWidth to the standard deviation', () => {
     const scaled = getNormalIntervalProbabilities({ halfWidth: 6, nIntervals: 5, standardDeviation: 2 });
     const unscaled = getNormalIntervalProbabilities({ halfWidth: 3, nIntervals: 5, standardDeviation: 1 });
 
-    expectCloseTo(scaled.additive, unscaled.additive);
+    expect(scaled.additive).toStrictEqual(buildCloseMatchers(unscaled.additive));
   });
 
   it('is unaffected by the mean, which shifts the window with the distribution', () => {
     const shifted = getNormalIntervalProbabilities({ mean: 100, nIntervals: 5, standardDeviation: 2 });
     const centered = getNormalIntervalProbabilities({ mean: 0, nIntervals: 5, standardDeviation: 2 });
 
-    expectCloseTo(shifted.additive, centered.additive);
+    expect(shifted.additive).toStrictEqual(buildCloseMatchers(centered.additive));
   });
 
   it('places all mass in the middle interval when the standard deviation is 0 and nIntervals is odd', () => {
@@ -125,11 +131,11 @@ describe(getNormalIntervalProbabilities, () => {
   });
 });
 
-function expectCloseTo(actual: number[], expected: number[]): void {
-  expect(actual).toHaveLength(expected.length);
-  for (const [index, value] of expected.entries()) {
-    expect(getAtIndexOrThrow(actual, index)).toBeCloseTo(value, PRECISION);
-  }
+/**
+ * Returns a matcher per value, so an array comparison tolerates the CDF approximation's error.
+ */
+function buildCloseMatchers(values: number[]): unknown[] {
+  return values.map((value): unknown => expect.closeTo(value, PRECISION));
 }
 
 function sum(array: number[]): number {
