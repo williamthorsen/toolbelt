@@ -1,4 +1,4 @@
-import baseConfig, { createConfig, patterns } from '@williamthorsen/eslint-config-typescript';
+import baseConfig, { createConfig } from '@williamthorsen/eslint-config-typescript';
 import { defineConfig } from 'eslint/config';
 
 const config = defineConfig([
@@ -11,22 +11,6 @@ const config = defineConfig([
       '**/dist/**',
       '**/local/**',
     ],
-  },
-  {
-    files: patterns.codeFiles,
-    rules: {
-      'unicorn/consistent-class-member-order': 'off', // use `@typescript-eslint/member-ordering` instead
-      'unicorn/numeric-separators-style': [
-        'error',
-        {
-          onlyIfContainsSeparator: false,
-          hexadecimal: { minimumDigits: 0, groupLength: 4 },
-          binary: { minimumDigits: 0, groupLength: 4 },
-          octal: { minimumDigits: 0, groupLength: 4 },
-          number: { minimumDigits: 4, groupLength: 3, fractionGroupLength: 3 },
-        },
-      ], // 🔴🟠
-    },
   },
   {
     files: ['**/*.ts', '**/*.mts', '**/*.md/*.ts'],

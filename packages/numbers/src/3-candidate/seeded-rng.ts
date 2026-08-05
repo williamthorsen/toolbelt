@@ -14,6 +14,27 @@ export class SeededRng implements SeededGenerator {
   private baseSeed = 0; // original value used to create the seed
   private nIncrements = 0;
 
+  /**
+   * Constructor
+   */
+  constructor(seed?: Seed) {
+    this.initializeSeeds(SeededRng.evaluateSeed(seed));
+  }
+
+  // Must be a method because JavaScript does not support static property overrides
+  get maxBase(): number {
+    return IntegerSeed.max;
+  }
+
+  // Returns a function that successively returns a deterministic sequence of numbers based on this instance's seed
+  get rng(): () => number {
+    return () => this.next();
+  }
+
+  get seed(): number {
+    return this._seed;
+  }
+
   // Resolves a seed-like value to a number
   static evaluateSeed(seed?: Seed): number | undefined {
     return evaluateSeed(seed);
@@ -71,27 +92,6 @@ export class SeededRng implements SeededGenerator {
     return function (options?: TOptions): R {
       return fn({ ...options, seed: spawnedRng });
     };
-  }
-
-  /**
-   * Constructor
-   */
-  constructor(seed?: Seed) {
-    this.initializeSeeds(SeededRng.evaluateSeed(seed));
-  }
-
-  // Must be a method because JavaScript does not support static property overrides
-  get maxBase(): number {
-    return IntegerSeed.max;
-  }
-
-  // Returns a function that successively returns a deterministic sequence of numbers based on this instance's seed
-  get rng(): () => number {
-    return () => this.next();
-  }
-
-  get seed(): number {
-    return this._seed;
   }
 
   clone<T extends SeededRng>(this: T, nIncrements = 0): T {

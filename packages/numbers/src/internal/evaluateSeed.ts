@@ -19,8 +19,8 @@ export function checkIsRngLike(seed: Seed | undefined): seed is SeededGenerator 
  * Interface describing an object that returns a sequence of numbers.
  */
 export interface SeededGenerator {
-  next(): number;
   seed: number;
+  next(): number;
 }
 
 export type Seed = number | SeededGenerator | (() => number);

@@ -8,20 +8,6 @@ export class Timestamp {
   private readonly _millis: number;
   private _timeUnit: TimeUnit;
 
-  // region | Static methods
-  static fromMillis(milliseconds: number): Timestamp {
-    return new Timestamp(new Date(milliseconds));
-  }
-
-  static fromSeconds(seconds: number): Timestamp {
-    return new Timestamp(new Date(seconds * 1_000), { timeUnit: TimeUnit.Seconds });
-  }
-
-  static now(options: TimestampOptions = {}): Timestamp {
-    return new Timestamp(undefined, options);
-  }
-  // endregion
-
   // region | Public methods
   constructor(dateTime?: TimestampInput, options: TimestampOptions = {}) {
     const { format = 'iso', timeUnit = TimeUnit.Millis } = options;
@@ -51,6 +37,20 @@ export class Timestamp {
   get timeUnit(): TimeUnit {
     return this._timeUnit;
   }
+
+  // region | Static methods
+  static fromMillis(milliseconds: number): Timestamp {
+    return new Timestamp(new Date(milliseconds));
+  }
+
+  static fromSeconds(seconds: number): Timestamp {
+    return new Timestamp(new Date(seconds * 1_000), { timeUnit: TimeUnit.Seconds });
+  }
+
+  static now(options: TimestampOptions = {}): Timestamp {
+    return new Timestamp(undefined, options);
+  }
+  // endregion
 
   clone(options: TimestampOptions = {}): Timestamp {
     return new Timestamp(this._millis, options);

@@ -19,6 +19,8 @@ export class TypedObject {
    * this function rejects objects with numeric keys at compile-time (although it would succeed at runtime).
    * For these use cases without type safety, use `Object.entries` instead.
    */
+  protected constructor() {}
+
   static entries(input: string): [string, string][];
   static entries<T extends ReadonlyArray<unknown>>(input: T): [string, T extends ReadonlyArray<infer U> ? U : never][];
   static entries<T extends object>(input: NoNumericKeys<T>): [keyof StringFields<T>, ValueOf<StringFields<T>>][];
@@ -43,8 +45,6 @@ export class TypedObject {
   static fromEntries<K extends PropertyKey, V>(entries: Iterable<readonly [K, V]>): Record<K, V> {
     return Object.fromEntries(entries) as Record<K, V>;
   }
-
-  protected constructor() {}
 }
 
 type ExtractNumericKeys<T> = Extract<keyof T, number>;

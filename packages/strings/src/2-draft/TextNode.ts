@@ -110,10 +110,6 @@ export abstract class TextNode {
     return decodedIndices;
   }
 
-  abstract pick(options?: { seed?: Seed | undefined }): string;
-
-  abstract pickIndices(options?: { indices?: VariantIndices | undefined; seed?: Seed | undefined }): VariantIndices;
-
   pickWithFingerprint(options: { seed?: Seed | undefined } = {}): PickSummary {
     const seededRng = IntSeededRng.cloneOrCreate(options.seed);
     const seed = options.seed ?? seededRng;
@@ -130,6 +126,10 @@ export abstract class TextNode {
       seed: initialSeed,
     };
   }
+
+  abstract pick(options?: { seed?: Seed | undefined }): string;
+
+  abstract pickIndices(options?: { indices?: VariantIndices | undefined; seed?: Seed | undefined }): VariantIndices;
 
   abstract selectVariants(indices: string | VariantIndices, options?: { depth?: Integer }): string;
 

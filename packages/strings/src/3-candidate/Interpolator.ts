@@ -14,6 +14,12 @@ export class Interpolator {
   noAdaptCase = false; // if true, don't adapt mapping values to the case of the placeholders
   template: string;
 
+  constructor(template: string, options: InterpolatorOptions = {}) {
+    this.template = template;
+    this.assertIsValidTemplate();
+    this.setOptions(options);
+  }
+
   static interpolate<T>(template: string, mapping: StringMapping<T>, options: InterpolatorOptions = {}): string {
     return new Interpolator(template, options).interpolate({ mapping });
   }
@@ -32,12 +38,6 @@ export class Interpolator {
           .replace('closing delimiter "}"', 'closing brace'),
       })),
     };
-  }
-
-  constructor(template: string, options: InterpolatorOptions = {}) {
-    this.template = template;
-    this.assertIsValidTemplate();
-    this.setOptions(options);
   }
 
   /**
