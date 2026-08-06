@@ -29,6 +29,7 @@
     "nodejs": "scope:nodejs",
     "numbers": "scope:numbers",
     "objects": "scope:objects",
+    "packaging": "scope:packaging",
     "sets": "scope:sets",
     "statistics": "scope:statistics",
     "strings": "scope:strings",
