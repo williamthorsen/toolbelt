@@ -8,12 +8,12 @@ PNPM monorepo of TypeScript utility libraries, each published to npm as `@willia
 
 ## Project structure
 
-- `packages/{domain}/`: one published library per domain (arrays, async, datetime, dstructs, enums, filesystem, guards, hof, numbers, objects, sets, statistics, strings, tools).
+- `packages/{domain}/`: one published library per domain (arrays, async, datetime, dstructs, enums, filesystem, guards, hof, numbers, objects, packaging, sets, statistics, strings, tools).
 - `packages/_template/`: private scaffold for new packages, excluded from release processing in `.config/release-kit.config.ts`.
 - `packages/{domain}/src/{0-strawman,1-proposed,2-draft,3-candidate,4-release}/`: maturity tiers, each with an `index.ts` re-exporting that tier's public surface. `src/internal/` and `src/types/` sit outside the tiers and are not exported.
 - `.config/`: tool configs (nmr, release-kit, strict-lint, v11y, worktrunk). Vitest config lives outside it, in exactly two root files: `vitest.config.ts` and `vitest.root.config.ts`, each a bare call to a `@williamthorsen/nmr/vitest` factory.
 
-Versions are independent per package. `dstructs` and `statistics` are pre-1.0; the rest are 3.x to 4.x.
+Versions are independent per package.
 
 ## Commands
 
@@ -32,7 +32,7 @@ Runner conventions (discovery, invocation, root vs. package registries, hooks) c
 - `/draft`: `2-draft`
 - `/proposed`: `1-proposed`
 
-`0-strawman` is unexported.
+`0-strawman` is unexported. `__tests__/workspace-exports.app.unit.test.ts` enforces the correspondence in both directions: every export target names a tier holding an `index.ts`, and every tier but `0-strawman` has a subpath. A workspace with no tier directories, such as `tools`, is out of its scope.
 
 **Cross-package imports** use the published name plus the maturity subpath (`import { SeededRng } from '@williamthorsen/toolbelt.numbers/candidate'`), never relative paths across a package boundary. Workspace deps are declared `workspace:*`.
 

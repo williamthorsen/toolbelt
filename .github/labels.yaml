@@ -94,6 +94,9 @@
 - name: scope:objects
   color: 00ff96
   description: ''
+- name: scope:packaging
+  color: 00ff96
+  description: ''
 - name: scope:root
   color: 00ff96
   description: ''
