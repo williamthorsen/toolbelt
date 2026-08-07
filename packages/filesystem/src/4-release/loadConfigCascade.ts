@@ -1,7 +1,7 @@
 import { pathToFileURL } from 'node:url';
 
+import { listDirectoryChainMatches } from './directory-chain-matches.ts';
 import { findProjectRoot, type ProjectRoot } from './findProjectRoot.ts';
-import { listDirectoryChainMatches } from './listDirectoryChainMatches.ts';
 
 /**
  * Loads every config file between a starting directory and its project root, nearest first.

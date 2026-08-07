@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { findDirectoryChainMatch } from './listDirectoryChainMatches.ts';
+import { findDirectoryChainMatch } from './directory-chain-matches.ts';
 
 /**
  * Names that identify a project root, in precedence order: when a directory carries more than one,

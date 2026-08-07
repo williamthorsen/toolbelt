@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { findDirectoryChainMatch } from '../listDirectoryChainMatches.ts';
+import { findDirectoryChainMatch } from '../directory-chain-matches.ts';
 import { createTempTree, removeTempTrees } from './__fixtures__/createTempTree.ts';
 
 describe(findDirectoryChainMatch, () => {
