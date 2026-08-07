@@ -5,6 +5,12 @@ export {
   type ProjectRoot,
   type ProjectRootSource,
 } from './findProjectRoot.ts';
+export { listDirectoryChain, type ListDirectoryChainOptions } from './listDirectoryChain.ts';
+export {
+  type DirectoryChainMatch,
+  listDirectoryChainMatches,
+  type ListDirectoryChainMatchesOptions,
+} from './listDirectoryChainMatches.ts';
 export {
   type CascadeStopReason,
   type ConfigCascade,
