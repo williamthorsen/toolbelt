@@ -54,6 +54,7 @@ export interface DirectoryChainMatch {
 /** Forwarded to `listDirectoryChain`. */
 export type ListDirectoryChainMatchesOptions = ListDirectoryChainOptions;
 
+// region | Helpers
 /**
  * Rejects any name that would resolve outside the level it is probed against, which is what keeps a bounded ascent
  * bounded for a caller-supplied name rather than merely intended. Validated once against the names themselves, so
@@ -73,3 +74,4 @@ function assertLevelRelativeNames(names: ReadonlyArray<string>): void {
     }
   }
 }
+// endregion | Helpers

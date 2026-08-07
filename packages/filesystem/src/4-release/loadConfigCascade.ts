@@ -80,6 +80,7 @@ export interface LoadConfigCascadeOptions<TConfig> {
   startDir: string;
 }
 
+// region | Helpers
 /**
  * Imports a config module and returns its default export, rejecting a module that declares none.
  */
@@ -101,3 +102,4 @@ interface ConfigModule<TConfig> {
    */
   default?: TConfig;
 }
+// endregion | Helpers

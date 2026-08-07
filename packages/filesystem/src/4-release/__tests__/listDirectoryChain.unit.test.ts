@@ -76,7 +76,9 @@ describe(listDirectoryChain, () => {
   });
 });
 
+// region | Helpers
 /** Builds an absolute path from segments relative to the filesystem root. */
 function fromRoot(relativePath: string): string {
   return path.join(FILESYSTEM_ROOT, relativePath);
 }
+// endregion | Helpers
