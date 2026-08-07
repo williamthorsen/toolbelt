@@ -1,7 +1,6 @@
-import fs from 'node:fs';
-import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { listDirectoryChainMatches } from './directory-chain-matches.ts';
 import { findProjectRoot, type ProjectRoot } from './findProjectRoot.ts';
 
 /**
@@ -24,25 +23,23 @@ import { findProjectRoot, type ProjectRoot } from './findProjectRoot.ts';
  *
  * @category Filesystem
  * @stage release
- * @throws If a file name is absolute or escapes its level, or if a matched file has no default export.
+ * @throws If a file name or marker is absolute or escapes its level, or if a matched file has no default export.
  */
 export async function loadConfigCascade<TConfig = unknown>(
   options: LoadConfigCascadeOptions<TConfig>,
 ): Promise<ConfigCascade<TConfig>> {
   const { fileNames, markers, shouldStopAscent, startDir } = options;
 
-  assertLevelRelativeFileNames(fileNames);
-
   const projectRoot = findProjectRoot(startDir, { markers });
-  const candidates = collectCandidates(path.resolve(startDir), projectRoot.rootDir, fileNames);
+  const matches = listDirectoryChainMatches(startDir, fileNames, { stopAtDir: projectRoot.rootDir });
 
   const entries: ConfigEntry<TConfig>[] = [];
   let stopReason: CascadeStopReason = 'project-root';
 
-  for (const { dir, filePath } of candidates) {
+  for (const { dir, entryPath } of matches) {
     // Sequential by design: the predicate decides whether the next file is imported at all.
-    const config = await importDefaultExport<TConfig>(filePath);
-    entries.push({ config, dir, filePath });
+    const config = await importDefaultExport<TConfig>(entryPath);
+    entries.push({ config, dir, filePath: entryPath });
 
     if (shouldStopAscent?.(config) === true) {
       stopReason = 'predicate';
@@ -83,61 +80,7 @@ export interface LoadConfigCascadeOptions<TConfig> {
   startDir: string;
 }
 
-interface CascadeCandidate {
-  dir: string;
-  filePath: string;
-}
-
-/**
- * Rejects any file name that would resolve outside the level it is probed against, which is what keeps
- * "nothing above the project root is ever read" true for a caller-supplied name rather than merely intended.
- * Validated once against the names themselves, so the rejection does not depend on what happens to exist on disk.
- */
-function assertLevelRelativeFileNames(fileNames: ReadonlyArray<string>): void {
-  for (const fileName of fileNames) {
-    if (path.isAbsolute(fileName)) {
-      throw new Error(`Config file name must be relative to its directory level: ${fileName}`);
-    }
-
-    // Normalizing first collapses interior `..` segments, so only a name that truly escapes is left leading with one.
-    const normalized = path.normalize(fileName);
-
-    if (normalized === '..' || normalized.startsWith(`..${path.sep}`)) {
-      throw new Error(`Config file name must not ascend above its directory level: ${fileName}`);
-    }
-  }
-}
-
-/**
- * Returns the config file matched at each level from `startDir` up to and including `rootDir`, nearest first.
- */
-function collectCandidates(startDir: string, rootDir: string, fileNames: ReadonlyArray<string>): CascadeCandidate[] {
-  const candidates: CascadeCandidate[] = [];
-
-  let dir = startDir;
-  let previousDir = '';
-
-  // `rootDir` is always at or above `startDir`, so the ascent stops there; comparing against the previous
-  // directory is the backstop that keeps a caller-supplied pair from walking past the filesystem root.
-  while (dir !== previousDir) {
-    for (const fileName of fileNames) {
-      const filePath = path.join(dir, fileName);
-
-      if (fs.existsSync(filePath)) {
-        candidates.push({ dir, filePath });
-        break;
-      }
-    }
-
-    if (dir === rootDir) break;
-
-    previousDir = dir;
-    dir = path.dirname(dir);
-  }
-
-  return candidates;
-}
-
+// region | Helpers
 /**
  * Imports a config module and returns its default export, rejecting a module that declares none.
  */
@@ -159,3 +102,4 @@ interface ConfigModule<TConfig> {
    */
   default?: TConfig;
 }
+// endregion | Helpers

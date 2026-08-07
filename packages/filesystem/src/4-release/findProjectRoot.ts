@@ -1,5 +1,6 @@
-import fs from 'node:fs';
 import path from 'node:path';
+
+import { findDirectoryChainMatch } from './directory-chain-matches.ts';
 
 /**
  * Names that identify a project root, in precedence order: when a directory carries more than one,
@@ -31,38 +32,24 @@ export const DEFAULT_ROOT_MARKERS: ReadonlyArray<string> = [
  *
  * @category Filesystem
  * @stage release
+ * @throws If a marker is absolute or escapes its directory level.
  */
 export function findProjectRoot(startDir: string, options: FindProjectRootOptions = {}): ProjectRoot {
   const { markers = DEFAULT_ROOT_MARKERS } = options;
 
-  const resolvedStartDir = path.resolve(startDir);
-  let nearestPackageJsonDir: string | undefined;
+  const markerMatch = findDirectoryChainMatch(startDir, markers);
 
-  // `path.dirname` is its own fixed point at the filesystem root on every platform, so comparing each
-  // directory against its predecessor terminates portably while still probing the root itself.
-  let dir = resolvedStartDir;
-  let previousDir = '';
-
-  while (dir !== previousDir) {
-    for (const marker of markers) {
-      if (fs.existsSync(path.join(dir, marker))) {
-        return { marker, rootDir: dir, source: 'marker' };
-      }
-    }
-
-    if (nearestPackageJsonDir === undefined && fs.existsSync(path.join(dir, 'package.json'))) {
-      nearestPackageJsonDir = dir;
-    }
-
-    previousDir = dir;
-    dir = path.dirname(dir);
+  if (markerMatch !== undefined) {
+    return { marker: markerMatch.entryName, rootDir: markerMatch.dir, source: 'marker' };
   }
 
-  if (nearestPackageJsonDir !== undefined) {
-    return { marker: null, rootDir: nearestPackageJsonDir, source: 'package-json' };
+  const manifestMatch = findDirectoryChainMatch(startDir, ['package.json']);
+
+  if (manifestMatch !== undefined) {
+    return { marker: null, rootDir: manifestMatch.dir, source: 'package-json' };
   }
 
-  return { marker: null, rootDir: resolvedStartDir, source: 'start-dir' };
+  return { marker: null, rootDir: path.resolve(startDir), source: 'start-dir' };
 }
 
 export interface FindProjectRootOptions {
