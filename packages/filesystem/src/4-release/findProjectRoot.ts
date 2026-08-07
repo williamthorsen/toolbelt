@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { listDirectoryChainMatches } from './listDirectoryChainMatches.ts';
+import { findDirectoryChainMatch } from './listDirectoryChainMatches.ts';
 
 /**
  * Names that identify a project root, in precedence order: when a directory carries more than one,
@@ -37,15 +37,13 @@ export const DEFAULT_ROOT_MARKERS: ReadonlyArray<string> = [
 export function findProjectRoot(startDir: string, options: FindProjectRootOptions = {}): ProjectRoot {
   const { markers = DEFAULT_ROOT_MARKERS } = options;
 
-  const [markerMatch] = listDirectoryChainMatches(startDir, markers);
+  const markerMatch = findDirectoryChainMatch(startDir, markers);
 
   if (markerMatch !== undefined) {
     return { marker: markerMatch.entryName, rootDir: markerMatch.dir, source: 'marker' };
   }
 
-  // Scanning a second time costs nothing a marker hit would have saved: the original single pass discarded its
-  // `package.json` sighting on returning a marker, so the fallback only ever mattered when no marker existed.
-  const [manifestMatch] = listDirectoryChainMatches(startDir, ['package.json']);
+  const manifestMatch = findDirectoryChainMatch(startDir, ['package.json']);
 
   if (manifestMatch !== undefined) {
     return { marker: null, rootDir: manifestMatch.dir, source: 'package-json' };

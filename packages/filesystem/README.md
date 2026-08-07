@@ -12,7 +12,7 @@ pnpm add @williamthorsen/toolbelt.filesystem
 
 ## Runtime requirements
 
-`findProjectRoot`, `listDirectoryChainMatches`, and `loadConfigCascade` reach the filesystem through `node:` builtins, so they run under Node.js 24 or later, Bun, and Deno. They do not run in browsers, nor in edge runtimes that expose no filesystem. `listDirectoryChain` and `replaceFileExtension` touch no filesystem, so an edge runtime that exposes none runs them; they still import `node:path`, which a browser bundle has to supply.
+`findDirectoryChainMatch`, `findProjectRoot`, `listDirectoryChainMatches`, and `loadConfigCascade` reach the filesystem through `node:` builtins, so they run under Node.js 24 or later, Bun, and Deno. They do not run in browsers, nor in edge runtimes that expose no filesystem. `listDirectoryChain` and `replaceFileExtension` touch no filesystem, so an edge runtime that exposes none runs them; they still import `node:path`, which a browser bundle has to supply.
 
 `loadConfigCascade` imports each config through the host runtime, so a `.ts` config is subject to whatever that runtime does with TypeScript. Node strips types rather than compiling them, which admits erasable syntax alone: an `enum`, a `namespace`, or a parameter property in a config file fails to parse. A `.mjs` or `.js` config sidesteps the question.
 
@@ -48,6 +48,8 @@ import { DEFAULT_ROOT_MARKERS, findProjectRoot } from '@williamthorsen/toolbelt.
 
 findProjectRoot(process.cwd(), { markers: [...DEFAULT_ROOT_MARKERS, 'deno.json'] });
 ```
+
+Each marker is a path relative to the level it is probed against, on the terms [`listDirectoryChainMatches`](#listdirectorychainmatches) sets out: one that is absolute, or whose `..` segments escape its level, is rejected before any directory is probed.
 
 When no directory up to and including the filesystem root carries a marker, the result falls back in this order, reporting a `null` marker either way:
 
@@ -94,7 +96,7 @@ listDirectoryChainMatches(
 ): DirectoryChainMatch[];
 ```
 
-Returns, for each directory in the chain above `startDir`, the first of `names` that exists there:
+Returns, for each directory in the chain at or above `startDir`, the first of `names` that exists there:
 
 ```ts
 interface DirectoryChainMatch {
@@ -116,6 +118,29 @@ A level yields at most one match, the earliest of `names` found there, and a lev
 Each name is a path relative to the level it is probed against, so a nested location such as `.config/stack.config.mjs` works. A name that would leave its level (an absolute path, or one whose `..` segments escape it) is rejected before any level is probed, so the rejection never depends on what happens to exist on disk.
 
 `options` is forwarded to `listDirectoryChain`, so `stopAtDir` bounds the ascent the same way.
+
+Every level is probed, because every level's match is reported. Where only the nearest match matters, [`findDirectoryChainMatch`](#finddirectorychainmatch) returns it and stops there.
+
+## `findDirectoryChainMatch`
+
+```ts
+findDirectoryChainMatch(
+  startDir: string,
+  names: ReadonlyArray<string>,
+  options?: { stopAtDir?: string },
+): DirectoryChainMatch | undefined;
+```
+
+Returns the nearest directory at or above `startDir` holding one of `names`, or `undefined` when none does. It is `listDirectoryChainMatches` narrowed to the first hit, sharing its result shape, its options, and its name validation:
+
+```ts
+import { findDirectoryChainMatch } from '@williamthorsen/toolbelt.filesystem';
+
+findDirectoryChainMatch('/home/dev/app/src', ['.git']);
+// { dir: '/home/dev/app', entryName: '.git', entryPath: '/home/dev/app/.git' }
+```
+
+Probing stops at the first level that matches, so no level beyond it is touched — the reason to reach for this rather than read element zero off `listDirectoryChainMatches`, which probes to the ceiling regardless. The nullable return type is the other reason: a result that may be absent says so, where an array leaves the caller to narrow.
 
 ## `loadConfigCascade`
 

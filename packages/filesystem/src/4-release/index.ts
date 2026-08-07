@@ -8,8 +8,9 @@ export {
 export { listDirectoryChain, type ListDirectoryChainOptions } from './listDirectoryChain.ts';
 export {
   type DirectoryChainMatch,
+  type DirectoryChainMatchOptions,
+  findDirectoryChainMatch,
   listDirectoryChainMatches,
-  type ListDirectoryChainMatchesOptions,
 } from './listDirectoryChainMatches.ts';
 export {
   type CascadeStopReason,

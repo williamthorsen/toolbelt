@@ -3,12 +3,59 @@ import path from 'node:path';
 
 import { listDirectoryChain, type ListDirectoryChainOptions } from './listDirectoryChain.ts';
 
+export interface DirectoryChainMatch {
+  /** The chain level the match was found at, which differs from the entry's own directory for a nested name. */
+  dir: string;
+  entryName: string;
+  entryPath: string;
+}
+
+/** Forwarded to `listDirectoryChain`. */
+export type DirectoryChainMatchOptions = ListDirectoryChainOptions;
+
 /**
- * Returns, for each directory in the chain above `startDir`, the first of `names` that exists there.
+ * Returns the nearest directory at or above `startDir` holding one of `names`, or `undefined` when none does.
+ *
+ * Probing stops at the first level that matches, so no level beyond it is touched. Where every level's match
+ * matters rather than the nearest, `listDirectoryChainMatches` collects them all.
+ *
+ * Each name is a path relative to the level it is probed against, so a nested location such as
+ * `.config/stack.config.mjs` works. A name that would leave its level is rejected before any level is probed.
+ *
+ * @example
+ * findDirectoryChainMatch('/home/dev/app/src', ['.git']);
+ * // { dir: '/home/dev/app', entryName: '.git', entryPath: '/home/dev/app/.git' }
+ *
+ * @category Filesystem
+ * @stage release
+ * @throws If a name is absolute or escapes its level, or if `stopAtDir` is not on the chain.
+ */
+export function findDirectoryChainMatch(
+  startDir: string,
+  names: ReadonlyArray<string>,
+  options: DirectoryChainMatchOptions = {},
+): DirectoryChainMatch | undefined {
+  assertLevelRelativeNames(names);
+
+  for (const dir of listDirectoryChain(startDir, options)) {
+    const entryName = findMatchingName(dir, names);
+
+    if (entryName !== undefined) {
+      return { dir, entryName, entryPath: path.join(dir, entryName) };
+    }
+  }
+
+  return undefined;
+}
+
+/**
+ * Returns, for each directory in the chain at or above `startDir`, the first of `names` that exists there.
  *
  * Ordering is nearest first, and a level yields at most one match: the earliest of `names` found there. A level
  * holding none contributes nothing, so an empty result is an ordinary outcome rather than an error. A name matches
  * a directory as readily as a file.
+ *
+ * Every level is probed. Where only the nearest match matters, `findDirectoryChainMatch` stops at the first.
  *
  * Each name is a path relative to the level it is probed against, so a nested location such as
  * `.config/stack.config.mjs` works. A name that would leave its level is rejected before any level is probed.
@@ -24,35 +71,22 @@ import { listDirectoryChain, type ListDirectoryChainOptions } from './listDirect
 export function listDirectoryChainMatches(
   startDir: string,
   names: ReadonlyArray<string>,
-  options: ListDirectoryChainMatchesOptions = {},
+  options: DirectoryChainMatchOptions = {},
 ): DirectoryChainMatch[] {
   assertLevelRelativeNames(names);
 
   const matches: DirectoryChainMatch[] = [];
 
   for (const dir of listDirectoryChain(startDir, options)) {
-    for (const entryName of names) {
-      const entryPath = path.join(dir, entryName);
+    const entryName = findMatchingName(dir, names);
 
-      if (fs.existsSync(entryPath)) {
-        matches.push({ dir, entryName, entryPath });
-        break;
-      }
+    if (entryName !== undefined) {
+      matches.push({ dir, entryName, entryPath: path.join(dir, entryName) });
     }
   }
 
   return matches;
 }
-
-export interface DirectoryChainMatch {
-  /** The chain level the match was found at, which differs from the entry's own directory for a nested name. */
-  dir: string;
-  entryName: string;
-  entryPath: string;
-}
-
-/** Forwarded to `listDirectoryChain`. */
-export type ListDirectoryChainMatchesOptions = ListDirectoryChainOptions;
 
 // region | Helpers
 /**
@@ -73,5 +107,16 @@ function assertLevelRelativeNames(names: ReadonlyArray<string>): void {
       throw new Error(`Entry name must not ascend above its directory level: ${name}`);
     }
   }
+}
+
+/** Returns the first of `names` that exists in `dir`. */
+function findMatchingName(dir: string, names: ReadonlyArray<string>): string | undefined {
+  for (const name of names) {
+    if (fs.existsSync(path.join(dir, name))) {
+      return name;
+    }
+  }
+
+  return undefined;
 }
 // endregion | Helpers

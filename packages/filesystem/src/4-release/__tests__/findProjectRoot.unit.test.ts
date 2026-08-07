@@ -1,12 +1,18 @@
+import fs from 'node:fs';
 import path from 'node:path';
 
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { DEFAULT_ROOT_MARKERS, findProjectRoot } from '../findProjectRoot.ts';
 import { createTempTree, removeTempTrees } from './__fixtures__/createTempTree.ts';
 
 describe(findProjectRoot, () => {
-  afterEach(removeTempTrees);
+  const existsSyncSpy = vi.spyOn(fs, 'existsSync');
+
+  afterEach(() => {
+    existsSyncSpy.mockClear();
+    removeTempTrees();
+  });
 
   it('returns the start directory when it carries a marker', () => {
     const treeDir = createTempTree({ '.git/': '' });
@@ -71,6 +77,32 @@ describe(findProjectRoot, () => {
     const result = findProjectRoot(path.join(treeDir, 'app/src'));
 
     expect(result).toStrictEqual({ marker: null, rootDir: path.join(treeDir, 'app/src'), source: 'start-dir' });
+  });
+
+  it('probes no directory above the marker it finds', () => {
+    const treeDir = createTempTree({ '.git/': '', 'app/src/': '' });
+
+    findProjectRoot(path.join(treeDir, 'app/src'));
+
+    const probedDirs = [...new Set(existsSyncSpy.mock.calls.map(([target]) => path.dirname(String(target))))];
+
+    expect(probedDirs).toStrictEqual([path.join(treeDir, 'app/src'), path.join(treeDir, 'app'), treeDir]);
+  });
+
+  it('rejects an absolute marker', () => {
+    const treeDir = createTempTree({ '.git/': '' });
+
+    const find = () => findProjectRoot(treeDir, { markers: [path.join(treeDir, '.git')] });
+
+    expect(find).toThrow(/must be relative to its directory level/);
+  });
+
+  it('rejects a marker that would ascend above its level', () => {
+    const treeDir = createTempTree({ '.git/': '', 'app/': '' });
+
+    const find = () => findProjectRoot(path.join(treeDir, 'app'), { markers: ['../.git'] });
+
+    expect(find).toThrow(/must not ascend above its directory level/);
   });
 });
 
