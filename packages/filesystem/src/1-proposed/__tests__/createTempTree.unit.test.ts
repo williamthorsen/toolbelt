@@ -2,11 +2,15 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createTempTree } from '../createTempTree.ts';
 
 describe(createTempTree, () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('creates a directory for a key ending in a separator', () => {
     using tree = createTempTree({ 'app/src/': '' });
 
@@ -52,10 +56,14 @@ describe(createTempTree, () => {
     expect(fs.existsSync(treeDir)).toBe(false);
   });
 
-  it('rejects an entry resolving outside the tree', () => {
-    const create = () => createTempTree({ '../escaped.txt': '' });
+  it('rejects an entry resolving outside the tree, leaving nothing on disk', () => {
+    // Spy on the creation call, which is the only route to the root of a tree no handle was returned for.
+    const mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
+
+    const create = () => createTempTree({ 'written.txt': 'contents', '../escaped.txt': '' });
 
     expect(create).toThrow(/falls outside the temporary tree/);
+    expect(fs.existsSync(String(mkdtempSyncSpy.mock.results[0]?.value))).toBe(false);
   });
 });
 

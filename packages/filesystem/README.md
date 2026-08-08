@@ -219,7 +219,7 @@ import { createTempTree } from '@williamthorsen/toolbelt.filesystem/proposed';
 // The tree is gone here.
 ```
 
-Each key of `entries` is a path relative to the tree root. One ending in `/` becomes a directory; any other becomes a file holding the mapped contents, with its intermediate directories created for it. A key resolving outside the root is rejected before anything is written.
+Each key of `entries` is a path relative to the tree root. One ending in `/` becomes a directory; any other becomes a file holding the mapped contents, with its intermediate directories created for it. A key resolving outside the root is rejected, and a call that throws leaves nothing on disk.
 
 ```ts
 interface TempTree extends Disposable {
@@ -232,7 +232,7 @@ interface TempTree extends Disposable {
 
 `resolve` joins `segments` against the root and throws when the result would fall outside it, so a stray `..` fails loudly rather than reaching into the enclosing directory. An absolute segment landing inside the root is returned unchanged. The containment test is lexical, so it does not follow a symlink inside the tree that points out of it.
 
-Disposal is idempotent, and removes the tree whether or not `resolve` ever ran.
+Disposal is idempotent.
 
 `Disposable` is declared in `lib.esnext.disposable.d.ts` alone, so consuming this export requires `ESNext.Disposable` in your `lib`.
 

@@ -5,7 +5,7 @@ import path from 'node:path';
 /**
  * Creates a throwaway directory tree and returns a handle that removes it on disposal. Each key of `entries` is a
  * path relative to the tree root: one ending in `/` becomes a directory, and any other becomes a file holding the
- * mapped contents. A key resolving outside the root is rejected before anything is written.
+ * mapped contents. A key resolving outside the root is rejected, and a call that throws leaves nothing on disk.
  *
  * @example
  * using tree = createTempTree({ '.git/': '', 'src/main.ts': 'export {};\n' });
@@ -18,15 +18,20 @@ import path from 'node:path';
 export function createTempTree(entries: Record<string, string>): TempTree {
   const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'toolbelt-')));
 
-  for (const [entry, contents] of Object.entries(entries)) {
-    const entryPath = resolveWithinTree(dir, [entry]);
+  try {
+    for (const [entry, contents] of Object.entries(entries)) {
+      const entryPath = resolveWithinTree(dir, [entry]);
 
-    if (entry.endsWith('/')) {
-      fs.mkdirSync(entryPath, { recursive: true });
-    } else {
-      fs.mkdirSync(path.dirname(entryPath), { recursive: true });
-      fs.writeFileSync(entryPath, contents);
+      if (entry.endsWith('/')) {
+        fs.mkdirSync(entryPath, { recursive: true });
+      } else {
+        fs.mkdirSync(path.dirname(entryPath), { recursive: true });
+        fs.writeFileSync(entryPath, contents);
+      }
     }
+  } catch (error) {
+    fs.rmSync(dir, { force: true, recursive: true });
+    throw error;
   }
 
   return {
