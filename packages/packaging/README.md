@@ -57,3 +57,54 @@ When no directory up to and including the filesystem root carries a marker, the 
 The ascent terminates at the filesystem root on every platform, so a Windows drive root or UNC share is as safe a starting point as a POSIX path.
 
 A project root is not a package root: this answers "which checkout am I in", where [`findPackageRoot`](#findpackageroot) answers "which package declares me". A monorepo has one project root and many package roots.
+
+## `findPackageRoot`
+
+Candidate tier: imported from `@williamthorsen/toolbelt.packaging/candidate` rather than the package root, and subject to change.
+
+```ts
+findPackageRoot(fromUrl: string): string;
+```
+
+Returns the directory of the package that owns a module, which is where assets shipped alongside that package resolve from.
+
+```ts
+import path from 'node:path';
+
+import { findPackageRoot } from '@williamthorsen/toolbelt.packaging/candidate';
+
+const templatesDir = path.join(findPackageRoot(import.meta.url), 'templates');
+```
+
+Pass `import.meta.url`. A module's own URL is the only input that answers correctly from both a source tree and a compiled one, because the two sit at different depths and no fixed number of `..` hops suits both.
+
+The owning package is the nearest ancestor whose `package.json` declares a `name`. That rule is what distinguishes this from `findPackageJSON` in `node:module`, which answers the different question of which manifest _governs_ a file:
+
+```jsonc
+// dist/cjs/package.json -- a marker manifest, declaring no name
+{ "type": "commonjs" }
+```
+
+A dual-format build leaves that file so the runtime parses `dist/cjs/` as CommonJS. `findPackageJSON` stops there and reports it; `findPackageRoot` passes over it and keeps ascending to the manifest that declares the package's identity.
+
+A module belonging to no named package throws, rather than falling back to a directory that merely looks plausible, which is why the return is a bare string with no evidence to interpret. A manifest that is unreadable as JSON, or that parses to something other than an object, throws by name rather than being skipped: corruption is a defect, not an absence.
+
+## `getSelfVersion`
+
+Candidate tier: imported from `@williamthorsen/toolbelt.packaging/candidate` rather than the package root, and subject to change.
+
+```ts
+getSelfVersion(fromUrl: string): string;
+```
+
+Returns the version declared by the package that owns a module: the supported way for a CLI to report its own version without hand-rolling a manifest lookup.
+
+```ts
+import { getSelfVersion } from '@williamthorsen/toolbelt.packaging/candidate';
+
+console.log(`my-cli ${getSelfVersion(import.meta.url)}`);
+```
+
+Ownership is resolved exactly as [`findPackageRoot`](#findpackageroot) resolves it, so a marker manifest is passed over here too. Without that, a dual-format build would read its version as `undefined` rather than raising, since the marker manifest declares none.
+
+A manifest that declares a `name` but no string `version` throws, naming the manifest. The ascent does not continue past it, so a versionless package never reports an ancestor's version as its own.
