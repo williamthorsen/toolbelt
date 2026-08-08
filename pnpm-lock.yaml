@@ -113,7 +113,11 @@ importers:
         specifier: 8.1.0
         version: 8.1.0
 
-  packages/packaging: {}
+  packages/packaging:
+    dependencies:
+      '@williamthorsen/toolbelt.filesystem':
+        specifier: workspace:*
+        version: link:../filesystem
 
   packages/sets: {}
 

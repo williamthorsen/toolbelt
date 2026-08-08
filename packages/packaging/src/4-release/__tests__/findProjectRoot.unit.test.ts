@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { createTempTree } from '@williamthorsen/toolbelt.filesystem/proposed';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { createTempTree } from '../../1-proposed/createTempTree.ts';
 import { DEFAULT_ROOT_MARKERS, findProjectRoot } from '../findProjectRoot.ts';
 
 describe(findProjectRoot, () => {

@@ -1,16 +1,18 @@
 import { pathToFileURL } from 'node:url';
 
 import { listDirectoryChainMatches } from './directory-chain-matches.ts';
-import { findProjectRoot, type ProjectRoot } from './findProjectRoot.ts';
 
 /**
- * Loads every config file between a starting directory and its project root, nearest first.
+ * Loads every config file between a starting directory and `stopAtDir`, nearest first.
  *
- * At each level from `startDir` up to and including the project root, the first of `fileNames` that exists
+ * At each level from `startDir` up to and including `stopAtDir`, the first of `fileNames` that exists
  * is taken as that level's config; levels holding none contribute nothing. The matched files are then
  * imported one at a time, nearest first, and `shouldStopAscent` is consulted after each: once it returns
- * true, the ascent halts and no farther file is imported. Nothing above the project root is ever read:
+ * true, the ascent halts and no farther file is imported. Nothing above `stopAtDir` is ever read:
  * each name must stay within the level it is probed against, so one that escapes is rejected up front.
+ *
+ * The boundary is the caller's to choose, which is what keeps this function free of any notion of what
+ * marks a project. `findProjectRoot` from `@williamthorsen/toolbelt.packaging` resolves one from markers.
  *
  * Each config is the module's default export; validating its contents is the caller's job.
  *
@@ -19,22 +21,23 @@ import { findProjectRoot, type ProjectRoot } from './findProjectRoot.ts';
  *   fileNames: ['stack.config.mjs'],
  *   shouldStopAscent: (config) => config.shouldStopAscent === true,
  *   startDir: process.cwd(),
+ *   stopAtDir: findProjectRoot(process.cwd()).rootDir,
  * });
  *
  * @category Filesystem
  * @stage release
- * @throws If a file name or marker is absolute or escapes its level, or if a matched file has no default export.
+ * @throws If a file name is absolute or escapes its level, if `stopAtDir` is off the chain, or if a matched
+ * file has no default export.
  */
 export async function loadConfigCascade<TConfig = unknown>(
   options: LoadConfigCascadeOptions<TConfig>,
 ): Promise<ConfigCascade<TConfig>> {
-  const { fileNames, markers, shouldStopAscent, startDir } = options;
+  const { fileNames, shouldStopAscent, startDir, stopAtDir } = options;
 
-  const projectRoot = findProjectRoot(startDir, { markers });
-  const matches = listDirectoryChainMatches(startDir, fileNames, { stopAtDir: projectRoot.rootDir });
+  const matches = listDirectoryChainMatches(startDir, fileNames, { stopAtDir });
 
   const entries: ConfigEntry<TConfig>[] = [];
-  let stopReason: CascadeStopReason = 'project-root';
+  let stopReason: CascadeStopReason = 'stop-dir';
 
   for (const { dir, entryPath } of matches) {
     // Sequential by design: the predicate decides whether the next file is imported at all.
@@ -47,15 +50,14 @@ export async function loadConfigCascade<TConfig = unknown>(
     }
   }
 
-  return { entries, projectRoot, stopReason };
+  return { entries, stopReason };
 }
 
-export type CascadeStopReason = 'predicate' | 'project-root';
+export type CascadeStopReason = 'predicate' | 'stop-dir';
 
 export interface ConfigCascade<TConfig> {
   /** Ordered nearest first, starting at `startDir`. */
   entries: ConfigEntry<TConfig>[];
-  projectRoot: ProjectRoot;
   stopReason: CascadeStopReason;
 }
 
@@ -73,11 +75,11 @@ export interface LoadConfigCascadeOptions<TConfig> {
    * it would read outside the bounds the cascade exists to enforce.
    */
   fileNames: ReadonlyArray<string>;
-  /** Forwarded to `findProjectRoot` to bound the ascent. */
-  markers?: ReadonlyArray<string> | undefined;
   /** Called after each config is loaded; returning true halts the ascent before the next import. */
   shouldStopAscent?: ((config: TConfig) => boolean) | undefined;
   startDir: string;
+  /** Bounds the ascent, inclusive. Must be the start directory or one of its ancestors. */
+  stopAtDir: string;
 }
 
 // region | Helpers

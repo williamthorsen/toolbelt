@@ -36,6 +36,9 @@
   "scripts": {
     "prepublishOnly": "nmr build"
   },
+  "dependencies": {
+    "@williamthorsen/toolbelt.filesystem": "workspace:*"
+  },
   "engines": {
     "node": ">=24.0.0"
   },

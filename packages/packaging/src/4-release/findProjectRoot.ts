@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { findDirectoryChainMatch } from './directory-chain-matches.ts';
+import { findDirectoryChainMatch } from '@williamthorsen/toolbelt.filesystem';
 
 /**
  * Names that identify a project root, in precedence order: when a directory carries more than one,
@@ -8,7 +8,7 @@ import { findDirectoryChainMatch } from './directory-chain-matches.ts';
  *
  * `.git` matches whether it is a directory (an ordinary clone) or a file (a worktree or submodule).
  *
- * @category Filesystem
+ * @category Packaging
  * @stage release
  */
 export const DEFAULT_ROOT_MARKERS: ReadonlyArray<string> = [
@@ -30,7 +30,7 @@ export const DEFAULT_ROOT_MARKERS: ReadonlyArray<string> = [
  * @example
  * findProjectRoot(import.meta.dirname);  // { marker: '.git', rootDir: '/home/dev/my-app', source: 'marker' }
  *
- * @category Filesystem
+ * @category Packaging
  * @stage release
  * @throws If a marker is absolute or escapes its directory level.
  */
