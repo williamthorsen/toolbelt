@@ -2,6 +2,51 @@
 
 All notable changes to this project will be documented in this file.
 
+## 5.0.0 — 2026-08-08
+
+### Features
+
+- 🚨 **Breaking:** Spawn seeded number generator of same subclass (#84)
+
+  A seeded generator spawned from a subclass now matches that subclass, so `IntSeededRng.withSeed` supplies the wrapped function integers where it previously supplied floats. Callers relying on values derived through that path must re-baseline. A detached reference such as `const { withSeed } = SeededRng` now throws.
+
+- Use underscore separator at 4 digits or more
+
+  Changes the `unicorn/numeric-separators-style` rule config so that separators are consistently used in base 10 numbers, instead of exempting numbers of 5 digits or less.
+
+### Refactoring
+
+- Fixes violations surfaced by newly active lint rules (#84)
+- Fix slug punctuation and require safe integers (#86)
+
+  - Fixes an issue where the use of certain letters as the slug separator in `slugify` would leave punctuation marks in the result.
+  - Time-unit conversions, scaling range bounds, normal-distribution interval counts, and array indices in object paths now reject values too large to represent exactly instead of silently losing precision.
+  - Seeded number generators now produce distinct sequences for seeds at or beyond 2^53, where adjacent seeds previously collapsed onto nearly identical output. A seed of that size saved before this release no longer reproduces the same output.
+
+- Fix lint
+
+### Tooling
+
+- Migrate Vitest configs to the nmr projects model (#73)
+
+  Packages no longer need to declare their own Vitest config. Test suites are now selected by a test file's name suffix rather than by choosing a config file: `*.app.test.ts` and `*.int.test.ts` route to the app and integration suites, and everything else runs as a unit test. Local development is now declared to require Node 24.16 or later.
+
+- Adopt the mechanical-syntax deferred unicorn rules (#82)
+
+  Promotes ten deferred lint rules from warnings to errors and fixes the issues surfaced by those rules. One published behavior changes as well: Converting a Map to a plain object no longer drops an entry keyed `__proto__`.
+
+- Adopt four deferred unicorn lint rules (#90)
+
+  The strict-lint severity cap of four lint rules has been raised to error: `no-array-from-fill`, `no-return-array-push`, `no-unreadable-array-destructuring`, and `prefer-math-constants`.
+
+- Use identical compiler settings for all packages (#105)
+
+  All packages now have identical compiler settings, using the settings from the `@williamthorsen/tsconfig` base config without modification.
+
+### Dependencies
+
+- Upgrade all deps to latest version
+
 ## 4.3.8 — 2026-07-27
 
 ### Tooling

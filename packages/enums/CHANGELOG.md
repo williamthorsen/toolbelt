@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.1.9 — 2026-08-08
+
+### Tooling
+
+- Migrate Vitest configs to the nmr projects model (#73)
+
+  Packages no longer need to declare their own Vitest config. Test suites are now selected by a test file's name suffix rather than by choosing a config file: `*.app.test.ts` and `*.int.test.ts` route to the app and integration suites, and everything else runs as a unit test. Local development is now declared to require Node 24.16 or later.
+
+- Use identical compiler settings for all packages (#105)
+
+  All packages now have identical compiler settings, using the settings from the `@williamthorsen/tsconfig` base config without modification.
+
 ## 3.1.8 — 2026-07-27
 
 ### Tooling

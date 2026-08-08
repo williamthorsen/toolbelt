@@ -1,0 +1,36 @@
+[
+  {
+    "version": "0.2.0",
+    "date": "2026-08-08",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Scaffold toolbelt.packaging for project-layout utilities (#99)",
+            "body": "Adds `@williamthorsen/toolbelt.packaging`, a package scoped to package and project layout: where a package or project boundary begins, and what the manifest at that boundary declares. It exports nothing yet.",
+            "hash": "0cafd158a59535135033aabe051101e0ecb3af1b"
+          },
+          {
+            "description": "Add findPackageRoot, getSelfVersion, and findProjectRoot to toolbelt.packaging (#107)",
+            "body": "Adds a way for any module, whether it runs from a source tree or a compiled build, to identify the package that owns it and the version that package declares.\n\n`findProjectRoot` moves from `@williamthorsen/toolbelt.filesystem` to `@williamthorsen/toolbelt.packaging`. Callers of `loadConfigCascade` must now state where its upward search stops, rather than relying on a project root the function found for them.",
+            "breaking": true,
+            "hash": "dde45692f300586bc4154931edc483d49fc0defb"
+          }
+        ]
+      },
+      {
+        "title": "Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Use identical compiler settings for all packages (#105)",
+            "body": "All packages now have identical compiler settings, using the settings from the `@williamthorsen/tsconfig` base config without modification.",
+            "hash": "253af1cc885cb5d11e60b03221e2b38237874cf4"
+          }
+        ]
+      }
+    ]
+  }
+]

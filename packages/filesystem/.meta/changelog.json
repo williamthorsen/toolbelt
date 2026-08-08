@@ -1,5 +1,54 @@
 [
   {
+    "version": "0.3.0",
+    "date": "2026-08-08",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Migrate replaceFileExtension into filesystem package (#74)",
+            "body": "Adds `replaceFileExtension` to the filesystem utilities. The function replaces the file extension in a file path; unlike analogous built-in functions, it supports multi-part extensions such as `.d.ts`.",
+            "hash": "c63dd7e6c634cee80a763c3420f1061d60ae0f9b"
+          },
+          {
+            "description": "Add directory-chain ascent and lookup exports (#102)",
+            "body": "Adds three functions for upward directory search, which walk from a starting directory to either the filesystem root or a bounded ceiling, finding named files or directories at each level along the way:\n\n- `listDirectoryChain` returns the directories alone\n- `listDirectoryChainMatches` returns every level's match\n- `findDirectoryChainMatch` finds only the nearest match\n\nAll three reject a path that falls outside the range they were asked to search. `findProjectRoot` now applies that same rule to its markers.",
+            "hash": "cee6383c528ff5ead4c98aa27b9ab2d25d623d19"
+          },
+          {
+            "description": "Add createTempTree with scope-bound disposal (#106)",
+            "body": "Adds `createTempTree` to `@williamthorsen/toolbelt.filesystem/proposed`. The new function allows a caller to describe a directory tree as a plain object mapping paths to contents and receive a handle in return; the tree is removed when that handle goes out of scope.",
+            "hash": "42828ad840fd2ca0f29a17b6475342f6d28094ac"
+          },
+          {
+            "description": "Add findPackageRoot, getSelfVersion, and findProjectRoot to toolbelt.packaging (#107)",
+            "body": "Adds a way for any module, whether it runs from a source tree or a compiled build, to identify the package that owns it and the version that package declares.\n\n`findProjectRoot` moves from `@williamthorsen/toolbelt.filesystem` to `@williamthorsen/toolbelt.packaging`. Callers of `loadConfigCascade` must now state where its upward search stops, rather than relying on a project root the function found for them.",
+            "breaking": true,
+            "hash": "dde45692f300586bc4154931edc483d49fc0defb"
+          }
+        ]
+      },
+      {
+        "title": "Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Migrate Vitest configs to the nmr projects model (#73)",
+            "body": "Packages no longer need to declare their own Vitest config. Test suites are now selected by a test file's name suffix rather than by choosing a config file: `*.app.test.ts` and `*.int.test.ts` route to the app and integration suites, and everything else runs as a unit test. Local development is now declared to require Node 24.16 or later.",
+            "hash": "a0653eb9a2f764f1cfbdef2011ce5af4d60f4642"
+          },
+          {
+            "description": "Use identical compiler settings for all packages (#105)",
+            "body": "All packages now have identical compiler settings, using the settings from the `@williamthorsen/tsconfig` base config without modification.",
+            "hash": "253af1cc885cb5d11e60b03221e2b38237874cf4"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.2.1",
     "date": "2026-07-27",
     "sections": [

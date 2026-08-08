@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.1.0 — 2026-08-08
+
+### Features
+
+- Use underscore separator at 4 digits or more
+
+  Changes the `unicorn/numeric-separators-style` rule config so that separators are consistently used in base 10 numbers, instead of exempting numbers of 5 digits or less.
+
+### Tooling
+
+- Migrate Vitest configs to the nmr projects model (#73)
+
+  Packages no longer need to declare their own Vitest config. Test suites are now selected by a test file's name suffix rather than by choosing a config file: `*.app.test.ts` and `*.int.test.ts` route to the app and integration suites, and everything else runs as a unit test. Local development is now declared to require Node 24.16 or later.
+
+- Use identical compiler settings for all packages (#105)
+
+  All packages now have identical compiler settings, using the settings from the `@williamthorsen/tsconfig` base config without modification.
+
 ## 3.0.9 — 2026-07-27
 
 ### Tooling

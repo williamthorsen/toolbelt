@@ -1,5 +1,32 @@
 [
   {
+    "version": "3.0.17",
+    "date": "2026-08-08",
+    "sections": [
+      {
+        "title": "Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Migrate Vitest configs to the nmr projects model (#73)",
+            "body": "Packages no longer need to declare their own Vitest config. Test suites are now selected by a test file's name suffix rather than by choosing a config file: `*.app.test.ts` and `*.int.test.ts` route to the app and integration suites, and everything else runs as a unit test. Local development is now declared to require Node 24.16 or later.",
+            "hash": "a0653eb9a2f764f1cfbdef2011ce5af4d60f4642"
+          },
+          {
+            "description": "Adopt the mechanical-syntax deferred unicorn rules (#82)",
+            "body": "Promotes ten deferred lint rules from warnings to errors and fixes the issues surfaced by those rules. One published behavior changes as well: Converting a Map to a plain object no longer drops an entry keyed `__proto__`.",
+            "hash": "d8f6463f85a1aea90ba21149f96fcf5816866fb2"
+          },
+          {
+            "description": "Use identical compiler settings for all packages (#105)",
+            "body": "All packages now have identical compiler settings, using the settings from the `@williamthorsen/tsconfig` base config without modification.",
+            "hash": "253af1cc885cb5d11e60b03221e2b38237874cf4"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "3.0.16",
     "date": "2026-07-27",
     "sections": [

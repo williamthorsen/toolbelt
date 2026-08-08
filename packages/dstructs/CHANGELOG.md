@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.4 — 2026-08-08
+
+### Refactoring
+
+- Fix deferred violations of unicorn lint rules (#88)
+
+  Fixes issues surfaced by `unicorn` lint rules that were temporarily downgraded to warnings and restores the rules to "error" severity. Separately, the `Queue` class in `dstructs` has been modified to hide its internal array.
+
+### Tooling
+
+- Migrate Vitest configs to the nmr projects model (#73)
+
+  Packages no longer need to declare their own Vitest config. Test suites are now selected by a test file's name suffix rather than by choosing a config file: `*.app.test.ts` and `*.int.test.ts` route to the app and integration suites, and everything else runs as a unit test. Local development is now declared to require Node 24.16 or later.
+
+- Use identical compiler settings for all packages (#105)
+
+  All packages now have identical compiler settings, using the settings from the `@williamthorsen/tsconfig` base config without modification.
+
 ## 0.2.3 — 2026-07-27
 
 ### Tooling

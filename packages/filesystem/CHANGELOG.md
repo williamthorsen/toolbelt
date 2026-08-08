@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.0 — 2026-08-08
+
+### Features
+
+- Migrate replaceFileExtension into filesystem package (#74)
+
+  Adds `replaceFileExtension` to the filesystem utilities. The function replaces the file extension in a file path; unlike analogous built-in functions, it supports multi-part extensions such as `.d.ts`.
+
+- Add directory-chain ascent and lookup exports (#102)
+
+  Adds three functions for upward directory search, which walk from a starting directory to either the filesystem root or a bounded ceiling, finding named files or directories at each level along the way:
+
+  - `listDirectoryChain` returns the directories alone
+  - `listDirectoryChainMatches` returns every level's match
+  - `findDirectoryChainMatch` finds only the nearest match
+
+  All three reject a path that falls outside the range they were asked to search. `findProjectRoot` now applies that same rule to its markers.
+
+- Add createTempTree with scope-bound disposal (#106)
+
+  Adds `createTempTree` to `@williamthorsen/toolbelt.filesystem/proposed`. The new function allows a caller to describe a directory tree as a plain object mapping paths to contents and receive a handle in return; the tree is removed when that handle goes out of scope.
+
+- 🚨 **Breaking:** Add findPackageRoot, getSelfVersion, and findProjectRoot to toolbelt.packaging (#107)
+
+  Adds a way for any module, whether it runs from a source tree or a compiled build, to identify the package that owns it and the version that package declares.
+
+  `findProjectRoot` moves from `@williamthorsen/toolbelt.filesystem` to `@williamthorsen/toolbelt.packaging`. Callers of `loadConfigCascade` must now state where its upward search stops, rather than relying on a project root the function found for them.
+
+### Tooling
+
+- Migrate Vitest configs to the nmr projects model (#73)
+
+  Packages no longer need to declare their own Vitest config. Test suites are now selected by a test file's name suffix rather than by choosing a config file: `*.app.test.ts` and `*.int.test.ts` route to the app and integration suites, and everything else runs as a unit test. Local development is now declared to require Node 24.16 or later.
+
+- Use identical compiler settings for all packages (#105)
+
+  All packages now have identical compiler settings, using the settings from the `@williamthorsen/tsconfig` base config without modification.
+
 ## 0.2.1 — 2026-07-27
 
 ### Tooling
