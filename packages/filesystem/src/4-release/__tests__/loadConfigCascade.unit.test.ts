@@ -1,9 +1,7 @@
-import path from 'node:path';
+import { describe, expect, it } from 'vitest';
 
-import { afterEach, describe, expect, it } from 'vitest';
-
+import { createTempTree } from '../../1-proposed/createTempTree.ts';
 import { loadConfigCascade } from '../loadConfigCascade.ts';
-import { createTempTree, removeTempTrees } from './__fixtures__/createTempTree.ts';
 
 /** A module that fails loudly if it is ever imported, proving the loader skipped it rather than discarded it. */
 const POISONED_MODULE = "throw new Error('imported a config the cascade should have skipped');\n";
@@ -13,10 +11,8 @@ interface LabelledConfig {
 }
 
 describe(loadConfigCascade, () => {
-  afterEach(removeTempTrees);
-
   it('returns the configs from the start directory to the project root, nearest first', async () => {
-    const treeDir = createTempTree({
+    using tree = createTempTree({
       '.git/': '',
       'packages/app/stack.config.mjs': exportDefault({ level: 'app' }),
       'stack.config.mjs': exportDefault({ level: 'root' }),
@@ -24,17 +20,17 @@ describe(loadConfigCascade, () => {
 
     const result = await loadConfigCascade<LabelledConfig>({
       fileNames: ['stack.config.mjs'],
-      startDir: path.join(treeDir, 'packages/app'),
+      startDir: tree.resolve('packages/app'),
     });
 
     expect(result.entries.map((entry) => entry.config.level)).toStrictEqual(['app', 'root']);
-    expect(result.entries.map((entry) => entry.dir)).toStrictEqual([path.join(treeDir, 'packages/app'), treeDir]);
-    expect(result.projectRoot).toStrictEqual({ marker: '.git', rootDir: treeDir, source: 'marker' });
+    expect(result.entries.map((entry) => entry.dir)).toStrictEqual([tree.resolve('packages/app'), tree.dir]);
+    expect(result.projectRoot).toStrictEqual({ marker: '.git', rootDir: tree.dir, source: 'marker' });
     expect(result.stopReason).toBe('project-root');
   });
 
   it('never reads a config above the project root', async () => {
-    const treeDir = createTempTree({
+    using tree = createTempTree({
       'project/.git/': '',
       'project/stack.config.mjs': exportDefault({ level: 'project' }),
       'stack.config.mjs': POISONED_MODULE,
@@ -42,14 +38,14 @@ describe(loadConfigCascade, () => {
 
     const result = await loadConfigCascade<LabelledConfig>({
       fileNames: ['stack.config.mjs'],
-      startDir: path.join(treeDir, 'project'),
+      startDir: tree.resolve('project'),
     });
 
     expect(result.entries.map((entry) => entry.config.level)).toStrictEqual(['project']);
   });
 
   it('once the stop predicate returns true, imports no farther config', async () => {
-    const treeDir = createTempTree({
+    using tree = createTempTree({
       '.git/': '',
       'app/stack.config.mjs': exportDefault({ level: 'app', shouldStopAscent: true }),
       'stack.config.mjs': POISONED_MODULE,
@@ -58,7 +54,7 @@ describe(loadConfigCascade, () => {
     const result = await loadConfigCascade<LabelledConfig & { shouldStopAscent?: boolean }>({
       fileNames: ['stack.config.mjs'],
       shouldStopAscent: (config) => config.shouldStopAscent === true,
-      startDir: path.join(treeDir, 'app'),
+      startDir: tree.resolve('app'),
     });
 
     expect(result.entries.map((entry) => entry.config.level)).toStrictEqual(['app']);
@@ -66,7 +62,7 @@ describe(loadConfigCascade, () => {
   });
 
   it('if the stop predicate never returns true, ascends to the project root', async () => {
-    const treeDir = createTempTree({
+    using tree = createTempTree({
       '.git/': '',
       'app/stack.config.mjs': exportDefault({ level: 'app' }),
       'stack.config.mjs': exportDefault({ level: 'root' }),
@@ -75,7 +71,7 @@ describe(loadConfigCascade, () => {
     const result = await loadConfigCascade<LabelledConfig>({
       fileNames: ['stack.config.mjs'],
       shouldStopAscent: () => false,
-      startDir: path.join(treeDir, 'app'),
+      startDir: tree.resolve('app'),
     });
 
     expect(result.entries.map((entry) => entry.config.level)).toStrictEqual(['app', 'root']);
@@ -83,7 +79,7 @@ describe(loadConfigCascade, () => {
   });
 
   it('given several file names, takes the earliest match at each level independently', async () => {
-    const treeDir = createTempTree({
+    using tree = createTempTree({
       '.git/': '',
       'app/primary.config.mjs': exportDefault({ level: 'app-primary' }),
       'app/secondary.config.mjs': POISONED_MODULE,
@@ -92,31 +88,29 @@ describe(loadConfigCascade, () => {
 
     const result = await loadConfigCascade<LabelledConfig>({
       fileNames: ['primary.config.mjs', 'secondary.config.mjs'],
-      startDir: path.join(treeDir, 'app'),
+      startDir: tree.resolve('app'),
     });
 
     expect(result.entries.map((entry) => entry.config.level)).toStrictEqual(['app-primary', 'root-secondary']);
   });
 
   it('given a nested file name, reports the cascade level rather than the file’s own directory', async () => {
-    const treeDir = createTempTree({
+    using tree = createTempTree({
       '.git/': '',
       'app/.config/stack.config.mjs': exportDefault({ level: 'app' }),
     });
 
     const result = await loadConfigCascade<LabelledConfig>({
       fileNames: ['.config/stack.config.mjs'],
-      startDir: path.join(treeDir, 'app'),
+      startDir: tree.resolve('app'),
     });
 
-    expect(result.entries.map((entry) => entry.dir)).toStrictEqual([path.join(treeDir, 'app')]);
-    expect(result.entries.map((entry) => entry.filePath)).toStrictEqual([
-      path.join(treeDir, 'app/.config/stack.config.mjs'),
-    ]);
+    expect(result.entries.map((entry) => entry.dir)).toStrictEqual([tree.resolve('app')]);
+    expect(result.entries.map((entry) => entry.filePath)).toStrictEqual([tree.resolve('app/.config/stack.config.mjs')]);
   });
 
   it('given a marker list, bounds the ascent by those markers', async () => {
-    const treeDir = createTempTree({
+    using tree = createTempTree({
       'app/.git/': '',
       'app/stack.config.mjs': exportDefault({ level: 'app' }),
       'deno.json': '{}',
@@ -126,7 +120,7 @@ describe(loadConfigCascade, () => {
     const result = await loadConfigCascade<LabelledConfig>({
       fileNames: ['stack.config.mjs'],
       markers: ['deno.json'],
-      startDir: path.join(treeDir, 'app'),
+      startDir: tree.resolve('app'),
     });
 
     expect(result.entries.map((entry) => entry.config.level)).toStrictEqual(['app', 'root']);
@@ -134,11 +128,11 @@ describe(loadConfigCascade, () => {
   });
 
   it('if no level holds a config, returns no entries', async () => {
-    const treeDir = createTempTree({ '.git/': '', 'app/': '' });
+    using tree = createTempTree({ '.git/': '', 'app/': '' });
 
     const result = await loadConfigCascade<LabelledConfig>({
       fileNames: ['stack.config.mjs'],
-      startDir: path.join(treeDir, 'app'),
+      startDir: tree.resolve('app'),
     });
 
     expect(result.entries).toStrictEqual([]);
@@ -146,70 +140,70 @@ describe(loadConfigCascade, () => {
   });
 
   it('rejects a config module that has no default export', async () => {
-    const treeDir = createTempTree({
+    using tree = createTempTree({
       '.git/': '',
       'stack.config.mjs': 'export const config = { level: "root" };\n',
     });
 
     const resultPromise = loadConfigCascade<LabelledConfig>({
       fileNames: ['stack.config.mjs'],
-      startDir: treeDir,
+      startDir: tree.dir,
     });
 
     await expect(resultPromise).rejects.toThrow(/has no default export/);
   });
 
   it('rejects a file name that would ascend above its level', async () => {
-    const treeDir = createTempTree({
+    using tree = createTempTree({
       'project/.git/': '',
       'shared.config.mjs': POISONED_MODULE,
     });
 
     const resultPromise = loadConfigCascade<LabelledConfig>({
       fileNames: ['../shared.config.mjs'],
-      startDir: path.join(treeDir, 'project'),
+      startDir: tree.resolve('project'),
     });
 
     await expect(resultPromise).rejects.toThrow(/must not ascend above its directory level/);
   });
 
   it('rejects an absolute file name', async () => {
-    const treeDir = createTempTree({
+    using tree = createTempTree({
       '.git/': '',
       'stack.config.mjs': exportDefault({ level: 'root' }),
     });
 
     const resultPromise = loadConfigCascade<LabelledConfig>({
-      fileNames: [path.join(treeDir, 'stack.config.mjs')],
-      startDir: treeDir,
+      fileNames: [tree.resolve('stack.config.mjs')],
+      startDir: tree.dir,
     });
 
     await expect(resultPromise).rejects.toThrow(/must be relative to its directory level/);
   });
 
   it('given `..` segments that resolve back within the level, loads the config', async () => {
-    const treeDir = createTempTree({
+    using tree = createTempTree({
       '.git/': '',
       'stack.config.mjs': exportDefault({ level: 'root' }),
     });
 
     const result = await loadConfigCascade<LabelledConfig>({
       fileNames: ['nested/../stack.config.mjs'],
-      startDir: treeDir,
+      startDir: tree.dir,
     });
 
     expect(result.entries.map((entry) => entry.config.level)).toStrictEqual(['root']);
   });
 
   it('loads a TypeScript config module', async () => {
-    const treeDir = createTempTree({
+    using tree = createTempTree({
       '.git/': '',
       'stack.config.ts': 'const config: { level: string } = { level: "root" };\nexport default config;\n',
     });
 
     const result = await loadConfigCascade<LabelledConfig>({
       fileNames: ['stack.config.ts'],
-      startDir: treeDir,
+      startDir: tree.dir,
     });
 
     expect(result.entries.map((entry) => entry.config.level)).toStrictEqual(['root']);
