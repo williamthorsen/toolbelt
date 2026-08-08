@@ -12,51 +12,9 @@ pnpm add @williamthorsen/toolbelt.filesystem
 
 ## Runtime requirements
 
-`createTempTree`, `findDirectoryChainMatch`, `findProjectRoot`, `listDirectoryChainMatches`, and `loadConfigCascade` reach the filesystem through `node:` builtins, so they run under Node.js 24 or later, Bun, and Deno. They do not run in browsers, nor in edge runtimes that expose no filesystem. `listDirectoryChain` and `replaceFileExtension` touch no filesystem, so an edge runtime that exposes none runs them; they still import `node:path`, which a browser bundle has to supply.
+`createTempTree`, `findDirectoryChainMatch`, `listDirectoryChainMatches`, and `loadConfigCascade` reach the filesystem through `node:` builtins, so they run under Node.js 24 or later, Bun, and Deno. They do not run in browsers, nor in edge runtimes that expose no filesystem. `listDirectoryChain` and `replaceFileExtension` touch no filesystem, so an edge runtime that exposes none runs them; they still import `node:path`, which a browser bundle has to supply.
 
 `loadConfigCascade` imports each config through the host runtime, so a `.ts` config is subject to whatever that runtime does with TypeScript. Node strips types rather than compiling them, which admits erasable syntax alone: an `enum`, a `namespace`, or a parameter property in a config file fails to parse. A `.mjs` or `.js` config sidesteps the question.
-
-## `findProjectRoot`
-
-```ts
-findProjectRoot(startDir: string, options?: { markers?: ReadonlyArray<string> }): ProjectRoot;
-```
-
-Resolves `startDir` to an absolute path, ascends from it, and returns the first directory carrying a root marker, along with the evidence that identified it:
-
-```ts
-interface ProjectRoot {
-  marker: string | null; // the marker that matched, or null when a fallback answered
-  rootDir: string;
-  source: 'marker' | 'package-json' | 'start-dir';
-}
-```
-
-`DEFAULT_ROOT_MARKERS` is consulted in order, so the earliest entry wins when one directory carries several:
-
-1. `.git`, matching either a directory (an ordinary clone) or a file (a worktree or submodule);
-2. `pnpm-workspace.yaml`;
-3. `pnpm-lock.yaml`;
-4. `package-lock.json`;
-5. `yarn.lock`;
-6. `bun.lock`.
-
-Passing `markers` replaces that list rather than extending it. Spread `DEFAULT_ROOT_MARKERS` to add to it:
-
-```ts
-import { DEFAULT_ROOT_MARKERS, findProjectRoot } from '@williamthorsen/toolbelt.filesystem';
-
-findProjectRoot(process.cwd(), { markers: [...DEFAULT_ROOT_MARKERS, 'deno.json'] });
-```
-
-Each marker is a path relative to the level it is probed against, on the terms [`listDirectoryChainMatches`](#listdirectorychainmatches) sets out: one that is absolute, or whose `..` segments escape its level, is rejected before any directory is probed.
-
-When no directory up to and including the filesystem root carries a marker, the result falls back in this order, reporting a `null` marker either way:
-
-1. the nearest ancestor holding a `package.json`, reported as `source: 'package-json'`;
-2. `startDir` itself, reported as `source: 'start-dir'`.
-
-The ascent terminates at the filesystem root on every platform, so a Windows drive root or UNC share is as safe a starting point as a POSIX path.
 
 ## `listDirectoryChain`
 
@@ -147,15 +105,17 @@ Probing stops at the first level that matches, so no level beyond it is touched 
 ```ts
 loadConfigCascade<TConfig>(options: {
   fileNames: ReadonlyArray<string>;
-  markers?: ReadonlyArray<string>;
   shouldStopAscent?: (config: TConfig) => boolean;
   startDir: string;
+  stopAtDir: string;
 }): Promise<ConfigCascade<TConfig>>;
 ```
 
-Loads every config file between `startDir` and its project root, nearest first, and reads nothing above that root.
+Loads every config file between `startDir` and `stopAtDir`, nearest first, and reads nothing above that boundary.
 
-Discovery is [`listDirectoryChainMatches`](#listdirectorychainmatches) bounded at the project root, which [`findProjectRoot`](#findprojectroot) resolves from `markers`: the first of `fileNames` that exists at a level becomes that level's config, a level holding none contributes nothing, and a name that would leave its level is rejected before any file is read.
+Discovery is [`listDirectoryChainMatches`](#listdirectorychainmatches) bounded at `stopAtDir`: the first of `fileNames` that exists at a level becomes that level's config, a level holding none contributes nothing, and a name that would leave its level is rejected before any file is read. A `stopAtDir` that is neither the start directory nor one of its ancestors throws, on the same terms `listDirectoryChain` sets out.
+
+The boundary is required, and it is the caller's to choose. That is what keeps this function free of any notion of what marks a project: it never asks whether a directory holds a lockfile or a workspace manifest. Where the boundary should be a project root, [`findProjectRoot`](https://github.com/williamthorsen/toolbelt/tree/main/packages/packaging#findprojectroot) in `@williamthorsen/toolbelt.packaging` resolves one from markers.
 
 The matched files are then imported one at a time, and `shouldStopAscent` is consulted after each. Once it returns true, the ascent halts and no farther file is imported at all, rather than being loaded and discarded:
 
@@ -166,8 +126,7 @@ interface ConfigCascade<TConfig> {
     dir: string; // the cascade level, which differs from the file's own directory for a nested file name
     filePath: string;
   }>;
-  projectRoot: ProjectRoot;
-  stopReason: 'predicate' | 'project-root';
+  stopReason: 'predicate' | 'stop-dir';
 }
 ```
 
@@ -179,20 +138,24 @@ The predicate is the caller's whole stop policy, so any field can drive it. By c
 
 ```ts
 import { loadConfigCascade } from '@williamthorsen/toolbelt.filesystem';
+import { findProjectRoot } from '@williamthorsen/toolbelt.packaging';
 
 interface StackConfig {
   rules?: Record<string, string>;
   shouldStopAscent?: boolean;
 }
 
-const { entries, projectRoot, stopReason } = await loadConfigCascade<StackConfig>({
+const { rootDir } = findProjectRoot(process.cwd());
+
+const { entries, stopReason } = await loadConfigCascade<StackConfig>({
   fileNames: ['stack.config.mjs', 'stack.config.js'],
   shouldStopAscent: (config) => config.shouldStopAscent === true,
   startDir: process.cwd(),
+  stopAtDir: rootDir,
 });
 ```
 
-`projectRoot` and `stopReason` are provenance for the caller to surface, so a user can see which directory bounded the cascade and what ended it.
+`stopReason` is provenance for the caller to surface, so a user can see whether the predicate ended the cascade or it simply reached the boundary. Which directory bounded it is the `stopAtDir` the caller passed in.
 
 ## `createTempTree`
 
