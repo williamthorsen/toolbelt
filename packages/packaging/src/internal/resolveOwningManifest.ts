@@ -11,9 +11,6 @@ import { listDirectoryChain } from '@williamthorsen/toolbelt.filesystem';
  * that declares none is a marker manifest, such as the `{"type": "commonjs"}` file a dual-format build leaves
  * in `dist/`, and the ascent passes over it. That is the whole difference from `node:module`'s
  * `findPackageJSON`, which answers with the nearest manifest whatever it holds.
- *
- * The chain is walked one level at a time rather than collected up front, so no directory above the owning
- * package is ever probed.
  */
 export function resolveOwningManifest(fromUrl: string): OwningManifest {
   const startDir = path.dirname(fileURLToPath(fromUrl));
@@ -46,9 +43,14 @@ export interface PackageManifest {
 }
 
 // region | Helpers
-/** Narrows parsed JSON to a manifest shape, which is any object: every declared field is optional. */
+/**
+ * Narrows parsed JSON to a manifest shape, which is any JSON object: every declared field is optional.
+ *
+ * Arrays are excluded explicitly, since `typeof` reports one as an object. An array admitted here would be
+ * passed over as nameless, making a malformed manifest resolve to an ancestor instead of raising.
+ */
 function isPackageManifest(value: unknown): value is PackageManifest {
-  return typeof value === 'object' && value !== null;
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 /** Reads and parses a manifest, rejecting one that is unreadable as JSON or is not a JSON object. */
