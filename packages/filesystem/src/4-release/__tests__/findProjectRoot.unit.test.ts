@@ -3,104 +3,103 @@ import path from 'node:path';
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { createTempTree } from '../../1-proposed/createTempTree.ts';
 import { DEFAULT_ROOT_MARKERS, findProjectRoot } from '../findProjectRoot.ts';
-import { createTempTree, removeTempTrees } from './__fixtures__/createTempTree.ts';
 
 describe(findProjectRoot, () => {
   const existsSyncSpy = vi.spyOn(fs, 'existsSync');
 
   afterEach(() => {
     existsSyncSpy.mockClear();
-    removeTempTrees();
   });
 
   it('returns the start directory when it carries a marker', () => {
-    const treeDir = createTempTree({ '.git/': '' });
+    using tree = createTempTree({ '.git/': '' });
 
-    const result = findProjectRoot(treeDir);
+    const result = findProjectRoot(tree.dir);
 
-    expect(result).toStrictEqual({ marker: '.git', rootDir: treeDir, source: 'marker' });
+    expect(result).toStrictEqual({ marker: '.git', rootDir: tree.dir, source: 'marker' });
   });
 
   it('returns the nearest ancestor carrying a marker', () => {
-    const treeDir = createTempTree({ 'packages/app/src/': '', 'pnpm-workspace.yaml': '' });
+    using tree = createTempTree({ 'packages/app/src/': '', 'pnpm-workspace.yaml': '' });
 
-    const result = findProjectRoot(path.join(treeDir, 'packages/app/src'));
+    const result = findProjectRoot(tree.resolve('packages/app/src'));
 
-    expect(result).toStrictEqual({ marker: 'pnpm-workspace.yaml', rootDir: treeDir, source: 'marker' });
+    expect(result).toStrictEqual({ marker: 'pnpm-workspace.yaml', rootDir: tree.dir, source: 'marker' });
   });
 
   it('matches `.git` when it is a file rather than a directory', () => {
-    const treeDir = createTempTree({ '.git': '', 'src/': '' });
+    using tree = createTempTree({ '.git': '', 'src/': '' });
 
-    const result = findProjectRoot(path.join(treeDir, 'src'));
+    const result = findProjectRoot(tree.resolve('src'));
 
-    expect(result).toStrictEqual({ marker: '.git', rootDir: treeDir, source: 'marker' });
+    expect(result).toStrictEqual({ marker: '.git', rootDir: tree.dir, source: 'marker' });
   });
 
   it('reports the earliest matching marker when a directory carries several', () => {
-    const treeDir = createTempTree({ 'yarn.lock': '', 'pnpm-workspace.yaml': '' });
+    using tree = createTempTree({ 'yarn.lock': '', 'pnpm-workspace.yaml': '' });
 
-    const result = findProjectRoot(treeDir);
+    const result = findProjectRoot(tree.dir);
 
     expect(result.marker).toBe('pnpm-workspace.yaml');
   });
 
   it('resolves a relative start directory against the working directory', () => {
-    const treeDir = createTempTree({ '.git/': '', 'src/': '' });
-    const relativeStartDir = path.relative(process.cwd(), path.join(treeDir, 'src'));
+    using tree = createTempTree({ '.git/': '', 'src/': '' });
+    const relativeStartDir = path.relative(process.cwd(), tree.resolve('src'));
 
     const result = findProjectRoot(relativeStartDir);
 
-    expect(result.rootDir).toBe(treeDir);
+    expect(result.rootDir).toBe(tree.dir);
   });
 
   it('given a marker list, ignores the default markers', () => {
-    const treeDir = createTempTree({ 'app/.git/': '', 'deno.json': '' });
+    using tree = createTempTree({ 'app/.git/': '', 'deno.json': '' });
 
-    const result = findProjectRoot(path.join(treeDir, 'app'), { markers: ['deno.json'] });
+    const result = findProjectRoot(tree.resolve('app'), { markers: ['deno.json'] });
 
-    expect(result).toStrictEqual({ marker: 'deno.json', rootDir: treeDir, source: 'marker' });
+    expect(result).toStrictEqual({ marker: 'deno.json', rootDir: tree.dir, source: 'marker' });
   });
 
   it('if no marker is found, falls back to the nearest directory holding a package.json', () => {
-    const treeDir = createTempTree({ 'app/package.json': '', 'app/src/': '', 'package.json': '' });
+    using tree = createTempTree({ 'app/package.json': '', 'app/src/': '', 'package.json': '' });
 
-    const result = findProjectRoot(path.join(treeDir, 'app/src'));
+    const result = findProjectRoot(tree.resolve('app/src'));
 
-    expect(result).toStrictEqual({ marker: null, rootDir: path.join(treeDir, 'app'), source: 'package-json' });
+    expect(result).toStrictEqual({ marker: null, rootDir: tree.resolve('app'), source: 'package-json' });
   });
 
   it('if no marker or package.json is found, falls back to the start directory', () => {
-    const treeDir = createTempTree({ 'app/src/': '' });
+    using tree = createTempTree({ 'app/src/': '' });
 
-    const result = findProjectRoot(path.join(treeDir, 'app/src'));
+    const result = findProjectRoot(tree.resolve('app/src'));
 
-    expect(result).toStrictEqual({ marker: null, rootDir: path.join(treeDir, 'app/src'), source: 'start-dir' });
+    expect(result).toStrictEqual({ marker: null, rootDir: tree.resolve('app/src'), source: 'start-dir' });
   });
 
   it('probes no directory above the marker it finds', () => {
-    const treeDir = createTempTree({ '.git/': '', 'app/src/': '' });
+    using tree = createTempTree({ '.git/': '', 'app/src/': '' });
 
-    findProjectRoot(path.join(treeDir, 'app/src'));
+    findProjectRoot(tree.resolve('app/src'));
 
     const probedDirs = [...new Set(existsSyncSpy.mock.calls.map(([target]) => path.dirname(String(target))))];
 
-    expect(probedDirs).toStrictEqual([path.join(treeDir, 'app/src'), path.join(treeDir, 'app'), treeDir]);
+    expect(probedDirs).toStrictEqual([tree.resolve('app/src'), tree.resolve('app'), tree.dir]);
   });
 
   it('rejects an absolute marker', () => {
-    const treeDir = createTempTree({ '.git/': '' });
+    using tree = createTempTree({ '.git/': '' });
 
-    const find = () => findProjectRoot(treeDir, { markers: [path.join(treeDir, '.git')] });
+    const find = () => findProjectRoot(tree.dir, { markers: [tree.resolve('.git')] });
 
     expect(find).toThrow(/must be relative to its directory level/);
   });
 
   it('rejects a marker that would ascend above its level', () => {
-    const treeDir = createTempTree({ '.git/': '', 'app/': '' });
+    using tree = createTempTree({ '.git/': '', 'app/': '' });
 
-    const find = () => findProjectRoot(path.join(treeDir, 'app'), { markers: ['../.git'] });
+    const find = () => findProjectRoot(tree.resolve('app'), { markers: ['../.git'] });
 
     expect(find).toThrow(/must not ascend above its directory level/);
   });
