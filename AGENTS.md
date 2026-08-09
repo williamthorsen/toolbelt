@@ -9,13 +9,13 @@ PNPM monorepo of TypeScript utility libraries, each published to npm as `@willia
 - `packages/{domain}/`: one published library per domain (arrays, async, datetime, dstructs, enums, filesystem, guards, hof, numbers, objects, packaging, sets, statistics, strings, tools).
 - `packages/_template/`: private scaffold for new packages, excluded from release processing in `.config/release-kit.config.ts`.
 - `packages/{domain}/src/{0-strawman,1-proposed,2-draft,3-candidate,4-release}/`: maturity tiers, each with an `index.ts` re-exporting that tier's public surface. `src/internal/` and `src/types/` sit outside the tiers and are not exported.
-- `.config/`: tool configs (nmr, release-kit, strict-lint, v11y, worktrunk). Vitest config lives outside it, in exactly two root files: `vitest.config.ts` and `vitest.root.config.ts`, each a bare call to a `@williamthorsen/nmr/vitest` factory.
+- `.config/`: tool configs (nmr, readyup, release-kit, strict-lint, v11y, worktrunk). Vitest config lives outside it, in exactly two root files: `vitest.config.ts` and `vitest.root.config.ts`, each a bare call to a `@williamthorsen/nmr/vitest` factory.
 
 Versions are independent per package.
 
 ## Commands
 
-Runner conventions (discovery, invocation, root vs. package registries, hooks) come from the ambient `nmr` rulebook, which `codeassembly sync` writes into the machine-local guidance files. CI runs `pnpm exec nmr ci` (`.github/workflows/code-quality.yaml`); a dependency audit runs separately, on pull requests and daily (`.github/workflows/audit.yaml`).
+Runner conventions (discovery, invocation, root vs. package registries, hooks) come from the ambient `nmr` rulebook, which `codeassembly sync` writes into the machine-local guidance files. CI runs `pnpm exec nmr ci` (`.github/workflows/code-quality.yaml`); a dependency audit runs separately, on pull requests and daily (`.github/workflows/audit.yaml`). `pnpm exec rdy run --packages` runs the checks each tool dependency ships for its own adoption; nothing in CI runs it, so run it by hand after a dependency upgrade.
 
 ## Architecture
 
@@ -45,7 +45,7 @@ Runner conventions (discovery, invocation, root vs. package registries, hooks) c
 
 ## Gotchas
 
-- **`4-release` is empty for most packages.** Only `enums`, `filesystem`, `guards`, and `objects` export anything from the default entry point. `arrays`, `strings`, `numbers`, `sets`, and the rest hold `export {}` there, with the real API in `3-candidate`. Import from `/candidate` unless you have confirmed the symbol is promoted.
+- **`4-release` is empty for most packages.** Only `enums`, `filesystem`, `guards`, `objects`, and `packaging` export anything from the default entry point. `arrays`, `strings`, `numbers`, `sets`, and the rest hold `export {}` there, with the real API in `3-candidate`. Import from `/candidate` unless you have confirmed the symbol is promoted.
 - **Promoting an API is a move plus three edits**: relocate the file, update both tiers' `index.ts`, and update the `@stage` tag.
 - **Suites are Vitest projects selected by filename, not by config file.** The projects are the isolation ladder `unit`, `tool`, `localhost`, and `remote`, named for the furthest thing a test reaches and matched on the segment immediately before `.test.ts`. `unit` is the residual: any other segment lands there, which is why `stage-tag-alignment.app.unit.test.ts` carries its tier in the tail and leaves `app` as documentation. `nmr test` runs `unit` and `tool`; `nmr test:all` runs everything. The repo has no test above `unit`.
 - **`passWithNoTests` is set on every project.** A suite with no matching files exits green instead of failing, so `nmr test:tool` always passes (the repo has no `*.tool.test.ts` files) and a package that loses its tests passes just as quietly. The placeholder `todo` test in `packages/_template` is what keeps a freshly scaffolded package from being the first such case.
