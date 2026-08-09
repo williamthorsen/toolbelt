@@ -9,6 +9,7 @@ PNPM monorepo of TypeScript utility libraries, each published to npm as `@willia
 - `packages/{domain}/`: one published library per domain (arrays, async, datetime, dstructs, enums, filesystem, guards, hof, numbers, objects, packaging, sets, statistics, strings, tools).
 - `packages/_template/`: private scaffold for new packages, excluded from release processing in `.config/release-kit.config.ts`.
 - `packages/{domain}/src/{0-strawman,1-proposed,2-draft,3-candidate,4-release}/`: maturity tiers, each with an `index.ts` re-exporting that tier's public surface. `src/internal/` and `src/types/` sit outside the tiers and are not exported.
+- `.agents/`: `codeassembly.yaml` declares the guidance packages `codeassembly sync` resolves; `preferences.yaml` carries the project slug and ticket-ref prefix.
 - `.config/`: tool configs (nmr, readyup, release-kit, strict-lint, v11y, worktrunk). Vitest config lives outside it, in exactly two root files: `vitest.config.ts` and `vitest.root.config.ts`, each a bare call to a `@williamthorsen/nmr/vitest` factory.
 
 Versions are independent per package.
