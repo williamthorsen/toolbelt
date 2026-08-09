@@ -19,7 +19,7 @@
     "packages/*"
   ],
   "scripts": {
-    "postinstall": "nmr report-overrides --quiet",
+    "postinstall": "nmr report-overrides --quiet && codeassembly sync --warn-only",
     "prepare": "lefthook install"
   },
   "devDependencies": {
