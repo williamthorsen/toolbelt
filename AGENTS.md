@@ -1,7 +1,5 @@
 # Toolbelt
 
-@nmr/AGENTS.md
-
 ## Overview
 
 PNPM monorepo of TypeScript utility libraries, each published to npm as `@williamthorsen/toolbelt.{domain}`. Every package organizes its source by API maturity and exposes each tier as a separate export subpath, so consumers opt in to the stability they want. Node >= 24, ESM only. Runtime dependencies outside the workspace are avoided rather than forbidden: reach for one only where hand-rolling would be worse, and prefer a workspace helper where one fits. `objects` depends on `@sindresorhus/is`; no other package does.
@@ -17,7 +15,7 @@ Versions are independent per package.
 
 ## Commands
 
-Runner conventions (discovery, invocation, root vs. package registries, hooks) come from `.agents/nmr/AGENTS.md`, imported at the top of this file. CI runs `pnpm exec nmr ci` (`.github/workflows/code-quality.yaml`); a dependency audit runs separately, on pull requests and daily (`.github/workflows/audit.yaml`).
+Runner conventions (discovery, invocation, root vs. package registries, hooks) come from the ambient `nmr` rulebook, which `codeassembly sync` writes into the machine-local guidance files. CI runs `pnpm exec nmr ci` (`.github/workflows/code-quality.yaml`); a dependency audit runs separately, on pull requests and daily (`.github/workflows/audit.yaml`).
 
 ## Architecture
 
