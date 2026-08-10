@@ -5,7 +5,7 @@
  *
  * @internal
  */
-export function getFakeMathRandom(seed: number): number {
+export function computeFakeMathRandom(seed: number): number {
   // Convert the seed to a string representation to extract as much variation
   const strSeed = seed.toString().replace('.', ''); // Remove the decimal point for further processing
 

@@ -1,6 +1,6 @@
 import type { Seed, SeededGenerator } from '../internal/evaluateSeed.ts';
 import { checkIsRngLike, evaluateSeed } from '../internal/evaluateSeed.ts';
-import { getFakeMathRandom } from '../internal/getFakeMathRandom.ts';
+import { computeFakeMathRandom } from '../internal/computeFakeMathRandom.ts';
 import { IntegerSeed } from '../internal/IntegerSeed.ts';
 import { wrapSum } from '../internal/wrapSum.ts';
 import { pickInteger } from './pickInteger.ts';
@@ -142,7 +142,7 @@ export class SeededRng implements SeededGenerator {
   }
 
   protected generateValue(): number {
-    return getFakeMathRandom(this._seed);
+    return computeFakeMathRandom(this._seed);
   }
 
   // Safely sets records the base seed and sets the current seed to the same value
@@ -155,14 +155,14 @@ export class SeededRng implements SeededGenerator {
 // Behaves exactly the same as `SeededRng`, but returns integers in the range [1, Number.MAX_SAFE_INTEGER]
 export class IntSeededRng extends SeededRng {
   protected override generateValue(): number {
-    return pickInteger({ min: 1, max: Number.MAX_SAFE_INTEGER, seed: getFakeMathRandom(this.seed) });
+    return pickInteger({ min: 1, max: Number.MAX_SAFE_INTEGER, seed: computeFakeMathRandom(this.seed) });
   }
 }
 
 // Same as `IntSeededRng`, but returns integers in the range [1, 2 ** 32 - 1]
 export class Int32SeededRng extends SeededRng {
   protected override generateValue(): number {
-    return pickInteger({ min: 1, max: 2 ** 32 - 1, seed: getFakeMathRandom(this.seed) });
+    return pickInteger({ min: 1, max: 2 ** 32 - 1, seed: computeFakeMathRandom(this.seed) });
   }
 }
 // region | Types

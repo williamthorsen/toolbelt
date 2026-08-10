@@ -1,6 +1,6 @@
 import type { Seed } from '../internal/evaluateSeed.ts';
 import { evaluateSeed } from '../internal/evaluateSeed.ts';
-import { getFakeMathRandom } from '../internal/getFakeMathRandom.ts';
+import { computeFakeMathRandom } from '../internal/computeFakeMathRandom.ts';
 import { scale } from './scale.ts';
 
 /**
@@ -10,7 +10,7 @@ export function generateRandom(options: Options = {}): number {
   const { min = 0, max = 1 } = options;
 
   const seed = evaluateSeed(options.seed);
-  const randomNumber = seed === undefined ? Math.random() : getFakeMathRandom(seed);
+  const randomNumber = seed === undefined ? Math.random() : computeFakeMathRandom(seed);
 
   return scale(randomNumber, { min, max });
 }

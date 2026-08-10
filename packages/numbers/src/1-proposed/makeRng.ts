@@ -1,6 +1,6 @@
 import type { Seed } from '../internal/evaluateSeed.ts';
 import { evaluateSeed } from '../internal/evaluateSeed.ts';
-import { getFakeMathRandom } from '../internal/getFakeMathRandom.ts';
+import { computeFakeMathRandom } from '../internal/computeFakeMathRandom.ts';
 
 /**
  * Returns a number generator whose output, when invoked successively, is a pseudo-random
@@ -15,6 +15,6 @@ export function makeRng(seed?: Seed): () => number {
   let base = inputSeed;
   return function random() {
     base = (base + 1) % Number.MAX_SAFE_INTEGER;
-    return getFakeMathRandom(base);
+    return computeFakeMathRandom(base);
   };
 }

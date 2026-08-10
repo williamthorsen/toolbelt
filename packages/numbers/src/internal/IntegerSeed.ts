@@ -1,4 +1,4 @@
-import { getFakeMathRandom } from './getFakeMathRandom.ts';
+import { computeFakeMathRandom } from './computeFakeMathRandom.ts';
 
 const MAX_INTEGER = 2 ** 31 - 1; // 2147483647
 
@@ -27,7 +27,7 @@ function toIntegerSeed(value: number): number {
     if (Number.isSafeInteger(value)) return value;
 
     // Otherwise, get a deterministic integer from the value
-    return Math.floor(getFakeMathRandom(value) * MAX_INTEGER);
+    return Math.floor(computeFakeMathRandom(value) * MAX_INTEGER);
   })();
 
   // Constrain the integer to the range [1, MAX_INTEGER]
