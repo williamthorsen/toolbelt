@@ -44,6 +44,7 @@ Runner conventions (discovery, invocation, root vs. package registries, hooks) c
 - Exported functions in `src/internal/` carry `@internal` instead. `internal/` is not a maturity tier, so it has no `@stage` value to take, and the alignment test derives a tier only from a `src/{n}-{tier}/` segment -- any `@stage` there is unvalidated by construction.
 - Tests live in `__tests__/` beside the source, named `{subject}.{tier}.test.ts`. `describe()` takes the function reference, not a string: `describe(shuffle, () => ...)`.
 - Dependency versions are pinned exactly (`savePrefix: ''` in `pnpm-workspace.yaml`).
+- Name a function by what it returns and what it does: `find*` for one result or none, `list*` for an array, otherwise the most specific accurate verb, with any other container named in the tail (`extractPlaceholderSet`). `get*` is the fallback for when no more specific verb is accurate, not the default.
 
 ## Gotchas
 
