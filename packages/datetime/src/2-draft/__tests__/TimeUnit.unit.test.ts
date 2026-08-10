@@ -101,12 +101,12 @@ describe(TimeUnit, () => {
     });
   });
 
-  describe('getLabeledCount()', () => {
+  describe('formatLabeledCount()', () => {
     it('if amount=1, returns 1 {singular}', () => {
       const amount = 1;
       const expected = '1 minute';
 
-      const result = TimeUnit.Minutes.getLabeledCount(amount);
+      const result = TimeUnit.Minutes.formatLabeledCount(amount);
 
       expect(result).toBe(expected);
     });
@@ -115,7 +115,7 @@ describe(TimeUnit, () => {
       const amount = 1.1;
       const expected = '1.1 minutes';
 
-      const result = TimeUnit.Minutes.getLabeledCount(amount);
+      const result = TimeUnit.Minutes.formatLabeledCount(amount);
 
       expect(result).toBe(expected);
     });
@@ -124,18 +124,18 @@ describe(TimeUnit, () => {
       const amount = 1.1;
       const expected = '1.1m';
 
-      const result = TimeUnit.Minutes.getLabeledCount(amount, { format: 'short' });
+      const result = TimeUnit.Minutes.formatLabeledCount(amount, { format: 'short' });
 
       expect(result).toBe(expected);
     });
   });
 
-  describe('getInflectedLabel', () => {
+  describe('inflectLabel', () => {
     it('returns the singular if amount=1', () => {
       const amount = 1;
       const expected = 'hour';
 
-      const result = TimeUnit.Hours.getInflectedLabel(amount);
+      const result = TimeUnit.Hours.inflectLabel(amount);
 
       expect(result).toBe(expected);
     });
@@ -144,7 +144,7 @@ describe(TimeUnit, () => {
       const amount = 1.1;
       const expected = 'hours';
 
-      const result = TimeUnit.Hours.getInflectedLabel(amount);
+      const result = TimeUnit.Hours.inflectLabel(amount);
 
       expect(result).toBe(expected);
     });

@@ -25,7 +25,7 @@ export function formatDuration(milliseconds: number, options: FormatDurationOpti
 
   const components = selectComponents(milliseconds, maxUnits);
 
-  return components.map(({ count, unit }) => unit.getLabeledCount(count, { format: 'short' })).join(' ');
+  return components.map(({ count, unit }) => unit.formatLabeledCount(count, { format: 'short' })).join(' ');
 }
 
 export interface FormatDurationOptions {

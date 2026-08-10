@@ -12,7 +12,7 @@
  *  { start: 2000, end: 2009, label: '2000s' }
  *  ]
  */
-export function getDecadesContainingYears(years: number[]): Decade[] {
+export function listDecadesContainingYears(years: number[]): Decade[] {
   const uniqueYears = [...new Set(years)].toSorted((a, b) => a - b);
   const decadesMap = new Map<number, { start: number; end: number; label: string }>();
 
