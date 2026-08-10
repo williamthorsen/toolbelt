@@ -95,6 +95,8 @@ importers:
         specifier: workspace:*
         version: link:../arrays
 
+  packages/errors: {}
+
   packages/filesystem: {}
 
   packages/guards: {}
