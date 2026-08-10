@@ -2,7 +2,7 @@ import { assert } from '@williamthorsen/toolbelt.guards';
 import { generateRandom, type Seed } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { getAtIndexOrThrow } from './getAtIndexOrThrow.ts';
-import { getWeightedIndex } from './getWeightedIndex.ts';
+import { findWeightedIndex } from './findWeightedIndex.ts';
 
 /**
  * Returns a pseudo-random item from the cumulative weights, with odds reflecting the cumulative weights.
@@ -20,7 +20,7 @@ export function pickWeightedIndex(cumulativeWeights: ReadonlyArray<number>, opti
   const targetWeight = randomValue * cumulativeWeight;
 
   // Because the array is non-empty, the target weight is guaranteed to be within the range [0, cumulativeWeight).
-  const pickedIndex = getWeightedIndex(cumulativeWeights, targetWeight);
+  const pickedIndex = findWeightedIndex(cumulativeWeights, targetWeight);
   assert(pickedIndex !== undefined); // type guard only
 
   return pickedIndex;
