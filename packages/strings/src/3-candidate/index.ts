@@ -1,5 +1,11 @@
 export { capitalize } from './capitalize.ts';
-export { interpolate, Interpolator } from './Interpolator.ts';
+export {
+  interpolate,
+  type InterpolateOptions,
+  Interpolator,
+  type InterpolatorOptions,
+  type KeyPlaceholderPartition,
+} from './Interpolator.ts';
 export { isPatternMatch } from './isPatternMatch.ts';
 export { joinStrings } from './joinStrings.ts';
 export { obfuscate } from './obfuscate.ts';
