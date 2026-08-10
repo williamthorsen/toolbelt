@@ -23,6 +23,7 @@
     "datetime": "scope:datetime",
     "dstructs": "scope:dstructs",
     "enums": "scope:enums",
+    "errors": "scope:errors",
     "filesystem": "scope:filesystem",
     "guards": "scope:guards",
     "hof": "scope:hof",

@@ -79,6 +79,9 @@
 - name: scope:enums
   color: 00ff96
   description: ''
+- name: scope:errors
+  color: 00ff96
+  description: ''
 - name: scope:filesystem
   color: 00ff96
   description: ''

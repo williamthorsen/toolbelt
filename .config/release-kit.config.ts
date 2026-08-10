@@ -13,6 +13,7 @@ const config = defineConfig({
       'scope:datetime': { color: '00ff96' },
       'scope:dstructs': { color: '00ff96' },
       'scope:enums': { color: '00ff96' },
+      'scope:errors': { color: '00ff96' },
       'scope:filesystem': { color: '00ff96' },
       'scope:guards': { color: '00ff96' },
       'scope:hof': { color: '00ff96' },
