@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { toLowerCase, toUpperCase, trim, trimEnd, trimStart } from '../String-prototype-wrappers.ts';
+import { toLowerCase, toUpperCase, trim, trimEnd, trimStart } from '../string-prototype-wrappers.ts';
 
 describe(toLowerCase, () => {
   it('converts all characters to lowercase', () => {

@@ -2,7 +2,8 @@
 
 /**
  * Deterministically computes and returns a number in the range [0, 1) based on the input.
- * Used internally in this library. Not part of the public API.
+ *
+ * @internal
  */
 export function getFakeMathRandom(seed: number): number {
   // Convert the seed to a string representation to extract as much variation

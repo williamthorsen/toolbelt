@@ -1,3 +1,8 @@
+/**
+ * Resolves a seed to its numeric value, returning `undefined` when there is no seed.
+ *
+ * @internal
+ */
 export function evaluateSeed(seed: Seed | undefined): number | undefined {
   if (typeof seed === 'number') {
     return seed;
@@ -11,6 +16,11 @@ export function evaluateSeed(seed: Seed | undefined): number | undefined {
   return undefined;
 }
 
+/**
+ * Narrows a seed to a generator.
+ *
+ * @internal
+ */
 export function checkIsRngLike(seed: Seed | undefined): seed is SeededGenerator {
   return typeof seed === 'object' && 'next' in seed && 'seed' in seed;
 }

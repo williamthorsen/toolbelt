@@ -18,10 +18,9 @@
  * console.log(curriedAdd(1)(2)); // Outputs: 3
  * console.log(curriedAdd(1, 2)); // Outputs: 3
  *
- * @param {TFn} fn - The function to be curried.
- * @returns {Curry<TFn>} - The curried version of the provided function.
- *
- * @template TFn - The type of the function to be curried. It extends the generic Func type.
+ * @category Function
+ * @experimental
+ * @stage strawman
  */
 export function curry<TFn extends Func>(fn: TFn): Curry<TFn> {
   return function curried(...args: any[]): any {

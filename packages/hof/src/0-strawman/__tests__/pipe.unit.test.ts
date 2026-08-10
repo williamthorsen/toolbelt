@@ -2,14 +2,6 @@ import { describe, expect, it } from 'vitest';
 
 import { applyPipe, pipe } from '../pipe.ts';
 
-const double = (n: number) => n * 2;
-const sum = (addend1: number, addend2: number) => addend1 + addend2;
-const enclose = (s: string) => `|${s}|`;
-
-const toString = (s: number) => s.toString();
-const upper = (str: string) => str.toUpperCase();
-const asyncUpper = async (s: string) => await Promise.try(() => s.toUpperCase());
-
 describe(pipe, () => {
   it('correctly composes multiple functions together', () => {
     const fnPipe = pipe(double, toString, enclose);
@@ -74,3 +66,29 @@ describe(applyPipe, () => {
     expect(result).toBe('4');
   });
 });
+
+// region | Helpers
+async function asyncUpper(s: string): Promise<string> {
+  return await Promise.try(() => s.toUpperCase());
+}
+
+function double(n: number): number {
+  return n * 2;
+}
+
+function enclose(s: string): string {
+  return `|${s}|`;
+}
+
+function sum(addend1: number, addend2: number): number {
+  return addend1 + addend2;
+}
+
+function toString(s: number): string {
+  return s.toString();
+}
+
+function upper(str: string): string {
+  return str.toUpperCase();
+}
+// endregion | Helpers

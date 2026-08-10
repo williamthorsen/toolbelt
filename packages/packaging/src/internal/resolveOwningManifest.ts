@@ -11,6 +11,8 @@ import { listDirectoryChain } from '@williamthorsen/toolbelt.filesystem';
  * that declares none is a marker manifest, such as the `{"type": "commonjs"}` file a dual-format build leaves
  * in `dist/`, and the ascent passes over it. That is the whole difference from `node:module`'s
  * `findPackageJSON`, which answers with the nearest manifest whatever it holds.
+ *
+ * @internal
  */
 export function resolveOwningManifest(fromUrl: string): OwningManifest {
   const startDir = path.dirname(fileURLToPath(fromUrl));

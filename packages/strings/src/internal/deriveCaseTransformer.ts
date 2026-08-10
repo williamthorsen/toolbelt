@@ -8,8 +8,7 @@
  * Else if the placeholder is capitalized, return a toCapitalized function.
  * Else returns `undefined`.
  *
- * @experimental
- * @stage candidate
+ * @internal
  */
 export function deriveCaseTransformer(source: string, target: string): Transform | undefined {
   if (source === target) {

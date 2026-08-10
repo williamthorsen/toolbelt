@@ -1,5 +1,5 @@
 // Contains the essential content of the AST representing "1:[A[1[a|b]|2[c|d]]|B] 2:[C|D]"
-export default {
+export const nestedTextNodeAst = {
   children: [
     '1:',
     {

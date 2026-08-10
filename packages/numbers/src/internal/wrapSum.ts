@@ -1,5 +1,7 @@
 /**
  * Returns the sum of the given addends, wrapping around from 0 when the given max is exceeded.
+ *
+ * @internal
  */
 export function wrapSum(max: number, ...addends: number[]): number {
   let sum = 0;

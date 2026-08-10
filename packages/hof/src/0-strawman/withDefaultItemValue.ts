@@ -1,5 +1,9 @@
 /**
  * Returns a new function that replaces undefined values in the input array to the original function with a default value.
+ *
+ * @category Function
+ * @experimental
+ * @stage strawman
  */
 export function withDefaultItemValue<TItem, TReturn>(
   fn: (values: ReadonlyArray<TItem>) => TReturn,

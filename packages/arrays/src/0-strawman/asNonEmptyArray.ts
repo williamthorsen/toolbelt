@@ -20,7 +20,10 @@ export function asNonEmptyArray<TItem>(items: AnyArray<TItem>): NonEmptyArray<TI
 /**
  * Narrows the array's type to `ImmutableArray` or throws an error.
  * Cannot catch all cases at compile-time: Performs a runtime check to ensure that the array is frozen.
- * @params array A frozen array.
+ *
+ * @category Array
+ * @experimental
+ * @stage strawman
  */
 export function assertFrozenArray<TItem>(array: ImmutableArray<TItem>): asserts array is ImmutableArray<TItem> {
   if (!Object.isFrozen(array)) throw new Error('Invalid input. Array cannot be mutable.');
@@ -28,7 +31,10 @@ export function assertFrozenArray<TItem>(array: ImmutableArray<TItem>): asserts 
 
 /**
  * Narrows the array's type to `ImmutableArray` or throws an error.
- * @params array An immutable array.
+ *
+ * @category Array
+ * @experimental
+ * @stage strawman
  */
 export function assertImmutableArray<TItem>(array: ReadonlyArray<TItem>): asserts array is ImmutableArray<TItem> {
   if ('push' in array) throw new Error('Invalid input. Array cannot be mutable.');
@@ -38,7 +44,10 @@ export function assertImmutableArray<TItem>(array: ReadonlyArray<TItem>): assert
  * Narrows the array's type to `NonEmptyArray` or throws an error.
  * Because the input must be read-only, the output array is guaranteed to be both non-empty and
  * (within the scope of the calling program) read-only.
- * @params array A read-only array.
+ *
+ * @category Array
+ * @experimental
+ * @stage strawman
  */
 export function assertNonEmptyArray<TItem>(array: ImmutableArray<TItem>): asserts array is NonEmptyArray<TItem> {
   if (array.length === 0) throw new Error('Invalid input. Array cannot be empty.');

@@ -8,7 +8,6 @@ export class Timestamp {
   private readonly _millis: number;
   private _timeUnit: TimeUnit;
 
-  // region | Public methods
   constructor(dateTime?: TimestampInput, options: TimestampOptions = {}) {
     const { format = 'iso', timeUnit = TimeUnit.Millis } = options;
     if (dateTime instanceof Timestamp) {
@@ -38,7 +37,6 @@ export class Timestamp {
     return this._timeUnit;
   }
 
-  // region | Static methods
   static fromMillis(milliseconds: number): Timestamp {
     return new Timestamp(new Date(milliseconds));
   }
@@ -50,7 +48,6 @@ export class Timestamp {
   static now(options: TimestampOptions = {}): Timestamp {
     return new Timestamp(undefined, options);
   }
-  // endregion
 
   clone(options: TimestampOptions = {}): Timestamp {
     return new Timestamp(this._millis, options);

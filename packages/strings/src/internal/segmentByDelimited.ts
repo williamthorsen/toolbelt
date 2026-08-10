@@ -7,6 +7,7 @@
  *
  * segmentByDelimited('Hello, [[friendly|unfriendly] stranger|world]!');
  * // => ['Hello, ', '[[friendly|unfriendly] stranger|world]', '!']
+ * ```
  * @internal
  */
 export function segmentByDelimited(text: string, params: Params): string[] {
