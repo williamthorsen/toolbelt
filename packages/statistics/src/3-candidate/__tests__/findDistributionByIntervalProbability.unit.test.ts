@@ -1,8 +1,8 @@
 import { getAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 import { describe, expect, it } from 'vitest';
 
-import { findDistributionByIntervalProbability } from '../findDistributionByIntervalProbability.ts';
 import { computeNormalIntervalProbabilities } from '../computeNormalIntervalProbabilities.ts';
+import { findDistributionByIntervalProbability } from '../findDistributionByIntervalProbability.ts';
 
 describe(findDistributionByIntervalProbability, () => {
   const tolerance = 0.001;

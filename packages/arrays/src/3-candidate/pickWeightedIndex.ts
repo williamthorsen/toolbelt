@@ -1,8 +1,8 @@
 import { assert } from '@williamthorsen/toolbelt.guards';
 import { generateRandom, type Seed } from '@williamthorsen/toolbelt.numbers/candidate';
 
-import { getAtIndexOrThrow } from './getAtIndexOrThrow.ts';
 import { findWeightedIndex } from './findWeightedIndex.ts';
+import { getAtIndexOrThrow } from './getAtIndexOrThrow.ts';
 
 /**
  * Returns a pseudo-random item from the cumulative weights, with odds reflecting the cumulative weights.
