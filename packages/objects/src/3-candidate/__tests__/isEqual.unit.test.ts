@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { serializableScalars } from '../../internal/primitives.fixture.ts';
+import { serializableScalars } from '../../test-utils/scalars.ts';
 import { isEqual } from '../isEqual.ts';
 
 describe(isEqual, () => {

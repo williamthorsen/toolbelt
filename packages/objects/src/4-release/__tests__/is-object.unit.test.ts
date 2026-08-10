@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { nonscalars, scalars } from '../../internal/primitives.fixture.ts';
+import { nonscalars, scalars } from '../../test-utils/scalars.ts';
 import { isObject, isPlainObject } from '../is-object.ts';
 
 describe(isObject, () => {

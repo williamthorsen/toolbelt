@@ -8,7 +8,7 @@ PNPM monorepo of TypeScript utility libraries, each published to npm as `@willia
 
 - `packages/{domain}/`: one published library per domain (arrays, async, datetime, dstructs, enums, errors, filesystem, guards, hof, numbers, objects, packaging, sets, statistics, strings, tools).
 - `packages/_template/`: private scaffold for new packages, excluded from release processing in `.config/release-kit.config.ts`.
-- `packages/{domain}/src/{0-strawman,1-proposed,2-draft,3-candidate,4-release}/`: maturity tiers, each with an `index.ts` re-exporting that tier's public surface. `src/internal/` and `src/types/` sit outside the tiers and are not exported.
+- `packages/{domain}/src/{0-strawman,1-proposed,2-draft,3-candidate,4-release}/`: maturity tiers, each with an `index.ts` re-exporting that tier's public surface. `src/internal/`, `src/types/`, and `src/test-utils/` sit outside the tiers and are not exported. The first two still ship, being build entry points, so `__tests__/support-module-usage.app.unit.test.ts` requires every module in one to have an importer outside test scaffolding; `test-utils/` the build drops, which is what keeps a test helper out of `dist/`.
 - `.agents/`: `codeassembly.yaml` declares the guidance packages `codeassembly sync` resolves; `preferences.yaml` carries the project slug and ticket-ref prefix.
 - `.config/`: tool configs (nmr, readyup, release-kit, strict-lint, v11y, worktrunk). Vitest config lives outside it, in exactly two root files: `vitest.config.ts` and `vitest.root.config.ts`, each a bare call to a `@williamthorsen/nmr/vitest` factory.
 
