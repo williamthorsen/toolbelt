@@ -43,13 +43,13 @@ export class Interpolator {
   /**
    * Returns the set of mapping keys in lowercase.
    */
-  getKeys<T>(options?: { mapping?: StringMapping<T>; noValidation?: boolean | undefined }): Set<RegExp | string>;
-  getKeys<T>(options: {
+  collectKeySet<T>(options?: { mapping?: StringMapping<T>; noValidation?: boolean | undefined }): Set<RegExp | string>;
+  collectKeySet<T>(options: {
     excludeRegExp: true;
     mapping?: StringMapping<T>;
     noValidation?: boolean | undefined;
   }): Set<string>;
-  getKeys<T>(
+  collectKeySet<T>(
     options: { excludeRegExp?: boolean; mapping?: StringMapping<T>; noValidation?: boolean | undefined } = {},
   ): Set<RegExp | string> {
     const { excludeRegExp, mapping = this.mapping, noValidation } = options;
@@ -69,7 +69,7 @@ export class Interpolator {
   /**
    * Returns the set of placeholders in lowercase.
    */
-  getPlaceholders(): Set<string> {
+  extractPlaceholderSet(): Set<string> {
     const matcher = createDelimitedMatcher(/([^}]+)/, { caseInsensitive: true });
     const placeholderMatches = this.template.matchAll(matcher);
     const placeholderSet = new Set<string>();
@@ -80,11 +80,11 @@ export class Interpolator {
     return placeholderSet;
   }
 
-  getSets<T>(options: { mapping?: StringMapping<T> } = {}): Sets {
+  partitionKeysAndPlaceholders<T>(options: { mapping?: StringMapping<T> } = {}): KeyPlaceholderPartition {
     const { mapping = this.mapping } = options;
 
-    const keys = this.getKeys({ excludeRegExp: true, mapping });
-    const placeholders = this.getPlaceholders();
+    const keys = this.collectKeySet({ excludeRegExp: true, mapping });
+    const placeholders = this.extractPlaceholderSet();
 
     const matches = setIntersection<string>(keys, placeholders);
     const unmatchedKeys = setDifference(keys, placeholders);
@@ -142,7 +142,7 @@ export class Interpolator {
         return newText.replace(matcher, (_, placeholder: string) => placeholder);
       }
       if (ifMissing === 'THROW') {
-        const { unmatchedPlaceholders } = this.getSets({ mapping });
+        const { unmatchedPlaceholders } = this.partitionKeysAndPlaceholders({ mapping });
         if (unmatchedPlaceholders.size > 0) {
           throw new Error(`Text has unmatched placeholders: ${[...unmatchedPlaceholders].join(', ')}`);
         }
@@ -171,7 +171,7 @@ export class Interpolator {
   validateMapping<T>(options: { mapping?: StringMapping<T> | undefined } = {}): ValidationResult {
     const { mapping = this.mapping } = options;
 
-    const keys = this.getKeys({ mapping, noValidation: true });
+    const keys = this.collectKeySet({ mapping, noValidation: true });
     if (keys.size === this.stringMappingToMap(mapping, { noValidation: true }).size) {
       return { isValid: true, errors: [] };
     }
@@ -254,7 +254,7 @@ export interface InterpolateOptions<T> extends InterpolatorOptions {
 /**
  * Ignores regular expressions.
  */
-interface Sets {
+export interface KeyPlaceholderPartition {
   matches: Set<string>;
   unmatchedKeys: Set<string>;
   unmatchedPlaceholders: Set<string>;
