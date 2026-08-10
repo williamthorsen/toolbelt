@@ -1,0 +1,24 @@
+[
+  {
+    "version": "0.2.0",
+    "date": "2026-08-10",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Scaffold toolbelt.errors for error-handling utilities (#112)",
+            "body": "Introduces `@williamthorsen/toolbelt.errors`, a new package for working with errors. It carries no exports yet.",
+            "hash": "1b6fe287077cd2b2bdd36dda291467d248e81d52"
+          },
+          {
+            "description": "Add describeError, chainError, isError, and assertIsError (#113)",
+            "body": "Adds four helpers for handling a caught value whose type is unknown. `describeError` produces a readable message from any thrown value, including one that is not an `Error`. `chainError` wraps a failure with added context while keeping the original value inspectable rather than flattened into text. `isError` and `assertIsError` narrow a caught value to `Error`. All four are experimental for now, imported from `@williamthorsen/toolbelt.errors/candidate`.",
+            "hash": "595dacbe04cf7e90a0b90bcfe400e118bfb58773"
+          }
+        ]
+      }
+    ]
+  }
+]
