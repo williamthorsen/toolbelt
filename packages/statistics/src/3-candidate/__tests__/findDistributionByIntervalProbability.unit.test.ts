@@ -2,7 +2,7 @@ import { getAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 import { describe, expect, it } from 'vitest';
 
 import { findDistributionByIntervalProbability } from '../findDistributionByIntervalProbability.ts';
-import { getNormalIntervalProbabilities } from '../getNormalIntervalProbabilities.ts';
+import { computeNormalIntervalProbabilities } from '../computeNormalIntervalProbabilities.ts';
 
 describe(findDistributionByIntervalProbability, () => {
   const tolerance = 0.001;
@@ -29,7 +29,9 @@ describe(findDistributionByIntervalProbability, () => {
       expect(converged).toBe(true);
       expect(Math.abs(standardDeviation - expectedSd)).toBeLessThan(tolerance);
       expect(Math.abs(getAtIndexOrThrow(intervalProbabilities.additive, 0) / probability - 1)).toBeLessThan(0.000_1);
-      expect(intervalProbabilities).toStrictEqual(getNormalIntervalProbabilities({ nIntervals, standardDeviation }));
+      expect(intervalProbabilities).toStrictEqual(
+        computeNormalIntervalProbabilities({ nIntervals, standardDeviation }),
+      );
     },
   );
 
@@ -140,6 +142,8 @@ describe(findDistributionByIntervalProbability, () => {
     });
 
     expect(getAtIndexOrThrow(intervalProbabilities.additive, 0) / 0.05 - 1).toBeCloseTo(divergenceFromTarget, 15);
-    expect(intervalProbabilities).toStrictEqual(getNormalIntervalProbabilities({ nIntervals: 5, standardDeviation }));
+    expect(intervalProbabilities).toStrictEqual(
+      computeNormalIntervalProbabilities({ nIntervals: 5, standardDeviation }),
+    );
   });
 });

@@ -3,7 +3,7 @@ import { round } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { assertFinite } from '../internal/assertFinite.ts';
 import { assertPositiveInteger } from '../internal/assertPositiveInteger.ts';
-import { getNormalIntervalProbabilities } from './getNormalIntervalProbabilities.ts';
+import { computeNormalIntervalProbabilities } from './computeNormalIntervalProbabilities.ts';
 
 const MAX_ITERATIONS = 50;
 const SD_MAX = 20;
@@ -40,7 +40,7 @@ export function findDistributionByIntervalProbability(params: Params, options: O
   }
 
   function getIntervalProbabilities(standardDeviation: number): IntervalProbabilities {
-    return getNormalIntervalProbabilities({ halfWidth, nIntervals, standardDeviation });
+    return computeNormalIntervalProbabilities({ halfWidth, nIntervals, standardDeviation });
   }
 
   // Confirm the target lies between the probabilities the range's endpoints can produce.
@@ -98,7 +98,7 @@ function toFirstProbability(intervalProbabilities: IntervalProbabilities): numbe
   return getAtIndexOrThrow(intervalProbabilities.additive, 0);
 }
 
-type IntervalProbabilities = ReturnType<typeof getNormalIntervalProbabilities>;
+type IntervalProbabilities = ReturnType<typeof computeNormalIntervalProbabilities>;
 
 interface NormalDistribution {
   converged: boolean;
