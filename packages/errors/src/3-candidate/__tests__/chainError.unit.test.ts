@@ -27,6 +27,19 @@ describe(chainError, () => {
     expect(chainError('Failed to load config', cause).cause).toBe(cause);
   });
 
+  it('composes the error where the runtime implements no captureStackTrace', () => {
+    const descriptor = Object.getOwnPropertyDescriptor(Error, 'captureStackTrace');
+    Reflect.deleteProperty(Error, 'captureStackTrace');
+
+    try {
+      const error = chainError('Failed to load config', new Error('ENOENT'));
+
+      expect(error.message).toBe('Failed to load config: ENOENT');
+    } finally {
+      if (descriptor !== undefined) Object.defineProperty(Error, 'captureStackTrace', descriptor);
+    }
+  });
+
   it('omits its own frame from the stack', () => {
     const error = chainError('Failed to load config', new Error('ENOENT'));
 
