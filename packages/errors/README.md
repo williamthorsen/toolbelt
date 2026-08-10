@@ -40,7 +40,7 @@ An `Error` carrying no message describes as its stringification rather than as t
 describeError(new Error()); // 'Error'
 ```
 
-Describing never throws. `String()` raises a `TypeError` on a null-prototype object and propagates a `toString` that throws; both answer `[unstringifiable value]` instead. The `unknown` parameter is a promise to accept any value, and a describer that fails inside a `catch` block discards the very error it was called to report.
+Describing never throws. A null-prototype object, a `toString` that throws, and a `message` accessor that throws all answer `[unstringifiable value]` instead. The `unknown` parameter is a promise to accept any value, and a describer that fails inside a `catch` block discards the very error it was called to report.
 
 An `Error` whose `message` is not a string is stringified rather than returned as-is, so the declared `string` return holds for every input.
 
@@ -65,7 +65,7 @@ try {
 
 Attaching the cause is what makes the chain inspectable rather than merely readable, and it happens whatever the cause's type: a handler further up can examine what was actually thrown instead of parsing the text describing it.
 
-Where the runtime implements `Error.captureStackTrace` (V8, so Node.js, Deno, Bun, and Chromium), this function's own frame is dropped from the stack, leaving the throwing call site on top. Elsewhere the stack is unmodified.
+Where the runtime implements `Error.captureStackTrace` (Node.js, Deno, Bun, and Chromium), this function's own frame is dropped from the stack, leaving the throwing call site on top. Elsewhere the stack is unmodified.
 
 ## `isError` and `assertIsError`
 

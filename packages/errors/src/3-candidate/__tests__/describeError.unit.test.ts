@@ -43,6 +43,16 @@ describe(describeError, () => {
     expect(describeError(Object.create(null))).toBe('[unstringifiable value]');
   });
 
+  it('describes an Error whose message accessor throws', () => {
+    class LazyError extends Error {
+      override get message(): string {
+        throw new Error('accessor failed');
+      }
+    }
+
+    expect(describeError(new LazyError())).toBe('[unstringifiable value]');
+  });
+
   it('describes a value whose toString throws', () => {
     const hostile = {
       toString(): string {
