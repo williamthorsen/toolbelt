@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import { getWeightedIndex } from '../getWeightedIndex.ts';
+import { findWeightedIndex } from '../findWeightedIndex.ts';
 
-describe(getWeightedIndex, () => {
+describe(findWeightedIndex, () => {
   it('returns the correct index based on target weight', () => {
     const cumulativeWeights = [1, 3, 6, 10, 15];
     const targetWeight = 7;
     const expectedIndex = 3;
 
-    const index = getWeightedIndex(cumulativeWeights, targetWeight);
+    const index = findWeightedIndex(cumulativeWeights, targetWeight);
 
     expect(index).toBe(expectedIndex);
   });
@@ -18,7 +18,7 @@ describe(getWeightedIndex, () => {
     const targetWeight = 0;
     const expectedIndex = 0;
 
-    const index = getWeightedIndex(cumulativeWeights, targetWeight);
+    const index = findWeightedIndex(cumulativeWeights, targetWeight);
 
     expect(index).toBe(expectedIndex);
   });
@@ -28,7 +28,7 @@ describe(getWeightedIndex, () => {
     const targetWeight = -1;
     const expectedIndex = undefined;
 
-    const index = getWeightedIndex(cumulativeWeights, targetWeight);
+    const index = findWeightedIndex(cumulativeWeights, targetWeight);
 
     expect(index).toBe(expectedIndex);
   });
@@ -38,7 +38,7 @@ describe(getWeightedIndex, () => {
     const targetWeight = 5;
     const expectedIndex = undefined;
 
-    const index = getWeightedIndex(cumulativeWeights, targetWeight);
+    const index = findWeightedIndex(cumulativeWeights, targetWeight);
 
     expect(index).toBe(expectedIndex);
   });
@@ -48,7 +48,7 @@ describe(getWeightedIndex, () => {
     const targetWeight = 20;
     const expectedIndex = undefined;
 
-    const index = getWeightedIndex(cumulativeWeights, targetWeight);
+    const index = findWeightedIndex(cumulativeWeights, targetWeight);
 
     expect(index).toBe(expectedIndex);
   });
@@ -58,7 +58,7 @@ describe(getWeightedIndex, () => {
     const targetWeight = 15;
     const expectedIndex = 4;
 
-    const index = getWeightedIndex(cumulativeWeights, targetWeight);
+    const index = findWeightedIndex(cumulativeWeights, targetWeight);
 
     expect(index).toBe(expectedIndex);
   });

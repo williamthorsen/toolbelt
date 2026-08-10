@@ -18,7 +18,7 @@ describe(Interpolator, () => {
     });
   });
 
-  describe('getKeys()', () => {
+  describe('collectKeySet()', () => {
     const template = 'not used in this test';
 
     it('if the mapping contains no keys, returns an empty set', () => {
@@ -26,7 +26,7 @@ describe(Interpolator, () => {
       const interpolable = new Interpolator(template);
       const expected = new Set();
 
-      const actual = interpolable.getKeys({ mapping });
+      const actual = interpolable.collectKeySet({ mapping });
 
       expect(actual).toStrictEqual(expected);
     });
@@ -36,19 +36,19 @@ describe(Interpolator, () => {
       const interpolable = new Interpolator(template).setOptions({ mapping });
       const expected = new Set(['firstname', 'lastname']);
 
-      const actual = interpolable.getKeys();
+      const actual = interpolable.collectKeySet();
 
       expect(actual).toStrictEqual(expected);
     });
   });
 
-  describe('getPlaceholders()', () => {
+  describe('extractPlaceholderSet()', () => {
     it('if the template contains no placeholders, returns an empty array', () => {
       const template = 'Hello, World!';
       const interpolable = new Interpolator(template);
       const expected = new Set();
 
-      const actual = interpolable.getPlaceholders();
+      const actual = interpolable.extractPlaceholderSet();
 
       expect(actual).toStrictEqual(expected);
     });
@@ -58,13 +58,13 @@ describe(Interpolator, () => {
       const interpolable = new Interpolator(template);
       const expected = new Set(['firstname', 'lastname']);
 
-      const actual = interpolable.getPlaceholders();
+      const actual = interpolable.extractPlaceholderSet();
 
       expect(actual).toStrictEqual(expected);
     });
   });
 
-  describe('getSets()', () => {
+  describe('partitionKeysAndPlaceholders()', () => {
     it('correctly identifies matched & unmatched keys and placeholders', () => {
       const template = '{match1}{templateOnly}{match2}';
       const interpolable = new Interpolator(template);
@@ -75,7 +75,7 @@ describe(Interpolator, () => {
         unmatchedPlaceholders: new Set(['templateonly']),
       };
 
-      const actual = interpolable.getSets({ mapping });
+      const actual = interpolable.partitionKeysAndPlaceholders({ mapping });
 
       expect(actual).toStrictEqual(expected);
     });

@@ -3,13 +3,13 @@ import { pathToFileURL } from 'node:url';
 import { createTempTree } from '@williamthorsen/toolbelt.filesystem/proposed';
 import { describe, expect, it } from 'vitest';
 
-import { getSelfVersion } from '../getSelfVersion.ts';
+import { resolveSelfVersion } from '../resolveSelfVersion.ts';
 
-describe(getSelfVersion, () => {
+describe(resolveSelfVersion, () => {
   it('returns the version the owning package declares', () => {
     using tree = createTempTree({ 'package.json': manifest({ name: 'demo', version: '1.4.2' }) });
 
-    expect(getSelfVersion(moduleUrl(tree.resolve('src/main.ts')))).toBe('1.4.2');
+    expect(resolveSelfVersion(moduleUrl(tree.resolve('src/main.ts')))).toBe('1.4.2');
   });
 
   it('reports the same version from source and compiled layouts at differing depths', () => {
@@ -21,7 +21,7 @@ describe(getSelfVersion, () => {
       tree.resolve('dist/esm/4-release/index.js'),
     ].map(moduleUrl);
 
-    expect(fromUrls.map(getSelfVersion)).toStrictEqual(['1.4.2', '1.4.2', '1.4.2']);
+    expect(fromUrls.map(resolveSelfVersion)).toStrictEqual(['1.4.2', '1.4.2', '1.4.2']);
   });
 
   it('skips the marker manifest a dual-format build leaves in `dist`', () => {
@@ -30,13 +30,13 @@ describe(getSelfVersion, () => {
       'package.json': manifest({ name: 'demo', version: '1.4.2' }),
     });
 
-    expect(getSelfVersion(moduleUrl(tree.resolve('dist/cjs/deep/main.js')))).toBe('1.4.2');
+    expect(resolveSelfVersion(moduleUrl(tree.resolve('dist/cjs/deep/main.js')))).toBe('1.4.2');
   });
 
   it('throws naming the manifest when it declares no version', () => {
     using tree = createTempTree({ 'package.json': manifest({ name: 'demo' }) });
 
-    const read = () => getSelfVersion(moduleUrl(tree.resolve('src/main.ts')));
+    const read = () => resolveSelfVersion(moduleUrl(tree.resolve('src/main.ts')));
 
     expect(read).toThrow(/declares no string version/);
     expect(read).toThrow(tree.resolve('package.json'));
@@ -45,7 +45,7 @@ describe(getSelfVersion, () => {
   it('throws naming the manifest when the version is not a string', () => {
     using tree = createTempTree({ 'package.json': manifest({ name: 'demo', version: 2 }) });
 
-    const read = () => getSelfVersion(moduleUrl(tree.resolve('src/main.ts')));
+    const read = () => resolveSelfVersion(moduleUrl(tree.resolve('src/main.ts')));
 
     expect(read).toThrow(/declares no string version/);
     expect(read).toThrow(tree.resolve('package.json'));
@@ -57,7 +57,7 @@ describe(getSelfVersion, () => {
       'packages/app/package.json': manifest({ name: 'app' }),
     });
 
-    const read = () => getSelfVersion(moduleUrl(tree.resolve('packages/app/src/main.ts')));
+    const read = () => resolveSelfVersion(moduleUrl(tree.resolve('packages/app/src/main.ts')));
 
     expect(read).toThrow(/declares no string version/);
     expect(read).toThrow(tree.resolve('packages/app/package.json'));

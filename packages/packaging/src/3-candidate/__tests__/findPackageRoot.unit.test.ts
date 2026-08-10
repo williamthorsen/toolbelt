@@ -31,8 +31,8 @@ describe(findPackageRoot, () => {
   it('returns the same directory from source and compiled layouts', () => {
     using tree = createTempTree({ 'package.json': manifest({ name: 'demo', version: '1.0.0' }) });
 
-    const fromSource = findPackageRoot(moduleUrl(tree.resolve('src/3-candidate/getSelfVersion.ts')));
-    const fromCompiled = findPackageRoot(moduleUrl(tree.resolve('dist/esm/3-candidate/getSelfVersion.js')));
+    const fromSource = findPackageRoot(moduleUrl(tree.resolve('src/3-candidate/resolveSelfVersion.ts')));
+    const fromCompiled = findPackageRoot(moduleUrl(tree.resolve('dist/esm/3-candidate/resolveSelfVersion.js')));
 
     expect(fromSource).toBe(tree.dir);
     expect(fromCompiled).toBe(tree.dir);

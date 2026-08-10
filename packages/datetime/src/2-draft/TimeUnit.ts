@@ -54,7 +54,7 @@ export class TimeUnit {
 
     if (throwOnFractional && !Number.isSafeInteger(value)) {
       throw new Error(
-        `${fromUnit.getLabeledCount(amount)} cannot be converted into an exact whole number of ${toUnit.plural}.`,
+        `${fromUnit.formatLabeledCount(amount)} cannot be converted into an exact whole number of ${toUnit.plural}.`,
       );
     }
 
@@ -65,14 +65,14 @@ export class TimeUnit {
     return value;
   }
 
-  getLabeledCount(amount: number, options: TimeUnitLabelOptions = {}): string {
+  formatLabeledCount(amount: number, options: TimeUnitLabelOptions = {}): string {
     if (options.format === 'short') {
       return `${amount}${this.abbrev}`;
     }
-    return `${amount} ${this.getInflectedLabel(amount)}`;
+    return `${amount} ${this.inflectLabel(amount)}`;
   }
 
-  getInflectedLabel(amount: number): string {
+  inflectLabel(amount: number): string {
     return amount === 1 ? this.singular : this.plural;
   }
 

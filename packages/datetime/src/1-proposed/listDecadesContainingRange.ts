@@ -1,4 +1,4 @@
-import type { Decade } from './getDecadesContainingYears.ts';
+import type { Decade } from './listDecadesContainingYears.ts';
 
 /**
  * Given a range of years, identify the decades containing those years and return a list of objects
@@ -6,7 +6,7 @@ import type { Decade } from './getDecadesContainingYears.ts';
  * A decade starts a year that is a multiple of 10 (e.g., 1990, 2000, etc.).
  * A decade ends 9 years after its start (e.g., 1990-1999, 2000-2009, etc.).
  */
-export function getDecadesContainingRange(range: { start: number; end: number }): Decade[] {
+export function listDecadesContainingRange(range: { start: number; end: number }): Decade[] {
   const { start, end } = range;
 
   if (start < 0 || end < 0) {

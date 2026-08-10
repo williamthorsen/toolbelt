@@ -3,7 +3,7 @@ import { round } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { assertFinite } from '../internal/assertFinite.ts';
 import { assertPositiveInteger } from '../internal/assertPositiveInteger.ts';
-import { getNormalIntervalProbabilities } from './getNormalIntervalProbabilities.ts';
+import { computeNormalIntervalProbabilities } from './computeNormalIntervalProbabilities.ts';
 
 const MAX_ITERATIONS = 50;
 const SD_MAX = 20;
@@ -39,14 +39,14 @@ export function findDistributionByIntervalProbability(params: Params, options: O
     throw new Error('Maximum standard deviation (sdMax) must be greater than minimum (sdMin).');
   }
 
-  function getIntervalProbabilities(standardDeviation: number): IntervalProbabilities {
-    return getNormalIntervalProbabilities({ halfWidth, nIntervals, standardDeviation });
+  function computeIntervalProbabilities(standardDeviation: number): IntervalProbabilities {
+    return computeNormalIntervalProbabilities({ halfWidth, nIntervals, standardDeviation });
   }
 
   // Confirm the target lies between the probabilities the range's endpoints can produce.
-  let intervalProbabilities = getIntervalProbabilities(sdMin);
+  let intervalProbabilities = computeIntervalProbabilities(sdMin);
   const minProbability = toFirstProbability(intervalProbabilities);
-  const maxProbability = toFirstProbability(getIntervalProbabilities(sdMax));
+  const maxProbability = toFirstProbability(computeIntervalProbabilities(sdMax));
   const range = `standard deviation in range [${sdMin}, ${sdMax}]`;
 
   if (target < minProbability) {
@@ -70,7 +70,7 @@ export function findDistributionByIntervalProbability(params: Params, options: O
   while (iterations < maxIterations) {
     iterations += 1;
     standardDeviation = (low + high) / 2;
-    intervalProbabilities = getIntervalProbabilities(standardDeviation);
+    intervalProbabilities = computeIntervalProbabilities(standardDeviation);
     probability = toFirstProbability(intervalProbabilities);
 
     if (Math.abs(probability / target - 1) < tolerance) {
@@ -98,7 +98,7 @@ function toFirstProbability(intervalProbabilities: IntervalProbabilities): numbe
   return getAtIndexOrThrow(intervalProbabilities.additive, 0);
 }
 
-type IntervalProbabilities = ReturnType<typeof getNormalIntervalProbabilities>;
+type IntervalProbabilities = ReturnType<typeof computeNormalIntervalProbabilities>;
 
 interface NormalDistribution {
   converged: boolean;

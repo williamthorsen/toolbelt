@@ -16,7 +16,7 @@ import { toCumulativeSumsFromAddends } from './toCumulativeSumsFromAddends.ts';
  * @category Statistics
  * @stage candidate
  */
-export function getNormalIntervalProbabilities(params: Params): IntervalProbabilities {
+export function computeNormalIntervalProbabilities(params: Params): IntervalProbabilities {
   const { halfWidth = 3, mean = 0, nIntervals, standardDeviation = 1 } = params;
 
   assertPositiveInteger(nIntervals, 'nIntervals');

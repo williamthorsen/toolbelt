@@ -1,11 +1,11 @@
 export { arraify } from './arraify.ts';
 export { extractWeights } from './extractWeights.ts';
 export { findOrThrow } from './findOrThrow.ts';
+export { findWeightedIndex } from './findWeightedIndex.ts';
 export { getAtIndexOrThrow } from './getAtIndexOrThrow.ts';
-export { getDuplicateItems } from './getDuplicateItems.ts';
-export { getUniqueItems } from './getUniqueItems.ts';
-export { getWeightedIndex } from './getWeightedIndex.ts';
 export { includes } from './includes.ts';
+export { listDuplicateItems } from './listDuplicateItems.ts';
+export { listUniqueItems } from './listUniqueItems.ts';
 export { makePickWeightedItemFromDistribution } from './makePickWeightedItemFromDistribution.ts';
 export { makeNullishCompare, nullishCompare } from './nullishCompare.ts';
 export { pickItem } from './pickItem.ts';

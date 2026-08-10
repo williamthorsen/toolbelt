@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { getFakeMathRandom } from '../getFakeMathRandom.ts';
+import { computeFakeMathRandom } from '../computeFakeMathRandom.ts';
 
 // Added to demonstrate that these tests also pass in the distribution bundle after transpilation
 
-describe(getFakeMathRandom, () => {
+describe(computeFakeMathRandom, () => {
   const testCases = [
     { seed: 0.1, expected: 0.631_793_978_918_247_8 },
     { seed: 1, expected: 0.003_280_733_247_883_959_5 },
@@ -16,6 +16,6 @@ describe(getFakeMathRandom, () => {
   ];
 
   it.each(testCases)('given the same seed, always returns the same value (seed $seed)', ({ seed, expected }) => {
-    expect(getFakeMathRandom(seed)).toBe(expected);
+    expect(computeFakeMathRandom(seed)).toBe(expected);
   });
 });

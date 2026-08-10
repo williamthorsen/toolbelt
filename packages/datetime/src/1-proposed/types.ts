@@ -1,1 +1,1 @@
-export type { Decade } from './getDecadesContainingYears.ts';
+export type { Decade } from './listDecadesContainingYears.ts';

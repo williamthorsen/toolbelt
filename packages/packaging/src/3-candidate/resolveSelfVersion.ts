@@ -8,7 +8,7 @@ import { resolveOwningManifest } from '../internal/resolveOwningManifest.ts';
  * letting the ascent continue, so a versionless package never reports an ancestor's version as its own.
  *
  * @example
- * getSelfVersion(import.meta.url); // '1.4.2'
+ * resolveSelfVersion(import.meta.url); // '1.4.2'
  *
  * @category Packaging
  * @experimental
@@ -16,7 +16,7 @@ import { resolveOwningManifest } from '../internal/resolveOwningManifest.ts';
  * @throws If the owning manifest declares no string version, if no ancestor manifest declares a name, or if
  * one is unreadable as JSON.
  */
-export function getSelfVersion(fromUrl: string): string {
+export function resolveSelfVersion(fromUrl: string): string {
   const { manifest, manifestPath } = resolveOwningManifest(fromUrl);
 
   if (typeof manifest.version !== 'string') {

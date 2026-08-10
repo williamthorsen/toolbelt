@@ -89,20 +89,20 @@ A dual-format build leaves that file so the runtime parses `dist/cjs/` as Common
 
 A module belonging to no named package throws, rather than falling back to a directory that merely looks plausible, which is why the return is a bare string with no evidence to interpret. A manifest that is unreadable as JSON, or that parses to something other than an object, throws by name rather than being skipped: corruption is a defect, not an absence.
 
-## `getSelfVersion`
+## `resolveSelfVersion`
 
 Candidate tier: imported from `@williamthorsen/toolbelt.packaging/candidate` rather than the package root, and subject to change.
 
 ```ts
-getSelfVersion(fromUrl: string): string;
+resolveSelfVersion(fromUrl: string): string;
 ```
 
 Returns the version declared by the package that owns a module: the supported way for a CLI to report its own version without hand-rolling a manifest lookup.
 
 ```ts
-import { getSelfVersion } from '@williamthorsen/toolbelt.packaging/candidate';
+import { resolveSelfVersion } from '@williamthorsen/toolbelt.packaging/candidate';
 
-console.log(`my-cli ${getSelfVersion(import.meta.url)}`);
+console.log(`my-cli ${resolveSelfVersion(import.meta.url)}`);
 ```
 
 Ownership is resolved exactly as [`findPackageRoot`](#findpackageroot) resolves it, so a marker manifest is passed over here too. Without that, a dual-format build would read its version as `undefined` rather than raising, since the marker manifest declares none.

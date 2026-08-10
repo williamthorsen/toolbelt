@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { getUniqueItems } from '../getUniqueItems.ts';
+import { listUniqueItems } from '../listUniqueItems.ts';
 
-describe(getUniqueItems, () => {
+describe(listUniqueItems, () => {
   it('should return an array with all unique values', () => {
     const array = [1, 1, 2, 1];
     const expected = [1, 2];
 
-    const unique = getUniqueItems(array);
+    const unique = listUniqueItems(array);
 
     expect(unique).toStrictEqual(expected);
   });
@@ -16,7 +16,7 @@ describe(getUniqueItems, () => {
     const array = [1, 2, 3];
     const expected = [1, 2, 3];
 
-    const unique = getUniqueItems(array);
+    const unique = listUniqueItems(array);
 
     expect(unique).toStrictEqual(expected);
   });
@@ -25,7 +25,7 @@ describe(getUniqueItems, () => {
     const array = [] as const;
     const expected: number[] = [];
 
-    const unique = getUniqueItems(array);
+    const unique = listUniqueItems(array);
 
     expect(unique).toStrictEqual(expected);
   });
@@ -34,7 +34,7 @@ describe(getUniqueItems, () => {
     const array = [1, 'a', false, null, undefined, null];
     const expected = [1, 'a', false, null, undefined];
 
-    const unique = getUniqueItems(array);
+    const unique = listUniqueItems(array);
 
     expect(unique).toStrictEqual(expected);
   });
@@ -48,7 +48,7 @@ describe(getUniqueItems, () => {
     };
     const expected = [1, 2];
 
-    const unique = getUniqueItems(toGenerateInt());
+    const unique = listUniqueItems(toGenerateInt());
 
     expect(unique).toStrictEqual(expected);
   });
