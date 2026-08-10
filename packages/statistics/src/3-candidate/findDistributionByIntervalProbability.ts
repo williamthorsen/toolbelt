@@ -39,14 +39,14 @@ export function findDistributionByIntervalProbability(params: Params, options: O
     throw new Error('Maximum standard deviation (sdMax) must be greater than minimum (sdMin).');
   }
 
-  function getIntervalProbabilities(standardDeviation: number): IntervalProbabilities {
+  function computeIntervalProbabilities(standardDeviation: number): IntervalProbabilities {
     return computeNormalIntervalProbabilities({ halfWidth, nIntervals, standardDeviation });
   }
 
   // Confirm the target lies between the probabilities the range's endpoints can produce.
-  let intervalProbabilities = getIntervalProbabilities(sdMin);
+  let intervalProbabilities = computeIntervalProbabilities(sdMin);
   const minProbability = toFirstProbability(intervalProbabilities);
-  const maxProbability = toFirstProbability(getIntervalProbabilities(sdMax));
+  const maxProbability = toFirstProbability(computeIntervalProbabilities(sdMax));
   const range = `standard deviation in range [${sdMin}, ${sdMax}]`;
 
   if (target < minProbability) {
@@ -70,7 +70,7 @@ export function findDistributionByIntervalProbability(params: Params, options: O
   while (iterations < maxIterations) {
     iterations += 1;
     standardDeviation = (low + high) / 2;
-    intervalProbabilities = getIntervalProbabilities(standardDeviation);
+    intervalProbabilities = computeIntervalProbabilities(standardDeviation);
     probability = toFirstProbability(intervalProbabilities);
 
     if (Math.abs(probability / target - 1) < tolerance) {
