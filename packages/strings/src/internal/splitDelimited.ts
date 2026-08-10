@@ -7,6 +7,7 @@ import { validateDelimiters } from './validateDelimiters.ts';
  * ```ts
  * splitDelimited('[[firstName|lastName]|world]', { opening: '[', closing: ']', separator: '|' });
  * // => ['[firstName|lastName]', 'world']
+ * ```
  * @internal
  */
 export function splitDelimited(text: string, params: Params): string[] {

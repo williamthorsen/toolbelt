@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { TextNode, VariantNode } from '../TextNode.ts';
-import expectedNestedAst from './__fixtures__/TextNode.fixture.ts';
+import { nestedTextNodeAst } from './fixtures/TextNode.fixture.ts';
 
 describe(TextNode, () => {
   const testCase = {
@@ -68,7 +68,7 @@ describe(TextNode, () => {
 
     it('can handle nested delimiters', () => {
       const input = '1:[A[1[a|b]|2[c|d]]|B] 2:[C|D]';
-      const expected = expectedNestedAst;
+      const expected = nestedTextNodeAst;
 
       const actual = TextNode.create(input);
 

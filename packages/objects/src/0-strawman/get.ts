@@ -1,6 +1,10 @@
 /**
  * Returns a function that returns the value mapped to a key.
  * If a default value is provided, the returned function will return the default value if the key is undefined.
+ *
+ * @category Object
+ * @experimental
+ * @stage strawman
  */
 export function get<TKey extends string>(
   prop: TKey,

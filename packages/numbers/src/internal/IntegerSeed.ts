@@ -4,6 +4,8 @@ const MAX_INTEGER = 2 ** 31 - 1; // 2147483647
 
 /**
  * Wrapper for `toIntegerSeed` that provides static properties for generating new seeds.
+ *
+ * @internal
  */
 export const IntegerSeed = {
   max: MAX_INTEGER, // 2_147_483_647

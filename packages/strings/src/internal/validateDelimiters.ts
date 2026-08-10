@@ -5,6 +5,8 @@ import type { ValidationResult } from '../types/common.types.ts';
 /**
  * Validates that the given text has matching opening and closing delimiters.
  * TODO: Add support for multicharacter delimiters.
+ *
+ * @internal
  */
 export function validateDelimiters(text: string, params: Params): ValidationResult {
   const { disallowNested, opening, closing } = params;

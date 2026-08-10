@@ -17,6 +17,10 @@ import { isPromise } from './isPromise.ts';
 /**
  * Successively invokes the functions, passing the result of the previous function as an argument to the next function.
  * If a function returns a promise, the promise will be resolved before its result is passed to the next function.
+ *
+ * @category Function
+ * @experimental
+ * @stage strawman
  */
 export function pipe<T extends [Fn, ...Fn[]]>(...fns: PipeReturn<T> extends never ? never : T): PipedFn<T> {
   return ((...args) => {
@@ -39,6 +43,10 @@ export function pipe<T extends [Fn, ...Fn[]]>(...fns: PipeReturn<T> extends neve
  * ```
  * applyPipe(2, double, square, half)  // -> 8
  * ```
+ *
+ * @category Function
+ * @experimental
+ * @stage strawman
  */
 export function applyPipe<Fns extends [Fn<[any]>, ...Fn[]]>(
   Fn: Parameters<Fns[0]>[0],
