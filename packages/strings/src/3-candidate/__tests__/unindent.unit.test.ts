@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { END_OF_LINE } from '../../internal/constants.ts';
-import { unindent } from '../unindent.ts';
+import { END_OF_LINE, unindent } from '../unindent.ts';
 
 describe(unindent, () => {
   it('if the first and last line are empty, discards them', () => {
