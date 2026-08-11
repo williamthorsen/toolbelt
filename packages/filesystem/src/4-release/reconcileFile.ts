@@ -14,7 +14,8 @@ import { describeError } from '@williamthorsen/toolbelt.errors';
  *
  * An I/O error is reported as `failed` rather than thrown, which is what lets a caller writing several files
  * collect a result for each instead of losing the rest to the first failure. A dry run writes nothing and
- * creates no directory, returning the outcome the real call would have produced.
+ * creates no directory, returning the outcome the real call would have produced, short of a write failure,
+ * which nothing detects without attempting the write.
  *
  * @example
  * reconcileFile('.config/tool.config.ts', template, { conflictPolicy: 'replace' });
