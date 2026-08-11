@@ -14,7 +14,7 @@ pnpm add @williamthorsen/toolbelt.errors
 
 No export reaches a `node:` builtin or any other host API, so they run under Node.js 24 or later, Bun, Deno, browsers, and edge runtimes alike.
 
-Every export is candidate tier: imported from `@williamthorsen/toolbelt.errors/candidate` rather than the package root, and subject to change.
+`describeError` is release tier, imported from the package root. `chainError`, `isError`, and `assertIsError` are candidate tier: imported from `@williamthorsen/toolbelt.errors/candidate` rather than the package root, and subject to change.
 
 ## `describeError`
 
@@ -25,7 +25,7 @@ describeError(error: unknown): string;
 Returns an `Error`'s message, and the stringified value for anything else. A `catch` binding is `unknown` and need not be an `Error` at all, so reporting what was caught otherwise means rewriting the same extraction in every project.
 
 ```ts
-import { describeError } from '@williamthorsen/toolbelt.errors/candidate';
+import { describeError } from '@williamthorsen/toolbelt.errors';
 
 try {
   readConfig();

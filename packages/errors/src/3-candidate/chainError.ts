@@ -1,4 +1,4 @@
-import { describeError } from './describeError.ts';
+import { describeError } from '../4-release/describeError.ts';
 
 /**
  * Returns an `Error` prefixing `message` to a description of `cause`, and carrying `cause` as its own.

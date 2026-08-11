@@ -13,8 +13,7 @@
  * describeError('connection refused'); // 'connection refused'
  *
  * @category Errors
- * @experimental
- * @stage candidate
+ * @stage release
  */
 export function describeError(error: unknown): string {
   try {
