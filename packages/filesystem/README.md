@@ -227,9 +227,15 @@ reconcileFileFromFile('.config/git-cliff.toml', bundledTemplatePath);
 
 It is [`reconcileFile`](#reconcilefile) with the read supplied: the outcome table, the conflict policy, the created parent directories, and the result type are that function's, unchanged. Three things are this one's own.
 
-The source is read as utf8 text, so a binary source is not supported — it would be decoded and re-encoded on the way through.
+The source is read as utf8 text, so a binary source is not supported: it would be decoded and re-encoded on the way through.
 
-A source that cannot be read reports `failed` carrying the reason, rather than throwing. A missing source is not distinguished from an unreadable one, because Node's message names both the path and the cause (`ENOENT: no such file or directory, open '…/template.toml'`). The result's `filePath` is the destination either way, so a caller copying several templates keys its results by destination without asking which side failed.
+A source that cannot be read reports `failed` rather than throwing, and a missing source is not distinguished from an unreadable one. The reason names the source and the cause:
+
+```
+Failed to read /pkg/cliff.toml.template: ENOENT: no such file or directory, open '/pkg/cliff.toml.template'
+```
+
+The path is interpolated rather than left to the underlying message, which carries none of its own at the read stage: reading a directory yields `EISDIR: illegal operation on a directory, read`. Under `ENOENT` the path therefore reads twice. The result's `filePath` is the destination on this path as on every other, so a caller copying several templates keys its results by destination and still sees which source failed.
 
 The source is read even under `isDryRun`, because the outcome depends on comparing its content. A dry run can therefore report `failed` where `reconcileFile`'s cannot, and it still writes nothing.
 

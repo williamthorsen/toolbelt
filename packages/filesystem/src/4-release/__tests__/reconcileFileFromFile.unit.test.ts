@@ -51,21 +51,24 @@ describe(reconcileFileFromFile, () => {
     it('reports failure against the destination when the source does not exist', () => {
       using tree = createTempTree({});
       const filePath = tree.resolve('config.toml');
+      const sourcePath = tree.resolve('absent.toml');
 
-      const result = reconcileFileFromFile(filePath, tree.resolve('absent.toml'));
+      const result = reconcileFileFromFile(filePath, sourcePath);
 
-      expect(result).toStrictEqual({ filePath, outcome: 'failed', error: expect.any(String) });
+      expect(result).toStrictEqual({ filePath, outcome: 'failed', error: expect.stringContaining(sourcePath) });
       expect(fs.existsSync(filePath)).toBe(false);
     });
 
-    // A directory stands in for any existing entry that cannot be read as text.
-    it('reports failure when the source cannot be read', () => {
+    // A directory stands in for any existing entry that cannot be read as text. Its `EISDIR` names no path of its
+    // own, so it is the case that proves the reason carries one.
+    it('reports failure naming the source when the source cannot be read', () => {
       using tree = createTempTree({ 'template.toml/': '' });
       const filePath = tree.resolve('config.toml');
+      const sourcePath = tree.resolve('template.toml');
 
-      const result = reconcileFileFromFile(filePath, tree.resolve('template.toml'));
+      const result = reconcileFileFromFile(filePath, sourcePath);
 
-      expect(result).toStrictEqual({ filePath, outcome: 'failed', error: expect.any(String) });
+      expect(result).toStrictEqual({ filePath, outcome: 'failed', error: expect.stringContaining(sourcePath) });
       expect(fs.existsSync(filePath)).toBe(false);
     });
   });
@@ -85,10 +88,11 @@ describe(reconcileFileFromFile, () => {
     it('reports failure when the source does not exist', () => {
       using tree = createTempTree({});
       const filePath = tree.resolve('config.toml');
+      const sourcePath = tree.resolve('absent.toml');
 
-      const result = reconcileFileFromFile(filePath, tree.resolve('absent.toml'), { isDryRun: true });
+      const result = reconcileFileFromFile(filePath, sourcePath, { isDryRun: true });
 
-      expect(result).toStrictEqual({ filePath, outcome: 'failed', error: expect.any(String) });
+      expect(result).toStrictEqual({ filePath, outcome: 'failed', error: expect.stringContaining(sourcePath) });
     });
   });
 });
