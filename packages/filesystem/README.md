@@ -12,7 +12,7 @@ pnpm add @williamthorsen/toolbelt.filesystem
 
 ## Runtime requirements
 
-`createTempTree`, `findDirectoryChainMatch`, `listDirectoryChainMatches`, and `loadConfigCascade` reach the filesystem through `node:` builtins, so they run under Node.js 24 or later, Bun, and Deno. They do not run in browsers, nor in edge runtimes that expose no filesystem. `listDirectoryChain` and `replaceFileExtension` touch no filesystem, so an edge runtime that exposes none runs them; they still import `node:path`, which a browser bundle has to supply.
+`createTempTree`, `findDirectoryChainMatch`, `listDirectoryChainMatches`, `loadConfigCascade`, and `reconcileFile` reach the filesystem through `node:` builtins, so they run under Node.js 24 or later, Bun, and Deno. They do not run in browsers, nor in edge runtimes that expose no filesystem. `listDirectoryChain` and `replaceFileExtension` touch no filesystem, so an edge runtime that exposes none runs them; they still import `node:path`, which a browser bundle has to supply.
 
 `loadConfigCascade` imports each config through the host runtime, so a `.ts` config is subject to whatever that runtime does with TypeScript. Node strips types rather than compiling them, which admits erasable syntax alone: an `enum`, a `namespace`, or a parameter property in a config file fails to parse. A `.mjs` or `.js` config sidesteps the question.
 
@@ -156,6 +156,55 @@ const { entries, stopReason } = await loadConfigCascade<StackConfig>({
 ```
 
 `stopReason` is provenance for the caller to surface, so a user can see whether the predicate ended the cascade or it simply reached the boundary. Which directory bounded it is the `stopAtDir` the caller passed in.
+
+## `reconcileFile`
+
+```ts
+reconcileFile(
+  filePath: string,
+  content: string,
+  options?: { conflictPolicy?: 'replace' | 'skip'; isDryRun?: boolean },
+): FileReconciliation;
+```
+
+Writes `content` to `filePath` and reports what the write took, rather than throwing:
+
+```ts
+import { reconcileFile } from '@williamthorsen/toolbelt.filesystem';
+
+reconcileFile('.config/tool.config.ts', template);
+// { filePath: '.config/tool.config.ts', outcome: 'created' }
+```
+
+Missing parent directories are created. `isDryRun` writes nothing and creates no directory, returning the outcome the real call would have produced, which is what lets a `--dry-run` flag print the same lines the run itself would. A write that would fail is the exception: nothing detects that without attempting it, so a dry run reports the outcome the write was headed for.
+
+`conflictPolicy` decides what becomes of an existing file whose content differs, and decides nothing else: it is consulted in that case alone. The default, `'skip'`, never replaces a file the user may have edited.
+
+| exists | differs | `conflictPolicy` | outcome       |
+| ------ | ------- | ---------------- | ------------- |
+| no     | —       | —                | `created`     |
+| yes    | no      | either           | `up-to-date`  |
+| yes    | yes     | `replace`        | `overwritten` |
+| yes    | yes     | `skip`           | `skipped`     |
+
+What counts as differing follows the policy, which is the part worth reading twice. `'replace'` promises the file holds exactly `content` afterwards, so only byte-identical content reports `up-to-date`; a file differing from `content` only in trailing whitespace is rewritten, because calling it up to date would leave the caller holding a file that is not what it asked for. `'skip'` modifies nothing either way, so its comparison decides a message alone and ignores trailing whitespace per line and at end of file, which keeps formatter churn from reading as a conflict. `up-to-date` therefore means the same thing under both: this policy has no work to do.
+
+The result discriminates on `outcome`, so a failure always carries its reason:
+
+```ts
+type FileReconciliation =
+  | { filePath: string; outcome: 'created' | 'overwritten' | 'up-to-date' }
+  | { filePath: string; outcome: 'skipped'; error?: string }
+  | { filePath: string; outcome: 'failed'; error: string };
+```
+
+An I/O error on the write path reports `failed` rather than throwing, which is what lets a command writing several files collect a result for each instead of losing the rest to the first failure.
+
+Three behaviors are worth knowing before they surprise you:
+
+- A `skipped` result carrying an `error` means the existing file could not be read for comparison. The file was left alone, which is exactly what `'skip'` promises, so this is not a failure and a command exiting non-zero on failures should not count it as one.
+- The existence probe follows symlinks. A dangling symlink therefore reports as non-existent: the outcome is `created`, the result names the link, and the bytes land at the link's target.
+- The probe and the write are separate calls, leaving a window in which another process can create or remove the file. That gap is left open deliberately: the callers this serves are scaffolding commands with no competing writer, and an exclusive-create flag would close only the create half of it.
 
 ## `createTempTree`
 

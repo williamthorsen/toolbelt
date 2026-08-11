@@ -1,1 +1,1 @@
-export {};
+export { describeError } from './describeError.ts';

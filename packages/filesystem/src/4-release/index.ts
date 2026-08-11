@@ -12,3 +12,9 @@ export {
   loadConfigCascade,
   type LoadConfigCascadeOptions,
 } from './loadConfigCascade.ts';
+export {
+  type FileReconciliation,
+  reconcileFile,
+  type ReconcileFileOptions,
+  type ReconciliationOutcome,
+} from './reconcileFile.ts';
