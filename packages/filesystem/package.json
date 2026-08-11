@@ -33,11 +33,11 @@
     "dist/*",
     "CHANGELOG.md"
   ],
-  "dependencies": {
-    "@williamthorsen/toolbelt.errors": "workspace:*"
-  },
   "scripts": {
     "prepublishOnly": "nmr build"
+  },
+  "dependencies": {
+    "@williamthorsen/toolbelt.errors": "workspace:*"
   },
   "engines": {
     "node": ">=24.0.0"
