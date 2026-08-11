@@ -33,6 +33,9 @@
     "dist/*",
     "CHANGELOG.md"
   ],
+  "dependencies": {
+    "@williamthorsen/toolbelt.errors": "workspace:*"
+  },
   "scripts": {
     "prepublishOnly": "nmr build"
   },

@@ -97,7 +97,11 @@ importers:
 
   packages/errors: {}
 
-  packages/filesystem: {}
+  packages/filesystem:
+    dependencies:
+      '@williamthorsen/toolbelt.errors':
+        specifier: workspace:*
+        version: link:../errors
 
   packages/guards: {}
 
