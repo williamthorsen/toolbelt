@@ -6,10 +6,50 @@ Utilities for testing with Vitest.
 
 ## Installation
 
-Requires Node.js 24 or later.
+```sh
+pnpm add --save-dev @williamthorsen/toolbelt.vitest
+```
 
-Vitest is a peer dependency: the package uses whichever Vitest 4 the consuming project already installs.
+Requires Node.js 24 or later. Vitest is a peer dependency: the package uses whichever Vitest 4 the consuming project already installs.
 
-## Status
+`silenceConsole` is candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change.
 
-The package is scaffolded and exports nothing yet. Its first exports arrive with [#38](https://github.com/williamthorsen/toolbelt/issues/38).
+## `silenceConsole`
+
+```ts
+silenceConsole<M extends ConsoleMethod = ConsoleMethod>(methods?: readonly M[]): Disposable & Record<M, MockInstance>;
+```
+
+Silences the given console methods for the enclosing scope and returns the spy backing each one.
+
+```ts
+import { silenceConsole } from '@williamthorsen/toolbelt.vitest/candidate';
+
+it('falls back to defaults when settings are missing', () => {
+  using silent = silenceConsole(['warn']);
+
+  loadSettings({});
+
+  expect(silent.warn).toHaveBeenCalledWith('No settings found; using defaults');
+});
+```
+
+Each spy records its calls while suppressing the output, so a console call can be asserted on without reaching the terminal. Binding with `using` is what restores the originals when the block exits.
+
+Called with no argument, it silences all five methods:
+
+```ts
+using _silent = silenceConsole();
+```
+
+`debug` is among them, so a `console.debug` added to diagnose a failing test goes quiet under the no-argument form. Name the methods explicitly to keep it audible.
+
+Silences do not stack. Vitest's `vi.spyOn` hands back the existing spy for a method already being spied on, so a nested call that overlaps an outer one shares its spy: when the inner scope exits it restores the method for the outer scope too, and the calls the outer scope had recorded are gone. Overlap is easiest to reach through the no-argument form, which claims every method.
+
+The return type narrows to exactly the methods requested, so one that was not silenced is absent from the record:
+
+```ts
+using silent = silenceConsole(['error']);
+
+silent.warn; // Property 'warn' does not exist
+```
