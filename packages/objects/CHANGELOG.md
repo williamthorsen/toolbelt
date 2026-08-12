@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.2.12 — 2026-08-12
+
+### Refactoring
+
+- Stop shipping test-only and dead support modules (#117)
+
+  Fixes an issue where `@williamthorsen/toolbelt.numbers`, `@williamthorsen/toolbelt.objects`, and `@williamthorsen/toolbelt.strings` each shipped a module that was never importable.
+
+- Align stray modules with layout and TypeScript conventions (#118)
+
+  Aligns all packages with code-layout and annotation conventions, ending a handful of long-standing exceptions. Documentation has been updated to make the conventions clear.
+
 ## 3.2.11 — 2026-08-08
 
 ### Refactoring

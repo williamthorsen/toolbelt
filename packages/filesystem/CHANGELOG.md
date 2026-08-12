@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.0 — 2026-08-12
+
+### Features
+
+- 🚨 **Breaking:** Add reconcileFile to toolbelt.filesystem and promote describeError to release tier (#122)
+
+  Adds `reconcileFile` to `@williamthorsen/toolbelt.filesystem`: an idempotent file write that creates what is missing, refuses by default to replace what is not, and reports which of those it did as a structured outcome rather than throwing.
+
+  Separately, `describeError` is promoted to `@williamthorsen/toolbelt.errors`' release tier, so no release-tier module depends on a candidate one.
+
+  Migration: `describeError` is imported from `@williamthorsen/toolbelt.errors` rather than `@williamthorsen/toolbelt.errors/candidate`, which no longer exports it. `chainError`, `isError`, and `assertIsError` remain at candidate tier.
+
+- Add reconcileFileFromFile to toolbelt.filesystem (#123)
+
+  Adds `reconcileFileFromFile` to `@williamthorsen/toolbelt.filesystem`. It reads a source path as utf8 text and reconciles a destination against it, sharing `reconcileFile`'s options, outcome vocabulary, and `FileReconciliation` result type.
+
+  A source that cannot be read reports `failed` with a reason naming the source and the cause, rather than throwing. Because the outcome depends on the source's content, the read happens even under `isDryRun`, so a dry run can report `failed` where `reconcileFile`'s cannot.
+
 ## 0.3.0 — 2026-08-08
 
 ### Features

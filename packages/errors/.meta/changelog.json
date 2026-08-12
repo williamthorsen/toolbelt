@@ -1,5 +1,23 @@
 [
   {
+    "version": "0.3.0",
+    "date": "2026-08-12",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add reconcileFile to toolbelt.filesystem and promote describeError to release tier (#122)",
+            "body": "Adds `reconcileFile` to `@williamthorsen/toolbelt.filesystem`: an idempotent file write that creates what is missing, refuses by default to replace what is not, and reports which of those it did as a structured outcome rather than throwing.\n\nSeparately, `describeError` is promoted to `@williamthorsen/toolbelt.errors`' release tier, so no release-tier module depends on a candidate one.\n\nMigration: `describeError` is imported from `@williamthorsen/toolbelt.errors` rather than `@williamthorsen/toolbelt.errors/candidate`, which no longer exports it. `chainError`, `isError`, and `assertIsError` remain at candidate tier.",
+            "breaking": true,
+            "hash": "461a61b13f5f95e2c975baf3883f043f8bc2066e"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.2.0",
     "date": "2026-08-10",
     "sections": [

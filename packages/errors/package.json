@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.errors",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Utilities for working with errors",
   "keywords": [],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/errors#readme",

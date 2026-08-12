@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.0.0 — 2026-08-12
+
+### Features
+
+- 🚨 **Breaking:** Rename get* functions by return kind and verb specificity (#119)
+
+  Renames thirteen functions across various packages to align with a consistent naming pattern.
+
+### Refactoring
+
+- Align stray modules with layout and TypeScript conventions (#118)
+
+  Aligns all packages with code-layout and annotation conventions, ending a handful of long-standing exceptions. Documentation has been updated to make the conventions clear.
+
 ## 3.3.0 — 2026-08-08
 
 ### Features

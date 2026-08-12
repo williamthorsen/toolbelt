@@ -1,5 +1,27 @@
 [
   {
+    "version": "3.2.12",
+    "date": "2026-08-12",
+    "sections": [
+      {
+        "title": "Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Stop shipping test-only and dead support modules (#117)",
+            "body": "Fixes an issue where `@williamthorsen/toolbelt.numbers`, `@williamthorsen/toolbelt.objects`, and `@williamthorsen/toolbelt.strings` each shipped a module that was never importable.",
+            "hash": "1b9650a69535a74d8e786f9890fdf5fc07a48da4"
+          },
+          {
+            "description": "Align stray modules with layout and TypeScript conventions (#118)",
+            "body": "Aligns all packages with code-layout and annotation conventions, ending a handful of long-standing exceptions. Documentation has been updated to make the conventions clear.",
+            "hash": "03fe37b2f5159348053db9cc21c5915b6847c26f"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "3.2.11",
     "date": "2026-08-08",
     "sections": [

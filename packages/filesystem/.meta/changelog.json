@@ -1,5 +1,28 @@
 [
   {
+    "version": "0.4.0",
+    "date": "2026-08-12",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add reconcileFile to toolbelt.filesystem and promote describeError to release tier (#122)",
+            "body": "Adds `reconcileFile` to `@williamthorsen/toolbelt.filesystem`: an idempotent file write that creates what is missing, refuses by default to replace what is not, and reports which of those it did as a structured outcome rather than throwing.\n\nSeparately, `describeError` is promoted to `@williamthorsen/toolbelt.errors`' release tier, so no release-tier module depends on a candidate one.\n\nMigration: `describeError` is imported from `@williamthorsen/toolbelt.errors` rather than `@williamthorsen/toolbelt.errors/candidate`, which no longer exports it. `chainError`, `isError`, and `assertIsError` remain at candidate tier.",
+            "breaking": true,
+            "hash": "461a61b13f5f95e2c975baf3883f043f8bc2066e"
+          },
+          {
+            "description": "Add reconcileFileFromFile to toolbelt.filesystem (#123)",
+            "body": "Adds `reconcileFileFromFile` to `@williamthorsen/toolbelt.filesystem`. It reads a source path as utf8 text and reconciles a destination against it, sharing `reconcileFile`'s options, outcome vocabulary, and `FileReconciliation` result type.\n\nA source that cannot be read reports `failed` with a reason naming the source and the cause, rather than throwing. Because the outcome depends on the source's content, the read happens even under `isDryRun`, so a dry run can report `failed` where `reconcileFile`'s cannot.",
+            "hash": "017b412a5532f6e2fe0615cd1ba545a8568321a5"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.3.0",
     "date": "2026-08-08",
     "sections": [

@@ -1,5 +1,22 @@
 [
   {
+    "version": "3.0.18",
+    "date": "2026-08-12",
+    "sections": [
+      {
+        "title": "Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Align stray modules with layout and TypeScript conventions (#118)",
+            "body": "Aligns all packages with code-layout and annotation conventions, ending a handful of long-standing exceptions. Documentation has been updated to make the conventions clear.",
+            "hash": "03fe37b2f5159348053db9cc21c5915b6847c26f"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "3.0.17",
     "date": "2026-08-08",
     "sections": [

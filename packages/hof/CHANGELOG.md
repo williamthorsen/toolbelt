@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.0.18 — 2026-08-12
+
+### Refactoring
+
+- Align stray modules with layout and TypeScript conventions (#118)
+
+  Aligns all packages with code-layout and annotation conventions, ending a handful of long-standing exceptions. Documentation has been updated to make the conventions clear.
+
 ## 3.0.17 — 2026-08-08
 
 ### Tooling
