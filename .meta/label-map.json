@@ -36,6 +36,7 @@
     "strings": "scope:strings",
     "testing": "scope:testing",
     "tools": "scope:tools",
+    "vitest": "scope:vitest",
     "root": "scope:root"
   }
 }
