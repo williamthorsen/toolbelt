@@ -44,6 +44,8 @@ using _silent = silenceConsole();
 
 `debug` is among them, so a `console.debug` added to diagnose a failing test goes quiet under the no-argument form. Name the methods explicitly to keep it audible.
 
+Silences do not stack. Vitest's `vi.spyOn` hands back the existing spy for a method already being spied on, so a nested call that overlaps an outer one shares its spy: when the inner scope exits it restores the method for the outer scope too, and the calls the outer scope had recorded are gone. Overlap is easiest to reach through the no-argument form, which claims every method.
+
 The return type narrows to exactly the methods requested, so one that was not silenced is absent from the record:
 
 ```ts
