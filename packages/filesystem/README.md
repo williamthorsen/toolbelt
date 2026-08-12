@@ -12,7 +12,7 @@ pnpm add @williamthorsen/toolbelt.filesystem
 
 ## Runtime requirements
 
-`createTempTree`, `findDirectoryChainMatch`, `listDirectoryChainMatches`, `loadConfigCascade`, and `reconcileFile` reach the filesystem through `node:` builtins, so they run under Node.js 24 or later, Bun, and Deno. They do not run in browsers, nor in edge runtimes that expose no filesystem. `listDirectoryChain` and `replaceFileExtension` touch no filesystem, so an edge runtime that exposes none runs them; they still import `node:path`, which a browser bundle has to supply.
+`createTempTree`, `findDirectoryChainMatch`, `listDirectoryChainMatches`, `loadConfigCascade`, `reconcileFile`, and `reconcileFileFromFile` reach the filesystem through `node:` builtins, so they run under Node.js 24 or later, Bun, and Deno. They do not run in browsers, nor in edge runtimes that expose no filesystem. `listDirectoryChain` and `replaceFileExtension` touch no filesystem, so an edge runtime that exposes none runs them; they still import `node:path`, which a browser bundle has to supply.
 
 `loadConfigCascade` imports each config through the host runtime, so a `.ts` config is subject to whatever that runtime does with TypeScript. Node strips types rather than compiling them, which admits erasable syntax alone: an `enum`, a `namespace`, or a parameter property in a config file fails to parse. A `.mjs` or `.js` config sidesteps the question.
 
@@ -205,6 +205,39 @@ Three behaviors are worth knowing before they surprise you:
 - A `skipped` result carrying an `error` means the existing file could not be read for comparison. The file was left alone, which is exactly what `'skip'` promises, so this is not a failure and a command exiting non-zero on failures should not count it as one.
 - The existence probe follows symlinks. A dangling symlink therefore reports as non-existent: the outcome is `created`, the result names the link, and the bytes land at the link's target.
 - The probe and the write are separate calls, leaving a window in which another process can create or remove the file. That gap is left open deliberately: the callers this serves are scaffolding commands with no competing writer, and an exclusive-create flag would close only the create half of it.
+
+## `reconcileFileFromFile`
+
+```ts
+reconcileFileFromFile(
+  filePath: string,
+  sourcePath: string,
+  options?: { conflictPolicy?: 'replace' | 'skip'; isDryRun?: boolean },
+): FileReconciliation;
+```
+
+Reconciles `filePath` against the content of `sourcePath`, which is what a command copying a bundled template reaches for:
+
+```ts
+import { reconcileFileFromFile } from '@williamthorsen/toolbelt.filesystem';
+
+reconcileFileFromFile('.config/git-cliff.toml', bundledTemplatePath);
+// { filePath: '.config/git-cliff.toml', outcome: 'created' }
+```
+
+It is [`reconcileFile`](#reconcilefile) with the read supplied: the outcome table, the conflict policy, the created parent directories, and the result type are that function's, unchanged. Three things are this one's own.
+
+The source is read as utf8 text, so a binary source is not supported: it would be decoded and re-encoded on the way through.
+
+A source that cannot be read reports `failed` rather than throwing, and a missing source is not distinguished from an unreadable one. The reason names the source and the cause:
+
+```
+Failed to read /pkg/cliff.toml.template: ENOENT: no such file or directory, open '/pkg/cliff.toml.template'
+```
+
+The path is interpolated rather than left to the underlying message, which carries none of its own at the read stage: reading a directory yields `EISDIR: illegal operation on a directory, read`. Under `ENOENT` the path therefore reads twice. The result's `filePath` is the destination on this path as on every other, so a caller copying several templates keys its results by destination and still sees which source failed.
+
+The source is read even under `isDryRun`, because the outcome depends on comparing its content. A dry run can therefore report `failed` where `reconcileFile`'s cannot, and it still writes nothing.
 
 ## `createTempTree`
 

@@ -18,3 +18,4 @@ export {
   type ReconcileFileOptions,
   type ReconciliationOutcome,
 } from './reconcileFile.ts';
+export { reconcileFileFromFile } from './reconcileFileFromFile.ts';
