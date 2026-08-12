@@ -1,10 +1,19 @@
 import { type MockInstance, vi } from 'vitest';
 
-const ALL_CONSOLE_METHODS: readonly ConsoleMethod[] = ['debug', 'error', 'info', 'log', 'warn'];
+const ALL_CONSOLE_METHODS = ['debug', 'error', 'info', 'log', 'warn'] as const;
 
 /**
+ * Silences every console method for the enclosing scope, returning the spy backing each one and restoring
+ * them all when the scope exits.
+ *
+ * @category Testing
+ * @experimental
+ * @stage candidate
+ */
+export function silenceConsole(): Disposable & Record<ConsoleMethod, MockInstance>;
+/**
  * Silences the given console methods for the enclosing scope, returning the spy backing each one and
- * restoring them all when the scope exits. Silences every method when called with no argument.
+ * restoring them all when the scope exits.
  *
  * @category Testing
  * @experimental
@@ -15,11 +24,11 @@ const ALL_CONSOLE_METHODS: readonly ConsoleMethod[] = ['debug', 'error', 'info',
  * emitDeprecationWarning();
  * expect(silent.warn).toHaveBeenCalledWith('deprecated');
  */
-export function silenceConsole<M extends ConsoleMethod = ConsoleMethod>(
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- omitting the argument resolves `M` to the full union, which is what the constant holds.
-  methods: readonly M[] = ALL_CONSOLE_METHODS as readonly M[],
-): Disposable & Record<M, MockInstance> {
-  const entries = methods.map((method): [M, MockInstance] => [method, silenceMethod(method)]);
+export function silenceConsole<M extends ConsoleMethod>(methods: readonly M[]): Disposable & Record<M, MockInstance>;
+export function silenceConsole(
+  methods: readonly ConsoleMethod[] = ALL_CONSOLE_METHODS,
+): Disposable & Record<ConsoleMethod, MockInstance> {
+  const entries = methods.map((method): [ConsoleMethod, MockInstance] => [method, silenceMethod(method)]);
 
   return Object.assign(toTypedRecord(entries), {
     // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's Symbol allowlist omits Symbol.dispose and accepts no options.
@@ -31,13 +40,13 @@ export function silenceConsole<M extends ConsoleMethod = ConsoleMethod>(
   });
 }
 
-export type ConsoleMethod = 'debug' | 'error' | 'info' | 'log' | 'warn';
+export type ConsoleMethod = (typeof ALL_CONSOLE_METHODS)[number];
 
 // region | Helpers
 
 /**
- * Spies on a single console method, replacing it with a no-op. Takes the full union rather than the caller's
- * narrowed type parameter, which is what lets `mockImplementation` resolve against a settled signature.
+ * Spies on a single console method, replacing it with a no-op. Takes the full union rather than a narrowed
+ * type parameter, which is what lets `mockImplementation` resolve against a settled signature.
  */
 function silenceMethod(method: ConsoleMethod): MockInstance {
   return vi.spyOn(console, method).mockImplementation(() => {});
