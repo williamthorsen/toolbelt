@@ -24,6 +24,7 @@ const config = defineConfig({
       'scope:statistics': { color: '00ff96' },
       'scope:strings': { color: '00ff96' },
       'scope:tools': { color: '00ff96' },
+      'scope:vitest': { color: '00ff96' },
     },
   },
   // Historical tags predate the `toolbelt.`-scoped package names, so their prefixes (`arrays-v`, …) no longer match the

@@ -1,0 +1,49 @@
+{
+  "name": "@williamthorsen/toolbelt.vitest",
+  "version": "0.1.0",
+  "description": "Utilities for testing with Vitest",
+  "keywords": [],
+  "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/vitest#readme",
+  "bugs": {
+    "url": "https://github.com/williamthorsen/toolbelt/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/williamthorsen/toolbelt.git",
+    "directory": "packages/vitest"
+  },
+  "license": "ISC",
+  "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/4-release/index.js"
+    },
+    "./candidate": {
+      "import": "./dist/esm/3-candidate/index.js"
+    },
+    "./draft": {
+      "import": "./dist/esm/2-draft/index.js"
+    },
+    "./proposed": {
+      "import": "./dist/esm/1-proposed/index.js"
+    }
+  },
+  "files": [
+    "dist/*",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "prepublishOnly": "nmr build"
+  },
+  "peerDependencies": {
+    "vitest": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
+}

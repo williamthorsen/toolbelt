@@ -154,6 +154,12 @@ importers:
 
   packages/tools: {}
 
+  packages/vitest:
+    dependencies:
+      vitest:
+        specifier: ^4.0.0
+        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))
+
 packages:
 
   '@altano/repository-tools@2.0.5':

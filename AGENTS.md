@@ -2,11 +2,11 @@
 
 ## Overview
 
-PNPM monorepo of TypeScript utility libraries, each published to npm as `@williamthorsen/toolbelt.{domain}`. Every package organizes its source by API maturity and exposes each tier as a separate export subpath, so consumers opt in to the stability they want. Node >= 24, ESM only. Runtime dependencies outside the workspace are avoided rather than forbidden: reach for one only where hand-rolling would be worse, and prefer a workspace helper where one fits. `objects` depends on `@sindresorhus/is`; no other package does.
+PNPM monorepo of TypeScript utility libraries, each published to npm as `@williamthorsen/toolbelt.{domain}`. Every package organizes its source by API maturity and exposes each tier as a separate export subpath, so consumers opt in to the stability they want. Node >= 24, ESM only. Runtime dependencies outside the workspace are avoided rather than forbidden: reach for one only where hand-rolling would be worse, and prefer a workspace helper where one fits. `objects` depends on `@sindresorhus/is`; no other package does. `vitest` declares Vitest as a `peerDependency`, the repo's only one.
 
 ## Project structure
 
-- `packages/{domain}/`: one published library per domain (arrays, async, datetime, dstructs, enums, errors, filesystem, guards, hof, numbers, objects, packaging, sets, statistics, strings, tools).
+- `packages/{domain}/`: one published library per domain (arrays, async, datetime, dstructs, enums, errors, filesystem, guards, hof, numbers, objects, packaging, sets, statistics, strings, tools, vitest).
 - `packages/_template/`: private scaffold for new packages, excluded from release processing in `.config/release-kit.config.ts`.
 - `packages/{domain}/src/{0-strawman,1-proposed,2-draft,3-candidate,4-release}/`: maturity tiers, each with an `index.ts` re-exporting that tier's public surface. `src/internal/`, `src/types/`, and `src/test-utils/` sit outside the tiers and are not exported. The first two still ship, being build entry points, so `__tests__/support-module-usage.app.unit.test.ts` requires every module in one to have an importer outside test scaffolding; `test-utils/` the build drops, which is what keeps a test helper out of `dist/`.
 - `.agents/`: `codeassembly.yaml` declares the guidance packages `codeassembly sync` resolves; `preferences.yaml` carries the project slug and ticket-ref prefix.
