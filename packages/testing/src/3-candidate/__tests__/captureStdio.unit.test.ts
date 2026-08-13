@@ -1,0 +1,177 @@
+import { Buffer } from 'node:buffer';
+import process from 'node:process';
+
+import { describe, expect, expectTypeOf, it } from 'vitest';
+
+import { captureStdio } from '../captureStdio.ts';
+
+describe(captureStdio, () => {
+  describe('stream capture', () => {
+    it('buffers each stream separately', () => {
+      using stdio = captureStdio();
+
+      process.stdout.write('out\n');
+      process.stderr.write('err\n');
+
+      expect(stdio.stdout).toBe('out\n');
+      expect(stdio.stderr).toBe('err\n');
+    });
+
+    it('preserves write boundaries alongside the joined transcript', () => {
+      using stdio = captureStdio();
+
+      process.stdout.write('first');
+      process.stdout.write('second');
+
+      expect(stdio.stdoutChunks).toStrictEqual(['first', 'second']);
+      expect(stdio.stdout).toBe(stdio.stdoutChunks.join(''));
+    });
+
+    it('decodes a byte chunk as text', () => {
+      using stdio = captureStdio();
+
+      process.stdout.write(Buffer.from('bytes'));
+      process.stdout.write(new Uint8Array([0x68, 0x69]));
+
+      expect(stdio.stdoutChunks).toStrictEqual(['bytes', 'hi']);
+    });
+
+    it('reports the write as flushed and invokes a trailing callback', () => {
+      const callbacks: string[] = [];
+
+      using stdio = captureStdio();
+
+      const returned = process.stdout.write('a', () => {
+        callbacks.push('two-argument');
+      });
+      process.stdout.write('b', 'utf8', () => {
+        callbacks.push('three-argument');
+      });
+
+      expect(returned).toBe(true);
+      expect(callbacks).toStrictEqual(['two-argument', 'three-argument']);
+      expect(stdio.stdout).toBe('ab');
+    });
+
+    it('suppresses the output rather than passing it through', () => {
+      using stdio = captureStdio();
+
+      process.stdout.write('swallowed');
+
+      expect(Object.hasOwn(process.stdout, 'write')).toBe(true);
+      expect(stdio.stdout).toBe('swallowed');
+    });
+  });
+
+  describe('reset', () => {
+    it('empties both buffers', () => {
+      using stdio = captureStdio();
+
+      process.stdout.write('before');
+      process.stderr.write('before');
+      stdio.reset();
+
+      expect(stdio.stdout).toBe('');
+      expect(stdio.stderr).toBe('');
+    });
+
+    it('leaves a previously read chunk list untouched', () => {
+      using stdio = captureStdio();
+
+      process.stdout.write('first');
+      const chunks = stdio.stdoutChunks;
+      stdio.reset();
+
+      expect(chunks).toStrictEqual(['first']);
+    });
+
+    it('lets one test compare two invocations', () => {
+      using stdio = captureStdio();
+
+      process.stdout.write('rendered');
+      const first = stdio.stdout;
+
+      stdio.reset();
+      process.stdout.write('rendered');
+
+      expect(stdio.stdout).toBe(first);
+    });
+  });
+
+  describe('restoration', () => {
+    it('returns write to prototype resolution when the scope exits', () => {
+      {
+        using _stdio = captureStdio();
+        expect(Object.hasOwn(process.stdout, 'write')).toBe(true);
+      }
+
+      // The streams own no `write` of their own, so its absence is the whole of the restoration.
+      expect(Object.hasOwn(process.stdout, 'write')).toBe(false);
+      expect(Object.hasOwn(process.stderr, 'write')).toBe(false);
+    });
+
+    it('restores a property the stream owned to the value it held', () => {
+      process.stdout.isTTY = true;
+
+      {
+        using _stdio = captureStdio({ isTty: false });
+        expect(process.stdout.isTTY).toBe(false);
+      }
+
+      expect(process.stdout.isTTY).toBe(true);
+
+      Reflect.deleteProperty(process.stdout, 'isTTY');
+    });
+
+    it('restores the absence of a property the stream did not own', () => {
+      Reflect.deleteProperty(process.stdout, 'isTTY');
+
+      {
+        using _stdio = captureStdio({ isTty: true });
+        expect(Object.hasOwn(process.stdout, 'isTTY')).toBe(true);
+      }
+
+      expect(Object.hasOwn(process.stdout, 'isTTY')).toBe(false);
+    });
+  });
+
+  describe('isTty', () => {
+    it('reports the requested value on both streams', () => {
+      using _stdio = captureStdio({ isTty: true });
+
+      expect(process.stdout.isTTY).toBe(true);
+      expect(process.stderr.isTTY).toBe(true);
+    });
+
+    it('leaves the value alone when it is not requested', () => {
+      process.stdout.isTTY = true;
+
+      {
+        using _stdio = captureStdio();
+        expect(process.stdout.isTTY).toBe(true);
+      }
+
+      Reflect.deleteProperty(process.stdout, 'isTTY');
+    });
+
+    it('restores both streams even when it is not requested', () => {
+      const owned = { stderr: Object.hasOwn(process.stderr, 'isTTY'), stdout: Object.hasOwn(process.stdout, 'isTTY') };
+
+      {
+        using _stdio = captureStdio();
+      }
+
+      expect(Object.hasOwn(process.stdout, 'isTTY')).toBe(owned.stdout);
+      expect(Object.hasOwn(process.stderr, 'isTTY')).toBe(owned.stderr);
+    });
+  });
+
+  describe('type surface', () => {
+    it('returns a disposable', () => {
+      using stdio = captureStdio();
+
+      expectTypeOf(stdio).toExtend<Disposable>();
+      expectTypeOf(stdio.stdoutChunks).toEqualTypeOf<readonly string[]>();
+    });
+  });
+});
