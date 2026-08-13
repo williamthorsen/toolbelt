@@ -37,7 +37,7 @@ Runner conventions (discovery, invocation, root vs. package registries, hooks) c
 
 **Adoption.** A utility earns a place by cross-repo demand, or by supplying a capability its platform structurally lacks -- the language for most packages, Vitest for `vitest`. Hand-roll count alone is not the measure: a helper nobody hand-rolls may only show that people settle for the platform's weaker alternative. Adopting one from another repository reconsiders its API; it is not a port.
 
-**Test-utility routing.** A test-only utility goes to `vitest` if it imports the Vitest API and to `testing` if it does not. Every other utility goes to its domain package.
+**Test-utility routing.** A test-only utility goes to `vitest` if it imports the Vitest API and to `testing` if it does not. Every other utility goes to its domain package. `__tests__/runner-agnostic-imports.app.unit.test.ts` enforces the split, exempting a workspace that declares Vitest under `dependencies` or `peerDependencies` -- the fields that install it for a consumer.
 
 **Release.** Run release-kit locally (`prepare`, `commit`, `tag`), then `git push && git push --tags`. The tag push triggers `publish.yaml`, which publishes with provenance via npm trusted publishing (OIDC); the repo holds no `NPM_TOKEN`. Tags must be pushed from a developer machine: GitHub does not fire workflows for tags pushed with `GITHUB_TOKEN`, so the dispatch `release.yaml` path alone cannot publish.
 
