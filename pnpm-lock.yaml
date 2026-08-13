@@ -30,14 +30,14 @@ importers:
         specifier: 10.3.1
         version: 10.3.1
       '@williamthorsen/strict-lint':
-        specifier: 10.0.0
-        version: 10.0.0(eslint@10.8.0(jiti@2.7.0)(supports-color@7.2.0))
+        specifier: 11.0.0
+        version: 11.0.0(eslint@10.8.0(jiti@2.7.0)(supports-color@7.2.0))
       '@williamthorsen/tsconfig':
         specifier: 0.5.0
         version: 0.5.0
       codeassembly:
-        specifier: 0.8.0
-        version: 0.8.0
+        specifier: 0.9.0
+        version: 0.9.0
       eslint:
         specifier: 10.8.0
         version: 10.8.0(jiti@2.7.0)(supports-color@7.2.0)
@@ -806,8 +806,8 @@ packages:
       eslint: '>=10'
       typescript: '>=5'
 
-  '@williamthorsen/kb@0.5.0':
-    resolution: {integrity: sha512-xfoLqOwfedtj4jzl4/JqJjZerfZZiAOcmEiFIh3zwtFA4Twf2QRTHuZc4ylS+PSHZ63cGMr6VsZQ0Tpngnq1IA==}
+  '@williamthorsen/kb@0.6.0':
+    resolution: {integrity: sha512-9c3sCtf90NfMCZjAJGwsrPymmKMi2qxYkUmx5tfyqOPaScW7U7I+aIO1U9SkwttE/mmWZbPWzO+285T5/K80nA==}
     engines: {node: '>=24'}
     hasBin: true
 
@@ -834,19 +834,31 @@ packages:
     engines: {node: '>=24'}
     hasBin: true
 
-  '@williamthorsen/strict-lint@10.0.0':
-    resolution: {integrity: sha512-uu+g0cbBD6xFGZqwGkMJhbQuTXeWJDTbM6G9ATL/72Lv1QnXZPo8IjppqoV2UTxt9HLKgOUNMwQH3c6hzhZn0g==}
+  '@williamthorsen/strict-lint@11.0.0':
+    resolution: {integrity: sha512-9WRdra2IunXdi4OamvkltmUuu8Xm/phE74gkzo1ynpjk3QrDZ7KFaw1h98F1WFyRIvropTkCiMld+xgkrAhHDw==}
     engines: {node: '>=24'}
     hasBin: true
     peerDependencies:
       eslint: '>=10'
 
+  '@williamthorsen/toolbelt.errors@0.3.0':
+    resolution: {integrity: sha512-ZBY+DRI6A1tI3oxcYBDDN8w3hRUNHoZRa9FS6u1COxiTYoi545UfJ5LDma/3dej5DIz3FeleS1h57aCOAdj2KA==}
+    engines: {node: '>=24.0.0'}
+
   '@williamthorsen/toolbelt.filesystem@0.3.0':
     resolution: {integrity: sha512-LAgacq4EBEtrmXCMUsZ6gslzOGF01HHLluwIQRwuqitdcjqrOMU/kh8GFJTWpWnT77JtFwAb80bGyGCYCz6NWQ==}
     engines: {node: '>=24.0.0'}
 
+  '@williamthorsen/toolbelt.filesystem@0.4.0':
+    resolution: {integrity: sha512-UKeOOKngs5t5f9BKZ21hh/oyPIXueo5A+Mugkwc0f200abGdeNeZ9O7MbsvXb+h+o2t1E0BZzy8zk66OicsagQ==}
+    engines: {node: '>=24.0.0'}
+
   '@williamthorsen/toolbelt.packaging@0.2.0':
     resolution: {integrity: sha512-SR6VTng8kAQXFEZEVgexp04G/rEUkm15MoL6vx2rKIX9B9ltLMDHZBHK/2oSOxic0UInCZW1cA+y73vdpnkM7Q==}
+    engines: {node: '>=24.0.0'}
+
+  '@williamthorsen/toolbelt.packaging@0.3.0':
+    resolution: {integrity: sha512-cmWHKbVp+6cNe5pBtbzmTTm8DOB7B2m8prvyL2uyw/2va1VinoP4K1ud+K/9ehQCD8Yktgm6/p7uS7V7Jtt/qw==}
     engines: {node: '>=24.0.0'}
 
   '@williamthorsen/tsconfig@0.5.0':
@@ -980,12 +992,12 @@ packages:
     resolution: {integrity: sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ==}
     engines: {node: '>=12'}
 
-  codeassembly-lifecycle@0.3.0:
-    resolution: {integrity: sha512-po6xU8f1UqzjbO4walh99CiNWET1q7XDEACUSnl87AAeYqXxHoaLODMYqZziFM18BsPH7gEjzH6sagNSmPjyUg==}
+  codeassembly-lifecycle@0.4.0:
+    resolution: {integrity: sha512-JxzORj9u1jDMNbIxT+KqtksQRTj3CZYlewwHMSp+qSRUOxV8AnVU56sC4MD3eO2Nv3eNqGnt8sj2dvPNC3MM+w==}
     engines: {node: '>=24'}
 
-  codeassembly@0.8.0:
-    resolution: {integrity: sha512-sRNvqGWiZxFxBfBCTHKe5gQhiuzo4iw2432XYCkYI+Xq2H0znHf3UTngent7XNBrgCDzyh+ZABSmPgLSH5sNtg==}
+  codeassembly@0.9.0:
+    resolution: {integrity: sha512-/v2JoEOVI6jRYhjjnWuyCz4ozKBNQ2WdaVySbuQJw4v/gLVlOBsRpk59Pj5wA79X4td9O9i0cBPqEPxXwnL+Uw==}
     engines: {node: '>=24'}
     hasBin: true
 
@@ -3082,8 +3094,9 @@ snapshots:
       - supports-color
       - ts-declaration-location
 
-  '@williamthorsen/kb@0.5.0':
+  '@williamthorsen/kb@0.6.0':
     dependencies:
+      '@williamthorsen/toolbelt.errors': 0.3.0
       picomatch: 4.0.5
       yaml: 2.9.0
       zod: 4.4.3
@@ -3111,17 +3124,27 @@ snapshots:
       yaml: 2.9.0
       zod: 4.4.3
 
-  '@williamthorsen/strict-lint@10.0.0(eslint@10.8.0(jiti@2.7.0)(supports-color@7.2.0))':
+  '@williamthorsen/strict-lint@11.0.0(eslint@10.8.0(jiti@2.7.0)(supports-color@7.2.0))':
     dependencies:
-      '@williamthorsen/toolbelt.filesystem': 0.3.0
-      '@williamthorsen/toolbelt.packaging': 0.2.0
+      '@williamthorsen/toolbelt.filesystem': 0.4.0
+      '@williamthorsen/toolbelt.packaging': 0.3.0
       eslint: 10.8.0(jiti@2.7.0)(supports-color@7.2.0)
 
+  '@williamthorsen/toolbelt.errors@0.3.0': {}
+
   '@williamthorsen/toolbelt.filesystem@0.3.0': {}
+
+  '@williamthorsen/toolbelt.filesystem@0.4.0':
+    dependencies:
+      '@williamthorsen/toolbelt.errors': 0.3.0
 
   '@williamthorsen/toolbelt.packaging@0.2.0':
     dependencies:
       '@williamthorsen/toolbelt.filesystem': 0.3.0
+
+  '@williamthorsen/toolbelt.packaging@0.3.0':
+    dependencies:
+      '@williamthorsen/toolbelt.filesystem': 0.4.0
 
   '@williamthorsen/tsconfig@0.5.0': {}
 
@@ -3278,12 +3301,13 @@ snapshots:
       strip-ansi: 6.0.1
       wrap-ansi: 7.0.0
 
-  codeassembly-lifecycle@0.3.0: {}
+  codeassembly-lifecycle@0.4.0: {}
 
-  codeassembly@0.8.0:
+  codeassembly@0.9.0:
     dependencies:
-      '@williamthorsen/kb': 0.5.0
-      codeassembly-lifecycle: 0.3.0
+      '@williamthorsen/kb': 0.6.0
+      '@williamthorsen/toolbelt.errors': 0.3.0
+      codeassembly-lifecycle: 0.4.0
       ulid: 3.0.2
       yaml: 2.9.0
       zod: 4.4.3
