@@ -1,8 +1,16 @@
 {
   "name": "@williamthorsen/toolbelt.objects",
   "version": "3.2.12",
-  "description": "Utilities for working with objects in JavaScript and TypeScript.",
-  "keywords": [],
+  "description": "Utilities for working with objects in JavaScript and TypeScript",
+  "keywords": [
+    "deep-equal",
+    "esm",
+    "object",
+    "plain-object",
+    "toolbelt",
+    "typescript",
+    "utilities"
+  ],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/objects#readme",
   "bugs": {
     "url": "https://github.com/williamthorsen/toolbelt/issues"
@@ -14,6 +22,7 @@
   },
   "license": "ISC",
   "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {

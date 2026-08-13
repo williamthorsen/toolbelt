@@ -1,8 +1,17 @@
 {
   "name": "@williamthorsen/toolbelt.sets",
   "version": "3.0.10",
-  "description": "API",
-  "keywords": [],
+  "description": "Functions for working with sets",
+  "keywords": [
+    "esm",
+    "intersection",
+    "set",
+    "set-operations",
+    "toolbelt",
+    "typescript",
+    "union",
+    "utilities"
+  ],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/sets#readme",
   "bugs": {
     "url": "https://github.com/williamthorsen/toolbelt/issues"
@@ -14,6 +23,7 @@
   },
   "license": "ISC",
   "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {

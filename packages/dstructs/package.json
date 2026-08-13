@@ -2,7 +2,14 @@
   "name": "@williamthorsen/toolbelt.dstructs",
   "version": "0.2.4",
   "description": "Data-structure utilities",
-  "keywords": [],
+  "keywords": [
+    "data-structures",
+    "esm",
+    "queue",
+    "toolbelt",
+    "typescript",
+    "utilities"
+  ],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/dstructs#readme",
   "bugs": {
     "url": "https://github.com/williamthorsen/toolbelt/issues"
@@ -14,6 +21,7 @@
   },
   "license": "ISC",
   "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {

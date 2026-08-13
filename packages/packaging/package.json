@@ -2,7 +2,15 @@
   "name": "@williamthorsen/toolbelt.packaging",
   "version": "0.3.0",
   "description": "Package and project layout utilities: where a package or project boundary begins, and what its manifest declares",
-  "keywords": [],
+  "keywords": [
+    "esm",
+    "monorepo",
+    "package-json",
+    "toolbelt",
+    "typescript",
+    "utilities",
+    "workspace"
+  ],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/packaging#readme",
   "bugs": {
     "url": "https://github.com/williamthorsen/toolbelt/issues"
@@ -14,6 +22,7 @@
   },
   "license": "ISC",
   "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {

@@ -1,8 +1,17 @@
 {
   "name": "@williamthorsen/toolbelt.strings",
   "version": "4.0.0",
-  "description": "API",
-  "keywords": [],
+  "description": "String-handling utilities",
+  "keywords": [
+    "case-conversion",
+    "esm",
+    "pluralize",
+    "slugify",
+    "string",
+    "toolbelt",
+    "typescript",
+    "utilities"
+  ],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/strings#readme",
   "bugs": {
     "url": "https://github.com/williamthorsen/toolbelt/issues"
@@ -14,6 +23,7 @@
   },
   "license": "ISC",
   "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
