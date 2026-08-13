@@ -36,6 +36,9 @@
   "scripts": {
     "prepublishOnly": "nmr build"
   },
+  "devDependencies": {
+    "vitest": "catalog:"
+  },
   "peerDependencies": {
     "vitest": "^4.0.0"
   },
