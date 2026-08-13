@@ -57,7 +57,7 @@ Three cases throw instead of returning, each failing the test with a message nam
 | It threw a non-`Error`        | `Expected the call to throw Error, but it threw: 'boom'`                              |
 | It threw another class        | `Expected the call to throw KitError, but it threw: TypeError: url is not a function` |
 
-The last two carry the thrown value as the failure's `cause`, so the real error's stack survives into the report.
+The first names no class: with nothing thrown, nothing was compared against one. The last two carry the thrown value as the failure's `cause`, so the real error's stack survives into the report.
 
 ## `captureStdio`
 
