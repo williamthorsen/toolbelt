@@ -36,10 +36,26 @@ describe(createTempTree, () => {
     expect(path.dirname(tree.dir)).toBe(fs.realpathSync(os.tmpdir()));
   });
 
-  it('names no single package in the directory prefix', () => {
+  it('names no single package in the default directory prefix', () => {
     using tree = createTempTree({});
 
     expect(path.basename(tree.dir)).toMatch(/^toolbelt-/);
+  });
+
+  it('builds the directory under a given prefix', () => {
+    using tree = createTempTree({}, { prefix: 'rdy-tsconfig-' });
+
+    expect(path.basename(tree.dir)).toMatch(/^rdy-tsconfig-/);
+  });
+
+  // The backslash case covers the separator Windows resolves alongside `/`.
+  it.each(['rdy/', 'rdy\\', '../escaped-'])('rejects the prefix %j, building nothing', (prefix) => {
+    const mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
+
+    const create = () => createTempTree({}, { prefix });
+
+    expect(create).toThrow(/contains a path separator/);
+    expect(mkdtempSyncSpy).not.toHaveBeenCalled();
   });
 
   it('removes the tree when the binding leaves scope', () => {
