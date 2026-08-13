@@ -2,7 +2,7 @@ import fs from 'node:fs';
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { createTempTree } from '../../1-proposed/createTempTree.ts';
+import { createTempTree } from '../../3-candidate/createTempTree.ts';
 import { findDirectoryChainMatch } from '../directory-chain-matches.ts';
 
 describe(findDirectoryChainMatch, () => {

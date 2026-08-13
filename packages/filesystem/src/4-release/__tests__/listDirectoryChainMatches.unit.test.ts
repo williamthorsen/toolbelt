@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { createTempTree } from '../../1-proposed/createTempTree.ts';
+import { createTempTree } from '../../3-candidate/createTempTree.ts';
 import { listDirectoryChainMatches } from '../directory-chain-matches.ts';
 
 describe(listDirectoryChainMatches, () => {

@@ -13,7 +13,7 @@ import path from 'node:path';
  *
  * @category Filesystem
  * @experimental
- * @stage proposed
+ * @stage candidate
  */
 export function createTempTree(entries: Record<string, string>): TempTree {
   const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'toolbelt-')));

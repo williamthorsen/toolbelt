@@ -1,1 +1,1 @@
-export {};
+export { createTempTree, type TempTree } from './createTempTree.ts';

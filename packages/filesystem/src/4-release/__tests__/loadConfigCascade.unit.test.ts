@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { createTempTree } from '../../1-proposed/createTempTree.ts';
+import { createTempTree } from '../../3-candidate/createTempTree.ts';
 import { loadConfigCascade } from '../loadConfigCascade.ts';
 
 /** A module that fails loudly if it is ever imported, proving the loader skipped it rather than discarded it. */
