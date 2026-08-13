@@ -5,7 +5,8 @@ import path from 'node:path';
 /**
  * Creates a throwaway directory tree and returns a handle that removes it on disposal. Each key of `entries` is a
  * path relative to the tree root: one ending in `/` becomes a directory, and any other becomes a file holding the
- * mapped contents. A key resolving outside the root is rejected, and a call that throws leaves nothing on disk.
+ * mapped contents, given as text or as the bytes themselves. A key resolving outside the root is rejected, and a
+ * call that throws leaves nothing on disk.
  *
  * `prefix` names the directory, so a tree outliving a crashed run still says what made it.
  *
@@ -17,7 +18,10 @@ import path from 'node:path';
  * @experimental
  * @stage candidate
  */
-export function createTempTree(entries: Record<string, string>, options: CreateTempTreeOptions = {}): TempTree {
+export function createTempTree(
+  entries: Record<string, string | Uint8Array>,
+  options: CreateTempTreeOptions = {},
+): TempTree {
   const { prefix = 'toolbelt-' } = options;
 
   assertNamesNoDirectory(prefix);

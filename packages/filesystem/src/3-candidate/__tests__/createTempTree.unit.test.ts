@@ -23,6 +23,14 @@ describe(createTempTree, () => {
     expect(fs.readFileSync(tree.resolve('package.json'), 'utf8')).toBe('{ "name": "app" }');
   });
 
+  it('writes a byte-valued key without passing it through a text encoding', () => {
+    const bytes = Uint8Array.from([0x00, 0xff, 0xfe, 0x80]);
+
+    using tree = createTempTree({ 'logo.bin': bytes });
+
+    expect(Uint8Array.from(fs.readFileSync(tree.resolve('logo.bin')))).toStrictEqual(bytes);
+  });
+
   it('creates the intermediate directories of a nested file key', () => {
     using tree = createTempTree({ 'app/src/main.ts': 'export {};\n' });
 
