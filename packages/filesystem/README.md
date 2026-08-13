@@ -98,7 +98,7 @@ findDirectoryChainMatch('/home/dev/app/src', ['.git']);
 // { dir: '/home/dev/app', entryName: '.git', entryPath: '/home/dev/app/.git' }
 ```
 
-Probing stops at the first level that matches, so no level beyond it is touched — the reason to reach for this rather than read element zero off `listDirectoryChainMatches`, which probes to the ceiling regardless. The nullable return type is the other reason: a result that may be absent says so, where an array leaves the caller to narrow.
+Probing stops at the first level that matches, so no level beyond it is touched -- the reason to reach for this rather than read element zero off `listDirectoryChainMatches`, which probes to the ceiling regardless. The nullable return type is the other reason: a result that may be absent says so, where an array leaves the caller to narrow.
 
 ## `loadConfigCascade`
 
@@ -279,7 +279,7 @@ using tree = createTempTree({}, { prefix: 'rdy-tsconfig-' });
 tree.dir; // '/private/var/folders/.../rdy-tsconfig-a1b2c3'
 ```
 
-A prefix that would place the tree anywhere but directly inside the system temporary directory is rejected before anything is created. `mkdtemp` appends its random suffix to the joined path as given, so a prefix holding `/` or `\` targets a nested directory that has to already exist, and one that normalizes away — `''`, `'.'`, `'..'` — lands the suffix beside the temporary directory rather than within it.
+A prefix that would place the tree anywhere but directly inside the system temporary directory is rejected before anything is created. `mkdtemp` appends its random suffix to the joined path as given, so a prefix holding `/` or `\` targets a nested directory that has to already exist, or, where it ascends, a directory outside the temporary one; and a prefix that normalizes away (`''`, `'.'`, or `'..'`) lands the suffix beside the temporary directory rather than within it.
 
 ```ts
 interface TempTree extends Disposable {

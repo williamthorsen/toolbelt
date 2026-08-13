@@ -79,8 +79,9 @@ export interface TempTree extends Disposable {
 /**
  * Rejects a prefix that would place the tree anywhere but directly inside the system temporary directory. `mkdtemp`
  * appends its random suffix to the joined path as given, so a prefix holding a separator targets a nested directory
- * that has to already exist, and one that normalizes away lands the suffix beside the temporary directory instead
- * of within it. Every other prefix joins to a name inside it.
+ * that has to already exist, or, where it ascends, a directory outside the temporary one; and a prefix that
+ * normalizes away lands the suffix beside the temporary directory rather than within it. Every other prefix joins
+ * to a name inside it.
  */
 function assertNamesDirectChild(prefix: string): void {
   // Both separators are tested, because Windows resolves each and `path.sep` names only one of them.
