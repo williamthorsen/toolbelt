@@ -241,16 +241,16 @@ The source is read even under `isDryRun`, because the outcome depends on compari
 
 ## `createTempTree`
 
-Proposed tier: imported from `@williamthorsen/toolbelt.filesystem/proposed` rather than the package root, and subject to change.
+Candidate tier: imported from `@williamthorsen/toolbelt.filesystem/candidate` rather than the package root, and subject to change.
 
 ```ts
-createTempTree(entries: Record<string, string>): TempTree;
+createTempTree(entries: Record<string, string | Uint8Array>, options?: { prefix?: string }): TempTree;
 ```
 
 Builds a throwaway directory tree and returns a handle that removes it when the binding leaves scope:
 
 ```ts
-import { createTempTree } from '@williamthorsen/toolbelt.filesystem/proposed';
+import { createTempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
 
 {
   using tree = createTempTree({
@@ -265,6 +265,21 @@ import { createTempTree } from '@williamthorsen/toolbelt.filesystem/proposed';
 ```
 
 Each key of `entries` is a path relative to the tree root. One ending in `/` becomes a directory; any other becomes a file holding the mapped contents, with its intermediate directories created for it. A key resolving outside the root is rejected, and a call that throws leaves nothing on disk.
+
+A value is text or the bytes themselves, so a body no UTF-8 round trip survives is as writable as a string:
+
+```ts
+using tree = createTempTree({ 'logo.png': pngBytes });
+```
+
+`prefix` names the directory built under the system temporary directory, defaulting to `toolbelt-`. Set it to whatever is doing the building, so a tree outliving a crashed run says what made it:
+
+```ts
+using tree = createTempTree({}, { prefix: 'rdy-tsconfig-' });
+tree.dir; // '/private/var/folders/.../rdy-tsconfig-a1b2c3'
+```
+
+A prefix holding `/` or `\` is rejected before anything is created. `mkdtemp` appends its random suffix to the string as given, so such a prefix would build the tree one directory down, or above the system temporary directory entirely.
 
 ```ts
 interface TempTree extends Disposable {
