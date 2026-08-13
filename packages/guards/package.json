@@ -1,8 +1,16 @@
 {
   "name": "@williamthorsen/toolbelt.guards",
   "version": "3.1.9",
-  "description": "API",
-  "keywords": [],
+  "description": "TypeScript type guards",
+  "keywords": [
+    "assertion",
+    "esm",
+    "toolbelt",
+    "type-guard",
+    "type-safety",
+    "typescript",
+    "utilities"
+  ],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/guards#readme",
   "bugs": {
     "url": "https://github.com/williamthorsen/toolbelt/issues"
@@ -14,6 +22,7 @@
   },
   "license": "ISC",
   "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {

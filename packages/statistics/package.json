@@ -2,7 +2,16 @@
   "name": "@williamthorsen/toolbelt.statistics",
   "version": "0.7.0",
   "description": "Statistics utilities",
-  "keywords": [],
+  "keywords": [
+    "cdf",
+    "distribution",
+    "esm",
+    "normal-distribution",
+    "statistics",
+    "toolbelt",
+    "typescript",
+    "utilities"
+  ],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/statistics#readme",
   "bugs": {
     "url": "https://github.com/williamthorsen/toolbelt/issues"
@@ -14,6 +23,7 @@
   },
   "license": "ISC",
   "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {

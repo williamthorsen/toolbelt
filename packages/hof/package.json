@@ -1,8 +1,13 @@
 {
   "name": "@williamthorsen/toolbelt.hof",
   "version": "3.0.18",
-  "description": "API",
-  "keywords": [],
+  "description": "TypeScript higher-order functions",
+  "keywords": [
+    "esm",
+    "toolbelt",
+    "typescript",
+    "utilities"
+  ],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/hof#readme",
   "bugs": {
     "url": "https://github.com/williamthorsen/toolbelt/issues"
@@ -14,6 +19,7 @@
   },
   "license": "ISC",
   "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {

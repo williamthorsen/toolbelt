@@ -2,7 +2,16 @@
   "name": "@williamthorsen/toolbelt.vitest",
   "version": "0.1.0",
   "description": "Utilities for testing with Vitest",
-  "keywords": [],
+  "keywords": [
+    "esm",
+    "mocking",
+    "test-utilities",
+    "testing",
+    "toolbelt",
+    "typescript",
+    "utilities",
+    "vitest"
+  ],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/vitest#readme",
   "bugs": {
     "url": "https://github.com/williamthorsen/toolbelt/issues"
@@ -14,6 +23,7 @@
   },
   "license": "ISC",
   "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
@@ -35,6 +45,9 @@
   ],
   "scripts": {
     "prepublishOnly": "nmr build"
+  },
+  "devDependencies": {
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "vitest": "^4.0.0"

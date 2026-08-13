@@ -2,8 +2,13 @@
   "name": "@williamthorsen/toolbelt.tools",
   "version": "3.0.6",
   "private": true,
-  "description": "API",
-  "keywords": [],
+  "description": "Miscellaneous utility functions",
+  "keywords": [
+    "esm",
+    "toolbelt",
+    "typescript",
+    "utilities"
+  ],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/tools#readme",
   "bugs": {
     "url": "https://github.com/williamthorsen/toolbelt/issues"

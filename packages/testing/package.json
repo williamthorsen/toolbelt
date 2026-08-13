@@ -2,7 +2,15 @@
   "name": "@williamthorsen/toolbelt.testing",
   "version": "0.1.0",
   "description": "Runner-agnostic utilities for testing",
-  "keywords": [],
+  "keywords": [
+    "esm",
+    "stdio",
+    "test-utilities",
+    "testing",
+    "toolbelt",
+    "typescript",
+    "utilities"
+  ],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/testing#readme",
   "bugs": {
     "url": "https://github.com/williamthorsen/toolbelt/issues"
@@ -14,6 +22,7 @@
   },
   "license": "ISC",
   "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {

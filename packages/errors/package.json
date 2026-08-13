@@ -2,7 +2,15 @@
   "name": "@williamthorsen/toolbelt.errors",
   "version": "0.3.0",
   "description": "Utilities for working with errors",
-  "keywords": [],
+  "keywords": [
+    "error",
+    "error-handling",
+    "esm",
+    "exception",
+    "toolbelt",
+    "typescript",
+    "utilities"
+  ],
   "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/errors#readme",
   "bugs": {
     "url": "https://github.com/williamthorsen/toolbelt/issues"
@@ -14,6 +22,7 @@
   },
   "license": "ISC",
   "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
@@ -40,7 +49,7 @@
   },
   "devDependencies": {
     "esbuild": "0.28.1",
-    "readyup": "0.27.0"
+    "readyup": "catalog:"
   },
   "engines": {
     "node": ">=24.0.0"
