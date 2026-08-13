@@ -24,7 +24,7 @@ export function createTempTree(
 ): TempTree {
   const { prefix = 'toolbelt-' } = options;
 
-  assertNamesNoDirectory(prefix);
+  assertNamesDirectChild(prefix);
 
   const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), prefix)));
 
@@ -59,7 +59,7 @@ export function createTempTree(
 }
 
 export interface CreateTempTreeOptions {
-  /** Name the directory is built under, within the system temporary directory. Defaults to `toolbelt-`. */
+  /** Leading text of the generated directory's name, to which a random suffix is appended. Defaults to `toolbelt-`. */
   prefix?: string;
 }
 
@@ -77,13 +77,19 @@ export interface TempTree extends Disposable {
 
 // region | Helpers
 /**
- * Rejects a prefix holding a path separator. `mkdtemp` appends its random suffix to the string as given, so such a
- * prefix builds the tree inside a directory of its own, or above the system temporary directory entirely.
+ * Rejects a prefix that would place the tree anywhere but directly inside the system temporary directory. `mkdtemp`
+ * appends its random suffix to the joined path as given, so a prefix holding a separator targets a nested directory
+ * that has to already exist, and one that normalizes away lands the suffix beside the temporary directory instead
+ * of within it. Every other prefix joins to a name inside it.
  */
-function assertNamesNoDirectory(prefix: string): void {
+function assertNamesDirectChild(prefix: string): void {
   // Both separators are tested, because Windows resolves each and `path.sep` names only one of them.
   if (prefix.includes('/') || prefix.includes('\\')) {
     throw new Error(`Temporary-directory prefix "${prefix}" contains a path separator`);
+  }
+
+  if (['', '.', '..'].includes(prefix)) {
+    throw new Error(`Temporary-directory prefix "${prefix}" names no new directory`);
   }
 }
 

@@ -50,10 +50,11 @@ describe(createTempTree, () => {
     expect(path.basename(tree.dir)).toMatch(/^toolbelt-/);
   });
 
-  it('builds the directory under a given prefix', () => {
+  it('builds the directory under a given prefix, inside the temporary directory', () => {
     using tree = createTempTree({}, { prefix: 'rdy-tsconfig-' });
 
     expect(path.basename(tree.dir)).toMatch(/^rdy-tsconfig-/);
+    expect(path.dirname(tree.dir)).toBe(fs.realpathSync(os.tmpdir()));
   });
 
   // The backslash case covers the separator Windows resolves alongside `/`.
@@ -63,6 +64,16 @@ describe(createTempTree, () => {
     const create = () => createTempTree({}, { prefix });
 
     expect(create).toThrow(/contains a path separator/);
+    expect(mkdtempSyncSpy).not.toHaveBeenCalled();
+  });
+
+  // Each of these joins away to the temporary directory itself or its parent, so `mkdtemp` would build a sibling.
+  it.each(['', '.', '..'])('rejects the prefix %j, building nothing', (prefix) => {
+    const mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
+
+    const create = () => createTempTree({}, { prefix });
+
+    expect(create).toThrow(/names no new directory/);
     expect(mkdtempSyncSpy).not.toHaveBeenCalled();
   });
 

@@ -279,7 +279,7 @@ using tree = createTempTree({}, { prefix: 'rdy-tsconfig-' });
 tree.dir; // '/private/var/folders/.../rdy-tsconfig-a1b2c3'
 ```
 
-A prefix holding `/` or `\` is rejected before anything is created. `mkdtemp` appends its random suffix to the string as given, so such a prefix would build the tree one directory down, or above the system temporary directory entirely.
+A prefix that would place the tree anywhere but directly inside the system temporary directory is rejected before anything is created. `mkdtemp` appends its random suffix to the joined path as given, so a prefix holding `/` or `\` targets a nested directory that has to already exist, and one that normalizes away — `''`, `'.'`, `'..'` — lands the suffix beside the temporary directory rather than within it.
 
 ```ts
 interface TempTree extends Disposable {
