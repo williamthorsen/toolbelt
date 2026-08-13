@@ -9,35 +9,27 @@
  * accounted for and named, and severity carries the judgment: a hand-rolled description is a `warn`, a
  * narrowing that a guard would express better is a `recommend`. Nothing here is `error`, because none of it
  * breaks the package -- it reports how far adoption got.
+ *
+ * The kit holds wiring and filesystem access alone. What it reports lives in `src/readiness/`, where the
+ * package's own suite covers it.
  */
-import { type CheckOutcome, defineRdyKit, type Progress } from 'readyup';
+import { type CheckOutcome, defineRdyKit } from 'readyup';
 import { discoverWorkspaces, isGitRepo, readFile, runGit } from 'readyup/check-utils';
 
-import { type ErrorSiteKind, listErrorSites } from '../../src/readiness/listErrorSites.ts';
+import { buildKindReport } from '../../src/readiness/buildKindReport.ts';
+import type { ErrorSiteKind } from '../../src/readiness/listErrorSites.ts';
 import { listSourceFiles } from '../../src/readiness/listSourceFiles.ts';
+import { PACKAGE_NAME } from '../../src/readiness/packageName.ts';
+import { type ProjectSummary, summarizeSources } from '../../src/readiness/summarizeSources.ts';
 
-const PACKAGE_NAME = '@williamthorsen/toolbelt.errors';
 const README_URL = 'https://github.com/williamthorsen/toolbelt/tree/main/packages/errors#readme';
 
+const NOT_A_REPO = 'the project is not a git working tree, and these checks read the files git tracks';
 const NO_SOURCES = 'the project holds no JavaScript or TypeScript sources outside the exempt paths';
 const SELF = 'this project publishes the package these checks are for';
 
-interface Finding {
-  kind: ErrorSiteKind;
-  line: number;
-  path: string;
-  symbol?: string;
-}
-
-interface Project {
-  /** Calls the project already makes into this package, which is the numerator of every fraction. */
-  adopted: number;
-  findings: Finding[];
-  sourceCount: number;
-}
-
 // Held for the life of one `rdy` run, which is one process targeting one project.
-const cache: { project?: Promise<Project> } = {};
+const cache: { summary?: Promise<ProjectSummary | undefined> } = {};
 
 export default defineRdyKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
@@ -79,63 +71,50 @@ export default defineRdyKit({
 
 // region | Helpers
 
-/** Names one finding by where it is, and by the helper it defines where it defines one. */
-function describeFinding(finding: Finding): string {
-  const location = `${finding.path}:${finding.line}`;
-  return finding.symbol === undefined ? location : `${finding.symbol} (${location})`;
-}
-
-/** Counts calls to the package's exports in one source. */
-function countCalls(text: string): number {
-  return text.matchAll(/\b(?:assertIsError|chainError|describeError|isError)\s*\(/g).toArray().length;
-}
-
 /** Reads the project once, so four checks and their skips share one filesystem pass. */
-function loadProject(): Promise<Project> {
-  cache.project ??= readProject();
-  return cache.project;
+function loadSummary(): Promise<ProjectSummary | undefined> {
+  cache.summary ??= readProject();
+  return cache.summary;
 }
 
-/** Lists the project's tracked files, which git already filters by the project's own ignore rules. */
-async function listTrackedPaths(): Promise<string[]> {
-  if (!(await isGitRepo('.'))) return [];
-  const tracked = await runGit('.', 'ls-files');
-  return tracked.split('\n').filter((path) => path !== '');
+/**
+ * Lists the project's tracked files, or nothing where it is not a git working tree.
+ *
+ * `-z` is what makes the list complete: without it git escapes a path holding a non-ASCII byte and wraps it in
+ * quotes, which no reader can open, and that source would drop out of the sweep unreported.
+ */
+async function listTrackedPaths(): Promise<string[] | undefined> {
+  if (!(await isGitRepo('.'))) return undefined;
+  const tracked = await runGit('.', 'ls-files', '-z');
+  return tracked.split('\0').filter((path) => path !== '');
 }
 
-/** Classifies every hand-rolled site in the project, and counts how far adoption already got. */
-async function readProject(): Promise<Project> {
-  const paths = listSourceFiles(await listTrackedPaths());
-  const sources = paths.flatMap((path) => {
-    const text = readFile(path);
-    return text === undefined ? [] : [{ path, text }];
-  });
+/** Summarizes the project's sources, or nothing where the files cannot be listed. */
+async function readProject(): Promise<ProjectSummary | undefined> {
+  const tracked = await listTrackedPaths();
+  if (tracked === undefined) return undefined;
 
-  return {
-    adopted: sources.reduce((total, source) => total + countCalls(source.text), 0),
-    findings: sources.flatMap((source) => listErrorSites(source.text).map((site) => ({ ...site, path: source.path }))),
-    sourceCount: sources.length,
-  };
+  return summarizeSources(
+    listSourceFiles(tracked).flatMap((path) => {
+      const text = readFile(path);
+      return text === undefined ? [] : [{ path, text }];
+    }),
+  );
 }
 
 /** Fails when the project holds sites of the named kinds, naming each and how far adoption got. */
 async function reportKinds(...kinds: readonly ErrorSiteKind[]): Promise<CheckOutcome> {
-  const project = await loadProject();
-  const findings = project.findings.filter((finding) => kinds.includes(finding.kind));
-  const progress: Progress = {
-    type: 'fraction',
-    passedCount: project.adopted,
-    count: project.adopted + project.findings.length,
-  };
-
-  if (findings.length === 0) return { ok: true, progress };
-  return { ok: false, detail: findings.map((finding) => describeFinding(finding)).join(', '), progress };
+  const summary = await loadSummary();
+  return summary === undefined ? { ok: true } : buildKindReport(summary, kinds);
 }
 
-/** Skips every check where the project is this package's own repository, or holds nothing to read. */
+/** Skips every check where the project cannot be read, or is this package's own repository. */
 async function skipUnlessProjectIsAccountable(): Promise<false | string> {
   if (discoverWorkspaces().some((workspace) => workspace.name === PACKAGE_NAME)) return SELF;
-  return (await loadProject()).sourceCount === 0 ? NO_SOURCES : false;
+
+  const summary = await loadSummary();
+  if (summary === undefined) return NOT_A_REPO;
+  return summary.sourceCount === 0 ? NO_SOURCES : false;
 }
 
 // endregion | Helpers

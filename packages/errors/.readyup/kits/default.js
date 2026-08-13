@@ -7,6 +7,49 @@ export const __readyupVersion = "0.27.0";
 import { defineRdyKit } from "readyup";
 import { discoverWorkspaces, isGitRepo, readFile, runGit } from "readyup/check-utils";
 
+// src/readiness/buildKindReport.ts
+function buildKindReport(summary, kinds) {
+  const named = summary.findings.filter((finding) => kinds.includes(finding.kind));
+  const progress = {
+    count: summary.adopted + summary.findings.length,
+    passedCount: summary.adopted,
+    type: "fraction"
+  };
+  if (named.length === 0) return { ok: true, progress };
+  return { detail: named.map((finding) => describeFinding(finding)).join(", "), ok: false, progress };
+}
+function describeFinding(finding) {
+  const location = `${finding.path}:${finding.line}`;
+  return finding.symbol === void 0 ? location : `${finding.symbol} (${location})`;
+}
+
+// src/readiness/exemptions.ts
+var EXEMPTIONS = [
+  {
+    pattern: /(?:^|\/)bin\//,
+    reason: "a bootstrap wrapper imports nothing, so its build-first message survives an incomplete install"
+  },
+  {
+    pattern: /(?:^|\/)\.readyup\/kits\/.+\.js$/,
+    reason: "a compiled kit bundle is generated from a source the sweep already reads, and editing it breaks its recorded hash"
+  },
+  { pattern: /(?:^|\/)__tests__\//, reason: "a test constructs error shapes deliberately" },
+  { pattern: /\.(?:spec|test)\.[cm]?[jt]sx?$/, reason: "a test constructs error shapes deliberately" },
+  { pattern: /(?:^|\/)node_modules\//, reason: "a dependency is not the reader\u2019s code" }
+];
+function findExemption(path) {
+  return EXEMPTIONS.find((exemption) => exemption.pattern.test(path))?.reason;
+}
+
+// src/readiness/listSourceFiles.ts
+var SOURCE_EXTENSION = /\.[cm]?[jt]sx?$/;
+function listSourceFiles(paths) {
+  return paths.filter((path) => SOURCE_EXTENSION.test(path) && findExemption(path) === void 0);
+}
+
+// src/readiness/packageName.ts
+var PACKAGE_NAME = "@williamthorsen/toolbelt.errors";
+
 // src/readiness/classifySite.ts
 var DESCRIBE_TERNARY = /^instanceof Error \? [\w.]+\.message :/;
 var DESCRIBE_STATEMENT = /^instanceof Error\)+ ?(?:\{ )?return [\w.]+\.message/;
@@ -93,29 +136,27 @@ function countLines(source, index) {
   return line;
 }
 
-// src/readiness/exemptions.ts
-var EXEMPTIONS = [
-  {
-    pattern: /(?:^|\/)bin\//,
-    reason: "a bootstrap wrapper imports nothing, so its build-first message survives an incomplete install"
-  },
-  { pattern: /(?:^|\/)__tests__\//, reason: "a test constructs error shapes deliberately" },
-  { pattern: /\.(?:spec|test)\.[cm]?[jt]sx?$/, reason: "a test constructs error shapes deliberately" },
-  { pattern: /(?:^|\/)node_modules\//, reason: "a dependency is not the reader\u2019s code" }
-];
-function findExemption(path) {
-  return EXEMPTIONS.find((exemption) => exemption.pattern.test(path))?.reason;
+// src/readiness/summarizeSources.ts
+var EXPORT_NAMES = `assertIsError|chainError|describeError|isError`;
+var CALL = new RegExp(String.raw`\b(?:${EXPORT_NAMES})\s*\(`, "g");
+function summarizeSources(sources) {
+  return {
+    adopted: sources.reduce((total, source) => total + countAdoptedCalls(source.text), 0),
+    findings: sources.flatMap((source) => listErrorSites(source.text).map((site) => ({ ...site, path: source.path }))),
+    sourceCount: sources.length
+  };
 }
-
-// src/readiness/listSourceFiles.ts
-var SOURCE_EXTENSION = /\.[cm]?[jt]sx?$/;
-function listSourceFiles(paths) {
-  return paths.filter((path) => SOURCE_EXTENSION.test(path) && findExemption(path) === void 0);
+function countAdoptedCalls(text) {
+  return importsPackage(text) ? text.matchAll(CALL).toArray().length : 0;
+}
+function importsPackage(text) {
+  const specifier = String.raw`${PACKAGE_NAME.replaceAll(".", String.raw`\.`)}(?:/[\w-]+)*`;
+  return new RegExp(String.raw`(?:from|require\()\s*['"]${specifier}['"]`).test(text);
 }
 
 // .readyup/kits/default.ts
-var PACKAGE_NAME = "@williamthorsen/toolbelt.errors";
 var README_URL = "https://github.com/williamthorsen/toolbelt/tree/main/packages/errors#readme";
+var NOT_A_REPO = "the project is not a git working tree, and these checks read the files git tracks";
 var NO_SOURCES = "the project holds no JavaScript or TypeScript sources outside the exempt paths";
 var SELF = "this project publishes the package these checks are for";
 var cache = {};
@@ -156,48 +197,34 @@ var default_default = defineRdyKit({
     }
   ]
 });
-function describeFinding(finding) {
-  const location = `${finding.path}:${finding.line}`;
-  return finding.symbol === void 0 ? location : `${finding.symbol} (${location})`;
-}
-function countCalls(text) {
-  return text.matchAll(/\b(?:assertIsError|chainError|describeError|isError)\s*\(/g).toArray().length;
-}
-function loadProject() {
-  cache.project ??= readProject();
-  return cache.project;
+function loadSummary() {
+  cache.summary ??= readProject();
+  return cache.summary;
 }
 async function listTrackedPaths() {
-  if (!await isGitRepo(".")) return [];
-  const tracked = await runGit(".", "ls-files");
-  return tracked.split("\n").filter((path) => path !== "");
+  if (!await isGitRepo(".")) return void 0;
+  const tracked = await runGit(".", "ls-files", "-z");
+  return tracked.split("\0").filter((path) => path !== "");
 }
 async function readProject() {
-  const paths = listSourceFiles(await listTrackedPaths());
-  const sources = paths.flatMap((path) => {
-    const text = readFile(path);
-    return text === void 0 ? [] : [{ path, text }];
-  });
-  return {
-    adopted: sources.reduce((total, source) => total + countCalls(source.text), 0),
-    findings: sources.flatMap((source) => listErrorSites(source.text).map((site) => ({ ...site, path: source.path }))),
-    sourceCount: sources.length
-  };
+  const tracked = await listTrackedPaths();
+  if (tracked === void 0) return void 0;
+  return summarizeSources(
+    listSourceFiles(tracked).flatMap((path) => {
+      const text = readFile(path);
+      return text === void 0 ? [] : [{ path, text }];
+    })
+  );
 }
 async function reportKinds(...kinds) {
-  const project = await loadProject();
-  const findings = project.findings.filter((finding) => kinds.includes(finding.kind));
-  const progress = {
-    type: "fraction",
-    passedCount: project.adopted,
-    count: project.adopted + project.findings.length
-  };
-  if (findings.length === 0) return { ok: true, progress };
-  return { ok: false, detail: findings.map((finding) => describeFinding(finding)).join(", "), progress };
+  const summary = await loadSummary();
+  return summary === void 0 ? { ok: true } : buildKindReport(summary, kinds);
 }
 async function skipUnlessProjectIsAccountable() {
   if (discoverWorkspaces().some((workspace) => workspace.name === PACKAGE_NAME)) return SELF;
-  return (await loadProject()).sourceCount === 0 ? NO_SOURCES : false;
+  const summary = await loadSummary();
+  if (summary === void 0) return NOT_A_REPO;
+  return summary.sourceCount === 0 ? NO_SOURCES : false;
 }
 export {
   default_default as default
