@@ -6,7 +6,7 @@ PNPM monorepo of TypeScript utility libraries, each published to npm as `@willia
 
 ## Project structure
 
-- `packages/{domain}/`: one published library per domain (arrays, async, datetime, dstructs, enums, errors, filesystem, guards, hof, numbers, objects, packaging, sets, statistics, strings, tools, vitest).
+- `packages/{domain}/`: one published library per domain (arrays, async, datetime, dstructs, enums, errors, filesystem, guards, hof, numbers, objects, packaging, sets, statistics, strings, testing, tools, vitest).
 - `packages/_template/`: private scaffold for new packages, excluded from release processing in `.config/release-kit.config.ts`.
 - `packages/{domain}/src/{0-strawman,1-proposed,2-draft,3-candidate,4-release}/`: maturity tiers, each with an `index.ts` re-exporting that tier's public surface. `src/internal/`, `src/types/`, and `src/test-utils/` sit outside the tiers and are not exported. The first two still ship, being build entry points, so `__tests__/support-module-usage.app.unit.test.ts` requires every module in one to have an importer outside test scaffolding; `test-utils/` the build drops, which is what keeps a test helper out of `dist/`.
 - `.agents/`: `codeassembly.yaml` declares the guidance packages `codeassembly sync` resolves; `preferences.yaml` carries the project slug and ticket-ref prefix.
@@ -37,7 +37,7 @@ Runner conventions (discovery, invocation, root vs. package registries, hooks) c
 
 **Adoption.** A utility earns a place by cross-repo demand, or by supplying a capability its platform structurally lacks -- the language for most packages, Vitest for `vitest`. Hand-roll count alone is not the measure: a helper nobody hand-rolls may only show that people settle for the platform's weaker alternative. Adopting one from another repository reconsiders its API; it is not a port.
 
-**`vitest` admission.** A utility belongs in `vitest` only if it imports the Vitest API; anything else routes to the package owning its domain. The two rejections differ: failing this gate reroutes a utility, while failing the adoption bar leaves it hand-rolled where it already lives.
+**Test-utility routing.** A test-only utility goes to `vitest` if it imports the Vitest API and to `testing` if it does not. Every other utility goes to its domain package.
 
 **Release.** Run release-kit locally (`prepare`, `commit`, `tag`), then `git push && git push --tags`. The tag push triggers `publish.yaml`, which publishes with provenance via npm trusted publishing (OIDC); the repo holds no `NPM_TOKEN`. Tags must be pushed from a developer machine: GitHub does not fire workflows for tags pushed with `GITHUB_TOKEN`, so the dispatch `release.yaml` path alone cannot publish.
 

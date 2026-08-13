@@ -23,6 +23,7 @@ const config = defineConfig({
       'scope:sets': { color: '00ff96' },
       'scope:statistics': { color: '00ff96' },
       'scope:strings': { color: '00ff96' },
+      'scope:testing': { color: '00ff96' },
       'scope:tools': { color: '00ff96' },
       'scope:vitest': { color: '00ff96' },
     },
