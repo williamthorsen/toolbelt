@@ -8,7 +8,7 @@ PNPM monorepo of TypeScript utility libraries, each published to npm as `@willia
 
 - `packages/{domain}/`: one published library per domain (arrays, async, datetime, dstructs, enums, errors, filesystem, guards, hof, numbers, objects, packaging, sets, statistics, strings, testing, tools, vitest).
 - `packages/_template/`: private scaffold for new packages, excluded from release processing in `.config/release-kit.config.ts`.
-- `packages/{domain}/src/{0-strawman,1-proposed,2-draft,3-candidate,4-release}/`: maturity tiers, each with an `index.ts` re-exporting that tier's public surface. `src/internal/`, `src/types/`, and `src/test-utils/` sit outside the tiers and are not exported. The first two still ship, being build entry points, so `__tests__/support-module-usage.app.unit.test.ts` requires every module in one to have an importer outside test scaffolding; `test-utils/` the build drops, which is what keeps a test helper out of `dist/`.
+- `packages/{domain}/src/{0-strawman,1-proposed,2-draft,3-candidate,4-release}/`: maturity tiers, each with an `index.ts` re-exporting that tier's public surface. `src/internal/`, `src/readiness/`, `src/types/`, and `src/test-utils/` sit outside the tiers and are not exported. `internal/` and `types/` still ship, being build entry points, so `__tests__/support-module-usage.app.unit.test.ts` requires every module in one to have an importer outside test scaffolding; `test-utils/` the build drops, which is what keeps a test helper out of `dist/`. `readiness/` backs a package's ReadyUp kit, which `rdy compile` bundles on its own, and a package holding one drops it from the build through `build.extraIgnorePatterns` in its own `.config/nmr.config.ts`.
 - `.agents/`: `codeassembly.yaml` declares the guidance packages `codeassembly sync` resolves; `preferences.yaml` carries the project slug and ticket-ref prefix.
 - `.config/`: tool configs. Vitest config lives outside it, in exactly two root files: `vitest.config.ts` and `vitest.root.config.ts`, each a bare call to a `@williamthorsen/nmr/vitest` factory.
 
@@ -45,7 +45,7 @@ Runner conventions (discovery, invocation, root vs. package registries, hooks) c
 
 - Intra-package imports carry an explicit `.ts` extension (`./shuffle.ts`). `allowImportingTsExtensions` is on and `nmr-compile` rewrites it at build time.
 - Exported functions in a maturity tier carry JSDoc `@category` and `@stage {maturity}`, plus `@experimental` where applicable. Keep `@stage` in sync with the containing folder; `__tests__/stage-tag-alignment.app.unit.test.ts` enforces this.
-- Exported functions in `src/internal/` carry `@internal` instead. `internal/` is not a maturity tier, so it has no `@stage` value to take, and the alignment test derives a tier only from a `src/{n}-{tier}/` segment -- any `@stage` there is unvalidated by construction.
+- Exported functions in `src/internal/` and `src/readiness/` carry `@internal` instead. Neither is a maturity tier, so neither has an `@stage` value to take, and the alignment test derives a tier only from a `src/{n}-{tier}/` segment -- any `@stage` there is unvalidated by construction.
 - Tests live in `__tests__/` beside the source, named `{subject}.{tier}.test.ts`. `describe()` takes the function reference, not a string: `describe(shuffle, () => ...)`.
 - Dependency versions are pinned exactly (`savePrefix: ''` in `pnpm-workspace.yaml`).
 - External runtime dependencies are avoided rather than forbidden: reach for one only where hand-rolling would be worse, and prefer a workspace helper where one fits.

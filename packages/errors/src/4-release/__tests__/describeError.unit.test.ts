@@ -1,5 +1,7 @@
 /* eslint unicorn/error-message: off -- the message-less `Error` is the subject of the empty-message tests. */
 
+import vm from 'node:vm';
+
 import { describe, expect, it } from 'vitest';
 
 import { describeError } from '../describeError.ts';
@@ -7,6 +9,12 @@ import { describeError } from '../describeError.ts';
 describe(describeError, () => {
   it('returns the message of an Error', () => {
     expect(describeError(new Error('connection refused'))).toBe('connection refused');
+  });
+
+  it('returns the message of an Error thrown in another realm', () => {
+    const foreignError: unknown = vm.runInNewContext('new Error("connection refused")');
+
+    expect(describeError(foreignError)).toBe('connection refused');
   });
 
   it('describes an Error carrying no message by its name', () => {

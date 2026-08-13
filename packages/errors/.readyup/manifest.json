@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "kits": [
+    {
+      "checklists": [
+        "adoption"
+      ],
+      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.errors",
+      "name": "default",
+      "path": "kits/default.js",
+      "readyupVersion": "0.27.0",
+      "source": "kits/default.ts",
+      "sourceHash": "44c4028b",
+      "targetHash": "65eaec63"
+    }
+  ]
+}

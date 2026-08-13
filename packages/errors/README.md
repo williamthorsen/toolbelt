@@ -14,7 +14,7 @@ pnpm add @williamthorsen/toolbelt.errors
 
 No export reaches a `node:` builtin or any other host API, so they run under Node.js 24 or later, Bun, Deno, browsers, and edge runtimes alike.
 
-`describeError` is release tier, imported from the package root. `chainError`, `isError`, and `assertIsError` are candidate tier: imported from `@williamthorsen/toolbelt.errors/candidate` rather than the package root, and subject to change.
+`describeError` and `isError` are release tier, imported from the package root. `chainError` and `assertIsError` are candidate tier: imported from `@williamthorsen/toolbelt.errors/candidate` rather than the package root, and subject to change.
 
 ## `describeError`
 
@@ -76,6 +76,8 @@ assertIsError(error: unknown): asserts error is Error;
 
 The guard and the assertion for one narrowing. `isError` reports whether a value is an `Error`; `assertIsError` narrows a caught value in place, and throws when it cannot.
 
+Both recognize an `Error` crossing a realm boundary -- from a worker, an iframe, or a `vm` context -- which `instanceof Error` reports as false because the realms hold separate prototype chains. Both also recognize a `DOMException`, `AbortError` and `QuotaExceededError` among them, which an object-tag test alone would miss.
+
 ```ts
 import { assertIsError } from '@williamthorsen/toolbelt.errors/candidate';
 
@@ -88,3 +90,25 @@ try {
 ```
 
 `assertIsError` rethrows the value itself rather than a diagnostic of its own, so a thrown string reaches an outer handler as that string, still available to a handler that knows what to do with it.
+
+## Adoption checks
+
+The package ships a ReadyUp kit, so a project that installs it can ask how far its adoption got:
+
+```sh
+rdy run --packages
+```
+
+The kit reads the project's tracked sources and reports every `instanceof Error` in them, each named by what it is doing and counted against the calls the project already makes into this package. A hand-rolled description reports at `warn`, a narrowing or a hand-rolled coercion at `recommend`; nothing reports at `error`, because none of it breaks the package.
+
+A function whose whole body re-implements `describeError` reports once, naming the function, since one import retires the whole helper rather than a single expression.
+
+Bootstrap wrappers under `bin/` are exempt: such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they construct error shapes deliberately.
+
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+
+```ts
+export default defineRdyConfig({
+  packages: ['@williamthorsen/toolbelt.errors'],
+});
+```

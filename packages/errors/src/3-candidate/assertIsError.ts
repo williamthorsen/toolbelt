@@ -1,3 +1,5 @@
+import { isError } from '../4-release/isError.ts';
+
 /**
  * Narrows a thrown value to `Error`, rethrowing the value itself when it is not one.
  *
@@ -16,15 +18,4 @@ export function assertIsError(error: unknown): asserts error is Error {
   if (!isError(error)) {
     throw error;
   }
-}
-
-/**
- * Reports whether a value is an `Error`, narrowing it where it is.
- *
- * @category Errors
- * @experimental
- * @stage candidate
- */
-export function isError(error: unknown): error is Error {
-  return error instanceof Error;
 }
