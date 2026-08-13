@@ -7,6 +7,8 @@ const config = defineConfig([
     // Completely ignore these files
     ignores: [
       '**/*.sh', //
+      // Compiled kit bundles are generated; an autofix here would break the hash rdy records for them.
+      '**/.readyup/**/*.js',
       '**/coverage/**',
       '**/dist/**',
       '**/local/**',
