@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Runner-agnostic utilities for testing",
   "keywords": [
+    "error",
     "esm",
     "stdio",
     "test-utilities",
