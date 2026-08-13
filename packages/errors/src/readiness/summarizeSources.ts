@@ -18,7 +18,9 @@ export interface SourceText {
 }
 
 const EXPORT_NAMES = `assertIsError|chainError|describeError|isError`;
+const SPECIFIER = String.raw`${PACKAGE_NAME.replaceAll('.', String.raw`\.`)}(?:/[\w-]+)*`;
 const CALL = new RegExp(String.raw`\b(?:${EXPORT_NAMES})\s*\(`, 'g');
+const PACKAGE_IMPORT = new RegExp(String.raw`(?:from|require\()\s*['"]${SPECIFIER}['"]`);
 
 /**
  * Classifies every hand-rolled site across a project's sources, and counts how far adoption already got.
@@ -50,8 +52,7 @@ export function countAdoptedCalls(text: string): number {
 
 /** Reports whether a source imports this package, from the package root or any of its subpaths. */
 function importsPackage(text: string): boolean {
-  const specifier = String.raw`${PACKAGE_NAME.replaceAll('.', String.raw`\.`)}(?:/[\w-]+)*`;
-  return new RegExp(String.raw`(?:from|require\()\s*['"]${specifier}['"]`).test(text);
+  return PACKAGE_IMPORT.test(text);
 }
 
 // endregion | Helpers

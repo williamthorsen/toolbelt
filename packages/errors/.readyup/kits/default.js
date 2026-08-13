@@ -138,7 +138,9 @@ function countLines(source, index) {
 
 // src/readiness/summarizeSources.ts
 var EXPORT_NAMES = `assertIsError|chainError|describeError|isError`;
+var SPECIFIER = String.raw`${PACKAGE_NAME.replaceAll(".", String.raw`\.`)}(?:/[\w-]+)*`;
 var CALL = new RegExp(String.raw`\b(?:${EXPORT_NAMES})\s*\(`, "g");
+var PACKAGE_IMPORT = new RegExp(String.raw`(?:from|require\()\s*['"]${SPECIFIER}['"]`);
 function summarizeSources(sources) {
   return {
     adopted: sources.reduce((total, source) => total + countAdoptedCalls(source.text), 0),
@@ -150,8 +152,7 @@ function countAdoptedCalls(text) {
   return importsPackage(text) ? text.matchAll(CALL).toArray().length : 0;
 }
 function importsPackage(text) {
-  const specifier = String.raw`${PACKAGE_NAME.replaceAll(".", String.raw`\.`)}(?:/[\w-]+)*`;
-  return new RegExp(String.raw`(?:from|require\()\s*['"]${specifier}['"]`).test(text);
+  return PACKAGE_IMPORT.test(text);
 }
 
 // .readyup/kits/default.ts
