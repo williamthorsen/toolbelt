@@ -1,7 +1,8 @@
+/* eslint no-console: "off" */
 import { Buffer } from 'node:buffer';
 import process from 'node:process';
 
-import { describe, expect, expectTypeOf, it } from 'vitest';
+import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 
 import { captureStdio } from '../captureStdio.ts';
 
@@ -163,6 +164,96 @@ describe(captureStdio, () => {
 
       expect(Object.hasOwn(process.stdout, 'isTTY')).toBe(owned.stdout);
       expect(Object.hasOwn(process.stderr, 'isTTY')).toBe(owned.stderr);
+    });
+  });
+
+  describe('includeConsole', () => {
+    it('leaves the console methods alone by default', () => {
+      const originals = { info: console.info, warn: console.warn };
+
+      using _stdio = captureStdio();
+
+      expect(console.info).toBe(originals.info);
+      expect(console.warn).toBe(originals.warn);
+    });
+
+    it('routes each method to the stream Node routes it to', () => {
+      using stdio = captureStdio({ includeConsole: true });
+
+      console.debug('debug');
+      console.info('info');
+      console.log('log');
+      console.warn('warn');
+      console.error('error');
+
+      expect(stdio.stdout).toBe('debug\ninfo\nlog\n');
+      expect(stdio.stderr).toBe('warn\nerror\n');
+    });
+
+    it('interleaves console output with direct writes in call order', () => {
+      using stdio = captureStdio({ includeConsole: true });
+
+      process.stdout.write('written\n');
+      console.info('logged');
+      process.stdout.write('written again\n');
+
+      expect(stdio.stdout).toBe('written\nlogged\nwritten again\n');
+    });
+
+    it('renders format specifiers and extra arguments as Node does', () => {
+      using stdio = captureStdio({ includeConsole: true });
+
+      console.info('found %d', 3);
+      console.info('a', 'b');
+      console.info({ nested: { key: 'value' } });
+
+      expect(stdio.stdoutChunks).toStrictEqual(['found 3\n', 'a b\n', "{ nested: { key: 'value' } }\n"]);
+    });
+
+    it('restores every console method when the scope exits', () => {
+      const originals = { ...console };
+
+      {
+        using _stdio = captureStdio({ includeConsole: true });
+        expect(console.info).not.toBe(originals.info);
+      }
+
+      for (const method of ['debug', 'error', 'info', 'log', 'warn'] as const) {
+        expect(console[method]).toBe(originals[method]);
+      }
+    });
+  });
+
+  describe('composition with a console spy', () => {
+    it('loses only the region an inner silence covers', () => {
+      using stdio = captureStdio({ includeConsole: true });
+
+      console.info('before');
+      {
+        const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
+        console.info('silenced');
+        spy.mockRestore();
+      }
+      console.info('after');
+
+      expect(stdio.stdout).toBe('before\nafter\n');
+    });
+
+    it('leaves an outer spy holding the calls it recorded', () => {
+      const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
+
+      console.info('outer before');
+      {
+        using stdio = captureStdio({ includeConsole: true });
+        console.info('inner');
+        expect(stdio.stdout).toBe('inner\n');
+      }
+      console.info('outer after');
+
+      const calls = spy.mock.calls.flat();
+      spy.mockRestore();
+
+      expect(calls).toStrictEqual(['outer before', 'outer after']);
     });
   });
 

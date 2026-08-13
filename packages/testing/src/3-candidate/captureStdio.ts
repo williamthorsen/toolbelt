@@ -1,9 +1,22 @@
 import { Buffer } from 'node:buffer';
 import process from 'node:process';
+import { format } from 'node:util';
+
+const CONSOLE_METHODS = ['debug', 'error', 'info', 'log', 'warn'] as const;
+
+/** Stream each console method reports to, mirroring how Node routes them. */
+const CONSOLE_STREAMS: Record<ConsoleMethod, 'stderr' | 'stdout'> = {
+  debug: 'stdout',
+  error: 'stderr',
+  info: 'stdout',
+  log: 'stdout',
+  warn: 'stderr',
+};
 
 /**
  * Captures everything written to stdout and stderr for the enclosing scope, restoring both streams when the
- * scope exits.
+ * scope exits. A test runner replaces the global console, so console output reaches neither stream unless
+ * `includeConsole` asks for it.
  *
  * @category Testing
  * @experimental
@@ -15,7 +28,7 @@ import process from 'node:process';
  * expect(stdio.stdout).toContain('done');
  */
 export function captureStdio(options: CaptureStdioOptions = {}): CapturedStdio {
-  const { isTty } = options;
+  const { includeConsole = false, isTty } = options;
 
   const stdoutChunks: string[] = [];
   const stderrChunks: string[] = [];
@@ -26,6 +39,13 @@ export function captureStdio(options: CaptureStdioOptions = {}): CapturedStdio {
     swapProperty(process.stdout, 'isTTY', isTty ?? process.stdout.isTTY),
     swapProperty(process.stderr, 'isTTY', isTty ?? process.stderr.isTTY),
   ];
+
+  if (includeConsole) {
+    for (const method of CONSOLE_METHODS) {
+      const chunks = CONSOLE_STREAMS[method] === 'stdout' ? stdoutChunks : stderrChunks;
+      restorers.push(swapProperty(console, method, createConsoleCapture(chunks)));
+    }
+  }
 
   return {
     get stderr() {
@@ -65,11 +85,22 @@ export interface CapturedStdio extends Disposable {
 
 /** Options for a capture scope. */
 export interface CaptureStdioOptions {
+  /** Whether console output joins the stream buffers, which a command reporting through `console` needs. */
+  includeConsole?: boolean;
   /** Value both streams report for `isTTY` while the scope is open, which exercises style detection. */
   isTty?: boolean;
 }
 
+type ConsoleMethod = (typeof CONSOLE_METHODS)[number];
+
 // region | Helpers
+
+/** Builds a console-method replacement that buffers its arguments as one formatted line. */
+function createConsoleCapture(chunks: string[]): (...args: unknown[]) => void {
+  return (...args) => {
+    chunks.push(`${format(...args)}\n`);
+  };
+}
 
 /** Builds a `write` replacement that buffers each chunk as text and reports the write as flushed. */
 function createWriteCapture(chunks: string[]): typeof process.stdout.write {
