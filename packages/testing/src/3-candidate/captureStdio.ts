@@ -118,11 +118,14 @@ function createWriteCapture(chunks: string[]): typeof process.stdout.write {
   };
 }
 
-/** Renders a written chunk as text, decoding a byte chunk under the encoding the caller named. */
+/** Renders a chunk as the text Node writes: `encoding` reads a string chunk and has no bearing on bytes. */
 function decodeChunk(chunk: Uint8Array | string, encoding?: BufferEncoding | ((error?: Error) => void)): string {
-  if (typeof chunk === 'string') return chunk;
+  const bytes =
+    typeof chunk === 'string'
+      ? Buffer.from(chunk, typeof encoding === 'string' ? encoding : 'utf8')
+      : Buffer.from(chunk);
 
-  return Buffer.from(chunk).toString(typeof encoding === 'string' ? encoding : 'utf8');
+  return bytes.toString('utf8');
 }
 
 /**

@@ -37,6 +37,15 @@ describe(captureStdio, () => {
       expect(stdio.stdoutChunks).toStrictEqual(['bytes', 'hi']);
     });
 
+    it('reads a named encoding for a string chunk and ignores it for bytes', () => {
+      using stdio = captureStdio();
+
+      process.stdout.write('aGk=', 'base64');
+      process.stdout.write(new Uint8Array([0x68, 0x69]), 'hex');
+
+      expect(stdio.stdoutChunks).toStrictEqual(['hi', 'hi']);
+    });
+
     it('reports the write as flushed and invokes a trailing callback', () => {
       const callbacks: string[] = [];
 
@@ -112,7 +121,7 @@ describe(captureStdio, () => {
     });
 
     it('restores a property the stream owned to the value it held', () => {
-      process.stdout.isTTY = true;
+      using _pinned = pinIsTty(process.stdout, true);
 
       {
         using _stdio = captureStdio({ isTty: false });
@@ -120,12 +129,10 @@ describe(captureStdio, () => {
       }
 
       expect(process.stdout.isTTY).toBe(true);
-
-      Reflect.deleteProperty(process.stdout, 'isTTY');
     });
 
     it('restores the absence of a property the stream did not own', () => {
-      Reflect.deleteProperty(process.stdout, 'isTTY');
+      using _pinned = pinIsTty(process.stdout, undefined);
 
       {
         using _stdio = captureStdio({ isTty: true });
@@ -145,14 +152,14 @@ describe(captureStdio, () => {
     });
 
     it('leaves the value alone when it is not requested', () => {
-      process.stdout.isTTY = true;
+      using _pinned = pinIsTty(process.stdout, true);
 
       {
         using _stdio = captureStdio();
         expect(process.stdout.isTTY).toBe(true);
       }
 
-      Reflect.deleteProperty(process.stdout, 'isTTY');
+      expect(process.stdout.isTTY).toBe(true);
     });
 
     it('restores both streams even when it is not requested', () => {
@@ -266,3 +273,27 @@ describe(captureStdio, () => {
     });
   });
 });
+
+// region | Helpers
+
+/**
+ * Pins `isTTY` on a stream for the enclosing scope, putting back the state the stream had when it exits. A
+ * failing assertion disposes the binding on its way out, so the value cannot outlive the test that set it.
+ */
+function pinIsTty(stream: NodeJS.WriteStream, value: boolean | undefined): Disposable {
+  const hadOwnProperty = Object.hasOwn(stream, 'isTTY');
+  const previous = stream.isTTY;
+
+  if (value === undefined) Reflect.deleteProperty(stream, 'isTTY');
+  else stream.isTTY = value;
+
+  return {
+    // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's Symbol allowlist omits Symbol.dispose and accepts no options.
+    [Symbol.dispose]() {
+      if (hadOwnProperty) stream.isTTY = previous;
+      else Reflect.deleteProperty(stream, 'isTTY');
+    },
+  };
+}
+
+// endregion | Helpers
