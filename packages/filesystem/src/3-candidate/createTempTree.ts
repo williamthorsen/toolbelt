@@ -5,7 +5,10 @@ import path from 'node:path';
 /**
  * Creates a throwaway directory tree and returns a handle that removes it on disposal. Each key of `entries` is a
  * path relative to the tree root: one ending in `/` becomes a directory, and any other becomes a file holding the
- * mapped contents. A key resolving outside the root is rejected, and a call that throws leaves nothing on disk.
+ * mapped contents, given as text or as the bytes themselves. A key resolving outside the root is rejected, and a
+ * call that throws leaves nothing on disk.
+ *
+ * `prefix` names the directory, so a tree outliving a crashed run still says what made it.
  *
  * @example
  * using tree = createTempTree({ '.git/': '', 'src/main.ts': 'export {};\n' });
@@ -13,10 +16,17 @@ import path from 'node:path';
  *
  * @category Filesystem
  * @experimental
- * @stage proposed
+ * @stage candidate
  */
-export function createTempTree(entries: Record<string, string>): TempTree {
-  const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'toolbelt-')));
+export function createTempTree(
+  entries: Record<string, string | Uint8Array>,
+  options: CreateTempTreeOptions = {},
+): TempTree {
+  const { prefix = 'toolbelt-' } = options;
+
+  assertNamesDirectChild(prefix);
+
+  const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), prefix)));
 
   try {
     for (const [entry, contents] of Object.entries(entries)) {
@@ -48,6 +58,11 @@ export function createTempTree(entries: Record<string, string>): TempTree {
   };
 }
 
+export interface CreateTempTreeOptions {
+  /** Leading text of the generated directory's name, to which a random suffix is appended. Defaults to `toolbelt-`. */
+  prefix?: string;
+}
+
 export interface TempTree extends Disposable {
   /** Realpath of the tree root, resolved because `os.tmpdir()` is a symlink on macOS. */
   readonly dir: string;
@@ -61,6 +76,24 @@ export interface TempTree extends Disposable {
 }
 
 // region | Helpers
+/**
+ * Rejects a prefix that would place the tree anywhere but directly inside the system temporary directory. `mkdtemp`
+ * appends its random suffix to the joined path as given, so a prefix holding a separator targets a nested directory
+ * that has to already exist, or, where it ascends, a directory outside the temporary one; and a prefix that
+ * normalizes away lands the suffix beside the temporary directory rather than within it. Every other prefix joins
+ * to a name inside it.
+ */
+function assertNamesDirectChild(prefix: string): void {
+  // Both separators are tested, because Windows resolves each and `path.sep` names only one of them.
+  if (prefix.includes('/') || prefix.includes('\\')) {
+    throw new Error(`Temporary-directory prefix "${prefix}" contains a path separator`);
+  }
+
+  if (['', '.', '..'].includes(prefix)) {
+    throw new Error(`Temporary-directory prefix "${prefix}" names no new directory`);
+  }
+}
+
 /** Resolves `segments` against `dir`, rejecting a result that falls outside it. */
 function resolveWithinTree(dir: string, segments: ReadonlyArray<string>): string {
   const target = path.resolve(dir, ...segments);

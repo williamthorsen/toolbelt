@@ -2,7 +2,7 @@ import fs from 'node:fs';
 
 import { describe, expect, it } from 'vitest';
 
-import { createTempTree } from '../../1-proposed/createTempTree.ts';
+import { createTempTree } from '../../3-candidate/createTempTree.ts';
 import { reconcileFile } from '../reconcileFile.ts';
 
 describe(reconcileFile, () => {

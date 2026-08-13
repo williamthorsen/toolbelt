@@ -23,6 +23,14 @@ describe(createTempTree, () => {
     expect(fs.readFileSync(tree.resolve('package.json'), 'utf8')).toBe('{ "name": "app" }');
   });
 
+  it('writes a byte-valued key without passing it through a text encoding', () => {
+    const bytes = Uint8Array.from([0x00, 0xff, 0xfe, 0x80]);
+
+    using tree = createTempTree({ 'logo.bin': bytes });
+
+    expect(Uint8Array.from(fs.readFileSync(tree.resolve('logo.bin')))).toStrictEqual(bytes);
+  });
+
   it('creates the intermediate directories of a nested file key', () => {
     using tree = createTempTree({ 'app/src/main.ts': 'export {};\n' });
 
@@ -36,10 +44,37 @@ describe(createTempTree, () => {
     expect(path.dirname(tree.dir)).toBe(fs.realpathSync(os.tmpdir()));
   });
 
-  it('names no single package in the directory prefix', () => {
+  it('names no single package in the default directory prefix', () => {
     using tree = createTempTree({});
 
     expect(path.basename(tree.dir)).toMatch(/^toolbelt-/);
+  });
+
+  it('builds the directory under a given prefix, inside the temporary directory', () => {
+    using tree = createTempTree({}, { prefix: 'rdy-tsconfig-' });
+
+    expect(path.basename(tree.dir)).toMatch(/^rdy-tsconfig-/);
+    expect(path.dirname(tree.dir)).toBe(fs.realpathSync(os.tmpdir()));
+  });
+
+  // The backslash case covers the separator Windows resolves alongside `/`.
+  it.each(['rdy/', 'rdy\\', '../escaped-'])('rejects the prefix %j, building nothing', (prefix) => {
+    const mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
+
+    const create = () => createTempTree({}, { prefix });
+
+    expect(create).toThrow(/contains a path separator/);
+    expect(mkdtempSyncSpy).not.toHaveBeenCalled();
+  });
+
+  // Each of these joins away to the temporary directory itself or its parent, so `mkdtemp` would build a sibling.
+  it.each(['', '.', '..'])('rejects the prefix %j, building nothing', (prefix) => {
+    const mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
+
+    const create = () => createTempTree({}, { prefix });
+
+    expect(create).toThrow(/names no new directory/);
+    expect(mkdtempSyncSpy).not.toHaveBeenCalled();
   });
 
   it('removes the tree when the binding leaves scope', () => {
