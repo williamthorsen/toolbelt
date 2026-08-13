@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.0 — 2026-08-13
+
+### Features
+
+- 🚨 **Breaking:** Publish a ReadyUp adoption kit and promote isError to release (#139)
+
+  Adds a `default` ReadyUp kit to `@williamthorsen/toolbelt.errors`, allowing a repo consuming that package to check adoption of its functions. The check can trigger a warning or a recommendation, depending on the pattern matched.
+
+  Separately, `isError` now also recognizes an `Error` crossing a realm boundary, and a call to that function replaces an `instanceof` check in `describeError`.
+
+  🚨 **Breaking:** `isError` moves to the release tier and is imported from the package root; the `/candidate` subpath no longer resolves it.
+
+### Tooling
+
+- Remove redundant .gitignore files
+- Populate manifest metadata and adopt a pnpm catalog (#140)
+
+  Adopts a pnpm catalog to avoid specifying the version of a common dependency in multiple places. Separately, fixes violations of newly activated `package-json` lint rules. Missing values have been added to `package.json` fields across the repo, and package descriptions are improved.
+
 ## 0.3.0 — 2026-08-12
 
 ### Features

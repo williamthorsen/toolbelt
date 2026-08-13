@@ -1,0 +1,39 @@
+[
+  {
+    "version": "0.2.0",
+    "date": "2026-08-13",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Scaffold toolbelt.vitest for Vitest testing utilities (#125)",
+            "body": "Adds `@williamthorsen/toolbelt.vitest`, a package for testing utilities that depend on Vitest. It carries no exports yet.\n\nVitest is declared as a `peerDependency` at `^4.0.0`. It is the repo's only peer dependency.",
+            "hash": "4032554d6831a4570444ecd99c83215ceaa3f9f9"
+          },
+          {
+            "description": "Add silenceConsole to toolbelt.vitest (#126)",
+            "body": "Adds `silenceConsole`, the first export of `@williamthorsen/toolbelt.vitest`, reachable at the `/candidate` subpath. It silences the named console methods for the enclosing scope and hands back the Vitest spy behind each one, restoring them all when the scope exits; called with no argument it silences all five (`debug`, `error`, `info`, `log`, and `warn`).",
+            "hash": "e6550f7f1c5846116292e28cf142ff92a37a47a3"
+          }
+        ]
+      },
+      {
+        "title": "Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Remove redundant .gitignore files",
+            "hash": "d9bf7346a95b497e439398163202ca75deb48d1c"
+          },
+          {
+            "description": "Populate manifest metadata and adopt a pnpm catalog (#140)",
+            "body": "Adopts a pnpm catalog to avoid specifying the version of a common dependency in multiple places. Separately, fixes violations of newly activated `package-json` lint rules. Missing values have been added to `package.json` fields across the repo, and package descriptions are improved.",
+            "hash": "e01eff7c4af4a492b04b86762043565b408d6bea"
+          }
+        ]
+      }
+    ]
+  }
+]

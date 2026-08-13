@@ -1,5 +1,26 @@
 [
   {
+    "version": "0.4.1",
+    "date": "2026-08-13",
+    "sections": [
+      {
+        "title": "Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Remove redundant .gitignore files",
+            "hash": "d9bf7346a95b497e439398163202ca75deb48d1c"
+          },
+          {
+            "description": "Populate manifest metadata and adopt a pnpm catalog (#140)",
+            "body": "Adopts a pnpm catalog to avoid specifying the version of a common dependency in multiple places. Separately, fixes violations of newly activated `package-json` lint rules. Missing values have been added to `package.json` fields across the repo, and package descriptions are improved.",
+            "hash": "e01eff7c4af4a492b04b86762043565b408d6bea"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.4.0",
     "date": "2026-08-12",
     "sections": [

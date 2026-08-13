@@ -1,5 +1,38 @@
 [
   {
+    "version": "0.4.0",
+    "date": "2026-08-13",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Publish a ReadyUp adoption kit and promote isError to release (#139)",
+            "body": "Adds a `default` ReadyUp kit to `@williamthorsen/toolbelt.errors`, allowing a repo consuming that package to check adoption of its functions. The check can trigger a warning or a recommendation, depending on the pattern matched.\n\nSeparately, `isError` now also recognizes an `Error` crossing a realm boundary, and a call to that function replaces an `instanceof` check in `describeError`.\n\n🚨 **Breaking:** `isError` moves to the release tier and is imported from the package root; the `/candidate` subpath no longer resolves it.",
+            "breaking": true,
+            "hash": "93c348e4d312d85bdeca0d7f57343d4bea8695f9"
+          }
+        ]
+      },
+      {
+        "title": "Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Remove redundant .gitignore files",
+            "hash": "d9bf7346a95b497e439398163202ca75deb48d1c"
+          },
+          {
+            "description": "Populate manifest metadata and adopt a pnpm catalog (#140)",
+            "body": "Adopts a pnpm catalog to avoid specifying the version of a common dependency in multiple places. Separately, fixes violations of newly activated `package-json` lint rules. Missing values have been added to `package.json` fields across the repo, and package descriptions are improved.",
+            "hash": "e01eff7c4af4a492b04b86762043565b408d6bea"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.3.0",
     "date": "2026-08-12",
     "sections": [

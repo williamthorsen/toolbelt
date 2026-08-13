@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 6.0.1 — 2026-08-13
+
+### Tooling
+
+- Remove redundant .gitignore files
+- Populate manifest metadata and adopt a pnpm catalog (#140)
+
+  Adopts a pnpm catalog to avoid specifying the version of a common dependency in multiple places. Separately, fixes violations of newly activated `package-json` lint rules. Missing values have been added to `package.json` fields across the repo, and package descriptions are improved.
+
 ## 6.0.0 — 2026-08-12
 
 ### Features
