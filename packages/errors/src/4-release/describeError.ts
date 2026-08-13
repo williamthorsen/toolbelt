@@ -1,3 +1,5 @@
+import { isError } from './isError.ts';
+
 /**
  * Returns a human-readable description of a thrown value: an `Error`'s message, or the value stringified.
  *
@@ -17,7 +19,7 @@
  */
 export function describeError(error: unknown): string {
   try {
-    if (error instanceof Error && typeof error.message === 'string' && error.message !== '') {
+    if (isError(error) && typeof error.message === 'string' && error.message !== '') {
       return error.message;
     }
 
