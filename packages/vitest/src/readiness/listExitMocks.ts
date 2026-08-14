@@ -8,7 +8,6 @@ export interface ExitMock {
 }
 
 const SPY = /\bvi\s*\.\s*spyOn\(\s*process\s*,\s*(['"])exit\1\s*\)/g;
-const LOOKAHEAD = 400;
 
 /**
  * Lists every `process.exit` mock in a test file, each named by what it is doing.
@@ -22,15 +21,9 @@ const LOOKAHEAD = 400;
 export function listExitMocks(source: string): ExitMock[] {
   const mocks: ExitMock[] = [];
 
-  SPY.lastIndex = 0;
-  let match = SPY.exec(source);
-  while (match !== null) {
-    const end = match.index + match[0].length;
-    const after = source.slice(end, end + LOOKAHEAD);
-    const kind = classifyExitMock(after, source);
-
-    mocks.push({ kind, line: countLines(source, match.index), ...findSymbol(kind, after) });
-    match = SPY.exec(source);
+  for (const match of source.matchAll(SPY)) {
+    const after = source.slice(match.index + match[0].length);
+    mocks.push({ ...classifyExitMock(after, source), line: countLines(source, match.index) });
   }
 
   return mocks;
@@ -45,13 +38,6 @@ function countLines(source: string, offset: number): number {
     if (source[index] === '\n') line += 1;
   }
   return line;
-}
-
-/** Names the thrown sentinel class, on a `sentinel-clone` alone. */
-function findSymbol(kind: ExitMockKind, after: string): { symbol?: string } {
-  if (kind !== 'sentinel-clone') return {};
-  const symbol = /throw new (\w+)\(/.exec(after)?.[1];
-  return symbol === undefined ? {} : { symbol };
 }
 
 // endregion | Helpers

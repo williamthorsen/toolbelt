@@ -191,7 +191,9 @@ Node accepts an integer string and exits with its numeric value, so `process.exi
 
 `process.exitCode = 1` is a separate mechanism. It sets the code the process will eventually exit with and does not halt execution, so it needs no mock: read the property after the call. Note that a leaked `process.exitCode` makes the whole Vitest run exit non-zero while every test passes, so a test that sets one restores it.
 
-Mocks do not stack, for the reason `silenceConsole` does not: `vi.spyOn` hands back the existing spy for a method already being spied on, so a nested call shares the outer one and restores `process.exit` for both when the inner scope exits.
+### Mocks do not stack
+
+For the reason `silenceConsole`'s do not: `vi.spyOn` hands back the existing spy for a method already being spied on, so a nested call shares the outer one and restores `process.exit` for both when the inner scope exits.
 
 ## Adoption checks
 

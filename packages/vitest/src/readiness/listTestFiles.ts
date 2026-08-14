@@ -1,5 +1,5 @@
 const TEST_FILE = /\.(?:spec|test)\.[cm]?[jt]sx?$/;
-const EXCLUDED = [/(?:^|\/)node_modules\//, /(?:^|\/)\.readyup\/kits\/.+\.js$/];
+const EXCLUDED = /(?:^|\/)node_modules\//;
 
 /**
  * Narrows a project's file list to the test files these checks read.
@@ -11,5 +11,5 @@ const EXCLUDED = [/(?:^|\/)node_modules\//, /(?:^|\/)\.readyup\/kits\/.+\.js$/];
  * @internal
  */
 export function listTestFiles(paths: readonly string[]): string[] {
-  return paths.filter((path) => TEST_FILE.test(path) && EXCLUDED.every((pattern) => !pattern.test(path)));
+  return paths.filter((path) => TEST_FILE.test(path) && !EXCLUDED.test(path));
 }

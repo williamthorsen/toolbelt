@@ -1,6 +1,12 @@
+export interface ExitMockVerdict {
+  kind: ExitMockKind;
+  /** The sentinel class the mock throws, on a `sentinel-clone` alone. */
+  symbol?: string;
+}
+
 export type ExitMockKind = 'non-throwing' | 'sentinel-clone' | 'throwing' | 'unclassified';
 
-const IMPLEMENTATION = /^\s*\.mockImplementation\(/;
+const IMPLEMENTATION = /^\s*\.mockImplementation(?:Once)?\(/;
 const THROWN_CLASS = /throw new (\w+)\(/;
 const BARE_REFERENCE = /^[\w$.]+$/;
 
@@ -10,32 +16,40 @@ const BARE_REFERENCE = /^[\w$.]+$/;
  * A mock throwing a class the same file declares reports as `sentinel-clone` rather than as the `throwing`
  * mock it also is, so one finding names the class to retire alongside the mock.
  *
- * Only an implementation passed as a bare reference is `unclassified`. Anything else carries a body, and a
- * body holding no `throw` is evidence rather than an absence of it.
+ * `non-throwing` is claimed only against a body this read in full and found no `throw` in, because that kind
+ * carries the defect severity. Everything else is `unclassified`: an implementation given as a bare reference,
+ * one attached anywhere but the spy's own call chain, and one whose parentheses never balance.
  *
  * @internal
  */
-export function classifyExitMock(after: string, source: string): ExitMockKind {
-  if (!IMPLEMENTATION.test(after)) return 'non-throwing';
+export function classifyExitMock(after: string, source: string): ExitMockVerdict {
+  if (!IMPLEMENTATION.test(after)) return { kind: 'unclassified' };
 
   const body = readImplementation(after);
-  const thrown = THROWN_CLASS.exec(body);
+  if (body === undefined) return { kind: 'unclassified' };
 
-  if (thrown !== null) {
-    const declared = new RegExp(String.raw`\bclass ${thrown[1]}\b[^\n]*\bextends\b`);
-    return declared.test(source) ? 'sentinel-clone' : 'throwing';
+  const symbol = THROWN_CLASS.exec(body)?.[1];
+  if (symbol !== undefined) {
+    const declared = new RegExp(String.raw`\bclass ${symbol}\b[^\n]*\bextends\b`);
+    return declared.test(source) ? { kind: 'sentinel-clone', symbol } : { kind: 'throwing' };
   }
 
-  if (/\bthrow\b/.test(body)) return 'throwing';
-  return BARE_REFERENCE.test(body.trim()) ? 'unclassified' : 'non-throwing';
+  if (/\bthrow\b/.test(body)) return { kind: 'throwing' };
+  return { kind: BARE_REFERENCE.test(body.trim()) ? 'unclassified' : 'non-throwing' };
 }
 
 // region | Helpers
 
-/** Reads the `mockImplementation` argument by matching parentheses from the call's own. */
-function readImplementation(after: string): string {
+/**
+ * Reads the `mockImplementation` argument, or nothing where its parentheses never balance.
+ *
+ * Returning nothing is what keeps a body this could not read whole out of the `non-throwing` verdict, a
+ * `throw` past the unbalanced point being invisible rather than absent.
+ */
+function readImplementation(after: string): string | undefined {
   const start = after.indexOf('(');
   let depth = 0;
+
   for (let index = start; index < after.length; index += 1) {
     if (after[index] === '(') depth += 1;
     else if (after[index] === ')') {
@@ -43,7 +57,8 @@ function readImplementation(after: string): string {
       if (depth === 0) return after.slice(start + 1, index);
     }
   }
-  return after.slice(start + 1);
+
+  return undefined;
 }
 
 // endregion | Helpers

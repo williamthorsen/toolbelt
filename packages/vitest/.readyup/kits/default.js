@@ -25,28 +25,29 @@ function describeFinding(finding) {
 
 // src/readiness/listTestFiles.ts
 var TEST_FILE = /\.(?:spec|test)\.[cm]?[jt]sx?$/;
-var EXCLUDED = [/(?:^|\/)node_modules\//, /(?:^|\/)\.readyup\/kits\/.+\.js$/];
+var EXCLUDED = /(?:^|\/)node_modules\//;
 function listTestFiles(paths) {
-  return paths.filter((path) => TEST_FILE.test(path) && EXCLUDED.every((pattern) => !pattern.test(path)));
+  return paths.filter((path) => TEST_FILE.test(path) && !EXCLUDED.test(path));
 }
 
 // src/readiness/packageName.ts
 var PACKAGE_NAME = "@williamthorsen/toolbelt.vitest";
 
 // src/readiness/classifyExitMock.ts
-var IMPLEMENTATION = /^\s*\.mockImplementation\(/;
+var IMPLEMENTATION = /^\s*\.mockImplementation(?:Once)?\(/;
 var THROWN_CLASS = /throw new (\w+)\(/;
 var BARE_REFERENCE = /^[\w$.]+$/;
 function classifyExitMock(after, source) {
-  if (!IMPLEMENTATION.test(after)) return "non-throwing";
+  if (!IMPLEMENTATION.test(after)) return { kind: "unclassified" };
   const body = readImplementation(after);
-  const thrown = THROWN_CLASS.exec(body);
-  if (thrown !== null) {
-    const declared = new RegExp(String.raw`\bclass ${thrown[1]}\b[^\n]*\bextends\b`);
-    return declared.test(source) ? "sentinel-clone" : "throwing";
+  if (body === void 0) return { kind: "unclassified" };
+  const symbol = THROWN_CLASS.exec(body)?.[1];
+  if (symbol !== void 0) {
+    const declared = new RegExp(String.raw`\bclass ${symbol}\b[^\n]*\bextends\b`);
+    return declared.test(source) ? { kind: "sentinel-clone", symbol } : { kind: "throwing" };
   }
-  if (/\bthrow\b/.test(body)) return "throwing";
-  return BARE_REFERENCE.test(body.trim()) ? "unclassified" : "non-throwing";
+  if (/\bthrow\b/.test(body)) return { kind: "throwing" };
+  return { kind: BARE_REFERENCE.test(body.trim()) ? "unclassified" : "non-throwing" };
 }
 function readImplementation(after) {
   const start = after.indexOf("(");
@@ -58,22 +59,16 @@ function readImplementation(after) {
       if (depth === 0) return after.slice(start + 1, index);
     }
   }
-  return after.slice(start + 1);
+  return void 0;
 }
 
 // src/readiness/listExitMocks.ts
 var SPY = /\bvi\s*\.\s*spyOn\(\s*process\s*,\s*(['"])exit\1\s*\)/g;
-var LOOKAHEAD = 400;
 function listExitMocks(source) {
   const mocks = [];
-  SPY.lastIndex = 0;
-  let match = SPY.exec(source);
-  while (match !== null) {
-    const end = match.index + match[0].length;
-    const after = source.slice(end, end + LOOKAHEAD);
-    const kind = classifyExitMock(after, source);
-    mocks.push({ kind, line: countLines(source, match.index), ...findSymbol(kind, after) });
-    match = SPY.exec(source);
+  for (const match of source.matchAll(SPY)) {
+    const after = source.slice(match.index + match[0].length);
+    mocks.push({ ...classifyExitMock(after, source), line: countLines(source, match.index) });
   }
   return mocks;
 }
@@ -83,11 +78,6 @@ function countLines(source, offset) {
     if (source[index] === "\n") line += 1;
   }
   return line;
-}
-function findSymbol(kind, after) {
-  if (kind !== "sentinel-clone") return {};
-  const symbol = /throw new (\w+)\(/.exec(after)?.[1];
-  return symbol === void 0 ? {} : { symbol };
 }
 
 // src/readiness/summarizeSources.ts

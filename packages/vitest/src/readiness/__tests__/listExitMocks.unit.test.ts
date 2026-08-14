@@ -33,4 +33,11 @@ vi.spyOn(process, 'exit').mockImplementation(() => {
 
     expect(listExitMocks(source).map((mock) => mock.kind)).toStrictEqual(['non-throwing', 'throwing']);
   });
+
+  it('reads a body running past any fixed window', () => {
+    const padding = '  // padding padding padding padding padding padding\n'.repeat(9);
+    const source = `vi.spyOn(process, 'exit').mockImplementation((code) => {\n${padding}  throw new Error('late');\n});`;
+
+    expect(listExitMocks(source).map((mock) => mock.kind)).toStrictEqual(['throwing']);
+  });
 });

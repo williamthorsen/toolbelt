@@ -9,8 +9,8 @@ describe(listTestFiles, () => {
     expect(listTestFiles(paths)).toStrictEqual(['src/__tests__/main.unit.test.ts', 'src/main.spec.tsx']);
   });
 
-  it('drops a dependency and a compiled kit bundle', () => {
-    const paths = ['node_modules/pkg/index.test.js', '.readyup/kits/default.js', 'src/a.test.ts'];
+  it('drops a dependency’s tests', () => {
+    const paths = ['node_modules/pkg/index.test.js', 'src/a.test.ts'];
 
     expect(listTestFiles(paths)).toStrictEqual(['src/a.test.ts']);
   });
