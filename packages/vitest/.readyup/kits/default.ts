@@ -49,11 +49,11 @@ export default defineRdyKit({
           fix: `Replace each mock named above with throwOnProcessExit from ${PACKAGE_NAME}/candidate. A mock that returns lets execution continue past the exit, so the test asserts against a path the process never reaches, and nothing reports it.`,
         },
         {
-          name: 'No test hand-rolls a throwing process-exit mock',
+          name: 'No test hand-rolls a throwing or unreadable process-exit mock',
           severity: 'recommend',
           skip: skipUnlessProjectIsAccountable,
           check: () => reportKinds('throwing', 'unclassified'),
-          fix: `Replace each mock named above with throwOnProcessExit from ${PACKAGE_NAME}/candidate, and assert the code on the thrown ProcessExitError. An unclassified mock is one whose implementation is a bare reference these checks cannot read.`,
+          fix: `Replace each mock named above with throwOnProcessExit from ${PACKAGE_NAME}/candidate, and assert the code on the thrown ProcessExitError. An unclassified mock is one these checks could not read: an implementation given as a bare reference, attached away from the spy's own call chain, or whose parentheses never balance.`,
         },
       ],
     },

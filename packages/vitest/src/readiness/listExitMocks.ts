@@ -1,10 +1,7 @@
-import { classifyExitMock, type ExitMockKind } from './classifyExitMock.ts';
+import { classifyExitMock, type ExitMockVerdict } from './classifyExitMock.ts';
 
-export interface ExitMock {
-  kind: ExitMockKind;
+export interface ExitMock extends ExitMockVerdict {
   line: number;
-  /** The sentinel class the mock throws, on a `sentinel-clone` alone. */
-  symbol?: string;
 }
 
 const SPY = /\bvi\s*\.\s*spyOn\(\s*process\s*,\s*(['"])exit\1\s*\)/g;
