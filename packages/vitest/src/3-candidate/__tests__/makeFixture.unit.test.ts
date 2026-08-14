@@ -4,7 +4,7 @@ import process from 'node:process';
 
 import { createTempTree, type TempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
 import { captureStdio } from '@williamthorsen/toolbelt.testing/candidate';
-import { describe, expect, expectTypeOf, test } from 'vitest';
+import { describe, expect, expectTypeOf, it as baseIt } from 'vitest';
 
 import { makeFixture } from '../makeFixture.ts';
 import { silenceConsole } from '../silenceConsole.ts';
@@ -12,7 +12,7 @@ import { silenceConsole } from '../silenceConsole.ts';
 const buildLog: string[] = [];
 const disposalLog: string[] = [];
 
-const it = test
+const it = baseIt
   .extend(
     'perTest',
     makeFixture(() => makeProbe('per-test')),
@@ -98,6 +98,7 @@ function makeProbe(label: string): Probe {
 
   return {
     label,
+    // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's Symbol allowlist omits Symbol.dispose and accepts no options.
     [Symbol.dispose]() {
       disposalLog.push(label);
     },

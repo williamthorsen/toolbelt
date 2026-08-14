@@ -18,9 +18,10 @@
  */
 export function makeFixture<T extends Disposable>(build: () => T) {
   // eslint-disable-next-line no-empty-pattern -- Vitest parses this pattern from the emitted function's source to find the fixture's dependencies; an empty one declares none, and dropping the parameter fails collection.
-  return ({}, { onCleanup }: { onCleanup: (cleanup: () => void) => void }): T => {
+  return ({}: object, { onCleanup }: { onCleanup: (cleanup: () => void) => void }): T => {
     const resource = build();
 
+    // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's Symbol allowlist omits Symbol.dispose and accepts no options.
     onCleanup(() => resource[Symbol.dispose]());
 
     return resource;
