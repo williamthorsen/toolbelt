@@ -48,7 +48,7 @@ export class ProcessExitError extends Error {
   constructor(code?: number | string | null) {
     // Node accepts an integer string and exits with its numeric value, so the string form is coerced rather
     // than discarded. A code of `null` and an absent one both mean the caller named none.
-    const exitCode = code == null ? undefined : Number(code);
+    const exitCode = code === undefined || code === null ? undefined : Number(code);
 
     super(`process.exit(${exitCode})`);
 
