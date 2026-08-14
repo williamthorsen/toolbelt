@@ -12,7 +12,7 @@ pnpm add --save-dev @williamthorsen/toolbelt.vitest
 
 Requires Node.js 24 or later. Vitest is a peer dependency: the package uses whichever Vitest 4 the consuming project already installs.
 
-`makeFixture` and `silenceConsole` are candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change.
+`makeFixture`, `silenceConsole`, and `throwOnProcessExit` are candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change.
 
 ## `makeFixture`
 
@@ -141,3 +141,54 @@ using silent = silenceConsole(['error']);
 
 silent.warn; // Property 'warn' does not exist
 ```
+
+## `throwOnProcessExit`
+
+```ts
+throwOnProcessExit(): Disposable & { spy: MockInstance<typeof process.exit> };
+```
+
+Replaces `process.exit` for the enclosing scope with an implementation that throws a `ProcessExitError` carrying the exit code.
+
+```ts
+import { captureError } from '@williamthorsen/toolbelt.testing/candidate';
+import { ProcessExitError, throwOnProcessExit } from '@williamthorsen/toolbelt.vitest/candidate';
+
+it('exits with code 1 on an unknown flag', async () => {
+  using _exit = throwOnProcessExit();
+
+  const error = await captureError(ProcessExitError, () => tagCommand(['--unknown']));
+
+  expect(error.code).toBe(1);
+});
+```
+
+### Why it throws
+
+`process.exit` never returns, so a mock that returns breaks the one guarantee the call makes. Execution continues past the exit, and the test asserts against a path the process never reaches in production. Nothing reports it: the suite passes while covering code that cannot run, and it keeps passing as that dead continuation grows.
+
+The type system says the same thing. `process.exit` is `(code?: number | string | null) => never`, and a function whose last statement is an exit is sound only because of that `never`. Neuter it and the function returns `undefined` while its signature promises a value. A mock that throws satisfies `never` naturally, which is why this one needs no type assertion and no `vi.fn` workaround.
+
+The compiler will not let a test observe the difference directly, either: statements written after a `process.exit` call are unreachable, and TypeScript reports TS7027 rather than compiling them.
+
+### Asserting that nothing exited
+
+The thrown error covers every case except one -- proving a path does _not_ exit. That is what the spy is for:
+
+```ts
+using exit = throwOnProcessExit();
+
+parseArgsOrExit(['--dry-run'], schema);
+
+expect(exit.spy).not.toHaveBeenCalled();
+```
+
+### The exit code
+
+Node accepts an integer string and exits with its numeric value, so `process.exit('2')` arrives as `2` rather than being discarded. A call naming no code reports `undefined`.
+
+### What it does not cover
+
+`process.exitCode = 1` is a separate mechanism. It sets the code the process will eventually exit with and does not halt execution, so it needs no mock: read the property after the call. Note that a leaked `process.exitCode` makes the whole Vitest run exit non-zero while every test passes, so a test that sets one restores it.
+
+Mocks do not stack, for the reason `silenceConsole` does not: `vi.spyOn` hands back the existing spy for a method already being spied on, so a nested call shares the outer one and restores `process.exit` for both when the inner scope exits.
