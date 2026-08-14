@@ -92,6 +92,11 @@ describe(makeFixture, () => {
 
 // region | Helpers
 
+/** Counts a label's occurrences in one of the lifecycle logs. */
+function countOf(log: readonly string[], label: string): number {
+  return log.filter((entry) => entry === label).length;
+}
+
 /** Records every build and disposal, so a test can assert on a scope's lifecycle without holding the instance. */
 function makeProbe(label: string): Probe {
   buildLog.push(label);
@@ -103,11 +108,6 @@ function makeProbe(label: string): Probe {
       disposalLog.push(label);
     },
   };
-}
-
-/** Counts a label's occurrences in one of the lifecycle logs. */
-function countOf(log: readonly string[], label: string): number {
-  return log.filter((entry) => entry === label).length;
 }
 
 interface Probe extends Disposable {

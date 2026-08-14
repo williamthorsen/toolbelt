@@ -46,6 +46,8 @@ const it = test
 
 Scope belongs to `test.extend` rather than to the adapter, so `test`, `file`, and `worker` all work through it. A fixture is built only when a test names it, which is what keeps a temporary directory from being created for tests that never touch one. `{ auto: true }` opts out of that laziness, for a fixture such as a console silencer that should apply whether or not a test names it.
 
+A project setting `restoreMocks: true` restores every spy before each test, so a `silenceConsole` fixture there has to be test-scoped: at `file` or `worker` scope its spies are restored from the second test onward, and the console goes unsilenced with nothing reported. `{ auto: true }` at test scope covers the apply-everywhere case. `createTempTree` and `captureStdio` are unaffected, neither going through `vi.spyOn`.
+
 ### Fixtures that depend on other fixtures
 
 `makeFixture` serves a fixture that depends on no other fixture. Vitest discovers a fixture's dependencies by parsing the fixture function's source text for its destructuring pattern, so a fixture naming another one has to write that pattern itself, along with its own disposal:
