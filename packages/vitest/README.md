@@ -36,7 +36,7 @@ it('resolves a path within the tree', ({ tree }) => {
 });
 ```
 
-The instance arrives as a typed test parameter, so a suite binding one needs no `let`, no non-null assertion, and no `onCleanup` call of its own. Anything satisfying `Disposable` works, including `captureStdio` and `silenceConsole`:
+The instance arrives as a typed test parameter, so a suite binding one needs no `let`, no guard against an unbuilt instance, and no `onCleanup` call of its own. Anything satisfying `Disposable` works, including `captureStdio` and `silenceConsole`:
 
 ```ts
 const it = test
@@ -44,9 +44,47 @@ const it = test
   .extend('silent', makeFixture(() => silenceConsole(['warn'])));
 ```
 
+### When to reach for it
+
+The question arises only for a resource that has to outlive a single test. One that does not needs no fixture:
+
+```ts
+it('falls back to defaults', () => {
+  using silent = silenceConsole(['warn']);
+
+  loadSettings({});
+
+  expect(silent.warn).toHaveBeenCalled();
+});
+```
+
+For a resource shared across tests, the alternative is a hook-registered handle: an object bound once at module level that registers its own `beforeEach` and `afterEach` and forwards every read to whichever instance the current scope built. A handle reads better, because a test names nothing in its signature:
+
+```ts
+const tree = useTempTree({ 'src/main.ts': 'export {};\n' });
+
+it('resolves a path within the tree', () => {
+  expect(tree.resolve('src/main.ts')).toBe(`${tree.dir}/src/main.ts`);
+});
+```
+
+That read site is bought per resource type, at around forty lines: a guard reporting reads that arrive outside the scope, a forward per method, and an interface of the handle's own, since a handle cannot forward `[Symbol.dispose]`. The cost pays for itself across many suites and not within one.
+
+`makeFixture` costs nothing per type. It makes the out-of-scope read unrepresentable rather than guarded, the value existing only as a test parameter, and it builds only for the tests that name it, where a handle's `beforeEach` builds for every test in the file.
+
+Reach for a handle where one already exists for the resource and most of a file's tests touch it. Reach for `makeFixture` otherwise.
+
+### Scope
+
 Scope belongs to `test.extend` rather than to the adapter, so `test`, `file`, and `worker` all work through it. A fixture is built only when a test names it, which is what keeps a temporary directory from being created for tests that never touch one. `{ auto: true }` opts out of that laziness, for a fixture such as a console silencer that should apply whether or not a test names it.
 
+`worker` scope reaches past a single file only where the runner shares a worker between files, which Vitest's default isolation prevents: each file takes its own process, so a worker-scoped fixture builds and disposes once per file exactly as a file-scoped one does. A resource worth building once for a whole run belongs in `globalSetup`, which runs outside the workers and gives up no isolation.
+
 A project setting `restoreMocks: true` restores every spy before each test, so a `silenceConsole` fixture there has to be test-scoped: at `file` or `worker` scope its spies are restored from the second test onward, and the console goes unsilenced with nothing reported. `{ auto: true }` at test scope covers the apply-everywhere case. `createTempTree` and `captureStdio` are unaffected, neither going through `vi.spyOn`.
+
+### Naming the extended test function
+
+`vitest/consistent-test-it` resolves an extended function back to the name its chain was rooted at, so that root has to be the name the rule expects where the tests are written: `test` for tests at file level, `it` for tests inside a `describe`. Rooted at `it` for a `describe` block, a lone `.extend` call is itself reported, and a one-line disable there settles it.
 
 ### Fixtures that depend on other fixtures
 
