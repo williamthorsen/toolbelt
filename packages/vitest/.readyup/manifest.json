@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "kits": [
+    {
+      "checklists": [
+        "adoption"
+      ],
+      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.vitest",
+      "name": "default",
+      "path": "kits/default.js",
+      "readyupVersion": "0.27.0",
+      "source": "kits/default.ts",
+      "sourceHash": "cfb38449",
+      "targetHash": "bcf3c89d"
+    }
+  ]
+}

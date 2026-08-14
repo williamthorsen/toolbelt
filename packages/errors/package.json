@@ -48,7 +48,7 @@
     "prepublishOnly": "rdy compile && nmr build"
   },
   "devDependencies": {
-    "esbuild": "0.28.1",
+    "esbuild": "catalog:",
     "readyup": "catalog:"
   },
   "engines": {

@@ -12,7 +12,7 @@ pnpm add --save-dev @williamthorsen/toolbelt.vitest
 
 Requires Node.js 24 or later. Vitest is a peer dependency: the package uses whichever Vitest 4 the consuming project already installs.
 
-`makeFixture` and `silenceConsole` are candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change.
+`makeFixture`, `silenceConsole`, and `throwOnProcessExit` are candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change.
 
 ## `makeFixture`
 
@@ -140,4 +140,83 @@ The return type narrows to exactly the methods requested, so one that was not si
 using silent = silenceConsole(['error']);
 
 silent.warn; // Property 'warn' does not exist
+```
+
+## `throwOnProcessExit`
+
+```ts
+throwOnProcessExit(): Disposable & { spy: MockInstance<typeof process.exit> };
+```
+
+Replaces `process.exit` for the enclosing scope with an implementation that throws a `ProcessExitError` carrying the exit code.
+
+```ts
+import { captureError } from '@williamthorsen/toolbelt.testing/candidate';
+import { ProcessExitError, throwOnProcessExit } from '@williamthorsen/toolbelt.vitest/candidate';
+
+it('exits with code 1 on an unknown flag', async () => {
+  using _exit = throwOnProcessExit();
+
+  const error = await captureError(ProcessExitError, () => tagCommand(['--unknown']));
+
+  expect(error.code).toBe(1);
+});
+```
+
+### Why it throws
+
+`process.exit` never returns, so a mock that returns breaks the one guarantee the call makes. Execution continues past the exit, and the test asserts against a path the process never reaches in production. Nothing reports it: the suite passes while covering code that cannot run, and it keeps passing as that dead continuation grows.
+
+The type system says the same thing. `process.exit` is `(code?: number | string | null) => never`, and a function whose last statement is an exit is sound only because of that `never`. Neuter it and the function returns `undefined` while its signature promises a value. A mock that throws satisfies `never` naturally, which is why this one needs no type assertion and no `vi.fn` workaround.
+
+The compiler will not let a test observe the difference directly, either: statements written after a `process.exit` call are unreachable, and TypeScript reports TS7027 rather than compiling them.
+
+### Asserting that nothing exited
+
+The thrown error covers every case except one -- proving a path does _not_ exit. That is what the spy is for:
+
+```ts
+using exit = throwOnProcessExit();
+
+parseArgsOrExit(['--dry-run'], schema);
+
+expect(exit.spy).not.toHaveBeenCalled();
+```
+
+### The exit code
+
+Node accepts an integer string and exits with its numeric value, so `process.exit('2')` arrives as `2` rather than being discarded. A call naming no code reports `undefined`.
+
+### What it does not cover
+
+`process.exitCode = 1` is a separate mechanism. It sets the code the process will eventually exit with and does not halt execution, so it needs no mock: read the property after the call. Note that a leaked `process.exitCode` makes the whole Vitest run exit non-zero while every test passes, so a test that sets one restores it.
+
+### Mocks do not stack
+
+For the reason `silenceConsole`'s do not: `vi.spyOn` hands back the existing spy for a method already being spied on, so a nested call shares the outer one and restores `process.exit` for both when the inner scope exits.
+
+## Adoption checks
+
+The package ships a ReadyUp kit, so a project that installs it can ask how far its adoption got:
+
+```sh
+rdy run --packages
+```
+
+The kit reads the project's tracked test files and reports every `process.exit` mock in them, each named by what it is doing and counted against the calls the project already makes into this package.
+
+A mock that does not throw reports at `warn`, being a defect rather than a tidy-up: the suite covers a path the process never reaches. A hand-rolled throwing mock reports at `recommend`, being a substitution. Nothing reports at `error`, because none of it breaks the package.
+
+A mock throwing a sentinel class the same file declares reports once, naming the class, since one substitution retires the class and the mock together.
+
+Only test files are read, which inverts the exemption `@williamthorsen/toolbelt.errors` makes. That kit exempts tests because a test constructs error shapes deliberately; a `process.exit` mock exists nowhere else.
+
+A mock whose implementation is a bare reference reports as unclassified rather than as non-throwing. The referenced function may well throw, and naming it a defect without reading its body would misreport it.
+
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+
+```ts
+export default defineRdyConfig({
+  packages: ['@williamthorsen/toolbelt.vitest'],
+});
 ```
