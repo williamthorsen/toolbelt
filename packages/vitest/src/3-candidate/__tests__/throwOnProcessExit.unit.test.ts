@@ -1,22 +1,22 @@
 import process from 'node:process';
 
 import { captureError } from '@williamthorsen/toolbelt.testing/candidate';
-import { describe, expect, expectTypeOf, it, type MockInstance } from 'vitest';
+import { describe, expect, expectTypeOf, it, type MockInstance, vi } from 'vitest';
 
 import { type MockedProcessExit, ProcessExitError, throwOnProcessExit } from '../throwOnProcessExit.ts';
 
 describe(throwOnProcessExit, () => {
   describe('runtime behavior', () => {
     it('replaces process.exit for the scope and restores it afterwards', () => {
-      const original = process.exit;
+      expect(vi.isMockFunction(process.exit)).toBe(false);
 
       {
         using _exit = throwOnProcessExit();
 
-        expect(process.exit).not.toBe(original);
+        expect(vi.isMockFunction(process.exit)).toBe(true);
       }
 
-      expect(process.exit).toBe(original);
+      expect(vi.isMockFunction(process.exit)).toBe(false);
     });
 
     it('stops execution at the exit rather than running past it', () => {
