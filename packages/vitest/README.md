@@ -192,3 +192,29 @@ Node accepts an integer string and exits with its numeric value, so `process.exi
 `process.exitCode = 1` is a separate mechanism. It sets the code the process will eventually exit with and does not halt execution, so it needs no mock: read the property after the call. Note that a leaked `process.exitCode` makes the whole Vitest run exit non-zero while every test passes, so a test that sets one restores it.
 
 Mocks do not stack, for the reason `silenceConsole` does not: `vi.spyOn` hands back the existing spy for a method already being spied on, so a nested call shares the outer one and restores `process.exit` for both when the inner scope exits.
+
+## Adoption checks
+
+The package ships a ReadyUp kit, so a project that installs it can ask how far its adoption got:
+
+```sh
+rdy run --packages
+```
+
+The kit reads the project's tracked test files and reports every `process.exit` mock in them, each named by what it is doing and counted against the calls the project already makes into this package.
+
+A mock that does not throw reports at `warn`, being a defect rather than a tidy-up: the suite covers a path the process never reaches. A hand-rolled throwing mock reports at `recommend`, being a substitution. Nothing reports at `error`, because none of it breaks the package.
+
+A mock throwing a sentinel class the same file declares reports once, naming the class, since one substitution retires the class and the mock together.
+
+Only test files are read, which inverts the exemption `@williamthorsen/toolbelt.errors` makes. That kit exempts tests because a test constructs error shapes deliberately; a `process.exit` mock exists nowhere else.
+
+A mock whose implementation is a bare reference reports as unclassified rather than as non-throwing. The referenced function may well throw, and naming it a defect without reading its body would misreport it.
+
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+
+```ts
+export default defineRdyConfig({
+  packages: ['@williamthorsen/toolbelt.vitest'],
+});
+```

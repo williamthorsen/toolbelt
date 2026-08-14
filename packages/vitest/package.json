@@ -40,15 +40,19 @@
     }
   },
   "files": [
+    ".readyup/kits/*.js",
+    ".readyup/manifest.json",
     "dist/*",
     "CHANGELOG.md"
   ],
   "scripts": {
-    "prepublishOnly": "nmr build"
+    "prepublishOnly": "rdy compile && nmr build"
   },
   "devDependencies": {
     "@williamthorsen/toolbelt.filesystem": "workspace:*",
     "@williamthorsen/toolbelt.testing": "workspace:*",
+    "esbuild": "catalog:",
+    "readyup": "catalog:",
     "vitest": "catalog:"
   },
   "peerDependencies": {
