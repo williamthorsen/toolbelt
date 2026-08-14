@@ -12,7 +12,55 @@ pnpm add --save-dev @williamthorsen/toolbelt.vitest
 
 Requires Node.js 24 or later. Vitest is a peer dependency: the package uses whichever Vitest 4 the consuming project already installs.
 
-`silenceConsole` is candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change.
+`makeFixture` and `silenceConsole` are candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change.
+
+## `makeFixture`
+
+```ts
+makeFixture<T extends Disposable>(
+  build: () => T,
+): ({}, { onCleanup }: { onCleanup: (cleanup: () => void) => void }) => T;
+```
+
+Adapts a `Disposable` factory into a Vitest fixture that disposes the value when its scope ends.
+
+```ts
+import { createTempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
+import { makeFixture } from '@williamthorsen/toolbelt.vitest/candidate';
+import { expect, test } from 'vitest';
+
+const it = test.extend('tree', { scope: 'file' }, makeFixture(() => createTempTree({ 'src/main.ts': 'export {};\n' })));
+
+it('resolves a path within the tree', ({ tree }) => {
+  expect(tree.resolve('src/main.ts')).toBe(`${tree.dir}/src/main.ts`);
+});
+```
+
+The instance arrives as a typed test parameter, so a suite binding one needs no `let`, no non-null assertion, and no `onCleanup` call of its own. Anything satisfying `Disposable` works, including `captureStdio` and `silenceConsole`:
+
+```ts
+const it = test
+  .extend('stdio', makeFixture(() => captureStdio({ isTty: false })))
+  .extend('silent', makeFixture(() => silenceConsole(['warn'])));
+```
+
+Scope belongs to `test.extend` rather than to the adapter, so `test`, `file`, and `worker` all work through it. A fixture is built only when a test names it, which is what keeps a temporary directory from being created for tests that never touch one. `{ auto: true }` opts out of that laziness, for a fixture such as a console silencer that should apply whether or not a test names it.
+
+### Fixtures that depend on other fixtures
+
+`makeFixture` serves a fixture that depends on no other fixture. Vitest discovers a fixture's dependencies by parsing the fixture function's source text for its destructuring pattern, so a fixture naming another one has to write that pattern itself, along with its own disposal:
+
+```ts
+const it = test
+  .extend('tree', { scope: 'file' }, makeFixture(() => createTempTree({ 'src/main.ts': 'export {};\n' })))
+  .extend('project', ({ tree }, { onCleanup }) => {
+    const project = openProject(tree.dir); // a Disposable of the consumer's own
+    onCleanup(() => project[Symbol.dispose]());
+    return project;
+  });
+```
+
+Passing a wrapper that takes the context opaquely fails collection with `FixtureParseError`, naming the offending parameter.
 
 ## `silenceConsole`
 
