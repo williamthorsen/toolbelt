@@ -12,7 +12,7 @@ pnpm add @williamthorsen/toolbelt.filesystem
 
 ## Runtime requirements
 
-`createTempTree`, `findDirectoryChainMatch`, `listDirectoryChainMatches`, `loadConfigCascade`, `reconcileFile`, and `reconcileFileFromFile` reach the filesystem through `node:` builtins, so they run under Node.js 24 or later, Bun, and Deno. They do not run in browsers, nor in edge runtimes that expose no filesystem. `listDirectoryChain` and `replaceFileExtension` touch no filesystem, so an edge runtime that exposes none runs them; they still import `node:path`, which a browser bundle has to supply.
+`createTempTree`, `findDirectoryChainMatch`, `listDirectoryChainMatches`, `loadConfigCascade`, `reconcileFile`, `reconcileFileFromFile`, and `writeAtomic` reach the filesystem through `node:` builtins, so they run under Node.js 24 or later, Bun, and Deno. They do not run in browsers, nor in edge runtimes that expose no filesystem. `listDirectoryChain` and `replaceFileExtension` touch no filesystem, so an edge runtime that exposes none runs them; they still import `node:path`, which a browser bundle has to supply.
 
 `loadConfigCascade` imports each config through the host runtime, so a `.ts` config is subject to whatever that runtime does with TypeScript. Node strips types rather than compiling them, which admits erasable syntax alone: an `enum`, a `namespace`, or a parameter property in a config file fails to parse. A `.mjs` or `.js` config sidesteps the question.
 
@@ -323,3 +323,31 @@ replaceFileExtension('src/main.d.ts', '.js', { oldExtension: '.d.ts' }); // 'src
 Which extension is meant is genuinely ambiguous, since `archive.tar.gz` could reasonably end in `.gz` or in `.tar.gz`, so the caller declares it rather than the function guessing.
 
 Two inputs throw rather than returning a path that would quietly be wrong: a `filePath` ending in a separator, which names a directory rather than a file, and a `filePath` that does not end with a declared `oldExtension`.
+
+## `writeAtomic`
+
+Proposed tier: imported from `@williamthorsen/toolbelt.filesystem/proposed` rather than the package root, and subject to change.
+
+```ts
+writeAtomic(filePath: string, content: string | Uint8Array): Promise<void>;
+```
+
+Writes `content` to `filePath` through a temp file and a rename, so a concurrent reader sees either the previous file or the complete new one, never a partial write:
+
+```ts
+import { writeAtomic } from '@williamthorsen/toolbelt.filesystem/proposed';
+
+await writeAtomic('.agents/manifest.json', `${JSON.stringify(manifest, null, 2)}\n`);
+```
+
+The temp file is a sibling of the target, which is the part a hand-rolled copy most often gets wrong: `rename` is atomic only within one filesystem, so a temp file staged under the system temporary directory fails with `EXDEV` the moment the target lives on another volume. Its name is dot-prefixed and carries a random component, so it stays out of `*` globs and two processes writing the same target do not collide.
+
+Missing parent directories are created, as they are for [`reconcileFile`](#reconcilefile).
+
+An existing target's permission bits are carried onto the replacement. A plain `writeFile` truncates the file in place and so preserves its mode, while a rename replaces the inode and would otherwise reset it to the platform default; without this, swapping a plain write for an atomic one would silently widen a `0o600` file to world-readable. A target that does not exist yet gets the platform default, exactly as a plain write would.
+
+Three behaviors are worth knowing before they surprise you:
+
+- Nothing is fsynced. "Atomic" here means no torn reads, not survives-power-loss: a write this function has returned from can still be lost to a power failure. A durability option is additive if a caller ever needs one.
+- A symlink at `filePath` is replaced by a regular file rather than written through, because the rename replaces the target's directory entry. The link's former target is left untouched.
+- A failure removes the temp file best-effort and rethrows the error that caused it, never the cleanup's own. Where the cleanup also fails, the temp file survives beside the target under its dot-prefixed name ending in `.tmp`, which is where to look for one.
