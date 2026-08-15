@@ -12,7 +12,46 @@ pnpm add @williamthorsen/toolbelt.arrays
 
 Requires Node.js 24 or later.
 
-`getItemAtIndexOrThrow` is candidate tier: imported from `@williamthorsen/toolbelt.arrays/candidate` rather than the package root, and subject to change.
+`findItemOrThrow` and `getItemAtIndexOrThrow` are candidate tier: imported from `@williamthorsen/toolbelt.arrays/candidate` rather than the package root, and subject to change.
+
+## `findItemOrThrow`
+
+```ts
+findItemOrThrow<T>(
+  items: ReadonlyArray<T>,
+  predicate: (item: T, index: number, items: ReadonlyArray<T>) => boolean,
+  options?: { label?: string },
+): T;
+```
+
+Returns the first item satisfying the predicate, or throws if no item does.
+
+```ts
+import { findItemOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
+
+const account = findItemOrThrow(accounts, (candidate) => candidate.isActive, { label: 'active account' });
+```
+
+Its value is narrowing. `Array.prototype.find` returns `T | undefined`, so every call needs a check or an assertion before the value is usable. This collapses that to `T` or throws, so the call site needs neither.
+
+The predicate alone decides the match. An item satisfying it is returned whatever its value: `0`, `''`, `false`, `null`, and even `undefined` all pass through. `Array.prototype.find` cannot express this, because the `undefined` it returns conflates a missing match with a found `undefined`.
+
+The narrowing is therefore bounded by `T`. Searching a `ReadonlyArray<string | undefined>` yields `string | undefined`, since a match proves an item satisfied the predicate, not that the item is defined. Where the elements themselves are nullable and the result must not be, the caller narrows after the call as it would anywhere else.
+
+### When it throws
+
+No matching item throws an `Error`:
+
+```
+Could not find item.
+```
+
+`label` replaces `item` in that message, so a caller names what it was looking for:
+
+```ts
+findItemOrThrow(users, (user) => user.id === id, { label: `user ${id}` });
+// throws Error("Could not find user 42.")
+```
 
 ## `getItemAtIndexOrThrow`
 
