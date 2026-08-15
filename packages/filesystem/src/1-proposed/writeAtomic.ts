@@ -34,7 +34,11 @@ export async function writeAtomic(filePath: string, content: string | Uint8Array
   const tempPath = path.join(dir, `.${path.basename(filePath)}.${randomBytes(8).toString('hex')}.tmp`);
 
   try {
+    // The creation mode is umask-filtered, so `chmod` is what restores the exact bits; creating at the filtered
+    // mode first keeps the interim from ever being wider than the target.
     await fs.writeFile(tempPath, content, { mode });
+    if (mode !== undefined) await fs.chmod(tempPath, mode);
+
     await fs.rename(tempPath, filePath);
   } catch (error: unknown) {
     try {

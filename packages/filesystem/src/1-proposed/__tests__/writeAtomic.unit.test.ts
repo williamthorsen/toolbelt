@@ -69,7 +69,7 @@ describe(writeAtomic, () => {
   });
 
   describe('file mode', () => {
-    it('preserves the permission bits of an existing target', async () => {
+    it('preserves the mode of a private target', async () => {
       using tree = createTempTree({ 'creds.json': '{}\n' });
       const filePath = tree.resolve('creds.json');
       fs.chmodSync(filePath, 0o600);
@@ -77,6 +77,18 @@ describe(writeAtomic, () => {
       await writeAtomic(filePath, '{"token":"secret"}\n');
 
       expect(fs.statSync(filePath).mode & 0o777).toBe(0o600);
+    });
+
+    // The umask clears the group and other bits at creation, so a permissive mode is what exercises the chmod
+    // that restores them.
+    it('preserves the mode of a group-writable target', async () => {
+      using tree = createTempTree({ 'shared.json': '{}\n' });
+      const filePath = tree.resolve('shared.json');
+      fs.chmodSync(filePath, 0o664);
+
+      await writeAtomic(filePath, '{"shared":true}\n');
+
+      expect(fs.statSync(filePath).mode & 0o777).toBe(0o664);
     });
 
     // Compared against a control write rather than a literal, because the default depends on the runner's umask.
@@ -105,7 +117,8 @@ describe(writeAtomic, () => {
   });
 
   describe('failures', () => {
-    // Vacuous under root, which writes into a directory regardless of its permission bits.
+    // Requires a non-root process: root writes regardless of the directory's permission bits, and this then
+    // fails loudly rather than passing.
     it('surfaces a write failure, leaving no temp file', async () => {
       using tree = createTempTree({ 'locked/': '' });
       const dir = tree.resolve('locked');
@@ -136,6 +149,7 @@ describe(writeAtomic, () => {
       await expect(writeAtomic(tree.resolve('target'), 'new\n')).rejects.toThrow(/EISDIR/);
 
       expect(rmSpy).toHaveBeenCalledTimes(1);
+      expect(fs.readdirSync(tree.dir).filter((name) => name.endsWith('.tmp'))).toHaveLength(1);
     });
   });
 });
