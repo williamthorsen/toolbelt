@@ -37,4 +37,12 @@ describe(findOrThrow, () => {
 
     expect(throwingFn).toThrow(new Error('Could not find element.'));
   });
+
+  it('if the matching item is falsy, returns it rather than treating it as not found', () => {
+    expect(findOrThrow([0, 1], (item) => item === 0)).toBe(0);
+  });
+
+  it('if the matching item is undefined, returns it rather than throwing', () => {
+    expect(findOrThrow<string | undefined>(['a', undefined], (item) => item === undefined)).toBeUndefined();
+  });
 });

@@ -1,6 +1,7 @@
 /**
- * Searches for an item in a given list that matches a predicate. If the item is found, it is returned.
- * Otherwise, an error is thrown with a customizable message.
+ * Searches for an item in a given list that matches a predicate. If an item is found, it is
+ * returned: The predicate alone decides the match, so a falsy or `undefined` item that satisfies
+ * it is returned, not skipped. Otherwise, an error is thrown with a customizable message.
  *
  * Generic Types:
  * T - Type of the items in the provided list.
@@ -12,7 +13,7 @@
  * @param options.label - (Optional) A label used in the error message to make it more descriptive.
  *                        Defaults to "item".
  *
- * @returns The found item from the list that matches the predicate.
+ * @returns The first item in the list that matches the predicate.
  *
  * @throws Will throw an error if no item matches the predicate with the message "Could not find [label].".
  *
@@ -30,13 +31,14 @@ export function findOrThrow<T>(
   items: ReadonlyArray<T>,
   predicate: (item: T, index: number, items: ReadonlyArray<T>) => boolean,
   options: FindOrThrowOptions = {},
-): NonNullable<T> {
+): T {
   const { label = 'item' } = options;
-  const foundItem = items.find(predicate);
-  if (!foundItem) {
-    throw new Error(`Could not find ${label}.`);
+  for (const [index, item] of items.entries()) {
+    if (predicate(item, index, items)) {
+      return item;
+    }
   }
-  return foundItem;
+  throw new Error(`Could not find ${label}.`);
 }
 
 interface FindOrThrowOptions {
