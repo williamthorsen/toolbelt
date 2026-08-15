@@ -5,9 +5,6 @@ import { extractWeights, toCumulativeValues } from '../3-candidate/index.ts';
  * If all weights are undefined, returns an array of uniformly cumulative weights.
  * If any weights are defined, undefined weights are treated as 0.
  *
- * @param items The array of items.
- * @param getWeight A function that extracts the weight of each item.
- *
  * @category Array
  * @experimental
  * @stage proposed
