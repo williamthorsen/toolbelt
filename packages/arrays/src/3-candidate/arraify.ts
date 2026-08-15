@@ -1,17 +1,13 @@
 /**
- * If the value is already an array, returns a copy of the array; otherwise, wraps the value in an array and returns it.
- *
- * @template T - The type of the value or the array elements.
- * @param {T | ReadonlyArray<T>} value - The value to be returned or wrapped in an array.
- * @returns {Array<T>} The value wrapped in an array or the original array.
- *
- * @example
- * arraify(5); // [5]
- * arraify([1, 2, 3]); // [1, 2, 3]
+ * Returns a copy of the value if it is already an array; otherwise wraps it in an array.
  *
  * @category Array
  * @experimental
  * @stage candidate
+ *
+ * @example
+ * arraify(5); // [5]
+ * arraify([1, 2, 3]); // [1, 2, 3]
  */
 export function arraify<T>(value: T | ReadonlyArray<T>): T[] {
   // eslint-disable-next-line unicorn/no-instanceof-builtins
