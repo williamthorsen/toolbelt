@@ -69,4 +69,10 @@ describe(getItemAtIndexOrThrow, () => {
 
     expect(throwingFn).toThrow(new TypeError('Index must be a safe integer, but received Infinity.'));
   });
+
+  it('if the index is an integer above the safe range, throws a TypeError', () => {
+    const throwingFn = () => getItemAtIndexOrThrow(['a'], Number.MAX_SAFE_INTEGER + 1);
+
+    expect(throwingFn).toThrow(new TypeError('Index must be a safe integer, but received 9007199254740992.'));
+  });
 });

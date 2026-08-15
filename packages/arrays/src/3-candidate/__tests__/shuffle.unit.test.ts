@@ -28,6 +28,15 @@ describe(shuffle, () => {
     expect(shuffled).toContain(2);
     expect(shuffled).toContain(3);
   });
+
+  it('if an item is undefined, returns a shuffled array rather than throwing', () => {
+    const shuffled = shuffle(['a', undefined, 'c']);
+
+    expect(shuffled).toHaveLength(3);
+    expect(shuffled).toContain('a');
+    expect(shuffled).toContain(undefined);
+    expect(shuffled).toContain('c');
+  });
 });
 
 describe(shuffleInPlace, () => {

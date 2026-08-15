@@ -25,11 +25,11 @@ Returns the item at the index, or throws if the array has no item there.
 ```ts
 import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 
-const [first] = parseRow(line);
-const label = getItemAtIndexOrThrow(columns, first.columnIndex);
+const fields = parseRow(line);
+const label = getItemAtIndexOrThrow(fields, labelColumnIndex);
 ```
 
-Its value is narrowing. Under `noUncheckedIndexedAccess`, indexing an array yields `T | undefined`, so every read needs a check or an assertion before the value is usable. This collapses that to `T` or throws, without asserting.
+Its value is narrowing. Under `noUncheckedIndexedAccess`, indexing an array yields `T | undefined`, so every read needs a check or an assertion before the value is usable. This collapses that to `T` or throws, so the call site needs neither.
 
 The index must be non-negative. A negative index throws rather than resolving from the end as `Array.prototype.at` would: The function exists to make a violated index invariant loud, and silently reading from the end would turn an off-by-one into a wrong answer. A caller who wants the last item names it:
 
