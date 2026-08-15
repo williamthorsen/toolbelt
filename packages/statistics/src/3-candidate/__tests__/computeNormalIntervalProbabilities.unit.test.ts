@@ -1,4 +1,4 @@
-import { getAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
+import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 import { describe, expect, it } from 'vitest';
 
 import { computeNormalIntervalProbabilities } from '../computeNormalIntervalProbabilities.ts';
@@ -11,15 +11,15 @@ describe(computeNormalIntervalProbabilities, () => {
   it('returns a symmetrical array of probabilities when nIntervals is odd', () => {
     const { additive } = computeNormalIntervalProbabilities({ mean: 0, standardDeviation: 1, nIntervals: 5 });
 
-    expect(getAtIndexOrThrow(additive, 0)).toBeCloseTo(getAtIndexOrThrow(additive, 4), 4);
-    expect(getAtIndexOrThrow(additive, 1)).toBeCloseTo(getAtIndexOrThrow(additive, 3), 4);
+    expect(getItemAtIndexOrThrow(additive, 0)).toBeCloseTo(getItemAtIndexOrThrow(additive, 4), 4);
+    expect(getItemAtIndexOrThrow(additive, 1)).toBeCloseTo(getItemAtIndexOrThrow(additive, 3), 4);
   });
 
   it('returns a symmetrical array of probabilities when nIntervals is even', () => {
     const { additive } = computeNormalIntervalProbabilities({ mean: 0, standardDeviation: 1, nIntervals: 4 });
 
-    expect(getAtIndexOrThrow(additive, 0)).toBeCloseTo(getAtIndexOrThrow(additive, 3), 4);
-    expect(getAtIndexOrThrow(additive, 1)).toBeCloseTo(getAtIndexOrThrow(additive, 2), 4);
+    expect(getItemAtIndexOrThrow(additive, 0)).toBeCloseTo(getItemAtIndexOrThrow(additive, 3), 4);
+    expect(getItemAtIndexOrThrow(additive, 1)).toBeCloseTo(getItemAtIndexOrThrow(additive, 2), 4);
   });
 
   it('returns a cumulative probability of approximately 1', () => {
@@ -30,7 +30,7 @@ describe(computeNormalIntervalProbabilities, () => {
       nIntervals,
     });
 
-    expect(getAtIndexOrThrow(cumulative, nIntervals - 1)).toBeCloseTo(1, 4);
+    expect(getItemAtIndexOrThrow(cumulative, nIntervals - 1)).toBeCloseTo(1, 4);
     expect(sum(additive)).toBeCloseTo(1, 4);
   });
 
@@ -41,8 +41,8 @@ describe(computeNormalIntervalProbabilities, () => {
       nIntervals: 1,
     });
 
-    expect(getAtIndexOrThrow(additive, 0)).toBeCloseTo(1, 4);
-    expect(getAtIndexOrThrow(cumulative, 0)).toBeCloseTo(1, 4);
+    expect(getItemAtIndexOrThrow(additive, 0)).toBeCloseTo(1, 4);
+    expect(getItemAtIndexOrThrow(cumulative, 0)).toBeCloseTo(1, 4);
   });
 
   it('returns the expected probabilities for a unit standard deviation', () => {

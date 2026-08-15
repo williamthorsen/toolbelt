@@ -1,4 +1,4 @@
-import { getAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
+import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 
 import type { ValidationResult } from '../types/common.types.ts';
 
@@ -66,7 +66,7 @@ export function validateDelimiters(text: string, params: Params): ValidationResu
   })();
 
   if (!validationResult.isValid && params.throwOnError) {
-    throw new Error(getAtIndexOrThrow(validationResult.errors, 0).message);
+    throw new Error(getItemAtIndexOrThrow(validationResult.errors, 0).message);
   }
 
   return validationResult;

@@ -56,4 +56,8 @@ describe(pickItem, () => {
 
     expect(results).toStrictEqual(snapshot);
   });
+
+  it('if the drawn item is undefined, returns it rather than throwing', () => {
+    expect(pickItem<string | undefined>([undefined, undefined])).toBeUndefined();
+  });
 });

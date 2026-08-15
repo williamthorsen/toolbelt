@@ -1,4 +1,4 @@
-import { getAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
+import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 import { describe, expect, it } from 'vitest';
 
 import { computeNormalIntervalProbabilities } from '../computeNormalIntervalProbabilities.ts';
@@ -28,7 +28,9 @@ describe(findDistributionByIntervalProbability, () => {
 
       expect(converged).toBe(true);
       expect(Math.abs(standardDeviation - expectedSd)).toBeLessThan(tolerance);
-      expect(Math.abs(getAtIndexOrThrow(intervalProbabilities.additive, 0) / probability - 1)).toBeLessThan(0.000_1);
+      expect(Math.abs(getItemAtIndexOrThrow(intervalProbabilities.additive, 0) / probability - 1)).toBeLessThan(
+        0.000_1,
+      );
       expect(intervalProbabilities).toStrictEqual(
         computeNormalIntervalProbabilities({ nIntervals, standardDeviation }),
       );
@@ -141,7 +143,7 @@ describe(findDistributionByIntervalProbability, () => {
       probability: 0.05,
     });
 
-    expect(getAtIndexOrThrow(intervalProbabilities.additive, 0) / 0.05 - 1).toBeCloseTo(divergenceFromTarget, 15);
+    expect(getItemAtIndexOrThrow(intervalProbabilities.additive, 0) / 0.05 - 1).toBeCloseTo(divergenceFromTarget, 15);
     expect(intervalProbabilities).toStrictEqual(
       computeNormalIntervalProbabilities({ nIntervals: 5, standardDeviation }),
     );

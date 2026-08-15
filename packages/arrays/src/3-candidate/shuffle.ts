@@ -1,6 +1,6 @@
 import { pickInteger, type Seed, SeededRng } from '@williamthorsen/toolbelt.numbers/candidate';
 
-import { getAtIndexOrThrow } from './getAtIndexOrThrow.ts';
+import { getItemAtIndexOrThrow } from './getItemAtIndexOrThrow.ts';
 
 /**
  * Returns a new array with the items shuffled.
@@ -29,8 +29,8 @@ export function shuffleInPlace(items: unknown[], options: Options = {}): void {
   // Fisher-Yates: walk backward, swapping each item with a randomly chosen item at or before it.
   for (let i = items.length - 1; i > 0; i--) {
     const j = pickInteger({ max: i, seed });
-    const swapped = getAtIndexOrThrow(items, i);
-    items[i] = getAtIndexOrThrow(items, j);
+    const swapped = getItemAtIndexOrThrow(items, i);
+    items[i] = getItemAtIndexOrThrow(items, j);
     items[j] = swapped;
   }
 }

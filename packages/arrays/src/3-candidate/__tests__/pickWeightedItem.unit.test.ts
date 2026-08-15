@@ -77,4 +77,8 @@ describe(pickWeightedItem, () => {
 
     expect(results).toStrictEqual(snapshot);
   });
+
+  it('if the drawn item is undefined, returns it rather than throwing', () => {
+    expect(pickWeightedItem<string | undefined>([undefined, undefined], [1, 1])()).toBeUndefined();
+  });
 });

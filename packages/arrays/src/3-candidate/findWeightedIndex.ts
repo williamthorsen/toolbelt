@@ -1,4 +1,4 @@
-import { getAtIndexOrThrow } from './getAtIndexOrThrow.ts';
+import { getItemAtIndexOrThrow } from './getItemAtIndexOrThrow.ts';
 
 /**
  * Returns the index of the first cumulative weight that is greater than or equal to the target weight.
@@ -24,7 +24,7 @@ export function findWeightedIndex(cumulativeWeights: ReadonlyArray<number>, targ
 
   // If performance ever becomes a concern, replace this sequential search with a binary search.
   for (let i = 0; i < cumulativeWeights.length; i++) {
-    if (targetWeight <= getAtIndexOrThrow(cumulativeWeights, i)) {
+    if (targetWeight <= getItemAtIndexOrThrow(cumulativeWeights, i)) {
       return i;
     }
   }

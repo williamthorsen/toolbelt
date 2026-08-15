@@ -1,6 +1,6 @@
 import type { Seed } from '@williamthorsen/toolbelt.numbers/candidate';
 
-import { getAtIndexOrThrow } from './getAtIndexOrThrow.ts';
+import { getItemAtIndexOrThrow } from './getItemAtIndexOrThrow.ts';
 import { assertValidCumulativeWeights, pickWeightedIndex } from './pickWeightedIndex.ts';
 import { toCumulativeValues } from './toCumulativeValues.ts';
 
@@ -23,7 +23,7 @@ export function pickWeightedItem<T>(
 
   return function pickItem(options: PickWeightedItemOptions = {}): T {
     const index = pickWeightedIndex(cumulativeWeights, options);
-    return getAtIndexOrThrow(items, index);
+    return getItemAtIndexOrThrow(items, index);
   };
 }
 

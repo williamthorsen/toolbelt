@@ -1,4 +1,4 @@
-import { getAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
+import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 
 import { assertFinite } from '../internal/assertFinite.ts';
 import { assertPositiveInteger } from '../internal/assertPositiveInteger.ts';
@@ -59,7 +59,7 @@ function toNormalProbabilities(params: WindowParams): number[] {
 
   const weights: number[] = [];
   for (let i = 1; i < cumulativeWeights.length; i++) {
-    weights.push(getAtIndexOrThrow(cumulativeWeights, i) - getAtIndexOrThrow(cumulativeWeights, i - 1));
+    weights.push(getItemAtIndexOrThrow(cumulativeWeights, i) - getItemAtIndexOrThrow(cumulativeWeights, i - 1));
   }
 
   return toProbabilitiesFromWeights(weights);
