@@ -1,4 +1,5 @@
 export { capitalize } from './capitalize.ts';
+export { type Dedent, dedent, type DedentOptions, type DedentValue } from './dedent.ts';
 export {
   interpolate,
   type InterpolateOptions,
@@ -12,6 +13,6 @@ export { obfuscate } from './obfuscate.ts';
 export { pluralize, pluralizeWithCount } from './pluralize.ts';
 export { slugify } from './slugify.ts';
 export { toLowerCase, toUpperCase, trim, trimEnd, trimStart } from './string-prototype-wrappers.ts';
+export { stripCommonIndent } from './stripCommonIndent.ts';
 export { toCamelCase } from './toCamelCase.ts';
-export { unindent } from './unindent.ts';
 export { condenseWhitespace, removeWhitespace, trimWhitespace } from './whitespace-functions.ts';
