@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
-import { dedent } from '../dedent.ts';
+import { dedent, type DedentValue } from '../dedent.ts';
 
 describe(dedent, () => {
   it('discards the opening line and a blank closing line', () => {
@@ -25,6 +25,23 @@ describe(dedent, () => {
     `).toBe('indent 6\n  indent 8\nindent 6');
   });
 
+  it('strips nothing when a content line starts at column zero, rather than throwing', () => {
+    expect(
+      // eslint-disable-next-line unicorn/template-indent -- the flush-left line is the case under test; indenting it would remove the column-zero line the escape hatch turns on.
+      dedent`
+alpha
+  beta
+      `,
+    ).toBe('alpha\n  beta');
+  });
+
+  it('keeps a trailing newline when a blank line precedes the closing backtick', () => {
+    expect(dedent`
+      alpha
+
+    `).toBe('alpha\n');
+  });
+
   it('returns only the line breaks when every line is blank', () => {
     expect(dedent`
 
@@ -36,10 +53,19 @@ describe(dedent, () => {
     expect(() => dedent`not empty`).toThrow(/first line/);
   });
 
-  it('accepts an opening line of invisible trailing whitespace', () => {
+  it('accepts an opening line carrying trailing whitespace', () => {
+    // Built by hand because `.editorconfig` and the formatter strip trailing whitespace from source,
+    // so this case cannot be written as a template literal.
+    const source = '   \n      alpha\n    ';
+    const templateStrings = Object.assign([source], { raw: [source] });
+
+    expect(dedent(templateStrings)).toBe('alpha');
+  });
+
+  it('preserves an escaped backtick, which relies on reading the cooked strings', () => {
     expect(dedent`
-      alpha
-    `).toBe('alpha');
+      run \`command\`
+    `).toBe('run `command`');
   });
 
   describe('defect regressions', () => {
@@ -79,10 +105,17 @@ describe(dedent, () => {
       ).toThrow(/share no common indentation/);
     });
 
-    it('E: preserves an escaped backtick, which relies on cooked strings', () => {
-      expect(dedent`
-        run \`command\`
-      `).toBe('run `command`');
+    // D and E are compile-time rejections, so their regression tests are type assertions: widening
+    // `DedentValue` would restore the runtime coercions without failing a runtime assertion.
+    it('D: rejects a nullish value, which coerced to the empty string', () => {
+      expectTypeOf<null>().not.toExtend<DedentValue>();
+      expectTypeOf<undefined>().not.toExtend<DedentValue>();
+      expectTypeOf(dedent).parameter(1).toEqualTypeOf<DedentValue>();
+    });
+
+    it('E: rejects an object, which coerced to "[object Object]"', () => {
+      expectTypeOf<{ a: number }>().not.toExtend<DedentValue>();
+      expectTypeOf<Date>().not.toExtend<DedentValue>();
     });
   });
 

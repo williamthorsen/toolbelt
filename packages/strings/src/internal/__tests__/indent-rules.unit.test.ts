@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { findCommonIndent, findLineIndent } from '../findCommonIndent.ts';
+import { findCommonIndent, findLineIndent, isBlankText } from '../indent-rules.ts';
 
 describe(findCommonIndent, () => {
   it('returns the shared indent when every line agrees', () => {
@@ -39,5 +39,15 @@ describe(findLineIndent, () => {
 
   it('stops at the first character that is neither tab nor space', () => {
     expect(findLineIndent('  \u{A0}  alpha')).toBe('  ');
+  });
+});
+
+describe(isBlankText, () => {
+  it.each(['', ' ', '\t', ' \t '])('reports %j as blank', (text) => {
+    expect(isBlankText(text)).toBe(true);
+  });
+
+  it.each(['alpha', '  alpha', '\u{A0}', '\u{FEFF}', '\u{3000}'])('reports %j as content', (text) => {
+    expect(isBlankText(text)).toBe(false);
   });
 });

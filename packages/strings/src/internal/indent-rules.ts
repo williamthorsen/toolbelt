@@ -3,6 +3,10 @@
 // were layout rather than content.
 const INDENT_PATTERN = /^[\t ]*/;
 
+// The complement of `INDENT_PATTERN`, so a line of non-breaking spaces counts as content rather than
+// as blank layout.
+const BLANK_TEXT_PATTERN = /^[\t ]*$/;
+
 /**
  * Returns the longest indent shared by every line, compared character by character rather than by
  * width, so that a tab and a run of spaces never appear interchangeable. Lines that should not
@@ -29,6 +33,15 @@ export function findCommonIndent(lines: ReadonlyArray<string>): string {
  */
 export function findLineIndent(line: string): string {
   return INDENT_PATTERN.exec(line)?.[0] ?? '';
+}
+
+/**
+ * Reports whether text holds nothing but indentation, and so contributes no content to measure.
+ *
+ * @internal
+ */
+export function isBlankText(text: string): boolean {
+  return BLANK_TEXT_PATTERN.test(text);
 }
 
 // region | Helpers

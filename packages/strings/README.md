@@ -18,7 +18,7 @@ Requires Node.js 24 or later.
 
 ```ts
 dedent`...`;
-dedent.withOptions(options?: { valueIndentationStyle?: 'none' | 'line' }): Dedent;
+dedent.withOptions(options: { valueIndentationStyle?: 'none' | 'line' }): Dedent;
 ```
 
 Removes the indentation a multi-line template literal inherits from the source it is written in, so the string a reader sees is the string the program gets.
@@ -35,7 +35,17 @@ function describeNpc() {
 // 'You are assisting the Game Master of a roleplaying game.\nCreate an ordinary, everyday person in a high-fantasy setting.'
 ```
 
-The opening line is discarded, and so is the closing line when it holds nothing but whitespace. A closing line carrying text is kept and dedented along with the rest, so `` dedent`\n  a\n  b` `` and `` dedent`\n  a\n  b\n` `` differ only in the trailing newline.
+The opening line is discarded, and so is the closing line when it holds nothing but whitespace. A closing line carrying text is kept and dedented along with the rest, where `String.dedent` throws.
+
+Dropping the closing line takes with it the terminator that preceded it, so text on the last line comes back without a trailing newline. Where one is wanted, leave a blank line above the closing backtick: a blank line is emptied rather than discarded, and the terminator above it survives.
+
+```ts
+dedent`
+  alpha
+
+`;
+// 'alpha\n'
+```
 
 Relative depth is preserved. What is removed is the longest indentation every content line shares.
 

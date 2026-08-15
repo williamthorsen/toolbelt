@@ -1,7 +1,5 @@
-import { findCommonIndent, findLineIndent } from '../internal/findCommonIndent.ts';
+import { findCommonIndent, findLineIndent, isBlankText } from '../internal/indent-rules.ts';
 import { joinLines, splitLines } from '../internal/text-lines.ts';
-
-const BLANK_LINE_PATTERN = /^[\t ]*$/;
 
 /**
  * Removes the indentation shared by a template literal's lines, discarding the opening line and a
@@ -127,7 +125,7 @@ function indentContinuationLines(text: string, indent: string): string {
  * Reports whether a line holds no interpolation and nothing but whitespace.
  */
 function isBlankLine(line: TemplateLine): boolean {
-  return line.segments.every((segment) => segment.kind === 'literal' && BLANK_LINE_PATTERN.test(segment.text));
+  return line.segments.every((segment) => segment.kind === 'literal' && isBlankText(segment.text));
 }
 
 function renderTemplate(
