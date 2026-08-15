@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## 5.0.0 — 2026-08-15
+
+### Features
+
+- 🚨 **Breaking:** Fix unsound narrowing in `getAtIndexOrThrow` and rename it to `getItemAtIndexOrThrow` (#152)
+
+  Fixes an issue where `getAtIndexOrThrow` could falsely treat an `undefined` return value as satisfying a return type that excluded `undefined`. The function now throws a `RangeError` if the array holds no item at the index and a `TypeError` if the index is not a safe integer. `undefined` is a valid return value if the input array's type allows `undefined` elements. The function is renamed `getItemAtIndexOrThrow`.
+
+  Separately, `findOrThrow` now decides a match by its predicate rather than by the value it found, so an element is not treated as not found merely because it is falsy. Its return type is now `T` rather than `NonNullable<T>`.
+
+  Migration: Consumers of `@williamthorsen/toolbelt.arrays/candidate` import `getItemAtIndexOrThrow` in place of `getAtIndexOrThrow`.
+
+- 🚨 **Breaking:** Rename `findOrThrow` to `findItemOrThrow` and document it (#153)
+
+  Renames `findOrThrow` to `findItemOrThrow` in `@williamthorsen/toolbelt.arrays` for consistency with repo naming conventions.
+
+  Migration: Consumers import `findItemOrThrow` from `@williamthorsen/toolbelt.arrays/candidate`. The signature and behavior are unchanged.
+
 ## 4.0.1 — 2026-08-13
 
 ### Tooling

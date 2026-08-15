@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.5.0",
+    "date": "2026-08-15",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add throwOnProcessExit and a ReadyUp kit reporting hand-rolled exit mocks (#150)",
+            "body": "Adds `throwOnProcessExit` to `@williamthorsen/toolbelt.vitest`'s candidate tier: a `Disposable` that replaces `process.exit` for a scope with an implementation throwing a `ProcessExitError` carrying the exit code, and that exposes the spy for asserting a path did not exit. It always throws, because a mock that returns lets a test assert against a path the process never reaches, with nothing reporting it.\n\nSeparately, the package ships a ReadyUp kit that reports every use of `vi.spyOn(process, 'exit')` in a consuming project's test files, recommending substitution and identifying defects in `process.exit` mocks.",
+            "hash": "5ee282a966f3302da9f144a2fe1b6324c090d334"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.4.0",
     "date": "2026-08-13",
     "sections": [

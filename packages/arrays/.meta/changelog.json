@@ -1,5 +1,29 @@
 [
   {
+    "version": "5.0.0",
+    "date": "2026-08-15",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Fix unsound narrowing in `getAtIndexOrThrow` and rename it to `getItemAtIndexOrThrow` (#152)",
+            "body": "Fixes an issue where `getAtIndexOrThrow` could falsely treat an `undefined` return value as satisfying a return type that excluded `undefined`. The function now throws a `RangeError` if the array holds no item at the index and a `TypeError` if the index is not a safe integer. `undefined` is a valid return value if the input array's type allows `undefined` elements. The function is renamed `getItemAtIndexOrThrow`.\n\nSeparately, `findOrThrow` now decides a match by its predicate rather than by the value it found, so an element is not treated as not found merely because it is falsy. Its return type is now `T` rather than `NonNullable<T>`.\n\nMigration: Consumers of `@williamthorsen/toolbelt.arrays/candidate` import `getItemAtIndexOrThrow` in place of `getAtIndexOrThrow`.",
+            "breaking": true,
+            "hash": "3973100b016a4cb3a4ac890be529d8a7a3256b6c"
+          },
+          {
+            "description": "Rename `findOrThrow` to `findItemOrThrow` and document it (#153)",
+            "body": "Renames `findOrThrow` to `findItemOrThrow` in `@williamthorsen/toolbelt.arrays` for consistency with repo naming conventions.\n\nMigration: Consumers import `findItemOrThrow` from `@williamthorsen/toolbelt.arrays/candidate`. The signature and behavior are unchanged.",
+            "breaking": true,
+            "hash": "15f7ec6c7f4cfe06f194eb85a699e292b859af8b"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "4.0.1",
     "date": "2026-08-13",
     "sections": [

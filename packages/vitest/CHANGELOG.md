@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.0 — 2026-08-15
+
+### Features
+
+- Add makeFixture for Disposable-valued Vitest fixtures (#149)
+
+  Adds `makeFixture` to `@williamthorsen/toolbelt.vitest` at the candidate tier. It adapts a `Disposable` factory into a Vitest `test.extend` fixture that disposes the value when its scope ends, avoiding the need for a mutable top-level binding, a guard, and a hand-written `onCleanup` call. `createTempTree`, `captureStdio`, and `silenceConsole` each compose with it.
+
+- Add throwOnProcessExit and a ReadyUp kit reporting hand-rolled exit mocks (#150)
+
+  Adds `throwOnProcessExit` to `@williamthorsen/toolbelt.vitest`'s candidate tier: a `Disposable` that replaces `process.exit` for a scope with an implementation throwing a `ProcessExitError` carrying the exit code, and that exposes the spy for asserting a path did not exit. It always throws, because a mock that returns lets a test assert against a path the process never reaches, with nothing reporting it.
+
+  Separately, the package ships a ReadyUp kit that reports every use of `vi.spyOn(process, 'exit')` in a consuming project's test files, recommending substitution and identifying defects in `process.exit` mocks.
+
 ## 0.2.0 — 2026-08-13
 
 ### Features

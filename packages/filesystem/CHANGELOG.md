@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.5.0 — 2026-08-15
+
+### Features
+
+- 🚨 **Breaking:** Promote createTempTree to the candidate tier with a caller-chosen prefix and binary entries (#148)
+
+  Promotes `createTempTree` and `TempTree` to `@williamthorsen/toolbelt.filesystem/candidate`, adding two capabilities as they move: a caller-chosen prefix for the temporary directory's name, and file contents given as bytes. A prefix that would place the tree anywhere but directly inside the system temporary directory is rejected before anything is created.
+
+  Migration: `createTempTree` and `TempTree` are imported from `@williamthorsen/toolbelt.filesystem/candidate` rather than `/proposed`.
+
+- Add `writeAtomic`, an atomic file-write utility (#154)
+
+  Adds `writeAtomic` to `@williamthorsen/toolbelt.filesystem`, exported from the `/proposed` subpath. It stages content in a temp file beside the target and renames over it, so a concurrent reader sees either the previous file or the complete new one.
+
 ## 0.4.1 — 2026-08-13
 
 ### Tooling

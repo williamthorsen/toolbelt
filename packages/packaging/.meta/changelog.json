@@ -1,5 +1,23 @@
 [
   {
+    "version": "0.4.0",
+    "date": "2026-08-15",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Promote createTempTree to the candidate tier with a caller-chosen prefix and binary entries (#148)",
+            "body": "Promotes `createTempTree` and `TempTree` to `@williamthorsen/toolbelt.filesystem/candidate`, adding two capabilities as they move: a caller-chosen prefix for the temporary directory's name, and file contents given as bytes. A prefix that would place the tree anywhere but directly inside the system temporary directory is rejected before anything is created.\n\nMigration: `createTempTree` and `TempTree` are imported from `@williamthorsen/toolbelt.filesystem/candidate` rather than `/proposed`.",
+            "breaking": true,
+            "hash": "f0885cc49b3bcc8ab1585bb690e4ec779593235e"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.3.1",
     "date": "2026-08-13",
     "sections": [
