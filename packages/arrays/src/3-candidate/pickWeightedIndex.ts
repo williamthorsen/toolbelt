@@ -2,7 +2,7 @@ import { assert } from '@williamthorsen/toolbelt.guards';
 import { generateRandom, type Seed } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { findWeightedIndex } from './findWeightedIndex.ts';
-import { getAtIndexOrThrow } from './getAtIndexOrThrow.ts';
+import { getItemAtIndexOrThrow } from './getItemAtIndexOrThrow.ts';
 
 /**
  * Returns a pseudo-random item from the cumulative weights, with odds reflecting the cumulative weights.
@@ -15,7 +15,7 @@ import { getAtIndexOrThrow } from './getAtIndexOrThrow.ts';
 export function pickWeightedIndex(cumulativeWeights: ReadonlyArray<number>, options: PickRandomOptions = {}): Integer {
   assertValidCumulativeWeights(cumulativeWeights);
 
-  const cumulativeWeight = getAtIndexOrThrow(cumulativeWeights, cumulativeWeights.length - 1);
+  const cumulativeWeight = getItemAtIndexOrThrow(cumulativeWeights, cumulativeWeights.length - 1);
   const randomValue = generateRandom(options);
   const targetWeight = randomValue * cumulativeWeight;
 
@@ -48,7 +48,7 @@ export function assertValidCumulativeWeights(weights: ReadonlyArray<number>, nIt
  */
 function assertAscendingWeights(values: ReadonlyArray<number>): void | never {
   for (let i = 1; i < values.length; i++) {
-    if (getAtIndexOrThrow(values, i) < getAtIndexOrThrow(values, i - 1)) {
+    if (getItemAtIndexOrThrow(values, i) < getItemAtIndexOrThrow(values, i - 1)) {
       throw new Error('Cumulative weights must be in ascending order.');
     }
   }

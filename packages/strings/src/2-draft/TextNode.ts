@@ -1,4 +1,4 @@
-import { getAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
+import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 import { IntSeededRng, pickInteger, type Seed } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { segmentByDelimited } from '../internal/segmentByDelimited.ts';
@@ -164,7 +164,7 @@ class TokenNode extends TextNode {
       if (!(child instanceof VariantNode)) continue;
 
       const childIndices = child.pickIndices({ seed });
-      indices.push(childIndices.length === 1 ? getAtIndexOrThrow(childIndices, 0) : childIndices);
+      indices.push(childIndices.length === 1 ? getItemAtIndexOrThrow(childIndices, 0) : childIndices);
     }
 
     // Avoid unnecessary nesting
@@ -213,7 +213,7 @@ export class VariantNode extends TextNode {
 
     const index = pickInteger({ max: this.variants.length - 1, seed });
 
-    const variant = getAtIndexOrThrow(this.variants, index);
+    const variant = getItemAtIndexOrThrow(this.variants, index);
     if (typeof variant === 'string') return variant;
     return variant.pick({ seed });
   }

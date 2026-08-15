@@ -1,4 +1,4 @@
-import { getAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
+import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 import { round } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { assertFinite } from '../internal/assertFinite.ts';
@@ -95,7 +95,7 @@ export function findDistributionByIntervalProbability(params: Params, options: O
 }
 
 function toFirstProbability(intervalProbabilities: IntervalProbabilities): number {
-  return getAtIndexOrThrow(intervalProbabilities.additive, 0);
+  return getItemAtIndexOrThrow(intervalProbabilities.additive, 0);
 }
 
 type IntervalProbabilities = ReturnType<typeof computeNormalIntervalProbabilities>;

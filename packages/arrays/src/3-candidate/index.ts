@@ -2,7 +2,7 @@ export { arraify } from './arraify.ts';
 export { extractWeights } from './extractWeights.ts';
 export { findOrThrow } from './findOrThrow.ts';
 export { findWeightedIndex } from './findWeightedIndex.ts';
-export { getAtIndexOrThrow } from './getAtIndexOrThrow.ts';
+export { getItemAtIndexOrThrow } from './getItemAtIndexOrThrow.ts';
 export { includes } from './includes.ts';
 export { listDuplicateItems } from './listDuplicateItems.ts';
 export { listUniqueItems } from './listUniqueItems.ts';

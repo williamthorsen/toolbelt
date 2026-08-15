@@ -1,4 +1,4 @@
-import { getAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
+import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 
 /**
  * Given an array of addends, returns the running total at each index.
@@ -11,10 +11,10 @@ export function toCumulativeSumsFromAddends(addends: number[]): number[] {
     return addends;
   }
 
-  let sum = getAtIndexOrThrow(addends, 0);
+  let sum = getItemAtIndexOrThrow(addends, 0);
   const cumulativeSums = [sum];
   for (let i = 1; i < addends.length; i++) {
-    sum += getAtIndexOrThrow(addends, i);
+    sum += getItemAtIndexOrThrow(addends, i);
     cumulativeSums.push(sum);
   }
   return cumulativeSums;
