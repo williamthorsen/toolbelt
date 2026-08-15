@@ -1,6 +1,6 @@
 export { arraify } from './arraify.ts';
 export { extractWeights } from './extractWeights.ts';
-export { findOrThrow } from './findOrThrow.ts';
+export { findItemOrThrow } from './findItemOrThrow.ts';
 export { findWeightedIndex } from './findWeightedIndex.ts';
 export { getItemAtIndexOrThrow } from './getItemAtIndexOrThrow.ts';
 export { includes } from './includes.ts';
