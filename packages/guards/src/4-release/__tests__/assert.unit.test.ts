@@ -1,5 +1,4 @@
-import { expectTypeOf } from 'expect-type';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { assert } from '../assert.ts';
 
@@ -37,7 +36,7 @@ describe(assert, () => {
   it('narrows the type if the condition is a type guard', () => {
     function checkType(value: unknown) {
       assert(typeof value === 'string', 'Condition is true');
-      expectTypeOf<string>(value);
+      expectTypeOf(value).toEqualTypeOf<string>();
     }
 
     expect(() => checkType('test')).not.toThrow();

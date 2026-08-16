@@ -1,5 +1,4 @@
-import { expectTypeOf } from 'expect-type';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { enumEntries, enumKeys, enumValues } from '../enum-entries.ts';
 
@@ -36,7 +35,7 @@ describe(enumKeys, () => {
     const actual = enumKeys(StringEnum);
 
     expect(actual).toStrictEqual(expected);
-    expectTypeOf<(keyof typeof StringEnum)[]>(actual);
+    expectTypeOf(actual).toEqualTypeOf<(keyof typeof StringEnum)[]>();
   });
 
   it('returns keys for a numeric enum', () => {
@@ -45,7 +44,7 @@ describe(enumKeys, () => {
     const actual = enumKeys(NumericEnum);
 
     expect(actual).toStrictEqual(expected);
-    expectTypeOf<(keyof typeof NumericEnum)[]>(actual);
+    expectTypeOf(actual).toEqualTypeOf<(keyof typeof NumericEnum)[]>();
   });
 });
 
@@ -56,7 +55,7 @@ describe(enumValues, () => {
     const actual = enumValues(StringEnum);
 
     expect(actual).toStrictEqual(expected);
-    expectTypeOf<(typeof StringEnum)[keyof typeof StringEnum][]>(actual);
+    expectTypeOf(actual).toEqualTypeOf<(typeof StringEnum)[keyof typeof StringEnum][]>();
   });
 
   it('returns values for a numeric enum', () => {
@@ -65,6 +64,6 @@ describe(enumValues, () => {
     const actual = enumValues(NumericEnum);
 
     expect(actual).toStrictEqual(expected);
-    expectTypeOf<(typeof NumericEnum)[keyof typeof NumericEnum][]>(actual);
+    expectTypeOf(actual).toEqualTypeOf<(typeof NumericEnum)[keyof typeof NumericEnum][]>();
   });
 });

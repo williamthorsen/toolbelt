@@ -1,7 +1,6 @@
 import path from 'node:path';
 
-import { expectTypeOf } from 'expect-type';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { listDirectoryChain } from '../listDirectoryChain.ts';
 
@@ -24,7 +23,7 @@ describe(listDirectoryChain, () => {
   it('types the result as non-empty', () => {
     const result = listDirectoryChain(fromRoot('home/dev'));
 
-    expectTypeOf<[string, ...string[]]>(result);
+    expectTypeOf(result).toEqualTypeOf<[string, ...string[]]>();
   });
 
   it('resolves a relative start directory against the working directory', () => {
