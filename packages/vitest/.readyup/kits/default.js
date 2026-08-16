@@ -81,7 +81,7 @@ function countLines(source, offset) {
 }
 
 // src/readiness/summarizeSources.ts
-var EXPORT_NAMES = "makeFixture|silenceConsole|throwOnProcessExit";
+var EXPORT_NAMES = "disposeOnTestFinished|makeFixture|silenceConsole|throwOnProcessExit";
 var SPECIFIER = String.raw`${PACKAGE_NAME.replaceAll(".", String.raw`\.`)}(?:/[\w-]+)*`;
 var CALL = new RegExp(String.raw`\b(?:${EXPORT_NAMES})\s*\(`, "g");
 var PACKAGE_IMPORT = new RegExp(String.raw`(?:from|require\()\s*['"]${SPECIFIER}['"]`);
