@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import path from 'node:path';
 import process from 'node:process';
 
 // Captured before any scope replaces `process.cwd`, which under ESM is before any test body runs.
@@ -27,12 +28,13 @@ export function pointCwdAt(dir: string, options: PointCwdAtOptions = {}): Pointe
   const previousCwd = process.cwd;
   const previousDir = chdir ? nativeCwd() : undefined;
 
-  // The move installs the native implementation, so an enclosing replacement does not report over it.
-  process.cwd = chdir ? nativeCwd : () => resolvedDir;
-
+  // Moved before the property is replaced, so a `chdir` that throws leaves both untouched.
   if (chdir) {
     process.chdir(resolvedDir);
   }
+
+  // The move installs the native implementation, so an enclosing replacement does not report over it.
+  process.cwd = chdir ? nativeCwd : () => resolvedDir;
 
   return {
     dir: resolvedDir,
@@ -68,7 +70,7 @@ export interface PointedCwd extends Disposable {
  * against the directory `process.cwd()` reports, which an enclosing scope may already have pointed elsewhere.
  */
 function resolveDirectory(dir: string): string {
-  const resolvedDir = fs.realpathSync(dir);
+  const resolvedDir = fs.realpathSync(path.resolve(dir));
 
   if (!fs.statSync(resolvedDir).isDirectory()) {
     throw new Error(`Path "${resolvedDir}" is not a directory`);

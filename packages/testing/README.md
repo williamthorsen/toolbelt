@@ -198,7 +198,7 @@ using cwd = pointCwdAt(tree.dir, { chdir: true });
 
 A child spawned with no `cwd` option starts in the moved directory under `chdir` and in the test process's own directory under the default.
 
-The split holds inside the process too. A bare relative path handed to `fs` is resolved by the OS rather than by Node, so `fs.readFileSync('config.json')` reads from the real directory under the replacement and from the pointed one under `chdir`. Code resolving through `process.cwd()` first -- `path.resolve`, `path.join(process.cwd(), …)`, or `fs.realpathSync`, which resolves that way itself -- sees the pointed directory in either mode.
+The split holds inside the process too, on POSIX. A bare relative path handed to `fs` reaches the syscall unchanged, so `fs.readFileSync('config.json')` reads from the real directory under the replacement and from the pointed one under `chdir`. On Windows, Node resolves such a path through `process.cwd()` before the call, so both modes read from the pointed directory. Code resolving through `process.cwd()` first -- `path.resolve`, or `path.join(process.cwd(), …)` -- sees the pointed directory on either platform and in either mode.
 
 `process.chdir` throws `ERR_WORKER_UNSUPPORTED_OPERATION` in a worker thread, so the move needs Vitest's default `pool: 'forks'` and fails under `pool: 'threads'`. The replacement works under either.
 
