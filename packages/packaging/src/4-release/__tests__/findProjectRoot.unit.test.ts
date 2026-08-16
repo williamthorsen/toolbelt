@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { createTempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
+import { pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { DEFAULT_ROOT_MARKERS, findProjectRoot } from '../findProjectRoot.ts';
@@ -47,9 +48,9 @@ describe(findProjectRoot, () => {
 
   it('resolves a relative start directory against the working directory', () => {
     using tree = createTempTree({ '.git/': '', 'src/': '' });
-    const relativeStartDir = path.relative(process.cwd(), tree.resolve('src'));
+    using _cwd = pointCwdAt(tree.dir);
 
-    const result = findProjectRoot(relativeStartDir);
+    const result = findProjectRoot('src');
 
     expect(result.rootDir).toBe(tree.dir);
   });
