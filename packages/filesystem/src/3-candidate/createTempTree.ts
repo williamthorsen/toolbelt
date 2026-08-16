@@ -8,6 +8,10 @@ import path from 'node:path';
  * mapped contents, given as text or as the bytes themselves. A key resolving outside the root is rejected, and a
  * call that throws leaves nothing on disk.
  *
+ * The handle writes into the tree after it is built, through `mkdir`, `symlink`, `write`, and `writeJson`. Each
+ * creates the parent directories it needs, resolves through the containment check `resolve` applies, and returns
+ * the absolute path.
+ *
  * `prefix` names the directory, so a tree outliving a crashed run still says what made it.
  *
  * @example
@@ -30,13 +34,10 @@ export function createTempTree(
 
   try {
     for (const [entry, contents] of Object.entries(entries)) {
-      const entryPath = resolveWithinTree(dir, [entry]);
-
       if (entry.endsWith('/')) {
-        fs.mkdirSync(entryPath, { recursive: true });
+        mkdir(entry);
       } else {
-        fs.mkdirSync(path.dirname(entryPath), { recursive: true });
-        fs.writeFileSync(entryPath, contents);
+        write(entry, contents);
       }
     }
   } catch (error) {
@@ -44,12 +45,55 @@ export function createTempTree(
     throw error;
   }
 
+  function mkdir(entryPath: string): string {
+    const absolutePath = resolveWithinTree(dir, [entryPath]);
+
+    fs.mkdirSync(absolutePath, { recursive: true });
+
+    return absolutePath;
+  }
+
+  function resolve(...segments: string[]): string {
+    return resolveWithinTree(dir, segments);
+  }
+
+  function symlink(linkPath: string, targetPath: string): string {
+    const absoluteLink = resolveWithinTree(dir, [linkPath]);
+    const absoluteTarget = resolveWithinTree(dir, [targetPath]);
+
+    fs.mkdirSync(path.dirname(absoluteLink), { recursive: true });
+    fs.symlinkSync(absoluteTarget, absoluteLink, chooseLinkType(absoluteTarget));
+
+    return absoluteLink;
+  }
+
+  function write(entryPath: string, contents: string | Uint8Array): string {
+    const absolutePath = resolveWithinTree(dir, [entryPath]);
+
+    fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
+    fs.writeFileSync(absolutePath, contents);
+
+    return absolutePath;
+  }
+
+  function writeJson(entryPath: string, value: unknown): string {
+    const json = JSON.stringify(value, null, 2);
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- `stringify` is typed as returning `string`, but yields `undefined` for a value with no representation.
+    if (json === undefined) {
+      throw new Error(`Value of type "${typeof value}" for "${entryPath}" has no JSON representation`);
+    }
+
+    return write(entryPath, `${json}\n`);
+  }
+
   return {
     dir,
-
-    resolve(...segments: string[]): string {
-      return resolveWithinTree(dir, segments);
-    },
+    mkdir,
+    resolve,
+    symlink,
+    write,
+    writeJson,
 
     // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's `Symbol` list omits `dispose`, standard since ES2026.
     [Symbol.dispose](): void {
@@ -67,12 +111,35 @@ export interface TempTree extends Disposable {
   /** Realpath of the tree root, resolved because `os.tmpdir()` is a symlink on macOS. */
   readonly dir: string;
 
+  /** Creates the directory at a tree-relative path, along with its parents, leaving an existing one as it is. */
+  mkdir(entryPath: string): string;
+
   /**
    * Resolves `segments` against the tree root, throwing when the result falls outside it. An absolute segment
    * landing inside the root is returned. The containment test is lexical, so it does not follow a symlink within
    * the tree that points out of it.
    */
   resolve(...segments: string[]): string;
+
+  /**
+   * Links a tree-relative path to a tree-relative target, taking the link first and so inverting `fs.symlinkSync`.
+   * A directory target is linked as a junction, which Windows creates without the elevation a directory symlink
+   * needs and other platforms ignore; every other target, a missing one included, is linked as a file. An occupied
+   * link path raises `EEXIST`.
+   *
+   * The link stores an absolute path, which a junction requires, so reading one back yields a path under the tree
+   * root rather than the relative target a package manager writes.
+   */
+  symlink(linkPath: string, targetPath: string): string;
+
+  /** Writes `contents` at a tree-relative path, replacing an existing file. */
+  write(entryPath: string, contents: string | Uint8Array): string;
+
+  /**
+   * Writes `value` at a tree-relative path as two-space-indented JSON ending in a newline. A value with no JSON
+   * representation -- `undefined`, a function, a symbol -- is refused rather than written.
+   */
+  writeJson(entryPath: string, value: unknown): string;
 }
 
 // region | Helpers
@@ -92,6 +159,14 @@ function assertNamesDirectChild(prefix: string): void {
   if (['', '.', '..'].includes(prefix)) {
     throw new Error(`Temporary-directory prefix "${prefix}" names no new directory`);
   }
+}
+
+/**
+ * Answers with the link type to give a target: `junction` for a directory and `file` for everything else. A target
+ * that does not exist reads as `file`, which is what Node itself falls back to when no type is given.
+ */
+function chooseLinkType(targetPath: string): 'file' | 'junction' {
+  return fs.statSync(targetPath, { throwIfNoEntry: false })?.isDirectory() === true ? 'junction' : 'file';
 }
 
 /** Resolves `segments` against `dir`, rejecting a result that falls outside it. */

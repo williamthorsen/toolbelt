@@ -94,9 +94,8 @@ describe(writeAtomic, () => {
     // Compared against a control write rather than a literal, because the default depends on the runner's umask.
     it('gives a new file the same mode a plain write would', async () => {
       using tree = createTempTree({});
-      const controlPath = tree.resolve('control.json');
+      const controlPath = tree.write('control.json', '{}\n');
       const filePath = tree.resolve('config.json');
-      fs.writeFileSync(controlPath, '{}\n');
 
       await writeAtomic(filePath, '{}\n');
 
@@ -106,8 +105,7 @@ describe(writeAtomic, () => {
 
   it('replaces a symlink at the target instead of writing through it', async () => {
     using tree = createTempTree({ 'real.json': 'real\n' });
-    const linkPath = tree.resolve('link.json');
-    fs.symlinkSync(tree.resolve('real.json'), linkPath);
+    const linkPath = tree.symlink('link.json', 'real.json');
 
     await writeAtomic(linkPath, 'new\n');
 
