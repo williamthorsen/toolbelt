@@ -308,15 +308,19 @@ tree.mkdir('packages/empty');
 
 Each creates the parent directories it needs, resolves through the same containment check as `resolve`, and returns the absolute path of what it wrote. Both of `symlink`'s paths are checked, so an escaping target is refused as well as an escaping link.
 
+They part company on an entry that already exists: `write` replaces it, `mkdir` leaves it and its contents alone, and `symlink` raises `EEXIST`.
+
 `symlink` takes the link first and the target second, inverting `fs.symlinkSync`, so that it reads like the other methods: the path being created leads. The link type is chosen from the target, which is where the one portability difference lives. A directory is linked as a junction, which Windows creates without the elevation a directory symlink needs; every other target, one that does not exist included, is linked as a file. That last case matches what Node falls back to when no type is given, and it leaves the link dangling until the target appears.
 
 ```ts
 using tree = createTempTree({ 'store/kit/package.json': '{ "name": "kit" }' });
 
-tree.symlink('node_modules/kit', 'store/kit'); // a junction, as a pnpm install would leave
+tree.symlink('node_modules/kit', 'store/kit'); // a junction, so Windows needs no elevation
 ```
 
-`writeJson` writes two-space-indented JSON ending in a newline, so a tree outliving a crashed run reads as a real config file would. A fixture needing exact bytes goes through `write` instead.
+The link stores an absolute path, which a junction requires. Code under test that reads a link rather than following it therefore sees a path under the tree root, where a package manager would have written a relative one; a fixture reproducing that shape reaches for `fs.symlinkSync` directly.
+
+`writeJson` writes two-space-indented JSON ending in a newline, so a tree outliving a crashed run reads as a real config file would. A fixture needing exact bytes goes through `write` instead. A value `JSON.stringify` cannot represent -- `undefined`, a function, a symbol -- is refused rather than written, so an optional binding that arrived empty fails at the call that passed it instead of surfacing later as a parse error.
 
 Disposal is idempotent.
 

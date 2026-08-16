@@ -214,6 +214,24 @@ describe('TempTree.symlink', () => {
     expect(fs.existsSync(linkPath)).toBe(false);
   });
 
+  // Read rather than followed, because a junction stores an absolute path and a consumer can depend on that.
+  it('stores the target as an absolute path under the tree root', () => {
+    using tree = createTempTree({ 'store/kit/': '' });
+
+    const linkPath = tree.symlink('node_modules/kit', 'store/kit');
+
+    expect(fs.readlinkSync(linkPath)).toBe(tree.resolve('store/kit'));
+  });
+
+  it('throws on a link path that is already occupied', () => {
+    using tree = createTempTree({ 'real.json': 'real\n' });
+    tree.symlink('link.json', 'real.json');
+
+    const relink = () => tree.symlink('link.json', 'real.json');
+
+    expect(relink).toThrow(/EEXIST/);
+  });
+
   // The link type is the argument Windows reads and every other platform ignores, so a spy is the only way to
   // observe the choice from a POSIX run.
   describe('link type', () => {
@@ -329,5 +347,24 @@ describe('TempTree.writeJson', () => {
     const writeJson = () => tree.writeJson('../escaped.json', { name: 'app' });
 
     expect(writeJson).toThrow(/falls outside the temporary tree/);
+  });
+
+  // An optional binding that arrived empty is the route in, and `unknown` accepts it without complaint.
+  it('throws on an undefined value, writing no file', () => {
+    using tree = createTempTree({});
+
+    const writeJson = () => tree.writeJson('package.json', undefined);
+
+    expect(writeJson).toThrow(/Value of type "undefined" .* has no JSON representation/);
+    expect(fs.existsSync(tree.resolve('package.json'))).toBe(false);
+  });
+
+  it('throws on a function value, writing no file', () => {
+    using tree = createTempTree({});
+
+    const writeJson = () => tree.writeJson('package.json', () => undefined);
+
+    expect(writeJson).toThrow(/Value of type "function" .* has no JSON representation/);
+    expect(fs.existsSync(tree.resolve('package.json'))).toBe(false);
   });
 });

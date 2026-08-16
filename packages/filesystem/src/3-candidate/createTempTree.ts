@@ -77,7 +77,14 @@ export function createTempTree(
   }
 
   function writeJson(entryPath: string, value: unknown): string {
-    return write(entryPath, `${JSON.stringify(value, null, 2)}\n`);
+    const json = JSON.stringify(value, null, 2);
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- `stringify` is typed as returning `string`, but yields `undefined` for a value with no representation.
+    if (json === undefined) {
+      throw new Error(`Value of type "${typeof value}" for "${entryPath}" has no JSON representation`);
+    }
+
+    return write(entryPath, `${json}\n`);
   }
 
   return {
@@ -104,7 +111,7 @@ export interface TempTree extends Disposable {
   /** Realpath of the tree root, resolved because `os.tmpdir()` is a symlink on macOS. */
   readonly dir: string;
 
-  /** Creates the directory at a tree-relative path, along with its parents. */
+  /** Creates the directory at a tree-relative path, along with its parents, leaving an existing one as it is. */
   mkdir(entryPath: string): string;
 
   /**
@@ -117,14 +124,21 @@ export interface TempTree extends Disposable {
   /**
    * Links a tree-relative path to a tree-relative target, taking the link first and so inverting `fs.symlinkSync`.
    * A directory target is linked as a junction, which Windows creates without the elevation a directory symlink
-   * needs and other platforms ignore; every other target, a missing one included, is linked as a file.
+   * needs and other platforms ignore; every other target, a missing one included, is linked as a file. An occupied
+   * link path raises `EEXIST`.
+   *
+   * The link stores an absolute path, which a junction requires, so reading one back yields a path under the tree
+   * root rather than the relative target a package manager writes.
    */
   symlink(linkPath: string, targetPath: string): string;
 
-  /** Writes `contents` at a tree-relative path. */
+  /** Writes `contents` at a tree-relative path, replacing an existing file. */
   write(entryPath: string, contents: string | Uint8Array): string;
 
-  /** Writes `value` at a tree-relative path as two-space-indented JSON ending in a newline. */
+  /**
+   * Writes `value` at a tree-relative path as two-space-indented JSON ending in a newline. A value with no JSON
+   * representation -- `undefined`, a function, a symbol -- is refused rather than written.
+   */
   writeJson(entryPath: string, value: unknown): string;
 }
 
