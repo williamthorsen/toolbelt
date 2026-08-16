@@ -143,6 +143,10 @@ importers:
       '@williamthorsen/toolbelt.filesystem':
         specifier: workspace:*
         version: link:../filesystem
+    devDependencies:
+      '@williamthorsen/toolbelt.testing':
+        specifier: workspace:*
+        version: link:../testing
 
   packages/sets: {}
 
@@ -171,7 +175,11 @@ importers:
         specifier: 'catalog:'
         version: 8.1.0
 
-  packages/testing: {}
+  packages/testing:
+    devDependencies:
+      '@williamthorsen/toolbelt.filesystem':
+        specifier: workspace:*
+        version: link:../filesystem
 
   packages/tools: {}
 

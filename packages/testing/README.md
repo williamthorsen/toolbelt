@@ -12,7 +12,7 @@ pnpm add --save-dev @williamthorsen/toolbelt.testing
 
 Requires Node.js 24 or later. The package declares no dependencies and imports no test-runner API, so it works under Vitest, Jest, and `node:test` alike. A utility that does need the Vitest API lives in `@williamthorsen/toolbelt.vitest` instead.
 
-`captureError` and `captureStdio` are candidate tier: imported from `@williamthorsen/toolbelt.testing/candidate` rather than the package root, and subject to change.
+`captureError`, `captureStdio`, and `pointCwdAt` are candidate tier: imported from `@williamthorsen/toolbelt.testing/candidate` rather than the package root, and subject to change.
 
 ## `captureError`
 
@@ -159,3 +159,71 @@ expect(stdio.stdout).toBe('captured\ncaptured again\n');
 ```
 
 The reverse order holds too: a capture opened inside a silence takes the output for its own scope and hands the console back on exit, with the calls the silence had recorded still intact.
+
+## `pointCwdAt`
+
+```ts
+pointCwdAt(dir: string, options?: PointCwdAtOptions): PointedCwd;
+```
+
+Points `process.cwd()` at a directory for the enclosing scope and restores the prior state when the scope exits.
+
+```ts
+import { createTempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
+import { pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
+
+it('finds the project root from a relative start directory', () => {
+  using tree = createTempTree({ '.git/': '', 'src/': '' });
+  using _cwd = pointCwdAt(tree.dir);
+
+  expect(findProjectRoot('src').rootDir).toBe(tree.dir);
+});
+```
+
+It takes a directory rather than building one, so it works against a temporary tree and a fixture directory checked into the repository alike.
+
+### The two modes
+
+The default replaces `process.cwd` and leaves the process where it is, which satisfies code resolving its paths through `process.cwd()`:
+
+```ts
+using cwd = pointCwdAt(tree.dir);
+```
+
+`chdir` moves the real process, which is what a spawned child inherits and what code asking the OS rather than Node observes:
+
+```ts
+using cwd = pointCwdAt(tree.dir, { chdir: true });
+```
+
+A child spawned with no `cwd` option starts in the moved directory under `chdir` and in the test process's own directory under the default.
+
+The split holds inside the process too, on POSIX. A bare relative path handed to `fs` reaches the syscall unchanged, so `fs.readFileSync('config.json')` reads from the real directory under the replacement and from the pointed one under `chdir`. On Windows, Node resolves such a path through `process.cwd()` before the call, so both modes read from the pointed directory. Code resolving through `process.cwd()` first -- `path.resolve`, or `path.join(process.cwd(), …)` -- sees the pointed directory on either platform and in either mode.
+
+`process.chdir` throws `ERR_WORKER_UNSUPPORTED_OPERATION` in a worker thread, so the move needs Vitest's default `pool: 'forks'` and fails under `pool: 'threads'`. The replacement works under either.
+
+Neither mode touches `process.env.PWD`, because `process.chdir` does not touch it either. Code reading that variable rather than calling `process.cwd()` sees the shell's directory in both modes.
+
+### Resolution and rejection
+
+Both modes resolve the argument through `realpathSync` and reject a path naming no existing directory, so one call reports one directory whichever mode it runs in. Without that, macOS would report `/var/folders/…` under the replacement and `/private/var/folders/…` under the move. The resolved path is what the handle reports as `dir`.
+
+A relative path resolves against the directory `process.cwd()` reports, which an enclosing scope may already have pointed elsewhere.
+
+### Nesting
+
+Each scope restores the value it found, so scopes nest in any combination and in any order:
+
+```ts
+using _outer = pointCwdAt(tree.dir);
+{
+  using _inner = pointCwdAt(tree.resolve('packages/app'), { chdir: true });
+
+  expect(process.cwd()).toBe(tree.resolve('packages/app'));
+}
+expect(process.cwd()).toBe(tree.dir);
+```
+
+A move nested inside a replacement reports its own directory, and its restoration puts the process back where it really was rather than where the enclosing scope claimed.
+
+This is what a spy-based helper cannot offer: `vi.spyOn` hands back the existing spy for a method already spied on, and `restoreMocks: true` restores it between tests, which at fixture scope would silently point a suite back at the real working directory. The swap-and-restore form is immune to both, which is why this utility lives here rather than in `@williamthorsen/toolbelt.vitest`.
