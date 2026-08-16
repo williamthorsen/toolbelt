@@ -12,7 +12,60 @@ pnpm add --save-dev @williamthorsen/toolbelt.vitest
 
 Requires Node.js 24 or later. Vitest is a peer dependency: the package uses whichever Vitest 4 the consuming project already installs.
 
-`makeFixture`, `silenceConsole`, and `throwOnProcessExit` are candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change.
+`disposeOnTestFinished`, `makeFixture`, `silenceConsole`, and `throwOnProcessExit` are candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change.
+
+## `disposeOnTestFinished`
+
+```ts
+disposeOnTestFinished<T extends Disposable>(resource: T): T;
+```
+
+Registers a `Disposable`'s disposal with the current test and returns it unchanged.
+
+```ts
+import { createTempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
+import { disposeOnTestFinished } from '@williamthorsen/toolbelt.vitest/candidate';
+
+function buildSource(files: Record<string, string>, name = 'fixture'): SourceSpec {
+  const tree = disposeOnTestFinished(createTempTree(files, { prefix: `compositor-${name}-` }));
+
+  return { id: name, name, origin: { kind: 'directory', location: tree.dir }, dir: tree.dir };
+}
+
+it('resolves a source directory', () => {
+  const source = buildSource({ 'skills/lint/SKILL.md': 'lint' });
+
+  expect(resolveSource(source).files).toHaveLength(1);
+});
+```
+
+The builder is where this earns its place. It takes per-call arguments, so the resource cannot be built by a no-argument factory; it returns a value derived from the resource rather than the resource itself, so the caller has nothing to bind with `using`; and the tree has to outlive the builder's own scope, so `using` inside the builder would delete it before the test read a byte. Returning the value unchanged is what lets the construction be wrapped in place, leaving the call site with no lifetime code at all.
+
+Making the returned value `Disposable` instead is the alternative, and it distorts the type: a `Catalog` that also deletes temporary directories is the wrong shape, and a builder assembling several trees has several disposals to carry rather than one.
+
+### When to reach for it, and when to reach for `makeFixture`
+
+The two divide by lifetime, not by call site:
+
+- `disposeOnTestFinished` for a resource scoped to one test. It registers against whichever test is running, so it works from the test body and from `beforeEach` or `afterEach` alike.
+- [`makeFixture`](#makefixture) for a resource that outlives one test. Scope belongs to `test.extend` there, which is what reaches `file` and `worker`.
+
+Outside a test entirely -- at module scope, in a `describe` body, or in `beforeAll` or `afterAll` -- there is no test to register against, and Vitest throws `Hook onTestFinished() can only be called inside a test`. A resource wanted at that scope is a fixture, so `makeFixture` is the answer there rather than a workaround here.
+
+### Order of disposal
+
+Several resources registered in one test dispose in reverse registration order, matching how `using` declarations unwind:
+
+```ts
+const tree = disposeOnTestFinished(createTempTree({ 'src/': '' }));
+const cwd = disposeOnTestFinished(pointCwdAt(tree.dir));
+```
+
+The working directory is restored before the directory it points into is removed. That order is `sequence.hooks`' default rather than a guarantee: a project setting it to `list` runs the registrations forward and inverts every such pairing.
+
+### What is not disposed
+
+A test cancelled by a dynamic `ctx.skip()` does not run its `onTestFinished` hooks, so a resource built before that call is left behind. Build after the skip, or bind with `using` where the resource lives and dies inside the test anyway.
 
 ## `makeFixture`
 
@@ -57,6 +110,8 @@ it('falls back to defaults', () => {
   expect(silent.warn).toHaveBeenCalled();
 });
 ```
+
+`using` covers that case only where the resource dies with the block that built it. One built inside a test by a helper that returns something else takes [`disposeOnTestFinished`](#disposeontestfinished) instead.
 
 For a resource shared across tests, the alternative is a hook-registered handle: an object bound once at module level that registers its own `beforeEach` and `afterEach` and forwards every read to whichever instance the current scope built. A handle reads better, because a test names nothing in its signature:
 
