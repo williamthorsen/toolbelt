@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.6.0 — 2026-08-16
+
+### Features
+
+- Add mkdir, symlink, write, and writeJson methods to `TempTree` (#176)
+
+  Adds four write methods to `TempTree` in `@williamthorsen/toolbelt.filesystem`: `mkdir`, `symlink`, `write`, and `writeJson`. Each takes a tree-relative path, creates the parent directories it needs, resolves through the same containment check `resolve` applies, and returns the absolute path, so a suite writing into a built temporary tree reaches it through the handle rather than through `node:fs`. `symlink` accepts a link path and a target, and picks the link type from the target.
+
+### Tests
+
+- Drop expect-type in favor of expectTypeOf (#175)
+
+  Replaces all imports of `expectTypeOf` from `expect-type` with the same import from `vitest`. Previously there had been imports from both libraries. `expect-type` is removed as a dependency.
+
 ## 0.5.0 — 2026-08-15
 
 ### Features

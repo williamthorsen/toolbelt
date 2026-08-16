@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.5.0 — 2026-08-16
+
+### Features
+
+- Add `pointCwdAt`, a scope-bound cwd pointer (#178)
+
+  Adds `pointCwdAt` to `@williamthorsen/toolbelt.testing/candidate`, a `Disposable` that points `process.cwd()` at a directory for the enclosing scope and restores the prior state when the scope exits.
+
+  Restoration is by saved value rather than by spy, so scopes nest in any combination and neither `restoreMocks: true` nor a stray `vi.restoreAllMocks()` can point a suite back at the real working directory.
+
 ## 0.4.0 — 2026-08-15
 
 ### Features

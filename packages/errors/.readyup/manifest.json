@@ -6,12 +6,60 @@
         "adoption"
       ],
       "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.errors",
+      "esbuildVersion": "0.28.2",
+      "inputs": [
+        {
+          "hash": "44c4028b",
+          "kind": "module",
+          "path": "kits/default.ts"
+        },
+        {
+          "hash": "9150c9b8",
+          "kind": "module",
+          "path": "../src/readiness/buildKindReport.ts"
+        },
+        {
+          "hash": "373103e6",
+          "kind": "module",
+          "path": "../src/readiness/classifySite.ts"
+        },
+        {
+          "hash": "1d31c9f9",
+          "kind": "module",
+          "path": "../src/readiness/exemptions.ts"
+        },
+        {
+          "hash": "d2b64462",
+          "kind": "module",
+          "path": "../src/readiness/listDescribeClones.ts"
+        },
+        {
+          "hash": "65900255",
+          "kind": "module",
+          "path": "../src/readiness/listErrorSites.ts"
+        },
+        {
+          "hash": "d3f99317",
+          "kind": "module",
+          "path": "../src/readiness/listSourceFiles.ts"
+        },
+        {
+          "hash": "0681de08",
+          "kind": "module",
+          "path": "../src/readiness/packageName.ts"
+        },
+        {
+          "hash": "01ddaf95",
+          "kind": "module",
+          "path": "../src/readiness/summarizeSources.ts"
+        }
+      ],
       "name": "default",
       "path": "kits/default.js",
-      "readyupVersion": "0.27.0",
+      "readyupVersion": "0.28.0",
       "source": "kits/default.ts",
       "sourceHash": "44c4028b",
-      "targetHash": "65eaec63"
+      "targetHash": "20998ce5"
     }
   ]
 }

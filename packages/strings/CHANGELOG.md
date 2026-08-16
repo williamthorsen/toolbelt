@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## 6.0.0 — 2026-08-16
+
+### Features
+
+- 🚨 **Breaking:** Rename `unindent` to `dedent` and correct its indentation semantics (#171)
+
+  Renames `unindent` to `dedent` in `@williamthorsen/toolbelt.strings/candidate` and corrects five defects in how it removes indentation. Adds `stripCommonIndent`, the same rules as a plain function, for text that arrives at runtime rather than being written in source.
+
+  Migration: `unindent` no longer exists, and nullish and object values are now compile errors. Both exports stay at candidate tier.
+
+### Tests
+
+- Drop expect-type in favor of expectTypeOf (#175)
+
+  Replaces all imports of `expectTypeOf` from `expect-type` with the same import from `vitest`. Previously there had been imports from both libraries. `expect-type` is removed as a dependency.
+
 ## 5.0.0 — 2026-08-15
 
 ### Features

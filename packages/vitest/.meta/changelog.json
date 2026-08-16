@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.4.0",
+    "date": "2026-08-16",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add `disposeOnTestFinished` for a `Disposable` built inside a test (#180)",
+            "body": "Adds `disposeOnTestFinished` to `@williamthorsen/toolbelt.vitest/candidate`. The new function registers a `Disposable`'s disposal with the running test and returns the resource. A builder taking per-call arguments can wrap its construction in place and hand back a value derived from the resource, leaving the call site with no lifetime code. `makeFixture` remains the function to use for a resource that outlives one test.",
+            "hash": "0263b252d1280d1017f74870c55c4e5e6ec39152"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.3.0",
     "date": "2026-08-15",
     "sections": [

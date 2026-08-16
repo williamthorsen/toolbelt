@@ -1,5 +1,34 @@
 [
   {
+    "version": "6.0.0",
+    "date": "2026-08-16",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Rename `unindent` to `dedent` and correct its indentation semantics (#171)",
+            "body": "Renames `unindent` to `dedent` in `@williamthorsen/toolbelt.strings/candidate` and corrects five defects in how it removes indentation. Adds `stripCommonIndent`, the same rules as a plain function, for text that arrives at runtime rather than being written in source.\n\nMigration: `unindent` no longer exists, and nullish and object values are now compile errors. Both exports stay at candidate tier.",
+            "breaking": true,
+            "hash": "c9f2c02dff90e25a9d38d507aeef22c8764f3177"
+          }
+        ]
+      },
+      {
+        "title": "Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Drop expect-type in favor of expectTypeOf (#175)",
+            "body": "Replaces all imports of `expectTypeOf` from `expect-type` with the same import from `vitest`. Previously there had been imports from both libraries. `expect-type` is removed as a dependency.",
+            "hash": "1fc6c7e8bff6f25473c58bc80c37bb365df79d45"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "5.0.0",
     "date": "2026-08-15",
     "sections": [

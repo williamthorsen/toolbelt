@@ -1,5 +1,22 @@
 [
   {
+    "version": "3.1.13",
+    "date": "2026-08-16",
+    "sections": [
+      {
+        "title": "Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Drop expect-type in favor of expectTypeOf (#175)",
+            "body": "Replaces all imports of `expectTypeOf` from `expect-type` with the same import from `vitest`. Previously there had been imports from both libraries. `expect-type` is removed as a dependency.",
+            "hash": "1fc6c7e8bff6f25473c58bc80c37bb365df79d45"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "3.1.12",
     "date": "2026-08-15",
     "sections": [

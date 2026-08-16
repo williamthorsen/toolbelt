@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.2.14 — 2026-08-16
+
+### Tests
+
+- Drop expect-type in favor of expectTypeOf (#175)
+
+  Replaces all imports of `expectTypeOf` from `expect-type` with the same import from `vitest`. Previously there had been imports from both libraries. `expect-type` is removed as a dependency.
+
 ## 3.2.13 — 2026-08-13
 
 ### Tooling
