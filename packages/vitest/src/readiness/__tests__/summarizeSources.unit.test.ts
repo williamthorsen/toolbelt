@@ -25,4 +25,12 @@ using _exit = throwOnProcessExit();`;
   it('counts nothing where the name is the project’s own', () => {
     expect(countAdoptedCalls('using _exit = throwOnProcessExit();')).toBe(0);
   });
+
+  it('counts every export the package publishes', () => {
+    const text = `import { disposeOnTestFinished, makeFixture, silenceConsole } from '@williamthorsen/toolbelt.vitest/candidate';
+const tree = disposeOnTestFinished(createTempTree({}));
+const it = test.extend('silent', makeFixture(() => silenceConsole(['warn'])));`;
+
+    expect(countAdoptedCalls(text)).toBe(3);
+  });
 });

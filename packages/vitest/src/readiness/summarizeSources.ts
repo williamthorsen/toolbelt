@@ -17,7 +17,7 @@ export interface SourceText {
   text: string;
 }
 
-const EXPORT_NAMES = 'makeFixture|silenceConsole|throwOnProcessExit';
+const EXPORT_NAMES = 'disposeOnTestFinished|makeFixture|silenceConsole|throwOnProcessExit';
 const SPECIFIER = String.raw`${PACKAGE_NAME.replaceAll('.', String.raw`\.`)}(?:/[\w-]+)*`;
 const CALL = new RegExp(String.raw`\b(?:${EXPORT_NAMES})\s*\(`, 'g');
 const PACKAGE_IMPORT = new RegExp(String.raw`(?:from|require\()\s*['"]${SPECIFIER}['"]`);
