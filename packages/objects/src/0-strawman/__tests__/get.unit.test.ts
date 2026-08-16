@@ -1,7 +1,6 @@
 /* eslint @typescript-eslint/no-confusing-void-expression: off */
 
-import { expectTypeOf } from 'expect-type';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { get } from '../get.ts';
 
@@ -44,7 +43,7 @@ describe(get, () => {
 
     const actual = get(key)(obj);
 
-    expectTypeOf<string>(actual.a);
+    expectTypeOf(actual.a).toEqualTypeOf<string>();
     expect(actual).toStrictEqual(expected);
   });
 

@@ -1,5 +1,4 @@
-import { expectTypeOf } from 'expect-type';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { arraify } from '../arraify.ts';
 
@@ -12,7 +11,7 @@ describe(arraify, () => {
 
     expect(output).toStrictEqual(expectedOutput);
     expect(output).not.toBe(input);
-    expectTypeOf<number[]>(output);
+    expectTypeOf(output).toEqualTypeOf<number[]>();
   });
 
   it('if input is not an array, returns that value in an array', () => {
@@ -22,6 +21,6 @@ describe(arraify, () => {
     const output = arraify(input);
 
     expect(output).toStrictEqual(expectedOutput);
-    expectTypeOf<number[]>(output);
+    expectTypeOf(output).toEqualTypeOf<number[]>();
   });
 });

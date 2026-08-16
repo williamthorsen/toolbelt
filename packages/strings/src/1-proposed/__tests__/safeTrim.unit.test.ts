@@ -1,5 +1,4 @@
-import { expectTypeOf } from 'expect-type';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { safeTrim } from '../safeTrim.ts';
 
@@ -38,7 +37,7 @@ describe(safeTrim, () => {
     const actual = safeTrim(input);
 
     expect(actual).toBe(expected);
-    expectTypeOf<number>(actual);
+    expectTypeOf(actual).toEqualTypeOf<number>();
   });
 
   it('returns the input if the input is null', () => {
@@ -48,7 +47,7 @@ describe(safeTrim, () => {
     const actual = safeTrim(input);
 
     expect(actual).toBe(expected);
-    expectTypeOf<null>(actual);
+    expectTypeOf(actual).toEqualTypeOf<null>();
   });
 
   it('returns the input if the input is undefined', () => {
@@ -58,7 +57,7 @@ describe(safeTrim, () => {
     const actual = safeTrim(input);
 
     expect(actual).toBe(expected);
-    expectTypeOf<undefined>(actual);
+    expectTypeOf(actual).toEqualTypeOf<undefined>();
   });
 
   it.each([

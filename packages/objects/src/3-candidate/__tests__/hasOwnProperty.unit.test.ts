@@ -1,5 +1,4 @@
-import { expectTypeOf } from 'expect-type';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { hasOwnProperty } from '../hasOwnProperty.ts';
 
@@ -82,8 +81,8 @@ describe(hasOwnProperty, () => {
       }
       return false;
     }
-    expectTypeOf<number>(fn(nDict));
-    expectTypeOf<string>(fn(sDict));
+    expectTypeOf(fn(nDict)).toEqualTypeOf<number>();
+    expectTypeOf(fn(sDict)).toEqualTypeOf<string>();
   });
 
   it('can infer type when the key type is a superset of the object keys', () => {
