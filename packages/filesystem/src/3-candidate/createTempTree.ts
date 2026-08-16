@@ -104,7 +104,7 @@ export interface TempTree extends Disposable {
   /** Realpath of the tree root, resolved because `os.tmpdir()` is a symlink on macOS. */
   readonly dir: string;
 
-  /** Creates the directory at a tree-relative path, and its parents. */
+  /** Creates the directory at a tree-relative path, along with its parents. */
   mkdir(entryPath: string): string;
 
   /**
@@ -116,8 +116,8 @@ export interface TempTree extends Disposable {
 
   /**
    * Links a tree-relative path to a tree-relative target, taking the link first and so inverting `fs.symlinkSync`.
-   * A directory target is linked as a junction, which links a directory on Windows without the elevation a symlink
-   * needs and is ignored on other platforms; every other target, a missing one included, is linked as a file.
+   * A directory target is linked as a junction, which Windows creates without the elevation a directory symlink
+   * needs and other platforms ignore; every other target, a missing one included, is linked as a file.
    */
   symlink(linkPath: string, targetPath: string): string;
 
@@ -148,9 +148,8 @@ function assertNamesDirectChild(prefix: string): void {
 }
 
 /**
- * Answers with the link type to give a target: `junction` for a directory, which Windows creates without the
- * elevation a directory symlink needs, and `file` for everything else. A target that does not exist reads as
- * `file`, which is what Node itself falls back to when no type is given.
+ * Answers with the link type to give a target: `junction` for a directory and `file` for everything else. A target
+ * that does not exist reads as `file`, which is what Node itself falls back to when no type is given.
  */
 function chooseLinkType(targetPath: string): 'file' | 'junction' {
   return fs.statSync(targetPath, { throwIfNoEntry: false })?.isDirectory() === true ? 'junction' : 'file';

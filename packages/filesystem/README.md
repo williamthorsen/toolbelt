@@ -284,13 +284,39 @@ A prefix that would place the tree anywhere but directly inside the system tempo
 ```ts
 interface TempTree extends Disposable {
   readonly dir: string;
+  mkdir(entryPath: string): string;
   resolve(...segments: string[]): string;
+  symlink(linkPath: string, targetPath: string): string;
+  write(entryPath: string, contents: string | Uint8Array): string;
+  writeJson(entryPath: string, value: unknown): string;
 }
 ```
 
 `dir` is realpath-resolved, because `os.tmpdir()` is a symlink on macOS and a caller comparing paths against it would otherwise see a mismatch it did not cause.
 
 `resolve` joins `segments` against the root and throws when the result would fall outside it, so a stray `..` fails loudly rather than reaching into the enclosing directory. An absolute segment landing inside the root is returned unchanged. The containment test is lexical, so it does not follow a symlink inside the tree that points out of it.
+
+`mkdir`, `symlink`, `write`, and `writeJson` write into the tree after it is built, for a fixture that varies per test or a file created to trigger a re-read:
+
+```ts
+using tree = createTempTree({ 'packages/app/package.json': '{ "name": "app" }' });
+
+tree.write('packages/app/src/main.ts', 'export {};\n'); // '/private/var/folders/.../packages/app/src/main.ts'
+tree.writeJson('tsconfig.json', { include: ['src'] });
+tree.mkdir('packages/empty');
+```
+
+Each creates the parent directories it needs, resolves through the same containment check as `resolve`, and returns the absolute path of what it wrote. Both of `symlink`'s paths are checked, so an escaping target is refused as well as an escaping link.
+
+`symlink` takes the link first and the target second, inverting `fs.symlinkSync`, so that it reads like the other methods: the path being created leads. The link type is chosen from the target, which is where the one portability difference lives. A directory is linked as a junction, which Windows creates without the elevation a directory symlink needs; every other target, one that does not exist included, is linked as a file. That last case matches what Node falls back to when no type is given, and it leaves the link dangling until the target appears.
+
+```ts
+using tree = createTempTree({ 'store/kit/package.json': '{ "name": "kit" }' });
+
+tree.symlink('node_modules/kit', 'store/kit'); // a junction, as a pnpm install would leave
+```
+
+`writeJson` writes two-space-indented JSON ending in a newline, so a tree outliving a crashed run reads as a real config file would. A fixture needing exact bytes goes through `write` instead.
 
 Disposal is idempotent.
 
