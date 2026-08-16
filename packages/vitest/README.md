@@ -65,7 +65,7 @@ The working directory is restored before the directory it points into is removed
 
 ### Where Vitest's documentation disagrees
 
-Vitest documents `onTestFinished` as honoring `sequence.hooks`, and as not running for a test cancelled by a dynamic `ctx.skip()`. The 4.1 runner does neither: it passes a literal for the finish hooks, so they unwind in reverse whatever that option says, and it runs them for a dynamically skipped test too. This package's suite pins both, so a runner that starts honoring its own documentation fails here rather than at a consumer.
+Vitest documents `onTestFinished` as honoring `sequence.hooks`, and as not running for a test cancelled by a dynamic `ctx.skip()`. The 4.1 runner does neither: it passes a literal for the finish hooks, so they unwind in reverse whatever that option says, and it runs them for a dynamically skipped test too. The suite pins the skip half, so a runner that stopped disposing there fails here rather than at a consumer. It cannot pin the other: `sequence.hooks` defaults to `stack`, which means reverse whether the runner consults the option or ignores it, so no test under that default can tell the two apart.
 
 ## `makeFixture`
 
