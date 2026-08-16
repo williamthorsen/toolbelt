@@ -61,11 +61,11 @@ const tree = disposeOnTestFinished(createTempTree({ 'src/': '' }));
 const cwd = disposeOnTestFinished(pointCwdAt(tree.dir));
 ```
 
-The working directory is restored before the directory it points into is removed. That order is `sequence.hooks`' default rather than a guarantee: a project setting it to `list` runs the registrations forward and inverts every such pairing.
+The working directory is restored before the directory it points into is removed.
 
-### What is not disposed
+### Where Vitest's documentation disagrees
 
-A test cancelled by a dynamic `ctx.skip()` does not run its `onTestFinished` hooks, so a resource built before that call is left behind. Build after the skip, or bind with `using` where the resource lives and dies inside the test anyway.
+Vitest documents `onTestFinished` as honoring `sequence.hooks`, and as not running for a test cancelled by a dynamic `ctx.skip()`. The 4.1 runner does neither: it passes a literal for the finish hooks, so they unwind in reverse whatever that option says, and it runs them for a dynamically skipped test too. This package's suite pins both, so a runner that starts honoring its own documentation fails here rather than at a consumer.
 
 ## `makeFixture`
 

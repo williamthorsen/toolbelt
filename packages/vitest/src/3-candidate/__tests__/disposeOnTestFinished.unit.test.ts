@@ -4,7 +4,7 @@ import process from 'node:process';
 
 import { createTempTree, type TempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
 import { captureStdio, pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
-import { beforeAll, beforeEach, describe, expect, expectTypeOf, it } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, expectTypeOf, it } from 'vitest';
 
 import { disposeOnTestFinished } from '../disposeOnTestFinished.ts';
 import { silenceConsole } from '../silenceConsole.ts';
@@ -40,6 +40,19 @@ describe(disposeOnTestFinished, () => {
 
     it('disposes the value of a test that failed', () => {
       expect(countOf(disposalLog, 'failed')).toBe(1);
+    });
+
+    it('disposes what a dynamically skipped test registered', (ctx) => {
+      disposeOnTestFinished(makeProbe('skipped'));
+
+      expect(disposalLog).not.toContain('skipped');
+
+      // eslint-disable-next-line vitest/no-disabled-tests -- the dynamic skip is the behavior under test.
+      ctx.skip();
+    });
+
+    it('records that disposal', () => {
+      expect(countOf(disposalLog, 'skipped')).toBe(1);
     });
 
     it('registers two values in one test', () => {
@@ -86,17 +99,32 @@ describe(disposeOnTestFinished, () => {
     });
   });
 
-  describe('from a per-test hook', () => {
+  describe('from a beforeEach hook', () => {
     beforeEach(() => {
-      disposeOnTestFinished(makeProbe('per-hook'));
+      disposeOnTestFinished(makeProbe('before-hook'));
     });
 
     it('registers against the test the hook is running for', () => {
-      expect(disposalLog).not.toContain('per-hook');
+      expect(disposalLog).not.toContain('before-hook');
     });
 
     it('disposes once per test the hook ran for', () => {
-      expect(countOf(disposalLog, 'per-hook')).toBe(1);
+      expect(countOf(disposalLog, 'before-hook')).toBe(1);
+    });
+  });
+
+  describe('from an afterEach hook', () => {
+    afterEach(() => {
+      disposeOnTestFinished(makeProbe('after-hook'));
+    });
+
+    it('has registered nothing while the first test runs', () => {
+      expect(disposalLog).not.toContain('after-hook');
+    });
+
+    // Registration from `afterEach` disposes only because the runner unwinds the finish hooks after it.
+    it('disposes what the hook registered for the previous test', () => {
+      expect(countOf(disposalLog, 'after-hook')).toBe(1);
     });
   });
 
