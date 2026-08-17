@@ -69,8 +69,26 @@ describe(listFunctionBodies, () => {
     expect(summarize('function broken(a = { x: 1 } { return a; }')).toStrictEqual([]);
   });
 
-  it('reports nothing for an overload signature, whose next brace opens another function', () => {
+  it('reports nothing for an overload signature whose return type carries no brace', () => {
     expect(summarize('declare function f(a: string): void;')).toStrictEqual([]);
+  });
+
+  // The next three fix the documented limit: a return-type annotation's brace group wins over the body, because
+  // telling a type's braces from a block's takes a parser rather than delimiter counting.
+  it('reports the annotation of a function whose return type is an object literal', () => {
+    expect(summarize('function r(): { a: number } { return { a: 1 }; }')).toStrictEqual([
+      { body: '{ a: number }', name: 'r' },
+    ]);
+  });
+
+  it('reports the annotation of a function whose return type nests a brace in a generic argument', () => {
+    expect(summarize('function s(a: string): Record<string, { x: number }> { return {}; }')).toStrictEqual([
+      { body: '{ x: number }', name: 's' },
+    ]);
+  });
+
+  it('reports a brace-bearing overload signature as though it carried a body', () => {
+    expect(summarize('declare function o(): { a: number };')).toStrictEqual([{ body: '{ a: number }', name: 'o' }]);
   });
 
   it('reports nothing for a concise arrow, which carries no braced body', () => {

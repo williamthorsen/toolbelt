@@ -34,7 +34,7 @@
           "path": "../../adoption/src/portable/getLineAtOffset.ts"
         },
         {
-          "hash": "a0e6dee6",
+          "hash": "117c4b42",
           "kind": "module",
           "path": "../../adoption/src/portable/listFunctionBodies.ts"
         },

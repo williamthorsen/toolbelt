@@ -123,8 +123,7 @@ function listFunctionBodies(source) {
     const name = head[1] ?? head[2];
     const from = findBodySearchStart(source, head);
     const body = from === void 0 ? void 0 : readBalancedGroup(source, from, BRACES);
-    const isDefinition = body !== void 0 && from !== void 0 && !source.slice(from, body.start).includes(";");
-    if (name !== void 0 && body !== void 0 && isDefinition) {
+    if (name !== void 0 && from !== void 0 && body !== void 0 && !source.slice(from, body.start).includes(";")) {
       bodies.push({ bodyEnd: body.end, bodyStart: body.start, headStart: head.index, name });
     }
     head = FUNCTION_HEAD.exec(source);
