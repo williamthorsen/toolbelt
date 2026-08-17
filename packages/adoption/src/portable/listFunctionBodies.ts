@@ -5,7 +5,7 @@ export interface FunctionBody {
   bodyEnd: number;
   /** The reported group's opening brace. */
   bodyStart: number;
-  /** The function head's own offset, ahead of the body. */
+  /** The function head's own offset, ahead of the reported group. */
   headStart: number;
   name: string;
 }
@@ -23,7 +23,7 @@ const FUNCTION_HEAD =
  *
  * The group is the body except where a `function`'s return-type annotation carries a brace of its own, as an
  * object type or inside a generic argument. There the annotation's group is reported in the body's place, and a
- * brace-bearing overload signature is reported as though it had a body at all. Telling a type's braces from a
+ * brace-bearing overload signature is reported as though it carried a body. Telling a type's braces from a
  * block's takes a parser rather than delimiter counting, so a detector whose verdict would be wrong on such a
  * function has to recognize it directly.
  *
