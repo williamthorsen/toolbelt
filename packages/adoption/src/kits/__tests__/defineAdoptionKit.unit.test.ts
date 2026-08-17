@@ -57,10 +57,6 @@ describe(defineAdoptionKit, () => {
   it('gives every check a skip, so none runs against a project it does not apply to', () => {
     expect(listChecks(defineAdoptionKit(SPEC)).every((check) => check.skip !== undefined)).toBe(true);
   });
-
-  it('builds an independent kit per call, so one kit’s sweep is not another’s', () => {
-    expect(defineAdoptionKit(SPEC)).not.toBe(defineAdoptionKit(SPEC));
-  });
 });
 
 // region | Helpers

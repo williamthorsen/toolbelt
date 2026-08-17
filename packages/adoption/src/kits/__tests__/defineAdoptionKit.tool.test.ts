@@ -96,6 +96,25 @@ describe(defineAdoptionKit, () => {
     expect((await runCheck(cloneCheck)).detail).toBe('describeThing (src/a.ts:1)');
   });
 
+  it('sweeps per kit, so one kit’s findings are not another’s', async () => {
+    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/a.ts': CLONE, 'src/b.ts': INLINE });
+    using _cwd = pointCwdAt(tree.dir);
+
+    // Two live kits over one repo, each filtered to a different file. A cache shared across kits would serve
+    // the first kit's sweep to the second.
+    const cloneOnly = listChecks(buildSpec({ pathFilter: (path) => path.endsWith('a.ts') }));
+    const inlineOnly = listChecks(buildSpec({ pathFilter: (path) => path.endsWith('b.ts') }));
+
+    await expect(runCheck(cloneOnly[0])).resolves.toMatchObject({
+      detail: 'describeThing (src/a.ts:1)',
+      progress: { count: 1, passedCount: 0, type: 'fraction' },
+    });
+    await expect(runCheck(inlineOnly[1])).resolves.toMatchObject({
+      detail: 'src/b.ts:1',
+      progress: { count: 1, passedCount: 0, type: 'fraction' },
+    });
+  });
+
   it('skips every check where the project publishes the package under test', async () => {
     using tree = createTrackedRepo({ 'package.json': JSON.stringify({ name: '@scope/pkg', version: '1.0.0' }) });
     using _cwd = pointCwdAt(tree.dir);

@@ -1,4 +1,4 @@
-import { BRACES, readBalancedGroup } from './readBalancedGroup.ts';
+import { BRACES, PARENTHESES, readBalancedGroup } from './readBalancedGroup.ts';
 
 export interface FunctionBody {
   /** One past the body's closing brace. */
@@ -29,11 +29,14 @@ export function listFunctionBodies(source: string): FunctionBody[] {
   let head = FUNCTION_HEAD.exec(source);
   while (head !== null) {
     const name = head[1] ?? head[2];
-    const from = head.index + head[0].length;
-    const body = readBalancedGroup(source, from, BRACES);
+    const from = findBodySearchStart(source, head);
+    const body = from === undefined ? undefined : readBalancedGroup(source, from, BRACES);
 
-    // A `;` ahead of the first brace ends a declaration carrying no body, whose next brace opens something else.
-    if (name !== undefined && body !== undefined && !source.slice(from, body.start).includes(';')) {
+    // A `;` between the parameter list and the first brace ends a declaration carrying no body, whose next
+    // brace opens something else.
+    const isDefinition = body !== undefined && from !== undefined && !source.slice(from, body.start).includes(';');
+
+    if (name !== undefined && body !== undefined && isDefinition) {
       bodies.push({ bodyEnd: body.end, bodyStart: body.start, headStart: head.index, name });
     }
 
@@ -42,3 +45,19 @@ export function listFunctionBodies(source: string): FunctionBody[] {
 
   return bodies;
 }
+
+// region | Helpers
+
+/**
+ * Returns the offset the body's brace is searched from, or nothing where the parameter list never closes.
+ *
+ * A `function` head matches only as far as its opening parenthesis, so the parameter list is read past before
+ * any brace counts: a destructured parameter, an object default, or an inline type literal would otherwise
+ * supply the first one. An arrow head already spans its parameters and its `=>`.
+ */
+function findBodySearchStart(source: string, head: RegExpExecArray): number | undefined {
+  if (head[1] === undefined) return head.index + head[0].length;
+  return readBalancedGroup(source, head.index, PARENTHESES)?.end;
+}
+
+// endregion | Helpers

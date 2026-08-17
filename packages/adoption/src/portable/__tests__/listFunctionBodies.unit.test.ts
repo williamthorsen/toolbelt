@@ -43,6 +43,32 @@ describe(listFunctionBodies, () => {
     ]);
   });
 
+  it('reports the body of a function whose parameter destructures', () => {
+    expect(summarize('function g({ a, b }) { return a + b; }')).toStrictEqual([
+      { body: '{ return a + b; }', name: 'g' },
+    ]);
+  });
+
+  it('reports the body of a function whose parameter defaults to an object', () => {
+    expect(summarize('function f(a = { x: 1 }) { return a; }')).toStrictEqual([{ body: '{ return a; }', name: 'f' }]);
+  });
+
+  it('reports the body of a function whose parameter carries an inline type literal', () => {
+    expect(summarize('function h(a: { x: number }): void { return; }')).toStrictEqual([
+      { body: '{ return; }', name: 'h' },
+    ]);
+  });
+
+  it('reports the body of an arrow whose parameter defaults to an object', () => {
+    expect(summarize('const k = (a = { x: 1 }) => { return a; };')).toStrictEqual([
+      { body: '{ return a; }', name: 'k' },
+    ]);
+  });
+
+  it('reports nothing for a function whose parameter list never closes', () => {
+    expect(summarize('function broken(a = { x: 1 } { return a; }')).toStrictEqual([]);
+  });
+
   it('reports nothing for an overload signature, whose next brace opens another function', () => {
     expect(summarize('declare function f(a: string): void;')).toStrictEqual([]);
   });

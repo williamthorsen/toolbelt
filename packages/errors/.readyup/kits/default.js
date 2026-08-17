@@ -98,6 +98,7 @@ function getLineAtOffset(source, offset) {
 
 // ../adoption/src/portable/readBalancedGroup.ts
 var BRACES = { close: "}", open: "{" };
+var PARENTHESES = { close: ")", open: "(" };
 function readBalancedGroup(source, from, delimiters) {
   const start = source.indexOf(delimiters.open, from);
   if (start === -1) return void 0;
@@ -120,14 +121,19 @@ function listFunctionBodies(source) {
   let head = FUNCTION_HEAD.exec(source);
   while (head !== null) {
     const name = head[1] ?? head[2];
-    const from = head.index + head[0].length;
-    const body = readBalancedGroup(source, from, BRACES);
-    if (name !== void 0 && body !== void 0 && !source.slice(from, body.start).includes(";")) {
+    const from = findBodySearchStart(source, head);
+    const body = from === void 0 ? void 0 : readBalancedGroup(source, from, BRACES);
+    const isDefinition = body !== void 0 && from !== void 0 && !source.slice(from, body.start).includes(";");
+    if (name !== void 0 && body !== void 0 && isDefinition) {
       bodies.push({ bodyEnd: body.end, bodyStart: body.start, headStart: head.index, name });
     }
     head = FUNCTION_HEAD.exec(source);
   }
   return bodies;
+}
+function findBodySearchStart(source, head) {
+  if (head[1] === void 0) return head.index + head[0].length;
+  return readBalancedGroup(source, head.index, PARENTHESES)?.end;
 }
 
 // ../adoption/src/portable/readAnchoredWindow.ts

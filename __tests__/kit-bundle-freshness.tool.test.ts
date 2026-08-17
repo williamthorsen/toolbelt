@@ -7,6 +7,9 @@ import { describe, expect, it } from 'vitest';
 
 const MANIFEST_PATH = path.join('.readyup', 'manifest.json');
 const RDY_BIN_PATH = path.join('node_modules', '.bin', 'rdy');
+// Every verdict `isPassingVerdict` weighs. A rebuild mismatch leaves the other three `ok`, so reporting a
+// subset can name none of what failed.
+const VERDICT_FIELDS = ['status', 'sourceStatus', 'inputsStatus', 'rebuildStatus'];
 
 describe('Compiled kit bundles', () => {
   it('every kit-bearing workspace holds a bundle current with its sources', () => {
@@ -61,7 +64,7 @@ function verifyBundles(directory: string): string | undefined {
   return describeFailure(result.stdout) ?? `rdy verify exited ${String(result.status)}`;
 }
 
-/** Names each failing kit and the statuses behind its verdict, from the JSON report. */
+/** Names each failing kit and every verdict behind it, from the JSON report. */
 function describeFailure(stdout: string): string | undefined {
   let report: unknown;
   try {
@@ -74,8 +77,18 @@ function describeFailure(stdout: string): string | undefined {
 
   return report['kits']
     .filter((kit) => isRecord(kit))
-    .map((kit) => `${String(kit['name'])} (${String(kit['status'])}/${String(kit['inputsStatus'])})`)
+    .map((kit) => `${String(kit['name'])} (${describeVerdicts(kit)})`)
     .join(', ');
+}
+
+/** Lists a kit's verdicts as reported, naming any the report omits so a silent absence reads as one. */
+function describeVerdicts(kit: Record<string, unknown>): string {
+  return VERDICT_FIELDS.map((field) => `${field}=${readVerdict(kit[field])}`).join(', ');
+}
+
+/** Names a verdict, or its absence, without stringifying a shape the report never promised. */
+function readVerdict(value: unknown): string {
+  return typeof value === 'string' ? value : 'unreported';
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
