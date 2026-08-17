@@ -8,6 +8,7 @@ const config = defineConfig({
     extends: ['common'],
     labels: {
       'scope:root': { color: '00ff96' },
+      'scope:adoption': { color: '00ff96' },
       'scope:arrays': { color: '00ff96' },
       'scope:async': { color: '00ff96' },
       'scope:datetime': { color: '00ff96' },
@@ -34,6 +35,9 @@ const config = defineConfig({
   workspaces: [
     // Private scaffolding template: Exclude from release processing entirely.
     { dir: '_template', shouldExclude: true },
+    // Private shared layer for the adoption kits: `private: true` keeps it out of publish and announce, but
+    // tagging and changelog generation still reach a private workspace.
+    { dir: 'adoption', shouldExclude: true },
     { dir: 'arrays', legacyIdentities: [{ name: '@williamthorsen/toolbelt.arrays', tagPrefix: 'arrays-v' }] },
     { dir: 'async', legacyIdentities: [{ name: '@williamthorsen/toolbelt.async', tagPrefix: 'async-v' }] },
     { dir: 'datetime', legacyIdentities: [{ name: '@williamthorsen/toolbelt.datetime', tagPrefix: 'datetime-v' }] },
