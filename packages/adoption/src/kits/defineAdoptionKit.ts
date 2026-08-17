@@ -1,0 +1,124 @@
+import { type CheckOutcome, defineRdyKit, type RdyKit, type Severity, type SkipResult } from 'readyup';
+import {
+  buildFindingReport,
+  countPackageUsage,
+  discoverWorkspaces,
+  type PathFilter,
+  readTrackedSources,
+} from 'readyup/check-utils';
+
+export interface AdoptionSite<Kind extends string> {
+  kind: Kind;
+  line: number;
+  /** The symbol the site defines, where it defines one worth naming in place of the location. */
+  symbol?: string;
+}
+
+export interface AdoptionCheck<Kind extends string> {
+  fix: string;
+  /** The kinds this check reports. A site of any other kind counts toward the denominator alone. */
+  kinds: readonly Kind[];
+  name: string;
+  severity?: Severity;
+}
+
+export interface AdoptionKitSpec<Kind extends string> {
+  checks: ReadonlyArray<AdoptionCheck<Kind>>;
+  description: string;
+  detect: (text: string) => ReadonlyArray<AdoptionSite<Kind>>;
+  /** The package's own callable exports, which is what adoption is counted in calls to. */
+  exportNames: readonly string[];
+  /** Why the checks do not apply to a project the path filter matched nothing in. */
+  noSourcesReason: string;
+  packageName: string;
+  pathFilter: PathFilter;
+}
+
+interface ProjectSummary<Kind extends string> {
+  adoptedCount: number;
+  findings: Array<AdoptionSite<Kind> & { path: string }>;
+  sourceCount: number;
+}
+
+const NOT_A_REPO = 'the project is not a git working tree, and these checks read the files git tracks';
+const SELF = 'this project publishes the package these checks are for';
+
+/**
+ * Assembles a package's adoption checks into a kit, given the detector and the checks that read it.
+ *
+ * A kit built here holds its detector and its advice and nothing else: the self-skip, the source sweep, the
+ * adoption count, and the finding report are shared, so a package adopting these checks declares what it looks
+ * for rather than how the looking is done.
+ *
+ * The summary is held per kit rather than per module, because two compiled kits can run in one process and one
+ * kit's findings are not the other's. The sweep beneath it is cached in readyup, which a compiled kit leaves
+ * unbundled, so several kits in one run still read each file once.
+ *
+ * @internal
+ */
+export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kind>): RdyKit {
+  const cache: { summary?: Promise<ProjectSummary<Kind> | undefined> } = {};
+
+  return defineRdyKit({
+    description: spec.description,
+    defaultSeverity: 'warn',
+    checklists: [
+      {
+        name: 'adoption',
+        checks: spec.checks.map((check) => ({
+          name: check.name,
+          ...(check.severity !== undefined && { severity: check.severity }),
+          skip: skipUnlessProjectIsAccountable,
+          check: () => reportKinds(check.kinds),
+          fix: check.fix,
+        })),
+      },
+    ],
+  });
+
+  // region | Helpers
+
+  /** Reads the project once, so every check and its skip share one sweep. */
+  function loadSummary(): Promise<ProjectSummary<Kind> | undefined> {
+    cache.summary ??= readProject();
+    return cache.summary;
+  }
+
+  /** Summarizes the project's matching sources, or nothing where it is not a git working tree. */
+  async function readProject(): Promise<ProjectSummary<Kind> | undefined> {
+    const sources = await readTrackedSources(spec.pathFilter);
+    if (sources === undefined) return undefined;
+
+    return {
+      adoptedCount: countPackageUsage(sources, {
+        exportNames: spec.exportNames,
+        packageName: spec.packageName,
+      }),
+      findings: sources.flatMap((source) => spec.detect(source.text).map((site) => ({ ...site, path: source.path }))),
+      sourceCount: sources.length,
+    };
+  }
+
+  /** Fails where the project holds sites of the named kinds, naming each and how far adoption got. */
+  async function reportKinds(kinds: readonly Kind[]): Promise<CheckOutcome> {
+    const summary = await loadSummary();
+    if (summary === undefined) return { ok: true };
+
+    return buildFindingReport({
+      adoptedCount: summary.adoptedCount,
+      findings: summary.findings,
+      shouldReport: (finding) => kinds.includes(finding.kind),
+    });
+  }
+
+  /** Skips every check where the project cannot be read, or is the one publishing the package. */
+  async function skipUnlessProjectIsAccountable(): Promise<SkipResult> {
+    if (discoverWorkspaces().some((workspace) => workspace.name === spec.packageName)) return SELF;
+
+    const summary = await loadSummary();
+    if (summary === undefined) return NOT_A_REPO;
+    return summary.sourceCount === 0 ? spec.noSourcesReason : false;
+  }
+
+  // endregion | Helpers
+}
