@@ -13,8 +13,8 @@ catalogs:
       specifier: 0.28.2
       version: 0.28.2
     readyup:
-      specifier: 0.28.0
-      version: 0.28.0
+      specifier: 0.29.0
+      version: 0.29.0
     vitest:
       specifier: 4.1.10
       version: 4.1.10
@@ -33,17 +33,17 @@ importers:
         specifier: 4.1.10
         version: 4.1.10(vitest@4.1.10)
       '@vitest/eslint-plugin':
-        specifier: 1.6.26
-        version: 1.6.26(@typescript-eslint/eslint-plugin@8.66.0(@typescript-eslint/parser@8.66.0(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)(vitest@4.1.10)
+        specifier: 1.6.27
+        version: 1.6.27(@typescript-eslint/eslint-plugin@8.66.0(@typescript-eslint/parser@8.66.0(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)(vitest@4.1.10)
       '@williamthorsen/eslint-config-typescript':
         specifier: 10.0.0
         version: 10.0.0(@typescript-eslint/parser@8.66.0(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(@typescript-eslint/utils@8.66.0(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)
       '@williamthorsen/nmr':
-        specifier: 0.31.0
-        version: 0.31.0(prettier@3.9.6)(typescript@6.0.3)(vitest@4.1.10)
+        specifier: 0.32.0
+        version: 0.32.0(prettier@3.9.6)(typescript@6.0.3)(vitest@4.1.10)
       '@williamthorsen/release-kit':
-        specifier: 10.3.2
-        version: 10.3.2
+        specifier: 10.4.0
+        version: 10.4.0
       '@williamthorsen/strict-lint':
         specifier: 11.0.0
         version: 11.0.0(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))
@@ -67,7 +67,7 @@ importers:
         version: 3.9.6
       readyup:
         specifier: 'catalog:'
-        version: 0.28.0(esbuild@0.28.2)
+        version: 0.29.0(esbuild@0.28.2)
       rimraf:
         specifier: 6.1.3
         version: 6.1.3
@@ -75,8 +75,8 @@ importers:
         specifier: 6.0.3
         version: 6.0.3
       v11y-check:
-        specifier: 0.15.2
-        version: 0.15.2
+        specifier: 0.15.3
+        version: 0.15.3
       vitest:
         specifier: 'catalog:'
         version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
@@ -114,7 +114,7 @@ importers:
         version: 0.28.2
       readyup:
         specifier: 'catalog:'
-        version: 0.28.0(esbuild@0.28.2)
+        version: 0.29.0(esbuild@0.28.2)
 
   packages/filesystem:
     dependencies:
@@ -196,7 +196,7 @@ importers:
         version: 0.28.2
       readyup:
         specifier: 'catalog:'
-        version: 0.28.0(esbuild@0.28.2)
+        version: 0.29.0(esbuild@0.28.2)
       vitest:
         specifier: 'catalog:'
         version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
@@ -748,8 +748,8 @@ packages:
       '@vitest/browser':
         optional: true
 
-  '@vitest/eslint-plugin@1.6.26':
-    resolution: {integrity: sha512-2eawZk4MZvkEtMZFdScmCE0R1Rti85uRZpmbe9eAv5Q3blDZ5OxlrC9IHlSnxhDCqOO2xKNaD3oufl9BUlI0yA==}
+  '@vitest/eslint-plugin@1.6.27':
+    resolution: {integrity: sha512-X1RCAfwbatG4GFbJ/1PIHP9MSZMt0JJThqbYID+vS4L783k6QGlLPe421wQE8dHXuGCcenVLsydiM4qzsYWxhg==}
     engines: {node: '>=18'}
     peerDependencies:
       '@typescript-eslint/eslint-plugin': '*'
@@ -806,12 +806,12 @@ packages:
     engines: {node: '>=24'}
     hasBin: true
 
-  '@williamthorsen/nmr-core@0.10.0':
-    resolution: {integrity: sha512-/WTjCyPndKt7iiSzk/22u4YZZTenLa9GzJPym7uWdRxZi2wa5kkKP/ZuitvvsQYSz0JhEh6WowGzYgc2lYZCUg==}
+  '@williamthorsen/nmr-core@0.10.1':
+    resolution: {integrity: sha512-yunJ9Kv1M1uBDHcUYTfTO2CZM8vkchGAKpuUWWJLXtOiQ6C1nccoxDhUkYGkey3VAfaVD6vZZNFIMM6PSFFc1w==}
     engines: {node: '>=24'}
 
-  '@williamthorsen/nmr@0.31.0':
-    resolution: {integrity: sha512-oI70lS78Dj6jCzfHw+S9BVd4BaqowgZFM1zPx78Z4WZ6gdlxps3nEIW8H24rT2de2+Bwuy48O5ehlKinfgqdzQ==}
+  '@williamthorsen/nmr@0.32.0':
+    resolution: {integrity: sha512-4Os6cb3XHAkB5RJuUEKbkAaCIN+YfhUjDFWUgl9Tgnrg+gDqFom7c0wRRUcYcJaGIHpSFhEe6sLBSdgjRdNUCg==}
     engines: {node: '>=24.16.0', pnpm: '>=11'}
     hasBin: true
     peerDependencies:
@@ -824,8 +824,8 @@ packages:
       vitest:
         optional: true
 
-  '@williamthorsen/release-kit@10.3.2':
-    resolution: {integrity: sha512-avGd+ln+gh3/kVYm/kWkkaallQ185LOiIJuJU3OQZUb39C0/jMSlvFqznLimj0wKIUedUfDUd+TBg595N1RjUQ==}
+  '@williamthorsen/release-kit@10.4.0':
+    resolution: {integrity: sha512-q3NB+Ka2VFZKWN8xUsjhmN561nGSaR42wRwcbKEGolQ5CKXBYmwC6wBZpE2OIaDRXRfjiVpY79I+zEWd2PiCSw==}
     engines: {node: '>=24'}
     hasBin: true
 
@@ -840,10 +840,6 @@ packages:
     resolution: {integrity: sha512-ZBY+DRI6A1tI3oxcYBDDN8w3hRUNHoZRa9FS6u1COxiTYoi545UfJ5LDma/3dej5DIz3FeleS1h57aCOAdj2KA==}
     engines: {node: '>=24.0.0'}
 
-  '@williamthorsen/toolbelt.errors@0.4.0':
-    resolution: {integrity: sha512-EoMUWoyKsKkJxtLvn4+R2RG9KHWr7JEPNWBZHhYaGZ5MEucA6I94XW8RvlD9P0UtRHbhxbjN/RuXwJJjO01I5A==}
-    engines: {node: '>=24.0.0'}
-
   '@williamthorsen/toolbelt.errors@0.5.0':
     resolution: {integrity: sha512-bDsxxW6zAuDqNHl/ffT3c/IzVzRQREDwGdJ8xQssr7S+vNE8X9SfmNwiL1GyZoXw/njzLEmBXrI4Nb71zNmzbQ==}
     engines: {node: '>=24.0.0'}
@@ -852,16 +848,16 @@ packages:
     resolution: {integrity: sha512-UKeOOKngs5t5f9BKZ21hh/oyPIXueo5A+Mugkwc0f200abGdeNeZ9O7MbsvXb+h+o2t1E0BZzy8zk66OicsagQ==}
     engines: {node: '>=24.0.0'}
 
-  '@williamthorsen/toolbelt.filesystem@0.5.0':
-    resolution: {integrity: sha512-Wclpz5s7cfiD6Sw9afwsRwpNerR+/1NHhVrXES66xNfVb+WneOmPJegkW9hxuZwakjq7zRoUpBMYfAbJceCrXA==}
+  '@williamthorsen/toolbelt.filesystem@0.6.0':
+    resolution: {integrity: sha512-V+HIpkcrdA+SReunl//jjuSLN2CaMhH0WDWC3TzvNVnaF6kInhYNRPzF9FKEA7vj0uRa+TDvEPl3SdO24bcNUg==}
     engines: {node: '>=24.0.0'}
 
   '@williamthorsen/toolbelt.packaging@0.3.0':
     resolution: {integrity: sha512-cmWHKbVp+6cNe5pBtbzmTTm8DOB7B2m8prvyL2uyw/2va1VinoP4K1ud+K/9ehQCD8Yktgm6/p7uS7V7Jtt/qw==}
     engines: {node: '>=24.0.0'}
 
-  '@williamthorsen/toolbelt.packaging@0.4.0':
-    resolution: {integrity: sha512-Q6FB2Gbs0Njtos63fg7A219jKhJJ23/jdOzXoKlIYigndAJLo8NGZF9OYna8Csj5shmN096tIs8gjbim5doL1w==}
+  '@williamthorsen/toolbelt.packaging@0.5.0':
+    resolution: {integrity: sha512-613dFv+w6y+l9aGWJUx/Xujd04o7aOBrs6njUJwNGyv5Yj6c71HGbuLUF1A3tmCefzfAGvP1b/U5r0ICw58grQ==}
     engines: {node: '>=24.0.0'}
 
   '@williamthorsen/tsconfig@0.5.0':
@@ -2076,8 +2072,8 @@ packages:
     resolution: {integrity: sha512-7KA6+N9IGat52d83dvxnApAWN+MtVb1MiVuMR/cf1O4kYsJG+g/Aav0AHcHKsb6StinayfPLne0+fMX2sOzAKg==}
     engines: {node: '>=6'}
 
-  readyup@0.28.0:
-    resolution: {integrity: sha512-svMhuPbfEXKOrcQuPfwcpx3EUfNLChP2c24c2R/8Ib0FQcS+RzsjJyKgzEjDFvVQ0b+OckRBfT+Oh6zGbWxttQ==}
+  readyup@0.29.0:
+    resolution: {integrity: sha512-xvPFo15q89CS44ifkazliWe7ve8ibqR39GZCgdt5RTcCHg1coebCd5QRn3Mji9rNiLAHfK9G5NML1HWu8jznOg==}
     engines: {node: '>=24'}
     hasBin: true
     peerDependencies:
@@ -2290,8 +2286,8 @@ packages:
     resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
     engines: {node: '>=6'}
 
-  taze@20.0.0:
-    resolution: {integrity: sha512-aygXyZ0wQrQGjuclEWE1qSyxnlVERKO51Re+xhHwgS0Ml2dqCIXpMjRrUdV1thJFOUwKJj9XPvv9ZVlAaV0CWg==}
+  taze@20.0.1:
+    resolution: {integrity: sha512-eMaxsasw9WZfwXeiRNynqo9uSukB876oHlk+obmaaW4z8ue+LvFXSZC7O+RSABOlWNUqZmxXcDJS/O7MxW6tlw==}
     hasBin: true
 
   through2@4.0.2:
@@ -2399,8 +2395,8 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  v11y-check@0.15.2:
-    resolution: {integrity: sha512-1L3S+QTmPr9MIHExMiyJ0gCkd5BUBvEY+8tyFDXmSr9M3dCx4AujJI4Nd3j/sYEQ4edQOOgVBr56fOdLJpRz8A==}
+  v11y-check@0.15.3:
+    resolution: {integrity: sha512-Iw0RlM8RPCkjpTHwnDOTufy81/aO2NsrEZyGYlLdlLjboGbLfKbz/IzG7rsNEsIVmMzgU3RRqb9sIpwHVmFp8Q==}
     engines: {node: '>=24'}
     hasBin: true
 
@@ -2974,7 +2970,7 @@ snapshots:
       tinyrainbow: 3.1.1
       vitest: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
 
-  '@vitest/eslint-plugin@1.6.26(@typescript-eslint/eslint-plugin@8.66.0(@typescript-eslint/parser@8.66.0(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)(vitest@4.1.10)':
+  '@vitest/eslint-plugin@1.6.27(@typescript-eslint/eslint-plugin@8.66.0(@typescript-eslint/parser@8.66.0(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)(vitest@4.1.10)':
     dependencies:
       '@typescript-eslint/scope-manager': 8.66.0
       '@typescript-eslint/utils': 8.66.0(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)
@@ -3061,27 +3057,27 @@ snapshots:
       yaml: 2.9.0
       zod: 4.4.3
 
-  '@williamthorsen/nmr-core@0.10.0':
+  '@williamthorsen/nmr-core@0.10.1':
     dependencies:
-      '@williamthorsen/toolbelt.errors': 0.4.0
+      '@williamthorsen/toolbelt.errors': 0.5.0
 
-  '@williamthorsen/nmr@0.31.0(prettier@3.9.6)(typescript@6.0.3)(vitest@4.1.10)':
+  '@williamthorsen/nmr@0.32.0(prettier@3.9.6)(typescript@6.0.3)(vitest@4.1.10)':
     dependencies:
-      '@williamthorsen/nmr-core': 0.10.0
-      '@williamthorsen/toolbelt.errors': 0.4.0
+      '@williamthorsen/nmr-core': 0.10.1
+      '@williamthorsen/toolbelt.errors': 0.5.0
       glob: 13.0.6
       prettier-plugin-sh: 0.19.0(prettier@3.9.6)
-      taze: 20.0.0
+      taze: 20.0.1
       typescript: 6.0.3
       yaml: 2.9.0
     optionalDependencies:
       prettier: 3.9.6
       vitest: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
 
-  '@williamthorsen/release-kit@10.3.2':
+  '@williamthorsen/release-kit@10.4.0':
     dependencies:
-      '@williamthorsen/nmr-core': 0.10.0
-      '@williamthorsen/toolbelt.errors': 0.4.0
+      '@williamthorsen/nmr-core': 0.10.1
+      '@williamthorsen/toolbelt.errors': 0.5.0
       glob: 13.0.6
       json-stringify-pretty-compact: 4.0.0
       semver: 7.8.5
@@ -3096,15 +3092,13 @@ snapshots:
 
   '@williamthorsen/toolbelt.errors@0.3.0': {}
 
-  '@williamthorsen/toolbelt.errors@0.4.0': {}
-
   '@williamthorsen/toolbelt.errors@0.5.0': {}
 
   '@williamthorsen/toolbelt.filesystem@0.4.0':
     dependencies:
       '@williamthorsen/toolbelt.errors': 0.3.0
 
-  '@williamthorsen/toolbelt.filesystem@0.5.0':
+  '@williamthorsen/toolbelt.filesystem@0.6.0':
     dependencies:
       '@williamthorsen/toolbelt.errors': 0.5.0
 
@@ -3112,9 +3106,9 @@ snapshots:
     dependencies:
       '@williamthorsen/toolbelt.filesystem': 0.4.0
 
-  '@williamthorsen/toolbelt.packaging@0.4.0':
+  '@williamthorsen/toolbelt.packaging@0.5.0':
     dependencies:
-      '@williamthorsen/toolbelt.filesystem': 0.5.0
+      '@williamthorsen/toolbelt.filesystem': 0.6.0
 
   '@williamthorsen/tsconfig@0.5.0': {}
 
@@ -4426,10 +4420,10 @@ snapshots:
 
   readline-transform@1.0.0: {}
 
-  readyup@0.28.0(esbuild@0.28.2):
+  readyup@0.29.0(esbuild@0.28.2):
     dependencies:
       '@williamthorsen/toolbelt.errors': 0.5.0
-      '@williamthorsen/toolbelt.packaging': 0.4.0
+      '@williamthorsen/toolbelt.packaging': 0.5.0
       es-module-lexer: 2.3.1
       jiti: 2.7.0
       jsonc-parser: 3.3.1
@@ -4700,7 +4694,7 @@ snapshots:
 
   tapable@2.3.3: {}
 
-  taze@20.0.0:
+  taze@20.0.1:
     dependencies:
       '@antfu/ni': 30.5.0
       '@henrygd/queue': 1.2.0
@@ -4841,10 +4835,10 @@ snapshots:
 
   util-deprecate@1.0.2: {}
 
-  v11y-check@0.15.2:
+  v11y-check@0.15.3:
     dependencies:
-      '@williamthorsen/nmr-core': 0.10.0
-      '@williamthorsen/toolbelt.errors': 0.4.0
+      '@williamthorsen/nmr-core': 0.10.1
+      '@williamthorsen/toolbelt.errors': 0.5.0
       audit-ci: 7.1.0
       zod: 4.4.3
 
