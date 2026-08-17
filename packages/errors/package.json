@@ -48,6 +48,7 @@
     "prepublishOnly": "rdy compile && nmr build"
   },
   "devDependencies": {
+    "@williamthorsen/toolbelt.adoption": "workspace:*",
     "esbuild": "catalog:",
     "readyup": "catalog:"
   },

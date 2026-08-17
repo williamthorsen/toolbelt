@@ -18,6 +18,7 @@
   },
   "scopes": {
     "_template": "scope:_template",
+    "adoption": "scope:adoption",
     "arrays": "scope:arrays",
     "async": "scope:async",
     "datetime": "scope:datetime",
