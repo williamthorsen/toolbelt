@@ -9,14 +9,54 @@
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
-          "hash": "44c4028b",
+          "hash": "8da861d2",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/path-predicates.ts"
+        },
+        {
+          "hash": "7b2aca38",
+          "kind": "module",
+          "path": "../../adoption/src/kits/defineAdoptionKit.ts"
+        },
+        {
+          "hash": "c9bdfae7",
+          "kind": "module",
+          "path": "../../adoption/src/mod.ts"
+        },
+        {
+          "hash": "e8d0444d",
+          "kind": "module",
+          "path": "../../adoption/src/portable/condenseWhitespace.ts"
+        },
+        {
+          "hash": "4da99027",
+          "kind": "module",
+          "path": "../../adoption/src/portable/getLineAtOffset.ts"
+        },
+        {
+          "hash": "b6d99ce7",
+          "kind": "module",
+          "path": "../../adoption/src/portable/listFunctionBodies.ts"
+        },
+        {
+          "hash": "4d2d8e11",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readAnchoredWindow.ts"
+        },
+        {
+          "hash": "498e3ca4",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readBalancedGroup.ts"
+        },
+        {
+          "hash": "09ca6e6b",
           "kind": "module",
           "path": "kits/default.ts"
         },
         {
-          "hash": "9150c9b8",
+          "hash": "3c53eeb1",
           "kind": "module",
-          "path": "../src/readiness/buildKindReport.ts"
+          "path": "../src/readiness/adoptedExports.ts"
         },
         {
           "hash": "373103e6",
@@ -24,42 +64,22 @@
           "path": "../src/readiness/classifySite.ts"
         },
         {
-          "hash": "1d31c9f9",
-          "kind": "module",
-          "path": "../src/readiness/exemptions.ts"
-        },
-        {
-          "hash": "d2b64462",
+          "hash": "f6dac2fd",
           "kind": "module",
           "path": "../src/readiness/listDescribeClones.ts"
         },
         {
-          "hash": "65900255",
+          "hash": "79d38a29",
           "kind": "module",
           "path": "../src/readiness/listErrorSites.ts"
-        },
-        {
-          "hash": "d3f99317",
-          "kind": "module",
-          "path": "../src/readiness/listSourceFiles.ts"
-        },
-        {
-          "hash": "0681de08",
-          "kind": "module",
-          "path": "../src/readiness/packageName.ts"
-        },
-        {
-          "hash": "01ddaf95",
-          "kind": "module",
-          "path": "../src/readiness/summarizeSources.ts"
         }
       ],
       "name": "default",
       "path": "kits/default.js",
-      "readyupVersion": "0.28.0",
+      "readyupVersion": "0.29.0",
       "source": "kits/default.ts",
-      "sourceHash": "44c4028b",
-      "targetHash": "20998ce5"
+      "sourceHash": "09ca6e6b",
+      "targetHash": "9a255088"
     }
   ]
 }

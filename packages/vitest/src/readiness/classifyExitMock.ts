@@ -1,3 +1,5 @@
+import { PARENTHESES, readBalancedGroup } from '@williamthorsen/toolbelt.adoption';
+
 export interface ExitMockVerdict {
   kind: ExitMockKind;
   /** The sentinel class the mock throws, on a `sentinel-clone` alone. */
@@ -25,9 +27,10 @@ const BARE_REFERENCE = /^[\w$.]+$/;
 export function classifyExitMock(after: string, source: string): ExitMockVerdict {
   if (!IMPLEMENTATION.test(after)) return { kind: 'unclassified' };
 
-  const body = readImplementation(after);
-  if (body === undefined) return { kind: 'unclassified' };
+  const group = readBalancedGroup(after, 0, PARENTHESES);
+  if (group === undefined) return { kind: 'unclassified' };
 
+  const body = after.slice(group.start + 1, group.end - 1);
   const symbol = THROWN_CLASS.exec(body)?.[1];
   if (symbol !== undefined) {
     const declared = new RegExp(String.raw`\bclass ${symbol}\b[^\n]*\bextends\b`);
@@ -37,28 +40,3 @@ export function classifyExitMock(after: string, source: string): ExitMockVerdict
   if (/\bthrow\b/.test(body)) return { kind: 'throwing' };
   return { kind: BARE_REFERENCE.test(body.trim()) ? 'unclassified' : 'non-throwing' };
 }
-
-// region | Helpers
-
-/**
- * Reads the `mockImplementation` argument, or nothing where its parentheses never balance.
- *
- * Returning nothing is what keeps a body this could not read whole out of the `non-throwing` verdict, a
- * `throw` past the unbalanced point being invisible rather than absent.
- */
-function readImplementation(after: string): string | undefined {
-  const start = after.indexOf('(');
-  let depth = 0;
-
-  for (let index = start; index < after.length; index += 1) {
-    if (after[index] === '(') depth += 1;
-    else if (after[index] === ')') {
-      depth -= 1;
-      if (depth === 0) return after.slice(start + 1, index);
-    }
-  }
-
-  return undefined;
-}
-
-// endregion | Helpers

@@ -1,0 +1,38 @@
+{
+  "name": "@williamthorsen/toolbelt.adoption",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared scaffolding for the toolbelt packages' ReadyUp adoption kits",
+  "keywords": [
+    "esm",
+    "readyup",
+    "toolbelt",
+    "typescript"
+  ],
+  "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/adoption#readme",
+  "bugs": {
+    "url": "https://github.com/williamthorsen/toolbelt/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/williamthorsen/toolbelt.git",
+    "directory": "packages/adoption"
+  },
+  "license": "ISC",
+  "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/mod.ts"
+    }
+  },
+  "devDependencies": {
+    "@williamthorsen/toolbelt.filesystem": "workspace:*",
+    "@williamthorsen/toolbelt.testing": "workspace:*",
+    "readyup": "catalog:"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}
