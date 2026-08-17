@@ -1,1 +1,1 @@
-export { clamp } from './clamp.ts';
+export {};

@@ -1,3 +1,4 @@
+export { clamp, type ClampBounds } from './clamp.ts';
 export { generateRandom } from './generateRandom.ts';
 export { isIntegerString, safeParseInteger } from './integer-string.ts';
 export { isNumericString, safeParseNumber } from './numeric-string.ts';
