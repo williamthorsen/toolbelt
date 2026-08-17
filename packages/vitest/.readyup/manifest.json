@@ -9,47 +9,72 @@
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
-          "hash": "cfb38449",
+          "hash": "8da861d2",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/path-predicates.ts"
+        },
+        {
+          "hash": "7b2aca38",
+          "kind": "module",
+          "path": "../../adoption/src/kits/defineAdoptionKit.ts"
+        },
+        {
+          "hash": "c9bdfae7",
+          "kind": "module",
+          "path": "../../adoption/src/mod.ts"
+        },
+        {
+          "hash": "e8d0444d",
+          "kind": "module",
+          "path": "../../adoption/src/portable/condenseWhitespace.ts"
+        },
+        {
+          "hash": "4da99027",
+          "kind": "module",
+          "path": "../../adoption/src/portable/getLineAtOffset.ts"
+        },
+        {
+          "hash": "c261b998",
+          "kind": "module",
+          "path": "../../adoption/src/portable/listFunctionBodies.ts"
+        },
+        {
+          "hash": "4d2d8e11",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readAnchoredWindow.ts"
+        },
+        {
+          "hash": "498e3ca4",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readBalancedGroup.ts"
+        },
+        {
+          "hash": "68e7f587",
           "kind": "module",
           "path": "kits/default.ts"
         },
         {
-          "hash": "9d267b13",
+          "hash": "eb9b38ae",
           "kind": "module",
-          "path": "../src/readiness/buildKindReport.ts"
+          "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "e79a6b7b",
+          "hash": "b8d60ee2",
           "kind": "module",
           "path": "../src/readiness/classifyExitMock.ts"
         },
         {
-          "hash": "b12d5aa5",
+          "hash": "649f911f",
           "kind": "module",
           "path": "../src/readiness/listExitMocks.ts"
-        },
-        {
-          "hash": "094f4972",
-          "kind": "module",
-          "path": "../src/readiness/listTestFiles.ts"
-        },
-        {
-          "hash": "e44b113e",
-          "kind": "module",
-          "path": "../src/readiness/packageName.ts"
-        },
-        {
-          "hash": "b8290402",
-          "kind": "module",
-          "path": "../src/readiness/summarizeSources.ts"
         }
       ],
       "name": "default",
       "path": "kits/default.js",
-      "readyupVersion": "0.28.0",
+      "readyupVersion": "0.29.0",
       "source": "kits/default.ts",
-      "sourceHash": "cfb38449",
-      "targetHash": "9d4d681a"
+      "sourceHash": "68e7f587",
+      "targetHash": "cf29087f"
     }
   ]
 }

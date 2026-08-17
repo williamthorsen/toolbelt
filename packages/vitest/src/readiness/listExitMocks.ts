@@ -1,3 +1,5 @@
+import { getLineAtOffset } from '@williamthorsen/toolbelt.adoption';
+
 import { classifyExitMock, type ExitMockVerdict } from './classifyExitMock.ts';
 
 export interface ExitMock extends ExitMockVerdict {
@@ -20,21 +22,8 @@ export function listExitMocks(source: string): ExitMock[] {
 
   for (const match of source.matchAll(SPY)) {
     const after = source.slice(match.index + match[0].length);
-    mocks.push({ ...classifyExitMock(after, source), line: countLines(source, match.index) });
+    mocks.push({ ...classifyExitMock(after, source), line: getLineAtOffset(source, match.index) });
   }
 
   return mocks;
 }
-
-// region | Helpers
-
-/** Counts the 1-based line the offset falls on. */
-function countLines(source: string, offset: number): number {
-  let line = 1;
-  for (let index = 0; index < offset; index += 1) {
-    if (source[index] === '\n') line += 1;
-  }
-  return line;
-}
-
-// endregion | Helpers
