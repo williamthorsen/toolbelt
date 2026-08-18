@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "kits": [
+    {
+      "checklists": [
+        "adoption"
+      ],
+      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.numbers",
+      "esbuildVersion": "0.28.2",
+      "inputs": [
+        {
+          "hash": "9cbd3541",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/path-predicates.ts"
+        },
+        {
+          "hash": "23542821",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/site-handoffs.ts"
+        },
+        {
+          "hash": "7b2aca38",
+          "kind": "module",
+          "path": "../../adoption/src/kits/defineAdoptionKit.ts"
+        },
+        {
+          "hash": "97f51360",
+          "kind": "module",
+          "path": "../../adoption/src/mod.ts"
+        },
+        {
+          "hash": "e8d0444d",
+          "kind": "module",
+          "path": "../../adoption/src/portable/condenseWhitespace.ts"
+        },
+        {
+          "hash": "4da99027",
+          "kind": "module",
+          "path": "../../adoption/src/portable/getLineAtOffset.ts"
+        },
+        {
+          "hash": "b6d99ce7",
+          "kind": "module",
+          "path": "../../adoption/src/portable/listFunctionBodies.ts"
+        },
+        {
+          "hash": "4d2d8e11",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readAnchoredWindow.ts"
+        },
+        {
+          "hash": "498e3ca4",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readBalancedGroup.ts"
+        },
+        {
+          "hash": "824d5042",
+          "kind": "module",
+          "path": "kits/default.ts"
+        },
+        {
+          "hash": "f3d9105b",
+          "kind": "module",
+          "path": "../src/readiness/adoptedExports.ts"
+        },
+        {
+          "hash": "ede54aa8",
+          "kind": "module",
+          "path": "../src/readiness/listClampNestLines.ts"
+        },
+        {
+          "hash": "87fa507e",
+          "kind": "module",
+          "path": "../src/readiness/listMathIdioms.ts"
+        },
+        {
+          "hash": "06dd24c0",
+          "kind": "module",
+          "path": "../src/readiness/listRandomIntegerLines.ts"
+        },
+        {
+          "hash": "04db580f",
+          "kind": "module",
+          "path": "../src/readiness/listRoundScaleLines.ts"
+        }
+      ],
+      "name": "default",
+      "path": "kits/default.js",
+      "readyupVersion": "0.29.0",
+      "source": "kits/default.ts",
+      "sourceHash": "824d5042",
+      "targetHash": "d8e916df"
+    }
+  ]
+}

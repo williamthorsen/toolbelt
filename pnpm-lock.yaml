@@ -145,7 +145,23 @@ importers:
         specifier: workspace:*
         version: link:../arrays
 
-  packages/numbers: {}
+  packages/numbers:
+    devDependencies:
+      '@williamthorsen/toolbelt.adoption':
+        specifier: workspace:*
+        version: link:../adoption
+      '@williamthorsen/toolbelt.filesystem':
+        specifier: workspace:*
+        version: link:../filesystem
+      '@williamthorsen/toolbelt.testing':
+        specifier: workspace:*
+        version: link:../testing
+      esbuild:
+        specifier: 'catalog:'
+        version: 0.28.2
+      readyup:
+        specifier: 'catalog:'
+        version: 0.29.0(esbuild@0.28.2)
 
   packages/objects:
     dependencies:
