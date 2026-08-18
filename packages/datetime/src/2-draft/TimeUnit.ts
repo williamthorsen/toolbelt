@@ -1,3 +1,5 @@
+import { round } from '@williamthorsen/toolbelt.numbers/candidate';
+
 export class TimeUnit {
   static readonly Millis = new TimeUnit(1, { singular: 'millisecond', abbrev: 'ms' });
   static readonly Seconds = new TimeUnit(1_000, { singular: 'second', abbrev: 's' });
@@ -59,7 +61,7 @@ export class TimeUnit {
     }
 
     if (decimalPlaces !== undefined) {
-      return Math.round(value * 10 ** decimalPlaces) / 10 ** decimalPlaces;
+      return round(value, decimalPlaces);
     }
 
     return value;

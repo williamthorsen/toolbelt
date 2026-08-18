@@ -64,9 +64,18 @@ describe(TimeUnit, () => {
       expect(comparisons).toBeGreaterThan(0);
     });
 
-    it('rounds to the specified number of decimal places', () => {
+    it('rounds to whole units when decimalPlaces is 0', () => {
       const options = { decimalPlaces: 0 };
       const expected = 0;
+
+      const roundedConversion = TimeUnit.convert(1, TimeUnit.Minutes, TimeUnit.Hours, options);
+
+      expect(roundedConversion).toBe(expected);
+    });
+
+    it('rounds to the specified number of decimal places', () => {
+      const options = { decimalPlaces: 3 };
+      const expected = 0.017;
 
       const roundedConversion = TimeUnit.convert(1, TimeUnit.Minutes, TimeUnit.Hours, options);
 
