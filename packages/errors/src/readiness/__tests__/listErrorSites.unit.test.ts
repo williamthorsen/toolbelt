@@ -124,4 +124,25 @@ describe(listErrorSites, () => {
   it('finds no site in a source that never tests for an Error', () => {
     expect(listErrorSites('export const answer = 42;')).toStrictEqual([]);
   });
+
+  it('finds no site in prose about the operator', () => {
+    const sources = [
+      '// Returns the message where the value is an instanceof Error.\n',
+      '/**\n * Reports whether a thrown value is an instanceof Error.\n */\n',
+      "const label = 'instanceof Error';\n",
+      'const fix = `use isError instead of instanceof Error`;\n',
+      String.raw`const pattern = /\binstanceof Error\b/g;` + '\n',
+    ];
+
+    expect(sources.map(listErrorSites)).toStrictEqual(sources.map(() => []));
+  });
+
+  it('reports a site the prose beside it never obscures', () => {
+    const source = [
+      '// Falls back to instanceof Error where the guard is unavailable.',
+      'const message = error instanceof Error ? error.message : String(error);',
+    ].join('\n');
+
+    expect(listErrorSites(source)).toStrictEqual([{ kind: 'describe-inline', line: 2 }]);
+  });
 });

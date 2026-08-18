@@ -1,4 +1,4 @@
-import { getLineAtOffset, readAnchoredWindow } from '@williamthorsen/toolbelt.adoption';
+import { blankNonCode, getLineAtOffset, readAnchoredWindow } from '@williamthorsen/toolbelt.adoption';
 
 import { classifySite, type SiteKind } from './classifySite.ts';
 import { listDescribeClones } from './listDescribeClones.ts';
@@ -21,19 +21,24 @@ const WINDOW = { lookahead: 240, lookbehind: 80 };
  * A site inside a hand-rolled `describeError` reports as `describe-clone` rather than as the inline site it
  * also is, so one finding names the function to retire instead of several naming its branches.
  *
+ * The source is blanked before the anchor scan reads it, so an `instanceof Error` written in a comment, a
+ * string, or a regular expression is invisible here. Blanking preserves every offset, so a reported line still
+ * names the line the source holds.
+ *
  * @internal
  */
 export function listErrorSites(source: string): ErrorSite[] {
-  const clones = listDescribeClones(source);
+  const code = blankNonCode(source);
+  const clones = listDescribeClones(code);
   const sites: ErrorSite[] = [];
   const claimed = new Set<string>();
 
-  for (const match of source.matchAll(OPERATOR)) {
+  for (const match of code.matchAll(OPERATOR)) {
     const clone = clones.find((candidate) => match.index > candidate.start && match.index < candidate.end);
-    const line = getLineAtOffset(source, match.index);
+    const line = getLineAtOffset(code, match.index);
 
     if (clone === undefined) {
-      const { after, before } = readAnchoredWindow(source, match.index, WINDOW);
+      const { after, before } = readAnchoredWindow(code, match.index, WINDOW);
       sites.push({ kind: classifySite(before, after), line });
     } else if (!claimed.has(clone.name)) {
       claimed.add(clone.name);
