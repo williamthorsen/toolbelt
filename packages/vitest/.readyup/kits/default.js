@@ -82,7 +82,6 @@ var REGEX_PRECEDERS = /* @__PURE__ */ new Set([
   "-",
   ":",
   ";",
-  "<",
   "=",
   ">",
   "?",

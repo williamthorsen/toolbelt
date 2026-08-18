@@ -12,7 +12,6 @@ const REGEX_PRECEDERS = new Set([
   '-',
   ':',
   ';',
-  '<',
   '=',
   '>',
   '?',
@@ -60,9 +59,10 @@ interface Scan {
  * literal is code that runs and stays visible.
  *
  * Where a `/` could open a regular expression or divide, the ambiguity resolves toward division, and a quoted
- * string or regular expression whose closing delimiter never arrives on its line was neither. Every misjudgment
+ * string or regular expression whose closing delimiter never arrives on its line was neither. A misjudgment
  * therefore leaves text standing, which is what a detector reads today, rather than blanking an expression that
- * runs.
+ * runs. JSX is the one exception, being read here as the JavaScript it is not: `>` has to open a regular
+ * expression because `=>` does, so a text node beginning with `/` blanks as far as its closing tag's slash.
  *
  * @internal
  */

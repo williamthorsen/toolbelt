@@ -54,6 +54,21 @@ describe(blankNonCode, () => {
     expect(blankNonCode(source)).toBe(`const label = \`${blank('bounded ')}\${${CLAMP}}${blank(` and ${CLAMP}`)}\`;\n`);
   });
 
+  // Without the interpolation's own brace count, the object literal's `}` would end it and the rest of the
+  // expression would blank as though it were template text.
+  it('keeps an interpolation open past a brace of its own', () => {
+    const source = 'const s = `a ${JSON.stringify({ n: 1 })} b`;\n';
+
+    expect(blankNonCode(source)).toBe(`const s = \`${blank('a ')}\${JSON.stringify({ n: 1 })}${blank(' b')}\`;\n`);
+  });
+
+  it('reads an escaped backtick as part of the template holding it', () => {
+    const text = String.raw`bounded \` ${CLAMP}`;
+    const source = `const label = \`${text}\`;\nconst t = 1;\n`;
+
+    expect(blankNonCode(source)).toBe(`const label = \`${blank(text)}\`;\nconst t = 1;\n`);
+  });
+
   it('unwinds a template literal nested inside an interpolation', () => {
     const source = 'const s = `a ${`b ${x} c`} d`;\n';
 
@@ -89,10 +104,34 @@ describe(blankNonCode, () => {
     expect(blankNonCode(source)).toBe(source);
   });
 
-  // The shape a `.tsx` closing tag takes. Nothing closes the slash on its line, so it stays code, which is why
-  // JSX text is left visible rather than half-blanked.
-  it('leaves a slash it cannot close on its line standing as code', () => {
-    const source = 'const node = <div>{total}</div>;\nconst rest = 2;\n';
+  it('reads a regular expression opening after an expression keyword', () => {
+    const body = 'abc';
+    const source = `function isMatch(x) { return /${body}/.test(x); }\n`;
+
+    expect(blankNonCode(source)).toBe(`function isMatch(x) { return /${blank(body)}/.test(x); }\n`);
+  });
+
+  // `<` opens no regular expression, so a closing tag's slash divides. Were it a regular-expression position, a
+  // line holding two closing tags would blank everything between the first tag's slash and the second's.
+  it('leaves JSX closing tags standing as code', () => {
+    const source = [
+      'const one = <div>{total}</div>;',
+      'const two = <span>{a}</span> <span>{' + CLAMP + '}</span>;',
+      '',
+    ].join('\n');
+
+    expect(blankNonCode(source)).toBe(source);
+  });
+
+  it('leaves an unclosed slash standing rather than blanking past its line', () => {
+    const source = `const pattern = /abc;\nconst bounded = ${CLAMP};\n`;
+
+    expect(blankNonCode(source)).toBe(source);
+  });
+
+  // An apostrophe in prose opens no string, so it cannot swallow the code after it.
+  it('leaves an unclosed quote standing rather than blanking past its line', () => {
+    const source = `const node = <p>don't</p>;\nconst bounded = ${CLAMP};\n`;
 
     expect(blankNonCode(source)).toBe(source);
   });
