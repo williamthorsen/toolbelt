@@ -21,4 +21,23 @@ describe(listMathIdioms, () => {
   it('finds nothing in a source holding none of the idioms', () => {
     expect(listMathIdioms('export const total = items.length * 2;\n')).toStrictEqual([]);
   });
+
+  it('finds nothing in prose about the idioms', () => {
+    const sources = [
+      '// Replaces Math.floor(Math.random() * sides) with pickInteger.\n',
+      '/**\n * Bounds a value with Math.max(min, Math.min(max, value)).\n */\n',
+      "const fix = 'use round instead of Math.round(value * 100) / 100';\n",
+      'const fix = `use clamp instead of Math.max(min, Math.min(max, value))`;\n',
+      'const pattern = /Math.floor(Math.random() * n)/;\n',
+    ];
+
+    expect(sources.map(listMathIdioms)).toStrictEqual(sources.map(() => []));
+  });
+
+  // An interpolated expression is code that runs, so the idiom in it is one a consumer can retire.
+  it('claims an idiom interpolated into a template literal', () => {
+    const source = 'const label = `bounded to ${Math.max(min, Math.min(max, value))}`;\n';
+
+    expect(listMathIdioms(source)).toStrictEqual([{ kind: 'clamp-nest', line: 1 }]);
+  });
 });

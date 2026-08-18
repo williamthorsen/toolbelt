@@ -9,6 +9,8 @@ export interface DescribeClone {
 /**
  * Lists the functions whose whole body is a hand-rolled `describeError`.
  *
+ * Takes the blanked code `listErrorSites` produces, so a body's string and comment text reads as spaces.
+ *
  * A local re-implementation is the strongest adoption finding available, because one substitution retires a
  * whole function rather than a single expression. Detection deliberately under-matches: a body is a clone only
  * where every statement in it is a `return` or an `if` guarding one, so a function doing anything besides

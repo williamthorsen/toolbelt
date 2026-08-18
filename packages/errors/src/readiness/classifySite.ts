@@ -10,6 +10,9 @@ const NEGATED_OPERAND = /!\(\s*[\w.]+\s*$/;
 /**
  * Names what an `instanceof Error` site is doing, from the collapsed text either side of it.
  *
+ * Both windows are read from the blanked code `listErrorSites` produces, so a comment sitting mid-expression
+ * collapses to a single space rather than hiding the operand behind it.
+ *
  * Every unrecognized site is a `narrow` rather than being dropped: the substitution there is often a
  * correction rather than a tidy-up, as with a guard that reads `.message` off a value the runtime may not
  * deliver as an `Error` at all.

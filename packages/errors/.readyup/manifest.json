@@ -19,14 +19,19 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "7b2aca38",
+          "hash": "737a39d2",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "97f51360",
+          "hash": "29115f53",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
+        },
+        {
+          "hash": "6617674b",
+          "kind": "module",
+          "path": "../../adoption/src/portable/blankNonCode.ts"
         },
         {
           "hash": "e8d0444d",
@@ -64,17 +69,17 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "373103e6",
+          "hash": "cd95f4c4",
           "kind": "module",
           "path": "../src/readiness/classifySite.ts"
         },
         {
-          "hash": "f6dac2fd",
+          "hash": "8ba488d0",
           "kind": "module",
           "path": "../src/readiness/listDescribeClones.ts"
         },
         {
-          "hash": "79d38a29",
+          "hash": "41f4ae49",
           "kind": "module",
           "path": "../src/readiness/listErrorSites.ts"
         }
@@ -84,7 +89,7 @@
       "readyupVersion": "0.29.0",
       "source": "kits/default.ts",
       "sourceHash": "45ae48be",
-      "targetHash": "55e24d4b"
+      "targetHash": "26aa3725"
     }
   ]
 }
