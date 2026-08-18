@@ -1,0 +1,140 @@
+import { describe, expect, it } from 'vitest';
+
+import { blankNonCode } from '../blankNonCode.ts';
+
+const CLAMP = 'Math.max(min, Math.min(max, value))';
+
+describe(blankNonCode, () => {
+  it('matches the source in length and in every line break', () => {
+    const source = [
+      '#!/usr/bin/env node',
+      '/**',
+      ` * Bounds a value with ${CLAMP}.`,
+      ' */',
+      `export const label = 'bounds a value';`,
+      `export const bounded = ${CLAMP};`,
+      '',
+    ].join('\n');
+
+    const blanked = blankNonCode(source);
+
+    expect(blanked).toHaveLength(source.length);
+    expect(listLineBreakOffsets(blanked)).toStrictEqual(listLineBreakOffsets(source));
+  });
+
+  it('blanks an idiom written in a line comment', () => {
+    const comment = `// ${CLAMP}`;
+    const source = `const a = 1; ${comment}\nconst b = 2;\n`;
+
+    expect(blankNonCode(source)).toBe(`const a = 1; ${blank(comment)}\nconst b = 2;\n`);
+  });
+
+  it('blanks an idiom written in a block comment, across the lines it spans', () => {
+    const source = `/* ${CLAMP}\n   and more ${CLAMP} */\nconst b = 2;\n`;
+
+    expect(blankNonCode(source)).toBe(`${blank(`/* ${CLAMP}`)}\n${blank(`   and more ${CLAMP} */`)}\nconst b = 2;\n`);
+  });
+
+  it('blanks a quoted string, keeping its delimiters', () => {
+    const source = `const a = '${CLAMP}';\nconst b = "${CLAMP}";\n`;
+
+    expect(blankNonCode(source)).toBe(`const a = '${blank(CLAMP)}';\nconst b = "${blank(CLAMP)}";\n`);
+  });
+
+  it('reads an escaped delimiter as part of the literal holding it', () => {
+    const text = String.raw`it\'s ${CLAMP}`;
+    const source = `const a = '${text}';\nconst b = 2;\n`;
+
+    expect(blankNonCode(source)).toBe(`const a = '${blank(text)}';\nconst b = 2;\n`);
+  });
+
+  it('blanks a template literal and leaves the expression interpolated into it as code', () => {
+    const source = `const label = \`bounded \${${CLAMP}} and ${CLAMP}\`;\n`;
+
+    expect(blankNonCode(source)).toBe(`const label = \`${blank('bounded ')}\${${CLAMP}}${blank(` and ${CLAMP}`)}\`;\n`);
+  });
+
+  it('unwinds a template literal nested inside an interpolation', () => {
+    const source = 'const s = `a ${`b ${x} c`} d`;\n';
+
+    expect(blankNonCode(source)).toBe(
+      `const s = \`${blank('a ')}\${\`${blank('b ')}\${x}${blank(' c')}\`}${blank(' d')}\`;\n`,
+    );
+  });
+
+  it('blanks a regular expression body, keeping its delimiters and flags', () => {
+    const body = String.raw`\binstanceof\s+Error\b`;
+    const source = `const pattern = /${body}/g;\n`;
+
+    expect(blankNonCode(source)).toBe(`const pattern = /${blank(body)}/g;\n`);
+  });
+
+  it('reads a regular expression holding quote delimiters as one literal', () => {
+    const body = `['"]`;
+    const source = `const quote = /${body}/;\nconst tail = "${CLAMP}";\n`;
+
+    expect(blankNonCode(source)).toBe(`const quote = /${blank(body)}/;\nconst tail = "${blank(CLAMP)}";\n`);
+  });
+
+  it('reads a regular expression holding comment delimiters as one literal', () => {
+    const body = String.raw`\/\/|\/\*`;
+    const source = `const comment = /${body}/;\nconst tail = 2;\n`;
+
+    expect(blankNonCode(source)).toBe(`const comment = /${blank(body)}/;\nconst tail = 2;\n`);
+  });
+
+  it('reads a slash after a word or a closing parenthesis as division', () => {
+    const source = 'const ratio = a / b / c;\nconst mean = (a + b) / 2;\n';
+
+    expect(blankNonCode(source)).toBe(source);
+  });
+
+  // The shape a `.tsx` closing tag takes. Nothing closes the slash on its line, so it stays code, which is why
+  // JSX text is left visible rather than half-blanked.
+  it('leaves a slash it cannot close on its line standing as code', () => {
+    const source = 'const node = <div>{total}</div>;\nconst rest = 2;\n';
+
+    expect(blankNonCode(source)).toBe(source);
+  });
+
+  it('blanks a shebang line', () => {
+    const line = '#!/usr/bin/env node';
+    const source = `${line}\nconst a = 1;\n`;
+
+    expect(blankNonCode(source)).toBe(`${blank(line)}\nconst a = 1;\n`);
+  });
+
+  it('keeps every offset past an astral character inside a blanked span', () => {
+    const text = `🎉 ${CLAMP}`;
+    const source = `const s = '${text}';\nconst t = 1;\n`;
+
+    const blanked = blankNonCode(source);
+
+    expect(blanked).toBe(`const s = '${blank(text)}';\nconst t = 1;\n`);
+    expect(blanked.indexOf('const t')).toBe(source.indexOf('const t'));
+  });
+
+  it('leaves a source holding no comment or literal untouched', () => {
+    const source = `export const bounded = ${CLAMP};\n`;
+
+    expect(blankNonCode(source)).toBe(source);
+  });
+});
+
+// region | Helpers
+
+/** Renders what a span of the given text blanks to, which is a space per UTF-16 code unit. */
+function blank(text: string): string {
+  return ' '.repeat(text.length);
+}
+
+/** Lists the offset of every line break, which is what a preserved line number rests on. */
+function listLineBreakOffsets(text: string): number[] {
+  const offsets: number[] = [];
+  for (let index = 0; index < text.length; index += 1) {
+    if (text[index] === '\n') offsets.push(index);
+  }
+  return offsets;
+}
+
+// endregion | Helpers

@@ -25,6 +25,11 @@ export interface AdoptionCheck<Kind extends string> {
 export interface AdoptionKitSpec<Kind extends string> {
   checks: ReadonlyArray<AdoptionCheck<Kind>>;
   description: string;
+  /**
+   * Lists a source's sites. Blank the text with `blankNonCode` before the anchor scan, or an idiom written in a
+   * comment or a literal reports as one written in code. What `countPackageUsage` reads must stay unblanked:
+   * it matches the import specifier, which is a string literal.
+   */
   detect: (text: string) => ReadonlyArray<AdoptionSite<Kind>>;
   /** The package's own callable exports, which is what adoption is counted in calls to. */
   exportNames: readonly string[];
