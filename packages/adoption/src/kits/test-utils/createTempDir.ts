@@ -4,8 +4,9 @@ import path from 'node:path';
 
 /**
  * Creates a throwaway directory holding the given entries and returns a handle that removes it on disposal. Each
- * key is a directory-relative path to a text file, whose parent directories are created before the write. A call
- * that throws leaves nothing on disk.
+ * key is a directory-relative path to a text file, whose parent directories are created before the write. A key
+ * ending in `/` is rejected: `toolbelt.filesystem`'s `createTempTree` reads that shape as a directory, and this
+ * helper writes files alone. A call that throws leaves nothing on disk.
  *
  * Scaffolding for adoption's own tests, held to node builtins because the adoption layer declares no workspace
  * dependency.
@@ -16,6 +17,10 @@ export function createTempDir(entries: Record<string, string>): TempDir {
 
   try {
     for (const [entry, contents] of Object.entries(entries)) {
+      if (entry.endsWith('/')) {
+        throw new Error(`Entry "${entry}" names a directory; createTempDir writes files alone`);
+      }
+
       const entryPath = path.join(dir, entry);
 
       fs.mkdirSync(path.dirname(entryPath), { recursive: true });
