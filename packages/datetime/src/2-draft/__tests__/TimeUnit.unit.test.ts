@@ -64,6 +64,14 @@ describe(TimeUnit, () => {
       expect(comparisons).toBeGreaterThan(0);
     });
 
+    it('returns the unrounded value when no decimalPlaces is given', () => {
+      const expected = 0.016666666666666666;
+
+      const conversion = TimeUnit.convert(1, TimeUnit.Minutes, TimeUnit.Hours);
+
+      expect(conversion).toBe(expected);
+    });
+
     it('rounds to whole units when decimalPlaces is 0', () => {
       const options = { decimalPlaces: 0 };
       const expected = 0;
