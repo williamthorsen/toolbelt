@@ -22,6 +22,17 @@ describe(listRandomIntegerLines, () => {
     expect(listRandomIntegerLines(source)).toStrictEqual([]);
   });
 
+  // The anchor tolerates whatever spacing a formatter left, so the hand-off has to tolerate it too.
+  it('declines a subscript however it is spaced or chained', () => {
+    const subscripts = [
+      'const item = items?.[Math.floor(Math.random() * items.length)];\n',
+      'const item = items[\n  Math.floor(Math.random() * items.length)\n];\n',
+      'const item = items[ Math.floor(Math.random() * items.length) ];\n',
+    ];
+
+    expect(subscripts.filter((source) => listRandomIntegerLines(source).length > 0)).toStrictEqual([]);
+  });
+
   it('claims a floored random inside an array literal, which is no subscript', () => {
     expect(listRandomIntegerLines('return [Math.floor(Math.random() * sides)];\n')).toStrictEqual([1]);
   });

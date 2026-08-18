@@ -12,6 +12,8 @@ pnpm add @williamthorsen/toolbelt.numbers
 
 Requires Node.js 24 or later.
 
+`clamp`, `round`, and `pickInteger` are candidate tier: imported from `@williamthorsen/toolbelt.numbers/candidate` rather than the package root, and subject to change.
+
 ## `clamp`
 
 ```ts

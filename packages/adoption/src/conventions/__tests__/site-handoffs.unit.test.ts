@@ -13,6 +13,17 @@ describe(isArraySubscript, () => {
     expect(subscripts.filter((before) => !isArraySubscript(before))).toStrictEqual([]);
   });
 
+  it('claims a bracket reached through optional chaining', () => {
+    expect(isArraySubscript('const item = items?.[')).toBe(true);
+  });
+
+  // A formatter that wraps the subscript's contents leaves a space the condensing keeps.
+  it('claims a bracket the condensing left a space after', () => {
+    const spaced = ['const item = items[ ', 'const item = items?.[ '];
+
+    expect(spaced.filter((before) => !isArraySubscript(before))).toStrictEqual([]);
+  });
+
   it('declines a bracket opening an array literal', () => {
     const literals = ['const values = [', 'call(', 'const pair = [a, [', 'const make = () => ['];
 
@@ -20,7 +31,7 @@ describe(isArraySubscript, () => {
   });
 
   it('declines a bracket following a keyword that takes an expression', () => {
-    const keywords = ['return [', 'case [', 'for (const value of [', 'yield ['];
+    const keywords = ['return [', 'return [ ', 'case [', 'for (const value of [', 'yield ['];
 
     expect(keywords.filter((before) => isArraySubscript(before))).toStrictEqual([]);
   });

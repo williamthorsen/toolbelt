@@ -25,7 +25,7 @@ function isTestFile(path) {
 }
 
 // ../adoption/src/conventions/site-handoffs.ts
-var SUBSCRIPT_TAIL = /(?<token>[\w$]+|[)\]'"`])\s?\[$/;
+var SUBSCRIPT_TAIL = /(?<token>[\w$]+|[)\]'"`])\s?(?:\?\.)?\s?\[\s?$/;
 var EXPRESSION_KEYWORDS = /* @__PURE__ */ new Set([
   "await",
   "case",

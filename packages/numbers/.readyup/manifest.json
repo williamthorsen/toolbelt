@@ -14,7 +14,7 @@
           "path": "../../adoption/src/conventions/path-predicates.ts"
         },
         {
-          "hash": "23542821",
+          "hash": "c7d90b66",
           "kind": "module",
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
@@ -89,7 +89,7 @@
       "readyupVersion": "0.29.0",
       "source": "kits/default.ts",
       "sourceHash": "824d5042",
-      "targetHash": "d8e916df"
+      "targetHash": "d2a9a156"
     }
   ]
 }
