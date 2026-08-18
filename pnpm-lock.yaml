@@ -109,7 +109,11 @@ importers:
 
   packages/async: {}
 
-  packages/datetime: {}
+  packages/datetime:
+    dependencies:
+      '@williamthorsen/toolbelt.numbers':
+        specifier: workspace:*
+        version: link:../numbers
 
   packages/dstructs: {}
 

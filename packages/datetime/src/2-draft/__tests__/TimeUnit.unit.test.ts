@@ -64,11 +64,37 @@ describe(TimeUnit, () => {
       expect(comparisons).toBeGreaterThan(0);
     });
 
-    it('rounds to the specified number of decimal places', () => {
+    it('returns the unrounded value when no decimalPlaces is given', () => {
+      const expected = 0.016666666666666666;
+
+      const conversion = TimeUnit.convert(1, TimeUnit.Minutes, TimeUnit.Hours);
+
+      expect(conversion).toBe(expected);
+    });
+
+    it('rounds to whole units when decimalPlaces is 0', () => {
       const options = { decimalPlaces: 0 };
       const expected = 0;
 
       const roundedConversion = TimeUnit.convert(1, TimeUnit.Minutes, TimeUnit.Hours, options);
+
+      expect(roundedConversion).toBe(expected);
+    });
+
+    it('rounds to the specified number of decimal places', () => {
+      const options = { decimalPlaces: 3 };
+      const expected = 0.017;
+
+      const roundedConversion = TimeUnit.convert(1, TimeUnit.Minutes, TimeUnit.Hours, options);
+
+      expect(roundedConversion).toBe(expected);
+    });
+
+    it('rounds when the from and to units are the same', () => {
+      const options = { decimalPlaces: 0 };
+      const expected = 2;
+
+      const roundedConversion = TimeUnit.convert(1.5, TimeUnit.Hours, TimeUnit.Hours, options);
 
       expect(roundedConversion).toBe(expected);
     });
@@ -89,6 +115,14 @@ describe(TimeUnit, () => {
       expect(throwingFn).toThrow(
         new Error('1000000000000000000 seconds cannot be converted into an exact whole number of milliseconds.'),
       );
+    });
+
+    it('if throwOnFractional=true and the from and to units are the same, throws an error', () => {
+      const options: TimeUnitConversionOptions = { throwOnFractional: true };
+
+      const throwingFn = () => TimeUnit.convert(1.5, TimeUnit.Hours, TimeUnit.Hours, options);
+
+      expect(throwingFn).toThrow(new Error('1.5 hours cannot be converted into an exact whole number of hours.'));
     });
 
     it('if throwOnFractional=true and the result is the largest representable duration, returns it', () => {

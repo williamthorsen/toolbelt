@@ -1,3 +1,5 @@
+import { round } from '@williamthorsen/toolbelt.numbers/candidate';
+
 export class TimeUnit {
   static readonly Millis = new TimeUnit(1, { singular: 'millisecond', abbrev: 'ms' });
   static readonly Seconds = new TimeUnit(1_000, { singular: 'second', abbrev: 's' });
@@ -41,9 +43,6 @@ export class TimeUnit {
   ): number {
     const { decimalPlaces, throwOnFractional } = options;
 
-    if (fromUnit.inMillis === toUnit.inMillis) {
-      return amount;
-    }
     // Keep the ratio a whole number by multiplying when converting to a finer unit and dividing
     // when converting to a coarser one. Multiplying by an inexact reciprocal loses precision:
     // 3_600_000 milliseconds would convert to 0.9999999999999999 hours, which floors to zero.
@@ -59,7 +58,7 @@ export class TimeUnit {
     }
 
     if (decimalPlaces !== undefined) {
-      return Math.round(value * 10 ** decimalPlaces) / 10 ** decimalPlaces;
+      return round(value, decimalPlaces);
     }
 
     return value;
