@@ -11,8 +11,8 @@ const KITS_DIR = fileURLToPath(new URL('../../../.readyup/kits', import.meta.url
 const READINESS_DIR = fileURLToPath(new URL('..', import.meta.url));
 
 describe(listErrorSites, () => {
-  // Every file swept here writes `instanceof Error` in a comment, a pattern, or a fix string, and every one of
-  // them reported a site of its own before blanking. The kit skips this project, so nothing else would notice.
+  // Most files swept here write `instanceof Error` in a comment, a pattern, or a fix string, and each of those
+  // reported a site of its own before blanking. The kit skips this project, so nothing else would notice.
   it('finds nothing in the sources describing what it looks for', () => {
     const findings = listSweptFiles().flatMap((file) =>
       listErrorSites(fs.readFileSync(file, 'utf8')).map((site) => `${path.basename(file)}:${site.line}`),

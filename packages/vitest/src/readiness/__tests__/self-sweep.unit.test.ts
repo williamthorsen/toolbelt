@@ -13,7 +13,7 @@ const TESTS_DIR = fileURLToPath(new URL('.', import.meta.url));
 
 describe(listExitMocks, () => {
   // This kit sweeps tests, so the sweep here reads them too. Every fixture beside this file writes the spy
-  // inside a template literal, and each one reported a mock of its own before blanking.
+  // inside a literal, and each one reported a mock of its own before blanking.
   it('finds nothing in the sources describing what it looks for', () => {
     const findings = listSweptFiles().flatMap((file) =>
       listExitMocks(fs.readFileSync(file, 'utf8')).map((mock) => `${path.basename(file)}:${mock.line}`),
