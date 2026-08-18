@@ -37,7 +37,10 @@ vi.spyOn(process, 'exit').mockImplementation(() => {
   it('finds no mock in prose about one', () => {
     const sources = [
       "// Replaces vi.spyOn(process, 'exit') with throwOnProcessExit.\n",
+      "/**\n * Replaces vi.spyOn(process, 'exit') with throwOnProcessExit.\n */\n",
+      'const fix = "replace vi.spyOn(process, \'exit\')";\n',
       "const fix = `replace vi.spyOn(process, 'exit') with throwOnProcessExit`;\n",
+      "const pattern = /vi.spyOn(process, 'exit')/;\n",
     ];
 
     expect(sources.map(listExitMocks)).toStrictEqual(sources.map(() => []));

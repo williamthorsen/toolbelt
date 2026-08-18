@@ -28,6 +28,7 @@ describe(listMathIdioms, () => {
       '/**\n * Bounds a value with Math.max(min, Math.min(max, value)).\n */\n',
       "const fix = 'use round instead of Math.round(value * 100) / 100';\n",
       'const fix = `use clamp instead of Math.max(min, Math.min(max, value))`;\n',
+      'const pattern = /Math.floor(Math.random() * n)/;\n',
     ];
 
     expect(sources.map(listMathIdioms)).toStrictEqual(sources.map(() => []));
