@@ -88,12 +88,6 @@ importers:
 
   packages/adoption:
     devDependencies:
-      '@williamthorsen/toolbelt.filesystem':
-        specifier: workspace:*
-        version: link:../filesystem
-      '@williamthorsen/toolbelt.testing':
-        specifier: workspace:*
-        version: link:../testing
       readyup:
         specifier: 'catalog:'
         version: 0.29.0(esbuild@0.28.2)
@@ -154,9 +148,6 @@ importers:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
         version: link:../adoption
-      '@williamthorsen/toolbelt.filesystem':
-        specifier: workspace:*
-        version: link:../filesystem
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
         version: link:../testing

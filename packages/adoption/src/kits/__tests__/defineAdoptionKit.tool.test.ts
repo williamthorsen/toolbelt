@@ -1,10 +1,10 @@
-import { createTempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
-import { pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
 import { type CheckOutcome, isFlatChecklist, type RdyCheck } from 'readyup';
 import { describe, expect, it } from 'vitest';
 
 import { type AdoptionKitSpec, type AdoptionSite, defineAdoptionKit } from '../defineAdoptionKit.ts';
+import { createTempDir } from '../test-utils/createTempDir.ts';
 import { createTrackedRepo } from '../test-utils/createTrackedRepo.ts';
+import { pointCwdAt } from '../test-utils/pointCwdAt.ts';
 
 type Kind = 'clone' | 'inline';
 
@@ -125,7 +125,7 @@ describe(defineAdoptionKit, () => {
   });
 
   it('skips every check where the project is not a git working tree', async () => {
-    using tree = createTempTree({ 'package.json': MANIFEST, 'src/a.ts': CLONE });
+    using tree = createTempDir({ 'package.json': MANIFEST, 'src/a.ts': CLONE });
     using _cwd = pointCwdAt(tree.dir);
 
     await expect(runSkip(listChecks(buildSpec())[0])).resolves.toBe(

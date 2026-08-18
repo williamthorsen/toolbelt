@@ -4,6 +4,11 @@ Shared scaffolding for the toolbelt packages' ReadyUp adoption kits. Private to 
 source directly, and esbuild inlines it when `rdy compile` bundles a kit, so it never publishes and never
 resolves for a consumer.
 
+The layer declares no workspace dependency. Every kit-bearing package devDeps it, foundation packages
+included, and `filesystem` deps `errors`, so a dependency of its own closes a cycle pnpm cannot order. Its test
+scaffolding -- `createTempDir` and `pointCwdAt` in `src/kits/test-utils/` -- is held to node builtins for that
+reason, and the root's `__tests__/workspace-dependency-graph.app.unit.test.ts` fails on a cycle.
+
 ## What lives here
 
 - `src/portable/` -- source-scanning primitives. Pure text algorithms with nothing toolbelt about them, held
