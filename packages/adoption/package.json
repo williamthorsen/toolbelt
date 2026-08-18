@@ -25,6 +25,9 @@
   "exports": {
     ".": {
       "import": "./src/mod.ts"
+    },
+    "./test-utils": {
+      "import": "./src/kits/test-utils/createTrackedRepo.ts"
     }
   },
   "devDependencies": {

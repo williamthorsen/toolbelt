@@ -13,13 +13,7 @@
  * The kit declares what to look for and what to advise. What it reports lives in `src/readiness/`, where the
  * package's own suite covers it, and how the looking is done lives in `packages/adoption`.
  */
-import {
-  defineAdoptionKit,
-  isBinWrapper,
-  isInTestDirectory,
-  isJsTsSource,
-  isTestFile,
-} from '@williamthorsen/toolbelt.adoption';
+import { defineAdoptionKit, isAdoptableSource } from '@williamthorsen/toolbelt.adoption';
 
 import { ADOPTED_EXPORTS } from '../../src/readiness/adoptedExports.ts';
 import { listErrorSites } from '../../src/readiness/listErrorSites.ts';
@@ -35,7 +29,7 @@ export default defineAdoptionKit({
   packageName: PACKAGE_NAME,
   // A test constructs error shapes deliberately, and a bootstrap wrapper's hand-rolled handling is what keeps
   // its build-first message alive through an incomplete install.
-  pathFilter: (path) => isJsTsSource(path) && !isBinWrapper(path) && !isTestFile(path) && !isInTestDirectory(path),
+  pathFilter: isAdoptableSource,
   checks: [
     {
       name: 'No source defines its own description helper',

@@ -5,7 +5,7 @@
       "checklists": [
         "adoption"
       ],
-      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.errors",
+      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.numbers",
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
@@ -54,37 +54,42 @@
           "path": "../../adoption/src/portable/readBalancedGroup.ts"
         },
         {
-          "hash": "45ae48be",
+          "hash": "824d5042",
           "kind": "module",
           "path": "kits/default.ts"
         },
         {
-          "hash": "3c53eeb1",
+          "hash": "f3d9105b",
           "kind": "module",
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "373103e6",
+          "hash": "ede54aa8",
           "kind": "module",
-          "path": "../src/readiness/classifySite.ts"
+          "path": "../src/readiness/listClampNestLines.ts"
         },
         {
-          "hash": "f6dac2fd",
+          "hash": "87fa507e",
           "kind": "module",
-          "path": "../src/readiness/listDescribeClones.ts"
+          "path": "../src/readiness/listMathIdioms.ts"
         },
         {
-          "hash": "79d38a29",
+          "hash": "06dd24c0",
           "kind": "module",
-          "path": "../src/readiness/listErrorSites.ts"
+          "path": "../src/readiness/listRandomIntegerLines.ts"
+        },
+        {
+          "hash": "04db580f",
+          "kind": "module",
+          "path": "../src/readiness/listRoundScaleLines.ts"
         }
       ],
       "name": "default",
       "path": "kits/default.js",
       "readyupVersion": "0.29.0",
       "source": "kits/default.ts",
-      "sourceHash": "45ae48be",
-      "targetHash": "55e24d4b"
+      "sourceHash": "824d5042",
+      "targetHash": "d2a9a156"
     }
   ]
 }

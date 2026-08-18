@@ -8,6 +8,9 @@ var BIN_DIRECTORY = /(?:^|\/)bin\//;
 var JS_TS_EXTENSION = /\.[cm]?[jt]sx?$/;
 var TEST_DIRECTORY = /(?:^|\/)__tests__\//;
 var TEST_SUFFIX = /\.(?:spec|test)\.[cm]?[jt]sx?$/;
+function isAdoptableSource(path) {
+  return isJsTsSource(path) && !isBinWrapper(path) && !isTestFile(path) && !isInTestDirectory(path);
+}
 function isBinWrapper(path) {
   return BIN_DIRECTORY.test(path);
 }
@@ -201,7 +204,7 @@ var default_default = defineAdoptionKit({
   packageName: PACKAGE_NAME,
   // A test constructs error shapes deliberately, and a bootstrap wrapper's hand-rolled handling is what keeps
   // its build-first message alive through an incomplete install.
-  pathFilter: (path) => isJsTsSource(path) && !isBinWrapper(path) && !isTestFile(path) && !isInTestDirectory(path),
+  pathFilter: isAdoptableSource,
   checks: [
     {
       name: "No source defines its own description helper",
