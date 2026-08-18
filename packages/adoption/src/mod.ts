@@ -1,4 +1,11 @@
-export { isBinWrapper, isInTestDirectory, isJsTsSource, isTestFile } from './conventions/path-predicates.ts';
+export {
+  isAdoptableSource,
+  isBinWrapper,
+  isInTestDirectory,
+  isJsTsSource,
+  isTestFile,
+} from './conventions/path-predicates.ts';
+export { isArraySubscript } from './conventions/site-handoffs.ts';
 export {
   type AdoptionCheck,
   type AdoptionKitSpec,

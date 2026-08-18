@@ -9,9 +9,14 @@
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
-          "hash": "8da861d2",
+          "hash": "9cbd3541",
           "kind": "module",
           "path": "../../adoption/src/conventions/path-predicates.ts"
+        },
+        {
+          "hash": "23542821",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
           "hash": "7b2aca38",
@@ -19,7 +24,7 @@
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "c9bdfae7",
+          "hash": "97f51360",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },

@@ -1,6 +1,18 @@
 import { describe, expect, it } from 'vitest';
 
-import { isBinWrapper, isInTestDirectory, isJsTsSource, isTestFile } from '../path-predicates.ts';
+import { isAdoptableSource, isBinWrapper, isInTestDirectory, isJsTsSource, isTestFile } from '../path-predicates.ts';
+
+describe(isAdoptableSource, () => {
+  it('claims ordinary source', () => {
+    expect(isAdoptableSource('src/read.ts')).toBe(true);
+  });
+
+  it('declines every path one of its parts exempts', () => {
+    const exempt = ['README.md', 'bin/run.js', 'src/read.unit.test.ts', 'src/__tests__/fixtures/sample.ts'];
+
+    expect(exempt.filter((path) => isAdoptableSource(path))).toStrictEqual([]);
+  });
+});
 
 describe(isBinWrapper, () => {
   it('claims a path inside a bin directory', () => {
