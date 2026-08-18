@@ -15,6 +15,9 @@ const BARE_REFERENCE = /^[\w$.]+$/;
 /**
  * Names what a `process.exit` mock is doing, from the text following the spy and the file that holds it.
  *
+ * Both come from the blanked code `listExitMocks` produces, so a `throw` written in a comment does not make a
+ * mock throwing, and a sentinel class named only in prose is not one the file declares.
+ *
  * A mock throwing a class the same file declares reports as `sentinel-clone` rather than as the `throwing`
  * mock it also is, so one finding names the class to retire alongside the mock.
  *
