@@ -19,14 +19,19 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "7b2aca38",
+          "hash": "737a39d2",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "97f51360",
+          "hash": "29115f53",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
+        },
+        {
+          "hash": "6ffcf1b9",
+          "kind": "module",
+          "path": "../../adoption/src/portable/blankNonCode.ts"
         },
         {
           "hash": "e8d0444d",
@@ -64,12 +69,12 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "b8d60ee2",
+          "hash": "5bfa7274",
           "kind": "module",
           "path": "../src/readiness/classifyExitMock.ts"
         },
         {
-          "hash": "649f911f",
+          "hash": "f09328b4",
           "kind": "module",
           "path": "../src/readiness/listExitMocks.ts"
         }
@@ -79,7 +84,7 @@
       "readyupVersion": "0.29.0",
       "source": "kits/default.ts",
       "sourceHash": "68e7f587",
-      "targetHash": "cf29087f"
+      "targetHash": "568d7314"
     }
   ]
 }

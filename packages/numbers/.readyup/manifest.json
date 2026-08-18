@@ -19,14 +19,19 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "7b2aca38",
+          "hash": "737a39d2",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "97f51360",
+          "hash": "29115f53",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
+        },
+        {
+          "hash": "6ffcf1b9",
+          "kind": "module",
+          "path": "../../adoption/src/portable/blankNonCode.ts"
         },
         {
           "hash": "e8d0444d",
@@ -64,22 +69,22 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "ede54aa8",
+          "hash": "54ee66e5",
           "kind": "module",
           "path": "../src/readiness/listClampNestLines.ts"
         },
         {
-          "hash": "87fa507e",
+          "hash": "47d35285",
           "kind": "module",
           "path": "../src/readiness/listMathIdioms.ts"
         },
         {
-          "hash": "06dd24c0",
+          "hash": "fa0a23b7",
           "kind": "module",
           "path": "../src/readiness/listRandomIntegerLines.ts"
         },
         {
-          "hash": "04db580f",
+          "hash": "ae0ac903",
           "kind": "module",
           "path": "../src/readiness/listRoundScaleLines.ts"
         }
@@ -89,7 +94,7 @@
       "readyupVersion": "0.29.0",
       "source": "kits/default.ts",
       "sourceHash": "824d5042",
-      "targetHash": "d2a9a156"
+      "targetHash": "d6ff4418"
     }
   ]
 }

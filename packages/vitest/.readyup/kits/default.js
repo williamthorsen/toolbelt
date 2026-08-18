@@ -70,6 +70,181 @@ function defineAdoptionKit(spec) {
   }
 }
 
+// ../adoption/src/portable/blankNonCode.ts
+var REGEX_PRECEDERS = /* @__PURE__ */ new Set([
+  "!",
+  "%",
+  "&",
+  "(",
+  "*",
+  "+",
+  ",",
+  "-",
+  ":",
+  ";",
+  "<",
+  "=",
+  ">",
+  "?",
+  "[",
+  "^",
+  "{",
+  "|",
+  "~"
+]);
+var EXPRESSION_KEYWORDS = /* @__PURE__ */ new Set([
+  "await",
+  "case",
+  "delete",
+  "do",
+  "else",
+  "in",
+  "instanceof",
+  "new",
+  "of",
+  "return",
+  "typeof",
+  "void",
+  "yield"
+]);
+var WORD_CHAR = /[\w$]/;
+function blankNonCode(source) {
+  const scan = { out: source.split(""), source };
+  const start = source.startsWith("#!") ? blankSpan(scan, 0, findLineEnd(source, 0)) : 0;
+  scanCode(scan, start, false);
+  return scan.out.join("");
+}
+function blankQuoted(scan, start, quote) {
+  const { source } = scan;
+  let index = start + 1;
+  while (index < source.length) {
+    const char = source[index];
+    if (char === "\\") {
+      index += 2;
+      continue;
+    }
+    if (char === "\n") break;
+    if (char === quote) return blankSpan(scan, start + 1, index) + 1;
+    index += 1;
+  }
+  return start + 1;
+}
+function blankSpan(scan, from, to) {
+  for (let index = from; index < to; index += 1) {
+    const char = scan.source[index];
+    if (char !== "\n" && char !== "\r") scan.out[index] = " ";
+  }
+  return to;
+}
+function blankTemplate(scan, start) {
+  const { source } = scan;
+  let index = start + 1;
+  let textStart = index;
+  while (index < source.length) {
+    const char = source[index];
+    if (char === "\\") {
+      index += 2;
+      continue;
+    }
+    if (char === "`") return blankSpan(scan, textStart, index) + 1;
+    if (char === "$" && source[index + 1] === "{") {
+      blankSpan(scan, textStart, index);
+      const close = scanCode(scan, index + 2, true);
+      index = close < source.length ? close + 1 : close;
+      textStart = index;
+      continue;
+    }
+    index += 1;
+  }
+  return blankSpan(scan, textStart, source.length);
+}
+function findBlockCommentEnd(source, from) {
+  const end = source.indexOf("*/", from + 2);
+  return end === -1 ? source.length : end + 2;
+}
+function findLineEnd(source, from) {
+  const end = source.indexOf("\n", from);
+  return end === -1 ? source.length : end;
+}
+function findRegexEnd(source, start) {
+  let index = start + 1;
+  let isInClass = false;
+  while (index < source.length) {
+    const char = source[index];
+    if (char === "\\") {
+      index += 2;
+      continue;
+    }
+    if (char === "\n") return void 0;
+    if (char === "[") isInClass = true;
+    else if (char === "]") isInClass = false;
+    else if (char === "/" && !isInClass) return index + 1;
+    index += 1;
+  }
+  return void 0;
+}
+function findWordEnd(source, from) {
+  let index = from;
+  while (index < source.length && WORD_CHAR.test(source[index] ?? "")) index += 1;
+  return index;
+}
+function scanCode(scan, from, isInterpolation) {
+  const { source } = scan;
+  let previousToken = "";
+  let braceDepth = 0;
+  let index = from;
+  while (index < source.length) {
+    const char = source[index] ?? "";
+    const next = source[index + 1];
+    if (char === "/" && next === "/") {
+      index = blankSpan(scan, index, findLineEnd(source, index));
+      continue;
+    }
+    if (char === "/" && next === "*") {
+      index = blankSpan(scan, index, findBlockCommentEnd(source, index));
+      continue;
+    }
+    if (char === "'" || char === '"') {
+      index = blankQuoted(scan, index, char);
+      previousToken = char;
+      continue;
+    }
+    if (char === "`") {
+      index = blankTemplate(scan, index);
+      previousToken = char;
+      continue;
+    }
+    if (char === "/" && startsRegex(previousToken)) {
+      const end = findRegexEnd(source, index);
+      if (end !== void 0) {
+        blankSpan(scan, index + 1, end - 1);
+        index = end;
+        previousToken = "/";
+        continue;
+      }
+    }
+    if (isInterpolation && char === "{") braceDepth += 1;
+    else if (isInterpolation && char === "}") {
+      if (braceDepth === 0) return index;
+      braceDepth -= 1;
+    }
+    if (WORD_CHAR.test(char)) {
+      const end = findWordEnd(source, index);
+      previousToken = source.slice(index, end);
+      index = end;
+      continue;
+    }
+    if (!/\s/.test(char)) previousToken = char;
+    index += 1;
+  }
+  return index;
+}
+function startsRegex(previousToken) {
+  if (previousToken === "") return true;
+  if (previousToken.length === 1) return REGEX_PRECEDERS.has(previousToken);
+  return EXPRESSION_KEYWORDS.has(previousToken);
+}
+
 // ../adoption/src/portable/getLineAtOffset.ts
 function getLineAtOffset(source, offset) {
   let line = 1;
@@ -124,10 +299,12 @@ function classifyExitMock(after, source) {
 // src/readiness/listExitMocks.ts
 var SPY = /\bvi\s*\.\s*spyOn\(\s*process\s*,\s*(['"])exit\1\s*\)/g;
 function listExitMocks(source) {
+  const code = blankNonCode(source);
   const mocks = [];
   for (const match of source.matchAll(SPY)) {
-    const after = source.slice(match.index + match[0].length);
-    mocks.push({ ...classifyExitMock(after, source), line: getLineAtOffset(source, match.index) });
+    if (code[match.index] !== source[match.index]) continue;
+    const after = code.slice(match.index + match[0].length);
+    mocks.push({ ...classifyExitMock(after, code), line: getLineAtOffset(code, match.index) });
   }
   return mocks;
 }
