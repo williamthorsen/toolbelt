@@ -90,6 +90,15 @@ describe(TimeUnit, () => {
       expect(roundedConversion).toBe(expected);
     });
 
+    it('rounds when the from and to units are the same', () => {
+      const options = { decimalPlaces: 0 };
+      const expected = 2;
+
+      const roundedConversion = TimeUnit.convert(1.5, TimeUnit.Hours, TimeUnit.Hours, options);
+
+      expect(roundedConversion).toBe(expected);
+    });
+
     it('if throwOnFractional=true and result is fractional, throws an error', () => {
       const options: TimeUnitConversionOptions = { throwOnFractional: true };
 
@@ -106,6 +115,14 @@ describe(TimeUnit, () => {
       expect(throwingFn).toThrow(
         new Error('1000000000000000000 seconds cannot be converted into an exact whole number of milliseconds.'),
       );
+    });
+
+    it('if throwOnFractional=true and the from and to units are the same, throws an error', () => {
+      const options: TimeUnitConversionOptions = { throwOnFractional: true };
+
+      const throwingFn = () => TimeUnit.convert(1.5, TimeUnit.Hours, TimeUnit.Hours, options);
+
+      expect(throwingFn).toThrow(new Error('1.5 hours cannot be converted into an exact whole number of hours.'));
     });
 
     it('if throwOnFractional=true and the result is the largest representable duration, returns it', () => {

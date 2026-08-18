@@ -43,9 +43,6 @@ export class TimeUnit {
   ): number {
     const { decimalPlaces, throwOnFractional } = options;
 
-    if (fromUnit.inMillis === toUnit.inMillis) {
-      return amount;
-    }
     // Keep the ratio a whole number by multiplying when converting to a finer unit and dividing
     // when converting to a coarser one. Multiplying by an inexact reciprocal loses precision:
     // 3_600_000 milliseconds would convert to 0.9999999999999999 hours, which floors to zero.
