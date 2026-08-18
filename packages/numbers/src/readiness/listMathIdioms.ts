@@ -1,4 +1,4 @@
-import type { AdoptionSite } from '@williamthorsen/toolbelt.adoption';
+import { type AdoptionSite, blankNonCode } from '@williamthorsen/toolbelt.adoption';
 
 import { listClampNestLines } from './listClampNestLines.ts';
 import { listRandomIntegerLines } from './listRandomIntegerLines.ts';
@@ -12,13 +12,18 @@ export type MathIdiomKind = 'clamp-nest' | 'random-integer' | 'round-scale';
  * The three idioms share no anchor, so each is matched by its own detector and the results are merged in line
  * order. A file holding two of them reports both.
  *
+ * The source is blanked once here and the three read what it produces, so an idiom written in a comment or a
+ * literal is invisible to all of them. Blanking preserves every offset, so a reported line still names the line
+ * the source holds.
+ *
  * @internal
  */
 export function listMathIdioms(source: string): Array<AdoptionSite<MathIdiomKind>> {
+  const code = blankNonCode(source);
   const sites = [
-    ...toSites('clamp-nest', listClampNestLines(source)),
-    ...toSites('random-integer', listRandomIntegerLines(source)),
-    ...toSites('round-scale', listRoundScaleLines(source)),
+    ...toSites('clamp-nest', listClampNestLines(code)),
+    ...toSites('random-integer', listRandomIntegerLines(code)),
+    ...toSites('round-scale', listRoundScaleLines(code)),
   ];
 
   return sites.toSorted((a, b) => a.line - b.line);

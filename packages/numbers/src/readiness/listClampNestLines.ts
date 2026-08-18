@@ -11,6 +11,8 @@ const OPPOSITE: Record<BoundingName, BoundingName> = { max: 'min', min: 'max' };
 /**
  * Lists the line of every hand-rolled clamp in a source file.
  *
+ * Takes the blanked code `listMathIdioms` produces, so a clamp written in a comment or a literal is not one.
+ *
  * A clamp is a two-argument `Math.max` holding a two-argument `Math.min`, or the mirror of that, with the
  * nested call in either argument position. The nested call's own anchor falls inside the outer call and is
  * suppressed, so one clamp reports once rather than twice.

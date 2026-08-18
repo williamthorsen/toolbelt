@@ -7,6 +7,8 @@ const WINDOW = { lookahead: 0, lookbehind: 80 };
 /**
  * Lists the line of every hand-rolled random integer in a source file.
  *
+ * Takes the blanked code `listMathIdioms` produces, so an idiom written in a comment or a literal is not one.
+ *
  * A site in array-subscript position is left out: it is `toolbelt.arrays`' random-item idiom, whose kit
  * recommends `pickItem`. Leaving it out rather than reporting it under an unclaimed kind keeps it out of the
  * denominator too, which no check here could ever close.
