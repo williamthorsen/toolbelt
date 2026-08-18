@@ -148,9 +148,6 @@ importers:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
         version: link:../adoption
-      '@williamthorsen/toolbelt.filesystem':
-        specifier: workspace:*
-        version: link:../filesystem
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
         version: link:../testing
