@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 
-import { createTempTree, type TempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
+import { createTempDir, type TempDir } from './createTempDir.ts';
 
 /**
  * Creates a throwaway git working tree holding the given entries, every one of them tracked.
@@ -8,8 +8,8 @@ import { createTempTree, type TempTree } from '@williamthorsen/toolbelt.filesyst
  * Adoption checks read the files git tracks, so an untracked fixture file is invisible to them. Staging is
  * enough to be tracked, which is what keeps the fixture clear of the identity a commit would demand.
  */
-export function createTrackedRepo(entries: Record<string, string>): TempTree {
-  const tree = createTempTree(entries);
+export function createTrackedRepo(entries: Record<string, string>): TempDir {
+  const tree = createTempDir(entries);
 
   try {
     runGit(tree.dir, 'init', '--quiet');

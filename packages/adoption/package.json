@@ -31,8 +31,6 @@
     }
   },
   "devDependencies": {
-    "@williamthorsen/toolbelt.filesystem": "workspace:*",
-    "@williamthorsen/toolbelt.testing": "workspace:*",
     "readyup": "catalog:"
   },
   "engines": {
