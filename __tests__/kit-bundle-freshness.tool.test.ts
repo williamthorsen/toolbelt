@@ -5,6 +5,8 @@ import path from 'node:path';
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
+import { isRecord } from '../test-utils/isRecord.ts';
+
 const MANIFEST_PATH = path.join('.readyup', 'manifest.json');
 const RDY_BIN_PATH = path.join('node_modules', '.bin', 'rdy');
 // Every verdict `isPassingVerdict` weighs. A rebuild mismatch leaves the other three `ok`, so reporting a
@@ -89,10 +91,6 @@ function describeVerdicts(kit: Record<string, unknown>): string {
 /** Names a verdict, or its absence, without stringifying a shape the report never promised. */
 function readVerdict(value: unknown): string {
   return typeof value === 'string' ? value : 'unreported';
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
 }
 
 // endregion | Helpers

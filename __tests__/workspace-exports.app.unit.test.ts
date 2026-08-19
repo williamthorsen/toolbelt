@@ -4,6 +4,9 @@ import path from 'node:path';
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
+import { listStringLeaves } from '../test-utils/listStringLeaves.ts';
+import { readManifest } from '../test-utils/readManifest.ts';
+
 const EXPORT_TARGET_PATTERN = /^\.\/dist\/esm\/(?<tier>[^/]+)\/index\.js$/;
 const TIER_DIRECTORY_PATTERN = /^\d-[a-z]+$/;
 // The strawman tier is unexported by design, so it is the one tier that needs no export subpath.
@@ -85,23 +88,6 @@ function auditWorkspaceExports(monorepoRoot: string): {
 }
 
 /**
- * Reports whether a value is a plain object whose properties can be read by name.
- */
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-/**
- * Collects every string held by a value, descending through the nested condition objects an `exports` map uses.
- */
-function listStringLeaves(value: unknown): string[] {
-  if (typeof value === 'string') return [value];
-  if (!isRecord(value)) return [];
-
-  return Object.values(value).flatMap((nested) => listStringLeaves(nested));
-}
-
-/**
  * Lists the maturity-tier directory names under a package's `src`.
  */
 function listTierDirectories(packageDirectory: string): string[] {
@@ -119,9 +105,7 @@ function listTierDirectories(packageDirectory: string): string[] {
  * Reads the targets declared by a package's `exports` map.
  */
 function readExportTargets(packageDirectory: string): string[] {
-  const manifest: unknown = JSON.parse(fs.readFileSync(path.join(packageDirectory, 'package.json'), 'utf8'));
-
-  return isRecord(manifest) ? listStringLeaves(manifest['exports']) : [];
+  return listStringLeaves(readManifest(packageDirectory)['exports']);
 }
 
 // endregion | Helpers

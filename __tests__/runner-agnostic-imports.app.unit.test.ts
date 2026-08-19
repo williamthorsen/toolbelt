@@ -4,6 +4,9 @@ import path from 'node:path';
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
+import { isRecord } from '../test-utils/isRecord.ts';
+import { readManifest } from '../test-utils/readManifest.ts';
+
 /** Fields that install the runner for a consumer. A `devDependencies` entry does not, so it exempts nothing. */
 const DEPENDENCY_FIELDS = ['dependencies', 'peerDependencies'] as const;
 const EXCLUDED_DIRS = new Set(['__tests__', 'dist', 'node_modules']);
@@ -50,18 +53,12 @@ function auditRunnerImports(monorepoRoot: string): { fileCount: number; importer
 
 /** Reports whether a package's manifest declares Vitest under a field that installs it for a consumer. */
 function declaresRunnerDependency(packageDirectory: string): boolean {
-  const manifest: unknown = JSON.parse(fs.readFileSync(path.join(packageDirectory, 'package.json'), 'utf8'));
-  if (!isRecord(manifest)) return false;
+  const manifest = readManifest(packageDirectory);
 
   return DEPENDENCY_FIELDS.some((field) => {
     const declared = manifest[field];
     return isRecord(declared) && Object.hasOwn(declared, RUNNER_PACKAGE);
   });
-}
-
-/** Reports whether a value is a plain object whose properties can be read by name. */
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 /** Yields every TypeScript source file under the given directory, skipping tests and build output. */
