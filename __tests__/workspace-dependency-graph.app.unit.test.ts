@@ -1,8 +1,8 @@
-import fs from 'node:fs';
-import path from 'node:path';
-
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
+
+import { isRecord } from '../test-utils/isRecord.ts';
+import { readManifest } from '../test-utils/readManifest.ts';
 
 const DEPENDENCY_FIELDS = ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies'];
 
@@ -28,9 +28,7 @@ describe('The workspace dependency graph', () => {
  * manifest stays out: nothing depends on it, so it cannot sit in a cycle.
  */
 function auditWorkspaceGraph(monorepoRoot: string): { cycles: string[]; workspaceCount: number } {
-  const manifests = getWorkspacePackageDirs(monorepoRoot).map((directory) =>
-    readManifest(path.join(directory, 'package.json')),
-  );
+  const manifests = getWorkspacePackageDirs(monorepoRoot).map((directory) => readGraphNode(directory));
   const workspaceNames = new Set(manifests.map((manifest) => manifest.name));
   const graph = new Map(
     manifests.map((manifest) => [
@@ -40,10 +38,6 @@ function auditWorkspaceGraph(monorepoRoot: string): { cycles: string[]; workspac
   );
 
   return { cycles: listCycles(graph), workspaceCount: manifests.length };
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
 }
 
 /** Reports each cycle a depth-first walk of the graph closes, as `a -> b -> a`. */
@@ -79,12 +73,12 @@ function listCycles(graph: Map<string, string[]>): string[] {
   return cycles.toSorted((a, b) => a.localeCompare(b));
 }
 
-/** Reads a manifest's name and the names it depends on, across every field that links one workspace to another. */
-function readManifest(manifestPath: string): { dependencies: string[]; name: string } {
-  const parsed: unknown = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+/** Reads a workspace's name and the names it depends on, across every field that links one workspace to another. */
+function readGraphNode(packageDirectory: string): { dependencies: string[]; name: string } {
+  const parsed = readManifest(packageDirectory);
 
-  if (!isRecord(parsed) || typeof parsed['name'] !== 'string') {
-    throw new Error(`Manifest "${manifestPath}" declares no name`);
+  if (typeof parsed['name'] !== 'string') {
+    throw new TypeError(`Manifest in "${packageDirectory}" declares no name`);
   }
 
   const dependencies = DEPENDENCY_FIELDS.flatMap((field) => {

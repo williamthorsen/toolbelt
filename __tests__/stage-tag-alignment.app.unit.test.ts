@@ -4,6 +4,8 @@ import path from 'node:path';
 import { findMonorepoRoot } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
+import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
+
 const EXCLUDED_DIRS = new Set(['__tests__', 'dist', 'node_modules']);
 const STAGE_TAG_PATTERN = /@stage\s+(\S+)/g;
 const TIER_DIR_PATTERN = /^\d-(?<tier>[a-z]+)$/;
@@ -18,6 +20,8 @@ describe('Maturity stage tags', () => {
   });
 });
 
+// region | Helpers
+
 /**
  * Audits every `@stage` tag under a maturity tier directory, reporting those whose value disagrees
  * with the tier holding them. Files outside a `src/{n}-{tier}/` directory carry no tier and are skipped.
@@ -26,7 +30,7 @@ function auditStageTags(monorepoRoot: string): { misalignments: string[]; tagCou
   const misalignments: string[] = [];
   let tagCount = 0;
 
-  const sourceFiles = listSourceFiles(path.join(monorepoRoot, 'packages'));
+  const sourceFiles = listSourceFiles(path.join(monorepoRoot, 'packages'), EXCLUDED_DIRS);
 
   for (const filePath of sourceFiles) {
     const tier = extractTier(filePath);
@@ -60,26 +64,4 @@ function extractTier(filePath: string): string | undefined {
   return TIER_DIR_PATTERN.exec(tierSegment)?.groups?.['tier'];
 }
 
-/**
- * Yields every TypeScript source file under the given directory, skipping tests and build output.
- */
-function* listSourceFiles(rootDir: string): Generator<string> {
-  const pendingDirs = [rootDir];
-
-  while (pendingDirs.length > 0) {
-    const dir = pendingDirs.pop();
-    if (dir === undefined) continue;
-
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-
-    for (const entry of entries) {
-      const entryPath = path.join(dir, entry.name);
-
-      if (entry.isDirectory()) {
-        if (!EXCLUDED_DIRS.has(entry.name)) pendingDirs.push(entryPath);
-      } else if (entry.name.endsWith('.ts')) {
-        yield entryPath;
-      }
-    }
-  }
-}
+// endregion | Helpers
