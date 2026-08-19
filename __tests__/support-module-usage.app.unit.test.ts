@@ -4,6 +4,8 @@ import path from 'node:path';
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
+import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
+
 const EXCLUDED_DIRS = new Set(['dist', 'node_modules']);
 const RELATIVE_SPECIFIER_PATTERN = /from\s+'(\.[^']*)'/g;
 // The directories `nmr build` drops as entry points, which is what keeps a module inside one out of `dist`.
@@ -30,7 +32,7 @@ describe('Support modules', () => {
  */
 function auditSupportModules(monorepoRoot: string): { moduleCount: number; unusedModules: string[] } {
   const sourceFiles = getWorkspacePackageDirs(monorepoRoot).flatMap((packageDirectory) => [
-    ...listSourceFiles(path.join(packageDirectory, 'src')),
+    ...listSourceFiles(path.join(packageDirectory, 'src'), EXCLUDED_DIRS),
   ]);
   const importersByModule = indexImporters(sourceFiles);
 
@@ -92,33 +94,6 @@ function isSupportModule(filePath: string): boolean {
   const supportSegment = segments[srcIndex + 1];
 
   return supportSegment !== undefined && SUPPORT_DIRS.has(supportSegment);
-}
-
-/**
- * Yields every TypeScript source file under the given directory, skipping build output. Test
- * scaffolding is walked rather than skipped, because a test is an importer like any other.
- */
-function* listSourceFiles(rootDir: string): Generator<string> {
-  if (!fs.existsSync(rootDir)) return;
-
-  const pendingDirs = [rootDir];
-
-  while (pendingDirs.length > 0) {
-    const dir = pendingDirs.pop();
-    if (dir === undefined) continue;
-
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-
-    for (const entry of entries) {
-      const entryPath = path.join(dir, entry.name);
-
-      if (entry.isDirectory()) {
-        if (!EXCLUDED_DIRS.has(entry.name)) pendingDirs.push(entryPath);
-      } else if (entry.name.endsWith('.ts')) {
-        yield entryPath;
-      }
-    }
-  }
 }
 
 /**
