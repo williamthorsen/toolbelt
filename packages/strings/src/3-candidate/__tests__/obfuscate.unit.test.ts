@@ -32,10 +32,30 @@ describe(obfuscate, () => {
     expect(actual).toBe(expected);
   });
 
+  it('hides at least {bookendSize} characters, revealing a whole number at each end', () => {
+    const options = { bookendSize: 4 };
+    const str = '123456789';
+    const expected = '12*****89';
+
+    const actual = obfuscate(str, options);
+
+    expect(actual).toBe(expected);
+  });
+
   it('if bookendSize >= string length, obfuscates all characters', () => {
     const options = { bookendSize: 6 };
     const str = '1234';
     const expected = '****';
+
+    const actual = obfuscate(str, options);
+
+    expect(actual).toBe(expected);
+  });
+
+  it('if bookendSize is fractional, ignores its decimal part', () => {
+    const options = { bookendSize: 2.5 };
+    const str = '1234567890';
+    const expected = '12******90';
 
     const actual = obfuscate(str, options);
 
@@ -47,6 +67,13 @@ describe(obfuscate, () => {
     const str = '1234';
 
     expect(() => obfuscate(str, options)).toThrow('Minimum bookendSize is 0.');
+  });
+
+  it('if bookendSize is NaN, throws an error', () => {
+    const options = { bookendSize: NaN };
+    const str = '1234';
+
+    expect(() => obfuscate(str, options)).toThrow('bookendSize cannot be NaN.');
   });
 
   it('if fillChar is given, uses it as the replacement character', () => {
@@ -95,5 +122,12 @@ describe(obfuscate, () => {
     const str = '1234';
 
     expect(() => obfuscate(str, options)).toThrow('Minimum fillSize is 1.');
+  });
+
+  it('if fillSize is NaN, throws an error', () => {
+    const options = { fillSize: NaN };
+    const str = '1234';
+
+    expect(() => obfuscate(str, options)).toThrow('fillSize cannot be NaN.');
   });
 });
