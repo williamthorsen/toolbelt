@@ -12,6 +12,7 @@
     "__tests__/",
     "config/",
     "scripts/",
+    "test-utils/",
     // Root-level TS files so that the ESLint project service can resolve them.
     "*.ts",
   ],
