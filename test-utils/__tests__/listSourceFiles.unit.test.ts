@@ -1,23 +1,21 @@
-import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
+import { createTempDir } from '../createTempDir.ts';
 import { listSourceFiles } from '../listSourceFiles.ts';
 
-const createdDirs: string[] = [];
+const SOURCE_TREE = {
+  '__tests__/covered.unit.test.ts': '',
+  'nested/deep.ts': '',
+  'shallow.ts': '',
+};
 
 describe(listSourceFiles, () => {
-  afterEach(() => {
-    for (const dir of createdDirs) fs.rmSync(dir, { force: true, recursive: true });
-    createdDirs.length = 0;
-  });
-
   it('yields every TypeScript file under the directory', () => {
-    const rootDir = createSourceTree();
+    using tree = createTempDir(SOURCE_TREE);
 
-    const found = [...listSourceFiles(rootDir, new Set())].map((filePath) => path.relative(rootDir, filePath));
+    const found = [...listSourceFiles(tree.dir, new Set())].map((filePath) => path.relative(tree.dir, filePath));
 
     expect(found.toSorted()).toStrictEqual([
       path.join('__tests__', 'covered.unit.test.ts'),
@@ -27,43 +25,26 @@ describe(listSourceFiles, () => {
   });
 
   it('descends into no directory named in the excluded set', () => {
-    const rootDir = createSourceTree();
+    using tree = createTempDir(SOURCE_TREE);
 
-    const found = [...listSourceFiles(rootDir, new Set(['__tests__', 'nested']))];
+    const found = [...listSourceFiles(tree.dir, new Set(['__tests__', 'nested']))];
 
-    expect(found).toStrictEqual([path.join(rootDir, 'shallow.ts')]);
+    expect(found).toStrictEqual([path.join(tree.dir, 'shallow.ts')]);
   });
 
   it('yields nothing for a directory that does not exist', () => {
-    const found = [...listSourceFiles(path.join(createSourceTree(), 'absent'), new Set())];
+    using tree = createTempDir(SOURCE_TREE);
+
+    const found = [...listSourceFiles(path.join(tree.dir, 'absent'), new Set())];
 
     expect(found).toStrictEqual([]);
   });
 
   it('yields no file that is not a TypeScript source', () => {
-    const rootDir = createSourceTree();
-    fs.writeFileSync(path.join(rootDir, 'notes.md'), '');
+    using tree = createTempDir({ ...SOURCE_TREE, 'notes.md': '' });
 
-    const found = [...listSourceFiles(rootDir, new Set(['__tests__', 'nested']))];
+    const found = [...listSourceFiles(tree.dir, new Set(['__tests__', 'nested']))];
 
-    expect(found).toStrictEqual([path.join(rootDir, 'shallow.ts')]);
+    expect(found).toStrictEqual([path.join(tree.dir, 'shallow.ts')]);
   });
 });
-
-// region | Helpers
-
-/** Builds a throwaway source tree holding a shallow module, a nested module, and a test file. */
-function createSourceTree(): string {
-  const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'toolbelt-sources-'));
-  createdDirs.push(rootDir);
-
-  fs.mkdirSync(path.join(rootDir, 'nested'));
-  fs.mkdirSync(path.join(rootDir, '__tests__'));
-  fs.writeFileSync(path.join(rootDir, 'shallow.ts'), '');
-  fs.writeFileSync(path.join(rootDir, 'nested', 'deep.ts'), '');
-  fs.writeFileSync(path.join(rootDir, '__tests__', 'covered.unit.test.ts'), '');
-
-  return rootDir;
-}
-
-// endregion | Helpers
