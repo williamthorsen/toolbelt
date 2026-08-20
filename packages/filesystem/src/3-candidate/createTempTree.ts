@@ -10,7 +10,8 @@ import path from 'node:path';
  *
  * The handle writes into the tree after it is built, through `mkdir`, `symlink`, `write`, `writeAll`, and
  * `writeJson`. Each creates the parent directories it needs and resolves through the containment check `resolve`
- * applies; every one but `writeAll`, which takes a map, returns the absolute path it wrote.
+ * applies; every one but `writeAll`, which takes a map, returns the absolute path it wrote. It reads the tree back
+ * through `exists`, `list`, `read`, and `readJson`, and removes an entry through `rm`.
  *
  * `prefix` names the directory, so a tree outliving a crashed run still says what made it.
  *
@@ -39,6 +40,14 @@ export function createTempTree(
     throw error;
   }
 
+  function exists(entryPath: string): boolean {
+    return fs.existsSync(resolveWithinTree(dir, [entryPath]));
+  }
+
+  function list(entryPath = ''): string[] {
+    return fs.readdirSync(resolveWithinTree(dir, [entryPath])).sort();
+  }
+
   function mkdir(entryPath: string): string {
     const absolutePath = resolveWithinTree(dir, [entryPath]);
 
@@ -47,8 +56,26 @@ export function createTempTree(
     return absolutePath;
   }
 
+  function read(entryPath: string): string {
+    return fs.readFileSync(resolveWithinTree(dir, [entryPath]), 'utf8');
+  }
+
+  function readJson(entryPath: string): unknown {
+    const contents = read(entryPath);
+
+    try {
+      return JSON.parse(contents);
+    } catch (error) {
+      throw new Error(`Entry "${entryPath}" is not readable as JSON`, { cause: error });
+    }
+  }
+
   function resolve(...segments: string[]): string {
     return resolveWithinTree(dir, segments);
+  }
+
+  function rm(entryPath: string): void {
+    fs.rmSync(resolveWithinTree(dir, [entryPath]), { force: true, recursive: true });
   }
 
   function symlink(linkPath: string, targetPath: string): string {
@@ -92,8 +119,13 @@ export function createTempTree(
 
   return {
     dir,
+    exists,
+    list,
     mkdir,
+    read,
+    readJson,
     resolve,
+    rm,
     symlink,
     write,
     writeAll,
@@ -120,8 +152,23 @@ export interface TempTree extends Disposable {
   /** Realpath of the tree root, resolved because `os.tmpdir()` is a symlink on macOS. */
   readonly dir: string;
 
+  /** Answers whether a tree-relative path exists, following a symlink, so a dangling one answers `false`. */
+  exists(entryPath: string): boolean;
+
+  /** Lists the names directly inside a tree-relative directory, sorted, defaulting to the tree root. */
+  list(entryPath?: string): string[];
+
   /** Creates the directory at a tree-relative path, along with its parents, leaving an existing one as it is. */
   mkdir(entryPath: string): string;
+
+  /** Reads the file at a tree-relative path as UTF-8 text. */
+  read(entryPath: string): string;
+
+  /**
+   * Reads the file at a tree-relative path as JSON. The result is `unknown`, for the caller to narrow; contents
+   * that do not parse raise an error naming the entry, which the parse error alone does not.
+   */
+  readJson(entryPath: string): unknown;
 
   /**
    * Resolves `segments` against the tree root, throwing when the result falls outside it. An absolute segment
@@ -129,6 +176,9 @@ export interface TempTree extends Disposable {
    * the tree that points out of it.
    */
   resolve(...segments: string[]): string;
+
+  /** Removes a tree-relative entry, along with its contents where it is a directory, and a missing one silently. */
+  rm(entryPath: string): void;
 
   /**
    * Links a tree-relative path to `targetPath`, taking the link first and so inverting `fs.symlinkSync`. The target

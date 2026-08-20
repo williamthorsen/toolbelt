@@ -136,6 +136,60 @@ describe(createTempTree, () => {
   });
 });
 
+describe('TempTree.exists', () => {
+  it('answers true for a written file and false for a missing entry', () => {
+    using tree = createTempTree({ 'package.json': '{}' });
+
+    expect(tree.exists('package.json')).toBe(true);
+    expect(tree.exists('absent.json')).toBe(false);
+  });
+
+  it('answers false for a dangling link, following it rather than reading the link itself', () => {
+    using tree = createTempTree({});
+    tree.symlink('link.json', 'absent.json');
+
+    expect(tree.exists('link.json')).toBe(false);
+  });
+
+  it('throws on a path that would ascend out of the tree', () => {
+    using tree = createTempTree({});
+
+    const exists = () => tree.exists('../escaped.txt');
+
+    expect(exists).toThrow(/falls outside the temporary tree/);
+  });
+});
+
+describe('TempTree.list', () => {
+  it('lists the names directly inside a directory, sorted', () => {
+    using tree = createTempTree({ 'app/b.ts': '', 'app/a.ts': '', 'app/nested/c.ts': '' });
+
+    expect(tree.list('app')).toStrictEqual(['a.ts', 'b.ts', 'nested']);
+  });
+
+  it('given no path, lists the tree root', () => {
+    using tree = createTempTree({ '.git/': '', 'package.json': '{}' });
+
+    expect(tree.list()).toStrictEqual(['.git', 'package.json']);
+  });
+
+  it('throws on a directory that does not exist', () => {
+    using tree = createTempTree({});
+
+    const list = () => tree.list('absent');
+
+    expect(list).toThrow(/ENOENT/);
+  });
+
+  it('throws on a path that would ascend out of the tree', () => {
+    using tree = createTempTree({});
+
+    const list = () => tree.list('..');
+
+    expect(list).toThrow(/falls outside the temporary tree/);
+  });
+});
+
 describe('TempTree.mkdir', () => {
   it('creates the directory and its parents', () => {
     using tree = createTempTree({});
@@ -165,6 +219,55 @@ describe('TempTree.mkdir', () => {
     const mkdir = () => tree.mkdir('../escaped');
 
     expect(mkdir).toThrow(/falls outside the temporary tree/);
+  });
+});
+
+describe('TempTree.read', () => {
+  it('reads a written file as text', () => {
+    using tree = createTempTree({ 'package.json': '{ "name": "app" }' });
+
+    expect(tree.read('package.json')).toBe('{ "name": "app" }');
+  });
+
+  it('throws on a file that does not exist', () => {
+    using tree = createTempTree({});
+
+    const read = () => tree.read('absent.json');
+
+    expect(read).toThrow(/ENOENT/);
+  });
+
+  it('throws on a path that would ascend out of the tree', () => {
+    using tree = createTempTree({});
+
+    const read = () => tree.read('../escaped.txt');
+
+    expect(read).toThrow(/falls outside the temporary tree/);
+  });
+});
+
+describe('TempTree.readJson', () => {
+  it('round-trips a value written by writeJson', () => {
+    using tree = createTempTree({});
+    tree.writeJson('package.json', { name: 'app', private: true });
+
+    expect(tree.readJson('package.json')).toStrictEqual({ name: 'app', private: true });
+  });
+
+  it('names the entry when the contents do not parse', () => {
+    using tree = createTempTree({ 'package.json': '{ "name": ' });
+
+    const readJson = () => tree.readJson('package.json');
+
+    expect(readJson).toThrow(/Entry "package.json" is not readable as JSON/);
+  });
+
+  it('throws on a file that does not exist', () => {
+    using tree = createTempTree({});
+
+    const readJson = () => tree.readJson('absent.json');
+
+    expect(readJson).toThrow(/ENOENT/);
   });
 });
 
@@ -201,6 +304,38 @@ describe('TempTree.resolve', () => {
     const resolve = () => tree.resolve(os.tmpdir());
 
     expect(resolve).toThrow(/falls outside the temporary tree/);
+  });
+});
+
+describe('TempTree.rm', () => {
+  it('removes a file', () => {
+    using tree = createTempTree({ 'package.json': '{}' });
+
+    tree.rm('package.json');
+
+    expect(tree.exists('package.json')).toBe(false);
+  });
+
+  it('removes a populated directory without options given', () => {
+    using tree = createTempTree({ 'packages/app/package.json': '{}' });
+
+    tree.rm('packages');
+
+    expect(tree.exists('packages')).toBe(false);
+  });
+
+  it('is silent on an entry that does not exist', () => {
+    using tree = createTempTree({});
+
+    expect(() => tree.rm('absent.json')).not.toThrow();
+  });
+
+  it('throws on a path that would ascend out of the tree', () => {
+    using tree = createTempTree({});
+
+    const rm = () => tree.rm('../escaped.txt');
+
+    expect(rm).toThrow(/falls outside the temporary tree/);
   });
 });
 
