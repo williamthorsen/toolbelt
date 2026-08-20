@@ -16,7 +16,7 @@ export function assertIsNonNullable<T>(
 
 /**
  * Returns true if the value is neither null nor undefined, else false.
- * If true, narrows the type to exclude null and undefined.
+ * If true, narrows the type to exclude null and undefined; if false, narrows it to `null | undefined`.
  *
  * @category Type Guards
  * @stage release
