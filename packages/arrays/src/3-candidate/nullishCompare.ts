@@ -1,3 +1,5 @@
+import { isNullish } from '@williamthorsen/toolbelt.guards';
+
 /**
  * Accepts a comparison function and returns a new function that adds handling of nullish values and optional
  * comparison reversal.
@@ -38,12 +40,6 @@ export function nullishCompare<T>(
   }
   return compare(a, b) || 0; // avoids returning negative 0
 }
-
-// region | Helpers
-function isNullish(value: unknown): value is null | undefined {
-  return value === null || value === undefined;
-}
-// endregion | Helpers
 
 // region | Types
 type Nullish<T> = T | null | undefined;
