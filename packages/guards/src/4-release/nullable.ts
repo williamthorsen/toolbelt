@@ -8,9 +8,9 @@ import { assert } from './assert.ts';
  * @stage release
  */
 export function assertIsNonNullable<T>(
-  value: T | null | undefined,
+  value: T,
   error: Error | string = 'Value must not be null or undefined.',
-): asserts value is T {
+): asserts value is NonNullable<T> {
   assert(isNonNullable(value), error);
 }
 
@@ -21,7 +21,7 @@ export function assertIsNonNullable<T>(
  * @category Type Guards
  * @stage release
  */
-export function isNonNullable<T>(value: T | null | undefined): value is T {
+export function isNonNullable<T>(value: T): value is NonNullable<T> {
   return value !== null && value !== undefined;
 }
 

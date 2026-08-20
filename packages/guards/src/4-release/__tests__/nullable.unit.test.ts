@@ -16,6 +16,14 @@ describe(assertIsNonNullable, () => {
 
     expectTypeOf(value).toEqualTypeOf<string>();
   });
+
+  it('takes the value at its own type, rejecting a wider explicit type argument', () => {
+    const value = asNullishUnion('');
+    expectTypeOf(value).toEqualTypeOf<string | null | undefined>();
+
+    // @ts-expect-error `string | null` omits the `undefined` that the value's type carries.
+    assertIsNonNullable<string | null>(value);
+  });
 });
 
 describe(isNonNullable, () => {
@@ -39,6 +47,14 @@ describe(isNonNullable, () => {
     } else {
       expectTypeOf(value).toEqualTypeOf<null | undefined>();
     }
+  });
+
+  it('takes the value at its own type, rejecting a wider explicit type argument', () => {
+    const value = asNullishUnion('');
+    expectTypeOf(value).toEqualTypeOf<string | null | undefined>();
+
+    // @ts-expect-error `string | null` omits the `undefined` that the value's type carries.
+    isNonNullable<string | null>(value);
   });
 });
 
