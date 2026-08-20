@@ -23,7 +23,14 @@ describe(isNonNullable, () => {
   }
 
   it('narrows each branch of a nullish union', () => {
-    assertNonNullableNarrowing('');
+    const value = asNullishUnion('');
+
+    // eslint-disable-next-line vitest/no-conditional-in-test -- the branches carry type assertions, not runtime logic.
+    if (isNonNullable(value)) {
+      expectTypeOf(value).toEqualTypeOf<string>();
+    } else {
+      expectTypeOf(value).toEqualTypeOf<null | undefined>();
+    }
   });
 });
 
@@ -44,33 +51,25 @@ describe(isNullish, () => {
   });
 
   it('narrows each branch of a nullish union', () => {
-    assertNullishNarrowing('');
+    const value = asNullishUnion('');
+
+    // eslint-disable-next-line vitest/no-conditional-in-test -- the branches carry type assertions, not runtime logic.
+    if (isNullish(value)) {
+      expectTypeOf(value).toEqualTypeOf<null | undefined>();
+    } else {
+      expectTypeOf(value).toEqualTypeOf<string>();
+    }
   });
 });
 
 // region | Helpers
 
 /**
- * Asserts the type of each branch of an `isNonNullable` check. The subject is a parameter because a local
- * would be narrowed to its initializer before the guard runs.
+ * Returns the value under its full declared type. A local initialized from a literal would be narrowed to
+ * that literal before the guard runs, leaving the branch assertions vacuous.
  */
-function assertNonNullableNarrowing(value: string | null | undefined): void {
-  if (isNonNullable(value)) {
-    expectTypeOf(value).toEqualTypeOf<string>();
-  } else {
-    expectTypeOf(value).toEqualTypeOf<null | undefined>();
-  }
-}
-
-/**
- * Asserts the type of each branch of an `isNullish` check.
- */
-function assertNullishNarrowing(value: string | null | undefined): void {
-  if (isNullish(value)) {
-    expectTypeOf(value).toEqualTypeOf<null | undefined>();
-  } else {
-    expectTypeOf(value).toEqualTypeOf<string>();
-  }
+function asNullishUnion(value: string | null | undefined): string | null | undefined {
+  return value;
 }
 
 // endregion | Helpers
