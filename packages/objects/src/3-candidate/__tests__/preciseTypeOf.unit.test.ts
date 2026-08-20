@@ -30,6 +30,24 @@ describe(preciseTypeOf, () => {
     expect(actual).toBe(expected);
   });
 
+  it('returns "plainobject" for an object with a null prototype', () => {
+    const input = Object.create(null);
+    const expected = 'plainobject';
+
+    const actual = preciseTypeOf(input);
+
+    expect(actual).toBe(expected);
+  });
+
+  it('returns "instance" for an object carrying Symbol.iterator', () => {
+    const input = { a: 1, [Symbol.iterator]: () => [].values() };
+    const expected = 'instance';
+
+    const actual = preciseTypeOf(input);
+
+    expect(actual).toBe(expected);
+  });
+
   it('returns "instance" for instances of built-in classes', () => {
     class TestClass {}
     const input = new TestClass();

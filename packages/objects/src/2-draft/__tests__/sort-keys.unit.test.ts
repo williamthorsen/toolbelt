@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import type { PlainObject } from '../../4-release/is-object.ts';
 import { sortKeys, sortObjectKeys } from '../sort-keys.ts';
 
 describe(sortKeys, () => {
@@ -30,6 +31,25 @@ describe(sortKeys, () => {
     const actual = sortKeys(input, compare);
 
     expect(actual).toStrictEqual(expected);
+  });
+
+  it('sorts a null-prototype object, returning one with the ordinary prototype', () => {
+    const input: PlainObject = Object.assign(Object.create(null), { z: 1, a: 2 });
+
+    const actual = sortKeys(input);
+
+    expect(Object.keys(actual)).toStrictEqual(['a', 'z']);
+    expect(Object.getPrototypeOf(actual)).toBe(Object.prototype);
+  });
+
+  it('returns an object carrying Symbol.iterator unsorted', () => {
+    // `PlainObject`'s string index signature does not admit a symbol-keyed literal.
+    const input: PlainObject = { z: 1, a: 2 };
+    Object.defineProperty(input, Symbol.iterator, { enumerable: true, value: () => [].values() });
+
+    const actual = sortKeys(input);
+
+    expect(Object.keys(actual)).toStrictEqual(['z', 'a']);
   });
 });
 
@@ -93,5 +113,26 @@ describe(sortObjectKeys, () => {
     const actual = sortObjectKeys(input, customCompareFn);
 
     expect(actual).toStrictEqual(expected);
+  });
+
+  it('sorts a nested null-prototype object, returning one with the ordinary prototype', () => {
+    const nested: PlainObject = Object.assign(Object.create(null), { y: 1, b: 2 });
+    const input = { z: 1, a: 2, m: nested };
+
+    const actual = sortObjectKeys(input);
+
+    expect(Object.keys(actual)).toStrictEqual(['a', 'm', 'z']);
+    expect(Object.keys(actual.m)).toStrictEqual(['b', 'y']);
+    expect(Object.getPrototypeOf(actual.m)).toBe(Object.prototype);
+  });
+
+  it('returns a nested object carrying Symbol.iterator unsorted', () => {
+    const nested = { y: 1, b: 2, [Symbol.iterator]: () => [].values() };
+    const input = { z: 1, a: 2, m: nested };
+
+    const actual = sortObjectKeys(input);
+
+    expect(Object.keys(actual)).toStrictEqual(['a', 'm', 'z']);
+    expect(actual.m).toBe(nested);
   });
 });
