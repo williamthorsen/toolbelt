@@ -91,6 +91,40 @@ describe(createTempTree, () => {
     expect(fs.existsSync(treeDir)).toBe(false);
   });
 
+  // Requires a non-root process: root unlinks regardless of the directory's permission bits, and the case then
+  // passes whether or not disposal restores them.
+  it('removes a tree whose root has been made unwritable', () => {
+    let treeDir: string;
+
+    {
+      using tree = createTempTree({ 'packages/app/package.json': '{}' });
+      treeDir = tree.dir;
+      fs.chmodSync(treeDir, 0o500);
+    }
+
+    expect(fs.existsSync(treeDir)).toBe(false);
+  });
+
+  it('removes a tree whose nested directory has been made unwritable', () => {
+    let treeDir: string;
+
+    {
+      using tree = createTempTree({ 'packages/app/package.json': '{}' });
+      treeDir = tree.dir;
+      fs.chmodSync(tree.resolve('packages/app'), 0o500);
+    }
+
+    expect(fs.existsSync(treeDir)).toBe(false);
+  });
+
+  it('disposes a second time without throwing', () => {
+    const tree = createTempTree({ '.git/': '' });
+
+    tree[Symbol.dispose]();
+
+    expect(() => tree[Symbol.dispose]()).not.toThrow();
+  });
+
   it('rejects an entry resolving outside the tree, leaving nothing on disk', () => {
     // Spy on the creation call, which is the only route to the root of a tree no handle was returned for.
     const mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');

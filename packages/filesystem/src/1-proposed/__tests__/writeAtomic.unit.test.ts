@@ -122,12 +122,9 @@ describe(writeAtomic, () => {
       const dir = tree.resolve('locked');
       fs.chmodSync(dir, 0o555);
 
-      try {
-        await expect(writeAtomic(tree.resolve('locked/config.json'), '{}\n')).rejects.toThrow(/EACCES/);
-        expect(fs.readdirSync(dir)).toStrictEqual([]);
-      } finally {
-        fs.chmodSync(dir, 0o755);
-      }
+      await expect(writeAtomic(tree.resolve('locked/config.json'), '{}\n')).rejects.toThrow(/EACCES/);
+
+      expect(fs.readdirSync(dir)).toStrictEqual([]);
     });
 
     it('surfaces a rename failure, removing the temp file', async () => {

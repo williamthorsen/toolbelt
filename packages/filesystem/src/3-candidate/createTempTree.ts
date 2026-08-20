@@ -96,7 +96,12 @@ export function createTempTree(
 
     // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's `Symbol` list omits `dispose`, standard since ES2026.
     [Symbol.dispose](): void {
-      fs.rmSync(dir, { force: true, recursive: true });
+      try {
+        fs.rmSync(dir, { force: true, recursive: true });
+      } catch {
+        restoreDirectoryPermissions(dir);
+        fs.rmSync(dir, { force: true, recursive: true });
+      }
     },
   };
 }
@@ -175,6 +180,23 @@ function chooseLinkType(linkPath: string, targetPath: string): 'dir' | 'file' | 
   }
 
   return path.isAbsolute(targetPath) ? 'junction' : 'dir';
+}
+
+/**
+ * Grants `dir` and every directory beneath it write and execute permission, so a tree a test made unwritable can
+ * still be removed. Only directories are touched, because unlinking an entry needs permission on its container
+ * rather than on the entry. Each directory is chmodded before it is read, so one denying its own listing is
+ * readable by the time it is listed.
+ */
+function restoreDirectoryPermissions(dir: string): void {
+  fs.chmodSync(dir, 0o700);
+
+  // `Dirent.isDirectory` reads the entry itself, so a symlink to a directory outside the tree is not followed.
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (entry.isDirectory()) {
+      restoreDirectoryPermissions(path.join(dir, entry.name));
+    }
+  }
 }
 
 /** Resolves `segments` against `dir`, rejecting a result that falls outside it. */
