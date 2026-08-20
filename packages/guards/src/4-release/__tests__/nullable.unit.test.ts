@@ -17,7 +17,7 @@ describe(assertIsNonNullable, () => {
     expectTypeOf(value).toEqualTypeOf<string>();
   });
 
-  it('takes the value at its own type, rejecting a wider explicit type argument', () => {
+  it('takes the value at its own type, rejecting a narrower explicit type argument', () => {
     const value = asNullishUnion('');
     expectTypeOf(value).toEqualTypeOf<string | null | undefined>();
 
@@ -49,7 +49,7 @@ describe(isNonNullable, () => {
     }
   });
 
-  it('takes the value at its own type, rejecting a wider explicit type argument', () => {
+  it('takes the value at its own type, rejecting a narrower explicit type argument', () => {
     const value = asNullishUnion('');
     expectTypeOf(value).toEqualTypeOf<string | null | undefined>();
 
