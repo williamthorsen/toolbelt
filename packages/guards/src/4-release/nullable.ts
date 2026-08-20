@@ -21,8 +21,8 @@ export function isNonNullable<T>(value: T | null | undefined): value is T {
 
 /**
  * Returns true if the value is null or undefined, else false.
- * If false, narrows the type to exclude null and undefined.
+ * If true, narrows the type to `null | undefined`; if false, narrows it to exclude null and undefined.
  */
-export function isNullable<T>(value: T | null | undefined): value is Exclude<T, null | undefined> {
+export function isNullish(value: unknown): value is null | undefined {
   return value === null || value === undefined;
 }
