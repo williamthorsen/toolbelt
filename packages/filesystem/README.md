@@ -338,7 +338,10 @@ The link type is chosen from the target, which is where the one portability diff
 `exists`, `list`, `read`, `readJson`, and `rm` read the tree back and remove from it, each through the same containment check:
 
 ```ts
-tree.list(); // ['packages'], sorted, defaulting to the tree root
+using tree = createTempTree({ 'packages/app/package.json': '{ "name": "app" }', 'packages/app/src/main.ts': 'export {};\n' });
+
+tree.list(); // ['packages'], defaulting to the tree root
+tree.list('packages/app'); // ['package.json', 'src'], sorted
 tree.read('packages/app/src/main.ts'); // 'export {};\n'
 tree.readJson('packages/app/package.json'); // unknown, for the caller to narrow
 tree.exists('packages/app/tsconfig.json'); // false

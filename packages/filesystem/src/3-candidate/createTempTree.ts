@@ -9,9 +9,10 @@ import path from 'node:path';
  * call that throws leaves nothing on disk.
  *
  * The handle writes into the tree after it is built, through `mkdir`, `symlink`, `write`, `writeAll`, and
- * `writeJson`. Each creates the parent directories it needs and resolves through the containment check `resolve`
- * applies; every one but `writeAll`, which takes a map, returns the absolute path it wrote. It reads the tree back
- * through `exists`, `list`, `read`, and `readJson`, and removes an entry through `rm`.
+ * `writeJson`. Each creates the parent directories it needs and takes its entry path through the containment check
+ * `resolve` applies; `symlink`'s target is the exception, stored verbatim. Every one but `writeAll`, which takes a
+ * map, returns the absolute path it wrote. It reads the tree back through `exists`, `list`, `read`, and `readJson`,
+ * and removes an entry through `rm`.
  *
  * `prefix` names the directory, so a tree outliving a crashed run still says what made it.
  *
