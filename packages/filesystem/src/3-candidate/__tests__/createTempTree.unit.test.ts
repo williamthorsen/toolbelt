@@ -378,6 +378,43 @@ describe('TempTree.write', () => {
   });
 });
 
+describe('TempTree.writeAll', () => {
+  it('creates a directory for a key ending in a separator and a file for any other', () => {
+    using tree = createTempTree({});
+
+    tree.writeAll({ 'app/src/': '', 'package.json': '{ "name": "app" }' });
+
+    expect(fs.statSync(tree.resolve('app/src')).isDirectory()).toBe(true);
+    expect(fs.readFileSync(tree.resolve('package.json'), 'utf8')).toBe('{ "name": "app" }');
+  });
+
+  it('writes byte contents without passing them through a text encoding', () => {
+    const bytes = Uint8Array.from([0x00, 0xff, 0xfe, 0x80]);
+    using tree = createTempTree({});
+
+    tree.writeAll({ 'logo.bin': bytes });
+
+    expect(Uint8Array.from(fs.readFileSync(tree.resolve('logo.bin')))).toStrictEqual(bytes);
+  });
+
+  it('replaces the contents of an existing file', () => {
+    using tree = createTempTree({ 'package.json': '{ "name": "old" }' });
+
+    tree.writeAll({ 'package.json': '{ "name": "new" }' });
+
+    expect(fs.readFileSync(tree.resolve('package.json'), 'utf8')).toBe('{ "name": "new" }');
+  });
+
+  it('throws on a key that would ascend out of the tree, leaving the tree standing', () => {
+    using tree = createTempTree({ 'kept.txt': 'kept' });
+
+    const writeAll = () => tree.writeAll({ '../escaped.txt': '' });
+
+    expect(writeAll).toThrow(/falls outside the temporary tree/);
+    expect(fs.readFileSync(tree.resolve('kept.txt'), 'utf8')).toBe('kept');
+  });
+});
+
 describe('TempTree.writeJson', () => {
   it('writes two-space-indented JSON ending in a newline', () => {
     using tree = createTempTree({});

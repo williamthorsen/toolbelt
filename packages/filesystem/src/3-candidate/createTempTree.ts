@@ -8,9 +8,9 @@ import path from 'node:path';
  * mapped contents, given as text or as the bytes themselves. A key resolving outside the root is rejected, and a
  * call that throws leaves nothing on disk.
  *
- * The handle writes into the tree after it is built, through `mkdir`, `symlink`, `write`, and `writeJson`. Each
- * creates the parent directories it needs, resolves through the containment check `resolve` applies, and returns
- * the absolute path.
+ * The handle writes into the tree after it is built, through `mkdir`, `symlink`, `write`, `writeAll`, and
+ * `writeJson`. Each creates the parent directories it needs and resolves through the containment check `resolve`
+ * applies; every one but `writeAll`, which takes a map, returns the absolute path it wrote.
  *
  * `prefix` names the directory, so a tree outliving a crashed run still says what made it.
  *
@@ -33,13 +33,7 @@ export function createTempTree(
   const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), prefix)));
 
   try {
-    for (const [entry, contents] of Object.entries(entries)) {
-      if (entry.endsWith('/')) {
-        mkdir(entry);
-      } else {
-        write(entry, contents);
-      }
-    }
+    writeAll(entries);
   } catch (error) {
     fs.rmSync(dir, { force: true, recursive: true });
     throw error;
@@ -75,6 +69,16 @@ export function createTempTree(
     return absolutePath;
   }
 
+  function writeAll(newEntries: Record<string, string | Uint8Array>): void {
+    for (const [entry, contents] of Object.entries(newEntries)) {
+      if (entry.endsWith('/')) {
+        mkdir(entry);
+      } else {
+        write(entry, contents);
+      }
+    }
+  }
+
   function writeJson(entryPath: string, value: unknown): string {
     const json = JSON.stringify(value, null, 2);
 
@@ -92,6 +96,7 @@ export function createTempTree(
     resolve,
     symlink,
     write,
+    writeAll,
     writeJson,
 
     // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's `Symbol` list omits `dispose`, standard since ES2026.
@@ -139,6 +144,13 @@ export interface TempTree extends Disposable {
 
   /** Writes `contents` at a tree-relative path, replacing an existing file. */
   write(entryPath: string, contents: string | Uint8Array): string;
+
+  /**
+   * Writes a map of entries in the shape the constructor takes, so a fixture built in one call there can be added
+   * to in one call here. Unlike the constructor, a failure part-way leaves the entries already written in place,
+   * there being no whole tree to discard.
+   */
+  writeAll(entries: Record<string, string | Uint8Array>): void;
 
   /**
    * Writes `value` at a tree-relative path as two-space-indented JSON ending in a newline. A value with no JSON
