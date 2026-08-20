@@ -8,6 +8,14 @@ describe(assertIsNonNullable, () => {
       assertIsNonNullable(null);
     }).toThrow(new Error('Value must not be null or undefined.'));
   });
+
+  it('narrows to the non-nullish type', () => {
+    const value = asNullishUnion('');
+
+    assertIsNonNullable(value);
+
+    expectTypeOf(value).toEqualTypeOf<string>();
+  });
 });
 
 describe(isNonNullable, () => {
