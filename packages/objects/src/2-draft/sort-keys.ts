@@ -1,9 +1,6 @@
 /* eslint @typescript-eslint/consistent-type-assertions: off */
-/* eslint @typescript-eslint/no-unsafe-return: off */
 
-import { isArray } from '@sindresorhus/is';
-
-import { isObject, isPlainObject, type PlainObject } from '../4-release/is-object.ts';
+import { isPlainObject, type PlainObject } from '../4-release/is-object.ts';
 
 /**
  * Returns a new object whose keys are sorted alphabetically or by a custom comparator function.
@@ -37,19 +34,18 @@ export function sortKeys<T extends PlainObject>(
  * equivalent but whose keys may be in a different order.
  */
 export function sortObjectKeys<T>(value: T, compare: CompareKeys = (keyA, keyB) => (keyA < keyB ? -1 : 1)): T {
-  if (isObject(value)) {
-    if (isArray(value)) {
-      return value.map((item: unknown) => sortObjectKeys(item, compare)) as T;
-    }
-    if (isPlainObject(value)) {
-      const sortedEntries = Object.entries(value)
-        .toSorted(([keyA], [keyB]) => compare(keyA, keyB))
-        .map(([key, value]) => {
-          return [key, sortObjectKeys(value, compare)];
-        });
+  if (Array.isArray(value)) {
+    return value.map((item: unknown) => sortObjectKeys(item, compare)) as T;
+  }
 
-      return Object.fromEntries(sortedEntries) as T;
-    }
+  if (isPlainObject(value)) {
+    const sortedEntries = Object.entries(value)
+      .toSorted(([keyA], [keyB]) => compare(keyA, keyB))
+      .map(([key, value]) => {
+        return [key, sortObjectKeys(value, compare)];
+      });
+
+    return Object.fromEntries(sortedEntries) as T;
   }
 
   return value;

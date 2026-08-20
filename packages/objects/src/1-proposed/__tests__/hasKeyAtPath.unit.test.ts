@@ -53,4 +53,13 @@ describe(hasKeyAtPath, () => {
     expect(hasKeyAtPath(obj, ['list', '0'])).toBe(true);
     expect(hasKeyAtPath(obj, ['list', '3'])).toBe(false);
   });
+
+  it('accepts an array as the root value', () => {
+    expect(hasKeyAtPath([1, 2, 3], ['0'])).toBe(true);
+    expect(hasKeyAtPath([1, 2, 3], ['3'])).toBe(false);
+  });
+
+  it('returns false for a function root, whose own keys are not traversed', () => {
+    expect(hasKeyAtPath(() => {}, ['name'])).toBe(false);
+  });
 });

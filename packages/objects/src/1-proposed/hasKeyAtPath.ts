@@ -1,4 +1,4 @@
-import { isObject } from '../4-release/is-object.ts';
+import { isRecordOrArray } from '../4-release/is-object.ts';
 
 /**
  * Checks whether a nested key exists within an object.
@@ -13,7 +13,7 @@ import { isObject } from '../4-release/is-object.ts';
  */
 export function hasKeyAtPath(obj: unknown, keys: readonly string[]): boolean {
   const [head, ...tail] = keys;
-  if (head === undefined || !isObject(obj) || !Object.hasOwn(obj, head)) {
+  if (head === undefined || !isRecordOrArray(obj) || !Object.hasOwn(obj, head)) {
     return false;
   }
 

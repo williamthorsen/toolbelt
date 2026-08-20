@@ -1,4 +1,4 @@
-import { isObject } from '../4-release/is-object.ts';
+import { isRecord, isRecordOrArray } from '../4-release/is-object.ts';
 
 /**
  * Retrieves a nested value from an object using dot and bracket notation.
@@ -14,7 +14,7 @@ import { isObject } from '../4-release/is-object.ts';
  * @throws If any segment is missing or the structure is invalid.
  */
 export function getValueAtPathOrThrow(obj: unknown, path: string): unknown {
-  if (!isObject(obj)) {
+  if (!isRecordOrArray(obj)) {
     throw new Error('Expected an object as root value.');
   }
 
@@ -36,7 +36,7 @@ export function getValueAtPathOrThrow(obj: unknown, path: string): unknown {
       } else {
         throw new Error(`Array index out of bounds: "${key}" in path "${path}"`);
       }
-    } else if (isObject(current)) {
+    } else if (isRecord(current)) {
       if (!Object.hasOwn(current, key)) {
         throw new Error(`Missing key "${key}" in path "${path}"`);
       }

@@ -45,9 +45,6 @@
   "scripts": {
     "prepublishOnly": "nmr build"
   },
-  "dependencies": {
-    "@sindresorhus/is": "catalog:"
-  },
   "engines": {
     "node": ">=24.0.0"
   },

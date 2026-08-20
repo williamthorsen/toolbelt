@@ -158,11 +158,7 @@ importers:
         specifier: 'catalog:'
         version: 0.29.0(esbuild@0.28.2)
 
-  packages/objects:
-    dependencies:
-      '@sindresorhus/is':
-        specifier: 'catalog:'
-        version: 8.1.0
+  packages/objects: {}
 
   packages/packaging:
     dependencies:
