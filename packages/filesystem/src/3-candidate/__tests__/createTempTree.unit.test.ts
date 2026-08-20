@@ -117,6 +117,19 @@ describe(createTempTree, () => {
     expect(fs.existsSync(treeDir)).toBe(false);
   });
 
+  // A directory denying its own listing is what separates chmodding each directory before reading it from after.
+  it('removes a tree whose nested directory denies its own listing', () => {
+    let treeDir: string;
+
+    {
+      using tree = createTempTree({ 'packages/app/package.json': '{}' });
+      treeDir = tree.dir;
+      fs.chmodSync(tree.resolve('packages/app'), 0o000);
+    }
+
+    expect(fs.existsSync(treeDir)).toBe(false);
+  });
+
   it('disposes a second time without throwing', () => {
     const tree = createTempTree({ '.git/': '' });
     // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's `Symbol` list omits `dispose`, standard since ES2026.
