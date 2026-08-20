@@ -235,8 +235,8 @@ function assertNamesDirectChild(prefix: string): void {
  * target to an absolute path, which would discard the relative string the link stores. Every other target, one that
  * does not exist included, takes `file`, which is what Node falls back to when no type is given.
  */
-function chooseLinkType(linkPath: string, targetPath: string): 'dir' | 'file' | 'junction' {
-  const resolvedTarget = path.resolve(path.dirname(linkPath), targetPath);
+function chooseLinkType(absoluteLinkPath: string, targetPath: string): 'dir' | 'file' | 'junction' {
+  const resolvedTarget = path.resolve(path.dirname(absoluteLinkPath), targetPath);
 
   if (fs.statSync(resolvedTarget, { throwIfNoEntry: false })?.isDirectory() !== true) {
     return 'file';
