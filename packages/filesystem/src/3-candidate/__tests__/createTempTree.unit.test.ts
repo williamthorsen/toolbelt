@@ -178,7 +178,7 @@ describe('TempTree.symlink', () => {
   it('links to a directory target, reaching its contents through the link', () => {
     using tree = createTempTree({ 'store/kit/package.json': '{ "name": "kit" }' });
 
-    tree.symlink('node_modules/kit', 'store/kit');
+    tree.symlink('node_modules/kit', '../store/kit');
 
     expect(fs.readFileSync(tree.resolve('node_modules/kit/package.json'), 'utf8')).toBe('{ "name": "kit" }');
   });
@@ -214,13 +214,31 @@ describe('TempTree.symlink', () => {
     expect(fs.existsSync(linkPath)).toBe(false);
   });
 
-  // Read rather than followed, because a junction stores an absolute path and a consumer can depend on that.
-  it('stores the target as an absolute path under the tree root', () => {
+  // Read rather than followed, because a consumer hashing the link's target depends on the stored string.
+  it('stores a relative target verbatim', () => {
     using tree = createTempTree({ 'store/kit/': '' });
 
-    const linkPath = tree.symlink('node_modules/kit', 'store/kit');
+    const linkPath = tree.symlink('node_modules/kit', '../store/kit');
+
+    expect(fs.readlinkSync(linkPath)).toBe('../store/kit');
+  });
+
+  it('stores an absolute target verbatim', () => {
+    using tree = createTempTree({ 'store/kit/': '' });
+
+    const linkPath = tree.symlink('node_modules/kit', tree.resolve('store/kit'));
 
     expect(fs.readlinkSync(linkPath)).toBe(tree.resolve('store/kit'));
+  });
+
+  it('links a target outside the tree, reaching it through the link', () => {
+    using outside = createTempTree({ 'kit/package.json': '{ "name": "kit" }' });
+    using tree = createTempTree({});
+
+    const linkPath = tree.symlink('node_modules/kit', outside.resolve('kit'));
+
+    expect(fs.readlinkSync(linkPath)).toBe(outside.resolve('kit'));
+    expect(fs.readFileSync(tree.resolve('node_modules/kit/package.json'), 'utf8')).toBe('{ "name": "kit" }');
   });
 
   it('throws on a link path that is already occupied', () => {
@@ -235,13 +253,23 @@ describe('TempTree.symlink', () => {
   // The link type is the argument Windows reads and every other platform ignores, so a spy is the only way to
   // observe the choice from a POSIX run.
   describe('link type', () => {
-    it('links a directory target as a junction', () => {
+    it('links an absolute directory target as a junction', () => {
       const symlinkSyncSpy = vi.spyOn(fs, 'symlinkSync');
       using tree = createTempTree({ 'store/kit/': '' });
 
-      tree.symlink('link', 'store/kit');
+      tree.symlink('link', tree.resolve('store/kit'));
 
       expect(symlinkSyncSpy).toHaveBeenCalledWith(tree.resolve('store/kit'), tree.resolve('link'), 'junction');
+    });
+
+    // The link is nested, so the target resolves only if it is taken against the link's own directory.
+    it('links a relative directory target as a directory', () => {
+      const symlinkSyncSpy = vi.spyOn(fs, 'symlinkSync');
+      using tree = createTempTree({ 'store/kit/': '' });
+
+      tree.symlink('node_modules/kit', '../store/kit');
+
+      expect(symlinkSyncSpy).toHaveBeenCalledWith('../store/kit', tree.resolve('node_modules/kit'), 'dir');
     });
 
     it('links a file target as a file', () => {
@@ -250,7 +278,7 @@ describe('TempTree.symlink', () => {
 
       tree.symlink('link', 'real.json');
 
-      expect(symlinkSyncSpy).toHaveBeenCalledWith(tree.resolve('real.json'), tree.resolve('link'), 'file');
+      expect(symlinkSyncSpy).toHaveBeenCalledWith('real.json', tree.resolve('link'), 'file');
     });
 
     it('links a target that does not exist as a file', () => {
@@ -259,7 +287,7 @@ describe('TempTree.symlink', () => {
 
       tree.symlink('link', 'absent.json');
 
-      expect(symlinkSyncSpy).toHaveBeenCalledWith(tree.resolve('absent.json'), tree.resolve('link'), 'file');
+      expect(symlinkSyncSpy).toHaveBeenCalledWith('absent.json', tree.resolve('link'), 'file');
     });
   });
 
@@ -267,14 +295,6 @@ describe('TempTree.symlink', () => {
     using tree = createTempTree({ 'real.json': 'real\n' });
 
     const symlink = () => tree.symlink('../escaped.json', 'real.json');
-
-    expect(symlink).toThrow(/falls outside the temporary tree/);
-  });
-
-  it('throws on a target that falls outside the tree', () => {
-    using tree = createTempTree({});
-
-    const symlink = () => tree.symlink('link.json', '../escaped.json');
 
     expect(symlink).toThrow(/falls outside the temporary tree/);
   });

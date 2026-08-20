@@ -59,10 +59,9 @@ export function createTempTree(
 
   function symlink(linkPath: string, targetPath: string): string {
     const absoluteLink = resolveWithinTree(dir, [linkPath]);
-    const absoluteTarget = resolveWithinTree(dir, [targetPath]);
 
     fs.mkdirSync(path.dirname(absoluteLink), { recursive: true });
-    fs.symlinkSync(absoluteTarget, absoluteLink, chooseLinkType(absoluteTarget));
+    fs.symlinkSync(targetPath, absoluteLink, chooseLinkType(absoluteLink, targetPath));
 
     return absoluteLink;
   }
@@ -122,13 +121,14 @@ export interface TempTree extends Disposable {
   resolve(...segments: string[]): string;
 
   /**
-   * Links a tree-relative path to a tree-relative target, taking the link first and so inverting `fs.symlinkSync`.
-   * A directory target is linked as a junction, which Windows creates without the elevation a directory symlink
-   * needs and other platforms ignore; every other target, a missing one included, is linked as a file. An occupied
-   * link path raises `EEXIST`.
+   * Links a tree-relative path to `targetPath`, taking the link first and so inverting `fs.symlinkSync`. The target
+   * is stored verbatim and is not containment-checked, being a string the link holds rather than a location the tree
+   * writes to: it may be absolute or relative, name something outside the tree, or dangle. A relative one resolves
+   * against the link's own directory, as POSIX resolves it. An occupied link path raises `EEXIST`.
    *
-   * The link stores an absolute path, which a junction requires, so reading one back yields a path under the tree
-   * root rather than the relative target a package manager writes.
+   * The link type is the one portability difference. An absolute directory target is linked as a junction, which
+   * Windows creates without the elevation a directory symlink needs; a relative directory target is linked as a
+   * directory, which needs that elevation; every other target, a missing one included, is linked as a file.
    */
   symlink(linkPath: string, targetPath: string): string;
 
@@ -162,11 +162,19 @@ function assertNamesDirectChild(prefix: string): void {
 }
 
 /**
- * Answers with the link type to give a target: `junction` for a directory and `file` for everything else. A target
- * that does not exist reads as `file`, which is what Node itself falls back to when no type is given.
+ * Answers with the link type to give a target, resolving a relative one against the link's own directory as POSIX
+ * does. A directory target takes `junction` when absolute and `dir` when relative: Node normalizes a junction's
+ * target to an absolute path, which would discard the relative string the link stores. Every other target, one that
+ * does not exist included, takes `file`, which is what Node falls back to when no type is given.
  */
-function chooseLinkType(targetPath: string): 'file' | 'junction' {
-  return fs.statSync(targetPath, { throwIfNoEntry: false })?.isDirectory() === true ? 'junction' : 'file';
+function chooseLinkType(linkPath: string, targetPath: string): 'dir' | 'file' | 'junction' {
+  const resolvedTarget = path.resolve(path.dirname(linkPath), targetPath);
+
+  if (fs.statSync(resolvedTarget, { throwIfNoEntry: false })?.isDirectory() !== true) {
+    return 'file';
+  }
+
+  return path.isAbsolute(targetPath) ? 'junction' : 'dir';
 }
 
 /** Resolves `segments` against `dir`, rejecting a result that falls outside it. */
