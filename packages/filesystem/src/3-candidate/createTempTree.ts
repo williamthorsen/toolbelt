@@ -45,7 +45,7 @@ export function createTempTree(
   }
 
   function list(entryPath = ''): string[] {
-    return fs.readdirSync(resolveWithinTree(dir, [entryPath])).sort();
+    return fs.readdirSync(resolveWithinTree(dir, [entryPath])).toSorted();
   }
 
   function mkdir(entryPath: string): string {
@@ -253,8 +253,10 @@ function chooseLinkType(linkPath: string, targetPath: string): 'dir' | 'file' | 
 function restoreDirectoryPermissions(dir: string): void {
   fs.chmodSync(dir, 0o700);
 
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+
   // `Dirent.isDirectory` reads the entry itself, so a symlink to a directory outside the tree is not followed.
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+  for (const entry of entries) {
     if (entry.isDirectory()) {
       restoreDirectoryPermissions(path.join(dir, entry.name));
     }
