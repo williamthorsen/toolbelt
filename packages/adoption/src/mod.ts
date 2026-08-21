@@ -12,9 +12,7 @@ export {
   type AdoptionSite,
   defineAdoptionKit,
 } from './kits/defineAdoptionKit.ts';
-export { blankNonCode } from './portable/blankNonCode.ts';
 export { condenseWhitespace } from './portable/condenseWhitespace.ts';
-export { getLineAtOffset } from './portable/getLineAtOffset.ts';
 export { type FunctionBody, listFunctionBodies } from './portable/listFunctionBodies.ts';
 export { type AnchoredWindow, readAnchoredWindow, type WindowLengths } from './portable/readAnchoredWindow.ts';
 export {
@@ -24,3 +22,4 @@ export {
   PARENTHESES,
   readBalancedGroup,
 } from './portable/readBalancedGroup.ts';
+export { blankNonCode, getLineAtOffset } from 'readyup/check-utils';
