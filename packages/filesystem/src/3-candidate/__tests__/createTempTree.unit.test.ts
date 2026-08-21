@@ -91,6 +91,55 @@ describe(createTempTree, () => {
     expect(fs.existsSync(treeDir)).toBe(false);
   });
 
+  // Requires a non-root process: root unlinks regardless of the directory's permission bits, and the case then
+  // passes whether or not disposal restores them.
+  it('removes a tree whose root has been made unwritable', () => {
+    let treeDir: string;
+
+    {
+      using tree = createTempTree({ 'packages/app/package.json': '{}' });
+      treeDir = tree.dir;
+      fs.chmodSync(treeDir, 0o500);
+    }
+
+    expect(fs.existsSync(treeDir)).toBe(false);
+  });
+
+  it('removes a tree whose nested directory has been made unwritable', () => {
+    let treeDir: string;
+
+    {
+      using tree = createTempTree({ 'packages/app/package.json': '{}' });
+      treeDir = tree.dir;
+      fs.chmodSync(tree.resolve('packages/app'), 0o500);
+    }
+
+    expect(fs.existsSync(treeDir)).toBe(false);
+  });
+
+  // A directory denying its own listing is what separates chmodding each directory before reading it from after.
+  it('removes a tree whose nested directory denies its own listing', () => {
+    let treeDir: string;
+
+    {
+      using tree = createTempTree({ 'packages/app/package.json': '{}' });
+      treeDir = tree.dir;
+      fs.chmodSync(tree.resolve('packages/app'), 0o000);
+    }
+
+    expect(fs.existsSync(treeDir)).toBe(false);
+  });
+
+  it('disposes a second time without throwing', () => {
+    const tree = createTempTree({ '.git/': '' });
+    // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's `Symbol` list omits `dispose`, standard since ES2026.
+    const dispose = () => tree[Symbol.dispose]();
+
+    dispose();
+
+    expect(dispose).not.toThrow();
+  });
+
   it('rejects an entry resolving outside the tree, leaving nothing on disk', () => {
     // Spy on the creation call, which is the only route to the root of a tree no handle was returned for.
     const mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
@@ -99,6 +148,60 @@ describe(createTempTree, () => {
 
     expect(create).toThrow(/falls outside the temporary tree/);
     expect(fs.existsSync(String(mkdtempSyncSpy.mock.results[0]?.value))).toBe(false);
+  });
+});
+
+describe('TempTree.exists', () => {
+  it('answers true for a written file and false for a missing entry', () => {
+    using tree = createTempTree({ 'package.json': '{}' });
+
+    expect(tree.exists('package.json')).toBe(true);
+    expect(tree.exists('absent.json')).toBe(false);
+  });
+
+  it('answers false for a dangling link, following it rather than reading the link itself', () => {
+    using tree = createTempTree({});
+    tree.symlink('link.json', 'absent.json');
+
+    expect(tree.exists('link.json')).toBe(false);
+  });
+
+  it('throws on a path that would ascend out of the tree', () => {
+    using tree = createTempTree({});
+
+    const exists = () => tree.exists('../escaped.txt');
+
+    expect(exists).toThrow(/falls outside the temporary tree/);
+  });
+});
+
+describe('TempTree.list', () => {
+  it('lists the names directly inside a directory, sorted', () => {
+    using tree = createTempTree({ 'app/b.ts': '', 'app/a.ts': '', 'app/nested/c.ts': '' });
+
+    expect(tree.list('app')).toStrictEqual(['a.ts', 'b.ts', 'nested']);
+  });
+
+  it('given no path, lists the tree root', () => {
+    using tree = createTempTree({ '.git/': '', 'package.json': '{}' });
+
+    expect(tree.list()).toStrictEqual(['.git', 'package.json']);
+  });
+
+  it('throws on a directory that does not exist', () => {
+    using tree = createTempTree({});
+
+    const list = () => tree.list('absent');
+
+    expect(list).toThrow(/ENOENT/);
+  });
+
+  it('throws on a path that would ascend out of the tree', () => {
+    using tree = createTempTree({});
+
+    const list = () => tree.list('..');
+
+    expect(list).toThrow(/falls outside the temporary tree/);
   });
 });
 
@@ -131,6 +234,55 @@ describe('TempTree.mkdir', () => {
     const mkdir = () => tree.mkdir('../escaped');
 
     expect(mkdir).toThrow(/falls outside the temporary tree/);
+  });
+});
+
+describe('TempTree.read', () => {
+  it('reads a written file as text', () => {
+    using tree = createTempTree({ 'package.json': '{ "name": "app" }' });
+
+    expect(tree.read('package.json')).toBe('{ "name": "app" }');
+  });
+
+  it('throws on a file that does not exist', () => {
+    using tree = createTempTree({});
+
+    const read = () => tree.read('absent.json');
+
+    expect(read).toThrow(/ENOENT/);
+  });
+
+  it('throws on a path that would ascend out of the tree', () => {
+    using tree = createTempTree({});
+
+    const read = () => tree.read('../escaped.txt');
+
+    expect(read).toThrow(/falls outside the temporary tree/);
+  });
+});
+
+describe('TempTree.readJson', () => {
+  it('round-trips a value written by writeJson', () => {
+    using tree = createTempTree({});
+    tree.writeJson('package.json', { name: 'app', private: true });
+
+    expect(tree.readJson('package.json')).toStrictEqual({ name: 'app', private: true });
+  });
+
+  it('names the entry when the contents do not parse', () => {
+    using tree = createTempTree({ 'package.json': '{ "name": ' });
+
+    const readJson = () => tree.readJson('package.json');
+
+    expect(readJson).toThrow(/Entry "package.json" is not readable as JSON/);
+  });
+
+  it('throws on a file that does not exist', () => {
+    using tree = createTempTree({});
+
+    const readJson = () => tree.readJson('absent.json');
+
+    expect(readJson).toThrow(/ENOENT/);
   });
 });
 
@@ -170,6 +322,38 @@ describe('TempTree.resolve', () => {
   });
 });
 
+describe('TempTree.rm', () => {
+  it('removes a file', () => {
+    using tree = createTempTree({ 'package.json': '{}' });
+
+    tree.rm('package.json');
+
+    expect(tree.exists('package.json')).toBe(false);
+  });
+
+  it('removes a populated directory without options given', () => {
+    using tree = createTempTree({ 'packages/app/package.json': '{}' });
+
+    tree.rm('packages');
+
+    expect(tree.exists('packages')).toBe(false);
+  });
+
+  it('is silent on an entry that does not exist', () => {
+    using tree = createTempTree({});
+
+    expect(() => tree.rm('absent.json')).not.toThrow();
+  });
+
+  it('throws on a path that would ascend out of the tree', () => {
+    using tree = createTempTree({});
+
+    const rm = () => tree.rm('../escaped.txt');
+
+    expect(rm).toThrow(/falls outside the temporary tree/);
+  });
+});
+
 describe('TempTree.symlink', () => {
   afterEach(() => {
     vi.restoreAllMocks();
@@ -178,7 +362,7 @@ describe('TempTree.symlink', () => {
   it('links to a directory target, reaching its contents through the link', () => {
     using tree = createTempTree({ 'store/kit/package.json': '{ "name": "kit" }' });
 
-    tree.symlink('node_modules/kit', 'store/kit');
+    tree.symlink('node_modules/kit', '../store/kit');
 
     expect(fs.readFileSync(tree.resolve('node_modules/kit/package.json'), 'utf8')).toBe('{ "name": "kit" }');
   });
@@ -214,13 +398,31 @@ describe('TempTree.symlink', () => {
     expect(fs.existsSync(linkPath)).toBe(false);
   });
 
-  // Read rather than followed, because a junction stores an absolute path and a consumer can depend on that.
-  it('stores the target as an absolute path under the tree root', () => {
+  // Read rather than followed, because a consumer hashing the link's target depends on the stored string.
+  it('stores a relative target verbatim', () => {
     using tree = createTempTree({ 'store/kit/': '' });
 
-    const linkPath = tree.symlink('node_modules/kit', 'store/kit');
+    const linkPath = tree.symlink('node_modules/kit', '../store/kit');
+
+    expect(fs.readlinkSync(linkPath)).toBe('../store/kit');
+  });
+
+  it('stores an absolute target verbatim', () => {
+    using tree = createTempTree({ 'store/kit/': '' });
+
+    const linkPath = tree.symlink('node_modules/kit', tree.resolve('store/kit'));
 
     expect(fs.readlinkSync(linkPath)).toBe(tree.resolve('store/kit'));
+  });
+
+  it('links a target outside the tree, reaching it through the link', () => {
+    using outside = createTempTree({ 'kit/package.json': '{ "name": "kit" }' });
+    using tree = createTempTree({});
+
+    const linkPath = tree.symlink('node_modules/kit', outside.resolve('kit'));
+
+    expect(fs.readlinkSync(linkPath)).toBe(outside.resolve('kit'));
+    expect(fs.readFileSync(tree.resolve('node_modules/kit/package.json'), 'utf8')).toBe('{ "name": "kit" }');
   });
 
   it('throws on a link path that is already occupied', () => {
@@ -235,13 +437,23 @@ describe('TempTree.symlink', () => {
   // The link type is the argument Windows reads and every other platform ignores, so a spy is the only way to
   // observe the choice from a POSIX run.
   describe('link type', () => {
-    it('links a directory target as a junction', () => {
+    it('links an absolute directory target as a junction', () => {
       const symlinkSyncSpy = vi.spyOn(fs, 'symlinkSync');
       using tree = createTempTree({ 'store/kit/': '' });
 
-      tree.symlink('link', 'store/kit');
+      tree.symlink('link', tree.resolve('store/kit'));
 
       expect(symlinkSyncSpy).toHaveBeenCalledWith(tree.resolve('store/kit'), tree.resolve('link'), 'junction');
+    });
+
+    // The link is nested, so the target resolves only if it is taken against the link's own directory.
+    it('links a relative directory target as a directory', () => {
+      const symlinkSyncSpy = vi.spyOn(fs, 'symlinkSync');
+      using tree = createTempTree({ 'store/kit/': '' });
+
+      tree.symlink('node_modules/kit', '../store/kit');
+
+      expect(symlinkSyncSpy).toHaveBeenCalledWith('../store/kit', tree.resolve('node_modules/kit'), 'dir');
     });
 
     it('links a file target as a file', () => {
@@ -250,7 +462,7 @@ describe('TempTree.symlink', () => {
 
       tree.symlink('link', 'real.json');
 
-      expect(symlinkSyncSpy).toHaveBeenCalledWith(tree.resolve('real.json'), tree.resolve('link'), 'file');
+      expect(symlinkSyncSpy).toHaveBeenCalledWith('real.json', tree.resolve('link'), 'file');
     });
 
     it('links a target that does not exist as a file', () => {
@@ -259,7 +471,7 @@ describe('TempTree.symlink', () => {
 
       tree.symlink('link', 'absent.json');
 
-      expect(symlinkSyncSpy).toHaveBeenCalledWith(tree.resolve('absent.json'), tree.resolve('link'), 'file');
+      expect(symlinkSyncSpy).toHaveBeenCalledWith('absent.json', tree.resolve('link'), 'file');
     });
   });
 
@@ -267,14 +479,6 @@ describe('TempTree.symlink', () => {
     using tree = createTempTree({ 'real.json': 'real\n' });
 
     const symlink = () => tree.symlink('../escaped.json', 'real.json');
-
-    expect(symlink).toThrow(/falls outside the temporary tree/);
-  });
-
-  it('throws on a target that falls outside the tree', () => {
-    using tree = createTempTree({});
-
-    const symlink = () => tree.symlink('link.json', '../escaped.json');
 
     expect(symlink).toThrow(/falls outside the temporary tree/);
   });
@@ -321,6 +525,43 @@ describe('TempTree.write', () => {
     const write = () => tree.write('../escaped.txt', 'contents');
 
     expect(write).toThrow(/falls outside the temporary tree/);
+  });
+});
+
+describe('TempTree.writeAll', () => {
+  it('creates a directory for a key ending in a separator and a file for any other', () => {
+    using tree = createTempTree({});
+
+    tree.writeAll({ 'app/src/': '', 'package.json': '{ "name": "app" }' });
+
+    expect(fs.statSync(tree.resolve('app/src')).isDirectory()).toBe(true);
+    expect(fs.readFileSync(tree.resolve('package.json'), 'utf8')).toBe('{ "name": "app" }');
+  });
+
+  it('writes byte contents without passing them through a text encoding', () => {
+    const bytes = Uint8Array.from([0x00, 0xff, 0xfe, 0x80]);
+    using tree = createTempTree({});
+
+    tree.writeAll({ 'logo.bin': bytes });
+
+    expect(Uint8Array.from(fs.readFileSync(tree.resolve('logo.bin')))).toStrictEqual(bytes);
+  });
+
+  it('replaces the contents of an existing file', () => {
+    using tree = createTempTree({ 'package.json': '{ "name": "old" }' });
+
+    tree.writeAll({ 'package.json': '{ "name": "new" }' });
+
+    expect(fs.readFileSync(tree.resolve('package.json'), 'utf8')).toBe('{ "name": "new" }');
+  });
+
+  it('throws on a key that would ascend out of the tree, leaving the tree standing', () => {
+    using tree = createTempTree({ 'kept.txt': 'kept' });
+
+    const writeAll = () => tree.writeAll({ '../escaped.txt': '' });
+
+    expect(writeAll).toThrow(/falls outside the temporary tree/);
+    expect(fs.readFileSync(tree.resolve('kept.txt'), 'utf8')).toBe('kept');
   });
 });
 

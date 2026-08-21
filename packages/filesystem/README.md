@@ -284,10 +284,16 @@ A prefix that would place the tree anywhere but directly inside the system tempo
 ```ts
 interface TempTree extends Disposable {
   readonly dir: string;
+  exists(entryPath: string): boolean;
+  list(entryPath?: string): string[];
   mkdir(entryPath: string): string;
+  read(entryPath: string): string;
+  readJson(entryPath: string): unknown;
   resolve(...segments: string[]): string;
+  rm(entryPath: string): void;
   symlink(linkPath: string, targetPath: string): string;
   write(entryPath: string, contents: string | Uint8Array): string;
+  writeAll(entries: Record<string, string | Uint8Array>): void;
   writeJson(entryPath: string, value: unknown): string;
 }
 ```
@@ -296,7 +302,7 @@ interface TempTree extends Disposable {
 
 `resolve` joins `segments` against the root and throws when the result would fall outside it, so a stray `..` fails loudly rather than reaching into the enclosing directory. An absolute segment landing inside the root is returned unchanged. The containment test is lexical, so it does not follow a symlink inside the tree that points out of it.
 
-`mkdir`, `symlink`, `write`, and `writeJson` write into the tree after it is built, for a fixture that varies per test or a file created to trigger a re-read:
+`mkdir`, `symlink`, `write`, `writeAll`, and `writeJson` write into the tree after it is built, for a fixture that varies per test or a file created to trigger a re-read:
 
 ```ts
 using tree = createTempTree({ 'packages/app/package.json': '{ "name": "app" }' });
@@ -306,23 +312,47 @@ tree.writeJson('tsconfig.json', { include: ['src'] });
 tree.mkdir('packages/empty');
 ```
 
-Each creates the parent directories it needs, resolves through the same containment check as `resolve`, and returns the absolute path of what it wrote. Both of `symlink`'s paths are checked, so an escaping target is refused as well as an escaping link.
+Each creates the parent directories it needs, resolves through the same containment check as `resolve`, and returns the absolute path of what it wrote. `symlink`'s link path is checked; its target is not, being a string the link holds rather than a location the tree writes to.
+
+`writeAll` takes the same map the constructor takes, `/`-suffix convention included, so a fixture built in one call can be added to in one call:
+
+```ts
+tree.writeAll({ 'packages/empty/': '', 'packages/app/src/main.ts': 'export {};\n' });
+```
+
+It returns nothing, there being no single path to return, and unlike the constructor it is not atomic: a failure part-way leaves the entries already written in place, there being no whole tree to discard.
 
 They part company on an entry that already exists: `write` replaces it, `mkdir` leaves it and its contents alone, and `symlink` raises `EEXIST`.
 
-`symlink` takes the link first and the target second, inverting `fs.symlinkSync`, so that it reads like the other methods: the path being created leads. The link type is chosen from the target, which is where the one portability difference lives. A directory is linked as a junction, which Windows creates without the elevation a directory symlink needs; every other target, one that does not exist included, is linked as a file. That last case matches what Node falls back to when no type is given, and it leaves the link dangling until the target appears.
+`symlink` takes the link first and the target second, inverting `fs.symlinkSync`, so that it reads like the other methods: the path being created leads. The target is stored verbatim, so it may be absolute or relative, name something outside the tree, or dangle until the target appears; a relative one resolves against the link's own directory, as POSIX resolves it. Code under test that reads a link rather than following it therefore sees the string that was passed, which is what a consumer hashing a link's target depends on.
 
 ```ts
 using tree = createTempTree({ 'store/kit/package.json': '{ "name": "kit" }' });
 
-tree.symlink('node_modules/kit', 'store/kit'); // a junction, so Windows needs no elevation
+tree.symlink('node_modules/kit', '../store/kit'); // reads back as '../store/kit'
+tree.symlink('node_modules/.bin', tree.resolve('store/kit/bin')); // reads back absolute
 ```
 
-The link stores an absolute path, which a junction requires. Code under test that reads a link rather than following it therefore sees a path under the tree root, where a package manager would have written a relative one; a fixture reproducing that shape reaches for `fs.symlinkSync` directly.
+The link type is chosen from the target, which is where the one portability difference lives. An absolute directory target is linked as a junction, which Windows creates without the elevation a directory symlink needs; a relative directory target is linked as a directory, which needs that elevation, because Node normalizes a junction's target to an absolute path and would discard the relative string. Every other target, one that does not exist included, is linked as a file, matching what Node falls back to when no type is given.
+
+`exists`, `list`, `read`, `readJson`, and `rm` read the tree back and remove from it, each through the same containment check:
+
+```ts
+using tree = createTempTree({ 'packages/app/package.json': '{ "name": "app" }', 'packages/app/src/main.ts': 'export {};\n' });
+
+tree.list(); // ['packages'], defaulting to the tree root
+tree.list('packages/app'); // ['package.json', 'src'], sorted
+tree.read('packages/app/src/main.ts'); // 'export {};\n'
+tree.readJson('packages/app/package.json'); // unknown, for the caller to narrow
+tree.exists('packages/app/tsconfig.json'); // false
+tree.rm('packages/app');
+```
+
+`read` returns UTF-8 text, and a missing entry raises `ENOENT` rather than answering emptily -- `exists` is the check. `readJson` returns `unknown`, so a caller narrows it rather than trusting an asserted type; contents that do not parse raise an error naming the entry, which the parse error alone does not. `exists` follows a symlink, so a dangling one answers `false`. `rm` is recursive and silent on an entry that is not there.
 
 `writeJson` writes two-space-indented JSON ending in a newline, so a tree outliving a crashed run reads as a real config file would. A fixture needing exact bytes goes through `write` instead. A value `JSON.stringify` cannot represent -- `undefined`, a function, a symbol -- is refused rather than written, so an optional binding that arrived empty fails at the call that passed it instead of surfacing later as a parse error.
 
-Disposal is idempotent.
+Disposal is idempotent, and it removes a tree that has been made unwritable: unlinking an entry needs write permission on the directory containing it, so disposal restores permission across the tree and retries once before giving up. A suite that chmods a directory to exercise a write-failure path therefore needs no wrapper to chmod it back.
 
 `Disposable` is declared in `lib.esnext.disposable.d.ts` alone, so consuming this export requires `ESNext.Disposable` in your `lib`.
 
