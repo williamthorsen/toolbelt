@@ -43,7 +43,7 @@ The builder is where this earns its place. It takes per-call arguments, so the r
 
 Making the returned value `Disposable` instead is the alternative, and it distorts the type: a `Catalog` that also deletes temporary directories is the wrong shape, and a builder assembling several trees has several disposals to carry rather than one.
 
-### When to reach for it, and when to reach for `makeFixture`
+### When to use it, and when to use `makeFixture`
 
 The two divide by lifetime, not by call site:
 
@@ -97,7 +97,7 @@ const it = test
   .extend('silent', makeFixture(() => silenceConsole(['warn'])));
 ```
 
-### When to reach for it
+### When to use it
 
 The question arises only for a resource that has to outlive a single test. One that does not needs no fixture:
 
@@ -127,7 +127,7 @@ That read site is bought per resource type, at around forty lines: a guard repor
 
 `makeFixture` costs nothing per type. It makes the out-of-scope read unrepresentable rather than guarded, the value existing only as a test parameter, and it builds only for the tests that name it, where a handle's `beforeEach` builds for every test in the file.
 
-Reach for a handle where one already exists for the resource and most of a file's tests touch it. Reach for `makeFixture` otherwise.
+Use a handle where one already exists for the resource and most of a file's tests touch it, and `makeFixture` otherwise.
 
 ### Scope
 
