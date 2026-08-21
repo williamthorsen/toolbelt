@@ -49,12 +49,14 @@ const it = baseIt
   );
 
 // A second extended API, carrying none of the fixtures above.
+// eslint-disable-next-line vitest/consistent-test-it -- the lone `.extend` is a declaration; the test it declares sits in a `describe`.
 const otherIt = baseIt.extend(
   'unshared',
   makeFixture(() => makeProbe('unshared')),
 );
 
 // Registered at file level, so it wraps every test in the file rather than one suite's.
+// eslint-disable-next-line vitest/require-hook -- `aroundEach` is a hook, and postdates the rule's list of them.
 it.aroundEach(async (runTest) => {
   fileHookLog.push('ran');
 
@@ -115,12 +117,14 @@ describe(makeFixture, () => {
   });
 
   describe('around hooks', () => {
+    // eslint-disable-next-line vitest/require-hook -- `aroundEach` is a hook, and postdates the rule's list of them.
     it.aroundEach(async (runTest, { hookProbe: _hookProbe, tree }) => {
       using _cwd = pointCwdAt(tree.dir);
 
       await runTest();
     });
 
+    // eslint-disable-next-line vitest/require-hook -- `aroundAll` is a hook, and postdates the rule's list of them.
     it.aroundAll(async (runSuite, { hookFileProbe }) => {
       aroundAllLog.push(hookFileProbe.label);
 
