@@ -43,7 +43,7 @@ The builder is where this earns its place. It takes per-call arguments, so the r
 
 Making the returned value `Disposable` instead is the alternative, and it distorts the type: a `Catalog` that also deletes temporary directories is the wrong shape, and a builder assembling several trees has several disposals to carry rather than one.
 
-### When to reach for it, and when to reach for `makeFixture`
+### When to use it, and when to use `makeFixture`
 
 The two divide by lifetime, not by call site:
 
@@ -97,7 +97,7 @@ const it = test
   .extend('silent', makeFixture(() => silenceConsole(['warn'])));
 ```
 
-### When to reach for it
+### When to use it
 
 The question arises only for a resource that has to outlive a single test. One that does not needs no fixture:
 
@@ -127,7 +127,33 @@ That read site is bought per resource type, at around forty lines: a guard repor
 
 `makeFixture` costs nothing per type. It makes the out-of-scope read unrepresentable rather than guarded, the value existing only as a test parameter, and it builds only for the tests that name it, where a handle's `beforeEach` builds for every test in the file.
 
-Reach for a handle where one already exists for the resource and most of a file's tests touch it. Reach for `makeFixture` otherwise.
+Use a handle where one already exists for the resource and most of a file's tests touch it, and `makeFixture` otherwise.
+
+A resource that no test names -- one installed around a test rather than read by it -- is a third case, taken up in [Wrapping tests with `aroundEach` and `aroundAll`](#wrapping-tests-with-aroundeach-and-aroundall).
+
+### Wrapping tests with `aroundEach` and `aroundAll`
+
+A resource a test reads is named by that test. A resource installed around a test is not: a pointed working directory exists to serve code resolving paths through `process.cwd()`, so the tests needing it hold no value and name no fixture, and a lazily built fixture leaves them running against the real working directory. Requesting the fixture from a wrapping hook is what builds it:
+
+```ts
+const it = test.extend('tree', makeFixture(() => createTempTree({ 'tsconfig.json': '{}\n' })));
+
+it.aroundEach(async (runTest, { tree }) => {
+  using _cwd = pointCwdAt(tree.dir);
+
+  await runTest();
+});
+```
+
+The hook's own parameter list is the request, so the fixture builds for every test whether or not the test names it, and the resource's lifetime is a plain `using` that unwinds when the hook returns.
+
+`{ auto: true }` also builds a fixture for every test, and for a resource depending on no other it is the simpler answer, as [Scope](#scope) describes. It is not the answer for a resource built from another fixture: `makeFixture` cannot build a [dependent fixture](#fixtures-that-depend-on-other-fixtures) at all, so a cwd pointed at a tree has to be hand-written with the disposal that entails. The hook needs neither.
+
+`aroundAll` is the file-scoped counterpart, over a `{ scope: 'file' }` fixture, and the shape is otherwise identical. Vitest gives a suite-level hook only file- and worker-scoped fixtures, and the types enforce it: a test-scoped fixture named there is not a property of the hook's context, and the error lists the fixtures that are. Past the types, the runner throws `FixtureDependencyError` and fails the suite, naming the test-scoped fixtures rather than the available ones.
+
+A hook registered at file level wraps every test in the file, not only the tests of the API it was registered on. A file declaring a second extended API gets the hook over those tests too, and a hook requesting a fixture that API does not carry receives `undefined`: the failure surfaces as a `TypeError` thrown inside the hook and attributed to the test, naming the property that was read rather than the fixture that was missing. Registering the hook inside the `describe` holding the tests scopes it to them, which is the fix where one file needs both; one extended API per file avoids the question.
+
+The suite pins the `aroundEach` request, the `aroundAll` counterpart, and the file-level hook's reach over a second API, so a runner that stopped honoring one fails here rather than at a consumer. It does not pin the `TypeError` above, which can only be observed as a failing test.
 
 ### Scope
 
@@ -154,6 +180,8 @@ const it = test
     return project;
   });
 ```
+
+That hand-written disposal is where `unicorn/no-nonstandard-builtin-properties` fires: the rule's `Symbol` allowlist omits `Symbol.dispose` and it accepts no options, so a project on unicorn's `recommended` or `unopinionated` set carries a disable comment at every such site. A dependent resource that only wraps the test needs no fixture of its own, and no disposal to write; see [Wrapping tests with `aroundEach` and `aroundAll`](#wrapping-tests-with-aroundeach-and-aroundall).
 
 Passing a wrapper that takes the context opaquely fails collection with `FixtureParseError`, naming the offending parameter.
 

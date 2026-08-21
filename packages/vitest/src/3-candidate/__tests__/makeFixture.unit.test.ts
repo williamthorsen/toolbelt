@@ -1,9 +1,10 @@
 /* eslint no-console: "off" */
 import fs from 'node:fs';
+import path from 'node:path';
 import process from 'node:process';
 
 import { createTempTree, type TempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
-import { captureStdio } from '@williamthorsen/toolbelt.testing/candidate';
+import { captureStdio, pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, expectTypeOf, it as baseIt } from 'vitest';
 
 import { makeFixture } from '../makeFixture.ts';
@@ -11,6 +12,8 @@ import { silenceConsole } from '../silenceConsole.ts';
 
 const buildLog: string[] = [];
 const disposalLog: string[] = [];
+const aroundAllLog: string[] = [];
+const fileHookLog: string[] = [];
 
 const it = baseIt
   .extend(
@@ -34,7 +37,31 @@ const it = baseIt
   .extend(
     'silent',
     makeFixture(() => silenceConsole(['warn'])),
+  )
+  .extend(
+    'hookProbe',
+    makeFixture(() => makeProbe('hook-probe')),
+  )
+  .extend(
+    'hookFileProbe',
+    { scope: 'file' },
+    makeFixture(() => makeProbe('hook-file-probe')),
   );
+
+// A second extended API, carrying none of the fixtures above.
+// eslint-disable-next-line vitest/consistent-test-it -- the lone `.extend` is a declaration; the test it declares sits in a `describe`.
+const otherIt = baseIt.extend(
+  'unshared',
+  makeFixture(() => makeProbe('unshared')),
+);
+
+// Registered at file level, so it wraps every test in the file rather than one suite's.
+// eslint-disable-next-line vitest/require-hook -- `aroundEach` is a hook, and postdates the rule's list of them.
+it.aroundEach(async (runTest, { task }) => {
+  fileHookLog.push(task.name);
+
+  await runTest();
+});
 
 describe(makeFixture, () => {
   describe('test scope', () => {
@@ -86,6 +113,47 @@ describe(makeFixture, () => {
   describe('types', () => {
     it("gives the fixture the factory's return type", ({ tree }) => {
       expectTypeOf(tree).toEqualTypeOf<TempTree>();
+    });
+  });
+
+  describe('around hooks', () => {
+    // eslint-disable-next-line vitest/require-hook -- `aroundEach` is a hook, and postdates the rule's list of them.
+    it.aroundEach(async (runTest, { hookProbe: _hookProbe, tree }) => {
+      using _cwd = pointCwdAt(tree.dir);
+
+      await runTest();
+    });
+
+    // eslint-disable-next-line vitest/require-hook -- `aroundAll` is a hook, and postdates the rule's list of them.
+    it.aroundAll(async (runSuite, { hookFileProbe }) => {
+      aroundAllLog.push(hookFileProbe.label);
+
+      await runSuite();
+    });
+
+    it('builds a test-scoped request for a test that names it nowhere', () => {
+      expect(countOf(buildLog, 'hook-probe')).toBe(1);
+    });
+
+    it('disposes that request before the next test runs', () => {
+      expect(countOf(disposalLog, 'hook-probe')).toBe(1);
+      expect(countOf(buildLog, 'hook-probe')).toBe(2);
+    });
+
+    it('points the working directory for a test that names no fixture', () => {
+      expect(fs.readFileSync(path.resolve('src/main.ts'), 'utf8')).toBe('export {};\n');
+    });
+
+    it('runs the suite-level hook once for the whole suite', () => {
+      expect(aroundAllLog).toStrictEqual(['hook-file-probe']);
+      expect(countOf(buildLog, 'hook-file-probe')).toBe(1);
+    });
+  });
+
+  describe('hook registration scope', () => {
+    otherIt('runs a file-level hook for a test declared with another extended API', ({ task, unshared }) => {
+      expect(unshared.label).toBe('unshared');
+      expect(fileHookLog.at(-1)).toBe(task.name);
     });
   });
 });
