@@ -147,7 +147,7 @@ it.aroundEach(async (runTest, { tree }) => {
 
 The hook's own parameter list is the request, so the fixture builds for every test whether or not the test names it, and the resource's lifetime is a plain `using` that unwinds when the hook returns.
 
-`{ auto: true }` also builds a fixture for every test, and for a resource depending on no other it is the simpler answer, as [Scope](#scope) describes. It is not the answer for a resource built from another fixture: `makeFixture` cannot build a dependent fixture at all, so a cwd pointed at a tree has to be hand-written with the disposal that entails. The hook needs neither.
+`{ auto: true }` also builds a fixture for every test, and for a resource depending on no other it is the simpler answer, as [Scope](#scope) describes. It is not the answer for a resource built from another fixture: `makeFixture` cannot build a [dependent fixture](#fixtures-that-depend-on-other-fixtures) at all, so a cwd pointed at a tree has to be hand-written with the disposal that entails. The hook needs neither.
 
 `aroundAll` is the file-scoped counterpart, over a `{ scope: 'file' }` fixture, and the shape is otherwise identical. Vitest gives a suite-level hook only file- and worker-scoped fixtures, and the types enforce it: naming a test-scoped fixture there reports `Property 'perTest' does not exist on type 'Record<"perFile", ...>'`, listing what is available.
 
@@ -180,6 +180,8 @@ const it = test
     return project;
   });
 ```
+
+That hand-written disposal is where `unicorn/no-nonstandard-builtin-properties` fires: the rule's `Symbol` allowlist omits `Symbol.dispose` and it accepts no options, so a project on unicorn's `recommended` or `unopinionated` set carries a disable comment at every such site. A dependent resource that only wraps the test needs no fixture of its own, and no disposal to write; see [Wrapping tests with `aroundEach` and `aroundAll`](#wrapping-tests-with-aroundeach-and-aroundall).
 
 Passing a wrapper that takes the context opaquely fails collection with `FixtureParseError`, naming the offending parameter.
 
