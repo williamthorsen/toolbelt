@@ -40,4 +40,12 @@ describe(listMathIdioms, () => {
 
     expect(listMathIdioms(source)).toStrictEqual([{ kind: 'clamp-nest', line: 1 }]);
   });
+
+  // Blanking leaves a literal's delimiters standing, which is what lets `isArraySubscript` read the closing
+  // quote as the expression a subscript indexes. Blank the quotes too and this kit claims a site it hands off.
+  it('declines a floored random subscripting a string literal, which another kit claims', () => {
+    const source = "const character = 'abcdef'[Math.floor(Math.random() * 6)];\n";
+
+    expect(listMathIdioms(source)).toStrictEqual([]);
+  });
 });
