@@ -129,6 +129,32 @@ That read site is bought per resource type, at around forty lines: a guard repor
 
 Use a handle where one already exists for the resource and most of a file's tests touch it, and `makeFixture` otherwise.
 
+A resource that no test names -- one installed around a test rather than read by it -- is a third case, taken up in [Wrapping tests with `aroundEach` and `aroundAll`](#wrapping-tests-with-aroundeach-and-aroundall).
+
+### Wrapping tests with `aroundEach` and `aroundAll`
+
+A resource a test reads is named by that test. A resource installed around a test is not: a pointed working directory exists to serve code resolving paths through `process.cwd()`, so the tests needing it hold no value and name no fixture, and a lazily built fixture leaves them running against the real working directory. Requesting the fixture from a wrapping hook is what builds it:
+
+```ts
+const it = test.extend('tree', makeFixture(() => createTempTree({}, { prefix: 'rdy-tsconfig-' })));
+
+it.aroundEach(async (runTest, { tree }) => {
+  using _cwd = pointCwdAt(tree.dir);
+
+  await runTest();
+});
+```
+
+The hook's own parameter list is the request, so the fixture builds for every test whether or not the test names it, and the resource's lifetime is a plain `using` that unwinds when the hook returns.
+
+`{ auto: true }` also builds a fixture for every test, and for a resource depending on no other it is the simpler answer, as [Scope](#scope) describes. It is not the answer for a resource built from another fixture: `makeFixture` cannot build a dependent fixture at all, so a cwd pointed at a tree has to be hand-written with the disposal that entails. The hook needs neither.
+
+`aroundAll` is the file-scoped counterpart, over a `{ scope: 'file' }` fixture, and the shape is otherwise identical. Vitest gives a suite-level hook only file- and worker-scoped fixtures, and the types enforce it: naming a test-scoped fixture there reports `Property 'perTest' does not exist on type 'Record<"perFile", ...>'`, listing what is available.
+
+A hook registered at file level wraps every test in the file, not only the tests of the API it was registered on. A file declaring a second extended API gets the hook over those tests too, and a hook requesting a fixture that API does not carry receives `undefined`: the failure surfaces as a `TypeError` thrown inside the hook and attributed to the test, naming the property that was read rather than the fixture that was missing. Registering the hook inside the `describe` holding the tests scopes it to them, which is the fix where one file needs both; one extended API per file avoids the question.
+
+The suite pins all three shapes, so a runner that stopped honoring one fails here rather than at a consumer.
+
 ### Scope
 
 Scope belongs to `test.extend` rather than to the adapter, so `test`, `file`, and `worker` all work through it. A fixture is built only when a test names it, which is what keeps a temporary directory from being created for tests that never touch one. `{ auto: true }` opts out of that laziness, for a fixture such as a console silencer that should apply whether or not a test names it.
