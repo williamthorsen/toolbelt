@@ -24,24 +24,14 @@
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "29115f53",
+          "hash": "6e5a8dda",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
-        },
-        {
-          "hash": "6617674b",
-          "kind": "module",
-          "path": "../../adoption/src/portable/blankNonCode.ts"
         },
         {
           "hash": "e8d0444d",
           "kind": "module",
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
-        },
-        {
-          "hash": "4da99027",
-          "kind": "module",
-          "path": "../../adoption/src/portable/getLineAtOffset.ts"
         },
         {
           "hash": "b6d99ce7",
@@ -89,7 +79,7 @@
       "readyupVersion": "0.30.0",
       "source": "kits/default.ts",
       "sourceHash": "45ae48be",
-      "targetHash": "0b5e09fe"
+      "targetHash": "49282207"
     }
   ]
 }
