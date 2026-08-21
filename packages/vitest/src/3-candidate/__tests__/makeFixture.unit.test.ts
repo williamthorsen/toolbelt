@@ -57,8 +57,8 @@ const otherIt = baseIt.extend(
 
 // Registered at file level, so it wraps every test in the file rather than one suite's.
 // eslint-disable-next-line vitest/require-hook -- `aroundEach` is a hook, and postdates the rule's list of them.
-it.aroundEach(async (runTest) => {
-  fileHookLog.push('ran');
+it.aroundEach(async (runTest, { task }) => {
+  fileHookLog.push(task.name);
 
   await runTest();
 });
@@ -151,9 +151,9 @@ describe(makeFixture, () => {
   });
 
   describe('hook registration scope', () => {
-    otherIt('runs a file-level hook for a test declared with another extended API', ({ unshared }) => {
+    otherIt('runs a file-level hook for a test declared with another extended API', ({ task, unshared }) => {
       expect(unshared.label).toBe('unshared');
-      expect(fileHookLog.length).toBeGreaterThan(0);
+      expect(fileHookLog.at(-1)).toBe(task.name);
     });
   });
 });
