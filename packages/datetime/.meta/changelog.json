@@ -1,5 +1,22 @@
 [
   {
+    "version": "4.0.2",
+    "date": "2026-08-21",
+    "sections": [
+      {
+        "title": "Bug fixes",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adopt `round` in `TimeUnit.convert` and repair its same-unit path (#192)",
+            "body": "Fixes an issue where `TimeUnit.convert` ignored both `decimalPlaces` and `throwOnFractional` whenever the source and target units were the same, returning the amount untouched.\n\nSeparately, replaces the method's hand-rolled decimal rounding with `round` from `@williamthorsen/toolbelt.numbers/candidate`, which gives `datetime` its first runtime dependency.",
+            "hash": "44e9d0b0b216000ffece6075d82149116304887f"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "4.0.1",
     "date": "2026-08-13",
     "sections": [

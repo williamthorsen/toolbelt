@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.0.2 — 2026-08-21
+
+### Bug fixes
+
+- Adopt `round` in `TimeUnit.convert` and repair its same-unit path (#192)
+
+  Fixes an issue where `TimeUnit.convert` ignored both `decimalPlaces` and `throwOnFractional` whenever the source and target units were the same, returning the amount untouched.
+
+  Separately, replaces the method's hand-rolled decimal rounding with `round` from `@williamthorsen/toolbelt.numbers/candidate`, which gives `datetime` its first runtime dependency.
+
 ## 4.0.1 — 2026-08-13
 
 ### Tooling

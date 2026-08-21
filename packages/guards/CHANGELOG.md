@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.0.0 — 2026-08-21
+
+### Features
+
+- 🚨 **Breaking:** Correct the nullish guards' narrowing and rename `isNullable` (#206)
+
+  Fixes an issue where `isNullable` in `@williamthorsen/toolbelt.guards` narrowed both of its branches backwards: A value it confirmed to be null or undefined was typed as non-nullish, so dereferencing it inside the check compiled and then threw. It is now named `isNullish`, after the type it narrows to.
+
+  Separately, `isNonNullable` and `assertIsNonNullable` let an explicit type argument exclude `null` from the false branch while `null` still reached it at runtime. Both now take the value at its own type.
+
+  Migration: `isNullable` no longer exists, and `isNullish` narrows in the opposite direction, so a call site written against the old behavior now fails to compile. On `isNonNullable` and `assertIsNonNullable`, an explicit type argument narrower than the value's own type is now a compile error; inference-driven narrowing is unchanged, as is `filter(isNonNullable)`.
+
 ## 3.1.11 — 2026-08-16
 
 ### Tests

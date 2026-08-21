@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.7.0 — 2026-08-21
+
+### Features
+
+- 🚨 **Breaking:** Fix createTempTree's symlink guard and disposal, and complete its entry API (#207)
+
+  Fixes an issue where `TempTree.symlink` in `@williamthorsen/toolbelt.filesystem/candidate` refused a target outside the tree and rewrote a relative target to an absolute path inside it. The containment check now applies to the link path alone and the target is stored as given, so a link reads back as the string that was passed.
+
+  Separately, fixes an issue where disposing a `TempTree` left the tree on disk when one of its directories had been made read-only.
+
+  Adds six methods to `TempTree`. `writeAll` applies the constructor's map of entries to a tree already built; `exists`, `list`, `read`, `readJson`, and `rm` read the tree back and remove from it, so a suite scaffolding through the handle reads its own fixture through it rather than reaching for `node:fs`.
+
+  Migration: A caller relying on the previous absolute storage passes `tree.resolve(target)`, which is written unchanged.
+
 ## 0.6.0 — 2026-08-16
 
 ### Features

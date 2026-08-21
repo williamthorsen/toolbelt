@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
+## 7.0.0 — 2026-08-21
+
+### Features
+
+- 🚨 **Breaking:** Promote clamp to the candidate tier with a stricter bounds contract (#185)
+
+  Promotes `clamp` to `@williamthorsen/toolbelt.numbers/candidate` and tightens its bounds contract: A `NaN` bound now throws a `RangeError`, where it previously returned `NaN` silently. A `NaN` value still passes through. Publishes the bounds type as `ClampBounds`, whose optional properties admit `undefined`, so a bound that may be absent typechecks under `exactOptionalPropertyTypes`.
+
+  Migration: `clamp` is no longer exported from the `/draft` subpath; consumers import it from `/candidate`.
+
+- Add a ReadyUp adoption kit to `numbers` (#188)
+
+  Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.numbers`. When run against a project, the kit identifies hand-rolled code that can be replaced by the package's `clamp`, `round`, or `pickInteger` functions.
+
+### Bug fixes
+
+- Blank comments and literals before a detector reads a source (#191)
+
+  Fixes the issue that the `errors`, `numbers`, and `vitest` adoption kits' detectors did not distinguish code from comments and literals, and so flagged a pattern written in a comment or a string as a candidate replacement site. Each detector now blanks every comment, string, template literal, and regular expression before its anchor scan, leaving interpolated expressions intact.
+
+### Refactoring
+
+- Break the workspace dependency cycle by making `adoption` a leaf (#195)
+
+  Fixes a cyclic dependency among packages in the repo. `packages/adoption` is now a workspace leaf: It declares no workspace dependency, and its test scaffolding is held to node builtins. A new root test fails on any cycle in the workspace dependency graph.
+
+### Dependencies
+
+- Upgrade all deps to latest version
+
 ## 6.0.1 — 2026-08-13
 
 ### Tooling

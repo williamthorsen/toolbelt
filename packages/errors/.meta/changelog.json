@@ -1,5 +1,54 @@
 [
   {
+    "version": "0.6.0",
+    "date": "2026-08-21",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add a ReadyUp adoption kit to `numbers` (#188)",
+            "body": "Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.numbers`. When run against a project, the kit identifies hand-rolled code that can be replaced by the package's `clamp`, `round`, or `pickInteger` functions.",
+            "hash": "1f0af785e2a05051c4fd9b75f0cba8eeb9104e37"
+          }
+        ]
+      },
+      {
+        "title": "Bug fixes",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Blank comments and literals before a detector reads a source (#191)",
+            "body": "Fixes the issue that the `errors`, `numbers`, and `vitest` adoption kits' detectors did not distinguish code from comments and literals, and so flagged a pattern written in a comment or a string as a candidate replacement site. Each detector now blanks every comment, string, template literal, and regular expression before its anchor scan, leaving interpolated expressions intact.",
+            "hash": "5ed807255874f326991e067249726157a6616e09"
+          }
+        ]
+      },
+      {
+        "title": "Dependencies",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Upgrade all deps to latest version",
+            "hash": "f2d81d50e5322802c26e0ae88bde2a93ca89a970"
+          }
+        ]
+      },
+      {
+        "title": "Internal",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add `packages/adoption` and migrate the `errors` and `vitest` kits onto it (#183)",
+            "body": "Adds `packages/adoption`, a private workspace package holding the source-scanning primitives, path predicates, and kit assembler that the toolbelt packages' ReadyUp adoption kits share, and migrates the `errors` and `vitest` kits onto it. Each kit is now a detector and a declaration; the sweep, the adoption count, and the finding report come from `readyup/check-utils` through `defineAdoptionKit`, the one module that binds to it.\n\nAdds `__tests__/kit-bundle-freshness.tool.test.ts`, which fails CI when a committed kit bundle falls behind a source it inlines.",
+            "hash": "c4655052277dc0d4416d9687277cfdad2f7c510f"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.5.0",
     "date": "2026-08-15",
     "sections": [

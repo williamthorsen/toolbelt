@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 6.0.1 — 2026-08-21
+
+### Bug fixes
+
+- Adopt `clamp` in `obfuscate` and reject a NaN size option (#196)
+
+  Fixes the issue that `obfuscate` returned its input unobfuscated when `bookendSize` was NaN, and returned the bookends with the fill cleared when `fillSize` was NaN. Both options now throw an `Error` naming the offending option.
+
+  Separately, the bookend count is bounded through `clamp` from `@williamthorsen/toolbelt.numbers/candidate` rather than by hand.
+
 ## 6.0.0 — 2026-08-16
 
 ### Features

@@ -1,5 +1,60 @@
 [
   {
+    "version": "7.0.0",
+    "date": "2026-08-21",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Promote clamp to the candidate tier with a stricter bounds contract (#185)",
+            "body": "Promotes `clamp` to `@williamthorsen/toolbelt.numbers/candidate` and tightens its bounds contract: A `NaN` bound now throws a `RangeError`, where it previously returned `NaN` silently. A `NaN` value still passes through. Publishes the bounds type as `ClampBounds`, whose optional properties admit `undefined`, so a bound that may be absent typechecks under `exactOptionalPropertyTypes`.\n\nMigration: `clamp` is no longer exported from the `/draft` subpath; consumers import it from `/candidate`.",
+            "breaking": true,
+            "hash": "127ddefbb825fb3f9f2dfb320da254b287a6682f"
+          },
+          {
+            "description": "Add a ReadyUp adoption kit to `numbers` (#188)",
+            "body": "Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.numbers`. When run against a project, the kit identifies hand-rolled code that can be replaced by the package's `clamp`, `round`, or `pickInteger` functions.",
+            "hash": "1f0af785e2a05051c4fd9b75f0cba8eeb9104e37"
+          }
+        ]
+      },
+      {
+        "title": "Bug fixes",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Blank comments and literals before a detector reads a source (#191)",
+            "body": "Fixes the issue that the `errors`, `numbers`, and `vitest` adoption kits' detectors did not distinguish code from comments and literals, and so flagged a pattern written in a comment or a string as a candidate replacement site. Each detector now blanks every comment, string, template literal, and regular expression before its anchor scan, leaving interpolated expressions intact.",
+            "hash": "5ed807255874f326991e067249726157a6616e09"
+          }
+        ]
+      },
+      {
+        "title": "Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Break the workspace dependency cycle by making `adoption` a leaf (#195)",
+            "body": "Fixes a cyclic dependency among packages in the repo. `packages/adoption` is now a workspace leaf: It declares no workspace dependency, and its test scaffolding is held to node builtins. A new root test fails on any cycle in the workspace dependency graph.",
+            "hash": "3d1dd87cd31a80acdb23fc5fb3ac8a1be69faaa3"
+          }
+        ]
+      },
+      {
+        "title": "Dependencies",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Upgrade all deps to latest version",
+            "hash": "f2d81d50e5322802c26e0ae88bde2a93ca89a970"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "6.0.1",
     "date": "2026-08-13",
     "sections": [

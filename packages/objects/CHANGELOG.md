@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.0.0 — 2026-08-21
+
+### Features
+
+- 🚨 **Breaking:** Name each object guard for the type it narrows to (#203)
+
+  Renames the object type guards in `@williamthorsen/toolbelt.objects` so each name states the type the guard checks for: `isObject`, `isRecord`, `isRecordOrArray`, and `isPlainObject`. The name `isObject` now belongs to a different guard than before, so every call to it must be revisited.
+
+  Separately, `objects` no longer depends on `@sindresorhus/is`, which leaves it with no external runtime dependency.
+
+  Migration: `isRecordOrArray` returns what the old `isObject` returned for every input, but it is not a drop-in rename. It narrows to a type that includes arrays, so code that reads a key off the value needs `isRecord`, which rejects arrays. The new `isObject` returns true for functions too, and narrows to `object`, which permits no key access.
+
+  `isPlainObject` now accepts an object with a null prototype, such as an `Object.groupBy` result, and rejects one carrying `Symbol.toStringTag` or `Symbol.iterator`. `preciseTypeOf`, `sortKeys`, and `sortObjectKeys` use it, so their results change for those two kinds of object.
+
 ## 3.2.14 — 2026-08-16
 
 ### Tests

@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.6.0 — 2026-08-21
+
+### Features
+
+- Add a ReadyUp adoption kit to `numbers` (#188)
+
+  Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.numbers`. When run against a project, the kit identifies hand-rolled code that can be replaced by the package's `clamp`, `round`, or `pickInteger` functions.
+
+### Bug fixes
+
+- Blank comments and literals before a detector reads a source (#191)
+
+  Fixes the issue that the `errors`, `numbers`, and `vitest` adoption kits' detectors did not distinguish code from comments and literals, and so flagged a pattern written in a comment or a string as a candidate replacement site. Each detector now blanks every comment, string, template literal, and regular expression before its anchor scan, leaving interpolated expressions intact.
+
+### Dependencies
+
+- Upgrade all deps to latest version
+
+### Internal
+
+- Add `packages/adoption` and migrate the `errors` and `vitest` kits onto it (#183)
+
+  Adds `packages/adoption`, a private workspace package holding the source-scanning primitives, path predicates, and kit assembler that the toolbelt packages' ReadyUp adoption kits share, and migrates the `errors` and `vitest` kits onto it. Each kit is now a detector and a declaration; the sweep, the adoption count, and the finding report come from `readyup/check-utils` through `defineAdoptionKit`, the one module that binds to it.
+
+  Adds `__tests__/kit-bundle-freshness.tool.test.ts`, which fails CI when a committed kit bundle falls behind a source it inlines.
+
 ## 0.5.0 — 2026-08-15
 
 ### Features
