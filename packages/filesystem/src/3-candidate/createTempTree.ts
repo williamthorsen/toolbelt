@@ -170,9 +170,11 @@ export interface TempTree extends Disposable {
 
   /**
    * Lists every file below a tree-relative directory, at any depth, as `/`-separated paths relative to it, sorted,
-   * defaulting to the tree root. A symlink is neither listed nor descended, whatever it points at, so every path in
-   * the result names a file held inside the tree. A path that does not exist yields an empty array, where `list`
-   * throws; one that exists as a file raises `ENOTDIR`, as `list` does.
+   * defaulting to the tree root. A symlink below that directory is neither listed nor descended, so every path in
+   * the result names a file held inside the tree. The directory given as the argument is the exception, followed as
+   * `list`, `read`, and `exists` follow theirs: one naming a link out of the tree lists the target's files. A path
+   * that does not exist yields an empty array, where `list` throws; one that exists as a file raises `ENOTDIR`, as
+   * `list` does.
    */
   listFiles(entryPath?: string): string[];
 

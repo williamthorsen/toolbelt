@@ -243,6 +243,14 @@ describe('TempTree.listFiles', () => {
     expect(tree.listFiles('app')).toStrictEqual(['real.ts']);
   });
 
+  it('follows a symlinked directory given as the path', () => {
+    using tree = createTempTree({ 'store/kit/package.json': '{}' });
+
+    tree.symlink('app/kit', '../store/kit');
+
+    expect(tree.listFiles('app/kit')).toStrictEqual(['package.json']);
+  });
+
   it('yields an empty array for a directory that does not exist', () => {
     using tree = createTempTree({});
 
