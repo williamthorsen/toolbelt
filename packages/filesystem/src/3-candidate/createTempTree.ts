@@ -11,8 +11,8 @@ import path from 'node:path';
  * The handle writes into the tree after it is built, through `mkdir`, `symlink`, `write`, `writeAll`, and
  * `writeJson`. Each creates the parent directories it needs and takes its entry path through the containment check
  * `resolve` applies; `symlink`'s target is the exception, stored verbatim. Every one but `writeAll`, which takes a
- * map, returns the absolute path it wrote. It reads the tree back through `exists`, `list`, `read`, and `readJson`,
- * and removes an entry through `rm`.
+ * map, returns the absolute path it wrote. It reads the tree back through `exists`, `list`, `listFiles`, `read`,
+ * and `readJson`, and removes an entry through `rm`.
  *
  * `prefix` names the directory, so a tree outliving a crashed run still says what made it.
  *
@@ -47,6 +47,14 @@ export function createTempTree(
 
   function list(entryPath = ''): string[] {
     return fs.readdirSync(resolveWithinTree(dir, [entryPath])).toSorted();
+  }
+
+  function listFiles(entryPath = ''): string[] {
+    const rootPath = resolveWithinTree(dir, [entryPath]);
+
+    if (!fs.existsSync(rootPath)) return [];
+
+    return listFilesBelow(rootPath, '').toSorted();
   }
 
   function mkdir(entryPath: string): string {
@@ -122,6 +130,7 @@ export function createTempTree(
     dir,
     exists,
     list,
+    listFiles,
     mkdir,
     read,
     readJson,
@@ -158,6 +167,16 @@ export interface TempTree extends Disposable {
 
   /** Lists the names directly inside a tree-relative directory, sorted, defaulting to the tree root. */
   list(entryPath?: string): string[];
+
+  /**
+   * Lists every file below a tree-relative directory, at any depth, as `/`-separated paths relative to it, sorted,
+   * defaulting to the tree root. A symlink below that directory is neither listed nor descended, so every path in
+   * the result names a file held inside the tree. The directory given as the argument is the exception, followed as
+   * `list`, `read`, and `exists` follow theirs: one naming a link out of the tree lists the target's files. A path
+   * that does not exist yields an empty array, where `list` throws; one that exists as a file raises `ENOTDIR`, as
+   * `list` does.
+   */
+  listFiles(entryPath?: string): string[];
 
   /** Creates the directory at a tree-relative path, along with its parents, leaving an existing one as it is. */
   mkdir(entryPath: string): string;
@@ -243,6 +262,33 @@ function chooseLinkType(absoluteLinkPath: string, targetPath: string): 'dir' | '
   }
 
   return path.isAbsolute(targetPath) ? 'junction' : 'dir';
+}
+
+/**
+ * Lists every file below `dir` as a `/`-separated path relative to it, in directory order, each under `prefix`, the
+ * caller's accumulated relative path. `Dirent` predicates read the entry itself, so a symlink is neither listed nor
+ * descended.
+ *
+ * `readdirSync`'s `recursive` option cannot serve here: it descends a symlinked directory, so a link pointing out of
+ * the tree lists foreign files, and a link to an ancestor revisits the same entries until `ELOOP` stops it. Joining
+ * segments with `/` leaves no platform separator to normalize away, a normalization that would corrupt a POSIX name
+ * holding a backslash.
+ */
+function listFilesBelow(dir: string, prefix: string): string[] {
+  const paths: string[] = [];
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const relativePath = `${prefix}${entry.name}`;
+
+    if (entry.isFile()) {
+      paths.push(relativePath);
+    } else if (entry.isDirectory()) {
+      paths.push(...listFilesBelow(path.join(dir, entry.name), `${relativePath}/`));
+    }
+  }
+
+  return paths;
 }
 
 /**
