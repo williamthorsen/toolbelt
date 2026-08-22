@@ -205,6 +205,67 @@ describe('TempTree.list', () => {
   });
 });
 
+describe('TempTree.listFiles', () => {
+  // `nested.ts` sorts ahead of `nested/deep/c.ts` only where the whole relative path is sorted, not each level.
+  it('lists every file below a directory, at any depth, relative to it, sorted', () => {
+    using tree = createTempTree({ 'app/nested/deep/c.ts': '', 'app/nested.ts': '', 'app/a.ts': '' });
+
+    expect(tree.listFiles('app')).toStrictEqual(['a.ts', 'nested.ts', 'nested/deep/c.ts']);
+  });
+
+  it('given no path, lists from the tree root', () => {
+    using tree = createTempTree({ 'package.json': '{}', 'src/main.ts': '' });
+
+    expect(tree.listFiles()).toStrictEqual(['package.json', 'src/main.ts']);
+  });
+
+  it('names files alone, an empty directory contributing nothing', () => {
+    using tree = createTempTree({ 'app/empty/': '', 'app/nested/leaf.ts': '' });
+
+    expect(tree.listFiles('app')).toStrictEqual(['nested/leaf.ts']);
+  });
+
+  it('lists no symlink, whether it points at a file, at a directory, or at nothing', () => {
+    using tree = createTempTree({ 'app/real.ts': '', 'store/kit/': '' });
+
+    tree.symlink('app/to-file', 'real.ts');
+    tree.symlink('app/to-dir', '../store/kit');
+    tree.symlink('app/dangling', 'absent.ts');
+
+    expect(tree.listFiles('app')).toStrictEqual(['real.ts']);
+  });
+
+  it('does not descend a symlinked directory', () => {
+    using tree = createTempTree({ 'app/real.ts': '', 'store/kit/package.json': '{}' });
+
+    tree.symlink('app/kit', '../store/kit');
+
+    expect(tree.listFiles('app')).toStrictEqual(['real.ts']);
+  });
+
+  it('yields an empty array for a directory that does not exist', () => {
+    using tree = createTempTree({});
+
+    expect(tree.listFiles('absent')).toStrictEqual([]);
+  });
+
+  it('throws on a path that is a file', () => {
+    using tree = createTempTree({ 'package.json': '{}' });
+
+    const listFiles = () => tree.listFiles('package.json');
+
+    expect(listFiles).toThrow(/ENOTDIR/);
+  });
+
+  it('throws on a path that would ascend out of the tree', () => {
+    using tree = createTempTree({});
+
+    const listFiles = () => tree.listFiles('..');
+
+    expect(listFiles).toThrow(/falls outside the temporary tree/);
+  });
+});
+
 describe('TempTree.mkdir', () => {
   it('creates the directory and its parents', () => {
     using tree = createTempTree({});

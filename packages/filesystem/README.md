@@ -286,6 +286,7 @@ interface TempTree extends Disposable {
   readonly dir: string;
   exists(entryPath: string): boolean;
   list(entryPath?: string): string[];
+  listFiles(entryPath?: string): string[];
   mkdir(entryPath: string): string;
   read(entryPath: string): string;
   readJson(entryPath: string): unknown;
@@ -335,18 +336,21 @@ tree.symlink('node_modules/.bin', tree.resolve('store/kit/bin')); // reads back 
 
 The link type is chosen from the target, which is where the one portability difference lives. An absolute directory target is linked as a junction, which Windows creates without the elevation a directory symlink needs; a relative directory target is linked as a directory, which needs that elevation, because Node normalizes a junction's target to an absolute path and would discard the relative string. Every other target, one that does not exist included, is linked as a file, matching what Node falls back to when no type is given.
 
-`exists`, `list`, `read`, `readJson`, and `rm` read the tree back and remove from it, each through the same containment check:
+`exists`, `list`, `listFiles`, `read`, `readJson`, and `rm` read the tree back and remove from it, each through the same containment check:
 
 ```ts
 using tree = createTempTree({ 'packages/app/package.json': '{ "name": "app" }', 'packages/app/src/main.ts': 'export {};\n' });
 
 tree.list(); // ['packages'], defaulting to the tree root
 tree.list('packages/app'); // ['package.json', 'src'], sorted
+tree.listFiles('packages'); // ['app/package.json', 'app/src/main.ts'], at any depth
 tree.read('packages/app/src/main.ts'); // 'export {};\n'
 tree.readJson('packages/app/package.json'); // unknown, for the caller to narrow
 tree.exists('packages/app/tsconfig.json'); // false
 tree.rm('packages/app');
 ```
+
+`listFiles` reaches every depth and reports paths relative to the directory it was given, sorted, with `/` as the separator on every platform: a path a test asserts on is a value rather than a location, so `'app/src/main.ts'` should not vary by platform. It parts from `list` twice. A directory that is not there answers `[]` where `list` raises `ENOENT`, which is what lets a suite assert that a build emitted nothing without guarding the call; a path that exists as a file still raises `ENOTDIR`, as `list` does. And a symlink is neither named nor descended, whatever it points at, so every path in the result names a file held inside the tree, where `list` reports a link by name at its own level.
 
 `read` returns UTF-8 text, and a missing entry raises `ENOENT` rather than answering emptily -- `exists` is the check. `readJson` returns `unknown`, so a caller narrows it rather than trusting an asserted type; contents that do not parse raise an error naming the entry, which the parse error alone does not. `exists` follows a symlink, so a dangling one answers `false`. `rm` is recursive and silent on an entry that is not there.
 
