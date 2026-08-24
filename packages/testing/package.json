@@ -3,6 +3,7 @@
   "version": "0.3.0",
   "description": "Runner-agnostic utilities for testing",
   "keywords": [
+    "argv",
     "cwd",
     "error",
     "esm",

@@ -12,7 +12,7 @@ pnpm add --save-dev @williamthorsen/toolbelt.testing
 
 Requires Node.js 24 or later. The package declares no dependencies and imports no test-runner API, so it works under Vitest, Jest, and `node:test` alike. A utility that does need the Vitest API lives in `@williamthorsen/toolbelt.vitest` instead.
 
-`captureError`, `captureStdio`, and `pointCwdAt` are candidate tier: imported from `@williamthorsen/toolbelt.testing/candidate` rather than the package root, and subject to change.
+`captureError`, `captureStdio`, `pointArgvAt`, and `pointCwdAt` are candidate tier: imported from `@williamthorsen/toolbelt.testing/candidate` rather than the package root, and subject to change.
 
 ## `captureError`
 
@@ -159,6 +159,67 @@ expect(stdio.stdout).toBe('captured\ncaptured again\n');
 ```
 
 The reverse order holds too: a capture opened inside a silence takes the output for its own scope and hands the console back on exit, with the calls the silence had recorded still intact.
+
+## `pointArgvAt`
+
+```ts
+pointArgvAt(args: readonly string[], options?: PointArgvAtOptions): PointedArgv;
+```
+
+Points `process.argv` at a set of CLI arguments for the enclosing scope and restores the previous value when the scope exits.
+
+```ts
+import { pointArgvAt } from '@williamthorsen/toolbelt.testing/candidate';
+
+it('pins ESLint to the config named by --config', async () => {
+  using _argv = pointArgvAt(['--config', '/project/custom.config.ts']);
+
+  await strictLint();
+
+  expect(constructedWith()).toMatchObject({ overrideConfigFile: '/project/custom.config.ts' });
+});
+```
+
+The caller passes the arguments alone, which is what `process.argv.slice(2)` reports, and the handle reports them back as `args`, copied so a later mutation of the caller's array does not change the scope. Binding with `using` is what restores the previous value. Nothing else does, so a scope bound with `const` leaves the arguments installed for the rest of the file.
+
+### The executable and script entries
+
+`process.argv[0]` and `process.argv[1]` are supplied, since a test reading `slice(2)` is about neither. They default to `process.execPath`, the binary Node itself names there, and the placeholder `script`:
+
+```ts
+using _argv = pointArgvAt(['--quiet']);
+
+expect(process.argv[0]).toBe(process.execPath);
+expect(process.argv[1]).toBe('script');
+```
+
+`execPath` and `scriptPath` override one entry each, leaving the other defaulted. A CLI that renders its own name into usage text reads `process.argv[1]`, so a test asserting on that name supplies it:
+
+```ts
+using _argv = pointArgvAt(['--help'], { scriptPath: 'strict-lint' });
+```
+
+The default names no existing file, so code deriving its own directory from `process.argv[1]` needs a real path passed to `scriptPath`.
+
+### One mode, not two
+
+`pointCwdAt` offers `chdir` because the OS holds a working directory of its own, which a spawned child inherits and which `process.cwd()` can be made to disagree with. Node offers no counterpart to `chdir` for `process.argv`, so there is one mode here: a spawned child receives whatever arguments its own `spawn` call passes, not the ones the scope installed.
+
+### What the swap does not reach
+
+The scope assigns a new array rather than mutating the one it found, which is what lets disposal restore the original by reference. A module that captured the array before the scope opened therefore goes on reporting the arguments it captured. Code that reads `process.argv` when it runs, which is what a CLI entry point does, sees the pointed arguments.
+
+### Setting a default for a whole file
+
+A scope disposes at the end of the block that binds it, so a `beforeEach` that opens one has closed it again before the test body runs. `disposeOnTestFinished` from `@williamthorsen/toolbelt.vitest` extends the scope to the end of the test instead:
+
+```ts
+beforeEach(() => {
+  disposeOnTestFinished(pointArgvAt([]));
+});
+```
+
+A test needing other arguments opens its own scope, which restores the file's default when it exits.
 
 ## `pointCwdAt`
 
