@@ -10,7 +10,10 @@ import { isFlatChecklist, type RdyCheck } from 'readyup';
 import { describe, expect, it, vi } from 'vitest';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
+const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.numbers', version: '1.0.0' });
 const CLAMP = 'export const bounded = Math.max(min, Math.min(max, value));\n';
+// The package's own `clamp`, holding the idiom its check recommends replacing.
+const OWN_CLAMP = 'export function clamp(value, bounds) {\n  return Math.max(min, Math.min(max, value));\n}\n';
 const ROUND = 'export const rate = Math.round(value * 100) / 100;\n';
 const RANDOM = 'export const roll = Math.floor(Math.random() * sides);\n';
 // The `arrays` idiom and a legitimate scaling, neither of which this kit claims.
@@ -59,15 +62,18 @@ describe('The numbers adoption kit', () => {
     await expect(runCheck((await loadChecks())[2])).resolves.toStrictEqual({ adoptedCount: 0, findings: [] });
   });
 
-  it('skips every check where the project publishes the package', async () => {
+  it('exempts the package’s own clamp, and reports a hand-roll beside it', async () => {
     using tree = createTrackedRepo({
-      'package.json': JSON.stringify({ name: '@williamthorsen/toolbelt.numbers', version: '1.0.0' }),
+      'package.json': PUBLISHER_MANIFEST,
+      'src/clamp.ts': OWN_CLAMP,
+      'src/other.ts': CLAMP,
     });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runSkip((await loadChecks())[0])).resolves.toBe(
-      'this project publishes the package these checks are for',
-    );
+    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({
+      adoptedCount: 0,
+      findings: [{ line: 1, path: 'src/other.ts', reported: true }],
+    });
   });
 
   it('skips every check where the sweep matches no source', async () => {
