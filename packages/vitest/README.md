@@ -12,7 +12,7 @@ pnpm add --save-dev @williamthorsen/toolbelt.vitest
 
 Requires Node.js 24 or later. Vitest is a peer dependency: the package uses whichever Vitest 4 the consuming project already installs.
 
-`disposeOnTestFinished`, `makeFixture`, `silenceConsole`, and `throwOnProcessExit` are candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change.
+`disposeOnTestFinished`, `listConsoleLines`, `makeFixture`, `silenceConsole`, and `throwOnProcessExit` are candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change.
 
 ## `disposeOnTestFinished`
 
@@ -66,6 +66,49 @@ The working directory is restored before the directory it points into is removed
 ### Where Vitest's documentation disagrees
 
 Vitest documents `onTestFinished` as honoring `sequence.hooks`, and as not running for a test cancelled by a dynamic `ctx.skip()`. The 4.1 runner does neither: it passes a literal for the finish hooks, so they unwind in reverse whatever that option says, and it runs them for a dynamically skipped test too. The suite pins the skip half, so a runner that stopped disposing there fails here rather than at a consumer. It cannot pin the other: `sequence.hooks` defaults to `stack`, which means reverse whether the runner consults the option or ignores it, so no test under that default can tell the two apart.
+
+## `listConsoleLines`
+
+```ts
+listConsoleLines(spy: MockInstance): string[];
+```
+
+Lists the lines a spied console method received, one per call.
+
+```ts
+import { listConsoleLines, silenceConsole } from '@williamthorsen/toolbelt.vitest/candidate';
+
+it('names the flag it could not parse', () => {
+  using silent = silenceConsole(['error']);
+
+  parseArgs(['--colour']);
+
+  expect(listConsoleLines(silent.error)).toStrictEqual(['unknown flag: --colour']);
+});
+```
+
+### Why it reads rather than captures
+
+`silenceConsole` already holds the `vi.spyOn` slot for the method, and silences do not stack, so a second helper that installed its own spy would take that slot from it. Reading the spy the silence hands back composes instead: one call silences, the other reads, and either works without the other.
+
+That also means the two are separable. A spy from `vi.spyOn(console, 'warn')` reads the same way, and a test that wants the recorded calls unrendered still has `silent.warn` to reach for.
+
+### What a line contains
+
+Each call's arguments render through `String` and join on a single space, which is how a console method separates them:
+
+```ts
+console.error('failed:', 3, new Error('boom'));
+// 'failed: 3 Error: boom'
+```
+
+`String` is what keeps that `Error` at its message rather than its stack. It is also where the rendering stops: an object reads as `[object Object]`, and a `%s` format specifier is not substituted. A test asserting on what the stream received, rather than on what the call was given, wants [`captureStdio`](https://github.com/williamthorsen/toolbelt/tree/main/packages/testing#capturestdio) in `@williamthorsen/toolbelt.testing`, which renders through `util.format`.
+
+A caller wanting one string joins the array:
+
+```ts
+expect(listConsoleLines(silent.info).join('\n')).toContain('--dry-run');
+```
 
 ## `makeFixture`
 
@@ -205,7 +248,7 @@ it('falls back to defaults when settings are missing', () => {
 });
 ```
 
-Each spy records its calls while suppressing the output, so a console call can be asserted on without reaching the terminal. Binding with `using` is what restores the originals when the block exits.
+Each spy records its calls while suppressing the output, so a console call can be asserted on without reaching the terminal. [`listConsoleLines`](#listconsolelines) renders those calls as the lines the method would have written. Binding with `using` is what restores the originals when the block exits.
 
 Called with no argument, it silences all five methods:
 

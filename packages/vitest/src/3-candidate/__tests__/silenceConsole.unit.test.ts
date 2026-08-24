@@ -1,6 +1,7 @@
 /* eslint no-console: "off" */
 import { describe, expect, expectTypeOf, it, type MockInstance } from 'vitest';
 
+import { listConsoleLines } from '../listConsoleLines.ts';
 import { type ConsoleMethod, silenceConsole } from '../silenceConsole.ts';
 
 describe(silenceConsole, () => {
@@ -45,7 +46,7 @@ describe(silenceConsole, () => {
 
       console.error('swallowed');
 
-      expect(silent.error.mock.calls).toStrictEqual([['swallowed']]);
+      expect(listConsoleLines(silent.error)).toStrictEqual(['swallowed']);
       expect(silent.error.getMockImplementation()).toBeTypeOf('function');
     });
 
