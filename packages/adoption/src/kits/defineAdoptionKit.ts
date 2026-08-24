@@ -2,8 +2,8 @@ import { defineRdyKit, type FindingOutcome, type RdyKit, type Severity, type Ski
 import {
   buildFindingReport,
   countPackageUsage,
-  discoverWorkspaces,
   type PathFilter,
+  type ProjectSource,
   readTrackedSources,
 } from 'readyup/check-utils';
 
@@ -48,20 +48,19 @@ export interface AdoptionKitSpec<Kind extends string> {
 interface ProjectSummary<Kind extends string> {
   adoptedCount: number;
   findings: Array<AdoptionSite<Kind> & { path: string }>;
-  sourceCount: number;
+  sources: readonly ProjectSource[];
 }
 
 const NOT_A_REPO = 'the project is not a git working tree, and these checks read the files git tracks';
 /** What a check reports where the project could not be read. The runner resolves it to a pass carrying nothing. */
 const NOTHING_TO_REPORT: FindingOutcome = { findings: [] };
-const SELF = 'this project publishes the package these checks are for';
 
 /**
  * Assembles a package's adoption checks into a kit, given the detector and the checks that read it.
  *
- * A kit built here holds its detector and its advice and nothing else: the self-skip, the source sweep, the
- * adoption count, and the finding report are shared, so a package adopting these checks declares what it looks
- * for rather than how the looking is done.
+ * A kit built here holds its detector and its advice and nothing else: the source sweep, the adoption count,
+ * the exemption covering the package's own implementation, and the finding report are shared, so a package
+ * adopting these checks declares what it looks for rather than how the looking is done.
  *
  * The summary is held per kit rather than per module, because two compiled kits can run in one process and one
  * kit's findings are not the other's. The sweep beneath it is cached in readyup, which a compiled kit leaves
@@ -73,6 +72,7 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
   assertCheckIdsAreUnique();
 
   const cache: { summary?: Promise<ProjectSummary<Kind> | undefined> } = {};
+  const adoptedPackage = { exportNames: spec.exportNames, packageName: spec.packageName };
 
   return defineRdyKit({
     description: spec.description,
@@ -84,7 +84,7 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
           name: check.name,
           id: check.id,
           ...(check.severity !== undefined && { severity: check.severity }),
-          skip: skipUnlessProjectIsAccountable,
+          skip: skipUnlessProjectHoldsSources,
           check: () => reportKinds(check.kinds),
           fix: check.fix,
         })),
@@ -127,19 +127,19 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
     if (sources === undefined) return undefined;
 
     return {
-      adoptedCount: countPackageUsage(sources, {
-        exportNames: spec.exportNames,
-        packageName: spec.packageName,
-      }),
+      adoptedCount: countPackageUsage(sources, adoptedPackage),
       findings: sources.flatMap((source) => spec.detect(source.text).map((site) => ({ ...site, path: source.path }))),
-      sourceCount: sources.length,
+      sources,
     };
   }
 
   /**
-   * Reports every site the project holds, marking those of the named kinds and how far adoption got. The
-   * runner reads the verdict, the detail, and the fraction off the report, so a pragma the sources carry is
-   * honored where it is written rather than in each kit.
+   * Reports every site the project holds, marking those of the named kinds and how far adoption got. A site
+   * inside the declaration the package exports under one of its adopted names is dropped from the report
+   * altogether, because the implementation of an idiom cannot adopt itself.
+   *
+   * The runner reads the verdict, the detail, and the fraction off the report, so a pragma the sources carry
+   * is honored where it is written rather than in each kit.
    */
   async function reportKinds(kinds: readonly Kind[]): Promise<FindingOutcome> {
     const summary = await loadSummary();
@@ -148,17 +148,16 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
     return buildFindingReport({
       adoptedCount: summary.adoptedCount,
       findings: summary.findings,
+      ownImplementation: { ...adoptedPackage, sources: summary.sources },
       shouldReport: (finding) => kinds.includes(finding.kind),
     });
   }
 
-  /** Skips every check where the project cannot be read, or is the one publishing the package. */
-  async function skipUnlessProjectIsAccountable(): Promise<SkipResult> {
-    if (discoverWorkspaces().some((workspace) => workspace.name === spec.packageName)) return SELF;
-
+  /** Skips every check where the project cannot be read, or holds no source the filter matched. */
+  async function skipUnlessProjectHoldsSources(): Promise<SkipResult> {
     const summary = await loadSummary();
     if (summary === undefined) return NOT_A_REPO;
-    return summary.sourceCount === 0 ? spec.noSourcesReason : false;
+    return summary.sources.length === 0 ? spec.noSourcesReason : false;
   }
 
   // endregion | Helpers
