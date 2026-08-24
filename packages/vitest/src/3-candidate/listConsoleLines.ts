@@ -1,14 +1,14 @@
 import type { MockInstance } from 'vitest';
 
 /**
- * Lists the lines a spied console method received, rendering each call the way the method would have written it.
+ * Lists the lines a spied console method received, one per call.
  *
- * A reader rather than a capturer: it takes the spy `silenceConsole` already installed instead of claiming the
- * same `vi.spyOn` slot, which two silences cannot share.
+ * Reads the spy `silenceConsole` hands back, so the two compose; a `vi.spyOn` spy on a console method reads the
+ * same way.
  *
- * Each argument renders through `String` and the arguments join on a space, so an `Error` reads as its message.
- * A caller asserting on what the stream received, format specifiers and inspected objects included, wants
- * `captureStdio` in `@williamthorsen/toolbelt.testing` instead.
+ * Each call's arguments render through `String` and join on a space, so an `Error` reads as its message. A test
+ * asserting on rendered stream output, format specifiers and inspected objects included, wants `captureStdio`
+ * in `@williamthorsen/toolbelt.testing` instead.
  *
  * @category Testing
  * @experimental
