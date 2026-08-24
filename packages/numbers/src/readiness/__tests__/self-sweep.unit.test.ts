@@ -12,7 +12,8 @@ const READINESS_DIR = fileURLToPath(new URL('..', import.meta.url));
 
 describe(listMathIdioms, () => {
   // The kit's `pickInteger` advice spells the idiom out in its fix text, and reported itself as a site before
-  // blanking, in the source and again in the bundle. The kit skips this project, so nothing else would notice.
+  // blanking, in the source and again in the bundle. readyup drops the compiled bundle from its own sweep,
+  // and nothing in CI runs `rdy run --packages`, so nothing else would notice.
   it('finds nothing in the sources describing what it looks for', () => {
     const findings = listSweptFiles().flatMap((file) =>
       listMathIdioms(fs.readFileSync(file, 'utf8')).map((site) => `${path.basename(file)}:${site.line}`),

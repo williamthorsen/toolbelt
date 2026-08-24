@@ -55,7 +55,7 @@ var NOTHING_TO_REPORT = { findings: [] };
 function defineAdoptionKit(spec) {
   assertCheckIdsAreUnique();
   const cache = {};
-  const packageUsage = { exportNames: spec.exportNames, packageName: spec.packageName };
+  const adoptedPackage = { exportNames: spec.exportNames, packageName: spec.packageName };
   return defineRdyKit({
     description: spec.description,
     defaultSeverity: "warn",
@@ -93,7 +93,7 @@ function defineAdoptionKit(spec) {
     const sources = await readTrackedSources(spec.pathFilter);
     if (sources === void 0) return void 0;
     return {
-      adoptedCount: countPackageUsage(sources, packageUsage),
+      adoptedCount: countPackageUsage(sources, adoptedPackage),
       findings: sources.flatMap((source) => spec.detect(source.text).map((site) => ({ ...site, path: source.path }))),
       sources
     };
@@ -104,7 +104,7 @@ function defineAdoptionKit(spec) {
     return buildFindingReport({
       adoptedCount: summary.adoptedCount,
       findings: summary.findings,
-      ownImplementation: { ...packageUsage, sources: summary.sources },
+      ownImplementation: { ...adoptedPackage, sources: summary.sources },
       shouldReport: (finding) => kinds.includes(finding.kind)
     });
   }

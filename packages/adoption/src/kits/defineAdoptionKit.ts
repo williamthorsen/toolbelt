@@ -72,7 +72,7 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
   assertCheckIdsAreUnique();
 
   const cache: { summary?: Promise<ProjectSummary<Kind> | undefined> } = {};
-  const packageUsage = { exportNames: spec.exportNames, packageName: spec.packageName };
+  const adoptedPackage = { exportNames: spec.exportNames, packageName: spec.packageName };
 
   return defineRdyKit({
     description: spec.description,
@@ -127,7 +127,7 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
     if (sources === undefined) return undefined;
 
     return {
-      adoptedCount: countPackageUsage(sources, packageUsage),
+      adoptedCount: countPackageUsage(sources, adoptedPackage),
       findings: sources.flatMap((source) => spec.detect(source.text).map((site) => ({ ...site, path: source.path }))),
       sources,
     };
@@ -148,7 +148,7 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
     return buildFindingReport({
       adoptedCount: summary.adoptedCount,
       findings: summary.findings,
-      ownImplementation: { ...packageUsage, sources: summary.sources },
+      ownImplementation: { ...adoptedPackage, sources: summary.sources },
       shouldReport: (finding) => kinds.includes(finding.kind),
     });
   }

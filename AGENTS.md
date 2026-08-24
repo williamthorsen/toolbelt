@@ -18,7 +18,7 @@ Versions are independent per package.
 
 ## Commands
 
-Runner conventions (discovery, invocation, root vs. package registries, hooks) come from the ambient `nmr` rulebook, which `codeassembly sync` writes into the machine-local guidance files. CI runs `pnpm exec nmr ci` (`.github/workflows/code-quality.yaml`); a dependency audit runs separately, on pull requests and daily (`.github/workflows/audit.yaml`). `pnpm exec rdy run --packages` runs the adoption checks its configured packages ship, this repo's own kits included: readyup resolves a configured package through the workspaces where `node_modules` misses, so the root manifest declares none of them. What it reports against this repo's sources is an adoption decision left open, not a defect. Nothing in CI runs it, so run it by hand after a dependency upgrade.
+Runner conventions (discovery, invocation, root vs. package registries, hooks) come from the ambient `nmr` rulebook, which `codeassembly sync` writes into the machine-local guidance files. CI runs `pnpm exec nmr ci` (`.github/workflows/code-quality.yaml`); a dependency audit runs separately, on pull requests and daily (`.github/workflows/audit.yaml`). `pnpm exec rdy run --packages` runs the adoption checks its configured packages ship, this repo's own kits included: readyup resolves a configured package through the workspaces where `node_modules` misses, so the root manifest declares no dependency on the toolbelt workspaces. What it reports against this repo's sources is an adoption decision left open, not a defect. Nothing in CI runs it, so run it by hand after a dependency upgrade.
 
 ## Architecture
 

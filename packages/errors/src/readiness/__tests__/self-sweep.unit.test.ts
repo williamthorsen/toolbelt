@@ -12,7 +12,8 @@ const READINESS_DIR = fileURLToPath(new URL('..', import.meta.url));
 
 describe(listErrorSites, () => {
   // Most files swept here write `instanceof Error` in a comment, a pattern, or a fix string, and each of those
-  // reported a site of its own before blanking. The kit skips this project, so nothing else would notice.
+  // reported a site of its own before blanking. readyup drops the compiled bundle from its own sweep, and
+  // nothing in CI runs `rdy run --packages`, so nothing else would notice.
   it('finds nothing in the sources describing what it looks for', () => {
     const findings = listSweptFiles().flatMap((file) =>
       listErrorSites(fs.readFileSync(file, 'utf8')).map((site) => `${path.basename(file)}:${site.line}`),
