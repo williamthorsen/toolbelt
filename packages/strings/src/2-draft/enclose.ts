@@ -1,5 +1,6 @@
 /**
  * Encloses a string with the given opening and closing strings.
+ * @category String
  * @experimental
  * @stage draft
  */

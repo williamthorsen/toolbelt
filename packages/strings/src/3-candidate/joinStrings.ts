@@ -6,6 +6,7 @@ interface JoinStringsOptions {
 /**
  * Joins an array of strings with a separator, omitting empty values and
  * optionally using a different separatorfor the last element.
+ * @category String
  * @experimental
  * @stage candidate
  */

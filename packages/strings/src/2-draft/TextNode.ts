@@ -13,6 +13,7 @@ const DELIMIT = {
 
 /**
  * Class for building an abstract syntax tree (AST) of static text nodes (tokens) and variants.
+ * @category String
  * @experimental
  * @stage draft
  */

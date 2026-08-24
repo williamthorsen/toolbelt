@@ -5,6 +5,7 @@ import { validateDelimiters } from '../internal/validateDelimiters.ts';
 import type { ValidationResult } from '../types/common.types.ts';
 
 /**
+ * @category String
  * @experimental
  * @stage candidate
  */

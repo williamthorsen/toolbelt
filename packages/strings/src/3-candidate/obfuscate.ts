@@ -4,6 +4,7 @@ import { clamp } from '@williamthorsen/toolbelt.numbers/candidate';
  * Returns a string in which all but an optional number of characters at its extremes are replaced with asterisks.
  * Throws a TypeError if bookendSize or fillSize is NaN or if fillChar is not a single character, and a RangeError
  * if bookendSize is negative, if fillSize is less than 1, or if fillSize is less than bookendSize.
+ * @category String
  * @experimental
  * @stage candidate
  */

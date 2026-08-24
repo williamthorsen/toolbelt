@@ -3,6 +3,7 @@ import { arraify } from '@williamthorsen/toolbelt.arrays/candidate';
 /**
  * Transforms a string into a URL-friendly slug.
  * Throws a TypeError if the separator is not a single character.
+ * @category String
  * @experimental
  * @stage candidate
  */
