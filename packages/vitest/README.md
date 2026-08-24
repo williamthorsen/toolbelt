@@ -102,7 +102,7 @@ console.error('failed:', 3, new Error('boom'));
 // 'failed: 3 Error: boom'
 ```
 
-`String` is what keeps that `Error` at its message rather than its stack. It is also where the rendering stops: an object reads as `[object Object]`, and a `%s` format specifier is not substituted. A test asserting on what the stream received, rather than on what the call was given, wants [`captureStdio`](https://github.com/williamthorsen/toolbelt/tree/main/packages/testing#readme) in `@williamthorsen/toolbelt.testing`, which renders through `util.format`.
+`String` is what keeps that `Error` at its message rather than its stack. It is also where the rendering stops: an object reads as `[object Object]`, and a `%s` format specifier is not substituted. A test asserting on what the stream received, rather than on what the call was given, wants [`captureStdio`](https://github.com/williamthorsen/toolbelt/tree/main/packages/testing#capturestdio) in `@williamthorsen/toolbelt.testing`, which renders through `util.format`.
 
 A caller wanting one string joins the array:
 

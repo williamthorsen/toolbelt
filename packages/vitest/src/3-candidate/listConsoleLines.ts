@@ -20,7 +20,7 @@ import type { MockInstance } from 'vitest';
  * expect(listConsoleLines(silent.warn)).toStrictEqual(['deprecated: use tagRelease']);
  */
 export function listConsoleLines(spy: MockInstance): string[] {
-  // `MockInstance`'s default type parameter types each call's arguments as `any[]`; the annotation stops that
-  // spreading into the returned array.
+  // `MockInstance`'s default type parameter types each call's arguments as `any[]`; the annotation holds them
+  // at `unknown`, so anything read out of `args` has to narrow.
   return spy.mock.calls.map((args: unknown[]) => args.map(String).join(' '));
 }
