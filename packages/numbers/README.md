@@ -73,6 +73,13 @@ A random integer used as an array subscript is left alone. That site belongs to 
 
 Bootstrap wrappers under `bin/` are exempt: such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they compute these values deliberately.
 
+A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
+
+```ts
+// rdy-ignore-next-line toolbelt.numbers/no-hand-rolled-clamp -- a reversed range is unreachable here
+const bounded = Math.max(min, Math.min(max, value));
+```
+
 Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
 
 ```ts

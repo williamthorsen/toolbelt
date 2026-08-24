@@ -26,3 +26,7 @@ reason, and the root's `__tests__/workspace-dependency-graph.app.unit.test.ts` f
 
 A package's `.readyup/kits/default.ts` declares its checks and points at its detector; everything else --
 the self-skip, the source sweep, the adoption count, the finding report -- comes from `defineAdoptionKit`.
+
+Each check declares an `id` alongside its name, which is what a consumer's `rdy-ignore` pragma names to
+suppress that check alone. `AdoptionCheck` requires it, though readyup's own field is optional: a check
+carrying none can be silenced only along with every other check on the line, and nothing reports the loss.

@@ -296,6 +296,13 @@ Only test files are read, which inverts the exemption `@williamthorsen/toolbelt.
 
 A mock whose implementation is a bare reference reports as unclassified rather than as non-throwing. The referenced function may well throw, and naming it a defect without reading its body would misreport it.
 
+A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
+
+```ts
+// rdy-ignore-next-line toolbelt.vitest/no-non-throwing-exit-mock -- the call under test returns first
+vi.spyOn(process, 'exit').mockImplementation(() => undefined);
+```
+
 Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
 
 ```ts
