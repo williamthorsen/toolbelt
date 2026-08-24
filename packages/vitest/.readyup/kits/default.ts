@@ -31,16 +31,19 @@ export default defineAdoptionKit({
   checks: [
     {
       name: 'No test declares its own process-exit sentinel error',
+      id: 'no-exit-sentinel-clone',
       kinds: ['sentinel-clone'],
       fix: `Delete the class named above and use throwOnProcessExit from ${PACKAGE_NAME}/candidate, whose ProcessExitError carries the code. One substitution retires the class and the mock together. Reference: ${README_URL}`,
     },
     {
       name: 'No test mocks process.exit without throwing',
+      id: 'no-non-throwing-exit-mock',
       kinds: ['non-throwing'],
       fix: `Replace each mock named above with throwOnProcessExit from ${PACKAGE_NAME}/candidate. A mock that returns lets execution continue past the exit, so the test asserts against a path the process never reaches, and nothing reports it.`,
     },
     {
       name: 'No test hand-rolls a throwing or unreadable process-exit mock',
+      id: 'no-hand-rolled-exit-mock',
       kinds: ['throwing', 'unclassified'],
       severity: 'recommend',
       fix: `Replace each mock named above with throwOnProcessExit from ${PACKAGE_NAME}/candidate, and assert the code on the thrown ProcessExitError. An unclassified mock is one these checks could not read: an implementation given as a bare reference, attached away from the spy's own call chain, or whose parentheses never balance.`,

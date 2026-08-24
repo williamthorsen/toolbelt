@@ -1,7 +1,8 @@
-import { type CheckOutcome, isFlatChecklist, type RdyCheck } from 'readyup';
+import { isFlatChecklist, type RdyCheck } from 'readyup';
 import { describe, expect, it } from 'vitest';
 
 import { type AdoptionKitSpec, type AdoptionSite, defineAdoptionKit } from '../defineAdoptionKit.ts';
+import { listReportedFindings, runCheck, runSkip, summarizeFraction } from '../test-utils/check-outcomes.ts';
 import { createTempDir } from '../test-utils/createTempDir.ts';
 import { createTrackedRepo } from '../test-utils/createTrackedRepo.ts';
 import { pointCwdAt } from '../test-utils/pointCwdAt.ts';
@@ -26,8 +27,8 @@ function detect(text: string): Array<AdoptionSite<Kind>> {
 function buildSpec(overrides: Partial<AdoptionKitSpec<Kind>> = {}): AdoptionKitSpec<Kind> {
   return {
     checks: [
-      { fix: 'delete it', kinds: ['clone'], name: 'clone check' },
-      { fix: 'replace it', kinds: ['inline'], name: 'inline check' },
+      { fix: 'delete it', id: 'no-clone', kinds: ['clone'], name: 'clone check' },
+      { fix: 'replace it', id: 'no-inline', kinds: ['inline'], name: 'inline check' },
     ],
     description: 'Adoption checks for a project consuming @scope/pkg',
     detect,
@@ -46,8 +47,12 @@ describe(defineAdoptionKit, () => {
 
     const [cloneCheck, inlineCheck] = listChecks(buildSpec());
 
-    await expect(runCheck(cloneCheck)).resolves.toMatchObject({ detail: 'describeThing (src/a.ts:1)', ok: false });
-    await expect(runCheck(inlineCheck)).resolves.toMatchObject({ detail: 'src/b.ts:1', ok: false });
+    expect(listReportedFindings(await runCheck(cloneCheck))).toStrictEqual([
+      { line: 1, path: 'src/a.ts', reported: true, symbol: 'describeThing' },
+    ]);
+    expect(listReportedFindings(await runCheck(inlineCheck))).toStrictEqual([
+      { line: 1, path: 'src/b.ts', reported: true },
+    ]);
   });
 
   it('spans every finding in the denominator, so a run’s checks share one fraction', async () => {
@@ -56,9 +61,9 @@ describe(defineAdoptionKit, () => {
 
     const outcomes = await Promise.all(listChecks(buildSpec()).map((check) => runCheck(check)));
 
-    expect(outcomes.map((outcome) => outcome.progress)).toStrictEqual([
-      { count: 2, passedCount: 0, type: 'fraction' },
-      { count: 2, passedCount: 0, type: 'fraction' },
+    expect(outcomes.map(summarizeFraction)).toStrictEqual([
+      { adoptedCount: 0, findingCount: 2 },
+      { adoptedCount: 0, findingCount: 2 },
     ]);
   });
 
@@ -72,18 +77,18 @@ describe(defineAdoptionKit, () => {
 
     const [cloneCheck] = listChecks(buildSpec());
 
-    expect((await runCheck(cloneCheck)).progress).toStrictEqual({ count: 3, passedCount: 2, type: 'fraction' });
+    expect(summarizeFraction(await runCheck(cloneCheck))).toStrictEqual({ adoptedCount: 2, findingCount: 1 });
   });
 
-  it('passes a check whose kinds the project holds none of', async () => {
+  it('names no site where the project holds none of a check’s kinds, and counts the rest anyway', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/b.ts': INLINE });
     using _cwd = pointCwdAt(tree.dir);
 
     const [cloneCheck] = listChecks(buildSpec());
 
     await expect(runCheck(cloneCheck)).resolves.toStrictEqual({
-      ok: true,
-      progress: { count: 1, passedCount: 0, type: 'fraction' },
+      adoptedCount: 0,
+      findings: [{ line: 1, path: 'src/b.ts', reported: false }],
     });
   });
 
@@ -93,7 +98,9 @@ describe(defineAdoptionKit, () => {
 
     const [cloneCheck] = listChecks(buildSpec());
 
-    expect((await runCheck(cloneCheck)).detail).toBe('describeThing (src/a.ts:1)');
+    expect((await runCheck(cloneCheck)).findings).toStrictEqual([
+      { line: 1, path: 'src/a.ts', reported: true, symbol: 'describeThing' },
+    ]);
   });
 
   it('sweeps per kit, so one kit’s findings are not another’s', async () => {
@@ -105,14 +112,22 @@ describe(defineAdoptionKit, () => {
     const cloneOnly = listChecks(buildSpec({ pathFilter: (path) => path.endsWith('a.ts') }));
     const inlineOnly = listChecks(buildSpec({ pathFilter: (path) => path.endsWith('b.ts') }));
 
-    await expect(runCheck(cloneOnly[0])).resolves.toMatchObject({
-      detail: 'describeThing (src/a.ts:1)',
-      progress: { count: 1, passedCount: 0, type: 'fraction' },
+    await expect(runCheck(cloneOnly[0])).resolves.toStrictEqual({
+      adoptedCount: 0,
+      findings: [{ line: 1, path: 'src/a.ts', reported: true, symbol: 'describeThing' }],
     });
-    await expect(runCheck(inlineOnly[1])).resolves.toMatchObject({
-      detail: 'src/b.ts:1',
-      progress: { count: 1, passedCount: 0, type: 'fraction' },
+    await expect(runCheck(inlineOnly[1])).resolves.toStrictEqual({
+      adoptedCount: 0,
+      findings: [{ line: 1, path: 'src/b.ts', reported: true }],
     });
+  });
+
+  // `skip` turns the check off before it runs, but `rdy run --diagnose` runs it anyway.
+  it('names no site where the project is not a git working tree', async () => {
+    using tree = createTempDir({ 'package.json': MANIFEST, 'src/a.ts': CLONE });
+    using _cwd = pointCwdAt(tree.dir);
+
+    await expect(runCheck(listChecks(buildSpec())[0])).resolves.toStrictEqual({ findings: [] });
   });
 
   it('skips every check where the project publishes the package under test', async () => {
@@ -155,18 +170,6 @@ function listChecks(spec: AdoptionKitSpec<Kind>): RdyCheck[] {
   const [checklist] = defineAdoptionKit(spec).checklists;
   if (checklist === undefined || !isFlatChecklist(checklist)) return [];
   return checklist.checks;
-}
-
-/** Runs a check, normalizing the boolean form readyup also accepts into an outcome. */
-async function runCheck(check: RdyCheck | undefined): Promise<CheckOutcome> {
-  if (check === undefined) throw new Error('the kit holds no such check');
-  const outcome = await check.check();
-  return typeof outcome === 'boolean' ? { ok: outcome } : outcome;
-}
-
-async function runSkip(check: RdyCheck | undefined): Promise<false | string> {
-  if (check?.skip === undefined) throw new Error('the check carries no skip');
-  return check.skip();
 }
 
 // endregion | Helpers

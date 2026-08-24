@@ -105,6 +105,13 @@ A function whose whole body re-implements `describeError` reports once, naming t
 
 Bootstrap wrappers under `bin/` are exempt: such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they construct error shapes deliberately.
 
+A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
+
+```ts
+// rdy-ignore-next-line toolbelt.errors/no-instanceof-error -- the value is constructed in this module
+if (error instanceof Error) throw error;
+```
+
 Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
 
 ```ts

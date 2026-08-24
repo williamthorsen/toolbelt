@@ -31,18 +31,21 @@ export default defineAdoptionKit({
   checks: [
     {
       name: 'No source clamps a value by hand',
+      id: 'no-hand-rolled-clamp',
       kinds: ['clamp-nest'],
       severity: 'recommend',
       fix: `Replace each expression named above with clamp from ${PACKAGE_NAME}/candidate, called as clamp(value, { min, max }). It is not a silent substitution: clamp throws a RangeError on a reversed range or a NaN bound, where the nested Math calls return a value for both. Reference: ${README_URL}`,
     },
     {
       name: 'No source rounds to decimal places by hand',
+      id: 'no-hand-rolled-round',
       kinds: ['round-scale'],
       severity: 'recommend',
       fix: `Replace each expression named above with round from ${PACKAGE_NAME}/candidate, called as round(value, places). The substitution is exact: round scales by the same power of ten these sites write out. Reference: ${README_URL}`,
     },
     {
       name: 'No source derives a random integer by hand',
+      id: 'no-hand-rolled-random-integer',
       kinds: ['random-integer'],
       severity: 'recommend',
       fix: `Replace each expression named above with pickInteger from ${PACKAGE_NAME}/candidate, which also takes a seed. Mind the bound: Math.floor(Math.random() * N) stops at N - 1, where pickInteger's max is inclusive, so the replacement is pickInteger({ max: N - 1 }). A site indexing an array is left to toolbelt.arrays, whose pickItem covers it. Reference: ${README_URL}`,

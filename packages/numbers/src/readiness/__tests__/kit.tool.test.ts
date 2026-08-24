@@ -1,6 +1,12 @@
-import { createTrackedRepo } from '@williamthorsen/toolbelt.adoption/test-utils';
+import {
+  createTrackedRepo,
+  listReportedFindings,
+  runCheck,
+  runSkip,
+  summarizeFraction,
+} from '@williamthorsen/toolbelt.adoption/test-utils';
 import { pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
-import { type CheckOutcome, isFlatChecklist, type RdyCheck } from 'readyup';
+import { isFlatChecklist, type RdyCheck } from 'readyup';
 import { describe, expect, it, vi } from 'vitest';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
@@ -19,10 +25,10 @@ describe('The numbers adoption kit', () => {
 
     const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
 
-    expect(outcomes.map((outcome) => outcome.detail)).toStrictEqual([
-      'src/bound.ts:1',
-      'src/rate.ts:1',
-      'src/roll.ts:1',
+    expect(outcomes.map(listReportedFindings)).toStrictEqual([
+      [{ line: 1, path: 'src/bound.ts', reported: true }],
+      [{ line: 1, path: 'src/rate.ts', reported: true }],
+      [{ line: 1, path: 'src/roll.ts', reported: true }],
     ]);
   });
 
@@ -32,8 +38,8 @@ describe('The numbers adoption kit', () => {
 
     const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
 
-    expect(outcomes.map((outcome) => outcome.progress)).toStrictEqual(
-      Array.from({ length: 3 }, () => ({ count: 3, passedCount: 0, type: 'fraction' })),
+    expect(outcomes.map(summarizeFraction)).toStrictEqual(
+      Array.from({ length: 3 }, () => ({ adoptedCount: 0, findingCount: 3 })),
     );
   });
 
@@ -41,10 +47,7 @@ describe('The numbers adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/rate.ts': ADOPTER });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[1])).resolves.toStrictEqual({
-      ok: true,
-      progress: { count: 1, passedCount: 1, type: 'fraction' },
-    });
+    await expect(runCheck((await loadChecks())[1])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
   });
 
   // A subscripted random integer is `toolbelt.arrays`' site. Claiming it would report one line twice across
@@ -53,10 +56,7 @@ describe('The numbers adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/pick.ts': UNCLAIMED });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[2])).resolves.toStrictEqual({
-      ok: true,
-      progress: { count: 0, passedCount: 0, type: 'fraction' },
-    });
+    await expect(runCheck((await loadChecks())[2])).resolves.toStrictEqual({ adoptedCount: 0, findings: [] });
   });
 
   it('skips every check where the project publishes the package', async () => {
@@ -95,18 +95,6 @@ async function loadChecks(): Promise<RdyCheck[]> {
   const [checklist] = kit.checklists;
   if (checklist === undefined || !isFlatChecklist(checklist)) return [];
   return checklist.checks;
-}
-
-/** Runs a check, normalizing the boolean form readyup also accepts into an outcome. */
-async function runCheck(check: RdyCheck | undefined): Promise<CheckOutcome> {
-  if (check === undefined) throw new Error('the kit holds no such check');
-  const outcome = await check.check();
-  return typeof outcome === 'boolean' ? { ok: outcome } : outcome;
-}
-
-async function runSkip(check: RdyCheck | undefined): Promise<false | string> {
-  if (check?.skip === undefined) throw new Error('the check carries no skip');
-  return check.skip();
 }
 
 // endregion | Helpers

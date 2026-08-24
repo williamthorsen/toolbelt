@@ -1,6 +1,6 @@
 /** @noformat — @generated. Do not edit. Compiled by rdy. */
 /* eslint-disable */
-export const __readyupVersion = "0.30.0";
+export const __readyupVersion = "0.32.0";
 
 
 // ../adoption/src/conventions/path-predicates.ts
@@ -52,8 +52,10 @@ import {
   readTrackedSources
 } from "readyup/check-utils";
 var NOT_A_REPO = "the project is not a git working tree, and these checks read the files git tracks";
+var NOTHING_TO_REPORT = { findings: [] };
 var SELF = "this project publishes the package these checks are for";
 function defineAdoptionKit(spec) {
+  assertCheckIdsAreUnique();
   const cache = {};
   return defineRdyKit({
     description: spec.description,
@@ -63,6 +65,7 @@ function defineAdoptionKit(spec) {
         name: "adoption",
         checks: spec.checks.map((check) => ({
           name: check.name,
+          id: check.id,
           ...check.severity !== void 0 && { severity: check.severity },
           skip: skipUnlessProjectIsAccountable,
           check: () => reportKinds(check.kinds),
@@ -71,6 +74,18 @@ function defineAdoptionKit(spec) {
       }
     ]
   });
+  function assertCheckIdsAreUnique() {
+    const seen = /* @__PURE__ */ new Set();
+    const duplicated = /* @__PURE__ */ new Set();
+    for (const { id } of spec.checks) {
+      if (seen.has(id)) duplicated.add(id);
+      seen.add(id);
+    }
+    if (duplicated.size > 0) {
+      const ids = [...duplicated].toSorted().join(", ");
+      throw new Error(`${spec.packageName}'s kit gives one id to more than one check: ${ids}`);
+    }
+  }
   function loadSummary() {
     cache.summary ??= readProject();
     return cache.summary;
@@ -89,7 +104,7 @@ function defineAdoptionKit(spec) {
   }
   async function reportKinds(kinds) {
     const summary = await loadSummary();
-    if (summary === void 0) return { ok: true };
+    if (summary === void 0) return NOTHING_TO_REPORT;
     return buildFindingReport({
       adoptedCount: summary.adoptedCount,
       findings: summary.findings,
@@ -268,18 +283,21 @@ var default_default = defineAdoptionKit({
   checks: [
     {
       name: "No source clamps a value by hand",
+      id: "no-hand-rolled-clamp",
       kinds: ["clamp-nest"],
       severity: "recommend",
       fix: `Replace each expression named above with clamp from ${PACKAGE_NAME}/candidate, called as clamp(value, { min, max }). It is not a silent substitution: clamp throws a RangeError on a reversed range or a NaN bound, where the nested Math calls return a value for both. Reference: ${README_URL}`
     },
     {
       name: "No source rounds to decimal places by hand",
+      id: "no-hand-rolled-round",
       kinds: ["round-scale"],
       severity: "recommend",
       fix: `Replace each expression named above with round from ${PACKAGE_NAME}/candidate, called as round(value, places). The substitution is exact: round scales by the same power of ten these sites write out. Reference: ${README_URL}`
     },
     {
       name: "No source derives a random integer by hand",
+      id: "no-hand-rolled-random-integer",
       kinds: ["random-integer"],
       severity: "recommend",
       fix: `Replace each expression named above with pickInteger from ${PACKAGE_NAME}/candidate, which also takes a seed. Mind the bound: Math.floor(Math.random() * N) stops at N - 1, where pickInteger's max is inclusive, so the replacement is pickInteger({ max: N - 1 }). A site indexing an array is left to toolbelt.arrays, whose pickItem covers it. Reference: ${README_URL}`

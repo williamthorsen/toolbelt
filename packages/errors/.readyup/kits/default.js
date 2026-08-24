@@ -1,6 +1,6 @@
 /** @noformat — @generated. Do not edit. Compiled by rdy. */
 /* eslint-disable */
-export const __readyupVersion = "0.30.0";
+export const __readyupVersion = "0.32.0";
 
 
 // ../adoption/src/conventions/path-predicates.ts
@@ -33,8 +33,10 @@ import {
   readTrackedSources
 } from "readyup/check-utils";
 var NOT_A_REPO = "the project is not a git working tree, and these checks read the files git tracks";
+var NOTHING_TO_REPORT = { findings: [] };
 var SELF = "this project publishes the package these checks are for";
 function defineAdoptionKit(spec) {
+  assertCheckIdsAreUnique();
   const cache = {};
   return defineRdyKit({
     description: spec.description,
@@ -44,6 +46,7 @@ function defineAdoptionKit(spec) {
         name: "adoption",
         checks: spec.checks.map((check) => ({
           name: check.name,
+          id: check.id,
           ...check.severity !== void 0 && { severity: check.severity },
           skip: skipUnlessProjectIsAccountable,
           check: () => reportKinds(check.kinds),
@@ -52,6 +55,18 @@ function defineAdoptionKit(spec) {
       }
     ]
   });
+  function assertCheckIdsAreUnique() {
+    const seen = /* @__PURE__ */ new Set();
+    const duplicated = /* @__PURE__ */ new Set();
+    for (const { id } of spec.checks) {
+      if (seen.has(id)) duplicated.add(id);
+      seen.add(id);
+    }
+    if (duplicated.size > 0) {
+      const ids = [...duplicated].toSorted().join(", ");
+      throw new Error(`${spec.packageName}'s kit gives one id to more than one check: ${ids}`);
+    }
+  }
   function loadSummary() {
     cache.summary ??= readProject();
     return cache.summary;
@@ -70,7 +85,7 @@ function defineAdoptionKit(spec) {
   }
   async function reportKinds(kinds) {
     const summary = await loadSummary();
-    if (summary === void 0) return { ok: true };
+    if (summary === void 0) return NOTHING_TO_REPORT;
     return buildFindingReport({
       adoptedCount: summary.adoptedCount,
       findings: summary.findings,
@@ -203,22 +218,26 @@ var default_default = defineAdoptionKit({
   checks: [
     {
       name: "No source defines its own description helper",
+      id: "no-describe-clone",
       kinds: ["describe-clone"],
       fix: `Delete the function named above and import describeError from ${PACKAGE_NAME}. One import retires the whole helper. Reference: ${README_URL}`
     },
     {
       name: "No source describes a thrown value inline",
+      id: "no-inline-description",
       kinds: ["describe-inline"],
       fix: `Replace each expression named above with describeError, imported from ${PACKAGE_NAME}. A domain-literal fallback discards what was thrown; describeError keeps it.`
     },
     {
       name: "No source narrows a thrown value by hand",
+      id: "no-instanceof-error",
       kinds: ["assert", "narrow"],
       severity: "recommend",
       fix: `Use isError from ${PACKAGE_NAME}, or assertIsError from ${PACKAGE_NAME}/candidate where the narrowing throws. Both recognize an Error crossing a realm boundary, which a bare instanceof test reports as false.`
     },
     {
       name: "No source coerces a thrown value to an Error by hand",
+      id: "no-error-coercion",
       kinds: ["coerce"],
       severity: "recommend",
       fix: `${PACKAGE_NAME} publishes no coercer, so this reports an unmet need rather than a substitution. Raise it at ${README_URL} if the sites above are worth one.`

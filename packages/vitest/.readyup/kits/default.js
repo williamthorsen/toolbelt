@@ -1,6 +1,6 @@
 /** @noformat — @generated. Do not edit. Compiled by rdy. */
 /* eslint-disable */
-export const __readyupVersion = "0.30.0";
+export const __readyupVersion = "0.32.0";
 
 
 // ../adoption/src/conventions/path-predicates.ts
@@ -18,8 +18,10 @@ import {
   readTrackedSources
 } from "readyup/check-utils";
 var NOT_A_REPO = "the project is not a git working tree, and these checks read the files git tracks";
+var NOTHING_TO_REPORT = { findings: [] };
 var SELF = "this project publishes the package these checks are for";
 function defineAdoptionKit(spec) {
+  assertCheckIdsAreUnique();
   const cache = {};
   return defineRdyKit({
     description: spec.description,
@@ -29,6 +31,7 @@ function defineAdoptionKit(spec) {
         name: "adoption",
         checks: spec.checks.map((check) => ({
           name: check.name,
+          id: check.id,
           ...check.severity !== void 0 && { severity: check.severity },
           skip: skipUnlessProjectIsAccountable,
           check: () => reportKinds(check.kinds),
@@ -37,6 +40,18 @@ function defineAdoptionKit(spec) {
       }
     ]
   });
+  function assertCheckIdsAreUnique() {
+    const seen = /* @__PURE__ */ new Set();
+    const duplicated = /* @__PURE__ */ new Set();
+    for (const { id } of spec.checks) {
+      if (seen.has(id)) duplicated.add(id);
+      seen.add(id);
+    }
+    if (duplicated.size > 0) {
+      const ids = [...duplicated].toSorted().join(", ");
+      throw new Error(`${spec.packageName}'s kit gives one id to more than one check: ${ids}`);
+    }
+  }
   function loadSummary() {
     cache.summary ??= readProject();
     return cache.summary;
@@ -55,7 +70,7 @@ function defineAdoptionKit(spec) {
   }
   async function reportKinds(kinds) {
     const summary = await loadSummary();
-    if (summary === void 0) return { ok: true };
+    if (summary === void 0) return NOTHING_TO_REPORT;
     return buildFindingReport({
       adoptedCount: summary.adoptedCount,
       findings: summary.findings,
@@ -143,16 +158,19 @@ var default_default = defineAdoptionKit({
   checks: [
     {
       name: "No test declares its own process-exit sentinel error",
+      id: "no-exit-sentinel-clone",
       kinds: ["sentinel-clone"],
       fix: `Delete the class named above and use throwOnProcessExit from ${PACKAGE_NAME}/candidate, whose ProcessExitError carries the code. One substitution retires the class and the mock together. Reference: ${README_URL}`
     },
     {
       name: "No test mocks process.exit without throwing",
+      id: "no-non-throwing-exit-mock",
       kinds: ["non-throwing"],
       fix: `Replace each mock named above with throwOnProcessExit from ${PACKAGE_NAME}/candidate. A mock that returns lets execution continue past the exit, so the test asserts against a path the process never reaches, and nothing reports it.`
     },
     {
       name: "No test hand-rolls a throwing or unreadable process-exit mock",
+      id: "no-hand-rolled-exit-mock",
       kinds: ["throwing", "unclassified"],
       severity: "recommend",
       fix: `Replace each mock named above with throwOnProcessExit from ${PACKAGE_NAME}/candidate, and assert the code on the thrown ProcessExitError. An unclassified mock is one these checks could not read: an implementation given as a bare reference, attached away from the spy's own call chain, or whose parentheses never balance.`
