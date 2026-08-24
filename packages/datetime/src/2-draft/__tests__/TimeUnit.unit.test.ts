@@ -65,7 +65,7 @@ describe(TimeUnit, () => {
     });
 
     it('returns the unrounded value when no decimalPlaces is given', () => {
-      const expected = 0.016666666666666666;
+      const expected = 0.016_666_666_666_666_666;
 
       const conversion = TimeUnit.convert(1, TimeUnit.Minutes, TimeUnit.Hours);
 

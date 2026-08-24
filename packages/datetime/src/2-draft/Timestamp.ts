@@ -109,8 +109,8 @@ export class Timestamp {
         const [datePart] = isoDateTime.split('T', 1);
         return `${datePart}Z`;
       }
-      // eslint-disable-next-line unicorn/no-useless-switch-case
       case TimeUnit.Millis:
+        return isoDateTime;
       default:
         return isoDateTime;
     }
