@@ -96,12 +96,12 @@ describe(slugify, () => {
     expect(actual).toBe(expected);
   });
 
-  it('if separator is longer than one character, throws an error', () => {
+  it('if separator is longer than one character, throws a TypeError', () => {
     const input = 'Hello, World';
     const options = { separator: '!!' };
 
     const throwingFn = () => slugify(input, options);
 
-    expect(throwingFn).toThrow('Separator must be a single character.');
+    expect(throwingFn).toThrow(new TypeError('Separator must be a single character.'));
   });
 });
