@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 6.0.1 — 2026-08-24
+
+### Dependency updates
+
+- Bumped `@williamthorsen/toolbelt.numbers` to 7.0.1
+
 ## 6.0.0 — 2026-08-21
 
 ### Features

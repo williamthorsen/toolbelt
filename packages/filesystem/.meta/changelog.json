@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.8.0",
+    "date": "2026-08-24",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add a recursive listFiles to createTempTree's entry API (#212)",
+            "body": "Adds `listFiles` to the handle `createTempTree` returns in `@williamthorsen/toolbelt.filesystem/candidate`. It reports every file below a tree-relative directory, at any depth, as sorted `/`-separated paths relative to that directory, whereas `list` reaches one level and reports names alone. A symlink below that directory is neither named nor descended, so every path in the result names a file held inside the tree.",
+            "hash": "b0e13cbfbe79421674b82dfae7f8392b4e7cc0f8"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.7.0",
     "date": "2026-08-21",
     "sections": [

@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.8.0 — 2026-08-24
+
+### Features
+
+- Add a recursive listFiles to createTempTree's entry API (#212)
+
+  Adds `listFiles` to the handle `createTempTree` returns in `@williamthorsen/toolbelt.filesystem/candidate`. It reports every file below a tree-relative directory, at any depth, as sorted `/`-separated paths relative to that directory, whereas `list` reaches one level and reports names alone. A symlink below that directory is neither named nor descended, so every path in the result names a file held inside the tree.
+
 ## 0.7.0 — 2026-08-21
 
 ### Features

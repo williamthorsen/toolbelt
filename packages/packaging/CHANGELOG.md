@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.5.2 — 2026-08-24
+
+### Dependency updates
+
+- Bumped `@williamthorsen/toolbelt.filesystem` to 0.8.0
+
 ## 0.5.1 — 2026-08-21
 
 ### Dependency updates

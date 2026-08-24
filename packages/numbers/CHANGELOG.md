@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## 7.0.1 — 2026-08-24
+
+### Bug fixes
+
+- Stop the adoption kits from blanking code after `++`, `!`, and keyword-named members (#208)
+
+  Fixes an issue where the `errors`, `numbers`, and `vitest` adoption kits stopped reading a line's code after a postfix `++`, a non-null `!`, or a property spelled like a keyword. The source blanker each kit runs before its anchor scan read the `/` that followed as the opening of a regular expression and blanked to the line's next `/`, so a replaceable idiom written after one of the three went unreported.
+
+  `@williamthorsen/toolbelt.adoption` now takes `blankNonCode` and `getLineAtOffset` from `readyup/check-utils` in place of the copies it held, which had fallen behind readyup's on those three cases.
+
+### Internal
+
+- Migrate the adoption kits onto FindingOutcome and add check ids (#217)
+
+  Upgrades `readyup` to 0.32.0 and migrates `defineAdoptionKit` onto the `FindingOutcome` that `buildFindingReport` returns as of 0.31.0.
+
+  Gives every adoption check an `id`, which a consumer's `rdy-ignore` pragma names to suppress that one check; a pragma naming none still silences every check on the line. The kits of `@williamthorsen/toolbelt.errors`, `@williamthorsen/toolbelt.numbers`, and `@williamthorsen/toolbelt.vitest` each declare ids, and `defineAdoptionKit` refuses a kit that gives one id to two checks.
+
+- Hold this repo to its own adoption kits and exempt each package's implementation (#218)
+
+  Removes the exemption that kept this repository out of its own adoption kits. `rdy run --packages` now covers this repo like any other project.
+
+  Each package's own implementation stays exempt, but that exemption now covers the function alone rather than the whole repository.
+
 ## 7.0.0 — 2026-08-21
 
 ### Features

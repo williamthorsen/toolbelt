@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.1.15 — 2026-08-24
+
+### Dependency updates
+
+- Bumped `@williamthorsen/toolbelt.arrays` to 6.0.1
+
 ## 3.1.14 — 2026-08-21
 
 ### Dependency updates
