@@ -1,4 +1,4 @@
-import { type CheckOutcome, defineRdyKit, type RdyKit, type Severity, type SkipResult } from 'readyup';
+import { defineRdyKit, type FindingOutcome, type RdyKit, type Severity, type SkipResult } from 'readyup';
 import {
   buildFindingReport,
   countPackageUsage,
@@ -16,6 +16,12 @@ export interface AdoptionSite<Kind extends string> {
 
 export interface AdoptionCheck<Kind extends string> {
   fix: string;
+  /**
+   * What an `rdy-ignore` pragma names to suppress this check's findings alone, the runner namespacing it under
+   * the publishing package. Required, though readyup's own field is optional: a check that declares none can
+   * be silenced only along with every other check on the line, and nothing reports the loss.
+   */
+  id: string;
   /** The kinds this check reports. A site of any other kind counts toward the denominator alone. */
   kinds: readonly Kind[];
   name: string;
@@ -46,6 +52,8 @@ interface ProjectSummary<Kind extends string> {
 }
 
 const NOT_A_REPO = 'the project is not a git working tree, and these checks read the files git tracks';
+/** What a check reports where the project could not be read. The runner resolves it to a pass carrying nothing. */
+const NOTHING_TO_REPORT: FindingOutcome = { findings: [] };
 const SELF = 'this project publishes the package these checks are for';
 
 /**
@@ -72,6 +80,7 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
         name: 'adoption',
         checks: spec.checks.map((check) => ({
           name: check.name,
+          id: check.id,
           ...(check.severity !== undefined && { severity: check.severity }),
           skip: skipUnlessProjectIsAccountable,
           check: () => reportKinds(check.kinds),
@@ -104,10 +113,14 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
     };
   }
 
-  /** Fails where the project holds sites of the named kinds, naming each and how far adoption got. */
-  async function reportKinds(kinds: readonly Kind[]): Promise<CheckOutcome> {
+  /**
+   * Reports every site the project holds, marking those of the named kinds and how far adoption got. The
+   * runner reads the verdict, the detail, and the fraction off the report, so a pragma the sources carry is
+   * honored where it is written rather than in each kit.
+   */
+  async function reportKinds(kinds: readonly Kind[]): Promise<FindingOutcome> {
     const summary = await loadSummary();
-    if (summary === undefined) return { ok: true };
+    if (summary === undefined) return NOTHING_TO_REPORT;
 
     return buildFindingReport({
       adoptedCount: summary.adoptedCount,

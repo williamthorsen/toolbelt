@@ -7,9 +7,10 @@ type Kind = 'clone' | 'inline' | 'unclassified';
 
 const SPEC: AdoptionKitSpec<Kind> = {
   checks: [
-    { fix: 'delete the clone', kinds: ['clone'], name: 'No source defines its own helper' },
+    { fix: 'delete the clone', id: 'no-clone', kinds: ['clone'], name: 'No source defines its own helper' },
     {
       fix: 'replace the expression',
+      id: 'no-inline',
       kinds: ['inline', 'unclassified'],
       name: 'No source inlines it',
       severity: 'recommend',
@@ -41,6 +42,10 @@ describe(defineAdoptionKit, () => {
       'delete the clone',
       'replace the expression',
     ]);
+  });
+
+  it('carries each declaration’s id through to its check, which is what a pragma names', () => {
+    expect(listChecks(defineAdoptionKit(SPEC)).map((check) => check.id)).toStrictEqual(['no-clone', 'no-inline']);
   });
 
   it('defaults severity to warn and honors a declared override', () => {
