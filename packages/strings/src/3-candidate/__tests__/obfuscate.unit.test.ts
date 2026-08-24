@@ -62,18 +62,18 @@ describe(obfuscate, () => {
     expect(actual).toBe(expected);
   });
 
-  it('if bookendSize < 0, throws an error', () => {
+  it('if bookendSize < 0, throws a RangeError', () => {
     const options = { bookendSize: -1 };
     const str = '1234';
 
-    expect(() => obfuscate(str, options)).toThrow('Minimum bookendSize is 0.');
+    expect(() => obfuscate(str, options)).toThrow(new RangeError('Minimum bookendSize is 0.'));
   });
 
-  it('if bookendSize is NaN, throws an error', () => {
+  it('if bookendSize is NaN, throws a TypeError', () => {
     const options = { bookendSize: NaN };
     const str = '1234';
 
-    expect(() => obfuscate(str, options)).toThrow('bookendSize cannot be NaN.');
+    expect(() => obfuscate(str, options)).toThrow(new TypeError('bookendSize cannot be NaN.'));
   });
 
   it('if fillChar is given, uses it as the replacement character', () => {
@@ -86,18 +86,18 @@ describe(obfuscate, () => {
     expect(actual).toBe(expected);
   });
 
-  it('if fillChar is an empty string, throws an error', () => {
+  it('if fillChar is an empty string, throws a TypeError', () => {
     const options = { bookendSize: 2, fillChar: '' };
     const str = '1234';
 
-    expect(() => obfuscate(str, options)).toThrow('fillChar must be a single character.');
+    expect(() => obfuscate(str, options)).toThrow(new TypeError('fillChar must be a single character.'));
   });
 
-  it('if fillChar is longer than one character, throws an error', () => {
+  it('if fillChar is longer than one character, throws a TypeError', () => {
     const options = { fillChar: '**' };
     const str = '1234';
 
-    expect(() => obfuscate(str, options)).toThrow('fillChar must be a single character.');
+    expect(() => obfuscate(str, options)).toThrow(new TypeError('fillChar must be a single character.'));
   });
 
   it('if fillSize is given, display at most {fillSize} fill characters', () => {
@@ -110,24 +110,24 @@ describe(obfuscate, () => {
     expect(actual).toBe(expected);
   });
 
-  it('if fillSize < bookendSize, throws an error', () => {
+  it('if fillSize < bookendSize, throws a RangeError', () => {
     const options = { bookendSize: 4, fillSize: 2 };
     const str = '1234';
 
-    expect(() => obfuscate(str, options)).toThrow('fillSize cannot be less than bookendSize.');
+    expect(() => obfuscate(str, options)).toThrow(new RangeError('fillSize cannot be less than bookendSize.'));
   });
 
-  it('if fillSize < 1, throws an error', () => {
+  it('if fillSize < 1, throws a RangeError', () => {
     const options = { fillSize: 0 };
     const str = '1234';
 
-    expect(() => obfuscate(str, options)).toThrow('Minimum fillSize is 1.');
+    expect(() => obfuscate(str, options)).toThrow(new RangeError('Minimum fillSize is 1.'));
   });
 
-  it('if fillSize is NaN, throws an error', () => {
+  it('if fillSize is NaN, throws a TypeError', () => {
     const options = { fillSize: NaN };
     const str = '1234';
 
-    expect(() => obfuscate(str, options)).toThrow('fillSize cannot be NaN.');
+    expect(() => obfuscate(str, options)).toThrow(new TypeError('fillSize cannot be NaN.'));
   });
 });
