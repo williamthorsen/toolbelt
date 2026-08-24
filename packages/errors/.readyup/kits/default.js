@@ -29,15 +29,14 @@ import { defineRdyKit } from "readyup";
 import {
   buildFindingReport,
   countPackageUsage,
-  discoverWorkspaces,
   readTrackedSources
 } from "readyup/check-utils";
 var NOT_A_REPO = "the project is not a git working tree, and these checks read the files git tracks";
 var NOTHING_TO_REPORT = { findings: [] };
-var SELF = "this project publishes the package these checks are for";
 function defineAdoptionKit(spec) {
   assertCheckIdsAreUnique();
   const cache = {};
+  const packageUsage = { exportNames: spec.exportNames, packageName: spec.packageName };
   return defineRdyKit({
     description: spec.description,
     defaultSeverity: "warn",
@@ -48,7 +47,7 @@ function defineAdoptionKit(spec) {
           name: check.name,
           id: check.id,
           ...check.severity !== void 0 && { severity: check.severity },
-          skip: skipUnlessProjectIsAccountable,
+          skip: skipUnlessProjectHoldsSources,
           check: () => reportKinds(check.kinds),
           fix: check.fix
         }))
@@ -75,12 +74,9 @@ function defineAdoptionKit(spec) {
     const sources = await readTrackedSources(spec.pathFilter);
     if (sources === void 0) return void 0;
     return {
-      adoptedCount: countPackageUsage(sources, {
-        exportNames: spec.exportNames,
-        packageName: spec.packageName
-      }),
+      adoptedCount: countPackageUsage(sources, packageUsage),
       findings: sources.flatMap((source) => spec.detect(source.text).map((site) => ({ ...site, path: source.path }))),
-      sourceCount: sources.length
+      sources
     };
   }
   async function reportKinds(kinds) {
@@ -89,14 +85,14 @@ function defineAdoptionKit(spec) {
     return buildFindingReport({
       adoptedCount: summary.adoptedCount,
       findings: summary.findings,
+      ownImplementation: { ...packageUsage, sources: summary.sources },
       shouldReport: (finding) => kinds.includes(finding.kind)
     });
   }
-  async function skipUnlessProjectIsAccountable() {
-    if (discoverWorkspaces().some((workspace) => workspace.name === spec.packageName)) return SELF;
+  async function skipUnlessProjectHoldsSources() {
     const summary = await loadSummary();
     if (summary === void 0) return NOT_A_REPO;
-    return summary.sourceCount === 0 ? spec.noSourcesReason : false;
+    return summary.sources.length === 0 ? spec.noSourcesReason : false;
   }
 }
 

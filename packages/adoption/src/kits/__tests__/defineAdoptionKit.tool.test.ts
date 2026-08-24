@@ -10,9 +10,13 @@ import { pointCwdAt } from '../test-utils/pointCwdAt.ts';
 type Kind = 'clone' | 'inline';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
+const PUBLISHER_MANIFEST = JSON.stringify({ name: '@scope/pkg', version: '1.0.0' });
 const CLONE = 'function describeThing(x) {\n  return x.message;\n}\n';
 const INLINE = "const label = thing.name;\nconst other = 'x';\n";
 const ADOPTER = "import { doThing } from '@scope/pkg';\ndoThing();\ndoThing();\n";
+// The package's own `doThing`, holding the idiom it exists to replace, beside a neighbour holding the same one.
+const IMPLEMENTATION =
+  'export function doThing(x) {\n  return x.name;\n}\n\nexport function other(x) {\n  return x.name;\n}\n';
 
 /** Reports a `clone` on any line declaring a function and an `inline` on any line reading `.name`. */
 function detect(text: string): Array<AdoptionSite<Kind>> {
@@ -122,6 +126,31 @@ describe(defineAdoptionKit, () => {
     });
   });
 
+  it('exempts a site inside the declaration the package exports, and reports its neighbour', async () => {
+    using tree = createTrackedRepo({ 'package.json': PUBLISHER_MANIFEST, 'src/doThing.ts': IMPLEMENTATION });
+    using _cwd = pointCwdAt(tree.dir);
+
+    const [, inlineCheck] = listChecks(buildSpec());
+
+    // The exempt site is absent rather than unreported, which is what takes it out of both halves of the
+    // fraction.
+    await expect(runCheck(inlineCheck)).resolves.toStrictEqual({
+      adoptedCount: 0,
+      findings: [{ line: 6, path: 'src/doThing.ts', reported: true }],
+    });
+  });
+
+  it('reports a site in the publishing project’s own source that exports no adopted name', async () => {
+    using tree = createTrackedRepo({ 'package.json': PUBLISHER_MANIFEST, 'src/b.ts': INLINE });
+    using _cwd = pointCwdAt(tree.dir);
+
+    const [, inlineCheck] = listChecks(buildSpec());
+
+    expect(listReportedFindings(await runCheck(inlineCheck))).toStrictEqual([
+      { line: 1, path: 'src/b.ts', reported: true },
+    ]);
+  });
+
   // `skip` turns the check off before it runs, but `rdy run --diagnose` runs it anyway.
   it('names no site where the project is not a git working tree', async () => {
     using tree = createTempDir({ 'package.json': MANIFEST, 'src/a.ts': CLONE });
@@ -130,13 +159,11 @@ describe(defineAdoptionKit, () => {
     await expect(runCheck(listChecks(buildSpec())[0])).resolves.toStrictEqual({ findings: [] });
   });
 
-  it('skips every check where the project publishes the package under test', async () => {
-    using tree = createTrackedRepo({ 'package.json': JSON.stringify({ name: '@scope/pkg', version: '1.0.0' }) });
+  it('runs every check where the project publishes the package they are for', async () => {
+    using tree = createTrackedRepo({ 'package.json': PUBLISHER_MANIFEST, 'src/a.ts': CLONE });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runSkip(listChecks(buildSpec())[0])).resolves.toBe(
-      'this project publishes the package these checks are for',
-    );
+    await expect(runSkip(listChecks(buildSpec())[0])).resolves.toBe(false);
   });
 
   it('skips every check where the project is not a git working tree', async () => {
@@ -155,7 +182,7 @@ describe(defineAdoptionKit, () => {
     await expect(runSkip(listChecks(buildSpec())[0])).resolves.toBe('the project holds no sources');
   });
 
-  it('runs every check where the project holds matching sources it does not publish', async () => {
+  it('runs every check where the project holds matching sources', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/a.ts': CLONE });
     using _cwd = pointCwdAt(tree.dir);
 

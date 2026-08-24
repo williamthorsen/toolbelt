@@ -19,7 +19,7 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "1ebf87d8",
+          "hash": "6c08cc1c",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -79,7 +79,7 @@
       "readyupVersion": "0.32.0",
       "source": "kits/default.ts",
       "sourceHash": "d6b6011f",
-      "targetHash": "452984ae"
+      "targetHash": "a539cb50"
     }
   ]
 }
