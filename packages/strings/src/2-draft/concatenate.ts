@@ -1,4 +1,7 @@
 /**
+ * Joins strings into an English-style list: a pair takes `dualSeparator`, and three or more take
+ * `separator` between all but the last two and `finalSeparator` before the last.
+ * @category String
  * @experimental
  * @stage draft
  */

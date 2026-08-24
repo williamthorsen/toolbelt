@@ -1,5 +1,6 @@
 /**
  * Capitalizes the first letter of the input string and returns the result.
+ * @category String
  * @experimental
  * @stage candidate
  */

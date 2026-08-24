@@ -10,6 +10,7 @@
  * toOrdinal(11); // "11th"
  * toOrdinal(-3); // "-3rd"
  *
+ * @category String
  * @experimental
  * @stage draft
  */

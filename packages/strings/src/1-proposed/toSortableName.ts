@@ -3,6 +3,13 @@ interface Options {
   postSeparator?: string;
 }
 
+/**
+ * Reorders a name so the segment at the given index leads, as `Public John Q` from `John Q Public`.
+ * Returns the name unchanged if the index is not a split point inside it.
+ * @category String
+ * @experimental
+ * @stage proposed
+ */
 export function toSortableName(
   name: string,
   index: number,

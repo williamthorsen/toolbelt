@@ -2,6 +2,8 @@ import { arraify } from '@williamthorsen/toolbelt.arrays/candidate';
 
 /**
  * Transforms a string into a URL-friendly slug.
+ * Throws a TypeError if the separator is not a single character.
+ * @category String
  * @experimental
  * @stage candidate
  */
@@ -10,7 +12,7 @@ export function slugify(input: string | number | ReadonlyArray<string | number>,
   // Limited to one character because the character class below preserves the separator
   // per character, not as a sequence.
   if (separator.length !== 1) {
-    throw new Error('Separator must be a single character.');
+    throw new TypeError('Separator must be a single character.');
   }
 
   return arraify(input)
