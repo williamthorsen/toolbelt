@@ -14,7 +14,7 @@ const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 interface CheckReport {
   count: number;
-  detail: string | null;
+  detail: string | undefined;
   id: string;
   passedCount: number;
 }
@@ -30,7 +30,7 @@ describe('The numbers adoption kit, run through rdy', () => {
 
   it('drops a site an unqualified pragma covers from every check’s detail and fraction', () => {
     expect(runKit(`${CLAMP} // rdy-ignore -- reviewed\n`)).toStrictEqual([
-      { count: 3, detail: null, id: 'no-hand-rolled-clamp', passedCount: 1 },
+      { count: 3, detail: undefined, id: 'no-hand-rolled-clamp', passedCount: 1 },
       { count: 3, detail: 'src/rate.ts:1', id: 'no-hand-rolled-round', passedCount: 1 },
       { count: 3, detail: 'src/roll.ts:1', id: 'no-hand-rolled-random-integer', passedCount: 1 },
     ]);
@@ -40,7 +40,7 @@ describe('The numbers adoption kit, run through rdy', () => {
   // installed package writes `toolbelt.numbers/no-hand-rolled-clamp`.
   it('drops a site a qualified pragma covers from the named check alone', () => {
     expect(runKit(`${CLAMP} // rdy-ignore no-hand-rolled-clamp -- reviewed\n`)).toStrictEqual([
-      { count: 3, detail: null, id: 'no-hand-rolled-clamp', passedCount: 1 },
+      { count: 3, detail: undefined, id: 'no-hand-rolled-clamp', passedCount: 1 },
       { count: 4, detail: 'src/rate.ts:1', id: 'no-hand-rolled-round', passedCount: 1 },
       { count: 4, detail: 'src/roll.ts:1', id: 'no-hand-rolled-random-integer', passedCount: 1 },
     ]);
@@ -71,7 +71,7 @@ function readCheckReport(check: unknown): CheckReport {
     throw new TypeError('the report describes a check in a shape these tests cannot read');
   }
 
-  return { count, detail: typeof detail === 'string' ? detail : null, id, passedCount };
+  return { count, detail: typeof detail === 'string' ? detail : undefined, id, passedCount };
 }
 
 /** Reaches the checks of the run's one checklist, the kit declaring a single one. */
@@ -108,6 +108,7 @@ function runKit(clampSource: string): CheckReport[] {
     ['run', '--from', `dir:${path.join(PACKAGE_DIR, '.readyup', 'kits')}`, '--json'],
     { cwd: tree.dir, encoding: 'utf8' },
   );
+  if (result.error !== undefined) throw result.error;
   if (result.stdout === '') throw new Error(`rdy reported nothing: ${result.stderr}`);
 
   return listCheckReports(result.stdout);
