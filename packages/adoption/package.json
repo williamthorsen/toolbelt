@@ -27,7 +27,7 @@
       "import": "./src/mod.ts"
     },
     "./test-utils": {
-      "import": "./src/kits/test-utils/createTrackedRepo.ts"
+      "import": "./src/kits/test-utils/index.ts"
     }
   },
   "devDependencies": {

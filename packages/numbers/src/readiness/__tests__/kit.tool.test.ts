@@ -1,6 +1,12 @@
-import { createTrackedRepo } from '@williamthorsen/toolbelt.adoption/test-utils';
+import {
+  createTrackedRepo,
+  listReportedFindings,
+  runCheck,
+  runSkip,
+  summarizeFraction,
+} from '@williamthorsen/toolbelt.adoption/test-utils';
 import { pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
-import { type FindingOutcome, isFlatChecklist, type OutcomeFinding, type RdyCheck } from 'readyup';
+import { isFlatChecklist, type RdyCheck } from 'readyup';
 import { describe, expect, it, vi } from 'vitest';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
@@ -19,7 +25,7 @@ describe('The numbers adoption kit', () => {
 
     const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
 
-    expect(outcomes.map(listReported)).toStrictEqual([
+    expect(outcomes.map(listReportedFindings)).toStrictEqual([
       [{ line: 1, path: 'src/bound.ts', reported: true }],
       [{ line: 1, path: 'src/rate.ts', reported: true }],
       [{ line: 1, path: 'src/roll.ts', reported: true }],
@@ -89,32 +95,6 @@ async function loadChecks(): Promise<RdyCheck[]> {
   const [checklist] = kit.checklists;
   if (checklist === undefined || !isFlatChecklist(checklist)) return [];
   return checklist.checks;
-}
-
-/**
- * Runs a check and returns the report it produced, which is the whole of what an adoption check declares: the
- * verdict, the detail, and the fraction are the runner's to derive, and are asserted where that derivation lives.
- */
-async function runCheck(check: RdyCheck | undefined): Promise<FindingOutcome> {
-  if (check === undefined) throw new Error('the kit holds no such check');
-  const outcome = await check.check();
-  if (typeof outcome === 'boolean' || !('findings' in outcome)) throw new Error('the check reported no findings');
-  return outcome;
-}
-
-async function runSkip(check: RdyCheck | undefined): Promise<false | string> {
-  if (check?.skip === undefined) throw new Error('the check carries no skip');
-  return check.skip();
-}
-
-/** Lists the sites a check names, which are the ones the runner renders into its detail. */
-function listReported(outcome: FindingOutcome): OutcomeFinding[] {
-  return outcome.findings.filter((finding) => finding.reported);
-}
-
-/** Reduces a report to the two numbers the runner derives its fraction from. */
-function summarizeFraction(outcome: FindingOutcome): { adoptedCount: number | undefined; findingCount: number } {
-  return { adoptedCount: outcome.adoptedCount, findingCount: outcome.findings.length };
 }
 
 // endregion | Helpers
