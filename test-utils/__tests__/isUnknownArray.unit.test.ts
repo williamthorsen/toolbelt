@@ -6,7 +6,7 @@ describe(isUnknownArray, () => {
   it.each([
     { label: 'an empty array', value: [] },
     { label: 'a populated array', value: ['./index.js'] },
-    { label: 'a sparse array', value: Array.from({ length: 2 }) },
+    { label: 'an array of undefined', value: Array.from({ length: 2 }) },
   ])('returns true for $label', ({ value }) => {
     expect(isUnknownArray(value)).toBe(true);
   });
