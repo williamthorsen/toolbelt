@@ -36,6 +36,7 @@ var NOT_A_REPO = "the project is not a git working tree, and these checks read t
 var NOTHING_TO_REPORT = { findings: [] };
 var SELF = "this project publishes the package these checks are for";
 function defineAdoptionKit(spec) {
+  assertCheckIdsAreUnique();
   const cache = {};
   return defineRdyKit({
     description: spec.description,
@@ -54,6 +55,18 @@ function defineAdoptionKit(spec) {
       }
     ]
   });
+  function assertCheckIdsAreUnique() {
+    const seen = /* @__PURE__ */ new Set();
+    const duplicated = /* @__PURE__ */ new Set();
+    for (const { id } of spec.checks) {
+      if (seen.has(id)) duplicated.add(id);
+      seen.add(id);
+    }
+    if (duplicated.size > 0) {
+      const ids = [...duplicated].toSorted().join(", ");
+      throw new Error(`${spec.packageName}'s kit gives one id to more than one check: ${ids}`);
+    }
+  }
   function loadSummary() {
     cache.summary ??= readProject();
     return cache.summary;

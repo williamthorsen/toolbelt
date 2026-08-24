@@ -48,6 +48,15 @@ describe(defineAdoptionKit, () => {
     expect(listChecks(defineAdoptionKit(SPEC)).map((check) => check.id)).toStrictEqual(['no-clone', 'no-inline']);
   });
 
+  it('refuses a kit giving one id to more than one check, which would silence both at once', () => {
+    const collided: AdoptionKitSpec<Kind> = {
+      ...SPEC,
+      checks: SPEC.checks.map((check) => ({ ...check, id: 'no-clone' })),
+    };
+
+    expect(() => defineAdoptionKit(collided)).toThrow("@scope/pkg's kit gives one id to more than one check");
+  });
+
   it('defaults severity to warn and honors a declared override', () => {
     const kit = defineAdoptionKit(SPEC);
 

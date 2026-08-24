@@ -70,6 +70,8 @@ const SELF = 'this project publishes the package these checks are for';
  * @internal
  */
 export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kind>): RdyKit {
+  assertCheckIdsAreUnique();
+
   const cache: { summary?: Promise<ProjectSummary<Kind> | undefined> } = {};
 
   return defineRdyKit({
@@ -91,6 +93,27 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
   });
 
   // region | Helpers
+
+  /**
+   * Throws where one id names more than one check, which readyup validates nowhere.
+   *
+   * A pragma is matched against each check's own accepted ids, so a shared id silences every check holding
+   * it and takes the site out of every one of their fractions -- the loss `id` is required to prevent,
+   * arriving from the other direction.
+   */
+  function assertCheckIdsAreUnique(): void {
+    const seen = new Set<string>();
+    const duplicated = new Set<string>();
+    for (const { id } of spec.checks) {
+      if (seen.has(id)) duplicated.add(id);
+      seen.add(id);
+    }
+
+    if (duplicated.size > 0) {
+      const ids = [...duplicated].toSorted().join(', ');
+      throw new Error(`${spec.packageName}'s kit gives one id to more than one check: ${ids}`);
+    }
+  }
 
   /** Reads the project once, so every check and its skip share one sweep. */
   function loadSummary(): Promise<ProjectSummary<Kind> | undefined> {

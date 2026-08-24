@@ -30,3 +30,5 @@ the self-skip, the source sweep, the adoption count, the finding report -- comes
 Each check declares an `id` alongside its name, which is what a consumer's `rdy-ignore` pragma names to
 suppress that check alone. `AdoptionCheck` requires it, though readyup's own field is optional: a check
 carrying none can be silenced only along with every other check on the line, and nothing reports the loss.
+Two checks sharing one id lose the same guarantee from the other direction, so `defineAdoptionKit` refuses a
+kit that gives one id twice.
