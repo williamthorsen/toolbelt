@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.6.0 — 2026-08-24
+
+### Features
+
+- Add listConsoleLines to toolbelt.vitest (#226)
+
+  Adds `listConsoleLines` to `@williamthorsen/toolbelt.vitest/candidate`, which returns the lines a spied console method received, one string per call. It reads the spy rather than installing one of its own, so it composes with `silenceConsole` instead of competing for the same slot.
+
 ## 0.5.1 — 2026-08-24
 
 ### Bug fixes

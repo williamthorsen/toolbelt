@@ -1,5 +1,22 @@
 [
   {
+    "version": "6.0.3",
+    "date": "2026-08-24",
+    "sections": [
+      {
+        "title": "Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Correct `obfuscate`'s and `slugify`'s error classes (#225)",
+            "body": "Fixes lint issues in `@williamthorsen/toolbelt.strings`. `obfuscate` and `slugify` now throw errors based on the class of failure instead of a bare `Error` for every throw.\n\nAlso adds `@category` tags where missing and removes the unused `StrictObject` type.",
+            "hash": "a9d19300de0d66199cf8a01872c42668722023db"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "6.0.2",
     "date": "2026-08-24",
     "sections": [

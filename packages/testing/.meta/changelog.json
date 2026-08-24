@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.4.0",
+    "date": "2026-08-24",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add `pointArgvAt`, a scope-bound argv pointer (#219)",
+            "body": "Adds `pointArgvAt` to `@williamthorsen/toolbelt.testing/candidate`. The function is a `Disposable` that points `process.argv` at a set of CLI arguments for the enclosing scope and restores the previous value when the scope exits.",
+            "hash": "072e30d220e949b3976d65226277a8c803866a0b"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.3.0",
     "date": "2026-08-16",
     "sections": [

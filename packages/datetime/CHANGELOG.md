@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.0.4 — 2026-08-24
+
+### Refactoring
+
+- Clear the last lint warning and suppression (#223)
+
+  Removes the last `eslint-disable` directive from `@williamthorsen/toolbelt.datetime` and clears its one remaining lint warning.
+
 ## 4.0.3 — 2026-08-24
 
 ### Dependency updates

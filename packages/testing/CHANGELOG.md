@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.0 — 2026-08-24
+
+### Features
+
+- Add `pointArgvAt`, a scope-bound argv pointer (#219)
+
+  Adds `pointArgvAt` to `@williamthorsen/toolbelt.testing/candidate`. The function is a `Disposable` that points `process.argv` at a set of CLI arguments for the enclosing scope and restores the previous value when the scope exits.
+
 ## 0.3.0 — 2026-08-16
 
 ### Features

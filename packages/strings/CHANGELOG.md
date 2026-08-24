@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 6.0.3 — 2026-08-24
+
+### Refactoring
+
+- Correct `obfuscate`'s and `slugify`'s error classes (#225)
+
+  Fixes lint issues in `@williamthorsen/toolbelt.strings`. `obfuscate` and `slugify` now throw errors based on the class of failure instead of a bare `Error` for every throw.
+
+  Also adds `@category` tags where missing and removes the unused `StrictObject` type.
+
 ## 6.0.2 — 2026-08-24
 
 ### Dependency updates

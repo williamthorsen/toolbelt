@@ -1,5 +1,22 @@
 [
   {
+    "version": "4.0.4",
+    "date": "2026-08-24",
+    "sections": [
+      {
+        "title": "Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Clear the last lint warning and suppression (#223)",
+            "body": "Removes the last `eslint-disable` directive from `@williamthorsen/toolbelt.datetime` and clears its one remaining lint warning.",
+            "hash": "a585fb087392c2aef09c8e2f8e6928e221387610"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "4.0.3",
     "date": "2026-08-24",
     "sections": [
