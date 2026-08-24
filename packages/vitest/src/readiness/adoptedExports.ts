@@ -8,6 +8,7 @@
  */
 export const ADOPTED_EXPORTS: readonly string[] = [
   'disposeOnTestFinished',
+  'listConsoleLines',
   'makeFixture',
   'silenceConsole',
   'throwOnProcessExit',
