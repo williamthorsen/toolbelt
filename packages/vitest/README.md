@@ -351,7 +351,7 @@ A console capture whose parameter list names its arguments drops every argument 
 
 ### What the kit reads
 
-Only test files are read, which inverts the exemption `@williamthorsen/toolbelt.errors` makes. That kit exempts tests because a test constructs error shapes deliberately; a `process.exit` mock exists nowhere else.
+Only test files are read, which inverts the exemption `@williamthorsen/toolbelt.errors` makes. That kit exempts tests because a test constructs error shapes deliberately; a mock of either idiom exists nowhere else.
 
 Only the five methods [`silenceConsole`](#silenceconsole) covers are anchored, and only through `vi.spyOn`. A spy on `console.table` gets no advice, because the package has none to give, and an assignment such as `console.error = vi.fn()` is not read, because the same anchor matches a restore as readily as a mock.
 

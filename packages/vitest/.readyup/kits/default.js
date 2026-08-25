@@ -264,7 +264,7 @@ var default_default = defineAdoptionKit({
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: "the project holds no test files",
   packageName: PACKAGE_NAME,
-  // The selection inverts the one `toolbelt.errors` makes, which exempts tests. A `process.exit` mock exists
+  // The selection inverts the one `toolbelt.errors` makes, which exempts tests. A mock of either idiom exists
   // only in a test, so a sweep that skipped tests would report nothing and say so as a pass.
   pathFilter: isTestFile,
   checks: [
