@@ -329,15 +329,41 @@ The package ships a ReadyUp kit, so a project that installs it can ask how far i
 rdy run --packages
 ```
 
-The kit reads the project's tracked test files and reports every `process.exit` mock in them, each named by what it is doing and counted against the calls the project already makes into this package.
+The kit reads the project's tracked test files and reports the two idioms this package publishes a replacement for: a `process.exit` mock, and a console method captured or silenced by hand. Each site is named by what it is doing and counted against the calls the project already makes into this package.
 
-A mock that does not throw reports at `warn`, being a defect rather than a tidy-up: the suite covers a path the process never reaches. A hand-rolled throwing mock reports at `recommend`, being a substitution. Nothing reports at `error`, because none of it breaks the package.
+Severity carries the judgment. A defect reports at `warn`, a working hand-roll at `recommend`. Nothing reports at `error`, because none of it breaks the package.
+
+Each check prints one fraction, and it measures the kit rather than the check: calls the project already makes into this package, over those calls plus every site the kit found of either idiom, less the sites a pragma silences for that check. A project holding twelve console sites and no exit mocks therefore reads `[0 of 12]` against the exit checks too.
+
+| Check id                         | Reports                                                                 | Severity    |
+| -------------------------------- | ----------------------------------------------------------------------- | ----------- |
+| `no-exit-sentinel-clone`         | a `process.exit` mock throwing a sentinel class the same file declares  | `warn`      |
+| `no-non-throwing-exit-mock`      | a `process.exit` mock that returns                                      | `warn`      |
+| `no-hand-rolled-exit-mock`       | a throwing or unreadable `process.exit` mock                            | `recommend` |
+| `no-lossy-console-capture`       | a console capture whose parameter list names its arguments              | `warn`      |
+| `no-hand-rolled-console-capture` | a console capture keeping every argument, or one the kit could not read | `recommend` |
+| `no-hand-rolled-console-silence` | a console method silenced with a no-op mock                             | `recommend` |
+| `no-console-calls-read`          | a read of a console spy's `mock.calls` or `mock.lastCall`               | `recommend` |
+
+### The two defects
+
+A `process.exit` mock that returns lets execution continue past the exit, so the test asserts against a path the process never reaches.
+
+A console capture whose parameter list names its arguments drops every argument past the ones it names: `console.error('failed:', reason)` asserts as `'failed:'`, and the test passes on a message the console never wrote. A capture taking a rest parameter loses nothing, so it reports as a substitution, as does one that captures nothing at all whatever its parameter list names.
+
+### What the kit reads
+
+Only test files are read, which inverts the exemption `@williamthorsen/toolbelt.errors` makes. That kit exempts tests because a test constructs error shapes deliberately; a mock of either idiom exists nowhere else.
+
+Only the five methods [`silenceConsole`](#silenceconsole) covers are anchored, and only through `vi.spyOn`. A spy on `console.table` gets no advice, because the package has none to give, and an assignment such as `console.error = vi.fn()` is not read, because the same anchor matches a restore as readily as a mock.
+
+A read of a spy's recorded calls reports once its receiver resolves to a console spy, either a name bound to one or a member of a `silenceConsole` result. A read of any other spy's calls stays silent, and one chained straight onto the spy call binds no name, so it reports at the spy's own site instead.
+
+A mock whose implementation is a bare reference reports as unclassified rather than as a defect. The referenced function may well throw, or keep every argument, and naming it a defect without reading its body would misreport it.
 
 A mock throwing a sentinel class the same file declares reports once, naming the class, since one substitution retires the class and the mock together.
 
-Only test files are read, which inverts the exemption `@williamthorsen/toolbelt.errors` makes. That kit exempts tests because a test constructs error shapes deliberately; a `process.exit` mock exists nowhere else.
-
-A mock whose implementation is a bare reference reports as unclassified rather than as non-throwing. The referenced function may well throw, and naming it a defect without reading its body would misreport it.
+### Silencing a reviewed site
 
 A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
 

@@ -49,7 +49,7 @@
           "path": "../../adoption/src/portable/readBalancedGroup.ts"
         },
         {
-          "hash": "ad77dc49",
+          "hash": "961b6e3d",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -59,22 +59,37 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
+          "hash": "64da6532",
+          "kind": "module",
+          "path": "../src/readiness/classifyConsoleMock.ts"
+        },
+        {
           "hash": "5bfa7274",
           "kind": "module",
           "path": "../src/readiness/classifyExitMock.ts"
         },
         {
+          "hash": "3654dbe0",
+          "kind": "module",
+          "path": "../src/readiness/listConsoleSites.ts"
+        },
+        {
           "hash": "f09328b4",
           "kind": "module",
           "path": "../src/readiness/listExitMocks.ts"
+        },
+        {
+          "hash": "0d7e51cc",
+          "kind": "module",
+          "path": "../src/readiness/listSites.ts"
         }
       ],
       "name": "default",
       "path": "kits/default.js",
       "readyupVersion": "0.32.1",
       "source": "kits/default.ts",
-      "sourceHash": "ad77dc49",
-      "targetHash": "50ef2c6e"
+      "sourceHash": "961b6e3d",
+      "targetHash": "da517e03"
     }
   ]
 }
