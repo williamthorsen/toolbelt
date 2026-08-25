@@ -69,7 +69,7 @@
           "path": "../src/readiness/classifyExitMock.ts"
         },
         {
-          "hash": "18ecf0bf",
+          "hash": "3654dbe0",
           "kind": "module",
           "path": "../src/readiness/listConsoleSites.ts"
         },
@@ -89,7 +89,7 @@
       "readyupVersion": "0.32.1",
       "source": "kits/default.ts",
       "sourceHash": "961b6e3d",
-      "targetHash": "4dbf2bb2"
+      "targetHash": "1a9688a0"
     }
   ]
 }

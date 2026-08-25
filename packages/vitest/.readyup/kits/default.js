@@ -177,7 +177,7 @@ function findBodyPastArrow(rest) {
 var SPY = /\bvi\s*\.\s*spyOn\(\s*console\s*,\s*(['"])(?:debug|error|info|log|warn)\1\s*\)/g;
 var READ = /\.\s*mock\s*\.\s*(?:calls|lastCall)\b/g;
 var SILENCE_BINDING = /\b(?:const|let|using|var)\s+([\w$]+)\s*=\s*silenceConsole\s*\(/g;
-var BINDING_TAIL = /\b(?:const|let|using|var) ([\w$]+) = $/;
+var BINDING_TAIL = /(?:^|[^.\w$])(?:(?:const|let|using|var) )?([\w$]+)(?:: [^=]+)? = $/;
 var MEMBER_RECEIVER = /([\w$]+) ?\. ?(?:debug|error|info|log|warn) ?$/;
 var IDENTIFIER_RECEIVER = /(?:^|[^.\w$])([\w$]+) ?$/;
 var WINDOW = { lookahead: 0, lookbehind: 64 };

@@ -12,7 +12,10 @@ export type ConsoleSiteKind = ConsoleMockKind | 'console-calls-read';
 const SPY = /\bvi\s*\.\s*spyOn\(\s*console\s*,\s*(['"])(?:debug|error|info|log|warn)\1\s*\)/g;
 const READ = /\.\s*mock\s*\.\s*(?:calls|lastCall)\b/g;
 const SILENCE_BINDING = /\b(?:const|let|using|var)\s+([\w$]+)\s*=\s*silenceConsole\s*\(/g;
-const BINDING_TAIL = /\b(?:const|let|using|var) ([\w$]+) = $/;
+// The declaration keyword is optional, because a suite commonly declares the name in one scope and assigns
+// the spy in a hook. The leading guard holds the name to one an identifier read can resolve: `harness.spy = `
+// binds nothing, since a read written `spy.mock.calls` would not be reaching that property.
+const BINDING_TAIL = /(?:^|[^.\w$])(?:(?:const|let|using|var) )?([\w$]+)(?:: [^=]+)? = $/;
 const MEMBER_RECEIVER = /([\w$]+) ?\. ?(?:debug|error|info|log|warn) ?$/;
 const IDENTIFIER_RECEIVER = /(?:^|[^.\w$])([\w$]+) ?$/;
 // Long enough to span a binding a formatter broke across lines, which is all either receiver form needs.

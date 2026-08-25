@@ -95,6 +95,36 @@ expect(spy.mock.calls).toHaveLength(1);`;
       ]);
     });
 
+    it('resolves a name declared in one scope and assigned the spy in another', () => {
+      const source = `let spy;
+beforeEach(() => {
+  spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+});
+it('warns', () => { expect(spy.mock.calls).toHaveLength(1); });`;
+
+      expect(listConsoleSites(source)).toStrictEqual([
+        { kind: 'console-silence', line: 3 },
+        { kind: 'console-calls-read', line: 5 },
+      ]);
+    });
+
+    it('resolves a binding carrying a type annotation', () => {
+      const source = `const spy: MockInstance = vi.spyOn(console, 'error').mockImplementation(() => {});
+expect(spy.mock.calls).toHaveLength(1);`;
+
+      expect(listConsoleSites(source)).toStrictEqual([
+        { kind: 'console-silence', line: 1 },
+        { kind: 'console-calls-read', line: 2 },
+      ]);
+    });
+
+    it('binds nothing where a member assignment takes the spy', () => {
+      const source = `harness.spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+expect(spy.mock.calls).toHaveLength(1);`;
+
+      expect(listConsoleSites(source)).toStrictEqual([{ kind: 'console-silence', line: 1 }]);
+    });
+
     it('declines a read of a spy that is not a console spy', () => {
       const source = `const existsSyncSpy = vi.spyOn(fs, 'existsSync').mockReturnValue(true);
 expect(existsSyncSpy.mock.calls).toHaveLength(2);`;
