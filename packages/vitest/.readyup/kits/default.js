@@ -143,6 +143,15 @@ function classifyConsoleMock(after) {
   if (REST_PARAMETER.test(head.parameters)) return "console-capture";
   return head.parameters.trim() === "" ? "console-capture" : "console-capture-lossy";
 }
+function findBodyPastAnnotation(rest) {
+  if (!rest.trimStart().startsWith(":")) return rest;
+  const brace = rest.indexOf("{");
+  return brace === -1 ? void 0 : rest.slice(brace);
+}
+function findBodyPastArrow(rest) {
+  const arrow = rest.indexOf("=>");
+  return arrow === -1 ? void 0 : rest.slice(arrow + 2);
+}
 function isNoOp(body) {
   const trimmed = body.trim();
   const block = trimmed.startsWith("{") ? readBalancedGroup(trimmed, 0, BRACES) : void 0;
@@ -162,15 +171,6 @@ function readParenthesizedHead(implementation, findBody) {
   const body = findBody(implementation.slice(list.end));
   if (body === void 0) return void 0;
   return { body, parameters: implementation.slice(list.start + 1, list.end - 1) };
-}
-function findBodyPastAnnotation(rest) {
-  if (!rest.trimStart().startsWith(":")) return rest;
-  const brace = rest.indexOf("{");
-  return brace === -1 ? void 0 : rest.slice(brace);
-}
-function findBodyPastArrow(rest) {
-  const arrow = rest.indexOf("=>");
-  return arrow === -1 ? void 0 : rest.slice(arrow + 2);
 }
 
 // src/readiness/listConsoleSites.ts

@@ -59,7 +59,7 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "4c54a778",
+          "hash": "64da6532",
           "kind": "module",
           "path": "../src/readiness/classifyConsoleMock.ts"
         },
@@ -89,7 +89,7 @@
       "readyupVersion": "0.32.1",
       "source": "kits/default.ts",
       "sourceHash": "961b6e3d",
-      "targetHash": "1a9688a0"
+      "targetHash": "da517e03"
     }
   ]
 }

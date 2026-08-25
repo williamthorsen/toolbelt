@@ -53,6 +53,24 @@ export function classifyConsoleMock(after: string): ConsoleMockKind {
 
 // region | Helpers
 
+/**
+ * Locates a `function` expression's body past any return-type annotation, whose own braces are not the body's.
+ * Telling a type's braces from a block's takes a parser, so an annotation carrying one leaves the body starting
+ * inside the type, where `isNoOp` declines it rather than mistaking it for an empty block.
+ */
+function findBodyPastAnnotation(rest: string): string | undefined {
+  if (!rest.trimStart().startsWith(':')) return rest;
+
+  const brace = rest.indexOf('{');
+  return brace === -1 ? undefined : rest.slice(brace);
+}
+
+/** Locates an arrow's body past its `=>`, which a return-type annotation may sit ahead of. */
+function findBodyPastArrow(rest: string): string | undefined {
+  const arrow = rest.indexOf('=>');
+  return arrow === -1 ? undefined : rest.slice(arrow + 2);
+}
+
 /** Reports whether a body does nothing, whether written as an empty block or as an expression discarding it. */
 function isNoOp(body: string): boolean {
   const trimmed = body.trim();
@@ -92,24 +110,6 @@ function readParenthesizedHead(
   if (body === undefined) return undefined;
 
   return { body, parameters: implementation.slice(list.start + 1, list.end - 1) };
-}
-
-/**
- * Locates a `function` expression's body past any return-type annotation, whose own braces are not the body's.
- * Telling a type's braces from a block's takes a parser, so an annotation carrying one leaves the body starting
- * inside the type, where `isNoOp` declines it rather than mistaking it for an empty block.
- */
-function findBodyPastAnnotation(rest: string): string | undefined {
-  if (!rest.trimStart().startsWith(':')) return rest;
-
-  const brace = rest.indexOf('{');
-  return brace === -1 ? undefined : rest.slice(brace);
-}
-
-/** Locates an arrow's body past its `=>`, which a return-type annotation may sit ahead of. */
-function findBodyPastArrow(rest: string): string | undefined {
-  const arrow = rest.indexOf('=>');
-  return arrow === -1 ? undefined : rest.slice(arrow + 2);
 }
 
 // endregion | Helpers
