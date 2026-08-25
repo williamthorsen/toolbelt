@@ -13,8 +13,8 @@ catalogs:
       specifier: 0.28.2
       version: 0.28.2
     readyup:
-      specifier: 0.32.0
-      version: 0.32.0
+      specifier: 0.32.1
+      version: 0.32.1
     vitest:
       specifier: 4.1.10
       version: 4.1.10
@@ -39,11 +39,11 @@ importers:
         specifier: 10.0.0
         version: 10.0.0(@typescript-eslint/parser@8.66.0(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(@typescript-eslint/utils@8.67.0(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)
       '@williamthorsen/nmr':
-        specifier: 0.33.0
-        version: 0.33.0(prettier@3.9.6)(typescript@6.0.3)(vitest@4.1.10)
+        specifier: 0.34.0
+        version: 0.34.0(prettier@3.9.6)(typescript@6.0.3)(vitest@4.1.10)
       '@williamthorsen/release-kit':
-        specifier: 10.4.3
-        version: 10.4.3
+        specifier: 10.4.4
+        version: 10.4.4
       '@williamthorsen/strict-lint':
         specifier: 11.0.0
         version: 11.0.0(eslint@10.8.1(jiti@2.7.0)(supports-color@7.2.0))
@@ -67,7 +67,7 @@ importers:
         version: 3.9.6
       readyup:
         specifier: 'catalog:'
-        version: 0.32.0(esbuild@0.28.2)
+        version: 0.32.1(esbuild@0.28.2)
       rimraf:
         specifier: 6.1.3
         version: 6.1.3
@@ -75,8 +75,8 @@ importers:
         specifier: 6.0.3
         version: 6.0.3
       v11y-check:
-        specifier: 0.15.6
-        version: 0.15.6
+        specifier: 0.15.7
+        version: 0.15.7
       vitest:
         specifier: 'catalog:'
         version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
@@ -90,7 +90,7 @@ importers:
     devDependencies:
       readyup:
         specifier: 'catalog:'
-        version: 0.32.0(esbuild@0.28.2)
+        version: 0.32.1(esbuild@0.28.2)
 
   packages/arrays:
     dependencies:
@@ -127,7 +127,7 @@ importers:
         version: 0.28.2
       readyup:
         specifier: 'catalog:'
-        version: 0.32.0(esbuild@0.28.2)
+        version: 0.32.1(esbuild@0.28.2)
 
   packages/filesystem:
     dependencies:
@@ -156,7 +156,7 @@ importers:
         version: 0.28.2
       readyup:
         specifier: 'catalog:'
-        version: 0.32.0(esbuild@0.28.2)
+        version: 0.32.1(esbuild@0.28.2)
 
   packages/objects: {}
 
@@ -221,7 +221,7 @@ importers:
         version: 0.28.2
       readyup:
         specifier: 'catalog:'
-        version: 0.32.0(esbuild@0.28.2)
+        version: 0.32.1(esbuild@0.28.2)
       vitest:
         specifier: 'catalog:'
         version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
@@ -874,12 +874,12 @@ packages:
     engines: {node: '>=24'}
     hasBin: true
 
-  '@williamthorsen/nmr-core@0.10.2':
-    resolution: {integrity: sha512-XBZXuD0FboJNhcVzSKyo7Ih6cI+LhsGoCYNarwELHQmtjtRP7PT5SzeXO3TxQ7Q6gRgpvOtcVyenjtNrD6S/9g==}
+  '@williamthorsen/nmr-core@0.10.3':
+    resolution: {integrity: sha512-7jmn0vzeNcn81XuMvNTr5LxVU7F41X7Es2Y5r4VswV5njwSBOKhkLo3+7n7aclCvoehmYMjk9I5SuqNIb1TJ+w==}
     engines: {node: '>=24'}
 
-  '@williamthorsen/nmr@0.33.0':
-    resolution: {integrity: sha512-FepYn23FCadvE8KFbjoGzyrGinSlkUWtDZwJCzZ7lK2iuNh8kMnc7bHDFuhNLv5AjlFkGKHRjRdyC/Vc1jWe2A==}
+  '@williamthorsen/nmr@0.34.0':
+    resolution: {integrity: sha512-oVYvj6HQTzVAVUOwX8cHjh7sD3y8ktU9imXaGxbblgx3uqifJcpXGP3PSKevn2I2DV+lkEfC9u5kJ1xWIEkFLQ==}
     engines: {node: '>=24.16.0', pnpm: '>=11'}
     hasBin: true
     peerDependencies:
@@ -892,8 +892,8 @@ packages:
       vitest:
         optional: true
 
-  '@williamthorsen/release-kit@10.4.3':
-    resolution: {integrity: sha512-9lW9PilcBtBi2WUQZ78NzEQ9RaRi6/Jj3ieB2+R6oTqz4LbyjixHwZUVQQvgesKnF6+RV1pGLExxokUnasOV+w==}
+  '@williamthorsen/release-kit@10.4.4':
+    resolution: {integrity: sha512-YZORXVR1nsTdGknHnO91tGMOmbbBYXyUndllxYUDbjINaKau3H2myQvkkhTL/I9rN7i/sDWyg0vbHKGdFVLkbg==}
     engines: {node: '>=24'}
     hasBin: true
 
@@ -912,24 +912,24 @@ packages:
     resolution: {integrity: sha512-bDsxxW6zAuDqNHl/ffT3c/IzVzRQREDwGdJ8xQssr7S+vNE8X9SfmNwiL1GyZoXw/njzLEmBXrI4Nb71zNmzbQ==}
     engines: {node: '>=24.0.0'}
 
-  '@williamthorsen/toolbelt.errors@0.6.0':
-    resolution: {integrity: sha512-vti9CHpLZBkGu3wA+H5LFdiIqclqDuHA6UGGlz/MZzFf2sFF76j1YEI3nmilcpfVxEB2WUKTDWmQLkuP8U+kxQ==}
+  '@williamthorsen/toolbelt.errors@0.6.1':
+    resolution: {integrity: sha512-LTbdY8C91+8Y4L5daiC5hqtoHX2e/FuGPw5omoJqY6jWD6R3BgQSvTDtlXYJB/4LUR+WCvnsN7xd913Ln0e03A==}
     engines: {node: '>=24.0.0'}
 
   '@williamthorsen/toolbelt.filesystem@0.4.0':
     resolution: {integrity: sha512-UKeOOKngs5t5f9BKZ21hh/oyPIXueo5A+Mugkwc0f200abGdeNeZ9O7MbsvXb+h+o2t1E0BZzy8zk66OicsagQ==}
     engines: {node: '>=24.0.0'}
 
-  '@williamthorsen/toolbelt.filesystem@0.7.0':
-    resolution: {integrity: sha512-dhzyviO8KHXbBj7N6VHCNKRXcXwVNOjm4/rm1s3onqtyYOoQN1FMQ2A6CSWAfspO1+/9sHHgD08i4EE+viwLEA==}
+  '@williamthorsen/toolbelt.filesystem@0.8.0':
+    resolution: {integrity: sha512-+elGxiWPmgF7BjsC+Cij7EU3pFMRceDhGudGd1i6T/0+7eL6Z1nBo9l0O8t2I0ZYpxcpDeJD340X05wkxLPHYA==}
     engines: {node: '>=24.0.0'}
 
   '@williamthorsen/toolbelt.packaging@0.3.0':
     resolution: {integrity: sha512-cmWHKbVp+6cNe5pBtbzmTTm8DOB7B2m8prvyL2uyw/2va1VinoP4K1ud+K/9ehQCD8Yktgm6/p7uS7V7Jtt/qw==}
     engines: {node: '>=24.0.0'}
 
-  '@williamthorsen/toolbelt.packaging@0.5.1':
-    resolution: {integrity: sha512-f3Gzi4DbVkDwoiIF73k+TDtxIpKXJRyIalUqMBr8Sopuzz/aLzCshJjr+AiUrSa8mO043UroK1k+PK59I9LZig==}
+  '@williamthorsen/toolbelt.packaging@0.5.2':
+    resolution: {integrity: sha512-IMU8WV6iMOqvJMnMJOk5z2CPtBxg5GiOZM81ySDTHTz0oQfUdCM16vwrqWyMGITnRVUs0oZXnHYQbI2JNaTrKA==}
     engines: {node: '>=24.0.0'}
 
   '@williamthorsen/tsconfig@0.5.0':
@@ -1199,9 +1199,6 @@ packages:
   es-errors@1.3.0:
     resolution: {integrity: sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==}
     engines: {node: '>= 0.4'}
-
-  es-module-lexer@2.3.1:
-    resolution: {integrity: sha512-shc1dbU90Yl/xq1QrC7QRtfcwURZuVRfPhZbDoldJ1cn1gzDvBaBWlv0eFolj5+0znnPJz5TXLxsN77X/12KTA==}
 
   es-module-lexer@2.3.2:
     resolution: {integrity: sha512-poHGpORABojJJucnV9KbOavETW8lBVnphkW77ER5/BQ5Fz7oXSoCNek7IH3vR5nRjdsEz926ibFYX8KtLQmdyw==}
@@ -2139,8 +2136,8 @@ packages:
     resolution: {integrity: sha512-7KA6+N9IGat52d83dvxnApAWN+MtVb1MiVuMR/cf1O4kYsJG+g/Aav0AHcHKsb6StinayfPLne0+fMX2sOzAKg==}
     engines: {node: '>=6'}
 
-  readyup@0.32.0:
-    resolution: {integrity: sha512-AZvKEcuBrE3e3zkjwwLpwuUoO/XA6RYRSm6HgxuQIdkjiMl30RZUIVOH3spS+C7PVBkmh4Wd9jW1KphGDBrY/Q==}
+  readyup@0.32.1:
+    resolution: {integrity: sha512-GOq9IcB8oH97Mi2YUucMddtm2/t22h0VQmqjEGKHhK1w82CSDKmPx/wSg2XkAkkVJX872V1XHw6FJ5bIjYW/HQ==}
     engines: {node: '>=24'}
     hasBin: true
     peerDependencies:
@@ -2353,8 +2350,8 @@ packages:
     resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
     engines: {node: '>=6'}
 
-  taze@20.0.1:
-    resolution: {integrity: sha512-eMaxsasw9WZfwXeiRNynqo9uSukB876oHlk+obmaaW4z8ue+LvFXSZC7O+RSABOlWNUqZmxXcDJS/O7MxW6tlw==}
+  taze@21.1.0:
+    resolution: {integrity: sha512-NkFkadmqqpaVZ9x3bV4cul1xQnUknhs1HzE3Q/VXHKS7np2Kg7ZNL7nNsEsBXKsafmgepa+aZNtzoegDgsymPw==}
     hasBin: true
 
   through2@4.0.2:
@@ -2462,8 +2459,8 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  v11y-check@0.15.6:
-    resolution: {integrity: sha512-Eh54LNTXnKO3nnz4K5TQETYjS2uD0+P5McDZzWeN5lmJ3BLPdpYHDz8VyBXdLump/MkgGewLlxItUAY91PtcUg==}
+  v11y-check@0.15.7:
+    resolution: {integrity: sha512-eJ6o7AQByFJspUDr6DndiJsbx0DXDNV74neR7bqOBVHK75GTuEyAjwBkUtzo0/ERuRl9bhWMZZ2/MrLhKZiACA==}
     engines: {node: '>=24'}
     hasBin: true
 
@@ -3178,27 +3175,27 @@ snapshots:
       yaml: 2.9.0
       zod: 4.4.3
 
-  '@williamthorsen/nmr-core@0.10.2':
+  '@williamthorsen/nmr-core@0.10.3':
     dependencies:
-      '@williamthorsen/toolbelt.errors': 0.5.0
+      '@williamthorsen/toolbelt.errors': 0.6.1
 
-  '@williamthorsen/nmr@0.33.0(prettier@3.9.6)(typescript@6.0.3)(vitest@4.1.10)':
+  '@williamthorsen/nmr@0.34.0(prettier@3.9.6)(typescript@6.0.3)(vitest@4.1.10)':
     dependencies:
-      '@williamthorsen/nmr-core': 0.10.2
-      '@williamthorsen/toolbelt.errors': 0.5.0
+      '@williamthorsen/nmr-core': 0.10.3
+      '@williamthorsen/toolbelt.errors': 0.6.1
       glob: 13.0.6
       prettier-plugin-sh: 0.19.0(prettier@3.9.6)
-      taze: 20.0.1
+      taze: 21.1.0
       typescript: 6.0.3
       yaml: 2.9.0
     optionalDependencies:
       prettier: 3.9.6
       vitest: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
 
-  '@williamthorsen/release-kit@10.4.3':
+  '@williamthorsen/release-kit@10.4.4':
     dependencies:
-      '@williamthorsen/nmr-core': 0.10.2
-      '@williamthorsen/toolbelt.errors': 0.5.0
+      '@williamthorsen/nmr-core': 0.10.3
+      '@williamthorsen/toolbelt.errors': 0.6.1
       glob: 13.0.6
       json-stringify-pretty-compact: 4.0.0
       semver: 7.8.5
@@ -3215,23 +3212,23 @@ snapshots:
 
   '@williamthorsen/toolbelt.errors@0.5.0': {}
 
-  '@williamthorsen/toolbelt.errors@0.6.0': {}
+  '@williamthorsen/toolbelt.errors@0.6.1': {}
 
   '@williamthorsen/toolbelt.filesystem@0.4.0':
     dependencies:
       '@williamthorsen/toolbelt.errors': 0.3.0
 
-  '@williamthorsen/toolbelt.filesystem@0.7.0':
+  '@williamthorsen/toolbelt.filesystem@0.8.0':
     dependencies:
-      '@williamthorsen/toolbelt.errors': 0.6.0
+      '@williamthorsen/toolbelt.errors': 0.6.1
 
   '@williamthorsen/toolbelt.packaging@0.3.0':
     dependencies:
       '@williamthorsen/toolbelt.filesystem': 0.4.0
 
-  '@williamthorsen/toolbelt.packaging@0.5.1':
+  '@williamthorsen/toolbelt.packaging@0.5.2':
     dependencies:
-      '@williamthorsen/toolbelt.filesystem': 0.7.0
+      '@williamthorsen/toolbelt.filesystem': 0.8.0
 
   '@williamthorsen/tsconfig@0.5.0': {}
 
@@ -3567,8 +3564,6 @@ snapshots:
   es-define-property@1.0.1: {}
 
   es-errors@1.3.0: {}
-
-  es-module-lexer@2.3.1: {}
 
   es-module-lexer@2.3.2: {}
 
@@ -4537,11 +4532,11 @@ snapshots:
 
   readline-transform@1.0.0: {}
 
-  readyup@0.32.0(esbuild@0.28.2):
+  readyup@0.32.1(esbuild@0.28.2):
     dependencies:
-      '@williamthorsen/toolbelt.errors': 0.6.0
-      '@williamthorsen/toolbelt.packaging': 0.5.1
-      es-module-lexer: 2.3.1
+      '@williamthorsen/toolbelt.errors': 0.6.1
+      '@williamthorsen/toolbelt.packaging': 0.5.2
+      es-module-lexer: 2.3.2
       jiti: 2.7.0
       jsonc-parser: 3.3.1
       picomatch: 4.0.5
@@ -4812,7 +4807,7 @@ snapshots:
 
   tapable@2.3.3: {}
 
-  taze@20.0.1:
+  taze@21.1.0:
     dependencies:
       '@antfu/ni': 30.5.0
       '@henrygd/queue': 1.2.0
@@ -4953,10 +4948,10 @@ snapshots:
 
   util-deprecate@1.0.2: {}
 
-  v11y-check@0.15.6:
+  v11y-check@0.15.7:
     dependencies:
-      '@williamthorsen/nmr-core': 0.10.2
-      '@williamthorsen/toolbelt.errors': 0.5.0
+      '@williamthorsen/nmr-core': 0.10.3
+      '@williamthorsen/toolbelt.errors': 0.6.1
       audit-ci: 7.1.0
       zod: 4.4.3
 
