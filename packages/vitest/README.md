@@ -333,6 +333,8 @@ The kit reads the project's tracked test files and reports the two idioms this p
 
 Severity carries the judgment. A defect reports at `warn`, a working hand-roll at `recommend`. Nothing reports at `error`, because none of it breaks the package.
 
+Each check prints one fraction, and it measures the kit rather than the check: calls the project already makes into this package, over those calls plus every site the kit found of either idiom, less the sites a pragma silences for that check. A project holding twelve console sites and no exit mocks therefore reads `[0 of 12]` against the exit checks too.
+
 | Check id                         | Reports                                                                 | Severity    |
 | -------------------------------- | ----------------------------------------------------------------------- | ----------- |
 | `no-exit-sentinel-clone`         | a `process.exit` mock throwing a sentinel class the same file declares  | `warn`      |
