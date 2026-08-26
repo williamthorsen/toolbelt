@@ -10,7 +10,6 @@ export {
 export { isPatternMatch } from './isPatternMatch.ts';
 export { joinStrings } from './joinStrings.ts';
 export { obfuscate } from './obfuscate.ts';
-export { pluralize, pluralizeWithCount } from './pluralize.ts';
 export { slugify } from './slugify.ts';
 export { toLowerCase, toUpperCase, trim, trimEnd, trimStart } from './string-prototype-wrappers.ts';
 export { stripCommonIndent } from './stripCommonIndent.ts';
