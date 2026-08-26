@@ -12,7 +12,41 @@ pnpm add @williamthorsen/toolbelt.strings
 
 Requires Node.js 24 or later.
 
-`dedent` and `stripCommonIndent` are candidate tier: imported from `@williamthorsen/toolbelt.strings/candidate` rather than the package root, and subject to change.
+`pluralize` and `pluralizeWithCount` are release tier, imported from the package root. `dedent` and `stripCommonIndent` are candidate tier: imported from `@williamthorsen/toolbelt.strings/candidate` rather than the package root, and subject to change.
+
+## `pluralize` and `pluralizeWithCount`
+
+```ts
+pluralize(count: number, singular: string, plural?: string): string;
+pluralizeWithCount(count: number, singular: string, plural?: string): string;
+```
+
+Selects the singular or plural form of a word for a count. `pluralizeWithCount` prefixes the count itself.
+
+```ts
+import { pluralize, pluralizeWithCount } from '@williamthorsen/toolbelt.strings';
+
+pluralize(3, 'match', 'matches');
+// 'matches'
+
+pluralizeWithCount(3, 'match', 'matches');
+// '3 matches'
+```
+
+The plural defaults to the singular with an `s` appended, so anything else is the caller's to supply: `pluralize(2, 'box')` returns `'boxs'`. A rule set covering the regular endings would fix `box` and `category` while still returning `'heros'` and `'quizes'`, and the wrong forms it left would be rarer without being easier to catch. A uniformly naive default is one a caller learns to override.
+
+Selection is English: only a count whose absolute value is exactly 1 takes the singular, so `-1` takes the singular and `0`, `1.5`, `NaN`, and `Infinity` take the plural. Neither function throws.
+
+`Intl.PluralRules` would change none of that, since CLDR's English `one` rule selects exactly the same counts. What it offers is other locales, and those need a form per plural category rather than a pair: Polish takes three, Arabic six. Reach for `Intl.PluralRules` or ICU message formatting there.
+
+`pluralizeWithCount` interpolates the count as given, without grouping separators. Formatted output composes the two:
+
+```ts
+const total = 1234;
+
+`${total.toLocaleString()} ${pluralize(total, 'result')}`;
+// '1,234 results'
+```
 
 ## `dedent`
 
