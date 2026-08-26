@@ -3,14 +3,23 @@ import { describe, expect, it } from 'vitest';
 import { pluralize, pluralizeWithCount } from '../pluralize.ts';
 
 describe(pluralize, () => {
-  it('returns the singular form for count 1', () => {
+  it('returns the singular form for a count of 1', () => {
     expect(pluralize(1, 'apple')).toBe('apple');
   });
 
-  it('returns the plural form for count other than 1', () => {
-    expect(pluralize(1.1, 'apple')).toBe('apples');
-    expect(pluralize(0, 'apple')).toBe('apples');
+  it('returns the singular form for a count of -1', () => {
     expect(pluralize(-1, 'apple')).toBe('apple');
+  });
+
+  it('returns the plural form for any other count', () => {
+    expect(pluralize(0, 'apple')).toBe('apples');
+    expect(pluralize(1.1, 'apple')).toBe('apples');
+    expect(pluralize(2, 'apple')).toBe('apples');
+  });
+
+  it('returns the plural form for a non-finite count', () => {
+    expect(pluralize(Number.NaN, 'apple')).toBe('apples');
+    expect(pluralize(Number.POSITIVE_INFINITY, 'apple')).toBe('apples');
   });
 
   it('uses a custom plural form if given', () => {
@@ -19,14 +28,26 @@ describe(pluralize, () => {
 });
 
 describe(pluralizeWithCount, () => {
-  it('returns the singular form with count for count 1', () => {
+  it('returns the singular form with count for a count of 1', () => {
     expect(pluralizeWithCount(1, 'apple')).toBe('1 apple');
   });
 
-  it('returns the plural form with count for count other than 1', () => {
-    expect(pluralizeWithCount(1.1, 'apple')).toBe('1.1 apples');
-    expect(pluralizeWithCount(0, 'apple')).toBe('0 apples');
+  it('returns the singular form with count for a count of -1', () => {
     expect(pluralizeWithCount(-1, 'apple')).toBe('-1 apple');
+  });
+
+  it('returns the plural form with count for any other count', () => {
+    expect(pluralizeWithCount(0, 'apple')).toBe('0 apples');
+    expect(pluralizeWithCount(1.1, 'apple')).toBe('1.1 apples');
+  });
+
+  it('returns the plural form with count for a non-finite count', () => {
+    expect(pluralizeWithCount(Number.NaN, 'apple')).toBe('NaN apples');
+    expect(pluralizeWithCount(Number.POSITIVE_INFINITY, 'apple')).toBe('Infinity apples');
+  });
+
+  it('interpolates the count as given, without grouping separators', () => {
+    expect(pluralizeWithCount(1234, 'apple')).toBe('1234 apples');
   });
 
   it('uses a custom plural form if given', () => {
