@@ -44,7 +44,7 @@ Selection is English: only a count whose absolute value is exactly 1 takes the s
 ```ts
 const total = 1234;
 
-`${total.toLocaleString()} ${pluralize(total, 'result')}`;
+`${total.toLocaleString('en-US')} ${pluralize(total, 'result')}`;
 // '1,234 results'
 ```
 
