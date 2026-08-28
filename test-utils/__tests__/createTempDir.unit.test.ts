@@ -2,15 +2,11 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { createTempDir } from '../createTempDir.ts';
 
 describe(createTempDir, () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('creates a file holding the mapped contents, intermediate directories included', () => {
     using tree = createTempDir({ 'src/nested/main.ts': 'export {};\n' });
 

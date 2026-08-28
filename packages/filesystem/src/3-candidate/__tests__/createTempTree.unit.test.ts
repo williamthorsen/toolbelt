@@ -2,15 +2,11 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { createTempTree } from '../createTempTree.ts';
 
 describe(createTempTree, () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('creates a directory for a key ending in a separator', () => {
     using tree = createTempTree({ 'app/src/': '' });
 
@@ -424,10 +420,6 @@ describe('TempTree.rm', () => {
 });
 
 describe('TempTree.symlink', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('links to a directory target, reaching its contents through the link', () => {
     using tree = createTempTree({ 'store/kit/package.json': '{ "name": "kit" }' });
 
