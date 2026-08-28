@@ -142,7 +142,7 @@ describe(createTempTree, () => {
 
   it('rejects an entry resolving outside the tree, leaving nothing on disk', () => {
     // Spy on the creation call, which is the only route to the root of a tree no handle was returned for.
-    const mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
+    using mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
 
     const create = () => createTempTree({ 'written.txt': 'contents', '../escaped.txt': '' });
 

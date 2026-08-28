@@ -42,7 +42,7 @@ describe(createTempDir, () => {
   // carrying that idiom over would get a file of the same name and no error.
   it('rejects an entry naming a directory, leaving nothing on disk', () => {
     // Spy on the creation call, which is the only route to the root of a directory no handle was returned for.
-    const mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
+    using mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
 
     const create = () => createTempDir({ 'package.json': '{}', 'src/': '' });
 
