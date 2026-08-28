@@ -5,6 +5,7 @@
   "keywords": [
     "case-conversion",
     "esm",
+    "hash",
     "pluralize",
     "slugify",
     "string",

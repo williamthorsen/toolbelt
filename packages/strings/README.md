@@ -12,7 +12,7 @@ pnpm add @williamthorsen/toolbelt.strings
 
 Requires Node.js 24 or later.
 
-`pluralize` and `pluralizeWithCount` are release tier, imported from the package root. `dedent` and `stripCommonIndent` are candidate tier: imported from `@williamthorsen/toolbelt.strings/candidate` rather than the package root, and subject to change.
+`pluralize` and `pluralizeWithCount` are release tier, imported from the package root. `dedent`, `hashString`, and `stripCommonIndent` are candidate tier: imported from `@williamthorsen/toolbelt.strings/candidate` rather than the package root, and subject to change.
 
 ## `pluralize` and `pluralizeWithCount`
 
@@ -206,3 +206,34 @@ Unlike the tag, this function never throws. It has no author's intent to check a
 | Value indentation        | opt-in via `valueIndentationStyle`        | none; declined in proposal issue #88      |
 
 The two lenient edge rules are deliberate. Requiring a bare opening line would reject invisible trailing whitespace after the backtick, which no formatter shows and every editor tolerates; throwing on a closing line that carries text would reject `` dedent`\n  a\n  b` ``, which is a reasonable thing to write.
+
+## `hashString`
+
+```ts
+hashString(str: string, options?: { max?: number; min?: number; offset?: number }): number;
+```
+
+Deterministically derives an integer from a string, for a stable bucket, index, or slot that survives restarts and processes.
+
+```ts
+import { hashString } from '@williamthorsen/toolbelt.strings/candidate';
+
+hashString('user-4821');
+// 2423608544
+
+hashString('user-4821', { max: 999 });
+// 544
+```
+
+The default range is the full 32-bit width, `[0, 4294967295]`. Bounding is opt-in through `min` and `max`, which are inclusive, because a narrow range imposes a collision floor the caller should choose knowingly: at `{ max: 999 }`, two of roughly forty inputs collide more often than not.
+
+`offset` rotates the result rather than salting the digest, so every input shifts by the same amount and `hashString(str, { offset })` stays derivable from `hashString(str)`. It wraps at both bounds, so a negative offset and one larger than the range are both fine.
+
+```ts
+hashString('user-4821', { max: 999, offset: 300 });
+// 844
+```
+
+The returned value is a contract. For a given input and options it is fixed, and changing the algorithm would be a breaking change, so a result may be persisted or compared across releases. The digest is FNV-1a 32-bit finalized through MurmurHash3's `fmix32`, applied to the low and high byte of each UTF-16 code unit. Encoding the text as UTF-8 first would match published FNV-1a vectors, at the cost of conflating lone surrogates, which `TextEncoder` replaces with U+FFFD.
+
+A `RangeError` names the fault when `min`, `max`, or `offset` is not a safe integer, when `min` exceeds `max`, or when the range spans more than 2^32 values, which is wider than the digest can fill.
