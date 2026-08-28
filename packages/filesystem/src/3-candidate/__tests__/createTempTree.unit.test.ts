@@ -2,15 +2,11 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { createTempTree } from '../createTempTree.ts';
 
 describe(createTempTree, () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('creates a directory for a key ending in a separator', () => {
     using tree = createTempTree({ 'app/src/': '' });
 
@@ -59,7 +55,7 @@ describe(createTempTree, () => {
 
   // The backslash case covers the separator Windows resolves alongside `/`.
   it.each(['rdy/', 'rdy\\', '../escaped-'])('rejects the prefix %j, building nothing', (prefix) => {
-    const mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
+    using mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
 
     const create = () => createTempTree({}, { prefix });
 
@@ -69,7 +65,7 @@ describe(createTempTree, () => {
 
   // Each of these joins away to the temporary directory itself or its parent, so `mkdtemp` would build a sibling.
   it.each(['', '.', '..'])('rejects the prefix %j, building nothing', (prefix) => {
-    const mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
+    using mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
 
     const create = () => createTempTree({}, { prefix });
 
@@ -142,7 +138,7 @@ describe(createTempTree, () => {
 
   it('rejects an entry resolving outside the tree, leaving nothing on disk', () => {
     // Spy on the creation call, which is the only route to the root of a tree no handle was returned for.
-    const mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
+    using mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
 
     const create = () => createTempTree({ 'written.txt': 'contents', '../escaped.txt': '' });
 
@@ -424,10 +420,6 @@ describe('TempTree.rm', () => {
 });
 
 describe('TempTree.symlink', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('links to a directory target, reaching its contents through the link', () => {
     using tree = createTempTree({ 'store/kit/package.json': '{ "name": "kit" }' });
 
@@ -507,7 +499,7 @@ describe('TempTree.symlink', () => {
   // observe the choice from a POSIX run.
   describe('link type', () => {
     it('links an absolute directory target as a junction', () => {
-      const symlinkSyncSpy = vi.spyOn(fs, 'symlinkSync');
+      using symlinkSyncSpy = vi.spyOn(fs, 'symlinkSync');
       using tree = createTempTree({ 'store/kit/': '' });
 
       tree.symlink('link', tree.resolve('store/kit'));
@@ -517,7 +509,7 @@ describe('TempTree.symlink', () => {
 
     // The link is nested, so the target resolves only if it is taken against the link's own directory.
     it('links a relative directory target as a directory', () => {
-      const symlinkSyncSpy = vi.spyOn(fs, 'symlinkSync');
+      using symlinkSyncSpy = vi.spyOn(fs, 'symlinkSync');
       using tree = createTempTree({ 'store/kit/': '' });
 
       tree.symlink('node_modules/kit', '../store/kit');
@@ -526,7 +518,7 @@ describe('TempTree.symlink', () => {
     });
 
     it('links a file target as a file', () => {
-      const symlinkSyncSpy = vi.spyOn(fs, 'symlinkSync');
+      using symlinkSyncSpy = vi.spyOn(fs, 'symlinkSync');
       using tree = createTempTree({ 'real.json': 'real\n' });
 
       tree.symlink('link', 'real.json');
@@ -535,7 +527,7 @@ describe('TempTree.symlink', () => {
     });
 
     it('links a target that does not exist as a file', () => {
-      const symlinkSyncSpy = vi.spyOn(fs, 'symlinkSync');
+      using symlinkSyncSpy = vi.spyOn(fs, 'symlinkSync');
       using tree = createTempTree({});
 
       tree.symlink('link', 'absent.json');

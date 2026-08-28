@@ -2,15 +2,11 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { createTempDir } from '../createTempDir.ts';
 
 describe(createTempDir, () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('creates a file holding the mapped contents, intermediate directories included', () => {
     using tree = createTempDir({ 'src/nested/main.ts': 'export {};\n' });
 
@@ -42,7 +38,7 @@ describe(createTempDir, () => {
   // carrying that idiom over would get a file of the same name and no error.
   it('rejects an entry naming a directory, leaving nothing on disk', () => {
     // Spy on the creation call, which is the only route to the root of a directory no handle was returned for.
-    const mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
+    using mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
 
     const create = () => createTempDir({ 'package.json': '{}', 'src/': '' });
 
