@@ -16,7 +16,7 @@ import { isRecord, isRecordOrArray } from '../4-release/is-object.ts';
  */
 export function getValueAtPathOrThrow(obj: unknown, path: string): unknown {
   if (!isRecordOrArray(obj)) {
-    throw new Error('Expected an object as root value.');
+    throw new TypeError('Expected an object as root value.');
   }
 
   const keys = path
@@ -35,7 +35,7 @@ export function getValueAtPathOrThrow(obj: unknown, path: string): unknown {
       if (index >= 0 && index < current.length) {
         current = current[index];
       } else {
-        throw new Error(`Array index out of bounds: "${key}" in path "${path}"`);
+        throw new RangeError(`Array index out of bounds: "${key}" in path "${path}"`);
       }
     } else if (isRecord(current)) {
       if (!Object.hasOwn(current, key)) {
@@ -43,7 +43,7 @@ export function getValueAtPathOrThrow(obj: unknown, path: string): unknown {
       }
       current = current[key];
     } else {
-      throw new Error(`Unexpected non-object/non-array at segment "${key}" in path "${path}"`);
+      throw new TypeError(`Unexpected non-object/non-array at segment "${key}" in path "${path}"`);
     }
   }
 
