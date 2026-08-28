@@ -1,0 +1,30 @@
+[
+  {
+    "version": "0.2.0",
+    "date": "2026-08-28",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add findBranchTicketRef and deriveBranchNumber to toolbelt.git (#239)",
+            "body": "Adds `findBranchTicketRef` and `deriveBranchNumber` to `@williamthorsen/toolbelt.git` at the candidate tier.\n\n`findBranchTicketRef` extracts the ticket ID encoded in a branch name. `deriveBranchNumber` relies on it to give every branch a stable number: the ticket's if the branch name includes one, and otherwise a `hashString` digest of the name. The number is bounded by the caller-specified range.",
+            "hash": "36b1ddb2ff6aa40444fe5b75ba86627fffaeaa53"
+          }
+        ]
+      },
+      {
+        "title": "Internal",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Scaffold toolbelt.git for git utilities (#235)",
+            "body": "Adds `packages/git`, an empty `@williamthorsen/toolbelt.git` at version `0.1.0` with its four maturity tiers in place.",
+            "hash": "fb7325333d8d09c12d3bf2fd74822d94b62a2c69"
+          }
+        ]
+      }
+    ]
+  }
+]

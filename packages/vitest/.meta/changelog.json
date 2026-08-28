@@ -1,5 +1,40 @@
 [
   {
+    "version": "0.7.0",
+    "date": "2026-08-28",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Report hand-rolled console reads in the adoption kit (#227)",
+            "body": "Adds four console checks to `@williamthorsen/toolbelt.vitest`'s ReadyUp kit, checking for hand-rolled code to capture, silence, or read console output. The kit warns where a capture silently drops arguments, and recommends `silenceConsole` and `listConsoleLines` in place of hand-rolled code.",
+            "hash": "fbbced83741d92c5af4689a0eb2e102bebe45e2e"
+          }
+        ]
+      },
+      {
+        "title": "Dependencies",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Upgrade all deps to latest version",
+            "hash": "33ca6eb096cba5c6bf9fdf75be147e0e8fecc7b8"
+          },
+          {
+            "description": "Upgrade deps to latest version",
+            "hash": "ed6a0593c8749d9474e8999f3a3cba85a113fb2e"
+          },
+          {
+            "description": "Upgrade all deps to latest version",
+            "hash": "aeb6196f27c79fa77a8d5f9628ff43b1c1a013e3"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.6.0",
     "date": "2026-08-24",
     "sections": [

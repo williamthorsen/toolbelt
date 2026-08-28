@@ -1,5 +1,16 @@
 [
   {
+    "version": "0.5.3",
+    "date": "2026-08-28",
+    "sections": [
+      {
+        "title": "Dependency updates",
+        "audience": "dev",
+        "items": [{ "description": "Bumped `@williamthorsen/toolbelt.filesystem` to 0.8.1" }]
+      }
+    ]
+  },
+  {
     "version": "0.5.2",
     "date": "2026-08-24",
     "sections": [

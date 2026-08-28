@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## 7.0.0 — 2026-08-28
+
+### Features
+
+- 🚨 **Breaking:** Promote pluralize and pluralizeWithCount to the release tier (#229)
+
+  Promotes `pluralize` and `pluralizeWithCount` to the release tier of `@williamthorsen/toolbelt.strings`.
+
+  Migration: Both must be imported from `@williamthorsen/toolbelt.strings` rather than `@williamthorsen/toolbelt.strings/candidate`.
+
+- Add hashString to derive a deterministic number from a string (#233)
+
+  Adds a `hashString` function to `@williamthorsen/toolbelt.strings` at the candidate tier. The function derives a number deterministically from a string for a stable bucket, index, or slot. It returns a value across the full 32-bit range by default; `min` and `max` bound it inclusively, and `offset` rotates the result.
+
+- 🚨 **Breaking:** Rename joinStrings to joinTruthy and drop its lastSeparator option (#240)
+
+  Renames `joinStrings` to `joinTruthy` in `@williamthorsen/toolbelt.strings/candidate` and removes its `lastSeparator` option, narrowing the function to a single job: dropping falsy members from an array and joining what remains with `separator`.
+
+  Migration: Replace `joinStrings` with `joinTruthy` if `lastSeparator` is not used; otherwise, use `Intl.ListFormat` and filter falsy values out of the array first.
+
+### Refactoring
+
+- Remove concatenate in favour of Intl.ListFormat (#238)
+
+  Removes `concatenate` from `@williamthorsen/toolbelt.strings/draft`, which reimplemented `Intl.ListFormat` without its locale awareness. The platform formatter produces identical output for every input `concatenate` accepted, and adds disjunction, the `unit`, `short`, and `narrow` styles, and every CLDR locale.
+
+  Migration: Call `new Intl.ListFormat('en').format(strings)` instead of `concatenate(strings)`, and pass only strings, because a non-string member would raise a `TypeError`. If a custom separator is needed, use `Array.prototype.join`, because `Intl.ListFormat` does not support one.
+
 ## 6.0.3 — 2026-08-24
 
 ### Refactoring

@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.6.2 — 2026-08-28
+
+### Dependencies
+
+- Upgrade all deps to latest version
+- Upgrade deps to latest version
+- Upgrade all deps to latest version
+
 ## 0.6.1 — 2026-08-24
 
 ### Bug fixes

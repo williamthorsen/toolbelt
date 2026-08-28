@@ -1,5 +1,22 @@
 [
   {
+    "version": "4.0.5",
+    "date": "2026-08-28",
+    "sections": [
+      {
+        "title": "Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Upgrade eslint-config-typescript to v12.0.1 and satisfy its new rules (#236)",
+            "body": "Upgrades `@williamthorsen/eslint-config-typescript` to v12 and fixes violations surfaced by the new rules banning unpublished barrels and floating disposables.",
+            "hash": "692ef2e30ee362f1b6bb830bedfbdf54f1543472"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "4.0.4",
     "date": "2026-08-24",
     "sections": [

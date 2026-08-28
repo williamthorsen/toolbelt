@@ -1,5 +1,45 @@
 [
   {
+    "version": "7.0.0",
+    "date": "2026-08-28",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Promote pluralize and pluralizeWithCount to the release tier (#229)",
+            "body": "Promotes `pluralize` and `pluralizeWithCount` to the release tier of `@williamthorsen/toolbelt.strings`.\n\nMigration: Both must be imported from `@williamthorsen/toolbelt.strings` rather than `@williamthorsen/toolbelt.strings/candidate`.",
+            "breaking": true,
+            "hash": "e862149fee428bee18f01b43f602b407845e5dff"
+          },
+          {
+            "description": "Add hashString to derive a deterministic number from a string (#233)",
+            "body": "Adds a `hashString` function to `@williamthorsen/toolbelt.strings` at the candidate tier. The function derives a number deterministically from a string for a stable bucket, index, or slot. It returns a value across the full 32-bit range by default; `min` and `max` bound it inclusively, and `offset` rotates the result.",
+            "hash": "3deeb038bc24801871c9119657d04a5c57ff102d"
+          },
+          {
+            "description": "Rename joinStrings to joinTruthy and drop its lastSeparator option (#240)",
+            "body": "Renames `joinStrings` to `joinTruthy` in `@williamthorsen/toolbelt.strings/candidate` and removes its `lastSeparator` option, narrowing the function to a single job: dropping falsy members from an array and joining what remains with `separator`.\n\nMigration: Replace `joinStrings` with `joinTruthy` if `lastSeparator` is not used; otherwise, use `Intl.ListFormat` and filter falsy values out of the array first.",
+            "breaking": true,
+            "hash": "498a71ec74414a884cf71d28f95a192eed135c83"
+          }
+        ]
+      },
+      {
+        "title": "Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Remove concatenate in favour of Intl.ListFormat (#238)",
+            "body": "Removes `concatenate` from `@williamthorsen/toolbelt.strings/draft`, which reimplemented `Intl.ListFormat` without its locale awareness. The platform formatter produces identical output for every input `concatenate` accepted, and adds disjunction, the `unit`, `short`, and `narrow` styles, and every CLDR locale.\n\nMigration: Call `new Intl.ListFormat('en').format(strings)` instead of `concatenate(strings)`, and pass only strings, because a non-string member would raise a `TypeError`. If a custom separator is needed, use `Array.prototype.join`, because `Intl.ListFormat` does not support one.",
+            "hash": "fa3fe87f66fa5e804680b47a83451ba3baecdaac"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "6.0.3",
     "date": "2026-08-24",
     "sections": [

@@ -1,5 +1,29 @@
 [
   {
+    "version": "0.6.2",
+    "date": "2026-08-28",
+    "sections": [
+      {
+        "title": "Dependencies",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Upgrade all deps to latest version",
+            "hash": "33ca6eb096cba5c6bf9fdf75be147e0e8fecc7b8"
+          },
+          {
+            "description": "Upgrade deps to latest version",
+            "hash": "ed6a0593c8749d9474e8999f3a3cba85a113fb2e"
+          },
+          {
+            "description": "Upgrade all deps to latest version",
+            "hash": "aeb6196f27c79fa77a8d5f9628ff43b1c1a013e3"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.6.1",
     "date": "2026-08-24",
     "sections": [

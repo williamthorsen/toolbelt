@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.7.0 — 2026-08-28
+
+### Features
+
+- Report hand-rolled console reads in the adoption kit (#227)
+
+  Adds four console checks to `@williamthorsen/toolbelt.vitest`'s ReadyUp kit, checking for hand-rolled code to capture, silence, or read console output. The kit warns where a capture silently drops arguments, and recommends `silenceConsole` and `listConsoleLines` in place of hand-rolled code.
+
+### Dependencies
+
+- Upgrade all deps to latest version
+- Upgrade deps to latest version
+- Upgrade all deps to latest version
+
 ## 0.6.0 — 2026-08-24
 
 ### Features

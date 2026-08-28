@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 7.0.2 — 2026-08-28
+
+### Refactoring
+
+- Upgrade eslint-config-typescript to v12.0.1 and satisfy its new rules (#236)
+
+  Upgrades `@williamthorsen/eslint-config-typescript` to v12 and fixes violations surfaced by the new rules banning unpublished barrels and floating disposables.
+
+### Dependencies
+
+- Upgrade all deps to latest version
+- Upgrade deps to latest version
+- Upgrade all deps to latest version
+
 ## 7.0.1 — 2026-08-24
 
 ### Bug fixes

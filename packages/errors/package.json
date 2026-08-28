@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.errors",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Utilities for working with errors",
   "keywords": [
     "error",

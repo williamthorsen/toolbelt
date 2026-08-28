@@ -1,5 +1,19 @@
 [
   {
+    "version": "0.8.4",
+    "date": "2026-08-28",
+    "sections": [
+      {
+        "title": "Dependency updates",
+        "audience": "dev",
+        "items": [
+          { "description": "Bumped `@williamthorsen/toolbelt.numbers` to 7.0.2" },
+          { "description": "Bumped `@williamthorsen/toolbelt.arrays` to 6.0.2" }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.8.3",
     "date": "2026-08-24",
     "sections": [

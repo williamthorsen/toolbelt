@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.packaging",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Package and project layout utilities: where a package or project boundary begins, and what its manifest declares",
   "keywords": [
     "esm",
