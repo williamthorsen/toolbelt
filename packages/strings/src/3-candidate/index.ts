@@ -1,5 +1,6 @@
 export { capitalize } from './capitalize.ts';
 export { type Dedent, dedent, type DedentOptions, type DedentValue } from './dedent.ts';
+export { hashString, type HashStringOptions } from './hashString.ts';
 export {
   interpolate,
   type InterpolateOptions,
