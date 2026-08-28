@@ -135,7 +135,11 @@ importers:
         specifier: workspace:*
         version: link:../errors
 
-  packages/git: {}
+  packages/git:
+    dependencies:
+      '@williamthorsen/toolbelt.strings':
+        specifier: workspace:*
+        version: link:../strings
 
   packages/guards: {}
 
