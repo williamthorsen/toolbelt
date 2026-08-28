@@ -1,11 +1,10 @@
-import fs from 'node:fs';
 import path from 'node:path';
 
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
 import { collectReachableModuleSet } from '../test-utils/collectReachableModuleSet.ts';
-import { listExportTargets } from '../test-utils/listExportTargets.ts';
+import { listExportedTierDirectories } from '../test-utils/listExportedTierDirectories.ts';
 import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
 
 const SCAFFOLDING_DIRS = new Set(['__fixtures__', '__mocks__', '__tests__', 'test-utils']);
@@ -53,20 +52,6 @@ function auditTierModules(monorepoRoot: string): { moduleCount: number; unreacha
   }
 
   return { moduleCount, unreachableModules: unreachableModules.toSorted((a, b) => a.localeCompare(b)) };
-}
-
-/** Lists the source directories of the maturity tiers a package's `exports` map exposes. */
-function listExportedTierDirectories(packageDirectory: string): string[] {
-  const tiers = new Set(
-    listExportTargets(packageDirectory)
-      .map(({ tier }) => tier)
-      .filter((tier) => tier !== undefined),
-  );
-
-  return [...tiers]
-    .map((tier) => path.join(packageDirectory, 'src', tier))
-    .filter((tierDirectory) => fs.existsSync(tierDirectory))
-    .toSorted((a, b) => a.localeCompare(b));
 }
 
 // endregion | Helpers
