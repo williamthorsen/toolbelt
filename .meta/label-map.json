@@ -26,6 +26,7 @@
     "enums": "scope:enums",
     "errors": "scope:errors",
     "filesystem": "scope:filesystem",
+    "git": "scope:git",
     "guards": "scope:guards",
     "hof": "scope:hof",
     "nodejs": "scope:nodejs",

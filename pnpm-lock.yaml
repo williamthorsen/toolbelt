@@ -135,6 +135,8 @@ importers:
         specifier: workspace:*
         version: link:../errors
 
+  packages/git: {}
+
   packages/guards: {}
 
   packages/hof:

@@ -16,6 +16,7 @@ const config = defineConfig({
       'scope:enums': { color: '00ff96' },
       'scope:errors': { color: '00ff96' },
       'scope:filesystem': { color: '00ff96' },
+      'scope:git': { color: '00ff96' },
       'scope:guards': { color: '00ff96' },
       'scope:hof': { color: '00ff96' },
       'scope:numbers': { color: '00ff96' },
