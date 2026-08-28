@@ -144,7 +144,7 @@ importers:
   packages/guards: {}
 
   packages/hof:
-    dependencies:
+    devDependencies:
       '@williamthorsen/toolbelt.arrays':
         specifier: workspace:*
         version: link:../arrays
