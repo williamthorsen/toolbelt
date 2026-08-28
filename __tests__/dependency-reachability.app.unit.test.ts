@@ -40,7 +40,12 @@ function auditDependencyReachability(monorepoRoot: string): {
   let dependencyCount = 0;
 
   for (const packageDirectory of getWorkspacePackageDirs(monorepoRoot)) {
-    const dependencies = listDependencies(packageDirectory);
+    const manifest = readManifest(packageDirectory);
+    // A private workspace installs for nobody, and it is the one shape that exports source rather than a tier
+    // index, which the walk below reaches through no entry point.
+    if (manifest['private'] === true) continue;
+
+    const dependencies = listDependencies(manifest);
     if (dependencies.length === 0) continue;
 
     const workspace = path.relative(monorepoRoot, packageDirectory);
@@ -85,9 +90,9 @@ function isImported(dependency: string, specifiers: ReadonlySet<string>): boolea
   return specifiers.values().some((specifier) => specifier === dependency || specifier.startsWith(`${dependency}/`));
 }
 
-/** Lists the runtime dependencies a workspace declares. */
-function listDependencies(packageDirectory: string): string[] {
-  const dependencies = readManifest(packageDirectory)['dependencies'];
+/** Lists the runtime dependencies a manifest declares. */
+function listDependencies(manifest: Record<string, unknown>): string[] {
+  const dependencies = manifest['dependencies'];
 
   return isRecord(dependencies) ? Object.keys(dependencies).toSorted((a, b) => a.localeCompare(b)) : [];
 }
