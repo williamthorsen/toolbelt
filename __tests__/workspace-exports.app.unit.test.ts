@@ -4,10 +4,8 @@ import path from 'node:path';
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
-import { listStringLeaves } from '../test-utils/listStringLeaves.ts';
-import { readManifest } from '../test-utils/readManifest.ts';
+import { listExportTargets } from '../test-utils/listExportTargets.ts';
 
-const EXPORT_TARGET_PATTERN = /^\.\/dist\/esm\/(?<tier>[^/]+)\/index\.js$/;
 const TIER_DIRECTORY_PATTERN = /^\d-[a-z]+$/;
 // The strawman tier is unexported by design, so it is the one tier that needs no export subpath.
 const UNEXPORTED_TIER = '0-strawman';
@@ -54,8 +52,7 @@ function auditWorkspaceExports(monorepoRoot: string): {
     const workspace = path.relative(monorepoRoot, packageDirectory);
     const exportedTiers = new Set<string>();
 
-    for (const target of readExportTargets(packageDirectory)) {
-      const tier = EXPORT_TARGET_PATTERN.exec(target)?.groups?.['tier'];
+    for (const { target, tier } of listExportTargets(packageDirectory)) {
       if (tier === undefined) {
         danglingTargets.push(`${workspace}: ${target} is not a maturity-tier entry point`);
         continue;
@@ -99,13 +96,6 @@ function listTierDirectories(packageDirectory: string): string[] {
     .filter((entry) => entry.isDirectory() && TIER_DIRECTORY_PATTERN.test(entry.name))
     .map((entry) => entry.name)
     .toSorted((a, b) => a.localeCompare(b));
-}
-
-/**
- * Reads the targets declared by a package's `exports` map.
- */
-function readExportTargets(packageDirectory: string): string[] {
-  return listStringLeaves(readManifest(packageDirectory)['exports']);
 }
 
 // endregion | Helpers
