@@ -9,7 +9,7 @@ export {
   type KeyPlaceholderPartition,
 } from './Interpolator.ts';
 export { isPatternMatch } from './isPatternMatch.ts';
-export { joinStrings } from './joinStrings.ts';
+export { joinTruthy } from './joinTruthy.ts';
 export { obfuscate } from './obfuscate.ts';
 export { slugify } from './slugify.ts';
 export { toLowerCase, toUpperCase, trim, trimEnd, trimStart } from './string-prototype-wrappers.ts';
