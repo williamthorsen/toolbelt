@@ -1,17 +1,18 @@
 import { isRecord, isRecordOrArray } from '../4-release/is-object.ts';
 
 /**
- * Retrieves a nested value from an object using dot and bracket notation.
- * Only own properties are traversed; inherited members are treated as missing.
+ * Returns the value a dot-and-bracket path reaches, throwing where any segment is missing or the structure
+ * along the way is neither a record nor an array. Only own properties are traversed; inherited members are
+ * treated as missing.
  *
- * Examples:
- *   path: 'foo.bar[0].baz'
- *   path: 'users[3].address.street'
+ * ```ts
+ * getValueAtPathOrThrow(data, 'foo.bar[0].baz');
+ * getValueAtPathOrThrow(data, 'users[3].address.street');
+ * ```
  *
- * @param obj - The root object.
- * @param path - Path string supporting dot and bracket notation.
- * @returns The value at the specified path.
- * @throws If any segment is missing or the structure is invalid.
+ * @category Object
+ * @experimental
+ * @stage draft
  */
 export function getValueAtPathOrThrow(obj: unknown, path: string): unknown {
   if (!isRecordOrArray(obj)) {

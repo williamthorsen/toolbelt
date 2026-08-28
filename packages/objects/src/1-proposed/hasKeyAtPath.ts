@@ -1,15 +1,12 @@
 import { isRecordOrArray } from '../4-release/is-object.ts';
 
 /**
- * Checks whether a nested key exists within an object.
+ * Returns true if the keys name a path of own properties reaching an existing key. An empty path, or a missing
+ * segment anywhere along it, returns false rather than throwing.
  *
- * Traverses the object using all but the last key in the `keys` array,
- * and then checks if the final key exists in the resulting object.
- * If any part of the path is missing, returns false without throwing.
- *
- * @param {object} obj - The root object to search in.
- * @param {string[]} keys - Array of keys representing the path to check.
- * @returns {boolean} True if the nested key exists, false otherwise.
+ * @category Object
+ * @experimental
+ * @stage proposed
  */
 export function hasKeyAtPath(obj: unknown, keys: readonly string[]): boolean {
   const [head, ...tail] = keys;
