@@ -5,6 +5,7 @@ import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/w
 import { describe, expect, it } from 'vitest';
 
 import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
+import { resolveSpecifier } from '../test-utils/resolveSpecifier.ts';
 
 const EXCLUDED_DIRS = new Set(['dist', 'node_modules']);
 const RELATIVE_SPECIFIER_PATTERN = /from\s+'(\.[^']*)'/g;
@@ -94,19 +95,6 @@ function isSupportModule(filePath: string): boolean {
   const supportSegment = segments[srcIndex + 1];
 
   return supportSegment !== undefined && SUPPORT_DIRS.has(supportSegment);
-}
-
-/**
- * Resolves a relative specifier to the file it names. The repo writes the `.ts` extension explicitly,
- * but the extensionless forms are tried too, because an unresolved specifier drops a real importer and
- * would report the module it names as unused.
- */
-function resolveSpecifier(importerDir: string, specifier: string): string | undefined {
-  const base = path.resolve(importerDir, specifier);
-
-  return [base, `${base}.ts`, path.join(base, 'index.ts')].find(
-    (candidate) => fs.existsSync(candidate) && fs.statSync(candidate).isFile(),
-  );
 }
 
 // endregion | Helpers
