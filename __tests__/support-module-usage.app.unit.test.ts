@@ -4,13 +4,12 @@ import path from 'node:path';
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
+import { RELATIVE_SPECIFIER_PATTERN } from '../test-utils/collectReachableModuleSet.ts';
 import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
+import { NON_SOURCE_DIRS } from '../test-utils/non-source-dirs.ts';
 import { resolveSpecifier } from '../test-utils/resolveSpecifier.ts';
+import { SCAFFOLDING_DIRS } from '../test-utils/scaffolding-dirs.ts';
 
-const EXCLUDED_DIRS = new Set(['dist', 'node_modules']);
-const RELATIVE_SPECIFIER_PATTERN = /from\s+'(\.[^']*)'/g;
-// The directories `nmr build` drops as entry points, which is what keeps a module inside one out of `dist`.
-const SCAFFOLDING_DIRS = new Set(['__fixtures__', '__mocks__', '__tests__', 'test-utils']);
 // The non-tier directories that ship: every module in one is its own build entry point.
 const SUPPORT_DIRS = new Set(['internal', 'types']);
 
@@ -33,7 +32,7 @@ describe('Support modules', () => {
  */
 function auditSupportModules(monorepoRoot: string): { moduleCount: number; unusedModules: string[] } {
   const sourceFiles = getWorkspacePackageDirs(monorepoRoot).flatMap((packageDirectory) => [
-    ...listSourceFiles(path.join(packageDirectory, 'src'), EXCLUDED_DIRS),
+    ...listSourceFiles(path.join(packageDirectory, 'src'), NON_SOURCE_DIRS),
   ]);
   const importersByModule = indexImporters(sourceFiles);
 

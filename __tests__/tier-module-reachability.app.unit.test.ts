@@ -6,8 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { collectReachableModuleSet } from '../test-utils/collectReachableModuleSet.ts';
 import { listExportedTierDirectories } from '../test-utils/listExportedTierDirectories.ts';
 import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
-
-const SCAFFOLDING_DIRS = new Set(['__fixtures__', '__mocks__', '__tests__', 'test-utils']);
+import { SCAFFOLDING_DIRS } from '../test-utils/scaffolding-dirs.ts';
 
 describe('Maturity-tier modules', () => {
   it('every module in an exported tier is reachable from a tier index', () => {
