@@ -126,7 +126,7 @@ var ADOPTED_EXPORTS = [
 ];
 
 // src/readiness/listCapitalizeLines.ts
-var CAPITALIZE_INLINE = /(?<![\w$.])(?<subject>[\w$]+(?:\.[\w$]+)*)\s*(?:\.charAt\(\s*0\s*\)|\[\s*0\s*\])\s*\.toUpperCase\(\)\s*(?:\+|\}\$\{)\s*\k<subject>\s*\.(?:slice|substring)\(\s*1\s*\)(?!\s*\.to(?:Low|Upp)erCase\b)/g;
+var CAPITALIZE_INLINE = /(?<![\w$.])(?<subject>[\w$]+(?:\.[\w$]+)*)\s*(?:\.charAt\(\s*0\s*\)|\[\s*0\s*\])\s*\.toUpperCase\(\)\s*(?:\+|\}\$\{)\s*\k<subject>\s*\.(?:slice|substring)\(\s*1\s*\)(?!\s*\.)/g;
 function listCapitalizeLines(source) {
   return source.matchAll(CAPITALIZE_INLINE).map((match) => getLineAtOffset(source, match.index)).toArray();
 }

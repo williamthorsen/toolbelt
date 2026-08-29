@@ -6,10 +6,11 @@ import { getLineAtOffset } from '@williamthorsen/toolbelt.adoption';
 //
 // The backreference is what makes the match a capitalize rather than two unrelated halves, and the leading
 // lookbehind keeps the subject from starting mid-identifier, which would let `sX...+ X.slice(1)` match on `X`.
-// The trailing lookahead declines a re-cased tail: `X.slice(1).toLowerCase()` is a different transformation,
-// and this package publishes nothing that performs it.
+// The trailing lookahead declines a tail the source goes on to transform: the chained call reaches the tail
+// alone, which `capitalize` does not reproduce, whether it re-cases the tail or does anything else to it. A
+// call on the whole expression sits outside the match and is claimed.
 const CAPITALIZE_INLINE =
-  /(?<![\w$.])(?<subject>[\w$]+(?:\.[\w$]+)*)\s*(?:\.charAt\(\s*0\s*\)|\[\s*0\s*\])\s*\.toUpperCase\(\)\s*(?:\+|\}\$\{)\s*\k<subject>\s*\.(?:slice|substring)\(\s*1\s*\)(?!\s*\.to(?:Low|Upp)erCase\b)/g;
+  /(?<![\w$.])(?<subject>[\w$]+(?:\.[\w$]+)*)\s*(?:\.charAt\(\s*0\s*\)|\[\s*0\s*\])\s*\.toUpperCase\(\)\s*(?:\+|\}\$\{)\s*\k<subject>\s*\.(?:slice|substring)\(\s*1\s*\)(?!\s*\.)/g;
 
 /**
  * Lists the line of every hand-rolled capitalization in a source file.

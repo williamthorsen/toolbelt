@@ -11,9 +11,10 @@ const KITS_DIR = fileURLToPath(new URL('../../../.readyup/kits', import.meta.url
 const READINESS_DIR = fileURLToPath(new URL('..', import.meta.url));
 
 describe(listStringIdioms, () => {
-  // Both checks spell their idiom out in their fix text, and would report themselves as sites before blanking,
-  // in the source and again in the bundle. readyup drops the compiled bundle from its own sweep, and nothing
-  // in CI runs `rdy run --packages`, so nothing else would notice.
+  // Both fix texts describe their idiom without writing it out, which is what keeps the kit off its own report:
+  // a spelled-out idiom would be a site in the source and again in the bundle. readyup drops the compiled
+  // bundle from its own sweep, and nothing in CI runs `rdy run --packages`, so this suite is what fails on an
+  // edit that spells one out.
   it('finds nothing in the sources describing what it looks for', () => {
     const findings = listSweptFiles().flatMap((file) =>
       listStringIdioms(fs.readFileSync(file, 'utf8')).map((site) => `${path.basename(file)}:${site.line}`),

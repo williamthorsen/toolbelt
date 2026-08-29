@@ -37,6 +37,13 @@ describe(listCapitalizeLines, () => {
     expect(listCapitalizeLines(source)).toStrictEqual([1, 2]);
   });
 
+  // The trailing call reaches the whole expression, which is what `capitalize` returns.
+  it('claims a capitalization the source transforms as a whole', () => {
+    const source = 'const label = (word.charAt(0).toUpperCase() + word.slice(1)).trim();\n';
+
+    expect(listCapitalizeLines(source)).toStrictEqual([1]);
+  });
+
   it('declines halves that name different subjects', () => {
     expect(listCapitalizeLines('const label = first.charAt(0).toUpperCase() + second.slice(1);\n')).toStrictEqual([]);
   });
@@ -50,6 +57,13 @@ describe(listCapitalizeLines, () => {
   // transformation, and this package publishes nothing that performs it.
   it('declines a tail the source re-cases', () => {
     const source = 'const t = (text) => text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();\n';
+
+    expect(listCapitalizeLines(source)).toStrictEqual([]);
+  });
+
+  // The chained call reaches the tail alone, so `capitalize` is not the substitution the fix text promises.
+  it('declines a tail the source goes on to transform', () => {
+    const source = "const label = word.charAt(0).toUpperCase() + word.slice(1).replace(/_/g, ' ');\n";
 
     expect(listCapitalizeLines(source)).toStrictEqual([]);
   });
