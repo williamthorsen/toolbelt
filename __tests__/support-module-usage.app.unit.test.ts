@@ -4,12 +4,12 @@ import path from 'node:path';
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
+import { RELATIVE_SPECIFIER_PATTERN } from '../test-utils/collectReachableModuleSet.ts';
 import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
+import { NON_SOURCE_DIRS } from '../test-utils/non-source-dirs.ts';
+import { resolveSpecifier } from '../test-utils/resolveSpecifier.ts';
+import { isScaffolding } from '../test-utils/scaffolding-dirs.ts';
 
-const EXCLUDED_DIRS = new Set(['dist', 'node_modules']);
-const RELATIVE_SPECIFIER_PATTERN = /from\s+'(\.[^']*)'/g;
-// The directories `nmr build` drops as entry points, which is what keeps a module inside one out of `dist`.
-const SCAFFOLDING_DIRS = new Set(['__fixtures__', '__mocks__', '__tests__', 'test-utils']);
 // The non-tier directories that ship: every module in one is its own build entry point.
 const SUPPORT_DIRS = new Set(['internal', 'types']);
 
@@ -32,7 +32,7 @@ describe('Support modules', () => {
  */
 function auditSupportModules(monorepoRoot: string): { moduleCount: number; unusedModules: string[] } {
   const sourceFiles = getWorkspacePackageDirs(monorepoRoot).flatMap((packageDirectory) => [
-    ...listSourceFiles(path.join(packageDirectory, 'src'), EXCLUDED_DIRS),
+    ...listSourceFiles(path.join(packageDirectory, 'src'), NON_SOURCE_DIRS),
   ]);
   const importersByModule = indexImporters(sourceFiles);
 
@@ -77,13 +77,6 @@ function indexImporters(sourceFiles: string[]): Map<string, string[]> {
 }
 
 /**
- * Reports whether a path passes through a directory holding test scaffolding.
- */
-function isScaffolding(filePath: string): boolean {
-  return filePath.split(path.sep).some((segment) => SCAFFOLDING_DIRS.has(segment));
-}
-
-/**
  * Reports whether a file sits under a package's non-tier support directory.
  */
 function isSupportModule(filePath: string): boolean {
@@ -94,19 +87,6 @@ function isSupportModule(filePath: string): boolean {
   const supportSegment = segments[srcIndex + 1];
 
   return supportSegment !== undefined && SUPPORT_DIRS.has(supportSegment);
-}
-
-/**
- * Resolves a relative specifier to the file it names. The repo writes the `.ts` extension explicitly,
- * but the extensionless forms are tried too, because an unresolved specifier drops a real importer and
- * would report the module it names as unused.
- */
-function resolveSpecifier(importerDir: string, specifier: string): string | undefined {
-  const base = path.resolve(importerDir, specifier);
-
-  return [base, `${base}.ts`, path.join(base, 'index.ts')].find(
-    (candidate) => fs.existsSync(candidate) && fs.statSync(candidate).isFile(),
-  );
 }
 
 // endregion | Helpers
