@@ -8,7 +8,7 @@ import { RELATIVE_SPECIFIER_PATTERN } from '../test-utils/collectReachableModule
 import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
 import { NON_SOURCE_DIRS } from '../test-utils/non-source-dirs.ts';
 import { resolveSpecifier } from '../test-utils/resolveSpecifier.ts';
-import { SCAFFOLDING_DIRS } from '../test-utils/scaffolding-dirs.ts';
+import { isScaffolding } from '../test-utils/scaffolding-dirs.ts';
 
 const PACKAGE_CONFIG_PATH = path.join('.config', 'nmr.config.ts');
 const STRAWMAN_DIR = '0-strawman';
@@ -92,11 +92,6 @@ function auditStrawmanImporters(monorepoRoot: string): { moduleCount: number; st
   }
 
   return { moduleCount, strawmanImporters: strawmanImporters.toSorted((a, b) => a.localeCompare(b)) };
-}
-
-/** Reports whether a path passes through a directory holding test scaffolding. */
-function isScaffolding(filePath: string): boolean {
-  return filePath.split(path.sep).some((segment) => SCAFFOLDING_DIRS.has(segment));
 }
 
 /** Reports whether a path passes through a strawman tier. */
