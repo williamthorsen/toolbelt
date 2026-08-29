@@ -59,7 +59,9 @@ describe(getValueAtPathOrThrow, () => {
 
   it('throws when an array index is out of bounds', () => {
     const obj = { list: [1, 2, 3] };
-    expect(() => getValueAtPathOrThrow(obj, 'list[5]')).toThrow('Array index out of bounds: "5" in path "list[5]"');
+    expect(() => getValueAtPathOrThrow(obj, 'list[5]')).toThrow(
+      new RangeError('Array index out of bounds: "5" in path "list[5]"'),
+    );
   });
 
   it('throws when given a non-integer array index', () => {
@@ -79,11 +81,11 @@ describe(getValueAtPathOrThrow, () => {
   it('throws when the path hits a primitive unexpectedly', () => {
     const obj = { a: 42 };
     expect(() => getValueAtPathOrThrow(obj, 'a.b')).toThrow(
-      'Unexpected non-object/non-array at segment "b" in path "a.b"',
+      new TypeError('Unexpected non-object/non-array at segment "b" in path "a.b"'),
     );
   });
 
   it('throws if the root is not an object', () => {
-    expect(() => getValueAtPathOrThrow(null, 'a')).toThrow('Expected an object as root value.');
+    expect(() => getValueAtPathOrThrow(null, 'a')).toThrow(new TypeError('Expected an object as root value.'));
   });
 });
