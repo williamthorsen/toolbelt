@@ -29,7 +29,8 @@ export interface AdoptionCheck<Kind extends string> {
 }
 
 export interface AdoptionKitSpec<Kind extends string> {
-  checks: ReadonlyArray<AdoptionCheck<Kind>>;
+  /** `NoInfer` fixes `Kind` to what `detect` produces, so each check's `kinds` is checked against it. */
+  checks: ReadonlyArray<AdoptionCheck<NoInfer<Kind>>>;
   description: string;
   /**
    * Lists a source's sites. Blank the text with `blankNonCode` before the anchor scan, or an idiom written in a
