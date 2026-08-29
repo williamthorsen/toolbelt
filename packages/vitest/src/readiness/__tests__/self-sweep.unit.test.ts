@@ -29,6 +29,7 @@ describe(listSites, () => {
     expect(names).toContain('default.js');
     expect(names).toContain('classifyConsoleMock.unit.test.ts');
     expect(names).toContain('listConsoleSites.unit.test.ts');
+    expect(names).toContain('listDisposalHooks.unit.test.ts');
     expect(names).toContain('listExitMocks.unit.test.ts');
   });
 });

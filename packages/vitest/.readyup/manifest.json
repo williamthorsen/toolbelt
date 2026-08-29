@@ -49,7 +49,7 @@
           "path": "../../adoption/src/portable/readBalancedGroup.ts"
         },
         {
-          "hash": "961b6e3d",
+          "hash": "2ccb108f",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -74,12 +74,17 @@
           "path": "../src/readiness/listConsoleSites.ts"
         },
         {
+          "hash": "36586bf7",
+          "kind": "module",
+          "path": "../src/readiness/listDisposalHooks.ts"
+        },
+        {
           "hash": "f09328b4",
           "kind": "module",
           "path": "../src/readiness/listExitMocks.ts"
         },
         {
-          "hash": "0d7e51cc",
+          "hash": "1855d644",
           "kind": "module",
           "path": "../src/readiness/listSites.ts"
         }
@@ -88,8 +93,8 @@
       "path": "kits/default.js",
       "readyupVersion": "0.34.0",
       "source": "kits/default.ts",
-      "sourceHash": "961b6e3d",
-      "targetHash": "f156ec1b"
+      "sourceHash": "2ccb108f",
+      "targetHash": "620a15e9"
     }
   ]
 }
