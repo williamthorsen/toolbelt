@@ -41,11 +41,13 @@
     }
   },
   "files": [
+    ".readyup/kits/*.js",
+    ".readyup/manifest.json",
     "dist/*",
     "CHANGELOG.md"
   ],
   "scripts": {
-    "prepublishOnly": "nmr build"
+    "prepublishOnly": "rdy compile && nmr build"
   },
   "dependencies": {
     "@williamthorsen/toolbelt.arrays": "workspace:*",
@@ -53,7 +55,11 @@
     "@williamthorsen/toolbelt.sets": "workspace:*"
   },
   "devDependencies": {
-    "@sindresorhus/is": "catalog:"
+    "@sindresorhus/is": "catalog:",
+    "@williamthorsen/toolbelt.adoption": "workspace:*",
+    "@williamthorsen/toolbelt.testing": "workspace:*",
+    "esbuild": "catalog:",
+    "readyup": "catalog:"
   },
   "engines": {
     "node": ">=24.0.0"

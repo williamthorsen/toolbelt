@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "kits": [
+    {
+      "checklists": [
+        "adoption"
+      ],
+      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.strings",
+      "esbuildVersion": "0.28.2",
+      "inputs": [
+        {
+          "hash": "9cbd3541",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/path-predicates.ts"
+        },
+        {
+          "hash": "c7d90b66",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/site-handoffs.ts"
+        },
+        {
+          "hash": "3a124dad",
+          "kind": "module",
+          "path": "../../adoption/src/kits/defineAdoptionKit.ts"
+        },
+        {
+          "hash": "6e5a8dda",
+          "kind": "module",
+          "path": "../../adoption/src/mod.ts"
+        },
+        {
+          "hash": "e8d0444d",
+          "kind": "module",
+          "path": "../../adoption/src/portable/condenseWhitespace.ts"
+        },
+        {
+          "hash": "b6d99ce7",
+          "kind": "module",
+          "path": "../../adoption/src/portable/listFunctionBodies.ts"
+        },
+        {
+          "hash": "4d2d8e11",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readAnchoredWindow.ts"
+        },
+        {
+          "hash": "498e3ca4",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readBalancedGroup.ts"
+        },
+        {
+          "hash": "c2b0a727",
+          "kind": "module",
+          "path": "kits/default.ts"
+        },
+        {
+          "hash": "4b058b7d",
+          "kind": "module",
+          "path": "../src/readiness/adoptedExports.ts"
+        },
+        {
+          "hash": "517a7fe1",
+          "kind": "module",
+          "path": "../src/readiness/listCapitalizeLines.ts"
+        },
+        {
+          "hash": "18799728",
+          "kind": "module",
+          "path": "../src/readiness/listPluralizeLines.ts"
+        },
+        {
+          "hash": "8b78d6cd",
+          "kind": "module",
+          "path": "../src/readiness/listStringIdioms.ts"
+        }
+      ],
+      "name": "default",
+      "path": "kits/default.js",
+      "readyupVersion": "0.34.0",
+      "source": "kits/default.ts",
+      "sourceHash": "c2b0a727",
+      "targetHash": "7940c3da"
+    }
+  ]
+}
