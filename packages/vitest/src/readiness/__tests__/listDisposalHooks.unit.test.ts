@@ -49,6 +49,12 @@ describe(listDisposalHooks, () => {
     expect(listDisposalHooks(source)).toStrictEqual([{ kind: 'disposal-hook', line: 1 }]);
   });
 
+  it('reports a disposal nested in a function inside the callback', () => {
+    const source = 'onTestFinished(() => {\n  queueMicrotask(() => tree[Symbol.dispose]());\n});';
+
+    expect(listDisposalHooks(source)).toStrictEqual([{ kind: 'disposal-hook', line: 1 }]);
+  });
+
   it('reports every hook in a file', () => {
     const source = [
       'onTestFinished(() => tree[Symbol.dispose]());',

@@ -336,7 +336,7 @@ var default_default = defineAdoptionKit({
       id: "no-hand-rolled-test-disposal",
       kinds: ["disposal-hook"],
       severity: "recommend",
-      fix: `Wrap each resource named above in disposeOnTestFinished from ${PACKAGE_NAME}/candidate, which registers the disposal and returns the resource at the type it was given. Moving registration to the construction site retires the hook and the eslint-disable comment the hand-written disposal carries, since unicorn's Symbol allowlist omits Symbol.dispose. Reference: ${README_URL}`
+      fix: `Wrap each resource named above in disposeOnTestFinished from ${PACKAGE_NAME}/candidate, which registers the disposal and returns the resource at the type it was given. Moving registration to the construction site retires the hook, and with it the unicorn/no-nonstandard-builtin-properties disable comment the hand-written disposal carries where that rule is enabled, since unicorn's Symbol allowlist omits Symbol.dispose. Reference: ${README_URL}`
     }
   ]
 });
