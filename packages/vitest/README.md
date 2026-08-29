@@ -329,11 +329,11 @@ The package ships a ReadyUp kit, so a project that installs it can ask how far i
 rdy run --packages
 ```
 
-The kit reads the project's tracked test files and reports the two idioms this package publishes a replacement for: a `process.exit` mock, and a console method captured or silenced by hand. Each site is named by what it is doing and counted against the calls the project already makes into this package.
+The kit reads the project's tracked test files and reports the three idioms this package publishes a replacement for: a `process.exit` mock, a console method captured or silenced by hand, and a disposal registered by hand on test finish. Each site is named by what it is doing and counted against the calls the project already makes into this package.
 
 Severity carries the judgment. A defect reports at `warn`, a working hand-roll at `recommend`. Nothing reports at `error`, because none of it breaks the package.
 
-Each check prints one fraction, and it measures the kit rather than the check: calls the project already makes into this package, over those calls plus every site the kit found of either idiom, less the sites a pragma silences for that check. A project holding twelve console sites and no exit mocks therefore reads `[0 of 12]` against the exit checks too.
+Each check prints one fraction, and it measures the kit rather than the check: calls the project already makes into this package, over those calls plus every site the kit found of any of the idioms, less the sites a pragma silences for that check. A project holding twelve console sites and no exit mocks therefore reads `[0 of 12]` against the exit checks too.
 
 | Check id                         | Reports                                                                 | Severity    |
 | -------------------------------- | ----------------------------------------------------------------------- | ----------- |
@@ -344,6 +344,7 @@ Each check prints one fraction, and it measures the kit rather than the check: c
 | `no-hand-rolled-console-capture` | a console capture keeping every argument, or one the kit could not read | `recommend` |
 | `no-hand-rolled-console-silence` | a console method silenced with a no-op mock                             | `recommend` |
 | `no-console-calls-read`          | a read of a console spy's `mock.calls` or `mock.lastCall`               | `recommend` |
+| `no-hand-rolled-test-disposal`   | an `onTestFinished` callback that disposes a value                      | `recommend` |
 
 ### The two defects
 
@@ -353,7 +354,7 @@ A console capture whose parameter list names its arguments drops every argument 
 
 ### What the kit reads
 
-Only test files are read, which inverts the exemption `@williamthorsen/toolbelt.errors` makes. That kit exempts tests because a test constructs error shapes deliberately; a mock of either idiom exists nowhere else.
+Only test files are read, which inverts the exemption `@williamthorsen/toolbelt.errors` makes. That kit exempts tests because a test constructs error shapes deliberately; each of these idioms exists nowhere else.
 
 Only the five methods [`silenceConsole`](#silenceconsole) covers are anchored, and only through `vi.spyOn`. A spy on `console.table` gets no advice, because the package has none to give, and an assignment such as `console.error = vi.fn()` is not read, because the same anchor matches a restore as readily as a mock.
 
@@ -362,6 +363,10 @@ A read of a spy's recorded calls reports once its receiver resolves to a console
 A mock whose implementation is a bare reference reports as unclassified rather than as a defect. The referenced function may well throw, or keep every argument, and naming it a defect without reading its body would misreport it.
 
 A mock throwing a sentinel class the same file declares reports once, naming the class, since one substitution retires the class and the mock together.
+
+A disposal reports from inside an `onTestFinished` callback alone, and only where the callback calls `[Symbol.dispose]()` itself. Both the imported hook and the one taken off the test context are anchors; `disposeOnTestFinished` is not, so an adopting project's own calls report nothing. A callback disposing alongside other cleanup reports too, since the disposal moves to the construction site whatever else the hook does.
+
+Everything else that anchor covers is silent rather than unclassified. The other two anchors are their idiom, so a mock the kit cannot read is still a site; `onTestFinished` only hosts one, and most calls to it clean up by other means. Counting those would put every cleanup hook in the project into the fraction all the checks share. A callback given as a bare reference and an unbound `resource[Symbol.dispose]` are declined on that footing, and an `AsyncDisposable` disposal has no advice to give besides: [`disposeOnTestFinished`](#disposeontestfinished) takes a sync `Disposable` alone.
 
 ### Silencing a reviewed site
 

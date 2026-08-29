@@ -26,7 +26,7 @@ export default defineAdoptionKit({
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: 'the project holds no test files',
   packageName: PACKAGE_NAME,
-  // The selection inverts the one `toolbelt.errors` makes, which exempts tests. A mock of either idiom exists
+  // The selection inverts the one `toolbelt.errors` makes, which exempts tests. Each of these idioms exists
   // only in a test, so a sweep that skipped tests would report nothing and say so as a pass.
   pathFilter: isTestFile,
   checks: [
@@ -75,6 +75,13 @@ export default defineAdoptionKit({
       kinds: ['console-calls-read'],
       severity: 'recommend',
       fix: `Read each spy named above with listConsoleLines from ${PACKAGE_NAME}/candidate, which returns one line per call with every argument rendered. Reading mock.calls by hand leaves each project deciding how a multi-argument call renders, and no two decide alike.`,
+    },
+    {
+      name: 'No test registers a disposal by hand',
+      id: 'no-hand-rolled-test-disposal',
+      kinds: ['disposal-hook'],
+      severity: 'recommend',
+      fix: `Wrap each resource named above in disposeOnTestFinished from ${PACKAGE_NAME}/candidate, which registers the disposal and returns the resource at the type it was given. Moving registration to the construction site retires the hook, and with it the unicorn/no-nonstandard-builtin-properties disable comment the hand-written disposal carries where that rule is enabled, since unicorn's Symbol allowlist omits Symbol.dispose. Reference: ${README_URL}`,
     },
   ],
 });

@@ -219,6 +219,21 @@ function readLookbehind(code, offset) {
   return readAnchoredWindow(code, offset, WINDOW).before;
 }
 
+// src/readiness/listDisposalHooks.ts
+var HOOK = /\bonTestFinished\s*\(/g;
+var DISPOSAL = /\[\s*Symbol\s*\.\s*dispose\s*\]\s*\(/;
+function listDisposalHooks(source) {
+  const code = blankNonCode(source);
+  const hooks = [];
+  for (const match of code.matchAll(HOOK)) {
+    const group = readBalancedGroup(code, match.index, PARENTHESES);
+    if (group === void 0) continue;
+    if (!DISPOSAL.test(code.slice(group.start + 1, group.end - 1))) continue;
+    hooks.push({ kind: "disposal-hook", line: getLineAtOffset(code, match.index) });
+  }
+  return hooks;
+}
+
 // src/readiness/classifyExitMock.ts
 var IMPLEMENTATION2 = /^\s*\.mockImplementation(?:Once)?\(/;
 var THROWN_CLASS = /throw new (\w+)\(/;
@@ -252,7 +267,9 @@ function listExitMocks(source) {
 
 // src/readiness/listSites.ts
 function listSites(source) {
-  return [...listExitMocks(source), ...listConsoleSites(source)].toSorted((a, b) => a.line - b.line);
+  return [...listExitMocks(source), ...listConsoleSites(source), ...listDisposalHooks(source)].toSorted(
+    (a, b) => a.line - b.line
+  );
 }
 
 // .readyup/kits/default.ts
@@ -264,7 +281,7 @@ var default_default = defineAdoptionKit({
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: "the project holds no test files",
   packageName: PACKAGE_NAME,
-  // The selection inverts the one `toolbelt.errors` makes, which exempts tests. A mock of either idiom exists
+  // The selection inverts the one `toolbelt.errors` makes, which exempts tests. Each of these idioms exists
   // only in a test, so a sweep that skipped tests would report nothing and say so as a pass.
   pathFilter: isTestFile,
   checks: [
@@ -313,6 +330,13 @@ var default_default = defineAdoptionKit({
       kinds: ["console-calls-read"],
       severity: "recommend",
       fix: `Read each spy named above with listConsoleLines from ${PACKAGE_NAME}/candidate, which returns one line per call with every argument rendered. Reading mock.calls by hand leaves each project deciding how a multi-argument call renders, and no two decide alike.`
+    },
+    {
+      name: "No test registers a disposal by hand",
+      id: "no-hand-rolled-test-disposal",
+      kinds: ["disposal-hook"],
+      severity: "recommend",
+      fix: `Wrap each resource named above in disposeOnTestFinished from ${PACKAGE_NAME}/candidate, which registers the disposal and returns the resource at the type it was given. Moving registration to the construction site retires the hook, and with it the unicorn/no-nonstandard-builtin-properties disable comment the hand-written disposal carries where that rule is enabled, since unicorn's Symbol allowlist omits Symbol.dispose. Reference: ${README_URL}`
     }
   ]
 });
