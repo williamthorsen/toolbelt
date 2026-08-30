@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 7.1.0 — 2026-08-30
+
+### Features
+
+- Add a ReadyUp adoption kit to `strings` (#248)
+
+  Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.strings`. Where appropriate, the kit recommends the use of `capitalize` or `pluralize` to replace hand-rolled capitalization and pluralization code, respectively.
+
 ## 7.0.0 — 2026-08-28
 
 ### Features

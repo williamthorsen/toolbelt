@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.6.3 — 2026-08-30
+
+### Bug fixes
+
+- Reject a check declaring a kind its detector never produces (#246)
+
+  Fixes an issue where an adoption check could declare a kind its kit's detector never produces. `Kind` was inferred from `checks` and `detect` together, so a typo in a check's `kinds` widened `Kind` rather than failing.
+
 ## 0.6.2 — 2026-08-28
 
 ### Dependencies

@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.hof",
-  "version": "4.0.4",
+  "version": "4.1.0",
   "description": "TypeScript higher-order functions",
   "keywords": [
     "esm",

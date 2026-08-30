@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.6.3",
+    "date": "2026-08-30",
+    "sections": [
+      {
+        "title": "Bug fixes",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Reject a check declaring a kind its detector never produces (#246)",
+            "body": "Fixes an issue where an adoption check could declare a kind its kit's detector never produces. `Kind` was inferred from `checks` and `detect` together, so a typo in a check's `kinds` widened `Kind` rather than failing.",
+            "hash": "7a1f5a4594c0854fc29e69abc528be768b8be6a0"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.6.2",
     "date": "2026-08-28",
     "sections": [

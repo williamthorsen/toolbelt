@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.8.0 — 2026-08-30
+
+### Features
+
+- Report hand-rolled test-scoped disposal in the adoption kit (#244)
+
+  Adds `no-hand-rolled-test-disposal` to the ReadyUp kit that ships with `@williamthorsen/toolbelt.vitest`. The check flags an `onTestFinished` callback that disposes a value and recommends `disposeOnTestFinished` in its place, at `recommend` severity alongside the kit's existing `process.exit` and console checks.
+
+  Only a callback that visibly calls `[Symbol.dispose]()` is flagged.
+
+### Bug fixes
+
+- Reject a check declaring a kind its detector never produces (#246)
+
+  Fixes an issue where an adoption check could declare a kind its kit's detector never produces. `Kind` was inferred from `checks` and `detect` together, so a typo in a check's `kinds` widened `Kind` rather than failing.
+
 ## 0.7.0 — 2026-08-28
 
 ### Features

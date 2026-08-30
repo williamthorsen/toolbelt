@@ -1,5 +1,16 @@
 [
   {
+    "version": "0.8.2",
+    "date": "2026-08-30",
+    "sections": [
+      {
+        "title": "Dependency updates",
+        "audience": "dev",
+        "items": [{ "description": "Bumped `@williamthorsen/toolbelt.errors` to 0.6.3" }]
+      }
+    ]
+  },
+  {
     "version": "0.8.1",
     "date": "2026-08-28",
     "sections": [

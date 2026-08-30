@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.0 — 2026-08-30
+
+### Features
+
+- Add a tb-git CLI for branch-number and ticket-ref (#250)
+
+  Adds a `tb-git` command to `@williamthorsen/toolbelt.git`, enabling the use of `deriveBranchNumber` and `findBranchTicketRef` on the command line. `tb-git branch-number` prints the number derived from a branch name; `tb-git ticket-ref` prints the ID of the ticket encoded by the name, or the whole ref when the `--json` option is used. Both take an optional branch name and otherwise use the checked-out branch.
+
 ## 0.2.0 — 2026-08-28
 
 ### Features

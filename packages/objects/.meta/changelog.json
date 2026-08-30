@@ -1,5 +1,22 @@
 [
   {
+    "version": "4.1.0",
+    "date": "2026-08-30",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Publish identity and object-path functions and remove dead code (#242)",
+            "body": "Adds three functions to the published surface that were in an exportable maturity tier but not actually exported: `identity` from `toolbelt.hof` and `hasKeyAtPath` and `getValueAtPathOrThrow` from `toolbelt.objects`. Tests now fail if a module in an exported tier is not exported from it.\n\nAlso fixes an issue where `@williamthorsen/toolbelt.arrays`, `@williamthorsen/toolbelt.hof`, or `@williamthorsen/toolbelt.objects` bundled dead code.",
+            "hash": "0fa280a26fa08ad1896050b07f50fe508727cced"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "4.0.0",
     "date": "2026-08-21",
     "sections": [

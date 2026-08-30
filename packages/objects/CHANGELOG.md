@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.1.0 — 2026-08-30
+
+### Features
+
+- Publish identity and object-path functions and remove dead code (#242)
+
+  Adds three functions to the published surface that were in an exportable maturity tier but not actually exported: `identity` from `toolbelt.hof` and `hasKeyAtPath` and `getValueAtPathOrThrow` from `toolbelt.objects`. Tests now fail if a module in an exported tier is not exported from it.
+
+  Also fixes an issue where `@williamthorsen/toolbelt.arrays`, `@williamthorsen/toolbelt.hof`, or `@williamthorsen/toolbelt.objects` bundled dead code.
+
 ## 4.0.0 — 2026-08-21
 
 ### Features

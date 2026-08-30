@@ -1,5 +1,22 @@
 [
   {
+    "version": "7.1.0",
+    "date": "2026-08-30",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add a ReadyUp adoption kit to `strings` (#248)",
+            "body": "Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.strings`. Where appropriate, the kit recommends the use of `capitalize` or `pluralize` to replace hand-rolled capitalization and pluralization code, respectively.",
+            "hash": "4372edf4078d6469ed5c28ac9e8280bf64e8adc8"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "7.0.0",
     "date": "2026-08-28",
     "sections": [
