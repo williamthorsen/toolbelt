@@ -12,6 +12,74 @@ pnpm add @williamthorsen/toolbelt.git
 
 Requires Node.js 24 or later.
 
+## CLI
+
+The package ships a `tb-git` command exposing the same functions to a shell caller.
+
+```sh
+pnpm add --global @williamthorsen/toolbelt.git   # puts tb-git on PATH
+npx @williamthorsen/toolbelt.git branch-number   # or run it without installing
+```
+
+The short `npx` form works because the package declares exactly one bin, which npm falls back to whatever its name. Were a second bin added, the invocation would become `npx --package @williamthorsen/toolbelt.git tb-git ...`.
+
+`tb-git --help`, each subcommand's `--help`, and `tb-git --version` report the surface and the installed version.
+
+### `tb-git branch-number [<branch>] [options]`
+
+Prints [`deriveBranchNumber`](#derivebranchnumber)'s result.
+
+| Option       | Effect                                          |
+| ------------ | ----------------------------------------------- |
+| `--key K`    | The project's ticket key, matched in any casing |
+| `--max N`    | Upper bound, inclusive (default 4294967295)     |
+| `--min N`    | Lower bound, inclusive (default 0)              |
+| `--offset N` | Rotate the result within the bounds             |
+
+```sh
+tb-git branch-number 232_add-widget --min 3000 --max 3999
+# 3232
+```
+
+A negative offset takes the `=` form, `--offset=-3`: a bare `-3` reads as an option rather than as the value.
+
+### `tb-git ticket-ref [<branch>] [options]`
+
+Prints [`findBranchTicketRef`](#findbranchticketref)'s `id`.
+
+| Option    | Effect                                          |
+| --------- | ----------------------------------------------- |
+| `--json`  | Print the whole ref on one line as JSON         |
+| `--key K` | The project's ticket key, matched in any casing |
+
+```sh
+tb-git ticket-ref wt/MAC-22.1-add-widget
+# MAC-22
+
+tb-git ticket-ref wt/MAC-22.1-add-widget --json
+# {"id":"MAC-22","key":"MAC","number":22,"revisit":1}
+```
+
+### The branch argument
+
+With no `<branch>`, both subcommands resolve the checked-out branch with `git branch --show-current`, which reports a worktree's own branch. A directory that is not a repository, an absent git, and a detached HEAD each fail rather than falling back to a derived value. An empty argument is an error too, so `tb-git ticket-ref "$BRANCH"` with `BRANCH` unset fails instead of quietly using the current branch.
+
+### Exit codes
+
+| Code | Meaning                                                                 |
+| ---- | ----------------------------------------------------------------------- |
+| `0`  | A result was printed                                                    |
+| `1`  | `ticket-ref` found no ticket in the branch name; both streams are empty |
+| `2`  | Usage or validation error, with the message on stderr                   |
+
+A bound, offset, or key the library rejects exits `2` carrying the message the library raises.
+
+```sh
+if ref=$(tb-git ticket-ref); then
+  echo "on ticket $ref"
+fi
+```
+
 ## `findBranchTicketRef`
 
 ```ts
