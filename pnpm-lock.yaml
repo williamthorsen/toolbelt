@@ -13,8 +13,8 @@ catalogs:
       specifier: 0.28.2
       version: 0.28.2
     readyup:
-      specifier: 0.34.0
-      version: 0.34.0
+      specifier: 0.35.0
+      version: 0.35.0
     vitest:
       specifier: 4.1.11
       version: 4.1.11
@@ -36,8 +36,8 @@ importers:
         specifier: 1.6.27
         version: 1.6.27(@typescript-eslint/eslint-plugin@8.67.0(@typescript-eslint/parser@8.67.0(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)(vitest@4.1.11)
       '@williamthorsen/eslint-config-typescript':
-        specifier: 12.0.1
-        version: 12.0.1(@typescript-eslint/parser@8.67.0(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(@typescript-eslint/utils@8.67.0(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(readyup@0.34.0(esbuild@0.28.2))(supports-color@7.2.0)(typescript@6.0.3)
+        specifier: 12.0.2
+        version: 12.0.2(@typescript-eslint/parser@8.67.0(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(@typescript-eslint/utils@8.67.0(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(readyup@0.35.0(esbuild@0.28.2))(supports-color@7.2.0)(typescript@6.0.3)
       '@williamthorsen/nmr':
         specifier: 0.34.0
         version: 0.34.0(prettier@3.9.6)(typescript@6.0.3)(vitest@4.1.11)
@@ -45,11 +45,11 @@ importers:
         specifier: 10.4.4
         version: 10.4.4
       '@williamthorsen/strict-lint':
-        specifier: 11.1.0
-        version: 11.1.0(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))
+        specifier: 11.1.1
+        version: 11.1.1(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))
       '@williamthorsen/tsconfig':
         specifier: 0.6.1
-        version: 0.6.1(readyup@0.34.0(esbuild@0.28.2))
+        version: 0.6.1(readyup@0.35.0(esbuild@0.28.2))
       codeassembly:
         specifier: 0.10.0
         version: 0.10.0
@@ -67,7 +67,7 @@ importers:
         version: 3.9.6
       readyup:
         specifier: 'catalog:'
-        version: 0.34.0(esbuild@0.28.2)
+        version: 0.35.0(esbuild@0.28.2)
       rimraf:
         specifier: 6.1.3
         version: 6.1.3
@@ -90,7 +90,7 @@ importers:
     devDependencies:
       readyup:
         specifier: 'catalog:'
-        version: 0.34.0(esbuild@0.28.2)
+        version: 0.35.0(esbuild@0.28.2)
 
   packages/arrays:
     dependencies:
@@ -127,7 +127,7 @@ importers:
         version: 0.28.2
       readyup:
         specifier: 'catalog:'
-        version: 0.34.0(esbuild@0.28.2)
+        version: 0.35.0(esbuild@0.28.2)
 
   packages/filesystem:
     dependencies:
@@ -166,7 +166,7 @@ importers:
         version: 0.28.2
       readyup:
         specifier: 'catalog:'
-        version: 0.34.0(esbuild@0.28.2)
+        version: 0.35.0(esbuild@0.28.2)
 
   packages/objects: {}
 
@@ -217,7 +217,7 @@ importers:
         version: 0.28.2
       readyup:
         specifier: 'catalog:'
-        version: 0.34.0(esbuild@0.28.2)
+        version: 0.35.0(esbuild@0.28.2)
 
   packages/testing:
     devDependencies:
@@ -243,7 +243,7 @@ importers:
         version: 0.28.2
       readyup:
         specifier: 'catalog:'
-        version: 0.34.0(esbuild@0.28.2)
+        version: 0.35.0(esbuild@0.28.2)
       vitest:
         specifier: 'catalog:'
         version: 4.1.11(@types/node@24.13.3)(@vitest/coverage-v8@4.1.11)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
@@ -846,8 +846,8 @@ packages:
   '@vitest/utils@4.1.11':
     resolution: {integrity: sha512-zTCVGpyFsGWBhllOyKlTw/vnr6D9qxsfSDyfbyZmTyjHw5N/VuvzHpHoQjm2ZJzn4RJgx5w4r7V0er69CmLgPQ==}
 
-  '@williamthorsen/eslint-config-typescript@12.0.1':
-    resolution: {integrity: sha512-lRXGKCvHKY/X63IpotxPGZDORBSuAK9BjWA2MOcpKmy+TXKjhQh45rpJWYW1l9KkW1+9budegPzBnpzdlmmjqw==}
+  '@williamthorsen/eslint-config-typescript@12.0.2':
+    resolution: {integrity: sha512-W2NEEvEWF4F2RSPhIyqGyT2m4CqmwkxtOOzdzhasTUzZxE2ybUU5Z4SJRqp3ek8wSApr5usbE8OSfc2YJAbYGQ==}
     engines: {node: '>=24'}
     peerDependencies:
       '@typescript-eslint/utils': ^8.59.1
@@ -886,12 +886,16 @@ packages:
     engines: {node: '>=24'}
     hasBin: true
 
-  '@williamthorsen/strict-lint@11.1.0':
-    resolution: {integrity: sha512-xhokIVVTgqUQoY9fozZB6FlAIarjmkBXeI9bZ2YrN1s2XbAGyi2HhJdkw2gk2bc0sTkerL7AVI5LMEpPudGbxw==}
+  '@williamthorsen/strict-lint@11.1.1':
+    resolution: {integrity: sha512-lqI8CFpbAn+/Flemop7Y7MjUam8Vv2LXnz1qvM2RChbmOPAfnhRy8KWey9j5/jmy596FCaW9JsS7RGrBLEsmEQ==}
     engines: {node: '>=24'}
     hasBin: true
     peerDependencies:
       eslint: '>=10'
+
+  '@williamthorsen/toolbelt.arrays@6.1.0':
+    resolution: {integrity: sha512-8RmzFYqW7VFok6sdmaxDDUsmr5Hq7nQpFvgV6GYQ6z9UWmlK6yqAeYDbsKBHNkkA1t8y8StFxc/ESQGFH4hU7A==}
+    engines: {node: '>=24.0.0'}
 
   '@williamthorsen/toolbelt.errors@0.5.0':
     resolution: {integrity: sha512-bDsxxW6zAuDqNHl/ffT3c/IzVzRQREDwGdJ8xQssr7S+vNE8X9SfmNwiL1GyZoXw/njzLEmBXrI4Nb71zNmzbQ==}
@@ -901,12 +905,44 @@ packages:
     resolution: {integrity: sha512-LTbdY8C91+8Y4L5daiC5hqtoHX2e/FuGPw5omoJqY6jWD6R3BgQSvTDtlXYJB/4LUR+WCvnsN7xd913Ln0e03A==}
     engines: {node: '>=24.0.0'}
 
-  '@williamthorsen/toolbelt.filesystem@0.8.0':
-    resolution: {integrity: sha512-+elGxiWPmgF7BjsC+Cij7EU3pFMRceDhGudGd1i6T/0+7eL6Z1nBo9l0O8t2I0ZYpxcpDeJD340X05wkxLPHYA==}
+  '@williamthorsen/toolbelt.errors@0.6.2':
+    resolution: {integrity: sha512-4OAa/qh2BPVolNqu+JWoi9cyWuB6Min4vZLzxqns198sPY2xRh0bKFiif/zc3YTP5KwPJzEMH/NRfbDVKJ26ag==}
     engines: {node: '>=24.0.0'}
 
-  '@williamthorsen/toolbelt.packaging@0.5.2':
-    resolution: {integrity: sha512-IMU8WV6iMOqvJMnMJOk5z2CPtBxg5GiOZM81ySDTHTz0oQfUdCM16vwrqWyMGITnRVUs0oZXnHYQbI2JNaTrKA==}
+  '@williamthorsen/toolbelt.errors@0.6.3':
+    resolution: {integrity: sha512-yHEkzpNLExsVex1FHEyF0tWbc+/pvIY9xUxkXaceSSSeQjf2sk35gJ/46B+5mEVWjBwEv4n8m7HCALnake1bEw==}
+    engines: {node: '>=24.0.0'}
+
+  '@williamthorsen/toolbelt.filesystem@0.8.1':
+    resolution: {integrity: sha512-PA237sX4RmZbsO2JErGfN2TRp5L2N8xpYO2x74qBi3U7ZVI+CXgGm81j/d8vnYUXHar2LeccDf2abSzz2WfP1w==}
+    engines: {node: '>=24.0.0'}
+
+  '@williamthorsen/toolbelt.filesystem@0.8.2':
+    resolution: {integrity: sha512-otrFJwkngwwdAtivu9DJ0oMFlUkrmeYOssCoqsG/M92qwFBzvBEw1uGYMqP+zmc/pTxFXkABCT7el6RJmYzW+w==}
+    engines: {node: '>=24.0.0'}
+
+  '@williamthorsen/toolbelt.guards@4.0.0':
+    resolution: {integrity: sha512-FVajXqyInoZ2JrzDGEAokpOLwlUrjiWdvcyvZ0J1VqE1V/lrSPXP3jG9lf7H30EWTCc529iSeK5wUyNnOTZTng==}
+    engines: {node: '>=24.0.0'}
+
+  '@williamthorsen/toolbelt.numbers@7.0.3':
+    resolution: {integrity: sha512-Z5e0Mgc56zxnIDaCSJlskleu9LeE95ltaxqjQ7db6/9/4AXWgxZk1dEuYuaAuwlZOhWxn56H8exhTJoqtC0DJA==}
+    engines: {node: '>=24.0.0'}
+
+  '@williamthorsen/toolbelt.packaging@0.5.3':
+    resolution: {integrity: sha512-iaQ96zATWTLQg62/RqiSZhXA7A7uzedLjylhVu6L4tjgkn5GkuptktjumNG++PiBpcSChiEpZ+C0vMOCDaVLww==}
+    engines: {node: '>=24.0.0'}
+
+  '@williamthorsen/toolbelt.packaging@0.5.4':
+    resolution: {integrity: sha512-amFTtg6qt4bV5u9Bm+Hoqshhppm7yJGPRay5/FRBQImmELGNU4h3WhIrNnElk/21fCRN0DSqaupYhBJV0UcVlA==}
+    engines: {node: '>=24.0.0'}
+
+  '@williamthorsen/toolbelt.sets@3.0.11':
+    resolution: {integrity: sha512-e/Gy5S7miTF3MkybUjAUj8jK2016qJJn6w+J9DJIzQdQg6pgIG040M4FWi7MSmqq8buUQf9csvD9pokZKNYwFA==}
+    engines: {node: '>=24.0.0'}
+
+  '@williamthorsen/toolbelt.strings@7.1.0':
+    resolution: {integrity: sha512-JhfRwUfBnfADkD2T8iehmfK65V/bSmK4dctmSwzo0UPe1XAEsEHT1F8cPmnBA6v0PQtobNcrqn6Q6ULxDcwwhA==}
     engines: {node: '>=24.0.0'}
 
   '@williamthorsen/tsconfig@0.6.1':
@@ -2118,8 +2154,8 @@ packages:
     resolution: {integrity: sha512-7KA6+N9IGat52d83dvxnApAWN+MtVb1MiVuMR/cf1O4kYsJG+g/Aav0AHcHKsb6StinayfPLne0+fMX2sOzAKg==}
     engines: {node: '>=6'}
 
-  readyup@0.34.0:
-    resolution: {integrity: sha512-6O8jcGcLciERkbx1Ei1/rXqpiQK8bettnwOMsyl7LJf/F16DMfVVT2UCufxRKhbtKyj/ESFuCaBnlJ3W9ZHxFQ==}
+  readyup@0.35.0:
+    resolution: {integrity: sha512-2J69P8ut/LjJs7FYRSKi7eLcvkIkKrsMpUscGqCo6ujNwuZMrG2ikTdwWdC7LkO5R45iF6rNY6X/IGAqMfEM7w==}
     engines: {node: '>=24'}
     hasBin: true
     peerDependencies:
@@ -3072,7 +3108,7 @@ snapshots:
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.1
 
-  '@williamthorsen/eslint-config-typescript@12.0.1(@typescript-eslint/parser@8.67.0(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(@typescript-eslint/utils@8.67.0(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(readyup@0.34.0(esbuild@0.28.2))(supports-color@7.2.0)(typescript@6.0.3)':
+  '@williamthorsen/eslint-config-typescript@12.0.2(@typescript-eslint/parser@8.67.0(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(@typescript-eslint/utils@8.67.0(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(readyup@0.35.0(esbuild@0.28.2))(supports-color@7.2.0)(typescript@6.0.3)':
     dependencies:
       '@eslint-community/eslint-plugin-eslint-comments': 4.7.2(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))
       '@eslint/js': 10.0.1(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))
@@ -3092,7 +3128,7 @@ snapshots:
       typescript-eslint: 8.67.0(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)
       yaml-eslint-parser: 2.1.0
     optionalDependencies:
-      readyup: 0.34.0(esbuild@0.28.2)
+      readyup: 0.35.0(esbuild@0.28.2)
     transitivePeerDependencies:
       - '@eslint/json'
       - '@typescript-eslint/parser'
@@ -3135,27 +3171,56 @@ snapshots:
       yaml: 2.9.0
       zod: 4.4.3
 
-  '@williamthorsen/strict-lint@11.1.0(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))':
+  '@williamthorsen/strict-lint@11.1.1(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))':
     dependencies:
-      '@williamthorsen/toolbelt.filesystem': 0.8.0
-      '@williamthorsen/toolbelt.packaging': 0.5.2
+      '@williamthorsen/toolbelt.filesystem': 0.8.1
+      '@williamthorsen/toolbelt.packaging': 0.5.3
       eslint: 10.9.0(jiti@2.7.0)(supports-color@7.2.0)
+
+  '@williamthorsen/toolbelt.arrays@6.1.0':
+    dependencies:
+      '@williamthorsen/toolbelt.guards': 4.0.0
+      '@williamthorsen/toolbelt.numbers': 7.0.3
 
   '@williamthorsen/toolbelt.errors@0.5.0': {}
 
   '@williamthorsen/toolbelt.errors@0.6.1': {}
 
-  '@williamthorsen/toolbelt.filesystem@0.8.0':
-    dependencies:
-      '@williamthorsen/toolbelt.errors': 0.6.1
+  '@williamthorsen/toolbelt.errors@0.6.2': {}
 
-  '@williamthorsen/toolbelt.packaging@0.5.2':
-    dependencies:
-      '@williamthorsen/toolbelt.filesystem': 0.8.0
+  '@williamthorsen/toolbelt.errors@0.6.3': {}
 
-  '@williamthorsen/tsconfig@0.6.1(readyup@0.34.0(esbuild@0.28.2))':
+  '@williamthorsen/toolbelt.filesystem@0.8.1':
+    dependencies:
+      '@williamthorsen/toolbelt.errors': 0.6.2
+
+  '@williamthorsen/toolbelt.filesystem@0.8.2':
+    dependencies:
+      '@williamthorsen/toolbelt.errors': 0.6.3
+
+  '@williamthorsen/toolbelt.guards@4.0.0': {}
+
+  '@williamthorsen/toolbelt.numbers@7.0.3': {}
+
+  '@williamthorsen/toolbelt.packaging@0.5.3':
+    dependencies:
+      '@williamthorsen/toolbelt.filesystem': 0.8.1
+
+  '@williamthorsen/toolbelt.packaging@0.5.4':
+    dependencies:
+      '@williamthorsen/toolbelt.filesystem': 0.8.2
+
+  '@williamthorsen/toolbelt.sets@3.0.11': {}
+
+  '@williamthorsen/toolbelt.strings@7.1.0':
+    dependencies:
+      '@williamthorsen/toolbelt.arrays': 6.1.0
+      '@williamthorsen/toolbelt.numbers': 7.0.3
+      '@williamthorsen/toolbelt.sets': 3.0.11
+
+  '@williamthorsen/tsconfig@0.6.1(readyup@0.35.0(esbuild@0.28.2))':
     optionalDependencies:
-      readyup: 0.34.0(esbuild@0.28.2)
+      readyup: 0.35.0(esbuild@0.28.2)
 
   acorn-jsx@5.3.2(acorn@8.18.0):
     dependencies:
@@ -4457,10 +4522,11 @@ snapshots:
 
   readline-transform@1.0.0: {}
 
-  readyup@0.34.0(esbuild@0.28.2):
+  readyup@0.35.0(esbuild@0.28.2):
     dependencies:
-      '@williamthorsen/toolbelt.errors': 0.6.1
-      '@williamthorsen/toolbelt.packaging': 0.5.2
+      '@williamthorsen/toolbelt.errors': 0.6.3
+      '@williamthorsen/toolbelt.packaging': 0.5.4
+      '@williamthorsen/toolbelt.strings': 7.1.0
       es-module-lexer: 2.3.2
       jiti: 2.7.0
       jsonc-parser: 3.3.1
