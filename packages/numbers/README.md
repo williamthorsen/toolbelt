@@ -71,7 +71,7 @@ The kit reads the project's tracked sources and reports every hand-rolled clamp,
 
 A random integer used as an array subscript is left alone. That site belongs to `@williamthorsen/toolbelt.arrays`, whose `pickItem` covers it, and reporting it here would mean seeing one line twice under conflicting advice.
 
-Bootstrap wrappers under `bin/` are exempt: such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they compute these values deliberately.
+Bootstrap wrappers under `bin/` are exempt: such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they compute these values deliberately. A source the project declares generated or vendored in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: the sweep drops it before the kit sees it, so committed bundler output yields no advice anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
 
 A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
 
