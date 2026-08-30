@@ -5,7 +5,7 @@ import { type BranchTicketRefOptions, findBranchTicketRef } from './findBranchTi
 const MAX_UINT32 = 0xffff_ffff;
 
 /**
- * Derives a number from a branch name: the number of the ticket the name encodes, or a hash of the name
+ * Derives a number from a branch name: the number of the ticket encoded by the name, or a hash of the name
  * when it encodes none, so a branch always yields a stable number. `min` and `max` bound the result
  * inclusively, and `offset` rotates it, wrapping at the bounds. Throws a RangeError on a malformed `key`,
  * or on a bound or offset hashString rejects.

@@ -34,6 +34,17 @@ const config = defineConfig([
     },
   }),
   {
+    // A package's `bin` names its compiled path, so the rule reads every bin source as a file needing no
+    // shebang until it is told the build's source-to-output mapping.
+    files: ['packages/*/src/**/*.ts'],
+    rules: {
+      'n/hashbang': [
+        'error',
+        { convertPath: [{ include: ['src/**/*.ts'], replace: [String.raw`^src/(.+)\.ts$`, 'dist/esm/$1.js'] }] },
+      ],
+    },
+  },
+  {
     files: ['**/.github/scripts/**/*', '**/scripts/**/*'],
     rules: {
       'no-console': 'off',

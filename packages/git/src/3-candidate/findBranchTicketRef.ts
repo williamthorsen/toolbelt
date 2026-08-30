@@ -8,7 +8,7 @@ const REF_PATTERN = /^(?:(?<key>[A-Za-z][A-Za-z0-9]+)-)?(?<number>[0-9]+)(?:\.(?
 const KEY_PATTERN = /^[A-Za-z][A-Za-z0-9]+$/;
 
 /**
- * Finds the ticket ref a branch name encodes, or `undefined` when it encodes none. A ref must begin a
+ * Finds the ticket ref encoded by a branch name, or `undefined` when it encodes none. A ref must begin a
  * `/`- or `_`-delimited segment, and the leftmost segment carrying one wins. A key must be uppercase,
  * unless `key` names the project's own key, which then matches in any casing and is the only key that
  * does; a bare-numeric ref is found either way. Throws a RangeError if `key` is not a well-formed key.

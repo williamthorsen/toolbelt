@@ -140,6 +140,10 @@ importers:
       '@williamthorsen/toolbelt.strings':
         specifier: workspace:*
         version: link:../strings
+    devDependencies:
+      '@williamthorsen/toolbelt.filesystem':
+        specifier: workspace:*
+        version: link:../filesystem
 
   packages/guards: {}
 

@@ -36,6 +36,9 @@
       "import": "./dist/esm/1-proposed/index.js"
     }
   },
+  "bin": {
+    "tb-git": "./dist/esm/bin/tb-git.js"
+  },
   "files": [
     "dist/*",
     "CHANGELOG.md"
@@ -45,6 +48,9 @@
   },
   "dependencies": {
     "@williamthorsen/toolbelt.strings": "workspace:*"
+  },
+  "devDependencies": {
+    "@williamthorsen/toolbelt.filesystem": "workspace:*"
   },
   "engines": {
     "node": ">=24.0.0"
