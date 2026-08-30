@@ -237,3 +237,34 @@ hashString('user-4821', { max: 999, offset: 300 });
 The returned value is a contract. For a given input and options it is fixed, and changing the algorithm would be a breaking change, so a result may be persisted or compared across releases. The digest is FNV-1a 32-bit finalized through MurmurHash3's `fmix32`, applied to the low and high byte of each UTF-16 code unit. Encoding the text as UTF-8 first would match published FNV-1a vectors, at the cost of conflating lone surrogates, which `TextEncoder` replaces with U+FFFD.
 
 A `RangeError` names the fault when `min`, `max`, or `offset` is not a safe integer, when `min` exceeds `max`, or when the range spans more than 2^32 values, which is wider than the digest can fill.
+
+## Adoption checks
+
+The package ships a ReadyUp kit, so a project that installs it can ask how far its adoption got:
+
+```sh
+rdy run --packages
+```
+
+The kit reads the project's tracked sources and reports every hand-rolled capitalization and pluralization in them, each counted against the calls the project already makes into this package. Both report at `recommend`: they are correct code that a published utility expresses better, not defects.
+
+A capitalization is claimed where the same subject supplies both halves, as in `word.charAt(0).toUpperCase() + word.slice(1)`. The subscript, `substring`, and template-substitution variants are claimed too. A tail the source goes on to transform is not: in `word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()` the chained call reaches the tail alone, which `capitalize` does not reproduce. A call on the whole expression is claimed, since it applies to what `capitalize` returns. Taking `capitalize` from the `charAt(0)` form is an exact substitution; from the subscript form it is a correction, since indexing an empty string throws where `capitalize` returns the empty string.
+
+A pluralization is claimed where a ternary tests a value against 1 and its branches are two string literals related as singular and singular plus `s`, covering `'item' : 'items'`, `'' : 's'`, and the `!==` mirror `'s' : ''`. A pair of identifiers is not claimed, and neither is a pair of unrelated literals such as `'active' : 'inactive'`: the plural relation is the only evidence available that the compared value counts something. `count > 1 ? 's' : ''` is not claimed either, since replacing it changes what the code prints at zero. Note that `pluralize` tests `Math.abs(count)`, so a count of `-1` takes the singular where a hand-rolled equality test takes the plural.
+
+Bootstrap wrappers under `bin/` are exempt: such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they write these forms deliberately.
+
+A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
+
+```ts
+// rdy-ignore-next-line toolbelt.strings/no-hand-rolled-capitalize -- the input is never empty here
+const label = word.charAt(0).toUpperCase() + word.slice(1);
+```
+
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+
+```ts
+export default defineRdyConfig({
+  packages: ['@williamthorsen/toolbelt.strings'],
+});
+```
