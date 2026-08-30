@@ -1,4 +1,4 @@
-import { getLineAtOffset } from '@williamthorsen/toolbelt.adoption';
+import { getLineAtOffset, readLiteral } from '@williamthorsen/toolbelt.adoption';
 
 const OBJECT_TAG = 'object';
 const SUBJECT = String.raw`[\w$]+(?:\.[\w$]+)*`;
@@ -48,14 +48,6 @@ function listLinesMatching(pattern: RegExp, code: string, source: string): numbe
     .filter((match) => readLiteral(source, match.indices?.groups?.['literal']) === OBJECT_TAG)
     .map((match) => getLineAtOffset(code, match.index))
     .toArray();
-}
-
-/** Reads a matched literal's text from the unblanked source, dropping the quotes the span includes. */
-function readLiteral(source: string, span: readonly number[] | undefined): string | undefined {
-  const start = span?.[0];
-  const end = span?.[1];
-
-  return start === undefined || end === undefined ? undefined : source.slice(start + 1, end - 1);
 }
 
 // endregion | Helpers

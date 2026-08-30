@@ -112,6 +112,13 @@ function readBalancedGroup(source, from, delimiters) {
   return void 0;
 }
 
+// ../adoption/src/portable/readLiteral.ts
+function readLiteral(source, span) {
+  const start = span?.[0];
+  const end = span?.[1];
+  return start === void 0 || end === void 0 ? void 0 : source.slice(start + 1, end - 1);
+}
+
 // ../adoption/src/mod.ts
 import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
 
@@ -163,15 +170,10 @@ function listRecordLines(code, source) {
 function listLinesMatching(pattern, code, source) {
   return code.matchAll(pattern).filter((match) => readLiteral(source, match.indices?.groups?.["literal"]) === OBJECT_TAG).map((match) => getLineAtOffset(code, match.index)).toArray();
 }
-function readLiteral(source, span) {
-  const start = span?.[0];
-  const end = span?.[1];
-  return start === void 0 || end === void 0 ? void 0 : source.slice(start + 1, end - 1);
-}
 
 // src/readiness/listStringifyCompareLines.ts
 var STRINGIFY_CALL = /(?<![\w$.])JSON\s*\.\s*stringify\s*\(/g;
-var COMPARED_TO_STRINGIFY = /\s*[!=]==\s*JSON\s*\.\s*stringify\s*\(/y;
+var COMPARED_TO_STRINGIFY = /\s*[!=]==?\s*JSON\s*\.\s*stringify\s*\(/y;
 function listStringifyCompareLines(source) {
   const lines = [];
   for (const match of source.matchAll(STRINGIFY_CALL)) {

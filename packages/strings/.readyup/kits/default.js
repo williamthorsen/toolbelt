@@ -96,6 +96,13 @@ function defineAdoptionKit(spec) {
   }
 }
 
+// ../adoption/src/portable/readLiteral.ts
+function readLiteral(source, span) {
+  const start = span?.[0];
+  const end = span?.[1];
+  return start === void 0 || end === void 0 ? void 0 : source.slice(start + 1, end - 1);
+}
+
 // ../adoption/src/mod.ts
 import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
 
@@ -150,11 +157,6 @@ function listPluralizeLines(code, source) {
     lines.push(getLineAtOffset(code, match.index));
   }
   return lines;
-}
-function readLiteral(source, span) {
-  const start = span?.[0];
-  const end = span?.[1];
-  return start === void 0 || end === void 0 ? void 0 : source.slice(start + 1, end - 1);
 }
 
 // src/readiness/listStringIdioms.ts

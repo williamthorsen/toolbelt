@@ -24,7 +24,7 @@
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "6e5a8dda",
+          "hash": "52127b8f",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -47,6 +47,11 @@
           "hash": "498e3ca4",
           "kind": "module",
           "path": "../../adoption/src/portable/readBalancedGroup.ts"
+        },
+        {
+          "hash": "f306cc46",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
           "hash": "e6df5682",

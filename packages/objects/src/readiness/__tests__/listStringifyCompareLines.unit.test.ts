@@ -11,6 +11,15 @@ describe(listStringifyCompareLines, () => {
     expect(listStringifyCompareLines('const differs = JSON.stringify(a) !== JSON.stringify(b);\n')).toStrictEqual([1]);
   });
 
+  // Both operands are strings, so the loose test answers exactly what the strict one answers.
+  it('claims a loose equality test', () => {
+    expect(listStringifyCompareLines('const same = JSON.stringify(a) == JSON.stringify(b);\n')).toStrictEqual([1]);
+  });
+
+  it('claims the loose inequality mirror', () => {
+    expect(listStringifyCompareLines('const differs = JSON.stringify(a) != JSON.stringify(b);\n')).toStrictEqual([1]);
+  });
+
   // The anchor alone would stop at the first inner parenthesis, which is why the argument list is read as a
   // balanced group.
   it('claims a comparison whose arguments carry parentheses of their own', () => {

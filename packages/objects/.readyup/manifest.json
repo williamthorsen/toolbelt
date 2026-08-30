@@ -24,7 +24,7 @@
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "6e5a8dda",
+          "hash": "52127b8f",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -49,6 +49,11 @@
           "path": "../../adoption/src/portable/readBalancedGroup.ts"
         },
         {
+          "hash": "f306cc46",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readLiteral.ts"
+        },
+        {
           "hash": "2876cd92",
           "kind": "module",
           "path": "kits/default.ts"
@@ -59,7 +64,7 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "6c2ee0bb",
+          "hash": "560b6636",
           "kind": "module",
           "path": "../src/readiness/listObjectIdioms.ts"
         },
@@ -69,12 +74,12 @@
           "path": "../src/readiness/listOwnPropertyCallLines.ts"
         },
         {
-          "hash": "e75eedaa",
+          "hash": "1bb21ae7",
           "kind": "module",
           "path": "../src/readiness/listRecordLines.ts"
         },
         {
-          "hash": "6be7a106",
+          "hash": "f3337859",
           "kind": "module",
           "path": "../src/readiness/listStringifyCompareLines.ts"
         }
@@ -84,7 +89,7 @@
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
       "sourceHash": "2876cd92",
-      "targetHash": "5fa46d3f"
+      "targetHash": "f43ffb82"
     }
   ]
 }

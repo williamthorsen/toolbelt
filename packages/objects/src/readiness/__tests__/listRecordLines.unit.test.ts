@@ -71,6 +71,17 @@ describe(listRecordLines, () => {
     expect(listLines("const ok = typeof err === 'object' && err !== null && 'code' in err;\n")).toStrictEqual([]);
   });
 
+  // Each operand order is matched by a pattern of its own, so a tail edit to one leaves the other unguarded.
+  it('declines a reversed-order conjunction continuing into a property probe', () => {
+    expect(listLines("const ok = err !== null && typeof err === 'object' && 'code' in err;\n")).toStrictEqual([]);
+  });
+
+  it('declines a reversed-order conjunction continuing past the array exclusion', () => {
+    const source = "const ok = v !== null && typeof v === 'object' && !Array.isArray(v) && 'lanes' in v;\n";
+
+    expect(listLines(source)).toStrictEqual([]);
+  });
+
   it('declines a conjunction continuing past the array exclusion', () => {
     const source = "const ok = typeof v === 'object' && v !== null && !Array.isArray(v) && 'lanes' in v;\n";
 
