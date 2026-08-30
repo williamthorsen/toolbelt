@@ -24,9 +24,12 @@ export function resolveCheckedOutBranch(): string {
 
 // region | Helpers
 
-/** Builds the one error every resolution failure raises, naming the cause and the way past it. */
+/**
+ * Builds the one error every resolution failure raises, naming the cause and the way past it. The remedy
+ * starts its own line, since git's messages end without punctuation and would otherwise run into it.
+ */
 function failToResolve(cause: string): Error {
-  return new Error(`${FAILURE_PREFIX} ${cause} ${FAILURE_SUFFIX}`);
+  return new Error(`${FAILURE_PREFIX} ${cause}\n${FAILURE_SUFFIX}`);
 }
 
 // endregion | Helpers

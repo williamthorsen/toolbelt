@@ -64,7 +64,7 @@ export function runTbGit(args: string[], effects: TbGitEffects): TbGitResult {
   try {
     return dispatch(args, effects);
   } catch (error) {
-    return failure(describeError(error), args[0]);
+    return fail(describeError(error), args[0]);
   }
 }
 
@@ -96,13 +96,13 @@ function dispatch(args: string[], effects: TbGitEffects): TbGitResult {
   if (command === 'ticket-ref') return runTicketRef(rest, effects);
   if (command === '--help' || command === '-h') return succeed(ROOT_HELP);
   if (command === '--version') return succeed(effects.resolveVersion());
-  if (command === undefined) return failure('A subcommand is required.', command);
+  if (command === undefined) return fail('A subcommand is required.', command);
 
-  return failure(`Unknown ${command.startsWith('-') ? 'option' : 'subcommand'}: ${command}`, command);
+  return fail(`Unknown ${command.startsWith('-') ? 'option' : 'subcommand'}: ${command}`, command);
 }
 
 /** Reports a usage or validation failure, pointing at the help of whichever command was invoked. */
-function failure(message: string, command: string | undefined): TbGitResult {
+function fail(message: string, command: string | undefined): TbGitResult {
   const scope = command !== undefined && SUBCOMMANDS.has(command) ? `tb-git ${command}` : 'tb-git';
 
   return { exitCode: EXIT_USAGE, stderr: `${message}\nTry \`${scope} --help\`.\n`, stdout: '' };
@@ -127,9 +127,9 @@ function runBranchNumber(args: string[], effects: TbGitEffects): TbGitResult {
 
   const number = deriveBranchNumber(selectBranch(positionals, effects), {
     key: values.key,
-    max: toNumber(values.max),
-    min: toNumber(values.min),
-    offset: toNumber(values.offset),
+    max: toNumber('max', values.max),
+    min: toNumber('min', values.min),
+    offset: toNumber('offset', values.offset),
   });
 
   return succeed(String(number));
@@ -174,9 +174,15 @@ function succeed(output: string): TbGitResult {
   return { exitCode: EXIT_OK, stderr: '', stdout: `${output}\n` };
 }
 
-/** Converts a flag's text to a number, leaving validation to the library that receives it. */
-function toNumber(value: string | undefined): number | undefined {
-  return value === undefined ? undefined : Number(value);
+/**
+ * Converts a flag's text to a number, leaving validation of a present value to the library that receives it.
+ * A blank value is rejected here instead, since `Number('')` is `0` and an unset shell variable expands to it.
+ */
+function toNumber(flag: string, value: string | undefined): number | undefined {
+  if (value === undefined) return undefined;
+  if (value.trim() === '') throw new Error(`The value of --${flag} is empty.`);
+
+  return Number(value);
 }
 
 // endregion | Helpers

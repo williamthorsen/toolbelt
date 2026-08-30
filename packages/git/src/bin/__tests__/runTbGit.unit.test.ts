@@ -98,6 +98,9 @@ describe(runTbGit, () => {
       { args: ['ticket-ref', 'a', 'b'], expected: 'Expected at most one branch name. Received 2.' },
       { args: ['branch-number', '249', '--offset', '-3'], expected: "Option '--offset' argument is ambiguous." },
       { args: ['branch-number', '249', '--min', 'abc'], expected: 'Received min=NaN' },
+      { args: ['branch-number', '249', '--min', ''], expected: 'The value of --min is empty.' },
+      { args: ['branch-number', '249', '--max', ' '], expected: 'The value of --max is empty.' },
+      { args: ['branch-number', '249', '--offset', ''], expected: 'The value of --offset is empty.' },
       { args: ['ticket-ref', '249', '--key', 'a'], expected: 'Invalid key' },
     ])('exits 2 with the message on stderr: $args', ({ args, expected }) => {
       const { exitCode, stderr, stdout } = runTbGit(args, EFFECTS);
