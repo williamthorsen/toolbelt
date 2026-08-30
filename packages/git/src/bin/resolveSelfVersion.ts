@@ -20,6 +20,7 @@ export function resolveSelfVersion(): string {
 
 // region | Helpers
 
+/** Walks up from a directory to the first ancestor holding a `package.json`. */
 function findNearestManifest(startDir: string): string {
   let dir = startDir;
 
@@ -34,6 +35,7 @@ function findNearestManifest(startDir: string): string {
   }
 }
 
+/** Reports whether a parsed manifest carries a version string. */
 function isVersionedManifest(value: unknown): value is { version: string } {
   return typeof value === 'object' && value !== null && 'version' in value && typeof value.version === 'string';
 }

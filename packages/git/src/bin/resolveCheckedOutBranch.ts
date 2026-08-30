@@ -24,6 +24,7 @@ export function resolveCheckedOutBranch(): string {
 
 // region | Helpers
 
+/** Builds the one error every resolution failure raises, naming the cause and the way past it. */
 function failToResolve(cause: string): Error {
   return new Error(`${FAILURE_PREFIX} ${cause} ${FAILURE_SUFFIX}`);
 }

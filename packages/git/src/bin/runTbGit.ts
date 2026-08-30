@@ -108,6 +108,7 @@ function failure(message: string, command: string | undefined): TbGitResult {
   return { exitCode: EXIT_USAGE, stderr: `${message}\nTry \`${scope} --help\`.\n`, stdout: '' };
 }
 
+/** Parses the `branch-number` subcommand and prints the number its options derive. */
 function runBranchNumber(args: string[], effects: TbGitEffects): TbGitResult {
   const { positionals, values } = parseArgs({
     allowPositionals: true,
@@ -134,6 +135,7 @@ function runBranchNumber(args: string[], effects: TbGitEffects): TbGitResult {
   return succeed(String(number));
 }
 
+/** Parses the `ticket-ref` subcommand and prints the ref it finds, or reports that it found none. */
 function runTicketRef(args: string[], effects: TbGitEffects): TbGitResult {
   const { positionals, values } = parseArgs({
     allowPositionals: true,
@@ -167,6 +169,7 @@ function selectBranch(positionals: string[], effects: TbGitEffects): string {
   return branch;
 }
 
+/** Reports a printed result, terminating the line the caller writes. */
 function succeed(output: string): TbGitResult {
   return { exitCode: EXIT_OK, stderr: '', stdout: `${output}\n` };
 }
