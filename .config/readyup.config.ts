@@ -12,6 +12,7 @@ export default defineRdyConfig({
     '@williamthorsen/release-kit',
     '@williamthorsen/toolbelt.errors',
     '@williamthorsen/toolbelt.numbers',
+    '@williamthorsen/toolbelt.objects',
     '@williamthorsen/toolbelt.strings',
     '@williamthorsen/toolbelt.vitest',
     '@williamthorsen/tsconfig',

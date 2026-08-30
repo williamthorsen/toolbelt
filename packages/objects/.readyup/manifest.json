@@ -5,7 +5,7 @@
       "checklists": [
         "adoption"
       ],
-      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.strings",
+      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.objects",
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
@@ -54,37 +54,42 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "c2b0a727",
+          "hash": "2876cd92",
           "kind": "module",
           "path": "kits/default.ts"
         },
         {
-          "hash": "4b058b7d",
+          "hash": "f99d3964",
           "kind": "module",
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "609d6c5e",
+          "hash": "560b6636",
           "kind": "module",
-          "path": "../src/readiness/listCapitalizeLines.ts"
+          "path": "../src/readiness/listObjectIdioms.ts"
         },
         {
-          "hash": "d63e23ba",
+          "hash": "6a131b7e",
           "kind": "module",
-          "path": "../src/readiness/listPluralizeLines.ts"
+          "path": "../src/readiness/listOwnPropertyCallLines.ts"
         },
         {
-          "hash": "8b78d6cd",
+          "hash": "1bb21ae7",
           "kind": "module",
-          "path": "../src/readiness/listStringIdioms.ts"
+          "path": "../src/readiness/listRecordLines.ts"
+        },
+        {
+          "hash": "f3337859",
+          "kind": "module",
+          "path": "../src/readiness/listStringifyCompareLines.ts"
         }
       ],
       "name": "default",
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "c2b0a727",
-      "targetHash": "9f562429"
+      "sourceHash": "2876cd92",
+      "targetHash": "f43ffb82"
     }
   ]
 }

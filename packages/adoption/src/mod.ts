@@ -22,4 +22,5 @@ export {
   PARENTHESES,
   readBalancedGroup,
 } from './portable/readBalancedGroup.ts';
+export { readLiteral } from './portable/readLiteral.ts';
 export { blankNonCode, getLineAtOffset } from 'readyup/check-utils';
