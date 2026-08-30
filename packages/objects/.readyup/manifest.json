@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "kits": [
+    {
+      "checklists": [
+        "adoption"
+      ],
+      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.objects",
+      "esbuildVersion": "0.28.2",
+      "inputs": [
+        {
+          "hash": "9cbd3541",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/path-predicates.ts"
+        },
+        {
+          "hash": "c7d90b66",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/site-handoffs.ts"
+        },
+        {
+          "hash": "3a124dad",
+          "kind": "module",
+          "path": "../../adoption/src/kits/defineAdoptionKit.ts"
+        },
+        {
+          "hash": "6e5a8dda",
+          "kind": "module",
+          "path": "../../adoption/src/mod.ts"
+        },
+        {
+          "hash": "e8d0444d",
+          "kind": "module",
+          "path": "../../adoption/src/portable/condenseWhitespace.ts"
+        },
+        {
+          "hash": "b6d99ce7",
+          "kind": "module",
+          "path": "../../adoption/src/portable/listFunctionBodies.ts"
+        },
+        {
+          "hash": "4d2d8e11",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readAnchoredWindow.ts"
+        },
+        {
+          "hash": "498e3ca4",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readBalancedGroup.ts"
+        },
+        {
+          "hash": "2876cd92",
+          "kind": "module",
+          "path": "kits/default.ts"
+        },
+        {
+          "hash": "f99d3964",
+          "kind": "module",
+          "path": "../src/readiness/adoptedExports.ts"
+        },
+        {
+          "hash": "6c2ee0bb",
+          "kind": "module",
+          "path": "../src/readiness/listObjectIdioms.ts"
+        },
+        {
+          "hash": "6a131b7e",
+          "kind": "module",
+          "path": "../src/readiness/listOwnPropertyCallLines.ts"
+        },
+        {
+          "hash": "e75eedaa",
+          "kind": "module",
+          "path": "../src/readiness/listRecordLines.ts"
+        },
+        {
+          "hash": "6be7a106",
+          "kind": "module",
+          "path": "../src/readiness/listStringifyCompareLines.ts"
+        }
+      ],
+      "name": "default",
+      "path": "kits/default.js",
+      "readyupVersion": "0.35.0",
+      "source": "kits/default.ts",
+      "sourceHash": "2876cd92",
+      "targetHash": "5fa46d3f"
+    }
+  ]
+}
