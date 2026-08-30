@@ -17,7 +17,7 @@ Utilities for working with git branch names.
 
 Subcommands:
   branch-number  Print a stable number derived from a branch name
-  ticket-ref     Print the ID of the ticket a branch name encodes
+  ticket-ref     Print the ID of the ticket encoded by a branch name
 
 Options:
   -h, --help     Print this help; each subcommand takes its own --help
@@ -32,7 +32,7 @@ Exit codes:
 
 const BRANCH_NUMBER_HELP = `Usage: tb-git branch-number [<branch>] [options]
 
-Print the number of the ticket the branch name encodes, or a hash of the name when it encodes none.
+Print the number of the ticket encoded by the branch name, or a hash of the name when it encodes none.
 
 Options:
   -h, --help      Print this help
@@ -45,7 +45,7 @@ With no <branch>, the checked-out branch is used.`;
 
 const TICKET_REF_HELP = `Usage: tb-git ticket-ref [<branch>] [options]
 
-Print the ID of the ticket the branch name encodes, exiting 1 when it encodes none.
+Print the ID of the ticket encoded by the branch name, exiting 1 when it encodes none.
 
 Options:
   -h, --help   Print this help
@@ -68,7 +68,7 @@ export function runTbGit(args: string[], effects: TbGitEffects): TbGitResult {
   }
 }
 
-/** The effects the runner defers to its entry point, which is what keeps the runner free of I/O. */
+/** The effects deferred to the entry point, which is what keeps the runner free of I/O. */
 export interface TbGitEffects {
   readonly resolveBranch: () => string;
   readonly resolveVersion: () => string;
@@ -83,7 +83,7 @@ export interface TbGitResult {
 
 // region | Helpers
 
-/** Extracts the message an unknown thrown value carries. */
+/** Extracts the message carried by an unknown thrown value. */
 function describeError(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
@@ -135,7 +135,7 @@ function runBranchNumber(args: string[], effects: TbGitEffects): TbGitResult {
   return succeed(String(number));
 }
 
-/** Parses the `ticket-ref` subcommand and prints the ref it finds, or reports that it found none. */
+/** Parses the `ticket-ref` subcommand and prints the ref that it finds, or reports that it found none. */
 function runTicketRef(args: string[], effects: TbGitEffects): TbGitResult {
   const { positionals, values } = parseArgs({
     allowPositionals: true,
@@ -169,7 +169,7 @@ function selectBranch(positionals: string[], effects: TbGitEffects): string {
   return branch;
 }
 
-/** Reports a printed result, terminating the line the caller writes. */
+/** Reports a printed result, terminating the line written by the caller. */
 function succeed(output: string): TbGitResult {
   return { exitCode: EXIT_OK, stderr: '', stdout: `${output}\n` };
 }

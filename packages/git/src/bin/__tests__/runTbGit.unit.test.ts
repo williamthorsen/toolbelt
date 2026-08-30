@@ -14,7 +14,7 @@ const EFFECTS: TbGitEffects = {
 
 describe(runTbGit, () => {
   describe('branch-number', () => {
-    it('prints the number the branch encodes', () => {
+    it('prints the number encoded by the branch', () => {
       expect(runTbGit(['branch-number', '249_add-tb-git-cli'], EFFECTS)).toStrictEqual({
         exitCode: 0,
         stderr: '',

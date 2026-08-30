@@ -23,7 +23,7 @@ describe('Declared bins', () => {
 // region | Helpers
 
 /**
- * Audits every workspace's `bin` against the source it names, reporting a target that reaches no module and
+ * Audits every workspace's `bin` against the source that it names, reporting a target that reaches no module and
  * a module that carries no shebang. Either ships a command the package cannot run, which no suite run from
  * source otherwise reaches.
  */
@@ -47,7 +47,7 @@ function auditBinTargets(monorepoRoot: string): { binCount: number; danglingTarg
   return { binCount, danglingTargets: danglingTargets.toSorted((a, b) => a.localeCompare(b)) };
 }
 
-/** Reports what disqualifies a bin target, or `undefined` where the source it names is fit to run. */
+/** Reports what disqualifies a bin target, or `undefined` where the source that it names is fit to run. */
 function findTargetFault(packageDirectory: string, target: string): string | undefined {
   const modulePath = BIN_TARGET_PATTERN.exec(target)?.groups?.['modulePath'];
   if (modulePath === undefined) return 'names no build output';

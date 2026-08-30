@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 import { resolveSelfVersion } from '../resolveSelfVersion.ts';
 
 describe(resolveSelfVersion, () => {
-  it('reports the version this package declares, not an ancestor manifest', () => {
+  it('reports the version declared by this package, not an ancestor manifest', () => {
     expect(resolveSelfVersion()).toBe(readDeclaredVersion());
   });
 

@@ -72,7 +72,7 @@ With no `<branch>`, both subcommands resolve the checked-out branch with `git br
 | `1`  | `ticket-ref` found no ticket in the branch name; both streams are empty |
 | `2`  | Usage or validation error, with the message on stderr                   |
 
-A bound, offset, or key the library rejects exits `2` carrying the message the library raises. So does an empty option value, so `--min "$PORT_MIN"` with `PORT_MIN` unset fails instead of bounding at `0`.
+A bound, offset, or key rejected by the library exits `2` carrying the message it raises. So does an empty option value, so `--min "$PORT_MIN"` with `PORT_MIN` unset fails instead of bounding at `0`.
 
 ```sh
 if ref=$(tb-git ticket-ref); then
@@ -93,7 +93,7 @@ interface BranchTicketRef {
 }
 ```
 
-Finds the ticket a branch name encodes, or `undefined` when it encodes none.
+Finds the ticket encoded by a branch name, or `undefined` when it encodes none.
 
 ```ts
 import { findBranchTicketRef } from '@williamthorsen/toolbelt.git/candidate';
