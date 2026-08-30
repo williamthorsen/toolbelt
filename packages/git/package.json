@@ -36,6 +36,9 @@
       "import": "./dist/esm/1-proposed/index.js"
     }
   },
+  "bin": {
+    "tb-git": "./dist/esm/bin/tb-git.js"
+  },
   "files": [
     "dist/*",
     "CHANGELOG.md"
