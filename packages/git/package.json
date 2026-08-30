@@ -49,6 +49,9 @@
   "dependencies": {
     "@williamthorsen/toolbelt.strings": "workspace:*"
   },
+  "devDependencies": {
+    "@williamthorsen/toolbelt.filesystem": "workspace:*"
+  },
   "engines": {
     "node": ">=24.0.0"
   },
