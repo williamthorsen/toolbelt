@@ -1,6 +1,5 @@
 import { computeFakeMathRandom } from '../internal/computeFakeMathRandom.ts';
-import type { Seed, SeededGenerator } from '../internal/evaluateSeed.ts';
-import { checkIsRngLike, evaluateSeed } from '../internal/evaluateSeed.ts';
+import { checkIsRngLike, evaluateSeed, type Seed, type SeededGenerator } from '../internal/evaluateSeed.ts';
 import { IntegerSeed } from '../internal/IntegerSeed.ts';
 import { wrapSum } from '../internal/wrapSum.ts';
 import { pickInteger } from './pickInteger.ts';

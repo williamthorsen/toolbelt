@@ -1,6 +1,5 @@
 import { computeFakeMathRandom } from '../internal/computeFakeMathRandom.ts';
-import type { Seed } from '../internal/evaluateSeed.ts';
-import { evaluateSeed } from '../internal/evaluateSeed.ts';
+import { evaluateSeed, type Seed } from '../internal/evaluateSeed.ts';
 
 /**
  * Returns a number generator whose output, when invoked successively, is a pseudo-random

@@ -1,5 +1,4 @@
-import type { NoNumericKeys } from './TypedObject.v1.ts';
-import { TypedObject } from './TypedObject.v1.ts';
+import { type NoNumericKeys, TypedObject } from './TypedObject.v1.ts';
 
 /**
  * Returns a new object with the same keys as the input object, but with values transformed by the predicate.
