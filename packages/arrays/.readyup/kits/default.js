@@ -194,6 +194,8 @@ function listArraifyLines(source) {
 var SORT_CALL = /\.\s*(?:sort|toSorted)\s*\(/g;
 var RANDOM_CALL = /Math\s*\.\s*random\s*\(\s*\)/g;
 var RETURN_KEYWORD = /\breturn\b/g;
+var BARE_PARAMETER_ARROW = /^[\w$]+\s?=>/;
+var FUNCTION_KEYWORD = /^function\b/;
 var IDENTIFIER_CHARACTER = /[A-Za-z_$]/;
 function listBiasedShuffleLines(source) {
   const lines = [];
@@ -206,6 +208,14 @@ function listBiasedShuffleLines(source) {
   }
   return lines;
 }
+function findArrowOffset(text) {
+  const parameters = readBalancedGroup(text, 0, PARENTHESES);
+  if (parameters?.start === 0) {
+    const arrow = text.indexOf("=>", parameters.end);
+    return arrow === -1 ? void 0 : arrow;
+  }
+  return BARE_PARAMETER_ARROW.test(text) ? text.indexOf("=>") : void 0;
+}
 function isRandomComparator(argument) {
   const body = readComparatorBody(argument);
   if (body === void 0) return false;
@@ -214,11 +224,13 @@ function isRandomComparator(argument) {
   return !IDENTIFIER_CHARACTER.test(withoutDraw.replaceAll(RETURN_KEYWORD, ""));
 }
 function readComparatorBody(argument) {
-  const arrow = argument.indexOf("=>");
-  if (arrow !== -1) return argument.slice(arrow + 2);
-  if (!argument.trimStart().startsWith("function")) return void 0;
-  const block = readBalancedGroup(argument, 0, BRACES);
-  return block === void 0 ? void 0 : argument.slice(block.start + 1, block.end - 1);
+  const text = argument.trimStart();
+  if (FUNCTION_KEYWORD.test(text)) {
+    const block = readBalancedGroup(text, 0, BRACES);
+    return block === void 0 ? void 0 : text.slice(block.start + 1, block.end - 1);
+  }
+  const arrow = findArrowOffset(text);
+  return arrow === void 0 ? void 0 : text.slice(arrow + 2);
 }
 
 // src/readiness/listRandomItemLines.ts

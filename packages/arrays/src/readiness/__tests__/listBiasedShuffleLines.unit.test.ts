@@ -51,6 +51,26 @@ describe(listBiasedShuffleLines, () => {
     expect(listBiasedShuffleLines(source)).toStrictEqual([]);
   });
 
+  // A combinator's own arrow is not the argument's, so a draw inside it breaks ties within a primary ordering.
+  it('declines a comparator a combinator assembles around an arrow of its own', () => {
+    const sources = [
+      'const ranked = rows.sort(thenBy(byScore, () => Math.random() - 0.5));\n',
+      'const ranked = rows.sort(withJitter(byName, () => Math.random() * 0.01));\n',
+    ];
+
+    expect(sources.filter((source) => listBiasedShuffleLines(source).length > 0)).toStrictEqual([]);
+  });
+
+  it('claims an arrow declaring a single parameter without parentheses', () => {
+    expect(listBiasedShuffleLines('const mixed = items.sort(a => Math.random() - 0.5);\n')).toStrictEqual([1]);
+  });
+
+  it('claims an arrow carrying a return-type annotation', () => {
+    const source = 'const mixed = items.sort((a: Row, b: Row): number => Math.random() - 0.5);\n';
+
+    expect(listBiasedShuffleLines(source)).toStrictEqual([1]);
+  });
+
   it('declines an ordinary comparator and a sort taking none', () => {
     const sources = [
       'const ranked = values.sort((a, b) => a - b);\n',
