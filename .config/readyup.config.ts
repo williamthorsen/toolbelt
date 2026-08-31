@@ -10,6 +10,7 @@ export default defineRdyConfig({
     '@williamthorsen/eslint-config-typescript',
     '@williamthorsen/nmr',
     '@williamthorsen/release-kit',
+    '@williamthorsen/toolbelt.arrays',
     '@williamthorsen/toolbelt.errors',
     '@williamthorsen/toolbelt.numbers',
     '@williamthorsen/toolbelt.objects',

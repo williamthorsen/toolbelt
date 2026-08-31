@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "kits": [
+    {
+      "checklists": [
+        "adoption"
+      ],
+      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.arrays",
+      "esbuildVersion": "0.28.2",
+      "inputs": [
+        {
+          "hash": "9cbd3541",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/path-predicates.ts"
+        },
+        {
+          "hash": "c7d90b66",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/site-handoffs.ts"
+        },
+        {
+          "hash": "3a124dad",
+          "kind": "module",
+          "path": "../../adoption/src/kits/defineAdoptionKit.ts"
+        },
+        {
+          "hash": "52127b8f",
+          "kind": "module",
+          "path": "../../adoption/src/mod.ts"
+        },
+        {
+          "hash": "e8d0444d",
+          "kind": "module",
+          "path": "../../adoption/src/portable/condenseWhitespace.ts"
+        },
+        {
+          "hash": "b6d99ce7",
+          "kind": "module",
+          "path": "../../adoption/src/portable/listFunctionBodies.ts"
+        },
+        {
+          "hash": "4d2d8e11",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readAnchoredWindow.ts"
+        },
+        {
+          "hash": "498e3ca4",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readBalancedGroup.ts"
+        },
+        {
+          "hash": "f306cc46",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readLiteral.ts"
+        },
+        {
+          "hash": "61be8824",
+          "kind": "module",
+          "path": "kits/default.ts"
+        },
+        {
+          "hash": "4a071a08",
+          "kind": "module",
+          "path": "../src/readiness/adoptedExports.ts"
+        },
+        {
+          "hash": "bc7c9af6",
+          "kind": "module",
+          "path": "../src/readiness/listArraifyLines.ts"
+        },
+        {
+          "hash": "f2eeb416",
+          "kind": "module",
+          "path": "../src/readiness/listArrayIdioms.ts"
+        },
+        {
+          "hash": "f12e8c48",
+          "kind": "module",
+          "path": "../src/readiness/listBiasedShuffleLines.ts"
+        },
+        {
+          "hash": "367782ac",
+          "kind": "module",
+          "path": "../src/readiness/listRandomItemLines.ts"
+        }
+      ],
+      "name": "default",
+      "path": "kits/default.js",
+      "readyupVersion": "0.35.0",
+      "source": "kits/default.ts",
+      "sourceHash": "61be8824",
+      "targetHash": "da256754"
+    }
+  ]
+}
