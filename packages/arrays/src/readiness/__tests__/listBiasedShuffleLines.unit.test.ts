@@ -56,6 +56,7 @@ describe(listBiasedShuffleLines, () => {
     const sources = [
       'const ranked = rows.sort(thenBy(byScore, () => Math.random() - 0.5));\n',
       'const ranked = rows.sort(withJitter(byName, () => Math.random() * 0.01));\n',
+      'const ranked = rows.sort((thenBy(byScore, () => Math.random() - 0.5)));\n',
     ];
 
     expect(sources.filter((source) => listBiasedShuffleLines(source).length > 0)).toStrictEqual([]);
@@ -69,6 +70,17 @@ describe(listBiasedShuffleLines, () => {
     const source = 'const mixed = items.sort((a: Row, b: Row): number => Math.random() - 0.5);\n';
 
     expect(listBiasedShuffleLines(source)).toStrictEqual([1]);
+  });
+
+  // A parenthesis wrapping the whole comparator holds the arrow rather than opening it, and a cast puts its
+  // type where the body would otherwise be read from.
+  it('claims an arrow a redundant parenthesis or a cast wraps', () => {
+    const sources = [
+      'const mixed = items.sort(((a, b) => Math.random() - 0.5));\n',
+      'const mixed = items.sort(((a, b) => Math.random() - 0.5) as Comparator<Row>);\n',
+    ];
+
+    expect(sources.map((source) => listBiasedShuffleLines(source))).toStrictEqual([[1], [1]]);
   });
 
   it('declines an ordinary comparator and a sort taking none', () => {

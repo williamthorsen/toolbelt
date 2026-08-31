@@ -224,13 +224,22 @@ function isRandomComparator(argument) {
   return !IDENTIFIER_CHARACTER.test(withoutDraw.replaceAll(RETURN_KEYWORD, ""));
 }
 function readComparatorBody(argument) {
-  const text = argument.trimStart();
+  const text = stripWrappingGroup(argument.trimStart());
   if (FUNCTION_KEYWORD.test(text)) {
     const block = readBalancedGroup(text, 0, BRACES);
     return block === void 0 ? void 0 : text.slice(block.start + 1, block.end - 1);
   }
   const arrow = findArrowOffset(text);
   return arrow === void 0 ? void 0 : text.slice(arrow + 2);
+}
+function stripWrappingGroup(text) {
+  let stripped = text;
+  let group = readBalancedGroup(stripped, 0, PARENTHESES);
+  while (group?.start === 0 && !stripped.includes("=>", group.end)) {
+    stripped = stripped.slice(1, group.end - 1).trimStart();
+    group = readBalancedGroup(stripped, 0, PARENTHESES);
+  }
+  return stripped;
 }
 
 // src/readiness/listRandomItemLines.ts

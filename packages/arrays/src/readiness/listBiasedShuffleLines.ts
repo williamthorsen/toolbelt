@@ -85,7 +85,7 @@ function isRandomComparator(argument: string): boolean {
  * being here to read.
  */
 function readComparatorBody(argument: string): string | undefined {
-  const text = argument.trimStart();
+  const text = stripWrappingGroup(argument.trimStart());
 
   if (FUNCTION_KEYWORD.test(text)) {
     const block = readBalancedGroup(text, 0, BRACES);
@@ -95,6 +95,25 @@ function readComparatorBody(argument: string): string | undefined {
   const arrow = findArrowOffset(text);
 
   return arrow === undefined ? undefined : text.slice(arrow + 2);
+}
+
+/**
+ * Returns the comparator text with every parenthesis group wrapping the whole comparator stripped.
+ *
+ * A redundant parenthesis and the operand of a cast both wrap the arrow rather than opening it, which is what
+ * an opening group holding no arrow past it reports. Stripping cannot admit a combinator, whose group opens
+ * past offset zero and is left as it stands.
+ */
+function stripWrappingGroup(text: string): string {
+  let stripped = text;
+  let group = readBalancedGroup(stripped, 0, PARENTHESES);
+
+  while (group?.start === 0 && !stripped.includes('=>', group.end)) {
+    stripped = stripped.slice(1, group.end - 1).trimStart();
+    group = readBalancedGroup(stripped, 0, PARENTHESES);
+  }
+
+  return stripped;
 }
 
 // endregion | Helpers
