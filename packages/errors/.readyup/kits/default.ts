@@ -2,7 +2,7 @@
  * Adoption checks for a project consuming @williamthorsen/toolbelt.errors.
  *
  * The kit ships inside the package, so it runs only where the package is installed and always at the version
- * the consumer has. Installing the package is the consent these checks rest on: a lint rule reaching every
+ * that the consumer has. Installing the package is the consent these checks rest on: a lint rule reaching every
  * repository would press the same opinion on projects that never asked for it.
  *
  * The checks take inventory rather than banning a pattern. Every `instanceof Error` in the project is

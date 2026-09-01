@@ -2,11 +2,11 @@
  * Adoption checks for a project consuming @williamthorsen/toolbelt.vitest.
  *
  * The kit ships inside the package, so it runs only where the package is installed and always at the version
- * the consumer has. Installing the package is the consent these checks rest on.
+ * that the consumer has. Installing the package is the consent these checks rest on.
  *
  * The checks take inventory rather than banning a pattern, and severity carries the judgment. A defect is a
  * `warn`: an exit mock that does not throw lets a suite cover a path that the process never reaches, and a console
- * capture naming its arguments asserts on a message the console never wrote. A working hand-roll is a
+ * capture naming its arguments asserts on a message that the console never wrote. A working hand-roll is a
  * `recommend`, being a substitution rather than a correction. Nothing here is `error`.
  *
  * The kit declares what to look for and what to advise. What it reports lives in `src/readiness/`, where the
@@ -53,7 +53,7 @@ export default defineAdoptionKit({
       name: 'No test captures only part of a console call',
       id: 'no-lossy-console-capture',
       kinds: ['console-capture-lossy'],
-      fix: `Silence each method named above with silenceConsole from ${PACKAGE_NAME}/candidate and read it with listConsoleLines, which renders every argument of a call. A capture whose parameter list names its arguments drops the ones past them, so console.error('failed:', reason) asserts as 'failed:' and the test passes on a message the console never wrote.`,
+      fix: `Silence each method named above with silenceConsole from ${PACKAGE_NAME}/candidate and read it with listConsoleLines, which renders every argument of a call. A capture whose parameter list names its arguments drops the ones past them, so console.error('failed:', reason) asserts as 'failed:' and the test passes on a message that the console never wrote.`,
     },
     {
       name: 'No test hand-rolls a console capture',

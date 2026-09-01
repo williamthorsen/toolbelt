@@ -350,7 +350,7 @@ Each check prints one fraction, and it measures the kit rather than the check: c
 
 A `process.exit` mock that returns lets execution continue past the exit, so the test asserts against a path never reached by the process.
 
-A console capture whose parameter list names its arguments drops every argument past the ones it names: `console.error('failed:', reason)` asserts as `'failed:'`, and the test passes on a message the console never wrote. A capture taking a rest parameter loses nothing, so it reports as a substitution, as does one that captures nothing at all whatever its parameter list names.
+A console capture whose parameter list names its arguments drops every argument past the ones it names: `console.error('failed:', reason)` asserts as `'failed:'`, and the test passes on a message that the console never wrote. A capture taking a rest parameter loses nothing, so it reports as a substitution, as does one that captures nothing at all whatever its parameter list names.
 
 ### What the kit reads
 

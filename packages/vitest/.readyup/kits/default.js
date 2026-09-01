@@ -308,7 +308,7 @@ var default_default = defineAdoptionKit({
       name: "No test captures only part of a console call",
       id: "no-lossy-console-capture",
       kinds: ["console-capture-lossy"],
-      fix: `Silence each method named above with silenceConsole from ${PACKAGE_NAME}/candidate and read it with listConsoleLines, which renders every argument of a call. A capture whose parameter list names its arguments drops the ones past them, so console.error('failed:', reason) asserts as 'failed:' and the test passes on a message the console never wrote.`
+      fix: `Silence each method named above with silenceConsole from ${PACKAGE_NAME}/candidate and read it with listConsoleLines, which renders every argument of a call. A capture whose parameter list names its arguments drops the ones past them, so console.error('failed:', reason) asserts as 'failed:' and the test passes on a message that the console never wrote.`
     },
     {
       name: "No test hand-rolls a console capture",

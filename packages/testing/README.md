@@ -137,7 +137,7 @@ await routeCommand(['verify']);
 expect(stdio.stdout).toContain('[PASS] passing');
 ```
 
-Both streams are saved and restored whether or not the option is passed, so the value cannot leak into later tests either way. Restoration puts back the state it found: a stream that owned no `isTTY` owns none again afterwards, rather than being left holding `undefined`.
+Both streams are saved and restored whether or not the option is passed, so the value cannot leak into later tests either way. Restoration puts back the state that it found: a stream that owned no `isTTY` owns none again afterwards, rather than being left holding `undefined`.
 
 Style detection reads the stream it writes to, so the value is set on both. A test needing them to differ has to assign directly.
 

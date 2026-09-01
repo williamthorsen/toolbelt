@@ -129,7 +129,7 @@ function decodeChunk(chunk: Uint8Array | string, encoding?: BufferEncoding | ((e
 }
 
 /**
- * Replaces one property and returns the call that puts back the state it found: the previous value where the
+ * Replaces one property and returns the call that puts back the state that it found: the previous value where the
  * target owned the property, and absence where it did not. Both cases arise here, since
  * `process.stdout.write` resolves from the stream's prototype and `isTTY` is unset outside a terminal.
  */

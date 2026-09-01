@@ -54,7 +54,7 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "d6b6011f",
+          "hash": "fbc5511a",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -83,7 +83,7 @@
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "d6b6011f",
+      "sourceHash": "fbc5511a",
       "targetHash": "ab68b1c6"
     }
   ]

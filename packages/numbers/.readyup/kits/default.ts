@@ -2,7 +2,7 @@
  * Adoption checks for a project consuming @williamthorsen/toolbelt.numbers.
  *
  * The kit ships inside the package, so it runs only where the package is installed and always at the version
- * the consumer has. Installing the package is the consent these checks rest on.
+ * that the consumer has. Installing the package is the consent these checks rest on.
  *
  * The checks take inventory rather than banning a pattern. Every one of them is a `recommend`: a hand-rolled
  * clamp, decimal rounding, or random integer is correct code that a published utility expresses better, not a
