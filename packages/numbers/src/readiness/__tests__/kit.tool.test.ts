@@ -12,7 +12,7 @@ import { describe, expect, it, vi } from 'vitest';
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.numbers', version: '1.0.0' });
 const CLAMP = 'export const bounded = Math.max(min, Math.min(max, value));\n';
-// The package's own `clamp`, holding the idiom its check recommends replacing.
+// The package's own `clamp`, holding the idiom that its check recommends replacing.
 const OWN_CLAMP = 'export function clamp(value, bounds) {\n  return Math.max(min, Math.min(max, value));\n}\n';
 const ROUND = 'export const rate = Math.round(value * 100) / 100;\n';
 const RANDOM = 'export const roll = Math.floor(Math.random() * sides);\n';
@@ -55,7 +55,7 @@ describe('The numbers adoption kit', () => {
 
   // A subscripted random integer is `toolbelt.arrays`' site. Claiming it would report one line twice across
   // the two kits; counting it would leave a fraction no check here could close.
-  it('neither reports nor counts a site it hands off to another kit', async () => {
+  it('neither reports nor counts a site that it hands off to another kit', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/pick.ts': UNCLAIMED });
     using _cwd = pointCwdAt(tree.dir);
 

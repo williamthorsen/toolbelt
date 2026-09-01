@@ -313,7 +313,7 @@ tree.writeJson('tsconfig.json', { include: ['src'] });
 tree.mkdir('packages/empty');
 ```
 
-Each creates the parent directories it needs, resolves through the same containment check as `resolve`, and returns the absolute path of what it wrote. `symlink`'s link path is checked; its target is not, being a string the link holds rather than a location the tree writes to.
+Each creates the parent directories that it needs, resolves through the same containment check as `resolve`, and returns the absolute path of what it wrote. `symlink`'s link path is checked; its target is not, being a string held by the link rather than a location the tree writes to.
 
 `writeAll` takes the same map the constructor takes, `/`-suffix convention included, so a fixture built in one call can be added to in one call:
 
@@ -334,7 +334,7 @@ tree.symlink('node_modules/kit', '../store/kit'); // reads back as '../store/kit
 tree.symlink('node_modules/.bin', tree.resolve('store/kit/bin')); // reads back absolute
 ```
 
-The link type is chosen from the target, which is where the one portability difference lives. An absolute directory target is linked as a junction, which Windows creates without the elevation a directory symlink needs; a relative directory target is linked as a directory, which needs that elevation, because Node normalizes a junction's target to an absolute path and would discard the relative string. Every other target, one that does not exist included, is linked as a file, matching what Node falls back to when no type is given.
+The link type is chosen from the target, which is where the one portability difference lives. An absolute directory target is linked as a junction, which Windows creates without the elevation needed by a directory symlink; a relative directory target is linked as a directory, which needs that elevation, because Node normalizes a junction's target to an absolute path and would discard the relative string. Every other target, one that does not exist included, is linked as a file, matching what Node falls back to when no type is given.
 
 `exists`, `list`, `listFiles`, `read`, `readJson`, and `rm` read the tree back and remove from it, each through the same containment check:
 

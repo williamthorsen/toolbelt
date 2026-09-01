@@ -52,7 +52,7 @@ interface ProjectSummary<Kind extends string> {
   sources: readonly ProjectSource[];
 }
 
-const NOT_A_REPO = 'the project is not a git working tree, and these checks read the files git tracks';
+const NOT_A_REPO = 'the project is not a git working tree, and these checks read the files that git tracks';
 /** What a check reports where the project could not be read. The runner resolves it to a pass carrying nothing. */
 const NOTHING_TO_REPORT: FindingOutcome = { findings: [] };
 
@@ -136,7 +136,7 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
 
   /**
    * Reports every site the project holds, marking those of the named kinds and how far adoption got. A site
-   * inside the declaration the package exports under one of its adopted names is dropped from the report
+   * inside the declaration exported by the package under one of its adopted names is dropped from the report
    * altogether, because the implementation of an idiom cannot adopt itself.
    *
    * The runner reads the verdict, the detail, and the fraction off the report, so a pragma the sources carry

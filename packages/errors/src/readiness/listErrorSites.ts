@@ -23,7 +23,7 @@ const WINDOW = { lookahead: 240, lookbehind: 80 };
  *
  * The source is blanked before the anchor scan reads it, so an `instanceof Error` written in a comment, a
  * string, or a regular expression is invisible here. Blanking preserves every offset, so a reported line still
- * names the line the source holds.
+ * names the line held by the source.
  *
  * @internal
  */

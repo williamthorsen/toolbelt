@@ -84,7 +84,7 @@ expect(silent.warn.mock.calls).toHaveLength(1);`;
       expect(listConsoleSites(source)).toStrictEqual([{ kind: 'console-calls-read', line: 2 }]);
     });
 
-    it('resolves a binding a formatter broke across lines', () => {
+    it('resolves a binding broken across lines by a formatter', () => {
       const source = `const spy =
   vi.spyOn(console, 'info').mockImplementation(() => {});
 expect(spy.mock.calls).toHaveLength(1);`;

@@ -28,7 +28,7 @@ describe(listPluralizeLines, () => {
     expect(listLines("const noun = (count === 1) ? 'item' : 'items';\n")).toStrictEqual([1]);
   });
 
-  it('claims a ternary a formatter broke across lines, at the line it opens on', () => {
+  it('claims a ternary broken across lines by a formatter, at the line it opens on', () => {
     expect(listLines("const noun =\n  count === 1\n    ? 'item'\n    : 'items';\n")).toStrictEqual([2]);
   });
 

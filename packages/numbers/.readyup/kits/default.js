@@ -50,7 +50,7 @@ import {
   countPackageUsage,
   readTrackedSources
 } from "readyup/check-utils";
-var NOT_A_REPO = "the project is not a git working tree, and these checks read the files git tracks";
+var NOT_A_REPO = "the project is not a git working tree, and these checks read the files that git tracks";
 var NOTHING_TO_REPORT = { findings: [] };
 function defineAdoptionKit(spec) {
   assertCheckIdsAreUnique();

@@ -5,7 +5,7 @@ import { createTempDir, type TempDir } from './createTempDir.ts';
 /**
  * Creates a throwaway git working tree holding the given entries, every one of them tracked.
  *
- * Adoption checks read the files git tracks, so an untracked fixture file is invisible to them. Staging is
+ * Adoption checks read the files that git tracks, so an untracked fixture file is invisible to them. Staging is
  * enough to be tracked, which is what keeps the fixture clear of the identity a commit would demand.
  */
 export function createTrackedRepo(entries: Record<string, string>): TempDir {

@@ -14,7 +14,7 @@ export type MathIdiomKind = 'clamp-nest' | 'random-integer' | 'round-scale';
  *
  * The source is blanked once here and the three read what it produces, so an idiom written in a comment or a
  * literal is invisible to all of them. Blanking preserves every offset, so a reported line still names the line
- * the source holds.
+ * held by the source.
  *
  * @internal
  */

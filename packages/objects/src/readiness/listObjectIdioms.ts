@@ -14,7 +14,7 @@ export type ObjectIdiomKind = 'own-property-call' | 'record-inline' | 'stringify
  *
  * The source is blanked once here and every detector reads what it produces, so an idiom written in a comment
  * or a literal is invisible to them. Blanking preserves every offset, so a reported line still names the line
- * the source holds, and the record detector can still read its literal from the source beneath.
+ * held by the source, and the record detector can still read its literal from the source beneath.
  *
  * @internal
  */

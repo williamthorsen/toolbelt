@@ -28,7 +28,7 @@ describe('The numbers adoption kit, run through rdy', () => {
     ]);
   });
 
-  it('drops a site an unqualified pragma covers from every check’s detail and fraction', () => {
+  it('drops a site covered by an unqualified pragma from every check’s detail and fraction', () => {
     expect(runKit(`${CLAMP} // rdy-ignore -- reviewed\n`)).toStrictEqual([
       { count: 3, detail: undefined, id: 'no-hand-rolled-clamp', passedCount: 1 },
       { count: 3, detail: 'src/rate.ts:1', id: 'no-hand-rolled-round', passedCount: 1 },
@@ -38,7 +38,7 @@ describe('The numbers adoption kit, run through rdy', () => {
 
   // A `dir:` kit source carries no namespace, so the bare id stands. A consumer running the kit from the
   // installed package writes `toolbelt.numbers/no-hand-rolled-clamp`.
-  it('drops a site a qualified pragma covers from the named check alone', () => {
+  it('drops a site covered by a qualified pragma from the named check alone', () => {
     expect(runKit(`${CLAMP} // rdy-ignore no-hand-rolled-clamp -- reviewed\n`)).toStrictEqual([
       { count: 3, detail: undefined, id: 'no-hand-rolled-clamp', passedCount: 1 },
       { count: 4, detail: 'src/rate.ts:1', id: 'no-hand-rolled-round', passedCount: 1 },

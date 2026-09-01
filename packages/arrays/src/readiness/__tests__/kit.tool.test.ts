@@ -14,7 +14,7 @@ const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.arra
 const ARRAIFY = 'export const list = Array.isArray(value) ? value : [value];\n';
 const RANDOM_ITEM = 'export const item = items[Math.floor(Math.random() * items.length)];\n';
 const SHUFFLE = 'export const mixed = items.sort(() => Math.random() - 0.5);\n';
-// The package's own `arraify`, holding the idiom its check recommends replacing.
+// The package's own `arraify`, holding the idiom that its check recommends replacing.
 const OWN_ARRAIFY = 'export function arraify(value) {\n  return Array.isArray(value) ? value : [value];\n}\n';
 // A tiebreak the shuffle check declines, a floored random the item check leaves to `toolbelt.numbers`, and a
 // ternary choosing between two unrelated values.

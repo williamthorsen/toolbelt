@@ -1,7 +1,7 @@
 import { getLineAtOffset, isArraySubscript, readAnchoredWindow } from '@williamthorsen/toolbelt.adoption';
 
 const FLOORED_RANDOM = /\bMath\.floor\s*\(\s*Math\.random\s*\(\s*\)\s*\*/g;
-// Only the lookbehind is read, and only far enough to see the expression a subscript bracket would follow.
+// Only the lookbehind is read, and only far enough to see the expression that a subscript bracket would follow.
 const WINDOW = { lookahead: 0, lookbehind: 80 };
 
 /**

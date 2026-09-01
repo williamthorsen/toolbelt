@@ -99,11 +99,11 @@ The package ships a ReadyUp kit, so a project that installs it can ask how far i
 rdy run --packages
 ```
 
-The kit reads the project's tracked sources and reports every `instanceof Error` in them, each named by what it is doing and counted against the calls the project already makes into this package. A hand-rolled description reports at `warn`, a narrowing or a hand-rolled coercion at `recommend`; nothing reports at `error`, because none of it breaks the package.
+The kit reads the project's tracked sources and reports every `instanceof Error` in them, each named by what it is doing and counted against the calls that the project already makes into this package. A hand-rolled description reports at `warn`, a narrowing or a hand-rolled coercion at `recommend`; nothing reports at `error`, because none of it breaks the package.
 
 A function whose whole body re-implements `describeError` reports once, naming the function, since one import retires the whole helper rather than a single expression.
 
-Bootstrap wrappers under `bin/` are exempt: such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they construct error shapes deliberately. A source the project declares generated or vendored in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: the sweep drops it before the kit sees it, so committed bundler output yields no advice anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
+Bootstrap wrappers under `bin/` are exempt: such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they construct error shapes deliberately. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: the sweep drops it before the kit sees it, so committed bundler output yields no advice anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
 
 A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
 

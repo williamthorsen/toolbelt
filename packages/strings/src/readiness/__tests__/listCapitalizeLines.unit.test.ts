@@ -25,7 +25,7 @@ describe(listCapitalizeLines, () => {
     expect(listCapitalizeLines(source)).toStrictEqual([1]);
   });
 
-  it('claims a capitalization a formatter broke across lines, at the line it opens on', () => {
+  it('claims a capitalization broken across lines by a formatter, at the line it opens on', () => {
     const source = 'const label =\n  word.charAt(0).toUpperCase() +\n  word.slice(1);\n';
 
     expect(listCapitalizeLines(source)).toStrictEqual([2]);
@@ -62,7 +62,7 @@ describe(listCapitalizeLines, () => {
   });
 
   // The chained call reaches the tail alone, so `capitalize` is not the substitution the fix text promises.
-  it('declines a tail the source goes on to transform', () => {
+  it('declines a tail that the source goes on to transform', () => {
     const source = "const label = word.charAt(0).toUpperCase() + word.slice(1).replace(/_/g, ' ');\n";
 
     expect(listCapitalizeLines(source)).toStrictEqual([]);

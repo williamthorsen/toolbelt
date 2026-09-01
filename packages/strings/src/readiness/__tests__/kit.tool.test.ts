@@ -12,7 +12,7 @@ import { describe, expect, it, vi } from 'vitest';
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.strings', version: '1.0.0' });
 const CAPITALIZE = 'export const label = word.charAt(0).toUpperCase() + word.slice(1);\n';
-// The package's own `capitalize`, holding the idiom its check recommends replacing.
+// The package's own `capitalize`, holding the idiom that its check recommends replacing.
 const OWN_CAPITALIZE =
   'export function capitalize(input) {\n  return input.charAt(0).toUpperCase() + input.slice(1);\n}\n';
 const PLURALIZE = "export const noun = count === 1 ? 'item' : 'items';\n";

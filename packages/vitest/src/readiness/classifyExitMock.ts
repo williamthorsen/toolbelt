@@ -18,7 +18,7 @@ const BARE_REFERENCE = /^[\w$.]+$/;
  * Both come from the blanked code `listExitMocks` produces, so a `throw` written in a comment does not make a
  * mock throwing, and a sentinel class named only in prose is not one the file declares.
  *
- * A mock throwing a class the same file declares reports as `sentinel-clone` rather than as the `throwing`
+ * A mock throwing a class declared by the same file reports as `sentinel-clone` rather than as the `throwing`
  * mock it also is, so one finding names the class to retire alongside the mock.
  *
  * `non-throwing` is claimed only against a body this read in full and found no `throw` in, because that kind

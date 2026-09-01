@@ -5,7 +5,7 @@
  * the consumer has. Installing the package is the consent these checks rest on.
  *
  * The checks take inventory rather than banning a pattern, and severity carries the judgment. A defect is a
- * `warn`: an exit mock that does not throw lets a suite cover a path the process never reaches, and a console
+ * `warn`: an exit mock that does not throw lets a suite cover a path that the process never reaches, and a console
  * capture naming its arguments asserts on a message the console never wrote. A working hand-roll is a
  * `recommend`, being a substitution rather than a correction. Nothing here is `error`.
  *
@@ -40,7 +40,7 @@ export default defineAdoptionKit({
       name: 'No test mocks process.exit without throwing',
       id: 'no-non-throwing-exit-mock',
       kinds: ['non-throwing'],
-      fix: `Replace each mock named above with throwOnProcessExit from ${PACKAGE_NAME}/candidate. A mock that returns lets execution continue past the exit, so the test asserts against a path the process never reaches, and nothing reports it.`,
+      fix: `Replace each mock named above with throwOnProcessExit from ${PACKAGE_NAME}/candidate. A mock that returns lets execution continue past the exit, so the test asserts against a path never reached by the process, and nothing reports it.`,
     },
     {
       name: 'No test hand-rolls a throwing or unreadable process-exit mock',

@@ -9,7 +9,7 @@ import path from 'node:path';
  * call that throws leaves nothing on disk.
  *
  * The handle writes into the tree after it is built, through `mkdir`, `symlink`, `write`, `writeAll`, and
- * `writeJson`. Each creates the parent directories it needs and takes its entry path through the containment check
+ * `writeJson`. Each creates the parent directories that it needs and takes its entry path through the containment check
  * `resolve` applies; `symlink`'s target is the exception, stored verbatim. Every one but `writeAll`, which takes a
  * map, returns the absolute path it wrote. It reads the tree back through `exists`, `list`, `listFiles`, `read`,
  * and `readJson`, and removes an entry through `rm`.
@@ -202,12 +202,12 @@ export interface TempTree extends Disposable {
 
   /**
    * Links a tree-relative path to `targetPath`, taking the link first and so inverting `fs.symlinkSync`. The target
-   * is stored verbatim and is not containment-checked, being a string the link holds rather than a location the tree
+   * is stored verbatim and is not containment-checked, being a string held by the link rather than a location the tree
    * writes to: it may be absolute or relative, name something outside the tree, or dangle. A relative one resolves
    * against the link's own directory, as POSIX resolves it. An occupied link path raises `EEXIST`.
    *
    * The link type is the one portability difference. An absolute directory target is linked as a junction, which
-   * Windows creates without the elevation a directory symlink needs; a relative directory target is linked as a
+   * Windows creates without the elevation needed by a directory symlink; a relative directory target is linked as a
    * directory, which needs that elevation; every other target, a missing one included, is linked as a file.
    */
   symlink(linkPath: string, targetPath: string): string;

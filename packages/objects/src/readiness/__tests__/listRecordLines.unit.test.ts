@@ -37,7 +37,7 @@ describe(listRecordLines, () => {
     expect(listLines("const ok = typeof this.value === 'object' && this.value !== null;\n")).toStrictEqual([1]);
   });
 
-  it('claims a conjunction a formatter broke across lines, at the line it opens on', () => {
+  it('claims a conjunction broken across lines by a formatter, at the line it opens on', () => {
     const source = "const ok =\n  typeof value === 'object' &&\n  value !== null &&\n  !Array.isArray(value);\n";
 
     expect(listLines(source)).toStrictEqual([2]);

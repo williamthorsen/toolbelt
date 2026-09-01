@@ -38,7 +38,7 @@ describe(listBiasedShuffleLines, () => {
     expect(listBiasedShuffleLines('const mixed = items.toSorted(() => Math.random() - 0.5);\n')).toStrictEqual([1]);
   });
 
-  it('claims a comparator a formatter broke across lines, at the line the call opens on', () => {
+  it('claims a comparator broken across lines by a formatter, at the line the call opens on', () => {
     const source = 'const mixed = items.sort(\n  () => Math.random() - 0.5,\n);\n';
 
     expect(listBiasedShuffleLines(source)).toStrictEqual([1]);
