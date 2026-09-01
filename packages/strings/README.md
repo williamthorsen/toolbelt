@@ -33,7 +33,7 @@ pluralizeWithCount(3, 'match', 'matches');
 // '3 matches'
 ```
 
-The plural defaults to the singular with an `s` appended, so anything else is the caller's to supply: `pluralize(2, 'box')` returns `'boxs'`. A rule set covering the regular endings would fix `box` and `category` while still returning `'heros'` and `'quizes'`, and the wrong forms that it left would be rarer without being easier to catch. A uniformly naive default is one a caller learns to override.
+The plural defaults to the singular with an `s` appended, so anything else is the caller's to supply: `pluralize(2, 'box')` returns `'boxs'`. A rule set covering the regular endings would fix `box` and `category` while still returning `'heros'` and `'quizes'`, and the wrong forms that it left would be rarer without being easier to catch. A uniformly naive default is one that a caller learns to override.
 
 Selection is English: only a count whose absolute value is exactly 1 takes the singular, so `-1` takes the singular and `0`, `1.5`, `NaN`, and `Infinity` take the plural. Neither function throws.
 

@@ -194,7 +194,7 @@ The hook's own parameter list is the request, so the fixture builds for every te
 
 `aroundAll` is the file-scoped counterpart, over a `{ scope: 'file' }` fixture, and the shape is otherwise identical. Vitest gives a suite-level hook only file- and worker-scoped fixtures, and the types enforce it: a test-scoped fixture named there is not a property of the hook's context, and the error lists the fixtures that are. Past the types, the runner throws `FixtureDependencyError` and fails the suite, naming the test-scoped fixtures rather than the available ones.
 
-A hook registered at file level wraps every test in the file, not only the tests of the API on which it was registered. A file declaring a second extended API gets the hook over those tests too, and a hook requesting a fixture that API does not carry receives `undefined`: the failure surfaces as a `TypeError` thrown inside the hook and attributed to the test, naming the property that was read rather than the fixture that was missing. Registering the hook inside the `describe` holding the tests scopes it to them, which is the fix where one file needs both; one extended API per file avoids the question.
+A hook registered at file level wraps every test in the file, not only the tests of the API on which it was registered. A file declaring a second extended API gets the hook over those tests too, and a hook requesting a fixture not carried by that API receives `undefined`: the failure surfaces as a `TypeError` thrown inside the hook and attributed to the test, naming the property that was read rather than the fixture that was missing. Registering the hook inside the `describe` holding the tests scopes it to them, which is the fix where one file needs both; one extended API per file avoids the question.
 
 The suite pins the `aroundEach` request, the `aroundAll` counterpart, and the file-level hook's reach over a second API, so a runner that stopped honoring one fails here rather than at a consumer. It does not pin the `TypeError` above, which can only be observed as a failing test.
 
@@ -333,7 +333,7 @@ The kit reads the project's tracked test files and reports the three idioms for 
 
 Severity carries the judgment. A defect reports at `warn`, a working hand-roll at `recommend`. Nothing reports at `error`, because none of it breaks the package.
 
-Each check prints one fraction, and it measures the kit rather than the check: calls that the project already makes into this package, over those calls plus every site of any of the idioms found by the kit, less the sites silenced by a pragma for that check. A project holding twelve console sites and no exit mocks therefore reads `[0 of 12]` against the exit checks too.
+Each check prints one fraction, and it measures the kit rather than the check: calls that the project already makes into this package, over those calls plus every site that the kit found of any of the idioms, less the sites silenced by a pragma for that check. A project holding twelve console sites and no exit mocks therefore reads `[0 of 12]` against the exit checks too.
 
 | Check id                         | Reports                                                                   | Severity    |
 | -------------------------------- | ------------------------------------------------------------------------- | ----------- |

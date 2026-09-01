@@ -20,7 +20,7 @@ Requires Node.js 24 or later.
 clamp(value: number, bounds: { min?: number; max?: number }): number;
 ```
 
-Returns the value constrained to the inclusive bounds; an omitted bound leaves that side unconstrained. A reversed range or a `NaN` bound throws a `RangeError`, where the `Math.max(min, Math.min(max, value))` idiom it replaces returns a value for both. A `NaN` value passes through.
+Returns the value constrained to the inclusive bounds; an omitted bound leaves that side unconstrained. A reversed range or a `NaN` bound throws a `RangeError`, where the `Math.max(min, Math.min(max, value))` idiom that it replaces returns a value for both. A `NaN` value passes through.
 
 ```ts
 import { clamp } from '@williamthorsen/toolbelt.numbers/candidate';
