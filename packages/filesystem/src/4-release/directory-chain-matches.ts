@@ -19,7 +19,7 @@ export type DirectoryChainMatchOptions = ListDirectoryChainOptions;
  * Probing stops at the first level that matches, so no level beyond it is touched. Where every level's match
  * matters rather than the nearest, `listDirectoryChainMatches` collects them all.
  *
- * Each name is a path relative to the level it is probed against, so a nested location such as
+ * Each name is a path relative to the level against which it is probed, so a nested location such as
  * `.config/stack.config.mjs` works. A name that would leave its level is rejected before any level is probed.
  *
  * @example
@@ -57,7 +57,7 @@ export function findDirectoryChainMatch(
  *
  * Every level is probed. Where only the nearest match matters, `findDirectoryChainMatch` stops at the first.
  *
- * Each name is a path relative to the level it is probed against, so a nested location such as
+ * Each name is a path relative to the level against which it is probed, so a nested location such as
  * `.config/stack.config.mjs` works. A name that would leave its level is rejected before any level is probed.
  *
  * @example
@@ -90,9 +90,9 @@ export function listDirectoryChainMatches(
 
 // region | Helpers
 /**
- * Rejects any name that would resolve outside the level it is probed against, which is what keeps a bounded ascent
- * bounded for a caller-supplied name rather than merely intended. Validated once against the names themselves, so
- * the rejection does not depend on what happens to exist on disk.
+ * Rejects any name that would resolve outside the level against which it is probed, which is what keeps a bounded
+ * ascent bounded for a caller-supplied name rather than merely intended. Validated once against the names themselves,
+ * so the rejection does not depend on what happens to exist on disk.
  */
 function assertLevelRelativeNames(names: ReadonlyArray<string>): void {
   for (const name of names) {

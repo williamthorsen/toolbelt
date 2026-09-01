@@ -1,7 +1,7 @@
 import { inspect } from 'node:util';
 
 /**
- * Runs a call expected to fail and returns the `Error` it threw or rejected with.
+ * Runs a call expected to fail and returns the `Error` that it threw or rejected with.
  *
  * Accepts a synchronous or an asynchronous call. Fails the test when the call completes normally or throws a
  * non-`Error`, so a regression that stops the failure reports itself rather than leaving a later assertion to
@@ -13,7 +13,7 @@ import { inspect } from 'node:util';
  */
 export function captureError(run: () => unknown): Promise<Error>;
 /**
- * Runs a call expected to fail and returns the error it threw or rejected with, narrowed to the expected
+ * Runs a call expected to fail and returns the error that it threw or rejected with, narrowed to the expected
  * class. Fails the test when the call completes normally or throws anything else, carrying what it did throw
  * as the failure's `cause`.
  *

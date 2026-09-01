@@ -21,7 +21,7 @@ captureError(run: () => unknown): Promise<Error>;
 captureError<E extends Error>(ErrorClass: abstract new (...args: never[]) => E, run: () => unknown): Promise<E>;
 ```
 
-Runs a call expected to fail and returns the error it threw or rejected with, narrowed to the expected class.
+Runs a call expected to fail and returns the error that it threw or rejected with, narrowed to the expected class.
 
 ```ts
 import { captureError } from '@williamthorsen/toolbelt.testing/candidate';

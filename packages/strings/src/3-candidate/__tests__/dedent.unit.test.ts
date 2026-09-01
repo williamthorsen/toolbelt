@@ -158,7 +158,7 @@ alpha
       `).toBe('Items:\n  alpha\nbeta');
     });
 
-    it('indents continuation lines to the line the value opened on', () => {
+    it('indents continuation lines to the line on which the value opened', () => {
       const indented = dedent.withOptions({ valueIndentationStyle: 'line' });
 
       expect(indented`

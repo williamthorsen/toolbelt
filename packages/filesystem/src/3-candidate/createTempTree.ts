@@ -202,9 +202,9 @@ export interface TempTree extends Disposable {
 
   /**
    * Links a tree-relative path to `targetPath`, taking the link first and so inverting `fs.symlinkSync`. The target
-   * is stored verbatim and is not containment-checked, being a string held by the link rather than a location the tree
-   * writes to: it may be absolute or relative, name something outside the tree, or dangle. A relative one resolves
-   * against the link's own directory, as POSIX resolves it. An occupied link path raises `EEXIST`.
+   * is stored verbatim and is not containment-checked, being a string held by the link rather than a location to
+   * which the tree writes: it may be absolute or relative, name something outside the tree, or dangle. A relative one
+   * resolves against the link's own directory, as POSIX resolves it. An occupied link path raises `EEXIST`.
    *
    * The link type is the one portability difference. An absolute directory target is linked as a junction, which
    * Windows creates without the elevation needed by a directory symlink; a relative directory target is linked as a

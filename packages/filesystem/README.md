@@ -73,7 +73,7 @@ listDirectoryChainMatches('/home/dev/app/src', ['.git'], { stopAtDir: '/home/dev
 
 A level yields at most one match, the earliest of `names` found there, and a level holding none contributes nothing, so an empty result is an ordinary outcome rather than an error. A name matches a directory as readily as a file, which is what lets `.git` be probed without knowing whether the clone is ordinary or a worktree.
 
-Each name is a path relative to the level it is probed against, so a nested location such as `.config/stack.config.mjs` works. A name that would leave its level (an absolute path, or one whose `..` segments escape it) is rejected before any level is probed, so the rejection never depends on what happens to exist on disk.
+Each name is a path relative to the level against which it is probed, so a nested location such as `.config/stack.config.mjs` works. A name that would leave its level (an absolute path, or one whose `..` segments escape it) is rejected before any level is probed, so the rejection never depends on what happens to exist on disk.
 
 `options` is forwarded to `listDirectoryChain`, so `stopAtDir` bounds the ascent the same way.
 
@@ -176,7 +176,7 @@ reconcileFile('.config/tool.config.ts', template);
 // { filePath: '.config/tool.config.ts', outcome: 'created' }
 ```
 
-Missing parent directories are created. `isDryRun` writes nothing and creates no directory, returning the outcome the real call would have produced, which is what lets a `--dry-run` flag print the same lines the run itself would. A write that would fail is the exception: nothing detects that without attempting it, so a dry run reports the outcome the write was headed for.
+Missing parent directories are created. `isDryRun` writes nothing and creates no directory, returning the outcome that the real call would have produced, which is what lets a `--dry-run` flag print what the run itself would. A write that would fail is the exception: nothing detects that without attempting it, so a dry run reports the outcome the write was headed for.
 
 `conflictPolicy` decides what becomes of an existing file whose content differs, and decides nothing else: it is consulted in that case alone. The default, `'skip'`, never replaces a file the user may have edited.
 
@@ -313,7 +313,7 @@ tree.writeJson('tsconfig.json', { include: ['src'] });
 tree.mkdir('packages/empty');
 ```
 
-Each creates the parent directories that it needs, resolves through the same containment check as `resolve`, and returns the absolute path of what it wrote. `symlink`'s link path is checked; its target is not, being a string held by the link rather than a location the tree writes to.
+Each creates the parent directories that it needs, resolves through the same containment check as `resolve`, and returns the absolute path of what it wrote. `symlink`'s link path is checked; its target is not, being a string held by the link rather than a location to which the tree writes.
 
 `writeAll` takes the same map the constructor takes, `/`-suffix convention included, so a fixture built in one call can be added to in one call:
 
