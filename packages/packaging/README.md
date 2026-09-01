@@ -47,7 +47,7 @@ import { DEFAULT_ROOT_MARKERS, findProjectRoot } from '@williamthorsen/toolbelt.
 findProjectRoot(process.cwd(), { markers: [...DEFAULT_ROOT_MARKERS, 'deno.json'] });
 ```
 
-Each marker is a path relative to the level it is probed against, on the terms [`listDirectoryChainMatches`](https://github.com/williamthorsen/toolbelt/tree/main/packages/filesystem#listdirectorychainmatches) sets out: one that is absolute, or whose `..` segments escape its level, is rejected before any directory is probed.
+Each marker is a path relative to the level against which it is probed, on the terms [`listDirectoryChainMatches`](https://github.com/williamthorsen/toolbelt/tree/main/packages/filesystem#listdirectorychainmatches) sets out: one that is absolute, or whose `..` segments escape its level, is rejected before any directory is probed.
 
 When no directory up to and including the filesystem root carries a marker, the result falls back in this order, reporting a `null` marker either way:
 

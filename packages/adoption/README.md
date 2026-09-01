@@ -19,8 +19,8 @@ reason, and the root's `__tests__/workspace-dependency-graph.app.unit.test.ts` f
   package claims where two kits recognize the same idiom.
 - `src/kits/` -- the kit-assembly helper, and the only module binding to readyup's kit machinery: the sweep,
   the adoption count, and the finding report. Its `test-utils/` reaches a package's own kit test through the
-  `./test-utils` export, held out of `src/mod.ts` so it stays clear of the module graph every kit bundle
-  inlines.
+  `./test-utils` export, held out of `src/mod.ts` so it stays clear of the module graph inlined by every
+  kit bundle.
 
 ## What a kit looks like
 

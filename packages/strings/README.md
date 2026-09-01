@@ -33,7 +33,7 @@ pluralizeWithCount(3, 'match', 'matches');
 // '3 matches'
 ```
 
-The plural defaults to the singular with an `s` appended, so anything else is the caller's to supply: `pluralize(2, 'box')` returns `'boxs'`. A rule set covering the regular endings would fix `box` and `category` while still returning `'heros'` and `'quizes'`, and the wrong forms it left would be rarer without being easier to catch. A uniformly naive default is one a caller learns to override.
+The plural defaults to the singular with an `s` appended, so anything else is the caller's to supply: `pluralize(2, 'box')` returns `'boxs'`. A rule set covering the regular endings would fix `box` and `category` while still returning `'heros'` and `'quizes'`, and the wrong forms that it left would be rarer without being easier to catch. A uniformly naive default is one that a caller learns to override.
 
 Selection is English: only a count whose absolute value is exactly 1 takes the singular, so `-1` takes the singular and `0`, `1.5`, `NaN`, and `Infinity` take the plural. Neither function throws.
 
@@ -55,7 +55,7 @@ dedent`...`;
 dedent.withOptions(options: { valueIndentationStyle?: 'none' | 'line' }): Dedent;
 ```
 
-Removes the indentation a multi-line template literal inherits from the source it is written in, so the string a reader sees is the string the program gets.
+Removes the indentation inherited by a multi-line template literal from the source in which it is written, so the string that a reader sees is the string that the program gets.
 
 ```ts
 import { dedent } from '@williamthorsen/toolbelt.strings/candidate';
@@ -81,7 +81,7 @@ dedent`
 // 'alpha\n'
 ```
 
-Relative depth is preserved. What is removed is the longest indentation every content line shares.
+Relative depth is preserved. What is removed is the longest indentation shared by every content line.
 
 ```ts
 dedent`
@@ -106,7 +106,7 @@ dedent`
 // Error: Every line of the template is indented, but they share no common indentation.
 ```
 
-Removing nothing would be silent, and a template that silently declines to dedent is the failure this function exists to prevent. A template with a genuine column-zero line is a different case, and strips nothing without complaint.
+Removing nothing would be silent, and a template that silently declines to dedent is the failure that this function exists to prevent. A template with a genuine column-zero line is a different case, and strips nothing without complaint.
 
 Blank lines are ignored when measuring and emptied in the output, so an editor's trailing whitespace on an otherwise empty line changes nothing. A line holding an interpolation counts as content even when the rest of it is blank, which means a value's **position** can affect the measurement even though its **content** cannot.
 
@@ -124,7 +124,7 @@ dedent`
 // 'before\nx\ny\nafter'
 ```
 
-By default a value is spliced exactly as given, so a multi-line value's later lines land where its own text puts them. `valueIndentationStyle: 'line'` indents them to match the line the value opened on:
+By default a value is spliced exactly as given, so a multi-line value's later lines land where its own text puts them. `valueIndentationStyle: 'line'` indents them to match the line on which the value opened:
 
 ```ts
 const items = 'alpha\nbeta';
@@ -142,7 +142,7 @@ dedent.withOptions({ valueIndentationStyle: 'line' })`
 // 'Items:\n  alpha\n  beta'
 ```
 
-`'none'` is the default because indenting a value edits data the caller did not ask to have edited. A patch, a stack trace, or a base64 blob comes back subtly altered, and nothing in the output says so. The other way round, a caller who wanted alignment sees ragged output and can act on it.
+`'none'` is the default because indenting a value edits data that the caller did not ask to have edited. A patch, a stack trace, or a base64 blob comes back subtly altered, and nothing in the output says so. The other way round, a caller who wanted alignment sees ragged output and can act on it.
 
 `withOptions` returns a new tag and leaves the receiver untouched, so configuring one call site cannot change behavior at another. Successive calls merge over the receiver, and an explicit `undefined` inherits rather than resets.
 
@@ -225,7 +225,7 @@ hashString('user-4821', { max: 999 });
 // 544
 ```
 
-The default range is the full 32-bit width, `[0, 4294967295]`. Bounding is opt-in through `min` and `max`, which are inclusive, because a narrow range imposes a collision floor the caller should choose knowingly: at `{ max: 999 }`, two of roughly forty inputs collide more often than not.
+The default range is the full 32-bit width, `[0, 4294967295]`. Bounding is opt-in through `min` and `max`, which are inclusive, because a narrow range imposes a collision floor that the caller should choose knowingly: at `{ max: 999 }`, two of roughly forty inputs collide more often than not.
 
 `offset` rotates the result rather than salting the digest, so every input shifts by the same amount and `hashString(str, { offset })` stays derivable from `hashString(str)`. It wraps at both bounds, so a negative offset and one larger than the range are both fine.
 
@@ -252,7 +252,7 @@ A capitalization is claimed where the same subject supplies both halves, as in `
 
 A pluralization is claimed where a ternary tests a value against 1 and its branches are two string literals related as singular and singular plus `s`, covering `'item' : 'items'`, `'' : 's'`, and the `!==` mirror `'s' : ''`. A pair of identifiers is not claimed, and neither is a pair of unrelated literals such as `'active' : 'inactive'`: the plural relation is the only evidence available that the compared value counts something. `count > 1 ? 's' : ''` is not claimed either, since replacing it changes what the code prints at zero. Note that `pluralize` tests `Math.abs(count)`, so a count of `-1` takes the singular where a hand-rolled equality test takes the plural.
 
-Bootstrap wrappers under `bin/` are exempt: such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they write these forms deliberately. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: the sweep drops it before the kit sees it, so committed bundler output yields no advice anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
+Bootstrap wrappers under `bin/` are exempt: such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they write these forms deliberately. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: the sweep drops it before the kit sees it, so committed bundler output yields no advice that anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
 
 A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
 

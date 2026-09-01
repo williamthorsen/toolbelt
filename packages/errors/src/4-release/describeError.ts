@@ -8,7 +8,7 @@ import { isError } from './isError.ts';
  *
  * Describing never throws. A null-prototype object, a `toString` that throws, and a `message` accessor that
  * throws all answer `[unstringifiable value]`, because a describer that fails inside a catch block discards
- * the very error it was called to report.
+ * the very error that it was called to report.
  *
  * @example
  * describeError(new Error('connection refused')); // 'connection refused'

@@ -21,7 +21,7 @@ captureError(run: () => unknown): Promise<Error>;
 captureError<E extends Error>(ErrorClass: abstract new (...args: never[]) => E, run: () => unknown): Promise<E>;
 ```
 
-Runs a call expected to fail and returns the error it threw or rejected with, narrowed to the expected class.
+Runs a call expected to fail and returns the error that it threw or rejected with, narrowed to the expected class.
 
 ```ts
 import { captureError } from '@williamthorsen/toolbelt.testing/candidate';
@@ -139,7 +139,7 @@ expect(stdio.stdout).toContain('[PASS] passing');
 
 Both streams are saved and restored whether or not the option is passed, so the value cannot leak into later tests either way. Restoration puts back the state that it found: a stream that owned no `isTTY` owns none again afterwards, rather than being left holding `undefined`.
 
-Style detection reads the stream it writes to, so the value is set on both. A test needing them to differ has to assign directly.
+Style detection reads the stream to which it writes, so the value is set on both. A test needing them to differ has to assign directly.
 
 ### Composing with `silenceConsole`
 
@@ -158,7 +158,7 @@ console.info('captured again');
 expect(stdio.stdout).toBe('captured\ncaptured again\n');
 ```
 
-The reverse order holds too: a capture opened inside a silence takes the output for its own scope and hands the console back on exit, with the calls the silence had recorded still intact.
+The reverse order holds too: a capture opened inside a silence takes the output for its own scope and hands the console back on exit, with the calls recorded by the silence still intact.
 
 ## `pointArgvAt`
 
@@ -203,11 +203,11 @@ The default names no existing file, so code deriving its own directory from `pro
 
 ### One mode, not two
 
-`pointCwdAt` offers `chdir` because the OS holds a working directory of its own, which a spawned child inherits and which `process.cwd()` can be made to disagree with. Node offers no counterpart to `chdir` for `process.argv`, so there is one mode here: a spawned child receives whatever arguments its own `spawn` call passes, not the ones the scope installed.
+`pointCwdAt` offers `chdir` because the OS holds a working directory of its own, which a spawned child inherits and which `process.cwd()` can be made to disagree with. Node offers no counterpart to `chdir` for `process.argv`, so there is one mode here: a spawned child receives whatever arguments its own `spawn` call passes, not the ones installed by the scope.
 
 ### What the swap does not reach
 
-The scope assigns a new array rather than mutating the one it found, which is what lets disposal restore the original by reference. A module that captured the array before the scope opened therefore goes on reporting the arguments it captured. Code that reads `process.argv` when it runs, which is what a CLI entry point does, sees the pointed arguments.
+The scope assigns a new array rather than mutating the one it found, which is what lets disposal restore the original by reference. A module that captured the array before the scope opened therefore goes on reporting the arguments that it captured. Code that reads `process.argv` when it runs, which is what a CLI entry point does, sees the pointed arguments.
 
 ### Setting a default for a whole file
 
@@ -267,13 +267,13 @@ Neither mode touches `process.env.PWD`, because `process.chdir` does not touch i
 
 ### Resolution and rejection
 
-Both modes resolve the argument through `realpathSync` and reject a path naming no existing directory, so one call reports one directory whichever mode it runs in. Without that, macOS would report `/var/folders/…` under the replacement and `/private/var/folders/…` under the move. The resolved path is what the handle reports as `dir`.
+Both modes resolve the argument through `realpathSync` and reject a path naming no existing directory, so one call reports one directory in whichever mode it runs. Without that, macOS would report `/var/folders/…` under the replacement and `/private/var/folders/…` under the move. The resolved path is what the handle reports as `dir`.
 
 A relative path resolves against the directory `process.cwd()` reports, which an enclosing scope may already have pointed elsewhere.
 
 ### Nesting
 
-Each scope restores the value it found, so scopes nest in any combination and in any order:
+Each scope restores the value that it found, so scopes nest in any combination and in any order:
 
 ```ts
 using _outer = pointCwdAt(tree.dir);
