@@ -19,7 +19,7 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "3a124dad",
+          "hash": "b93df24d",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -29,7 +29,7 @@
           "path": "../../adoption/src/mod.ts"
         },
         {
-          "hash": "e8d0444d",
+          "hash": "8f288316",
           "kind": "module",
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
@@ -54,7 +54,7 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "61be8824",
+          "hash": "3441295b",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -69,7 +69,7 @@
           "path": "../src/readiness/listArraifyLines.ts"
         },
         {
-          "hash": "f2eeb416",
+          "hash": "5d173bad",
           "kind": "module",
           "path": "../src/readiness/listArrayIdioms.ts"
         },
@@ -79,7 +79,7 @@
           "path": "../src/readiness/listBiasedShuffleLines.ts"
         },
         {
-          "hash": "367782ac",
+          "hash": "98190ab4",
           "kind": "module",
           "path": "../src/readiness/listRandomItemLines.ts"
         }
@@ -88,8 +88,8 @@
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "61be8824",
-      "targetHash": "b567e47e"
+      "sourceHash": "3441295b",
+      "targetHash": "6c96a267"
     }
   ]
 }

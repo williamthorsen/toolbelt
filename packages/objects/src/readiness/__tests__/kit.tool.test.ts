@@ -14,7 +14,7 @@ const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.obje
 const OWN_PROPERTY = 'export const has = Object.prototype.hasOwnProperty.call(target, key);\n';
 const RECORD = "export const ok = typeof value === 'object' && value !== null && !Array.isArray(value);\n";
 const STRINGIFY = 'export const same = JSON.stringify(a) === JSON.stringify(b);\n';
-// The package's own `isRecord`, holding the idiom its check recommends replacing.
+// The package's own `isRecord`, holding the idiom that its check recommends replacing.
 const OWN_RECORD =
   "export function isRecord(value) {\n  return typeof value === 'object' && value !== null && !Array.isArray(value);\n}\n";
 // A narrowing guard the record check declines, and a serialization the stringify check declines.

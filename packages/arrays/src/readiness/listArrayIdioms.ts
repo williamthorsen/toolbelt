@@ -14,7 +14,7 @@ export type ArrayIdiomKind = 'arraify-inline' | 'biased-shuffle' | 'random-item'
  *
  * The source is blanked once here and every detector reads what it produces, so an idiom written in a comment
  * or a literal is invisible to them. Blanking preserves every offset, so a reported line still names the line
- * the source holds.
+ * held by the source.
  *
  * @internal
  */

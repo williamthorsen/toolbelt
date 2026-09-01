@@ -19,7 +19,7 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "3a124dad",
+          "hash": "b93df24d",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -29,7 +29,7 @@
           "path": "../../adoption/src/mod.ts"
         },
         {
-          "hash": "e8d0444d",
+          "hash": "8f288316",
           "kind": "module",
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
@@ -54,7 +54,7 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "e6df5682",
+          "hash": "2b8ac62f",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -69,12 +69,12 @@
           "path": "../src/readiness/listClampNestLines.ts"
         },
         {
-          "hash": "47d35285",
+          "hash": "eabb769f",
           "kind": "module",
           "path": "../src/readiness/listMathIdioms.ts"
         },
         {
-          "hash": "fa0a23b7",
+          "hash": "9dce1264",
           "kind": "module",
           "path": "../src/readiness/listRandomIntegerLines.ts"
         },
@@ -88,8 +88,8 @@
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "e6df5682",
-      "targetHash": "98946f2d"
+      "sourceHash": "2b8ac62f",
+      "targetHash": "1e88eb34"
     }
   ]
 }

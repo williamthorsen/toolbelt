@@ -12,7 +12,7 @@ describe(resolveSpecifier, () => {
     expect(resolveSpecifier(tree.dir, './shuffle.ts')).toBe(path.join(tree.dir, 'shuffle.ts'));
   });
 
-  it('resolves an extensionless specifier to the TypeScript file it names', () => {
+  it('resolves an extensionless specifier to the TypeScript file that it names', () => {
     using tree = createTempDir({ 'shuffle.ts': '' });
 
     expect(resolveSpecifier(tree.dir, './shuffle')).toBe(path.join(tree.dir, 'shuffle.ts'));

@@ -19,7 +19,7 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "3a124dad",
+          "hash": "b93df24d",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -29,7 +29,7 @@
           "path": "../../adoption/src/mod.ts"
         },
         {
-          "hash": "e8d0444d",
+          "hash": "8f288316",
           "kind": "module",
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
@@ -54,7 +54,7 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "29c576c8",
+          "hash": "4845a1a8",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -69,12 +69,12 @@
           "path": "../src/readiness/classifyConsoleMock.ts"
         },
         {
-          "hash": "5bfa7274",
+          "hash": "e66ee47a",
           "kind": "module",
           "path": "../src/readiness/classifyExitMock.ts"
         },
         {
-          "hash": "3654dbe0",
+          "hash": "cff4fbd3",
           "kind": "module",
           "path": "../src/readiness/listConsoleSites.ts"
         },
@@ -98,8 +98,8 @@
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "29c576c8",
-      "targetHash": "05dcb83b"
+      "sourceHash": "4845a1a8",
+      "targetHash": "4c9f7fb9"
     }
   ]
 }

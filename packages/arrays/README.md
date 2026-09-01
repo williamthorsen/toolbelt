@@ -104,7 +104,7 @@ The package ships a ReadyUp kit, so a project that installs it can ask how far i
 rdy run --packages
 ```
 
-The kit reads the project's tracked sources and reports three hand-rolled idioms in them, each counted against the calls the project already makes into this package. Two report at `recommend`: they are correct code that a published utility expresses better. The first reports at `warn`, because it is a defect.
+The kit reads the project's tracked sources and reports three hand-rolled idioms in them, each counted against the calls that the project already makes into this package. Two report at `recommend`: they are correct code that a published utility expresses better. The first reports at `warn`, because it is a defect.
 
 A `sort` or `toSorted` comparator is claimed at `warn` where its body decides the order on `Math.random()` and nothing else. Such a comparator does not order consistently, and the engine sorting through it is free to produce any permutation, so the result is neither uniform nor the same across engines. `shuffle` from `/candidate` walks the array backward swapping each item with one drawn at or before it, and takes a seed where a test needs the draw to repeat; `shuffleInPlace` is the mutating form, and a `toSorted` site takes `shuffle`. Claiming the body rather than a spelling is what admits `() => Math.random() - 0.5`, its mirror, and the ternary variants together. A comparator that ranks by its operands and reaches for a draw only to break a tie is not claimed: its body names its own parameters, and `shuffle` does not reproduce it.
 
@@ -114,7 +114,7 @@ A ternary wrapping a value in an array is claimed, in either polarity, where bot
 
 `[...new Set(x)]` is not claimed, though `listUniqueItems` is exactly that expression. The platform form is not the weaker alternative here, so the advice would be a rename.
 
-Bootstrap wrappers under `bin/` are exempt: such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they write these forms deliberately. A source the project declares generated or vendored in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: the sweep drops it before the kit sees it, so committed bundler output yields no advice anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
+Bootstrap wrappers under `bin/` are exempt: such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they write these forms deliberately. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: the sweep drops it before the kit sees it, so committed bundler output yields no advice anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
 
 A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
 

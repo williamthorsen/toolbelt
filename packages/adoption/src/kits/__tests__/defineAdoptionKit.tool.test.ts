@@ -126,7 +126,7 @@ describe(defineAdoptionKit, () => {
     });
   });
 
-  it('exempts a site inside the declaration the package exports, and reports its neighbour', async () => {
+  it('exempts a site inside the declaration exported by the package, and reports its neighbour', async () => {
     using tree = createTrackedRepo({ 'package.json': PUBLISHER_MANIFEST, 'src/doThing.ts': IMPLEMENTATION });
     using _cwd = pointCwdAt(tree.dir);
 
@@ -171,7 +171,7 @@ describe(defineAdoptionKit, () => {
     using _cwd = pointCwdAt(tree.dir);
 
     await expect(runSkip(listChecks(buildSpec())[0])).resolves.toBe(
-      'the project is not a git working tree, and these checks read the files git tracks',
+      'the project is not a git working tree, and these checks read the files that git tracks',
     );
   });
 

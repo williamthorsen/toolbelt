@@ -6,13 +6,13 @@ import * as candidateExports from '../../3-candidate/index.ts';
 import * as releaseExports from '../../4-release/index.ts';
 import { ADOPTED_EXPORTS } from '../adoptedExports.ts';
 
-// Every tier the package's `exports` map publishes. `errors` and `vitest` scan the last two alone; this
+// Every tier published by the package's `exports` map. `errors` and `vitest` scan the last two alone; this
 // package puts `makeRng` in `1-proposed`, which a two-tier sweep would miss while still passing.
 const PUBLISHED_TIERS = [proposedExports, draftExports, candidateExports, releaseExports];
 
 describe('ADOPTED_EXPORTS', () => {
   // Fails when a published tier gains a callable export that nothing added to the list adoption is counted against.
-  it('names every export a consumer calls', () => {
+  it('names every export that a consumer calls', () => {
     const callable = PUBLISHED_TIERS.flatMap((tier) =>
       Object.entries(tier)
         .filter(([, value]) => typeof value === 'function')

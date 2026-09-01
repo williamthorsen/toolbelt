@@ -9,7 +9,7 @@ const UNCALLED_EXPORTS = new Set(['ProcessExitError']);
 
 describe('ADOPTED_EXPORTS', () => {
   // Fails when a published tier gains a callable export that nothing added to the list adoption is counted against.
-  it('names every export a consumer calls', () => {
+  it('names every export that a consumer calls', () => {
     const callable = [candidateExports, releaseExports].flatMap((tier) =>
       Object.entries(tier)
         .filter(([name, value]) => typeof value === 'function' && !UNCALLED_EXPORTS.has(name))

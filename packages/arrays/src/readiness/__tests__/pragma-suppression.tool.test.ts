@@ -28,7 +28,7 @@ describe('The arrays adoption kit, run through rdy', () => {
     ]);
   });
 
-  it('drops a site an unqualified pragma covers from every check’s detail and fraction', () => {
+  it('drops a site covered by an unqualified pragma from every check’s detail and fraction', () => {
     expect(runKit(`${ARRAIFY} // rdy-ignore -- reviewed\n`)).toStrictEqual([
       { count: 3, detail: 'src/mixed.ts:1', id: 'no-biased-shuffle', passedCount: 1 },
       { count: 3, detail: 'src/pick.ts:1', id: 'no-hand-rolled-random-item', passedCount: 1 },
@@ -38,7 +38,7 @@ describe('The arrays adoption kit, run through rdy', () => {
 
   // A `dir:` kit source carries no namespace, so the bare id stands. A consumer running the kit from the
   // installed package writes `toolbelt.arrays/no-hand-rolled-arraify`.
-  it('drops a site a qualified pragma covers from the named check alone', () => {
+  it('drops a site covered by a qualified pragma from the named check alone', () => {
     expect(runKit(`${ARRAIFY} // rdy-ignore no-hand-rolled-arraify -- reviewed\n`)).toStrictEqual([
       { count: 4, detail: 'src/mixed.ts:1', id: 'no-biased-shuffle', passedCount: 1 },
       { count: 4, detail: 'src/pick.ts:1', id: 'no-hand-rolled-random-item', passedCount: 1 },

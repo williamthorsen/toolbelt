@@ -6,7 +6,7 @@ import { getLineAtOffset } from '@williamthorsen/toolbelt.adoption';
 //
 // The backreference is what makes the match a capitalize rather than two unrelated halves, and the leading
 // lookbehind keeps the subject from starting mid-identifier, which would let `sX...+ X.slice(1)` match on `X`.
-// The trailing lookahead declines a tail the source goes on to transform: the chained call reaches the tail
+// The trailing lookahead declines a tail that the source goes on to transform: the chained call reaches the tail
 // alone, which `capitalize` does not reproduce, whether it re-cases the tail or does anything else to it. A
 // call on the whole expression sits outside the match and is claimed.
 const CAPITALIZE_INLINE =

@@ -4,7 +4,7 @@ import { createTempDir } from '../createTempDir.ts';
 import { listExportTargets } from '../listExportTargets.ts';
 
 describe(listExportTargets, () => {
-  it('pairs each tier entry point with the tier its path names', () => {
+  it('pairs each tier entry point with the tier named by its path', () => {
     using tree = createTempDir({
       'package.json': JSON.stringify({
         exports: {

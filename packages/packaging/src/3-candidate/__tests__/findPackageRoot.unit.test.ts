@@ -17,7 +17,7 @@ describe(findPackageRoot, () => {
     expect(result).toBe(tree.resolve('packages/app'));
   });
 
-  it('skips the marker manifest a dual-format build leaves in `dist`', () => {
+  it('skips the marker manifest left in `dist` by a dual-format build', () => {
     using tree = createTempTree({
       'dist/cjs/package.json': manifest({ type: 'commonjs' }),
       'package.json': manifest({ name: 'demo', version: '1.0.0' }),

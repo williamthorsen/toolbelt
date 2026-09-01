@@ -13,7 +13,7 @@ export type StringIdiomKind = 'capitalize-inline' | 'pluralize-inline';
  *
  * The source is blanked once here and both detectors read what it produces, so an idiom written in a comment
  * or a literal is invisible to them. Blanking preserves every offset, so a reported line still names the line
- * the source holds, and the pluralize detector can still read its literals from the source beneath.
+ * held by the source, and the pluralize detector can still read its literals from the source beneath.
  *
  * @internal
  */

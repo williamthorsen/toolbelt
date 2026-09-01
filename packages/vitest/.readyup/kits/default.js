@@ -16,7 +16,7 @@ import {
   countPackageUsage,
   readTrackedSources
 } from "readyup/check-utils";
-var NOT_A_REPO = "the project is not a git working tree, and these checks read the files git tracks";
+var NOT_A_REPO = "the project is not a git working tree, and these checks read the files that git tracks";
 var NOTHING_TO_REPORT = { findings: [] };
 function defineAdoptionKit(spec) {
   assertCheckIdsAreUnique();
@@ -295,7 +295,7 @@ var default_default = defineAdoptionKit({
       name: "No test mocks process.exit without throwing",
       id: "no-non-throwing-exit-mock",
       kinds: ["non-throwing"],
-      fix: `Replace each mock named above with throwOnProcessExit from ${PACKAGE_NAME}/candidate. A mock that returns lets execution continue past the exit, so the test asserts against a path the process never reaches, and nothing reports it.`
+      fix: `Replace each mock named above with throwOnProcessExit from ${PACKAGE_NAME}/candidate. A mock that returns lets execution continue past the exit, so the test asserts against a path never reached by the process, and nothing reports it.`
     },
     {
       name: "No test hand-rolls a throwing or unreadable process-exit mock",
@@ -308,7 +308,7 @@ var default_default = defineAdoptionKit({
       name: "No test captures only part of a console call",
       id: "no-lossy-console-capture",
       kinds: ["console-capture-lossy"],
-      fix: `Silence each method named above with silenceConsole from ${PACKAGE_NAME}/candidate and read it with listConsoleLines, which renders every argument of a call. A capture whose parameter list names its arguments drops the ones past them, so console.error('failed:', reason) asserts as 'failed:' and the test passes on a message the console never wrote.`
+      fix: `Silence each method named above with silenceConsole from ${PACKAGE_NAME}/candidate and read it with listConsoleLines, which renders every argument of a call. A capture whose parameter list names its arguments drops the ones past them, so console.error('failed:', reason) asserts as 'failed:' and the test passes on a message that the console never wrote.`
     },
     {
       name: "No test hand-rolls a console capture",

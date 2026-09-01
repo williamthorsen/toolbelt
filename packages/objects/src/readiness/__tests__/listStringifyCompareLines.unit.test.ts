@@ -28,7 +28,7 @@ describe(listStringifyCompareLines, () => {
     expect(listStringifyCompareLines(source)).toStrictEqual([1]);
   });
 
-  it('claims a comparison a formatter broke across lines, at the line it opens on', () => {
+  it('claims a comparison broken across lines by a formatter, at the line it opens on', () => {
     const source = 'const same =\n  JSON.stringify(a) ===\n  JSON.stringify(b);\n';
 
     expect(listStringifyCompareLines(source)).toStrictEqual([2]);

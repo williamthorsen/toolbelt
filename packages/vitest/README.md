@@ -73,7 +73,7 @@ Vitest documents `onTestFinished` as honoring `sequence.hooks`, and as not runni
 listConsoleLines(spy: MockInstance): string[];
 ```
 
-Lists the lines a spied console method received, one per call.
+Lists the lines received by a spied console method, one per call.
 
 ```ts
 import { listConsoleLines, silenceConsole } from '@williamthorsen/toolbelt.vitest/candidate';
@@ -291,7 +291,7 @@ it('exits with code 1 on an unknown flag', async () => {
 
 ### Why it throws
 
-`process.exit` never returns, so a mock that returns breaks the one guarantee the call makes. Execution continues past the exit, and the test asserts against a path the process never reaches in production. Nothing reports it: the suite passes while covering code that cannot run, and it keeps passing as that dead continuation grows.
+`process.exit` never returns, so a mock that returns breaks the one guarantee the call makes. Execution continues past the exit, and the test asserts against a path never reached by the process in production. Nothing reports it: the suite passes while covering code that cannot run, and it keeps passing as that dead continuation grows.
 
 The type system says the same thing. `process.exit` is `(code?: number | string | null) => never`, and a function whose last statement is an exit is sound only because of that `never`. Neuter it and the function returns `undefined` while its signature promises a value. A mock that throws satisfies `never` naturally, which is why this one needs no type assertion and no `vi.fn` workaround.
 
@@ -329,28 +329,28 @@ The package ships a ReadyUp kit, so a project that installs it can ask how far i
 rdy run --packages
 ```
 
-The kit reads the project's tracked test files and reports the three idioms this package publishes a replacement for: a `process.exit` mock, a console method captured or silenced by hand, and a disposal registered by hand on test finish. Each site is named by what it is doing and counted against the calls the project already makes into this package.
+The kit reads the project's tracked test files and reports the three idioms this package publishes a replacement for: a `process.exit` mock, a console method captured or silenced by hand, and a disposal registered by hand on test finish. Each site is named by what it is doing and counted against the calls that the project already makes into this package.
 
 Severity carries the judgment. A defect reports at `warn`, a working hand-roll at `recommend`. Nothing reports at `error`, because none of it breaks the package.
 
 Each check prints one fraction, and it measures the kit rather than the check: calls the project already makes into this package, over those calls plus every site the kit found of any of the idioms, less the sites a pragma silences for that check. A project holding twelve console sites and no exit mocks therefore reads `[0 of 12]` against the exit checks too.
 
-| Check id                         | Reports                                                                 | Severity    |
-| -------------------------------- | ----------------------------------------------------------------------- | ----------- |
-| `no-exit-sentinel-clone`         | a `process.exit` mock throwing a sentinel class the same file declares  | `warn`      |
-| `no-non-throwing-exit-mock`      | a `process.exit` mock that returns                                      | `warn`      |
-| `no-hand-rolled-exit-mock`       | a throwing or unreadable `process.exit` mock                            | `recommend` |
-| `no-lossy-console-capture`       | a console capture whose parameter list names its arguments              | `warn`      |
-| `no-hand-rolled-console-capture` | a console capture keeping every argument, or one the kit could not read | `recommend` |
-| `no-hand-rolled-console-silence` | a console method silenced with a no-op mock                             | `recommend` |
-| `no-console-calls-read`          | a read of a console spy's `mock.calls` or `mock.lastCall`               | `recommend` |
-| `no-hand-rolled-test-disposal`   | an `onTestFinished` callback that disposes a value                      | `recommend` |
+| Check id                         | Reports                                                                   | Severity    |
+| -------------------------------- | ------------------------------------------------------------------------- | ----------- |
+| `no-exit-sentinel-clone`         | a `process.exit` mock throwing a sentinel class declared by the same file | `warn`      |
+| `no-non-throwing-exit-mock`      | a `process.exit` mock that returns                                        | `warn`      |
+| `no-hand-rolled-exit-mock`       | a throwing or unreadable `process.exit` mock                              | `recommend` |
+| `no-lossy-console-capture`       | a console capture whose parameter list names its arguments                | `warn`      |
+| `no-hand-rolled-console-capture` | a console capture keeping every argument, or one the kit could not read   | `recommend` |
+| `no-hand-rolled-console-silence` | a console method silenced with a no-op mock                               | `recommend` |
+| `no-console-calls-read`          | a read of a console spy's `mock.calls` or `mock.lastCall`                 | `recommend` |
+| `no-hand-rolled-test-disposal`   | an `onTestFinished` callback that disposes a value                        | `recommend` |
 
 ### The two defects
 
-A `process.exit` mock that returns lets execution continue past the exit, so the test asserts against a path the process never reaches.
+A `process.exit` mock that returns lets execution continue past the exit, so the test asserts against a path never reached by the process.
 
-A console capture whose parameter list names its arguments drops every argument past the ones it names: `console.error('failed:', reason)` asserts as `'failed:'`, and the test passes on a message the console never wrote. A capture taking a rest parameter loses nothing, so it reports as a substitution, as does one that captures nothing at all whatever its parameter list names.
+A console capture whose parameter list names its arguments drops every argument past the ones it names: `console.error('failed:', reason)` asserts as `'failed:'`, and the test passes on a message that the console never wrote. A capture taking a rest parameter loses nothing, so it reports as a substitution, as does one that captures nothing at all whatever its parameter list names.
 
 ### What the kit reads
 
@@ -362,7 +362,7 @@ A read of a spy's recorded calls reports once its receiver resolves to a console
 
 A mock whose implementation is a bare reference reports as unclassified rather than as a defect. The referenced function may well throw, or keep every argument, and naming it a defect without reading its body would misreport it.
 
-A mock throwing a sentinel class the same file declares reports once, naming the class, since one substitution retires the class and the mock together.
+A mock throwing a sentinel class declared by the same file reports once, naming the class, since one substitution retires the class and the mock together.
 
 A disposal reports from inside an `onTestFinished` callback alone, and only where the callback calls `[Symbol.dispose]()` itself. Both the imported hook and the one taken off the test context are anchors; `disposeOnTestFinished` is not, so an adopting project's own calls report nothing. A callback disposing alongside other cleanup reports too, since the disposal moves to the construction site whatever else the hook does.
 

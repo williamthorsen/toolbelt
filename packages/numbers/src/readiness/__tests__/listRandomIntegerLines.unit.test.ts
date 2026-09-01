@@ -11,7 +11,7 @@ describe(listRandomIntegerLines, () => {
     expect(listRandomIntegerLines('const n = Math.floor(Math.random() * (max - min + 1)) + min;\n')).toStrictEqual([1]);
   });
 
-  it('claims a floored random a formatter broke across lines, at the line it opens on', () => {
+  it('claims a floored random broken across lines by a formatter, at the line it opens on', () => {
     expect(listRandomIntegerLines('const n = Math.floor(\n  Math.random() * sides,\n);\n')).toStrictEqual([1]);
   });
 

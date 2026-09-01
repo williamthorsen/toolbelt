@@ -2,7 +2,7 @@
  * Adoption checks for a project consuming @williamthorsen/toolbelt.objects.
  *
  * The kit ships inside the package, so it runs only where the package is installed and always at the version
- * the consumer has. Installing the package is the consent these checks rest on.
+ * that the consumer has. Installing the package is the consent these checks rest on.
  *
  * Two of the three checks take inventory rather than banning a pattern: a guarded prototype call and a
  * hand-rolled record guard are correct code that a published utility expresses better. The serialization

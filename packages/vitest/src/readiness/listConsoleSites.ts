@@ -18,7 +18,7 @@ const SILENCE_BINDING = /\b(?:const|let|using|var)\s+([\w$]+)\s*=\s*silenceConso
 const BINDING_TAIL = /(?:^|[^.\w$])(?:(?:const|let|using|var) )?([\w$]+)(?:: [^=]+)? = $/;
 const MEMBER_RECEIVER = /([\w$]+) ?\. ?(?:debug|error|info|log|warn) ?$/;
 const IDENTIFIER_RECEIVER = /(?:^|[^.\w$])([\w$]+) ?$/;
-// Long enough to span a binding a formatter broke across lines, which is all either receiver form needs.
+// Long enough to span a binding broken across lines by a formatter, which is all either receiver form needs.
 const WINDOW = { lookahead: 0, lookbehind: 64 };
 
 /**

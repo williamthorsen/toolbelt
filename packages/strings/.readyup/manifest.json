@@ -19,7 +19,7 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "3a124dad",
+          "hash": "b93df24d",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -29,7 +29,7 @@
           "path": "../../adoption/src/mod.ts"
         },
         {
-          "hash": "e8d0444d",
+          "hash": "8f288316",
           "kind": "module",
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
@@ -54,7 +54,7 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "c2b0a727",
+          "hash": "954b4fc0",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -64,7 +64,7 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "609d6c5e",
+          "hash": "2b4d9266",
           "kind": "module",
           "path": "../src/readiness/listCapitalizeLines.ts"
         },
@@ -74,7 +74,7 @@
           "path": "../src/readiness/listPluralizeLines.ts"
         },
         {
-          "hash": "8b78d6cd",
+          "hash": "7181ab25",
           "kind": "module",
           "path": "../src/readiness/listStringIdioms.ts"
         }
@@ -83,8 +83,8 @@
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "c2b0a727",
-      "targetHash": "9f562429"
+      "sourceHash": "954b4fc0",
+      "targetHash": "2316ca0c"
     }
   ]
 }
