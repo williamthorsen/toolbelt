@@ -155,7 +155,7 @@ const { entries, stopReason } = await loadConfigCascade<StackConfig>({
 });
 ```
 
-`stopReason` is provenance for the caller to surface, so a user can see whether the predicate ended the cascade or it simply reached the boundary. Which directory bounded it is the `stopAtDir` the caller passed in.
+`stopReason` is provenance for the caller to surface, so a user can see whether the predicate ended the cascade or it simply reached the boundary. Which directory bounded it is the `stopAtDir` passed in by the caller.
 
 ## `reconcileFile`
 
@@ -176,9 +176,9 @@ reconcileFile('.config/tool.config.ts', template);
 // { filePath: '.config/tool.config.ts', outcome: 'created' }
 ```
 
-Missing parent directories are created. `isDryRun` writes nothing and creates no directory, returning the outcome that the real call would have produced, which is what lets a `--dry-run` flag print what the run itself would. A write that would fail is the exception: nothing detects that without attempting it, so a dry run reports the outcome the write was headed for.
+Missing parent directories are created. `isDryRun` writes nothing and creates no directory, returning the outcome that the real call would have produced, which is what lets a `--dry-run` flag print what the run itself would. A write that would fail is the exception: nothing detects that without attempting it, so a dry run reports the write's intended outcome.
 
-`conflictPolicy` decides what becomes of an existing file whose content differs, and decides nothing else: it is consulted in that case alone. The default, `'skip'`, never replaces a file the user may have edited.
+`conflictPolicy` decides what becomes of an existing file whose content differs, and decides nothing else: it is consulted in that case alone. The default, `'skip'`, never replaces a file that the user may have edited.
 
 | exists | differs | `conflictPolicy` | outcome       |
 | ------ | ------- | ---------------- | ------------- |
@@ -204,7 +204,7 @@ Three behaviors are worth knowing before they surprise you:
 
 - A `skipped` result carrying an `error` means the existing file could not be read for comparison. The file was left alone, which is exactly what `'skip'` promises, so this is not a failure and a command exiting non-zero on failures should not count it as one.
 - The existence probe follows symlinks. A dangling symlink therefore reports as non-existent: the outcome is `created`, the result names the link, and the bytes land at the link's target.
-- The probe and the write are separate calls, leaving a window in which another process can create or remove the file. That gap is left open deliberately: the callers this serves are scaffolding commands with no competing writer, and an exclusive-create flag would close only the create half of it.
+- The probe and the write are separate calls, leaving a window in which another process can create or remove the file. That gap is left open deliberately: the callers that this serves are scaffolding commands with no competing writer, and an exclusive-create flag would close only the create half of it.
 
 ## `reconcileFileFromFile`
 
@@ -266,7 +266,7 @@ import { createTempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
 
 Each key of `entries` is a path relative to the tree root. One ending in `/` becomes a directory; any other becomes a file holding the mapped contents, with its intermediate directories created for it. A key resolving outside the root is rejected, and a call that throws leaves nothing on disk.
 
-A value is text or the bytes themselves, so a body no UTF-8 round trip survives is as writable as a string:
+A value is text or the bytes themselves, so a body that no UTF-8 round trip survives is as writable as a string:
 
 ```ts
 using tree = createTempTree({ 'logo.png': pngBytes });
@@ -299,7 +299,7 @@ interface TempTree extends Disposable {
 }
 ```
 
-`dir` is realpath-resolved, because `os.tmpdir()` is a symlink on macOS and a caller comparing paths against it would otherwise see a mismatch it did not cause.
+`dir` is realpath-resolved, because `os.tmpdir()` is a symlink on macOS and a caller comparing paths against it would otherwise see a mismatch that it did not cause.
 
 `resolve` joins `segments` against the root and throws when the result would fall outside it, so a stray `..` fails loudly rather than reaching into the enclosing directory. An absolute segment landing inside the root is returned unchanged. The containment test is lexical, so it does not follow a symlink inside the tree that points out of it.
 
@@ -315,7 +315,7 @@ tree.mkdir('packages/empty');
 
 Each creates the parent directories that it needs, resolves through the same containment check as `resolve`, and returns the absolute path of what it wrote. `symlink`'s link path is checked; its target is not, being a string held by the link rather than a location to which the tree writes.
 
-`writeAll` takes the same map the constructor takes, `/`-suffix convention included, so a fixture built in one call can be added to in one call:
+`writeAll` takes the same map as the constructor, `/`-suffix convention included, so a fixture built in one call can be added to in one call:
 
 ```ts
 tree.writeAll({ 'packages/empty/': '', 'packages/app/src/main.ts': 'export {};\n' });
@@ -350,7 +350,7 @@ tree.exists('packages/app/tsconfig.json'); // false
 tree.rm('packages/app');
 ```
 
-`listFiles` reaches every depth and reports paths relative to the directory it was given, sorted, with `/` as the separator on every platform: a path a test asserts on is a value rather than a location, so `'app/src/main.ts'` should not vary by platform. It parts from `list` twice. A directory that is not there answers `[]` where `list` raises `ENOENT`, which is what lets a suite assert that a build emitted nothing without guarding the call; a path that exists as a file still raises `ENOTDIR`, as `list` does. And a symlink below the directory it was given is neither named nor descended, so every path in the result names a file held inside the tree, where `list` reports a link by name at its own level. The directory given as the argument is the exception, followed as `list`, `read`, and `exists` follow theirs: one naming a link out of the tree lists the target's files.
+`listFiles` reaches every depth and reports paths relative to the directory given to it, sorted, with `/` as the separator on every platform: a path on which a test asserts is a value rather than a location, so `'app/src/main.ts'` should not vary by platform. It parts from `list` twice. A directory that is not there answers `[]` where `list` raises `ENOENT`, which is what lets a suite assert that a build emitted nothing without guarding the call; a path that exists as a file still raises `ENOTDIR`, as `list` does. And a symlink below the directory given to it is neither named nor descended, so every path in the result names a file held inside the tree, where `list` reports a link by name at its own level. The directory given as the argument is the exception, followed as `list`, `read`, and `exists` follow theirs: one naming a link out of the tree lists the target's files.
 
 `read` returns UTF-8 text, and a missing entry raises `ENOENT` rather than answering emptily -- `exists` is the check. `readJson` returns `unknown`, so a caller narrows it rather than trusting an asserted type; contents that do not parse raise an error naming the entry, which the parse error alone does not. `exists` follows a symlink, so a dangling one answers `false`. `rm` is recursive and silent on an entry that is not there.
 
@@ -404,7 +404,7 @@ import { writeAtomic } from '@williamthorsen/toolbelt.filesystem/proposed';
 await writeAtomic('.agents/manifest.json', `${JSON.stringify(manifest, null, 2)}\n`);
 ```
 
-The temp file is a sibling of the target, which is the part a hand-rolled copy most often gets wrong: `rename` is atomic only within one filesystem, so a temp file staged under the system temporary directory fails with `EXDEV` the moment the target lives on another volume. Its name is dot-prefixed and carries a random component, so it stays out of `*` globs and two processes writing the same target do not collide.
+The temp file is a sibling of the target, which is the part that a hand-rolled copy most often gets wrong: `rename` is atomic only within one filesystem, so a temp file staged under the system temporary directory fails with `EXDEV` the moment the target lives on another volume. Its name is dot-prefixed and carries a random component, so it stays out of `*` globs and two processes writing the same target do not collide.
 
 Missing parent directories are created, as they are for [`reconcileFile`](#reconcilefile).
 
@@ -412,6 +412,6 @@ An existing target's permission bits are carried onto the replacement. A plain `
 
 Three behaviors are worth knowing before they surprise you:
 
-- Nothing is fsynced. "Atomic" here means no torn reads, not survives-power-loss: a write this function has returned from can still be lost to a power failure. A durability option is additive if a caller ever needs one.
+- Nothing is fsynced. "Atomic" here means no torn reads, not survives-power-loss: a write from which this function has returned can still be lost to a power failure. A durability option is additive if a caller ever needs one.
 - A symlink at `filePath` is replaced by a regular file rather than written through, because the rename replaces the target's directory entry. The link's former target is left untouched.
 - A failure removes the temp file best-effort and rethrows the error that caused it, never the cleanup's own. Where the cleanup also fails, the temp file survives beside the target under its dot-prefixed name ending in `.tmp`, which is where to look for one.

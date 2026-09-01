@@ -75,7 +75,7 @@ nmr check
 
 Publishing is automated via npm [trusted publishing](https://docs.npmjs.com/trusted-publishers/) (OIDC) — there is no local publish command, and the repo holds no `NPM_TOKEN`.
 
-Cut a release by running `release-kit` locally and pushing the tags it creates:
+Cut a release by running `release-kit` locally and pushing the tags that it creates:
 
 ```shell
 # Bump versions, write changelogs, and create the release tags

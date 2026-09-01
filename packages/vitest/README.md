@@ -10,7 +10,7 @@ Utilities for testing with Vitest.
 pnpm add --save-dev @williamthorsen/toolbelt.vitest
 ```
 
-Requires Node.js 24 or later. Vitest is a peer dependency: the package uses whichever Vitest 4 the consuming project already installs.
+Requires Node.js 24 or later. Vitest is a peer dependency: the package uses the Vitest 4 that the consuming project already installs.
 
 `disposeOnTestFinished`, `listConsoleLines`, `makeFixture`, `silenceConsole`, and `throwOnProcessExit` are candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change.
 
@@ -61,7 +61,7 @@ const tree = disposeOnTestFinished(createTempTree({ 'src/': '' }));
 const cwd = disposeOnTestFinished(pointCwdAt(tree.dir));
 ```
 
-The working directory is restored before the directory it points into is removed.
+The working directory is restored before the directory into which it points is removed.
 
 ### Where Vitest's documentation disagrees
 
@@ -89,7 +89,7 @@ it('names the flag it could not parse', () => {
 
 ### Why it reads rather than captures
 
-`silenceConsole` already holds the `vi.spyOn` slot for the method, and silences do not stack, so a second helper that installed its own spy would take that slot from it. Reading the spy the silence hands back composes instead: one call silences, the other reads, and either works without the other.
+`silenceConsole` already holds the `vi.spyOn` slot for the method, and silences do not stack, so a second helper that installed its own spy would take that slot from it. Reading the spy handed back by the silence composes instead: one call silences, the other reads, and either works without the other.
 
 That also means the two are separable. A spy from `vi.spyOn(console, 'warn')` reads the same way, and a test that wants the recorded calls unrendered still has `silent.warn` to reach for.
 
@@ -156,7 +156,7 @@ it('falls back to defaults', () => {
 
 `using` covers that case only where the resource dies with the block that built it. One built inside a test by a helper that returns something else takes [`disposeOnTestFinished`](#disposeontestfinished) instead.
 
-For a resource shared across tests, the alternative is a hook-registered handle: an object bound once at module level that registers its own `beforeEach` and `afterEach` and forwards every read to whichever instance the current scope built. A handle reads better, because a test names nothing in its signature:
+For a resource shared across tests, the alternative is a hook-registered handle: an object bound once at module level that registers its own `beforeEach` and `afterEach` and forwards every read to the instance that the current scope built. A handle reads better, because a test names nothing in its signature:
 
 ```ts
 const tree = useTempTree({ 'src/main.ts': 'export {};\n' });
@@ -176,7 +176,7 @@ A resource that no test names -- one installed around a test rather than read by
 
 ### Wrapping tests with `aroundEach` and `aroundAll`
 
-A resource a test reads is named by that test. A resource installed around a test is not: a pointed working directory exists to serve code resolving paths through `process.cwd()`, so the tests needing it hold no value and name no fixture, and a lazily built fixture leaves them running against the real working directory. Requesting the fixture from a wrapping hook is what builds it:
+A resource that a test reads is named by that test. A resource installed around a test is not: a pointed working directory exists to serve code resolving paths through `process.cwd()`, so the tests needing it hold no value and name no fixture, and a lazily built fixture leaves them running against the real working directory. Requesting the fixture from a wrapping hook is what builds it:
 
 ```ts
 const it = test.extend('tree', makeFixture(() => createTempTree({ 'tsconfig.json': '{}\n' })));
@@ -194,7 +194,7 @@ The hook's own parameter list is the request, so the fixture builds for every te
 
 `aroundAll` is the file-scoped counterpart, over a `{ scope: 'file' }` fixture, and the shape is otherwise identical. Vitest gives a suite-level hook only file- and worker-scoped fixtures, and the types enforce it: a test-scoped fixture named there is not a property of the hook's context, and the error lists the fixtures that are. Past the types, the runner throws `FixtureDependencyError` and fails the suite, naming the test-scoped fixtures rather than the available ones.
 
-A hook registered at file level wraps every test in the file, not only the tests of the API it was registered on. A file declaring a second extended API gets the hook over those tests too, and a hook requesting a fixture that API does not carry receives `undefined`: the failure surfaces as a `TypeError` thrown inside the hook and attributed to the test, naming the property that was read rather than the fixture that was missing. Registering the hook inside the `describe` holding the tests scopes it to them, which is the fix where one file needs both; one extended API per file avoids the question.
+A hook registered at file level wraps every test in the file, not only the tests of the API on which it was registered. A file declaring a second extended API gets the hook over those tests too, and a hook requesting a fixture that API does not carry receives `undefined`: the failure surfaces as a `TypeError` thrown inside the hook and attributed to the test, naming the property that was read rather than the fixture that was missing. Registering the hook inside the `describe` holding the tests scopes it to them, which is the fix where one file needs both; one extended API per file avoids the question.
 
 The suite pins the `aroundEach` request, the `aroundAll` counterpart, and the file-level hook's reach over a second API, so a runner that stopped honoring one fails here rather than at a consumer. It does not pin the `TypeError` above, which can only be observed as a failing test.
 
@@ -208,7 +208,7 @@ A project setting `restoreMocks: true` restores every spy before each test, so a
 
 ### Naming the extended test function
 
-`vitest/consistent-test-it` resolves an extended function back to the name its chain was rooted at, so that root has to be the name the rule expects where the tests are written: `test` for tests at file level, `it` for tests inside a `describe`. Rooted at `it` for a `describe` block, a lone `.extend` call is itself reported, and a one-line disable there settles it.
+`vitest/consistent-test-it` resolves an extended function back to the name at which its chain was rooted, so that root has to be the name expected by the rule where the tests are written: `test` for tests at file level, `it` for tests inside a `describe`. Rooted at `it` for a `describe` block, a lone `.extend` call is itself reported, and a one-line disable there settles it.
 
 ### Fixtures that depend on other fixtures
 
@@ -248,7 +248,7 @@ it('falls back to defaults when settings are missing', () => {
 });
 ```
 
-Each spy records its calls while suppressing the output, so a console call can be asserted on without reaching the terminal. [`listConsoleLines`](#listconsolelines) renders those calls as the lines the method would have written. Binding with `using` is what restores the originals when the block exits.
+Each spy records its calls while suppressing the output, so a console call can be asserted on without reaching the terminal. [`listConsoleLines`](#listconsolelines) renders those calls as the lines that the method would have written. Binding with `using` is what restores the originals when the block exits.
 
 Called with no argument, it silences all five methods:
 
@@ -258,7 +258,7 @@ using _silent = silenceConsole();
 
 `debug` is among them, so a `console.debug` added to diagnose a failing test goes quiet under the no-argument form. Name the methods explicitly to keep it audible.
 
-Silences do not stack. Vitest's `vi.spyOn` hands back the existing spy for a method already being spied on, so a nested call that overlaps an outer one shares its spy: when the inner scope exits it restores the method for the outer scope too, and the calls the outer scope had recorded are gone. Overlap is easiest to reach through the no-argument form, which claims every method.
+Silences do not stack. Vitest's `vi.spyOn` hands back the existing spy for a method already being spied on, so a nested call that overlaps an outer one shares its spy: when the inner scope exits it restores the method for the outer scope too, and the calls recorded by the outer scope are gone. Overlap is easiest to reach through the no-argument form, which claims every method.
 
 The return type narrows to exactly the methods requested, so one that was not silenced is absent from the record:
 
@@ -291,7 +291,7 @@ it('exits with code 1 on an unknown flag', async () => {
 
 ### Why it throws
 
-`process.exit` never returns, so a mock that returns breaks the one guarantee the call makes. Execution continues past the exit, and the test asserts against a path never reached by the process in production. Nothing reports it: the suite passes while covering code that cannot run, and it keeps passing as that dead continuation grows.
+`process.exit` never returns, so a mock that returns breaks the one guarantee made by the call. Execution continues past the exit, and the test asserts against a path never reached by the process in production. Nothing reports it: the suite passes while covering code that cannot run, and it keeps passing as that dead continuation grows.
 
 The type system says the same thing. `process.exit` is `(code?: number | string | null) => never`, and a function whose last statement is an exit is sound only because of that `never`. Neuter it and the function returns `undefined` while its signature promises a value. A mock that throws satisfies `never` naturally, which is why this one needs no type assertion and no `vi.fn` workaround.
 
@@ -315,7 +315,7 @@ Node accepts an integer string and exits with its numeric value, so `process.exi
 
 ### What it does not cover
 
-`process.exitCode = 1` is a separate mechanism. It sets the code the process will eventually exit with and does not halt execution, so it needs no mock: read the property after the call. Note that a leaked `process.exitCode` makes the whole Vitest run exit non-zero while every test passes, so a test that sets one restores it.
+`process.exitCode = 1` is a separate mechanism. It sets the code with which the process will eventually exit and does not halt execution, so it needs no mock: read the property after the call. Note that a leaked `process.exitCode` makes the whole Vitest run exit non-zero while every test passes, so a test that sets one restores it.
 
 ### Mocks do not stack
 
@@ -329,11 +329,11 @@ The package ships a ReadyUp kit, so a project that installs it can ask how far i
 rdy run --packages
 ```
 
-The kit reads the project's tracked test files and reports the three idioms this package publishes a replacement for: a `process.exit` mock, a console method captured or silenced by hand, and a disposal registered by hand on test finish. Each site is named by what it is doing and counted against the calls that the project already makes into this package.
+The kit reads the project's tracked test files and reports the three idioms for which this package publishes a replacement: a `process.exit` mock, a console method captured or silenced by hand, and a disposal registered by hand on test finish. Each site is named by what it is doing and counted against the calls that the project already makes into this package.
 
 Severity carries the judgment. A defect reports at `warn`, a working hand-roll at `recommend`. Nothing reports at `error`, because none of it breaks the package.
 
-Each check prints one fraction, and it measures the kit rather than the check: calls the project already makes into this package, over those calls plus every site the kit found of any of the idioms, less the sites a pragma silences for that check. A project holding twelve console sites and no exit mocks therefore reads `[0 of 12]` against the exit checks too.
+Each check prints one fraction, and it measures the kit rather than the check: calls that the project already makes into this package, over those calls plus every site of any of the idioms found by the kit, less the sites silenced by a pragma for that check. A project holding twelve console sites and no exit mocks therefore reads `[0 of 12]` against the exit checks too.
 
 | Check id                         | Reports                                                                   | Severity    |
 | -------------------------------- | ------------------------------------------------------------------------- | ----------- |
@@ -350,7 +350,7 @@ Each check prints one fraction, and it measures the kit rather than the check: c
 
 A `process.exit` mock that returns lets execution continue past the exit, so the test asserts against a path never reached by the process.
 
-A console capture whose parameter list names its arguments drops every argument past the ones it names: `console.error('failed:', reason)` asserts as `'failed:'`, and the test passes on a message that the console never wrote. A capture taking a rest parameter loses nothing, so it reports as a substitution, as does one that captures nothing at all whatever its parameter list names.
+A console capture whose parameter list names its arguments drops every argument past the ones that it names: `console.error('failed:', reason)` asserts as `'failed:'`, and the test passes on a message that the console never wrote. A capture taking a rest parameter loses nothing, so it reports as a substitution, as does one that captures nothing at all whatever its parameter list names.
 
 ### What the kit reads
 
@@ -366,7 +366,7 @@ A mock throwing a sentinel class declared by the same file reports once, naming 
 
 A disposal reports from inside an `onTestFinished` callback alone, and only where the callback calls `[Symbol.dispose]()` itself. Both the imported hook and the one taken off the test context are anchors; `disposeOnTestFinished` is not, so an adopting project's own calls report nothing. A callback disposing alongside other cleanup reports too, since the disposal moves to the construction site whatever else the hook does.
 
-Everything else that anchor covers is silent rather than unclassified. The other two anchors are their idiom, so a mock the kit cannot read is still a site; `onTestFinished` only hosts one, and most calls to it clean up by other means. Counting those would put every cleanup hook in the project into the fraction all the checks share. A callback given as a bare reference and an unbound `resource[Symbol.dispose]` are declined on that footing, and an `AsyncDisposable` disposal has no advice to give besides: [`disposeOnTestFinished`](#disposeontestfinished) takes a sync `Disposable` alone.
+Everything else that anchor covers is silent rather than unclassified. The other two anchors are their idiom, so a mock that the kit cannot read is still a site; `onTestFinished` only hosts one, and most calls to it clean up by other means. Counting those would put every cleanup hook in the project into the fraction shared by all the checks. A callback given as a bare reference and an unbound `resource[Symbol.dispose]` are declined on that footing, and an `AsyncDisposable` disposal has no advice to give besides: [`disposeOnTestFinished`](#disposeontestfinished) takes a sync `Disposable` alone.
 
 ### Silencing a reviewed site
 
