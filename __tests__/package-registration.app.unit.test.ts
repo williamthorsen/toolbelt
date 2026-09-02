@@ -99,6 +99,12 @@ function readGeneratedLabels(monorepoRoot: string): Set<string> {
     if (label !== undefined) labels.add(label);
   }
 
+  // The `common` preset alone declares labels, so an empty result is the pattern failing rather than a file holding
+  // none. Report that as its own cause instead of as every workspace missing a label.
+  if (labels.size === 0) {
+    throw new Error(`.github/labels.yaml holds no line matching ${LABEL_NAME_PATTERN.source}`);
+  }
+
   return labels;
 }
 

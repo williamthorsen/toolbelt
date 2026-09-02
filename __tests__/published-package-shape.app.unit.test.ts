@@ -15,6 +15,8 @@ const PUBLISHED_NAME_PREFIX = '@williamthorsen/toolbelt.';
 const RELEASE_NOTES_MARKER = '<!-- section:release-notes -->';
 // The template's changelog holds its own release history, which belongs to the template rather than to a clone.
 const TEMPLATE_CHANGELOG_ENTRY = '_template-v';
+// npm shows a package's description on its registry page, so a clone that kept the template's would publish it.
+const TEMPLATE_DESCRIPTION = 'Template for new workspace';
 
 describe('Published package shape', () => {
   it('every published workspace carries the manifest that a scaffolded clone must reach', () => {
@@ -56,6 +58,7 @@ function auditPublishedManifests(monorepoRoot: string): { defects: string[]; wor
 
     const workspace = path.basename(packageDirectory);
     const manifest = readManifest(packageDirectory);
+    const description = manifest['description'];
     const publishConfig = manifest['publishConfig'];
     const repository = manifest['repository'];
     const scripts = manifest['scripts'];
@@ -63,6 +66,10 @@ function auditPublishedManifests(monorepoRoot: string): { defects: string[]; wor
 
     if (manifest['name'] !== `${PUBLISHED_NAME_PREFIX}${workspace}`) {
       defects.push(`${workspace}: name is not ${PUBLISHED_NAME_PREFIX}${workspace}`);
+    }
+
+    if (typeof description !== 'string' || description.trim() === '' || description === TEMPLATE_DESCRIPTION) {
+      defects.push(`${workspace}: description is absent or still the template's`);
     }
 
     if (manifest['homepage'] !== `${HOMEPAGE_PREFIX}${workspace}#readme`) {
