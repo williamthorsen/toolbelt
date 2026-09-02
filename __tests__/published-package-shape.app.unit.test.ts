@@ -94,9 +94,12 @@ function auditPublishedManifests(monorepoRoot: string): { defects: string[]; wor
 }
 
 /**
- * Audits every published workspace's README and changelog for the two marks that separate an authored pair from
- * a pair copied out of the template: the release-notes markers that release-kit writes between, and the absence
- * of the template's own release history.
+ * Audits every published workspace's README and changelog for the marks that separate an authored pair from a
+ * pair copied out of the template: the package's own name as the README title, the release-notes markers that
+ * release-kit writes between, and the absence of the template's own release history.
+ *
+ * The title check is what the marker check alone cannot do. The template's README quotes the markers in a code
+ * fence, so a clone that copied it whole would carry the string without carrying a place to inject into.
  */
 function auditPublishedDocuments(monorepoRoot: string): { defects: string[]; workspaceCount: number } {
   const defects: string[] = [];
@@ -111,8 +114,14 @@ function auditPublishedDocuments(monorepoRoot: string): { defects: string[]; wor
 
     if (readme === undefined) {
       defects.push(`${workspace}: README.md is missing`);
-    } else if (!readme.includes(RELEASE_NOTES_MARKER)) {
-      defects.push(`${workspace}: README.md holds no ${RELEASE_NOTES_MARKER} marker for release-kit to inject into`);
+    } else {
+      if (!readme.startsWith(`# ${PUBLISHED_NAME_PREFIX}${workspace}\n`)) {
+        defects.push(`${workspace}: README.md does not open with the title # ${PUBLISHED_NAME_PREFIX}${workspace}`);
+      }
+
+      if (!readme.includes(RELEASE_NOTES_MARKER)) {
+        defects.push(`${workspace}: README.md holds no ${RELEASE_NOTES_MARKER} marker for release-kit to inject into`);
+      }
     }
 
     if (changelog === undefined) {
