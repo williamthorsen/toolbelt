@@ -25,7 +25,7 @@ The four fields that the template cannot carry, being private:
 
 ## 2. Write a fresh README and changelog
 
-The README opens with the package name as an H1, a one-line description, and then the release-notes markers on their own line:
+The README's first line is `# @williamthorsen/toolbelt.{domain}`, which the shape audit matches exactly. A one-line description follows, and then the release-notes markers on their own line:
 
 ```html
 <!-- section:release-notes --><!-- /section:release-notes -->
