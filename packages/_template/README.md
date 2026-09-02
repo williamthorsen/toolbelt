@@ -50,6 +50,8 @@ Then run `pnpm install`, which adds the workspace's importer to `pnpm-lock.yaml`
 
 `__tests__/package-registration.app.unit.test.ts` fails on a missing entry in any of the four, and `__tests__/published-package-shape.app.unit.test.ts` fails on a manifest, README, or changelog that still carries the template's shape.
 
+One registration happens off the repo and no test can reach it: npm must know the package as a trusted publisher before its first release, or the tag push publishes nothing. It needs an npm account with 2FA, so it falls to the maintainer rather than to the scaffolding pull request. The command is in the root README, under the release instructions.
+
 ## 4. Keep the placeholder test
 
 Copy `src/__tests__/placeholder.unit.test.ts` unchanged. `passWithNoTests` is set on every Vitest project, so a package with no test file exits green rather than failing, and this file is what keeps a scaffolded package from being the first such case.
