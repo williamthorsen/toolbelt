@@ -5,7 +5,7 @@ import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/w
 import { describe, expect, it } from 'vitest';
 
 import { isRecord } from '../test-utils/isRecord.ts';
-import { PRIVATE_WORKSPACES, listPublishedWorkspaceDirectories } from '../test-utils/private-workspaces.ts';
+import { listPublishedWorkspaceDirectories, PRIVATE_WORKSPACES } from '../test-utils/private-workspaces.ts';
 import { readManifest } from '../test-utils/readManifest.ts';
 
 const HOMEPAGE_PREFIX = 'https://github.com/williamthorsen/toolbelt/tree/main/packages/';

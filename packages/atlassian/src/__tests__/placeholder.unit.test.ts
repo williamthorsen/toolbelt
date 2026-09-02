@@ -8,6 +8,8 @@
  * rather than over a freshly cloned one alone.
  */
 
-import { it } from 'vitest';
+import { describe, it } from 'vitest';
 
-it.todo("replace with the package's first real test");
+describe('Scaffolded package', () => {
+  it.todo("replace with the package's first real test");
+});
