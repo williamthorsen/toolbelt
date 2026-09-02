@@ -3,11 +3,11 @@ import { describe, expect, it } from 'vitest';
 import { readLiteral } from '../readLiteral.ts';
 
 const SOURCE = "const tag = 'object';";
-// The span a `'d'`-flag match reports for the quoted literal, quotes included.
+// The span reported by a `'d'`-flag match for the quoted literal, quotes included.
 const LITERAL_SPAN = [12, 20];
 
 describe(readLiteral, () => {
-  it('reads the literal a span names, without its quotes', () => {
+  it('reads the literal named by a span, without its quotes', () => {
     expect(readLiteral(SOURCE, LITERAL_SPAN)).toBe('object');
   });
 

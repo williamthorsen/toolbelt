@@ -14,7 +14,8 @@ const PUBLISHER_MANIFEST = JSON.stringify({ name: '@scope/pkg', version: '1.0.0'
 const CLONE = 'function describeThing(x) {\n  return x.message;\n}\n';
 const INLINE = "const label = thing.name;\nconst other = 'x';\n";
 const ADOPTER = "import { doThing } from '@scope/pkg';\ndoThing();\ndoThing();\n";
-// The package's own `doThing`, holding the idiom it exists to replace, beside a neighbour holding the same one.
+// The package's own `doThing`, holding the idiom that it exists to replace, beside a neighbour holding the
+// same one.
 const IMPLEMENTATION =
   'export function doThing(x) {\n  return x.name;\n}\n\nexport function other(x) {\n  return x.name;\n}\n';
 
@@ -96,7 +97,7 @@ describe(defineAdoptionKit, () => {
     });
   });
 
-  it('reads only the paths the filter matches', async () => {
+  it('reads only the paths matched by the filter', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/a.ts': CLONE, 'src/skipped.js': CLONE });
     using _cwd = pointCwdAt(tree.dir);
 
@@ -159,7 +160,7 @@ describe(defineAdoptionKit, () => {
     await expect(runCheck(listChecks(buildSpec())[0])).resolves.toStrictEqual({ findings: [] });
   });
 
-  it('runs every check where the project publishes the package they are for', async () => {
+  it('runs every check where the project publishes the package that they are for', async () => {
     using tree = createTrackedRepo({ 'package.json': PUBLISHER_MANIFEST, 'src/a.ts': CLONE });
     using _cwd = pointCwdAt(tree.dir);
 

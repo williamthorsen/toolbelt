@@ -64,11 +64,11 @@ describe(defineAdoptionKit, () => {
     expect(listChecks(kit).map((check) => check.severity)).toStrictEqual([undefined, 'recommend']);
   });
 
-  it('takes the description the spec declares', () => {
+  it('takes the description declared by the spec', () => {
     expect(defineAdoptionKit(SPEC).description).toBe('Adoption checks for a project consuming @scope/pkg');
   });
 
-  it('gives every check a skip, so none runs against a project it does not apply to', () => {
+  it('gives every check a skip, so none runs against a project to which it does not apply', () => {
     expect(listChecks(defineAdoptionKit(SPEC)).every((check) => check.skip !== undefined)).toBe(true);
   });
 });

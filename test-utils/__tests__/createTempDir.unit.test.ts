@@ -35,8 +35,8 @@ describe(createTempDir, () => {
   });
 
   it('rejects a key naming a directory, leaving nothing on disk', () => {
-    // Spy on the creation call, the only route to the root of a directory no handle was returned for. The
-    // call-count assertion keeps a spy that recorded nothing from passing the removal check vacuously.
+    // Spy on the creation call, the only route to the root of a directory for which no handle was returned.
+    // The call-count assertion keeps a spy that recorded nothing from passing the removal check vacuously.
     using mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
 
     // The rejected key follows a written one, so the removal covers an entry already on disk.

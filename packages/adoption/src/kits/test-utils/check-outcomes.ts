@@ -1,16 +1,17 @@
 import type { FindingOutcome, OutcomeFinding, RdyCheck } from 'readyup';
 
 /**
- * Lists the sites a check names, which are the ones the runner renders into its detail. The rest of the
- * report counts toward the fraction and does nothing else.
+ * Lists the sites named by a check, which are the ones that the runner renders into its detail. The rest of
+ * the report counts toward the fraction and does nothing else.
  */
 export function listReportedFindings(outcome: FindingOutcome): OutcomeFinding[] {
   return outcome.findings.filter((finding) => finding.reported);
 }
 
 /**
- * Runs a check and returns the report it produced, which is the whole of what an adoption check declares: the
- * verdict, the detail, and the fraction are the runner's to derive, and are asserted where that derivation lives.
+ * Runs a check and returns the report that it produced, which is the whole of what an adoption check declares:
+ * the verdict, the detail, and the fraction are the runner's to derive, and are asserted where that
+ * derivation lives.
  */
 export async function runCheck(check: RdyCheck | undefined): Promise<FindingOutcome> {
   if (check === undefined) throw new Error('the kit holds no such check');
@@ -25,7 +26,7 @@ export async function runSkip(check: RdyCheck | undefined): Promise<false | stri
   return check.skip();
 }
 
-/** Reduces a report to the two numbers the runner derives its fraction from. */
+/** Reduces a report to the two numbers from which the runner derives its fraction. */
 export function summarizeFraction(outcome: FindingOutcome): {
   adoptedCount: number | undefined;
   findingCount: number;

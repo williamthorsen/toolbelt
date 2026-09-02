@@ -10,7 +10,7 @@ import {
 export interface AdoptionSite<Kind extends string> {
   kind: Kind;
   line: number;
-  /** The symbol the site defines, where it defines one worth naming in place of the location. */
+  /** The symbol defined by the site, where it defines one worth naming in place of the location. */
   symbol?: string;
 }
 
@@ -22,7 +22,7 @@ export interface AdoptionCheck<Kind extends string> {
    * be silenced only along with every other check on the line, and nothing reports the loss.
    */
   id: string;
-  /** The kinds this check reports. A site of any other kind counts toward the denominator alone. */
+  /** The kinds reported by this check. A site of any other kind counts toward the denominator alone. */
   kinds: readonly Kind[];
   name: string;
   severity?: Severity;
@@ -40,7 +40,7 @@ export interface AdoptionKitSpec<Kind extends string> {
   detect: (text: string) => ReadonlyArray<AdoptionSite<Kind>>;
   /** The package's own callable exports, which is what adoption is counted in calls to. */
   exportNames: readonly string[];
-  /** Why the checks do not apply to a project the path filter matched nothing in. */
+  /** Why the checks do not apply to a project in which the path filter matched nothing. */
   noSourcesReason: string;
   packageName: string;
   pathFilter: PathFilter;
@@ -99,7 +99,7 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
    * Throws where one id names more than one check, which readyup validates nowhere.
    *
    * A pragma is matched against each check's own accepted ids, so a shared id silences every check holding
-   * it and takes the site out of every one of their fractions -- the loss `id` is required to prevent,
+   * it and takes the site out of every one of their fractions -- the loss that `id` is required to prevent,
    * arriving from the other direction.
    */
   function assertCheckIdsAreUnique(): void {
@@ -135,12 +135,12 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
   }
 
   /**
-   * Reports every site the project holds, marking those of the named kinds and how far adoption got. A site
+   * Reports every site held by the project, marking those of the named kinds and how far adoption got. A site
    * inside the declaration exported by the package under one of its adopted names is dropped from the report
    * altogether, because the implementation of an idiom cannot adopt itself.
    *
-   * The runner reads the verdict, the detail, and the fraction off the report, so a pragma the sources carry
-   * is honored where it is written rather than in each kit.
+   * The runner reads the verdict, the detail, and the fraction off the report, so a pragma carried by the
+   * sources is honored where it is written rather than in each kit.
    */
   async function reportKinds(kinds: readonly Kind[]): Promise<FindingOutcome> {
     const summary = await loadSummary();
@@ -154,7 +154,7 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
     });
   }
 
-  /** Skips every check where the project cannot be read, or holds no source the filter matched. */
+  /** Skips every check where the project cannot be read, or holds no source matched by the filter. */
   async function skipUnlessProjectHoldsSources(): Promise<SkipResult> {
     const summary = await loadSummary();
     if (summary === undefined) return NOT_A_REPO;
