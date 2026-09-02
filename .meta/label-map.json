@@ -29,6 +29,7 @@
     "git": "scope:git",
     "guards": "scope:guards",
     "hof": "scope:hof",
+    "jira": "scope:jira",
     "nodejs": "scope:nodejs",
     "numbers": "scope:numbers",
     "objects": "scope:objects",
