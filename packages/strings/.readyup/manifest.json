@@ -54,7 +54,7 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "954b4fc0",
+          "hash": "efb11767",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -64,12 +64,12 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "2b4d9266",
+          "hash": "ea1979ae",
           "kind": "module",
           "path": "../src/readiness/listCapitalizeLines.ts"
         },
         {
-          "hash": "d63e23ba",
+          "hash": "5061bdb6",
           "kind": "module",
           "path": "../src/readiness/listPluralizeLines.ts"
         },
@@ -83,7 +83,7 @@
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "954b4fc0",
+      "sourceHash": "efb11767",
       "targetHash": "2316ca0c"
     }
   ]

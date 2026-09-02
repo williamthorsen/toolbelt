@@ -7,7 +7,7 @@ describe(listExitMocks, () => {
     expect(listExitMocks("it('works', () => {});")).toStrictEqual([]);
   });
 
-  it('names the line and the sentinel class a clone declares', () => {
+  it('names the line and the sentinel class declared by a clone', () => {
     const source = `class ExitError extends Error {}
 
 beforeEach(() => {
@@ -46,7 +46,7 @@ vi.spyOn(process, 'exit').mockImplementation(() => {
     expect(sources.map(listExitMocks)).toStrictEqual(sources.map(() => []));
   });
 
-  it('declines a sentinel class the file names only in a comment', () => {
+  it('declines a sentinel class that the file names only in a comment', () => {
     const source = [
       '// class ExitError extends Error {}',
       "vi.spyOn(process, 'exit').mockImplementation(() => {",

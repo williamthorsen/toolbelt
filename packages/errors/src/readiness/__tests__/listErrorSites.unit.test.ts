@@ -137,7 +137,7 @@ describe(listErrorSites, () => {
     expect(sources.map(listErrorSites)).toStrictEqual(sources.map(() => []));
   });
 
-  it('reports a site the prose beside it never obscures', () => {
+  it('reports a site that the prose beside it never obscures', () => {
     const source = [
       '// Falls back to instanceof Error where the guard is unavailable.',
       'const message = error instanceof Error ? error.message : String(error);',

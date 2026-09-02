@@ -11,7 +11,7 @@ const OPPOSITE: Record<BoundingName, BoundingName> = { max: 'min', min: 'max' };
 /**
  * Lists the line of every hand-rolled clamp in a source file.
  *
- * Takes the blanked code `listMathIdioms` produces, so a clamp written in a comment or a literal is not one.
+ * Takes the blanked code produced by `listMathIdioms`, so a clamp written in a comment or a literal is not one.
  *
  * A clamp is a two-argument `Math.max` holding a two-argument `Math.min`, or the mirror of that, with the
  * nested call in either argument position. The nested call's own anchor falls inside the outer call and is
@@ -60,7 +60,7 @@ function isBoundingCall(argument: string, name: BoundingName): boolean {
 }
 
 /**
- * Splits a call's argument text on its top-level commas, discarding the empty tail a trailing comma leaves.
+ * Splits a call's argument text on its top-level commas, discarding the empty tail left by a trailing comma.
  *
  * A spread or an empty argument list yields a count of one, which no clamp shape has, so neither needs a case
  * of its own.
@@ -89,7 +89,7 @@ function listTopLevelArguments(inner: string): string[] {
   return args;
 }
 
-/** Narrows a captured name to the two the pattern can produce. */
+/** Narrows a captured name to the two that the pattern can produce. */
 function readBoundingName(name: string | undefined): BoundingName | undefined {
   return name === 'max' || name === 'min' ? name : undefined;
 }

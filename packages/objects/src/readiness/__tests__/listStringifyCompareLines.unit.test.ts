@@ -28,7 +28,7 @@ describe(listStringifyCompareLines, () => {
     expect(listStringifyCompareLines(source)).toStrictEqual([1]);
   });
 
-  it('claims a comparison broken across lines by a formatter, at the line it opens on', () => {
+  it('claims a comparison broken across lines by a formatter, at the line on which it opens', () => {
     const source = 'const same =\n  JSON.stringify(a) ===\n  JSON.stringify(b);\n';
 
     expect(listStringifyCompareLines(source)).toStrictEqual([2]);
@@ -52,7 +52,7 @@ describe(listStringifyCompareLines, () => {
     expect(listStringifyCompareLines('const same = JSON.stringify(a) === expected;\n')).toStrictEqual([]);
   });
 
-  it('declines a call the source does not compare', () => {
+  it('declines a call that the source does not compare', () => {
     expect(listStringifyCompareLines('const text = JSON.stringify(a, undefined, 2);\n')).toStrictEqual([]);
   });
 

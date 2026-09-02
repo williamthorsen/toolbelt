@@ -18,8 +18,8 @@ const WINDOW = { lookahead: 240, lookbehind: 80 };
 /**
  * Lists every `instanceof Error` in a source file, each named by what it is doing.
  *
- * A site inside a hand-rolled `describeError` reports as `describe-clone` rather than as the inline site it
- * also is, so one finding names the function to retire instead of several naming its branches.
+ * A site inside a hand-rolled `describeError` reports as `describe-clone` rather than as the inline site that
+ * it also is, so one finding names the function to retire instead of several naming its branches.
  *
  * The source is blanked before the anchor scan reads it, so an `instanceof Error` written in a comment, a
  * string, or a regular expression is invisible here. Blanking preserves every offset, so a reported line still

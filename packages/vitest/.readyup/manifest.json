@@ -54,7 +54,7 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "4845a1a8",
+          "hash": "aae4b90f",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -64,22 +64,22 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "64da6532",
+          "hash": "e69c23db",
           "kind": "module",
           "path": "../src/readiness/classifyConsoleMock.ts"
         },
         {
-          "hash": "e66ee47a",
+          "hash": "f6edca3b",
           "kind": "module",
           "path": "../src/readiness/classifyExitMock.ts"
         },
         {
-          "hash": "cff4fbd3",
+          "hash": "1fc70d26",
           "kind": "module",
           "path": "../src/readiness/listConsoleSites.ts"
         },
         {
-          "hash": "36586bf7",
+          "hash": "d6bffa9d",
           "kind": "module",
           "path": "../src/readiness/listDisposalHooks.ts"
         },
@@ -89,7 +89,7 @@
           "path": "../src/readiness/listExitMocks.ts"
         },
         {
-          "hash": "1855d644",
+          "hash": "9962db29",
           "kind": "module",
           "path": "../src/readiness/listSites.ts"
         }
@@ -98,8 +98,8 @@
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "4845a1a8",
-      "targetHash": "4c9f7fb9"
+      "sourceHash": "aae4b90f",
+      "targetHash": "3e5b7add"
     }
   ]
 }

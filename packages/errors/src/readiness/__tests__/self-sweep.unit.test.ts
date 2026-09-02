@@ -31,7 +31,7 @@ describe(listErrorSites, () => {
 
 // region | Helpers
 
-/** Lists the sources this package's own prose about the operator lives in. */
+/** Lists the sources in which this package's own prose about the operator lives. */
 function listSweptFiles(): string[] {
   return [KITS_DIR, READINESS_DIR].flatMap((directory) =>
     fs

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { classifyConsoleMock } from '../classifyConsoleMock.ts';
 
 describe(classifyConsoleMock, () => {
-  describe('an implementation it cannot read', () => {
+  describe('an implementation that it cannot read', () => {
     it('declines a spy carrying no implementation', () => {
       expect(classifyConsoleMock(';')).toBe('console-unclassified');
     });
@@ -20,7 +20,7 @@ describe(classifyConsoleMock, () => {
       expect(classifyConsoleMock('.mockImplementation(recordLine);')).toBe('console-unclassified');
     });
 
-    it('declines a head it does not recognize', () => {
+    it('declines a head that it does not recognize', () => {
       expect(classifyConsoleMock('.mockImplementation(new Recorder());')).toBe('console-unclassified');
     });
   });
@@ -80,7 +80,7 @@ describe(classifyConsoleMock, () => {
       );
     });
 
-    it('reads a spread inside a default value as the value it is, not as a rest parameter', () => {
+    it('reads a spread inside a default value as the value that it is, not as a rest parameter', () => {
       expect(classifyConsoleMock('.mockImplementation((message = [...prefix]) => { lines.push(message); });')).toBe(
         'console-capture-lossy',
       );

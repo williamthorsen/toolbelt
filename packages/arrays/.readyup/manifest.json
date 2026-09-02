@@ -54,7 +54,7 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "3441295b",
+          "hash": "055a9211",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -64,7 +64,7 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "bc7c9af6",
+          "hash": "a97f6341",
           "kind": "module",
           "path": "../src/readiness/listArraifyLines.ts"
         },
@@ -74,12 +74,12 @@
           "path": "../src/readiness/listArrayIdioms.ts"
         },
         {
-          "hash": "04447103",
+          "hash": "421dbe4a",
           "kind": "module",
           "path": "../src/readiness/listBiasedShuffleLines.ts"
         },
         {
-          "hash": "98190ab4",
+          "hash": "ab352b57",
           "kind": "module",
           "path": "../src/readiness/listRandomItemLines.ts"
         }
@@ -88,7 +88,7 @@
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "3441295b",
+      "sourceHash": "055a9211",
       "targetHash": "6c96a267"
     }
   ]

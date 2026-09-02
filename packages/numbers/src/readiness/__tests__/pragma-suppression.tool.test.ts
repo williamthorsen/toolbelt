@@ -60,7 +60,7 @@ function listCheckReports(report: string): CheckReport[] {
   return readFirstChecklistChecks(parsed).map((check) => readCheckReport(check));
 }
 
-/** Narrows one entry of the report to the fields these tests assert on. */
+/** Narrows one entry of the report to the fields on which these tests assert. */
 function readCheckReport(check: unknown): CheckReport {
   const progress = isRecord(check) ? check['progress'] : undefined;
   if (!isRecord(check) || !isRecord(progress)) throw new Error('the report holds a check carrying no fraction');
@@ -68,7 +68,7 @@ function readCheckReport(check: unknown): CheckReport {
   const { count, passedCount } = progress;
   const { detail, id } = check;
   if (typeof id !== 'string' || typeof count !== 'number' || typeof passedCount !== 'number') {
-    throw new TypeError('the report describes a check in a shape these tests cannot read');
+    throw new TypeError('the report describes a check in a shape that these tests cannot read');
   }
 
   return { count, detail: typeof detail === 'string' ? detail : undefined, id, passedCount };

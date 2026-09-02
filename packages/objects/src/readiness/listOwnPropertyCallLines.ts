@@ -8,7 +8,7 @@ const OWN_PROPERTY_CALL = /(?<![\w$.])Object\s*\.\s*prototype\s*\.\s*hasOwnPrope
 /**
  * Lists the line of every guarded `hasOwnProperty` call in a source file.
  *
- * Takes the blanked code `listObjectIdioms` produces, so a call written in a comment or a literal is not one.
+ * Takes the blanked code produced by `listObjectIdioms`, so a call written in a comment or a literal is not one.
  *
  * The unguarded form, calling the method on the value itself, is not claimed: it is a defect rather than a
  * verbose spelling, and eslint's recommended `no-prototype-builtins` already reports it.

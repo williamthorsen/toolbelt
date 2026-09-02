@@ -106,7 +106,7 @@ describe(listDisposalHooks, () => {
     expect(sources.map(listDisposalHooks)).toStrictEqual(sources.map(() => []));
   });
 
-  it('declines the helper the check recommends', () => {
+  it('declines the helper recommended by the check', () => {
     const source = 'const tree = disposeOnTestFinished(createTempTree({}));';
 
     expect(listDisposalHooks(source)).toStrictEqual([]);

@@ -19,7 +19,7 @@ describe(listClampNestLines, () => {
     expect(listClampNestLines('Math.max(0, Math.min(1, x));\n')).toHaveLength(1);
   });
 
-  it('claims a clamp broken across lines by a formatter, at the line it opens on', () => {
+  it('claims a clamp broken across lines by a formatter, at the line on which it opens', () => {
     const source = 'const a = Math.max(\n  lowerBound,\n  Math.min(upperBound, value),\n);\n';
 
     expect(listClampNestLines(source)).toStrictEqual([1]);

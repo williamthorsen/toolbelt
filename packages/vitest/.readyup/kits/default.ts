@@ -2,7 +2,7 @@
  * Adoption checks for a project consuming @williamthorsen/toolbelt.vitest.
  *
  * The kit ships inside the package, so it runs only where the package is installed and always at the version
- * that the consumer has. Installing the package is the consent these checks rest on.
+ * that the consumer has. Installing the package is the consent on which these checks rest.
  *
  * The checks take inventory rather than banning a pattern, and severity carries the judgment. A defect is a
  * `warn`: an exit mock that does not throw lets a suite cover a path that the process never reaches, and a console
@@ -26,7 +26,7 @@ export default defineAdoptionKit({
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: 'the project holds no test files',
   packageName: PACKAGE_NAME,
-  // The selection inverts the one `toolbelt.errors` makes, which exempts tests. Each of these idioms exists
+  // The selection inverts the one that `toolbelt.errors` makes, which exempts tests. Each of these idioms exists
   // only in a test, so a sweep that skipped tests would report nothing and say so as a pass.
   pathFilter: isTestFile,
   checks: [
@@ -47,7 +47,7 @@ export default defineAdoptionKit({
       id: 'no-hand-rolled-exit-mock',
       kinds: ['throwing', 'unclassified'],
       severity: 'recommend',
-      fix: `Replace each mock named above with throwOnProcessExit from ${PACKAGE_NAME}/candidate, and assert the code on the thrown ProcessExitError. An unclassified mock is one these checks could not read: an implementation given as a bare reference, attached away from the spy's own call chain, or whose parentheses never balance.`,
+      fix: `Replace each mock named above with throwOnProcessExit from ${PACKAGE_NAME}/candidate, and assert the code on the thrown ProcessExitError. An unclassified mock is one that these checks could not read: an implementation given as a bare reference, attached away from the spy's own call chain, or whose parentheses never balance.`,
     },
     {
       name: 'No test captures only part of a console call',
@@ -60,14 +60,14 @@ export default defineAdoptionKit({
       id: 'no-hand-rolled-console-capture',
       kinds: ['console-capture', 'console-unclassified'],
       severity: 'recommend',
-      fix: `Replace each capture named above with silenceConsole from ${PACKAGE_NAME}/candidate and listConsoleLines, which renders each call's arguments through String and joins them on a space. An unclassified mock is one these checks could not read: a spy carrying no implementation, an implementation given as a bare reference, attached away from the spy's own call chain, or whose delimiters never balance.`,
+      fix: `Replace each capture named above with silenceConsole from ${PACKAGE_NAME}/candidate and listConsoleLines, which renders each call's arguments through String and joins them on a space. An unclassified mock is one that these checks could not read: a spy carrying no implementation, an implementation given as a bare reference, attached away from the spy's own call chain, or whose delimiters never balance.`,
     },
     {
       name: 'No test silences a console method by hand',
       id: 'no-hand-rolled-console-silence',
       kinds: ['console-silence'],
       severity: 'recommend',
-      fix: `Replace each spy named above with silenceConsole from ${PACKAGE_NAME}/candidate, binding it with using so the methods are restored when the scope exits. It silences the methods it is given and hands back the spy behind each one. Reference: ${README_URL}`,
+      fix: `Replace each spy named above with silenceConsole from ${PACKAGE_NAME}/candidate, binding it with using so the methods are restored when the scope exits. It silences the methods that it is given and hands back the spy behind each one. Reference: ${README_URL}`,
     },
     {
       name: "No test reads a console spy's recorded calls",
@@ -81,7 +81,7 @@ export default defineAdoptionKit({
       id: 'no-hand-rolled-test-disposal',
       kinds: ['disposal-hook'],
       severity: 'recommend',
-      fix: `Wrap each resource named above in disposeOnTestFinished from ${PACKAGE_NAME}/candidate, which registers the disposal and returns the resource at the type it was given. Moving registration to the construction site retires the hook, and with it the unicorn/no-nonstandard-builtin-properties disable comment the hand-written disposal carries where that rule is enabled, since unicorn's Symbol allowlist omits Symbol.dispose. Reference: ${README_URL}`,
+      fix: `Wrap each resource named above in disposeOnTestFinished from ${PACKAGE_NAME}/candidate, which registers the disposal and returns the resource at the type that it was given. Moving registration to the construction site retires the hook, and with it the unicorn/no-nonstandard-builtin-properties disable comment carried by the hand-written disposal where that rule is enabled, since unicorn's Symbol allowlist omits Symbol.dispose. Reference: ${README_URL}`,
     },
   ],
 });

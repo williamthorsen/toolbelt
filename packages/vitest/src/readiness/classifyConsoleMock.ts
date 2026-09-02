@@ -20,13 +20,13 @@ const EMPTY_EXPRESSION = /^(?:undefined|void 0)$/;
 /**
  * Names what a console mock is doing, from the text following the spy.
  *
- * The text comes from the blanked code `listConsoleSites` produces, so an implementation written in a comment
- * or a string is not one the spy carries.
+ * The text comes from the blanked code produced by `listConsoleSites`, so an implementation written in a comment
+ * or a string is not one that the spy carries.
  *
  * A mock that captures nothing is a silence whatever its parameter list names, which is why the empty-body test
  * runs ahead of the parameter test: `(_message) => {}` names a parameter and still loses nothing. Past that, a
  * parameter list naming an argument and no rest parameter is the one defect, because every argument past the
- * last it names is dropped.
+ * last that it names is dropped.
  *
  * `console-unclassified` covers what this could not read: an implementation given as a bare reference, one
  * attached anywhere but the spy's own call chain, one whose delimiters never balance, and a spy carrying no
@@ -85,7 +85,7 @@ function isNoOp(body: string): boolean {
 
 /**
  * Splits an implementation into its parameter list and what follows, or returns nothing where neither of the
- * three heads it accepts fits: a parenthesized list, a sole parameter written without parentheses, and a
+ * three heads that it accepts fits: a parenthesized list, a sole parameter written without parentheses, and a
  * `function` expression.
  */
 function readImplementationHead(implementation: string): ImplementationHead | undefined {

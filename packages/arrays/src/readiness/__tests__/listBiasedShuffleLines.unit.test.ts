@@ -21,7 +21,7 @@ describe(listBiasedShuffleLines, () => {
     expect(sources.map((source) => listBiasedShuffleLines(source))).toStrictEqual([[1], [1]]);
   });
 
-  it('claims a comparator declaring parameters its body never reads', () => {
+  it('claims a comparator declaring parameters that its body never reads', () => {
     expect(listBiasedShuffleLines('const mixed = items.sort((a, b) => Math.random() - 0.5);\n')).toStrictEqual([1]);
   });
 
@@ -38,13 +38,13 @@ describe(listBiasedShuffleLines, () => {
     expect(listBiasedShuffleLines('const mixed = items.toSorted(() => Math.random() - 0.5);\n')).toStrictEqual([1]);
   });
 
-  it('claims a comparator broken across lines by a formatter, at the line the call opens on', () => {
+  it('claims a comparator broken across lines by a formatter, at the line on which the call opens', () => {
     const source = 'const mixed = items.sort(\n  () => Math.random() - 0.5,\n);\n';
 
     expect(listBiasedShuffleLines(source)).toStrictEqual([1]);
   });
 
-  // The draw breaks ties among equal keys, which is a deliberate choice `shuffle` does not reproduce.
+  // The draw breaks ties among equal keys, which is a deliberate choice that `shuffle` does not reproduce.
   it('declines a comparator that ranks by its operands and draws only to break a tie', () => {
     const source = 'const ranked = rows.sort((a, b) => a.score - b.score || Math.random() - 0.5);\n';
 
@@ -52,7 +52,7 @@ describe(listBiasedShuffleLines, () => {
   });
 
   // A combinator's own arrow is not the argument's, so a draw inside it breaks ties within a primary ordering.
-  it('declines a comparator a combinator assembles around an arrow of its own', () => {
+  it('declines a comparator assembled by a combinator around an arrow of its own', () => {
     const sources = [
       'const ranked = rows.sort(thenBy(byScore, () => Math.random() - 0.5));\n',
       'const ranked = rows.sort(withJitter(byName, () => Math.random() * 0.01));\n',
@@ -74,7 +74,7 @@ describe(listBiasedShuffleLines, () => {
 
   // A parenthesis wrapping the whole comparator holds the arrow rather than opening it, and a cast puts its
   // type where the body would otherwise be read from.
-  it('claims an arrow a redundant parenthesis or a cast wraps', () => {
+  it('claims an arrow wrapped by a redundant parenthesis or a cast', () => {
     const sources = [
       'const mixed = items.sort(((a, b) => Math.random() - 0.5));\n',
       'const mixed = items.sort(((a, b) => Math.random() - 0.5) as Comparator<Row>);\n',
@@ -93,7 +93,7 @@ describe(listBiasedShuffleLines, () => {
     expect(sources.filter((source) => listBiasedShuffleLines(source).length > 0)).toStrictEqual([]);
   });
 
-  it('declines a draw the source makes outside a comparator', () => {
+  it('declines a draw that the source makes outside a comparator', () => {
     expect(listBiasedShuffleLines('const jitter = Math.random() - 0.5;\n')).toStrictEqual([]);
   });
 

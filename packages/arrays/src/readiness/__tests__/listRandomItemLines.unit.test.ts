@@ -7,9 +7,9 @@ describe(listRandomItemLines, () => {
     expect(listRandomItemLines('const item = items[Math.floor(Math.random() * items.length)];\n')).toStrictEqual([1]);
   });
 
-  // These are the sources `toolbelt.numbers` asserts its own detector skips, so the two must agree on all of
-  // them: a form neither claims is a site the consumer never hears about.
-  it('claims every subscript the numbers kit declines, however it is spaced or chained', () => {
+  // These are the sources that `toolbelt.numbers` asserts its own detector skips, so the two must agree on
+  // all of them: a form claimed by neither is a site that the consumer never hears about.
+  it('claims every subscript declined by the numbers kit, however it is spaced or chained', () => {
     const subscripts = [
       'const item = items?.[Math.floor(Math.random() * items.length)];\n',
       'const item = items[\n  Math.floor(Math.random() * items.length)\n];\n',

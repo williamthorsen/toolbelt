@@ -17,7 +17,7 @@ const STRINGIFY = 'export const same = JSON.stringify(a) === JSON.stringify(b);\
 // The package's own `isRecord`, holding the idiom that its check recommends replacing.
 const OWN_RECORD =
   "export function isRecord(value) {\n  return typeof value === 'object' && value !== null && !Array.isArray(value);\n}\n";
-// A narrowing guard the record check declines, and a serialization the stringify check declines.
+// A narrowing guard declined by the record check, and a serialization declined by the stringify check.
 const UNCLAIMED =
   "export const isEnoent = typeof err === 'object' && err !== null && 'code' in err;\nexport const text = JSON.stringify(a) === '{}';\n";
 const ADOPTER = "import { isRecord } from '@williamthorsen/toolbelt.objects';\nisRecord(value);\n";
@@ -60,7 +60,7 @@ describe('The objects adoption kit', () => {
     await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
   });
 
-  it('neither reports nor counts a guard that narrows further or a serialization it compares to a literal', async () => {
+  it('neither reports nor counts a guard that narrows further or a serialization that it compares to a literal', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/probe.ts': UNCLAIMED });
     using _cwd = pointCwdAt(tree.dir);
 

@@ -41,7 +41,7 @@ vi.spyOn(console, 'error').mockImplementation((message) => { lines.push(message)
     ]);
   });
 
-  it('carries the symbol an exit mock names', () => {
+  it('carries the symbol named by an exit mock', () => {
     const source = `class ExitError extends Error {}
 vi.spyOn(process, 'exit').mockImplementation((code) => {
   throw new ExitError(code);

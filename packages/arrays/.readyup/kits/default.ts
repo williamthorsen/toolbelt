@@ -2,11 +2,11 @@
  * Adoption checks for a project consuming @williamthorsen/toolbelt.arrays.
  *
  * The kit ships inside the package, so it runs only where the package is installed and always at the version
- * that the consumer has. Installing the package is the consent these checks rest on.
+ * that the consumer has. Installing the package is the consent on which these checks rest.
  *
  * Two of the three checks take inventory rather than banning a pattern: a random item and a hand-rolled array
  * wrap are correct code that a published utility expresses better. The comparator is a `warn`, because it is a
- * defect: it does not order consistently, so the permutation it produces is not uniform either.
+ * defect: it does not order consistently, so the permutation that it produces is not uniform either.
  *
  * The kit declares what to look for and what to advise. What it reports lives in `src/readiness/`, where the
  * package's own suite covers it, and how the looking is done lives in `packages/adoption`.

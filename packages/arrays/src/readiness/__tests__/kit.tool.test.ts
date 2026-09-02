@@ -16,8 +16,8 @@ const RANDOM_ITEM = 'export const item = items[Math.floor(Math.random() * items.
 const SHUFFLE = 'export const mixed = items.sort(() => Math.random() - 0.5);\n';
 // The package's own `arraify`, holding the idiom that its check recommends replacing.
 const OWN_ARRAIFY = 'export function arraify(value) {\n  return Array.isArray(value) ? value : [value];\n}\n';
-// A tiebreak the shuffle check declines, a floored random the item check leaves to `toolbelt.numbers`, and a
-// ternary choosing between two unrelated values.
+// A tiebreak declined by the shuffle check, a floored random that the item check leaves to `toolbelt.numbers`,
+// and a ternary choosing between two unrelated values.
 const UNCLAIMED = [
   'export const ranked = rows.sort((a, b) => a.score - b.score || Math.random() - 0.5);',
   'export const roll = Math.floor(Math.random() * sides);',

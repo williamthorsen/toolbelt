@@ -2,11 +2,11 @@
  * Adoption checks for a project consuming @williamthorsen/toolbelt.objects.
  *
  * The kit ships inside the package, so it runs only where the package is installed and always at the version
- * that the consumer has. Installing the package is the consent these checks rest on.
+ * that the consumer has. Installing the package is the consent on which these checks rest.
  *
  * Two of the three checks take inventory rather than banning a pattern: a guarded prototype call and a
  * hand-rolled record guard are correct code that a published utility expresses better. The serialization
- * comparison is a `warn`, because it is a defect: it answers the wrong question about the values it compares.
+ * comparison is a `warn`, because it is a defect: it answers the wrong question about the values that it compares.
  *
  * The kit declares what to look for and what to advise. What it reports lives in `src/readiness/`, where the
  * package's own suite covers it, and how the looking is done lives in `packages/adoption`.
@@ -41,7 +41,7 @@ export default defineAdoptionKit({
       id: 'no-hand-rolled-record-guard',
       kinds: ['record-inline'],
       severity: 'recommend',
-      fix: `Replace each expression named above with isRecord from ${PACKAGE_NAME} where it excludes arrays, and isRecordOrArray where it admits them. Both return a type predicate, so the narrowing the expression performed is preserved. For the stricter question of whether a value carries Object.prototype and nothing exotic, isPlainObject answers it; the expressions named above do not ask it. Reference: ${README_URL}`,
+      fix: `Replace each expression named above with isRecord from ${PACKAGE_NAME} where it excludes arrays, and isRecordOrArray where it admits them. Both return a type predicate, so the narrowing performed by the expression is preserved. For the stricter question of whether a value carries Object.prototype and nothing exotic, isPlainObject answers it; the expressions named above do not ask it. Reference: ${README_URL}`,
     },
     {
       name: 'No source compares two serializations',

@@ -38,7 +38,7 @@ describe(listConsoleSites, () => {
       expect(listConsoleSites(source)).toStrictEqual([{ kind: 'console-silence', line: 1 }]);
     });
 
-    it('declines a method the package has no advice for', () => {
+    it('declines a method for which the package has no advice', () => {
       const source = `vi.spyOn(console, 'table').mockImplementation(() => {});`;
 
       expect(listConsoleSites(source)).toStrictEqual([]);
@@ -139,7 +139,7 @@ expect(mocks.error.mock.calls).toHaveLength(1);`;
       expect(listConsoleSites(source)).toStrictEqual([]);
     });
 
-    it('declines a read of a spy on a method the package has no advice for', () => {
+    it('declines a read of a spy on a method for which the package has no advice', () => {
       const source = `const spy = vi.spyOn(console, 'table').mockImplementation(() => {});
 expect(spy.mock.calls).toHaveLength(1);`;
 

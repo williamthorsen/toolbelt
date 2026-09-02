@@ -2,7 +2,7 @@ import { PARENTHESES, readBalancedGroup } from '@williamthorsen/toolbelt.adoptio
 
 export interface ExitMockVerdict {
   kind: ExitMockKind;
-  /** The sentinel class the mock throws, on a `sentinel-clone` alone. */
+  /** The sentinel class thrown by the mock, on a `sentinel-clone` alone. */
   symbol?: string;
 }
 
@@ -15,14 +15,14 @@ const BARE_REFERENCE = /^[\w$.]+$/;
 /**
  * Names what a `process.exit` mock is doing, from the text following the spy and the file that holds it.
  *
- * Both come from the blanked code `listExitMocks` produces, so a `throw` written in a comment does not make a
- * mock throwing, and a sentinel class named only in prose is not one the file declares.
+ * Both come from the blanked code produced by `listExitMocks`, so a `throw` written in a comment does not make a
+ * mock throwing, and a sentinel class named only in prose is not one that the file declares.
  *
  * A mock throwing a class declared by the same file reports as `sentinel-clone` rather than as the `throwing`
- * mock it also is, so one finding names the class to retire alongside the mock.
+ * mock that it also is, so one finding names the class to retire alongside the mock.
  *
- * `non-throwing` is claimed only against a body this read in full and found no `throw` in, because that kind
- * carries the defect severity. Everything else is `unclassified`: an implementation given as a bare reference,
+ * `non-throwing` is claimed only against a body that this read in full and found no `throw` in, because that
+ * kind carries the defect severity. Everything else is `unclassified`: an implementation given as a bare reference,
  * one attached anywhere but the spy's own call chain, and one whose parentheses never balance.
  *
  * @internal

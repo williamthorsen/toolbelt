@@ -13,8 +13,8 @@ const SPY = /\bvi\s*\.\s*spyOn\(\s*console\s*,\s*(['"])(?:debug|error|info|log|w
 const READ = /\.\s*mock\s*\.\s*(?:calls|lastCall)\b/g;
 const SILENCE_BINDING = /\b(?:const|let|using|var)\s+([\w$]+)\s*=\s*silenceConsole\s*\(/g;
 // The declaration keyword is optional, because a suite commonly declares the name in one scope and assigns
-// the spy in a hook. The leading guard holds the name to one an identifier read can resolve: `harness.spy = `
-// binds nothing, since a read written `spy.mock.calls` would not be reaching that property.
+// the spy in a hook. The leading guard holds the name to one that an identifier read can resolve:
+// `harness.spy = ` binds nothing, since a read written `spy.mock.calls` would not be reaching that property.
 const BINDING_TAIL = /(?:^|[^.\w$])(?:(?:const|let|using|var) )?([\w$]+)(?:: [^=]+)? = $/;
 const MEMBER_RECEIVER = /([\w$]+) ?\. ?(?:debug|error|info|log|warn) ?$/;
 const IDENTIFIER_RECEIVER = /(?:^|[^.\w$])([\w$]+) ?$/;
@@ -25,9 +25,9 @@ const WINDOW = { lookahead: 0, lookbehind: 64 };
  * Lists every console spy in a test file and every read of a console spy's recorded calls, each named by what
  * it is doing.
  *
- * Only the five methods `silenceConsole` covers are anchored, because they are the ones the package has advice
- * for. The anchor is `vi.spyOn`, not an assignment to a console method: an assignment anchor matches a restore
- * as readily as a mock.
+ * Only the five methods covered by `silenceConsole` are anchored, because they are the ones for which the
+ * package has advice. The anchor is `vi.spyOn`, not an assignment to a console method: an assignment anchor
+ * matches a restore as readily as a mock.
  *
  * The spy anchor reads the spied method's name out of a string literal, so like `listExitMocks` it matches the
  * source and takes its verdict from the blanked text at the same offsets. The read anchor is identifiers alone
