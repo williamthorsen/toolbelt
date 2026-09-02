@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { listMathIdioms } from '../listMathIdioms.ts';
 
 describe(listMathIdioms, () => {
-  it('names each idiom it finds and orders the sites by line', () => {
+  it('names each idiom that it finds and orders the sites by line', () => {
     const source = [
       'const roll = Math.floor(Math.random() * sides);',
       'const rate = Math.round(value * 100) / 100;',
@@ -34,7 +34,7 @@ describe(listMathIdioms, () => {
     expect(sources.map(listMathIdioms)).toStrictEqual(sources.map(() => []));
   });
 
-  // An interpolated expression is code that runs, so the idiom in it is one a consumer can retire.
+  // An interpolated expression is code that runs, so the idiom in it is one that a consumer can retire.
   it('claims an idiom interpolated into a template literal', () => {
     const source = 'const label = `bounded to ${Math.max(min, Math.min(max, value))}`;\n';
 
@@ -42,7 +42,7 @@ describe(listMathIdioms, () => {
   });
 
   // Blanking leaves a literal's delimiters standing, which is what lets `isArraySubscript` read the closing
-  // quote as the expression a subscript indexes. Blank the quotes too and this kit claims a site that it hands off.
+  // quote as the expression indexed by a subscript. Blank the quotes too and this kit claims a site that it hands off.
   it('declines a floored random subscripting a string literal, which another kit claims', () => {
     const source = "const character = 'abcdef'[Math.floor(Math.random() * 6)];\n";
 

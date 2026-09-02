@@ -22,12 +22,12 @@ const NEGATED_ARRAIFY_TERNARY = new RegExp(
 /**
  * Lists the line of every hand-rolled array wrap in a source file.
  *
- * Takes the blanked code `listArrayIdioms` produces, so a ternary written in a comment or a literal is not
+ * Takes the blanked code produced by `listArrayIdioms`, so a ternary written in a comment or a literal is not
  * one.
  *
  * Both polarities are claimed, and in each the array branch may pass the value through or spread it into a new
- * array. The spread is the one form the substitution is exact from; the other two hand back the value itself,
- * which is the limit the kit's advice names.
+ * array. The spread is the one form from which the substitution is exact; the other two hand back the value
+ * itself, which is the limit named by the kit's advice.
  *
  * A polarity is matched in a pass of its own, so the lines are sorted before they are returned.
  *

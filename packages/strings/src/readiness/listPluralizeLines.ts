@@ -19,7 +19,7 @@ const PLURALIZE_TERNARY = new RegExp(
  * A site is a pluralization where the plural is the singular plus `s`, which covers `'x' : 'xs'`, `'' : 's'`,
  * and the `!==` mirror `'s' : ''`. A pair of identifiers is not matched and a pair of unrelated literals is
  * declined: that relation is the only evidence available that the compared value is a count rather than any
- * other value a source compares against 1.
+ * other value that a source compares against 1.
  *
  * @internal
  */

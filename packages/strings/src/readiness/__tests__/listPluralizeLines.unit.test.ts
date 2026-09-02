@@ -28,11 +28,11 @@ describe(listPluralizeLines, () => {
     expect(listLines("const noun = (count === 1) ? 'item' : 'items';\n")).toStrictEqual([1]);
   });
 
-  it('claims a ternary broken across lines by a formatter, at the line it opens on', () => {
+  it('claims a ternary broken across lines by a formatter, at the line on which it opens', () => {
     expect(listLines("const noun =\n  count === 1\n    ? 'item'\n    : 'items';\n")).toStrictEqual([2]);
   });
 
-  // The literals are read from the unblanked source at offsets the blanked code reports, so anything that
+  // The literals are read from the unblanked source at offsets reported by the blanked code, so anything that
   // shifts one text against the other reads the wrong span.
   it('reads the literals through a comment sitting inside the ternary', () => {
     expect(listLines("const noun = count === 1 ? /* one */ 'item' : 'items';\n")).toStrictEqual([1]);
@@ -68,7 +68,7 @@ describe(listPluralizeLines, () => {
 
 // region | Helpers
 
-/** Runs the detector over a source and the blanked code its caller would hand it. */
+/** Runs the detector over a source and the blanked code that its caller would hand it. */
 function listLines(source: string): number[] {
   return listPluralizeLines(blankNonCode(source), source);
 }

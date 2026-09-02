@@ -37,7 +37,7 @@ describe(listRecordLines, () => {
     expect(listLines("const ok = typeof this.value === 'object' && this.value !== null;\n")).toStrictEqual([1]);
   });
 
-  it('claims a conjunction broken across lines by a formatter, at the line it opens on', () => {
+  it('claims a conjunction broken across lines by a formatter, at the line on which it opens', () => {
     const source = "const ok =\n  typeof value === 'object' &&\n  value !== null &&\n  !Array.isArray(value);\n";
 
     expect(listLines(source)).toStrictEqual([2]);
@@ -52,7 +52,7 @@ describe(listRecordLines, () => {
     expect(listLines("const no = !(typeof value === 'object' && value !== null);\n")).toStrictEqual([1]);
   });
 
-  it('claims a conjunction a disjunction follows, which ends it', () => {
+  it('claims a conjunction followed by a disjunction, which ends it', () => {
     expect(listLines("const ok = typeof value === 'object' && value !== null || fallback;\n")).toStrictEqual([1]);
   });
 
@@ -66,7 +66,7 @@ describe(listRecordLines, () => {
     expect(listLines(source)).toStrictEqual([1, 2]);
   });
 
-  // Adoption at these sites is a rewrite rather than a substitution, which is the noise the boundary excludes.
+  // Adoption at these sites is a rewrite rather than a substitution, which is the noise excluded by the boundary.
   it('declines a conjunction continuing into a property probe', () => {
     expect(listLines("const ok = typeof err === 'object' && err !== null && 'code' in err;\n")).toStrictEqual([]);
   });
@@ -108,7 +108,7 @@ describe(listRecordLines, () => {
     expect(listLines("const ok = typeof value === 'function' && value !== null;\n")).toStrictEqual([]);
   });
 
-  it('declines a null test the source does not pair with a type test', () => {
+  it('declines a null test that the source does not pair with a type test', () => {
     expect(listLines('const ok = value !== null && value !== undefined;\n')).toStrictEqual([]);
   });
 

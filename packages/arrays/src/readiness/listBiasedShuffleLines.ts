@@ -20,7 +20,7 @@ const IDENTIFIER_CHARACTER = /[A-Za-z_$]/;
 /**
  * Lists the line of every biased shuffle in a source file.
  *
- * Takes the blanked code `listArrayIdioms` produces, so a comparator written in a comment or a literal is not
+ * Takes the blanked code produced by `listArrayIdioms`, so a comparator written in a comment or a literal is not
  * one.
  *
  * A comparator is claimed for what its body does not hold rather than for a spelling: strip the draw and a
@@ -53,8 +53,8 @@ export function listBiasedShuffleLines(source: string): number[] {
  * Returns the offset of the arrow whose body is the argument's own, or nothing where the argument is no arrow.
  *
  * The arrow has to open the argument. A combinator assembling a comparator takes an arrow of its own, and an
- * arrow found anywhere in the text would be that one, whose body belongs to a function this argument only
- * passes along. Anything between the parameter list and the arrow is a return-type annotation.
+ * arrow found anywhere in the text would be that one, whose body belongs to a function that this argument
+ * only passes along. Anything between the parameter list and the arrow is a return-type annotation.
  */
 function findArrowOffset(text: string): number | undefined {
   const parameters = readBalancedGroup(text, 0, PARENTHESES);

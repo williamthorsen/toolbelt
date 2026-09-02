@@ -54,7 +54,7 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "fbc5511a",
+          "hash": "147be333",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -64,17 +64,17 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "cd95f4c4",
+          "hash": "97d2a4b0",
           "kind": "module",
           "path": "../src/readiness/classifySite.ts"
         },
         {
-          "hash": "8ba488d0",
+          "hash": "3bd4a423",
           "kind": "module",
           "path": "../src/readiness/listDescribeClones.ts"
         },
         {
-          "hash": "a1ef14c3",
+          "hash": "fe0ccdc5",
           "kind": "module",
           "path": "../src/readiness/listErrorSites.ts"
         }
@@ -83,7 +83,7 @@
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "fbc5511a",
+      "sourceHash": "147be333",
       "targetHash": "ab68b1c6"
     }
   ]

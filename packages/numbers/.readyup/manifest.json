@@ -54,7 +54,7 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "2b8ac62f",
+          "hash": "2ed9da8b",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -64,7 +64,7 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "54ee66e5",
+          "hash": "f14085f3",
           "kind": "module",
           "path": "../src/readiness/listClampNestLines.ts"
         },
@@ -74,12 +74,12 @@
           "path": "../src/readiness/listMathIdioms.ts"
         },
         {
-          "hash": "9dce1264",
+          "hash": "254ea06a",
           "kind": "module",
           "path": "../src/readiness/listRandomIntegerLines.ts"
         },
         {
-          "hash": "ae0ac903",
+          "hash": "bdcac255",
           "kind": "module",
           "path": "../src/readiness/listRoundScaleLines.ts"
         }
@@ -88,7 +88,7 @@
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "2b8ac62f",
+      "sourceHash": "2ed9da8b",
       "targetHash": "1e88eb34"
     }
   ]

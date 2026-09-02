@@ -9,7 +9,7 @@ describe(listOwnPropertyCallLines, () => {
     ]);
   });
 
-  it('claims a call broken across lines by a formatter, at the line it opens on', () => {
+  it('claims a call broken across lines by a formatter, at the line on which it opens', () => {
     const source = 'const has =\n  Object.prototype.hasOwnProperty\n    .call(target, key);\n';
 
     expect(listOwnPropertyCallLines(source)).toStrictEqual([2]);

@@ -54,12 +54,12 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "0f8edb7d",
+          "hash": "09bc7818",
           "kind": "module",
           "path": "kits/default.ts"
         },
         {
-          "hash": "f99d3964",
+          "hash": "c2ffe238",
           "kind": "module",
           "path": "../src/readiness/adoptedExports.ts"
         },
@@ -69,17 +69,17 @@
           "path": "../src/readiness/listObjectIdioms.ts"
         },
         {
-          "hash": "6a131b7e",
+          "hash": "54e7d525",
           "kind": "module",
           "path": "../src/readiness/listOwnPropertyCallLines.ts"
         },
         {
-          "hash": "1bb21ae7",
+          "hash": "fdcd7a1d",
           "kind": "module",
           "path": "../src/readiness/listRecordLines.ts"
         },
         {
-          "hash": "f3337859",
+          "hash": "530a3e4b",
           "kind": "module",
           "path": "../src/readiness/listStringifyCompareLines.ts"
         }
@@ -88,8 +88,8 @@
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "0f8edb7d",
-      "targetHash": "53cb54a7"
+      "sourceHash": "09bc7818",
+      "targetHash": "e6955961"
     }
   ]
 }

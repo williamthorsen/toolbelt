@@ -54,7 +54,7 @@ describe('The numbers adoption kit', () => {
   });
 
   // A subscripted random integer is `toolbelt.arrays`' site. Claiming it would report one line twice across
-  // the two kits; counting it would leave a fraction no check here could close.
+  // the two kits; counting it would leave a fraction that no check here could close.
   it('neither reports nor counts a site that it hands off to another kit', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/pick.ts': UNCLAIMED });
     using _cwd = pointCwdAt(tree.dir);

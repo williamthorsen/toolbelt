@@ -7,11 +7,11 @@ const WINDOW = { lookahead: 0, lookbehind: 80 };
 /**
  * Lists the line of every hand-rolled random item in a source file.
  *
- * Takes the blanked code `listArrayIdioms` produces, so an index written in a comment or a literal is not one.
+ * Takes the blanked code produced by `listArrayIdioms`, so an index written in a comment or a literal is not one.
  *
  * A site is claimed for standing in array-subscript position, whatever it scales the draw by. That is the
- * whole set `toolbelt.numbers` declines, and both kits read the answer from the same predicate, so every
- * floored random is claimed by exactly one of them.
+ * whole set that `toolbelt.numbers` declines, and both kits read the answer from the same predicate, so
+ * every floored random is claimed by exactly one of them.
  *
  * @internal
  */

@@ -39,7 +39,7 @@ describe(listObjectIdioms, () => {
     expect(listObjectIdioms(source)).toStrictEqual([]);
   });
 
-  it('reports every idiom a single line holds', () => {
+  it('reports every idiom held by a single line', () => {
     const source =
       "const ok = Object.prototype.hasOwnProperty.call(v, k) && typeof v.x === 'object' && v.x !== null;\n";
 

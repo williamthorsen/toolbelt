@@ -15,7 +15,7 @@ const CAPITALIZE_INLINE =
 /**
  * Lists the line of every hand-rolled capitalization in a source file.
  *
- * Takes the blanked code `listStringIdioms` produces, so a capitalization written in a comment or a literal is
+ * Takes the blanked code produced by `listStringIdioms`, so a capitalization written in a comment or a literal is
  * not one.
  *
  * Both first-character forms count, `charAt(0)` and `[0]`, as do both tails, `slice(1)` and `substring(1)`,

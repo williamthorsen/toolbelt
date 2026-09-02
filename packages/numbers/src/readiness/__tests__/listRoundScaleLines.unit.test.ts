@@ -17,7 +17,7 @@ describe(listRoundScaleLines, () => {
     expect(listRoundScaleLines('const a = Math.round(value * 10 ** 2) / 10**2;\n')).toStrictEqual([1]);
   });
 
-  it('claims a rounding broken across lines by a formatter, at the line it opens on', () => {
+  it('claims a rounding broken across lines by a formatter, at the line on which it opens', () => {
     expect(listRoundScaleLines('const a =\n  Math.round(\n    value * 1000,\n  ) / 1000;\n')).toStrictEqual([2]);
   });
 

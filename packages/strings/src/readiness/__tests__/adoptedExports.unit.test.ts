@@ -8,8 +8,8 @@ import { ADOPTED_EXPORTS } from '../adoptedExports.ts';
 
 // Every tier published by the package's `exports` map.
 const PUBLISHED_TIERS = [proposedExports, draftExports, candidateExports, releaseExports];
-// The `String.prototype` wrappers, whose names a file importing this package calls on strings it never took
-// from here. Counting those calls as adoption would put the fraction beyond reach of any check.
+// The `String.prototype` wrappers, whose names a file importing this package calls on strings that it never
+// took from here. Counting those calls as adoption would put the fraction beyond reach of any check.
 const EXCLUDED_EXPORTS = ['toLowerCase', 'toUpperCase', 'trim', 'trimEnd', 'trimStart'];
 
 describe('ADOPTED_EXPORTS', () => {

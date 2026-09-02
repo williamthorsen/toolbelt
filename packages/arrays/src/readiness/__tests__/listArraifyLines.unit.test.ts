@@ -26,7 +26,7 @@ describe(listArraifyLines, () => {
     ]);
   });
 
-  it('claims a ternary broken across lines by a formatter, at the line it opens on', () => {
+  it('claims a ternary broken across lines by a formatter, at the line on which it opens', () => {
     const source = 'const list = Array.isArray(value)\n  ? value\n  : [value];\n';
 
     expect(listArraifyLines(source)).toStrictEqual([1]);

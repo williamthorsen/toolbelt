@@ -5,11 +5,12 @@ const SUBJECT = String.raw`[\w$]+(?:\.[\w$]+)*`;
 // A quoted literal of any content: blanking replaces a literal's characters with spaces, so what it holds is
 // read from the unblanked source instead.
 const QUOTED = String.raw`(?<literal>(?<quote>['"])[^'"\n]*\k<quote>)`;
-// The array exclusion the shorter form omits, then the guard that ends the claim where the conjunction does.
+// The array exclusion omitted by the shorter form, then the guard that ends the claim where the conjunction
+// does.
 // Both lengths are tried, and a further operand fails the lookahead at each, so a site continuing into a
 // property probe goes unclaimed.
 const TAIL = String.raw`(?:\s*&&\s*!\s*Array\s*\.\s*isArray\s*\(\s*\k<subject>\s*\))?(?!\s*&&)`;
-// `\s*` sits at every joint, so a conjunction a formatter wrapped reads the same as one left on a line.
+// `\s*` sits at every joint, so a conjunction wrapped by a formatter reads the same as one left on a line.
 const TYPEOF_FIRST = new RegExp(
   String.raw`(?<![\w$.])typeof\s+(?<subject>${SUBJECT})\s*===\s*${QUOTED}\s*&&\s*\k<subject>\s*!==?\s*null${TAIL}`,
   'dg',
@@ -23,7 +24,7 @@ const NULL_FIRST = new RegExp(
  * Lists the line of every hand-rolled record guard in a source file.
  *
  * Takes both texts. The conjunction is matched on the blanked code, so a guard written in a comment is not
- * one, and the compared literal is then read from the unblanked source at the offset the match reports:
+ * one, and the compared literal is then read from the unblanked source at the offset reported by the match:
  * blanking replaces a literal's characters with spaces in place, so the two texts stay aligned while only the
  * unblanked one still says what the literal holds.
  *
