@@ -73,6 +73,9 @@
 - name: scope:async
   color: 00ff96
   description: ''
+- name: scope:atlassian
+  color: 00ff96
+  description: ''
 - name: scope:datetime
   color: 00ff96
   description: ''
@@ -95,9 +98,6 @@
   color: 00ff96
   description: ''
 - name: scope:hof
-  color: 00ff96
-  description: ''
-- name: scope:jira
   color: 00ff96
   description: ''
 - name: scope:numbers

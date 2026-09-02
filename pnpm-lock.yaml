@@ -116,6 +116,8 @@ importers:
 
   packages/async: {}
 
+  packages/atlassian: {}
+
   packages/datetime:
     dependencies:
       '@williamthorsen/toolbelt.numbers':
@@ -165,8 +167,6 @@ importers:
       '@williamthorsen/toolbelt.arrays':
         specifier: workspace:*
         version: link:../arrays
-
-  packages/jira: {}
 
   packages/numbers:
     devDependencies:
