@@ -1,22 +1,25 @@
 {
-  "name": "@williamthorsen/toolbelt.jira",
+  "name": "@williamthorsen/toolbelt.atlassian",
   "version": "0.1.0",
-  "description": "Utilities for working with Jira",
+  "description": "Utilities for working with Atlassian Cloud",
   "keywords": [
+    "atlassian",
+    "bitbucket",
+    "confluence",
     "esm",
     "jira",
     "toolbelt",
     "typescript",
     "utilities"
   ],
-  "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/jira#readme",
+  "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/atlassian#readme",
   "bugs": {
     "url": "https://github.com/williamthorsen/toolbelt/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/williamthorsen/toolbelt.git",
-    "directory": "packages/jira"
+    "directory": "packages/atlassian"
   },
   "license": "ISC",
   "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
