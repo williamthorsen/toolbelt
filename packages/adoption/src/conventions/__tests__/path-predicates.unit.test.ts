@@ -7,7 +7,7 @@ describe(isAdoptableSource, () => {
     expect(isAdoptableSource('src/read.ts')).toBe(true);
   });
 
-  it('declines every path one of its parts exempts', () => {
+  it('declines every path exempted by one of its parts', () => {
     const exempt = ['README.md', 'bin/run.js', 'src/read.unit.test.ts', 'src/__tests__/fixtures/sample.ts'];
 
     expect(exempt.filter((path) => isAdoptableSource(path))).toStrictEqual([]);
@@ -43,7 +43,7 @@ describe(isInTestDirectory, () => {
 });
 
 describe(isJsTsSource, () => {
-  it('claims every JavaScript and TypeScript extension the sweep reads', () => {
+  it('claims every JavaScript and TypeScript extension read by the sweep', () => {
     const paths = ['src/read.ts', 'src/Panel.tsx', 'scripts/build.mjs', 'lib/wrap.cjs', 'a.js', 'b.jsx', 'c.mts'];
 
     expect(paths.filter((path) => !isJsTsSource(path))).toStrictEqual([]);

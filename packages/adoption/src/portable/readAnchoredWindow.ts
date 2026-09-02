@@ -17,7 +17,7 @@ export interface WindowLengths {
  *
  * Both windows are condensed because a real site wraps mid-expression under a formatter, and a line-oriented
  * pattern would walk past it. Each caller passes its own lengths: how far a detector must see is a property of
- * the idiom it matches, not of the reading.
+ * the idiom that it matches, not of the reading.
  *
  * @internal
  */

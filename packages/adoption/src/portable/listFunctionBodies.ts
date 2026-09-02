@@ -59,7 +59,7 @@ export function listFunctionBodies(source: string): FunctionBody[] {
 // region | Helpers
 
 /**
- * Returns the offset the brace group is searched from, or nothing where the parameter list never closes.
+ * Returns the offset from which the brace group is searched, or nothing where the parameter list never closes.
  *
  * A `function` head matches only as far as its opening parenthesis, so the parameter list is read past before
  * any brace counts: a destructured parameter, an object default, or an inline type literal would otherwise

@@ -4,9 +4,9 @@ const TEST_DIRECTORY = /(?:^|\/)__tests__\//;
 const TEST_SUFFIX = /\.(?:spec|test)\.[cm]?[jt]sx?$/;
 
 /**
- * Reports whether a path names a source an adoption sweep reads.
+ * Reports whether a path names a source read by an adoption sweep.
  *
- * The selection every kit sweeping a project's own sources wants: a JavaScript or TypeScript file that is
+ * The selection wanted by every kit sweeping a project's own sources: a JavaScript or TypeScript file that is
  * neither a bootstrap wrapper nor a test. A kit sweeping tests instead, as `toolbelt.vitest` does, inverts the
  * last of those and reaches for `isTestFile` directly.
  *

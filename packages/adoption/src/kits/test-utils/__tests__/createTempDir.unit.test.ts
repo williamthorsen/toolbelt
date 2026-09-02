@@ -37,7 +37,8 @@ describe(createTempDir, () => {
   // `createTempTree` reads a key ending in a separator as a directory. Without this rejection, a caller
   // carrying that idiom over would get a file of the same name and no error.
   it('rejects an entry naming a directory, leaving nothing on disk', () => {
-    // Spy on the creation call, which is the only route to the root of a directory no handle was returned for.
+    // Spy on the creation call, which is the only route to the root of a directory for which no handle was
+    // returned.
     using mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
 
     const create = () => createTempDir({ 'package.json': '{}', 'src/': '' });

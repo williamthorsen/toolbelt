@@ -17,8 +17,8 @@ describe(isArraySubscript, () => {
     expect(isArraySubscript('const item = items?.[')).toBe(true);
   });
 
-  // A formatter that wraps the subscript's contents leaves a space the condensing keeps.
-  it('claims a bracket the condensing left a space after', () => {
+  // A formatter that wraps the subscript's contents leaves a space kept by the condensing.
+  it('claims a bracket after which the condensing left a space', () => {
     const spaced = ['const item = items[ ', 'const item = items?.[ '];
 
     expect(spaced.filter((before) => !isArraySubscript(before))).toStrictEqual([]);

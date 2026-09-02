@@ -11,7 +11,7 @@ describe(readBalancedGroup, () => {
     expect(source.slice(group?.start, group?.end)).toBe('{ a }');
   });
 
-  it('matches the outermost delimiter, not the first close it meets', () => {
+  it('matches the outermost delimiter, not the first close that it meets', () => {
     const source = 'f({ a: { b: 1 } })';
     const group = readBalancedGroup(source, 0, PARENTHESES);
 
