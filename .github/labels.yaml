@@ -97,6 +97,9 @@
 - name: scope:hof
   color: 00ff96
   description: ''
+- name: scope:jira
+  color: 00ff96
+  description: ''
 - name: scope:numbers
   color: 00ff96
   description: ''

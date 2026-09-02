@@ -166,6 +166,8 @@ importers:
         specifier: workspace:*
         version: link:../arrays
 
+  packages/jira: {}
+
   packages/numbers:
     devDependencies:
       '@williamthorsen/toolbelt.adoption':
