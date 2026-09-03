@@ -67,6 +67,8 @@ An absent secret is `1` and a keychain that could not be reached is `3`, so a sc
 ```sh
 if token=$(tb-secret get atlassian-api-token); then
   curl --user "me@example.com:$token" https://example.atlassian.net/rest/api/3/myself
+elif [ $? -eq 1 ]; then
+  echo 'No token stored. Run `tb-secret set atlassian-api-token`.' >&2
 fi
 ```
 
