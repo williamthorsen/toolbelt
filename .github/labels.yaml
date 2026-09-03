@@ -112,6 +112,9 @@
 - name: scope:root
   color: 00ff96
   description: ''
+- name: scope:secrets
+  color: 00ff96
+  description: ''
 - name: scope:sets
   color: 00ff96
   description: ''

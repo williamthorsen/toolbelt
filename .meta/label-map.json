@@ -34,6 +34,7 @@
     "numbers": "scope:numbers",
     "objects": "scope:objects",
     "packaging": "scope:packaging",
+    "secrets": "scope:secrets",
     "sets": "scope:sets",
     "statistics": "scope:statistics",
     "strings": "scope:strings",
