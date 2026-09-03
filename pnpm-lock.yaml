@@ -208,6 +208,8 @@ importers:
         specifier: workspace:*
         version: link:../testing
 
+  packages/secrets: {}
+
   packages/sets: {}
 
   packages/statistics:
