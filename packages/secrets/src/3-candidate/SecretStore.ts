@@ -1,6 +1,6 @@
 /** Names one stored secret. An omitted account is the empty account, which is matched exactly. */
 export interface SecretQuery {
-  readonly account?: string;
+  readonly account?: string | undefined;
   readonly service: string;
 }
 

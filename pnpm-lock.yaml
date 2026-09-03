@@ -208,7 +208,11 @@ importers:
         specifier: workspace:*
         version: link:../testing
 
-  packages/secrets: {}
+  packages/secrets:
+    devDependencies:
+      '@williamthorsen/toolbelt.filesystem':
+        specifier: workspace:*
+        version: link:../filesystem
 
   packages/sets: {}
 
