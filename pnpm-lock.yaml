@@ -51,8 +51,8 @@ importers:
         specifier: 0.7.0
         version: 0.7.0(readyup@0.35.0(esbuild@0.28.2))
       codeassembly:
-        specifier: 0.11.0
-        version: 0.11.0
+        specifier: 0.12.0
+        version: 0.12.0
       eslint:
         specifier: 10.9.1
         version: 10.9.1(jiti@2.7.0)(supports-color@7.2.0)
@@ -1213,8 +1213,8 @@ packages:
     resolution: {integrity: sha512-AUXO0bsWBPHkZx3O2/ALoTwTOcIUzN28FCZ5FVBfWmhHuaqwBVUGyqXVFwGFbugctbYOEmBSTcmafpGdpcQmaA==}
     engines: {node: '>=24'}
 
-  codeassembly@0.11.0:
-    resolution: {integrity: sha512-pKGAveRXKMr8om8KiZQyoahbtaxyZT7656yXIkwj/uV5k1cHwI4sIb5DBT3EWV5+BAtE23dRr6UjL1macaZz7g==}
+  codeassembly@0.12.0:
+    resolution: {integrity: sha512-XL3kLnqJVjfk2PVnTnZucRfuuMBpx7Qoqe2i96C8pFzpjdAIKExdLgi9YGtNLEqGTImX/kHtKXwvWZlIuH0SBQ==}
     engines: {node: '>=24'}
     hasBin: true
 
@@ -3532,7 +3532,7 @@ snapshots:
 
   codeassembly-lifecycle@0.4.2: {}
 
-  codeassembly@0.11.0:
+  codeassembly@0.12.0:
     dependencies:
       '@williamthorsen/kb': 0.6.2
       '@williamthorsen/toolbelt.errors': 0.6.3
@@ -4017,9 +4017,9 @@ snapshots:
 
   fast-levenshtein@2.0.6: {}
 
-  fdir@6.5.0(picomatch@4.0.5):
+  fdir@6.5.0(picomatch@4.0.7):
     optionalDependencies:
-      picomatch: 4.0.5
+      picomatch: 4.0.7
 
   file-entry-cache@8.0.0:
     dependencies:
@@ -5027,8 +5027,8 @@ snapshots:
 
   tinyglobby@0.2.17:
     dependencies:
-      fdir: 6.5.0(picomatch@4.0.5)
-      picomatch: 4.0.5
+      fdir: 6.5.0(picomatch@4.0.7)
+      picomatch: 4.0.7
 
   tinyrainbow@3.1.1: {}
 
@@ -5179,7 +5179,7 @@ snapshots:
   vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0):
     dependencies:
       lightningcss: 1.33.0
-      picomatch: 4.0.5
+      picomatch: 4.0.7
       postcss: 8.5.26
       rolldown: 1.2.5
       tinyglobby: 0.2.17
