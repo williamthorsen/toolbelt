@@ -116,7 +116,11 @@ importers:
 
   packages/async: {}
 
-  packages/atlassian: {}
+  packages/atlassian:
+    dependencies:
+      '@williamthorsen/toolbelt.secrets':
+        specifier: workspace:*
+        version: link:../secrets
 
   packages/datetime:
     dependencies:
