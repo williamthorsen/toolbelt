@@ -49,6 +49,15 @@ describe(createTokenTransport, () => {
     expect(fetchImpl).toHaveBeenCalledWith(`${BASE_URL}/rest/api/3/myself`, expect.anything());
   });
 
+  it('joins a path written without a leading slash', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(Response.json({}));
+    const request = createTokenTransport({ baseUrl: BASE_URL, email: EMAIL, fetch: fetchImpl, token: TOKEN });
+
+    await request('GET', 'rest/api/3/myself');
+
+    expect(fetchImpl).toHaveBeenCalledWith(`${BASE_URL}/rest/api/3/myself`, expect.anything());
+  });
+
   it('sends a JSON body with its content type', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(Response.json({}));
     const request = createTokenTransport({ baseUrl: BASE_URL, email: EMAIL, fetch: fetchImpl, token: TOKEN });
@@ -117,5 +126,12 @@ describe(createTokenTransport, () => {
     const request = createTokenTransport({ baseUrl: BASE_URL, email: EMAIL, fetch: fetchImpl, token: TOKEN });
 
     await expect(request('GET', '/rest/api/3/myself')).resolves.toMatchObject({ status: 401 });
+  });
+
+  it('propagates a transport failure', async () => {
+    const fetchImpl = vi.fn().mockRejectedValue(new TypeError('fetch failed'));
+    const request = createTokenTransport({ baseUrl: BASE_URL, email: EMAIL, fetch: fetchImpl, token: TOKEN });
+
+    await expect(request('GET', '/rest/api/3/myself')).rejects.toThrow('fetch failed');
   });
 });

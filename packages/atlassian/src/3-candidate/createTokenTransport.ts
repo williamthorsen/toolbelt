@@ -1,7 +1,5 @@
 import { Buffer } from 'node:buffer';
 
-import type { JiraRequest, JiraResponse } from './JiraTransport.ts';
-
 /**
  * Builds a request function that authenticates over Basic auth with an email and an API token. The credential
  * arrives as a value: nothing here reads an environment variable, a file, or a keystore. Every status is
@@ -18,7 +16,7 @@ export function createTokenTransport(options: TokenTransportOptions): JiraReques
   const origin = baseUrl.replace(/\/+$/, '');
 
   return async function request(method: string, path: string, body?: unknown): Promise<JiraResponse> {
-    const response = await fetchImpl(`${origin}${path}`, {
+    const response = await fetchImpl(`${origin}${path.startsWith('/') ? path : `/${path}`}`, {
       method,
       headers: {
         Accept: 'application/json',
@@ -30,6 +28,18 @@ export function createTokenTransport(options: TokenTransportOptions): JiraReques
 
     return readResponse(response);
   };
+}
+
+/** Issues one request against a resolved Jira base URL. */
+export type JiraRequest = (method: string, path: string, body?: unknown) => Promise<JiraResponse>;
+
+/** What one request answered with. */
+export interface JiraResponse {
+  /** The parsed body, or `undefined` where it was not JSON. */
+  readonly json: unknown;
+  readonly status: number;
+  /** The raw body, carried only where it did not parse as JSON. */
+  readonly text: string | undefined;
 }
 
 export interface TokenTransportOptions {
