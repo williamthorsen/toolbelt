@@ -4,6 +4,7 @@ export {
   type JiraResponse,
   type TokenTransportOptions,
 } from './createTokenTransport.ts';
+export { parseProjectSpec } from './parseProjectSpec.ts';
 export type {
   ProjectConfiguration,
   Workflow,
