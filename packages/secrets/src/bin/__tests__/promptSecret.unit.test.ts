@@ -1,0 +1,74 @@
+import { PassThrough } from 'node:stream';
+
+import { describe, expect, it } from 'vitest';
+
+import { promptSecret } from '../promptSecret.ts';
+
+describe(promptSecret, () => {
+  it('returns the secret typed twice', async () => {
+    const session = startSession('s3cret', 's3cret');
+
+    await expect(session.secret).resolves.toBe('s3cret');
+  });
+
+  it('echoes nothing that was typed', async () => {
+    const session = startSession('s3cret', 's3cret');
+
+    await session.secret;
+
+    expect(session.readOutput()).not.toContain('s3cret');
+  });
+
+  it('asks twice, so a mistyped secret is not stored unseen', async () => {
+    const session = startSession('s3cret', 's3cret');
+
+    await session.secret;
+
+    expect(session.readOutput()).toContain('Secret: ');
+    expect(session.readOutput()).toContain('Retype secret: ');
+  });
+
+  it('rejects two entries that differ', async () => {
+    const session = startSession('s3cret', 'mistyped');
+
+    await expect(session.secret).rejects.toThrow(/differ/);
+  });
+
+  it('reads a secret past the 128 bytes that `security` would have taken', async () => {
+    const long = 'a'.repeat(200);
+    const session = startSession(long, long);
+
+    await expect(session.secret).resolves.toBe(long);
+  });
+});
+
+// region | Helpers
+
+/** Drives one prompt session over a stream pair, typing each answer as its prompt appears. */
+function startSession(...answers: string[]): Session {
+  const input = new PassThrough();
+  const output = new PassThrough();
+  const pending = [...answers];
+  const written: string[] = [];
+
+  output.on('data', (chunk: Buffer) => {
+    const text = chunk.toString('utf8');
+    written.push(text);
+
+    if (!text.endsWith(': ')) return;
+
+    // A stream emits this event during the write itself, which is before the reader has asked its question.
+    // Typing on the next tick is what a person at a terminal does anyway.
+    const answer = pending.shift();
+    if (answer !== undefined) setImmediate(() => input.write(`${answer}\n`));
+  });
+
+  return { readOutput: () => written.join(''), secret: promptSecret(input, output) };
+}
+
+interface Session {
+  readOutput: () => string;
+  secret: Promise<string>;
+}
+
+// endregion | Helpers

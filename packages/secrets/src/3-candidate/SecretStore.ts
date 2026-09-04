@@ -5,9 +5,8 @@ export interface SecretQuery {
 }
 
 /**
- * A secret store that can be read from and removed from. A backend may support no more than this: the macOS
- * keychain accepts a new secret only into its default keychain, so a store opened on a named keychain is one
- * of these and no more.
+ * A secret store that can be read from and removed from. A backend that accepts no new secret supports no more
+ * than this.
  */
 export interface SecretStore {
   /** Removes a secret, reporting whether one was there to remove. */

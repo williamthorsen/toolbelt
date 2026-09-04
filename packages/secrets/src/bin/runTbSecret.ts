@@ -1,7 +1,7 @@
 import { parseArgs } from 'node:util';
 
-import type { SecretQuery, SecretStore, WritableSecretStore } from '../3-candidate/SecretStore.ts';
-import { assertStorableSecret } from '../internal/assertStorableSecret.ts';
+import type { SecretQuery, WritableSecretStore } from '../3-candidate/SecretStore.ts';
+import { UnstorableSecretError } from '../internal/UnstorableSecretError.ts';
 
 const EXIT_OK = 0;
 const EXIT_NO_RESULT = 1;
@@ -22,7 +22,7 @@ Subcommands:
   delete  Remove a secret
   get     Print a secret
   has     Report whether a secret is stored, printing nothing
-  set     Store a secret read from stdin
+  set     Store a secret
 
 Options:
   -h, --help     Print this help; each subcommand takes its own --help
@@ -69,15 +69,18 @@ const SET_HELP = `Usage: tb-secret set <service> [options]
 
 Store a secret, replacing one already held under the same service and account.
 
-The secret is read from stdin. At a terminal, \`security\` prompts for it instead, so it is neither echoed nor
-held by this program. A secret carrying a line break cannot be stored, since the prompt reads one line.
+At a terminal the secret is prompted for twice and echoed nowhere; piped, it is read from stdin and one
+trailing newline is dropped, since \`echo\` adds one. Either way it reaches \`security\` on stdin rather than on
+a command line, where any local process could read it, and it is read back and compared before this command
+reports success.
 
-A write lands in the default keychain, the only one \`security\` accepts a secret for without taking it on a
-command line, so this subcommand has no --keychain.
+A secret can be about 2,000 bytes long. The exact ceiling depends on the service, account, and keychain, which
+share one 4,095-byte command line with it; a secret that would not fit is refused rather than stored in part.
 
 Options:
-  -h, --help            Print this help
-  -a, --account <name>  Account to hold the secret (default: the empty account)`;
+  -h, --help             Print this help
+  -a, --account <name>   Account to hold the secret (default: the empty account)
+  -k, --keychain <path>  Keychain to write to, rather than the default search list`;
 
 /**
  * Runs the `tb-secret` command line, returning what to write and exit with rather than doing either, so the
@@ -85,9 +88,9 @@ Options:
  *
  * @internal
  */
-export function runTbSecret(args: string[], effects: TbSecretEffects): TbSecretResult {
+export async function runTbSecret(args: string[], effects: TbSecretEffects): Promise<TbSecretResult> {
   try {
-    return dispatch(args, effects);
+    return await dispatch(args, effects);
   } catch (error) {
     if (error instanceof KeystoreError) return { exitCode: EXIT_KEYSTORE, stderr: `${error.message}\n`, stdout: '' };
 
@@ -97,11 +100,10 @@ export function runTbSecret(args: string[], effects: TbSecretEffects): TbSecretR
 
 /** The effects deferred to the entry point, which is what keeps the runner free of I/O. */
 export interface TbSecretEffects {
-  readonly createStore: (keychain: string | undefined) => SecretStore;
-  readonly createWritableStore: () => WritableSecretStore;
+  readonly createStore: (keychain: string | undefined) => WritableSecretStore;
   readonly isStdinTty: () => boolean;
-  /** Hands the terminal to `security`, which prompts for the secret itself, and reports its exit code. */
-  readonly promptSecret: (query: SecretQuery) => number;
+  /** Reads a secret from the terminal, echoing nothing and asking twice. */
+  readonly promptSecret: () => Promise<string>;
   readonly readStdin: () => string;
   readonly resolveVersion: () => string;
 }
@@ -123,11 +125,16 @@ function buildQuery(positionals: string[], account: string | undefined): SecretQ
   return { account, service: selectService(positionals) };
 }
 
-/** Runs a keychain operation, reporting what it threw as a failure to reach the keychain. */
+/**
+ * Runs a keychain operation, reporting what it threw as a failure to reach the keychain. A value the keychain
+ * cannot carry passes through unwrapped, since nothing was reached: it is a usage error like any other.
+ */
 function callKeystore<T>(operation: () => T): T {
   try {
     return operation();
   } catch (error) {
+    if (error instanceof UnstorableSecretError) throw error;
+
     throw new KeystoreError(describeError(error));
   }
 }
@@ -138,13 +145,13 @@ function describeError(error: unknown): string {
 }
 
 /** Routes the arguments to a subcommand, or answers the root command's own options. */
-function dispatch(args: string[], effects: TbSecretEffects): TbSecretResult {
+async function dispatch(args: string[], effects: TbSecretEffects): Promise<TbSecretResult> {
   const [command, ...rest] = args;
 
   if (command === 'delete') return runDelete(rest, effects);
   if (command === 'get') return runGet(rest, effects);
   if (command === 'has') return runHas(rest, effects);
-  if (command === 'set') return runSet(rest, effects);
+  if (command === 'set') return await runSet(rest, effects);
   if (command === '--help' || command === '-h') return succeed(ROOT_HELP);
   if (command === '--version') return succeed(effects.resolveVersion());
   if (command === undefined) return fail('A subcommand is required.', command);
@@ -211,11 +218,10 @@ function runHas(args: string[], effects: TbSecretEffects): TbSecretResult {
 }
 
 /**
- * Parses the `set` subcommand and stores the secret it is given. A terminal is handed to `security`, which
- * prompts for the secret with no echo and asks for it twice, so an interactively typed secret never reaches
- * this process; a piped secret arrives on stdin, and one trailing newline is dropped, since `echo` adds one.
+ * Parses the `set` subcommand and stores the secret it is given. A terminal is prompted twice with no echo; a
+ * piped secret arrives on stdin, and one trailing newline is dropped, since `echo` adds one.
  */
-function runSet(args: string[], effects: TbSecretEffects): TbSecretResult {
+async function runSet(args: string[], effects: TbSecretEffects): Promise<TbSecretResult> {
   const { positionals, values } = parseArgs({
     allowPositionals: true,
     args,
@@ -224,22 +230,11 @@ function runSet(args: string[], effects: TbSecretEffects): TbSecretResult {
   });
 
   if (values.help === true) return succeed(SET_HELP);
-  if (values.keychain !== undefined) {
-    throw new Error('A secret can be stored only in the default keychain, so `set` takes no --keychain.');
-  }
 
   const query = buildQuery(positionals, values.account);
+  const secret = effects.isStdinTty() ? await effects.promptSecret() : stripOneTrailingNewline(effects.readStdin());
 
-  if (effects.isStdinTty()) {
-    const exitCode = callKeystore(() => effects.promptSecret(query));
-    if (exitCode !== EXIT_OK) throw new KeystoreError(`\`security\` exited ${exitCode} without storing the secret.`);
-
-    return succeedSilently();
-  }
-
-  const secret = stripOneTrailingNewline(effects.readStdin());
-  assertStorableSecret(secret);
-  callKeystore(() => effects.createWritableStore().setSecret(query, secret));
+  callKeystore(() => effects.createStore(values.keychain).setSecret(query, secret));
 
   return succeedSilently();
 }

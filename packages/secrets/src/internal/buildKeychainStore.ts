@@ -1,19 +1,27 @@
-import type { SecretQuery, SecretStore, WritableSecretStore } from '../3-candidate/SecretStore.ts';
+import type { SecretQuery, WritableSecretStore } from '../3-candidate/SecretStore.ts';
 import { assertStorableSecret } from './assertStorableSecret.ts';
 import { parseSecurityPassword } from './parseSecurityPassword.ts';
 import type { SecurityResult, SecurityRunner } from './runSecurity.ts';
-import { buildDeleteArgs, buildFindArgs, buildHasArgs, buildSetArgs } from './securityCommands.ts';
+import { buildDeleteArgs, buildFindArgs, buildHasArgs, composeSetLine } from './securityCommands.ts';
 
 const EXIT_NOT_FOUND = 44;
+const INTERACTIVE_ARGS = ['-i'];
 
 /**
- * Builds a store over one keychain, or over the default search list where none is named. It holds no write:
- * `security` reads a secret from stdin only where no keychain follows on the command line, so a keychain that
- * can be named is one that cannot be written to safely.
+ * Builds a store over one keychain, or over the default search list where none is named.
  *
  * @internal
  */
-export function buildKeychainStore(run: SecurityRunner, keychain?: string): SecretStore {
+export function buildKeychainStore(run: SecurityRunner, keychain?: string): WritableSecretStore {
+  function findSecret(query: SecretQuery): string | undefined {
+    const result = run(buildFindArgs(query, keychain));
+    if (result.exitCode === EXIT_NOT_FOUND) return undefined;
+
+    assertSucceeded(result, 'read the secret');
+
+    return parseSecurityPassword(result.stderr);
+  }
+
   return {
     deleteSecret(query: SecretQuery): boolean {
       const result = run(buildDeleteArgs(query, keychain));
@@ -24,14 +32,7 @@ export function buildKeychainStore(run: SecurityRunner, keychain?: string): Secr
       return true;
     },
 
-    findSecret(query: SecretQuery): string | undefined {
-      const result = run(buildFindArgs(query, keychain));
-      if (result.exitCode === EXIT_NOT_FOUND) return undefined;
-
-      assertSucceeded(result, 'read the secret');
-
-      return parseSecurityPassword(result.stderr);
-    },
+    findSecret,
 
     hasSecret(query: SecretQuery): boolean {
       const result = run(buildHasArgs(query, keychain));
@@ -41,29 +42,32 @@ export function buildKeychainStore(run: SecurityRunner, keychain?: string): Secr
 
       return true;
     },
-  };
-}
-
-/**
- * Builds a store over the default keychain, which is the only one a secret can be written to without passing
- * it on argv.
- *
- * @internal
- */
-export function buildWritableKeychainStore(run: SecurityRunner): WritableSecretStore {
-  return {
-    ...buildKeychainStore(run),
 
     setSecret(query: SecretQuery, secret: string): void {
       assertStorableSecret(secret);
 
-      // The prompt asks for the secret and then for a confirmation of it, reading a line for each.
-      assertSucceeded(run(buildSetArgs(query), `${secret}\n${secret}\n`), 'store the secret');
+      const line = composeSetLine(query, secret, keychain);
+      assertSucceeded(run(INTERACTIVE_ARGS, `${line}\n`), 'store the secret');
+
+      assertStoredIntact(findSecret(query), secret);
     },
   };
 }
 
 // region | Helpers
+
+/**
+ * Raises a stored secret that differs from the one written. `security` reads a command line into a fixed
+ * buffer, so a version whose buffer is smaller than this one accounts for would cut the secret; comparing
+ * what came back is what turns that into a failure at the write rather than a wrong answer at the caller.
+ */
+function assertStoredIntact(stored: string | undefined, secret: string): void {
+  if (stored === secret) return;
+
+  const found = stored === undefined ? 'nothing was stored' : `${stored.length} characters came back`;
+
+  throw new Error(`The secret was written but not stored intact: ${secret.length} characters went in and ${found}.`);
+}
 
 /** Raises what a failed run wrote, so a keystore that could not be reached is distinct from an absent item. */
 function assertSucceeded(result: SecurityResult, action: string): void {

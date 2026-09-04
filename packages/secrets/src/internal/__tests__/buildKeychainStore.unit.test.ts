@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildKeychainStore, buildWritableKeychainStore } from '../buildKeychainStore.ts';
+import { buildKeychainStore } from '../buildKeychainStore.ts';
 import type { SecurityResult, SecurityRunner } from '../runSecurity.ts';
 
 const KEYCHAIN = '/tmp/project.keychain-db';
 const QUERY = { account: 'me@example.com', service: 'atlassian-api-token' };
+
+const SET_LINE = 'add-generic-password -U -a "me@example.com" -s "atlassian-api-token" -X 733363726574';
 
 describe(buildKeychainStore, () => {
   describe('findSecret', () => {
@@ -102,37 +104,82 @@ describe(buildKeychainStore, () => {
     });
   });
 
-  it('holds no write, since a named keychain cannot be written to safely', () => {
-    expect('setSecret' in buildKeychainStore(createRunnerSpy().run, KEYCHAIN)).toBe(false);
-  });
-});
+  describe('setSecret', () => {
+    it('hands the whole command to interactive mode on stdin, keeping the secret off argv', () => {
+      const spy = createWriteSpy('s3cret');
 
-describe(buildWritableKeychainStore, () => {
-  it('ends the arguments with -w and writes the secret twice to stdin', () => {
-    const spy = createRunnerSpy();
+      buildKeychainStore(spy.run).setSecret(QUERY, 's3cret');
 
-    buildWritableKeychainStore(spy.run).setSecret(QUERY, 's3cret');
+      expect(spy.calls[0]).toStrictEqual({ args: ['-i'], input: `${SET_LINE}\n` });
+    });
 
-    expect(spy.calls).toStrictEqual([
-      {
-        args: ['add-generic-password', '-U', '-a', 'me@example.com', '-s', 'atlassian-api-token', '-w'],
-        input: 's3cret\ns3cret\n',
-      },
-    ]);
-  });
+    it('names the keychain it was built over, which the old write could not', () => {
+      const spy = createWriteSpy('s3cret');
 
-  it('rejects a secret `security` would store truncated, without running it', () => {
-    const spy = createRunnerSpy();
+      buildKeychainStore(spy.run, KEYCHAIN).setSecret(QUERY, 's3cret');
 
-    expect(() => buildWritableKeychainStore(spy.run).setSecret(QUERY, 'first\nsecond')).toThrow(/line break/);
-    expect(() => buildWritableKeychainStore(spy.run).setSecret(QUERY, '')).toThrow(/empty/);
-    expect(spy.calls).toStrictEqual([]);
-  });
+      expect(spy.calls[0]?.input).toBe(`${SET_LINE} "${KEYCHAIN}"\n`);
+    });
 
-  it('throws what `security` reported where the write failed', () => {
-    const spy = createRunnerSpy({ exitCode: 45, stderr: 'security: SecKeychainItemCreateFromContent: duplicate\n' });
+    it('reads the secret back, so a cut one fails at the write', () => {
+      const spy = createWriteSpy('s3cret');
 
-    expect(() => buildWritableKeychainStore(spy.run).setSecret(QUERY, 's3cret')).toThrow(/duplicate/);
+      buildKeychainStore(spy.run).setSecret(QUERY, 's3cret');
+
+      expect(spy.calls[1]?.args).toStrictEqual([
+        'find-generic-password',
+        '-a',
+        'me@example.com',
+        '-s',
+        'atlassian-api-token',
+        '-g',
+      ]);
+    });
+
+    it('throws where the stored secret differs from the one written', () => {
+      const spy = createWriteSpy('s3cr');
+
+      expect(() => buildKeychainStore(spy.run).setSecret(QUERY, 's3cret')).toThrow(
+        'The secret was written but not stored intact: 6 characters went in and 4 characters came back.',
+      );
+    });
+
+    it('throws where nothing was stored at all', () => {
+      const spy = createWriteSpy('s3cret', {}, { exitCode: 44 });
+
+      expect(() => buildKeychainStore(spy.run).setSecret(QUERY, 's3cret')).toThrow(/nothing was stored/);
+    });
+
+    it('rejects the empty secret without running anything', () => {
+      const spy = createWriteSpy('');
+
+      expect(() => buildKeychainStore(spy.run).setSecret(QUERY, '')).toThrow(/empty/);
+      expect(spy.calls).toStrictEqual([]);
+    });
+
+    it('rejects a secret too long for one command line without running anything', () => {
+      const spy = createWriteSpy('');
+
+      expect(() => buildKeychainStore(spy.run).setSecret(QUERY, 'a'.repeat(4_096))).toThrow(/too long/);
+      expect(spy.calls).toStrictEqual([]);
+    });
+
+    it('stores a secret carrying a line break, which the hexadecimal form carries', () => {
+      const spy = createWriteSpy('a\nb');
+
+      buildKeychainStore(spy.run).setSecret({ service: 'token' }, 'a\nb');
+
+      expect(spy.calls[0]?.input).toBe('add-generic-password -U -a "" -s "token" -X 610a62\n');
+    });
+
+    it('throws what `security` reported where the write failed', () => {
+      const spy = createWriteSpy('s3cret', {
+        exitCode: 45,
+        stderr: 'security: SecKeychainItemCreateFromContent: duplicate\n',
+      });
+
+      expect(() => buildKeychainStore(spy.run).setSecret(QUERY, 's3cret')).toThrow(/duplicate/);
+    });
   });
 });
 
@@ -148,6 +195,30 @@ function createRunnerSpy(result: Partial<SecurityResult> = {}): RunnerSpy {
       calls.push({ args, input });
 
       return { exitCode: 0, stderr: '', stdout: '', ...result };
+    },
+  };
+}
+
+/**
+ * Builds a runner for the write path, which runs twice: the write itself, then the readback that verifies it.
+ * The readback answers with `stored` in the hexadecimal form, the one `security` prints for any secret.
+ */
+function createWriteSpy(
+  stored: string,
+  writeResult: Partial<SecurityResult> = {},
+  readResult: Partial<SecurityResult> = {},
+): RunnerSpy {
+  const calls: RunnerCall[] = [];
+  const printed = `password: 0x${Buffer.from(stored, 'utf8').toString('hex').toUpperCase()}  "..."\n`;
+
+  return {
+    calls,
+    run: (args, input) => {
+      calls.push({ args, input });
+
+      if (args[0] === '-i') return { exitCode: 0, stderr: '', stdout: '', ...writeResult };
+
+      return { exitCode: 0, stderr: printed, stdout: '', ...readResult };
     },
   };
 }

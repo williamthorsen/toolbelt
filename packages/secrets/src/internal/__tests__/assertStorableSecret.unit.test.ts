@@ -11,7 +11,7 @@ describe(assertStorableSecret, () => {
     expect(() => assertStorableSecret('')).toThrow(/empty/);
   });
 
-  it.each([['a\nb'], ['a\rb'], ['trailing\n']])('rejects a secret carrying a line break: %j', (secret) => {
-    expect(() => assertStorableSecret(secret)).toThrow(/line break/);
+  it.each([['a\nb'], ['a\rb'], ['trailing\n']])('accepts a secret carrying a line break: %j', (secret) => {
+    expect(() => assertStorableSecret(secret)).not.toThrow();
   });
 });

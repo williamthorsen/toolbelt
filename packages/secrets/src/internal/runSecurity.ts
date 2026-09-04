@@ -25,22 +25,6 @@ export function runSecurity(args: string[], input?: string): SecurityResult {
   return { exitCode: status, stderr, stdout };
 }
 
-/**
- * Runs `security` with this process's own streams, so `security` reads its password prompt from the terminal
- * and echoes nothing. Nothing is captured, which is the point: a secret typed at that prompt never reaches
- * this process. Reports the exit code.
- *
- * @internal
- */
-export function runSecurityInteractively(args: string[]): number {
-  const { error, status } = spawnSync(SECURITY_PATH, args, { stdio: 'inherit' });
-
-  if (error !== undefined) throw new Error(`Could not run ${SECURITY_PATH}: ${error.message}`);
-  if (status === null) throw new Error(`${SECURITY_PATH} was killed before it exited.`);
-
-  return status;
-}
-
 /** Runs `security` with the given arguments, writing `input` to its stdin. */
 export type SecurityRunner = (args: string[], input?: string) => SecurityResult;
 
