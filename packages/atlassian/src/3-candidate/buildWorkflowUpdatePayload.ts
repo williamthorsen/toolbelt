@@ -33,8 +33,8 @@ export function buildWorkflowUpdatePayload(
     };
   });
 
-  // A renamed transition differs from the live one in its name alone. The write replaces the graph wholesale, so
-  // a transition reaching it short of the fields this package does not model would lose them.
+  // The write replaces the graph wholesale, so a transition reaching it short of the fields this package does not
+  // model would lose them.
   const amendedTransitions: WorkflowTransition[] = workflow.transitions.map((transition) => {
     const rename = plan.transitionRenames.find((entry) => entry.id === transition.id);
     return rename === undefined ? transition : { ...transition, name: rename.to };

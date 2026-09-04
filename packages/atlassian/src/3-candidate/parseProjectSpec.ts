@@ -27,18 +27,22 @@ export function parseProjectSpec(text: string): ProjectSpec {
 
 // region | Helpers
 
+/** Reports whether a value is a state a spec may request, which the two Jira also reports are not. */
 function isBoardFeatureRequest(value: unknown): value is BoardFeatureRequest {
   return typeof value === 'string' && BOARD_FEATURE_REQUESTS.includes(value);
 }
 
+/** Reports whether a value is a JSON object, which neither an array nor null is. */
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+/** Reports whether a value is one of the three categories Jira sorts a status into. */
 function isStatusCategory(value: unknown): value is StatusCategory {
   return typeof value === 'string' && STATUS_CATEGORIES.includes(value);
 }
 
+/** Parses the spec text, reporting the position the parser stopped at. */
 function parseJson(text: string): unknown {
   try {
     const document: unknown = JSON.parse(text);
@@ -48,6 +52,7 @@ function parseJson(text: string): unknown {
   }
 }
 
+/** Reads the live names an entry also claims, which are optional and each a non-empty name. */
 function readAliases(value: unknown, name: string): readonly string[] | undefined {
   if (value === undefined) return undefined;
   if (!Array.isArray(value)) throw new Error(`The aliases of status '${name}' are a list of names.`);
@@ -63,6 +68,7 @@ function readAliases(value: unknown, name: string): readonly string[] | undefine
   return aliases;
 }
 
+/** Reads the requested board-feature states, refusing one no spec may request. */
 function readBoardFeatures(value: unknown): Readonly<Record<string, BoardFeatureRequest>> | undefined {
   if (value === undefined) return undefined;
   if (!isRecord(value)) throw new Error('`boardFeatures` maps a feature key to the state it is requested in.');
@@ -78,6 +84,7 @@ function readBoardFeatures(value: unknown): Readonly<Record<string, BoardFeature
   return features;
 }
 
+/** Reads an optional top-level string, refusing one present but empty. */
 function readOptionalString(value: unknown, key: string): string | undefined {
   if (value === undefined) return undefined;
   if (typeof value !== 'string' || value.trim() === '') throw new Error(`\`${key}\` is a non-empty string.`);

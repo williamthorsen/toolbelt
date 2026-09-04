@@ -88,6 +88,7 @@ function findLiveStatus(
   return undefined;
 }
 
+/** Lists the board features whose live state differs from the one the spec requests. */
 function listFeatureToggles(
   requested: Readonly<Record<string, BoardFeatureRequest>> | undefined,
   live: ReadonlyMap<string, string>,

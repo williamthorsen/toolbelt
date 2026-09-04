@@ -145,6 +145,7 @@ describe(buildWorkflowUpdatePayload, () => {
 
 // region | Helpers
 
+/** Builds an empty plan, which amends nothing, with the entries a test needs. */
 function buildPlan(overrides: Partial<ReconciliationPlan> = {}): ReconciliationPlan {
   return {
     creations: [],
