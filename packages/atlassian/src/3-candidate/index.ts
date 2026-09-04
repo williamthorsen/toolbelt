@@ -1,4 +1,6 @@
+export { assertGraphPreserved } from './assertGraphPreserved.ts';
 export { buildReconciliationPlan, type ReconciliationPlanOptions } from './buildReconciliationPlan.ts';
+export { buildWorkflowUpdatePayload } from './buildWorkflowUpdatePayload.ts';
 export {
   createTokenTransport,
   type JiraRequest,

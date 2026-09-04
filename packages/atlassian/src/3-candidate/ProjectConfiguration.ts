@@ -23,9 +23,10 @@ export interface Workflow {
   readonly version: unknown;
 }
 
+/** Where something sits on the workflow diagram. Jira omits a coordinate it has not placed. */
 export interface WorkflowLayout {
-  readonly x: number;
-  readonly y: number;
+  readonly x?: number | undefined;
+  readonly y?: number | undefined;
 }
 
 export interface WorkflowStatus {
