@@ -1,16 +1,11 @@
-const LINE_BREAK_PATTERN = /[\n\r]/;
+import { UnstorableSecretError } from './UnstorableSecretError.ts';
 
 /**
- * Rejects a secret that `security` cannot store faithfully. Its prompt reads one line, so a secret carrying a
- * line break would be stored truncated at the first one with nothing reported, and an empty secret would be
- * stored as an item indistinguishable from a stray one.
+ * Rejects an empty secret, which the keychain would hold as an item indistinguishable from a stray one. Every
+ * other value is storable: the secret reaches `security` as hexadecimal, which carries any byte sequence.
  *
  * @internal
  */
 export function assertStorableSecret(secret: string): void {
-  if (secret === '') throw new Error('The secret is empty.');
-
-  if (LINE_BREAK_PATTERN.test(secret)) {
-    throw new Error('The secret carries a line break. `security` reads one line, so only the first would be stored.');
-  }
+  if (secret === '') throw new UnstorableSecretError('The secret is empty.');
 }

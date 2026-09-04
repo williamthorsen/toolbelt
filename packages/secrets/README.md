@@ -16,7 +16,9 @@ Requires Node.js 24 or later, and macOS: the one backend is the macOS keychain, 
 
 An item is named by a **service** and an **account**. The service is the caller's own name for the secret, never derived from a host or a URL, so one item can serve every product that accepts the same token. The account is optional and defaults to the empty account, which is matched exactly: a service holding several accounts answers with the one that is asked for, rather than with an arbitrary one.
 
-A secret reaches `security` on stdin, never on a command line, where any local process could read it. That has one consequence worth stating: `security` accepts a secret this way only for the **default keychain**, so a store opened on a named keychain reads and deletes but does not write.
+A secret reaches `security` through its interactive mode, which takes a whole command on stdin, so the secret never sits in an argument vector that any local process could read. It travels as hexadecimal, which carries every byte, a line break included, and every write is read back and compared before it is reported as stored.
+
+One command line carries the secret together with the service, the account, and the keychain, and `security` reads at most 4,095 bytes of it. That leaves room for a secret of roughly 2,000 bytes, and the exact ceiling falls as the other three grow. A secret that would not fit is refused, naming the room left; none is ever stored in part.
 
 An item created here is local to the Mac that created it. `security` offers no iCloud Keychain synchronization, so a secret stored on one machine has to be stored again on the next.
 
@@ -36,14 +38,14 @@ npx @williamthorsen/toolbelt.secrets get my-token    # or run it without install
 | `tb-secret delete <service>` | Removes a secret                                     |
 | `tb-secret get <service>`    | Prints a secret                                      |
 | `tb-secret has <service>`    | Reports whether a secret is stored, printing nothing |
-| `tb-secret set <service>`    | Stores a secret read from stdin                      |
+| `tb-secret set <service>`    | Stores a secret                                      |
 
-| Option                  | Effect                                                         |
-| ----------------------- | -------------------------------------------------------------- |
-| `-a, --account <name>`  | Account holding the secret (default: the empty account)        |
-| `-k, --keychain <path>` | Keychain to act on; `delete`, `get`, and `has` alone accept it |
+| Option                  | Effect                                                  |
+| ----------------------- | ------------------------------------------------------- |
+| `-a, --account <name>`  | Account holding the secret (default: the empty account) |
+| `-k, --keychain <path>` | Keychain to act on, rather than the default search list |
 
-`set` takes the secret from stdin. At a terminal it hands the prompt to `security`, which reads the secret with no echo and asks for it twice, so an interactively typed secret never enters the Node process; piped, one trailing newline is dropped, since `echo` adds one. A secret carrying a line break is rejected: the prompt reads a single line, so storing one would silently keep the first.
+At a terminal, `set` prompts for the secret twice and echoes nothing; piped, it reads stdin and drops one trailing newline, since `echo` adds one. The secret passes through this process either way.
 
 ```sh
 tb-secret set atlassian-api-token --account me@example.com   # prompts, echoing nothing
@@ -72,21 +74,10 @@ elif [ $? -eq 1 ]; then
 fi
 ```
 
-### Checking the write path
-
-`set` writes to the default keychain, which is the login keychain on a stock Mac, so the package's own tests do not exercise it: they run against a keychain created and deleted for the test. Three commands check it by hand.
-
-```sh
-printf 'probe-value' | tb-secret set tb-secret-probe
-tb-secret get tb-secret-probe   # probe-value
-tb-secret delete tb-secret-probe
-```
-
 ## `createKeychainStore`
 
 ```ts
-createKeychainStore(): WritableSecretStore;
-createKeychainStore(options: { keychain: string }): SecretStore;
+createKeychainStore(options?: { keychain: string }): WritableSecretStore;
 
 interface SecretQuery {
   readonly account?: string | undefined;
@@ -120,7 +111,7 @@ store.findSecret({ account: 'me@example.com', service: 'atlassian-api-token' });
 
 `hasSecret` reads the item's attributes rather than its data. That is the difference worth knowing: retrieving a secret can raise a keychain access prompt where the item was created by another program, and an attribute lookup cannot.
 
-`setSecret` rejects an empty secret and one carrying a line break, both of which `security` would otherwise store wrong. A secret is otherwise stored and returned byte for byte, whatever it holds.
+`setSecret` rejects an empty secret, which the keychain would hold as an item indistinguishable from a stray one, and one too long for the command line that carries it. Every other secret is stored and returned byte for byte, whatever it holds. Each write is read back and compared, so a secret that did not survive the round trip fails at the write rather than at a later caller. That readback retrieves the secret, so replacing an item another program created can raise the keychain access prompt described above, and a write whose readback is refused is reported as unverified rather than as stored.
 
 ```ts
 const projectStore = createKeychainStore({ keychain: '/Users/me/Library/Keychains/project.keychain-db' });
@@ -128,4 +119,4 @@ const projectStore = createKeychainStore({ keychain: '/Users/me/Library/Keychain
 projectStore.findSecret({ service: 'deploy-key' });
 ```
 
-A named keychain is typed as a `SecretStore`, which carries no `setSecret`: the write is unavailable there, and unavailable at compile time rather than at the call.
+A named keychain accepts a write like the default search list does. `SecretStore` remains the read-only half of the surface, for a backend that accepts no new secret.
