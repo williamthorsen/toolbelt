@@ -16,9 +16,15 @@ export async function promptSecret(input: NodeJS.ReadableStream, output: NodeJS.
   // prompts are written to the real stream instead.
   const reader = readline.createInterface({ input, output: createSink(), terminal: true });
 
+  // A pending question settles on a keystroke, `Ctrl-C` and `Ctrl-D` included, but not on the input stream
+  // ending under it. Cancelling on close is what turns that into an error rather than a promise that never
+  // settles, which would leave the caller reporting success over a secret it never received.
+  const abandoned = new AbortController();
+  reader.once('close', () => abandoned.abort());
+
   try {
-    const secret = await ask(reader, output, SECRET_PROMPT);
-    const confirmation = await ask(reader, output, CONFIRM_PROMPT);
+    const secret = await ask(reader, output, abandoned.signal, SECRET_PROMPT);
+    const confirmation = await ask(reader, output, abandoned.signal, CONFIRM_PROMPT);
 
     if (secret !== confirmation) throw new Error('The two entries differ. Nothing was stored.');
 
@@ -31,12 +37,24 @@ export async function promptSecret(input: NodeJS.ReadableStream, output: NodeJS.
 // region | Helpers
 
 /** Asks one question, writing the prompt and the closing newline that the reader no longer echoes. */
-async function ask(reader: readline.Interface, output: NodeJS.WritableStream, prompt: string): Promise<string> {
+async function ask(
+  reader: readline.Interface,
+  output: NodeJS.WritableStream,
+  signal: AbortSignal,
+  prompt: string,
+): Promise<string> {
   output.write(prompt);
-  const answer = await reader.question('');
-  output.write('\n');
 
-  return answer;
+  try {
+    const answer = await reader.question('', { signal });
+    output.write('\n');
+
+    return answer;
+  } catch (error) {
+    output.write('\n');
+
+    throw signal.aborted ? new Error('The prompt ended before a secret was entered. Nothing was stored.') : error;
+  }
 }
 
 /** Builds a stream that discards everything written to it. */

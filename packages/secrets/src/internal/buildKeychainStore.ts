@@ -22,6 +22,21 @@ export function buildKeychainStore(run: SecurityRunner, keychain?: string): Writ
     return parseSecurityPassword(result.stderr);
   }
 
+  /**
+   * Reads a secret back for verification, reporting a read that could not run as what it is. Retrieving a
+   * secret needs access to the item's data, which an item created by another program may withhold, and the
+   * write has already landed by then.
+   */
+  function readBack(query: SecretQuery): string | undefined {
+    try {
+      return findSecret(query);
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+
+      throw new Error(`The secret was written but could not be read back to verify it. ${detail}`, { cause: error });
+    }
+  }
+
   return {
     deleteSecret(query: SecretQuery): boolean {
       const result = run(buildDeleteArgs(query, keychain));
@@ -49,7 +64,7 @@ export function buildKeychainStore(run: SecurityRunner, keychain?: string): Writ
       const line = composeSetLine(query, secret, keychain);
       assertSucceeded(run(INTERACTIVE_ARGS, `${line}\n`), 'store the secret');
 
-      assertStoredIntact(findSecret(query), secret);
+      assertStoredIntact(readBack(query), secret);
     },
   };
 }

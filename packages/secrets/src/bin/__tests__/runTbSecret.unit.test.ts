@@ -101,7 +101,7 @@ describe(runTbSecret, () => {
     });
 
     it('prompts at a terminal and stores what was typed', async () => {
-      const harness = createHarness({ prompted: 'typed', tty: true });
+      const harness = createHarness({ promptAnswer: 'typed', tty: true });
 
       expect((await runTbSecret(['set', 'token'], harness.effects)).exitCode).toBe(0);
       expect(harness.secrets.get('default||token')).toBe('typed');
@@ -115,6 +115,15 @@ describe(runTbSecret, () => {
       expect(result.exitCode).toBe(2);
       expect(result.stderr).toMatch(/The two entries differ/);
       expect(harness.secrets.size).toBe(0);
+    });
+
+    it('reports an unreachable keychain before a secret is typed into this process', async () => {
+      const harness = createHarness({ failure: 'A keychain store needs macOS. This platform is linux.', tty: true });
+
+      const result = await runTbSecret(['set', 'token'], harness.effects);
+
+      expect(result.exitCode).toBe(3);
+      expect(harness.state.prompted).toBe(false);
     });
 
     it('writes to the keychain named by --keychain', async () => {
@@ -194,8 +203,9 @@ describe(runTbSecret, () => {
  * back from which key it touched.
  */
 function createHarness(options: HarnessOptions = {}): Harness {
-  const { failure, promptFailure, prompted = '', stdin = '', stored = {}, tty = false } = options;
+  const { failure, promptAnswer = '', promptFailure, stdin = '', stored = {}, tty = false } = options;
   const secrets = new Map(Object.entries(stored));
+  const state = { prompted: false };
 
   return {
     effects: {
@@ -214,12 +224,16 @@ function createHarness(options: HarnessOptions = {}): Harness {
         };
       },
       isStdinTty: () => tty,
-      promptSecret: () =>
-        promptFailure === undefined ? Promise.resolve(prompted) : Promise.reject(new Error(promptFailure)),
+      promptSecret: () => {
+        state.prompted = true;
+
+        return promptFailure === undefined ? Promise.resolve(promptAnswer) : Promise.reject(new Error(promptFailure));
+      },
       readStdin: () => stdin,
       resolveVersion: () => VERSION,
     },
     secrets,
+    state,
   };
 }
 
@@ -231,12 +245,14 @@ function buildKey({ account = '', service }: SecretQuery, keychain: string | und
 interface Harness {
   effects: TbSecretEffects;
   secrets: Map<string, string>;
+  /** What the effects recorded, which is how a test sees that a prompt was never reached. */
+  state: { prompted: boolean };
 }
 
 interface HarnessOptions {
   failure?: string;
+  promptAnswer?: string;
   promptFailure?: string;
-  prompted?: string;
   stdin?: string;
   stored?: Record<string, string>;
   tty?: boolean;

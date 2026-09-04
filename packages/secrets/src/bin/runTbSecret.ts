@@ -70,9 +70,12 @@ const SET_HELP = `Usage: tb-secret set <service> [options]
 Store a secret, replacing one already held under the same service and account.
 
 At a terminal the secret is prompted for twice and echoed nowhere; piped, it is read from stdin and one
-trailing newline is dropped, since \`echo\` adds one. Either way it reaches \`security\` on stdin rather than on
-a command line, where any local process could read it, and it is read back and compared before this command
-reports success.
+trailing newline is dropped, since \`echo\` adds one. Either way it reaches \`security\` inside a command that
+travels on stdin, so it never enters an argument vector that any local process could read.
+
+The stored secret is read back and compared before this command reports success. Replacing an item that
+another program created can therefore raise a keychain access prompt, since verifying the write reads the
+secret.
 
 A secret can be about 2,000 bytes long. The exact ceiling depends on the service, account, and keychain, which
 share one 4,095-byte command line with it; a secret that would not fit is refused rather than stored in part.
@@ -219,7 +222,8 @@ function runHas(args: string[], effects: TbSecretEffects): TbSecretResult {
 
 /**
  * Parses the `set` subcommand and stores the secret it is given. A terminal is prompted twice with no echo; a
- * piped secret arrives on stdin, and one trailing newline is dropped, since `echo` adds one.
+ * piped secret arrives on stdin, and one trailing newline is dropped, since `echo` adds one. The store is
+ * opened first, so a platform that has no keychain is reported before a secret is typed into this process.
  */
 async function runSet(args: string[], effects: TbSecretEffects): Promise<TbSecretResult> {
   const { positionals, values } = parseArgs({
@@ -232,9 +236,10 @@ async function runSet(args: string[], effects: TbSecretEffects): Promise<TbSecre
   if (values.help === true) return succeed(SET_HELP);
 
   const query = buildQuery(positionals, values.account);
+  const store = callKeystore(() => effects.createStore(values.keychain));
   const secret = effects.isStdinTty() ? await effects.promptSecret() : stripOneTrailingNewline(effects.readStdin());
 
-  callKeystore(() => effects.createStore(values.keychain).setSecret(query, secret));
+  callKeystore(() => store.setSecret(query, secret));
 
   return succeedSilently();
 }

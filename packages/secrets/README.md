@@ -111,7 +111,7 @@ store.findSecret({ account: 'me@example.com', service: 'atlassian-api-token' });
 
 `hasSecret` reads the item's attributes rather than its data. That is the difference worth knowing: retrieving a secret can raise a keychain access prompt where the item was created by another program, and an attribute lookup cannot.
 
-`setSecret` rejects an empty secret, which the keychain would hold as an item indistinguishable from a stray one, and one too long for the command line that carries it. Every other secret is stored and returned byte for byte, whatever it holds. Each write is read back and compared, so a secret that did not survive the round trip fails at the write rather than at a later caller.
+`setSecret` rejects an empty secret, which the keychain would hold as an item indistinguishable from a stray one, and one too long for the command line that carries it. Every other secret is stored and returned byte for byte, whatever it holds. Each write is read back and compared, so a secret that did not survive the round trip fails at the write rather than at a later caller. That readback retrieves the secret, so replacing an item another program created can raise the keychain access prompt described above, and a write whose readback is refused is reported as unverified rather than as stored.
 
 ```ts
 const projectStore = createKeychainStore({ keychain: '/Users/me/Library/Keychains/project.keychain-db' });

@@ -34,6 +34,20 @@ describe(promptSecret, () => {
     await expect(session.secret).rejects.toThrow(/differ/);
   });
 
+  it('rejects where the input ends before anything is typed', async () => {
+    const session = startSession();
+
+    session.endInput();
+
+    await expect(session.secret).rejects.toThrow(/ended before a secret was entered/);
+  });
+
+  it('rejects where the input ends between the two entries', async () => {
+    const session = startSession('s3cret');
+
+    await expect(session.secret).rejects.toThrow(/ended before a secret was entered/);
+  });
+
   it('reads a secret past the 128 bytes that `security` would have taken', async () => {
     const long = 'a'.repeat(200);
     const session = startSession(long, long);
@@ -63,10 +77,16 @@ function startSession(...answers: string[]): Session {
     if (answer !== undefined) setImmediate(() => input.write(`${answer}\n`));
   });
 
-  return { readOutput: () => written.join(''), secret: promptSecret(input, output) };
+  // A prompt with no answer left to type is one whose input has ended, which is the stream reaching EOF.
+  output.on('data', () => {
+    if (pending.length === 0) setImmediate(() => input.end());
+  });
+
+  return { endInput: () => input.end(), readOutput: () => written.join(''), secret: promptSecret(input, output) };
 }
 
 interface Session {
+  endInput: () => void;
   readOutput: () => string;
   secret: Promise<string>;
 }

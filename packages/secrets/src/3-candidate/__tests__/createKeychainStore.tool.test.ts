@@ -105,6 +105,17 @@ describe.skipIf(process.platform !== 'darwin')(createKeychainStore, () => {
       });
     });
 
+    it('stores under a service and account that the command line has to quote', () => {
+      withKeychain((keychain) => {
+        const store = createKeychainStore({ keychain });
+        const query = { account: 'me "the" admin', service: String.raw`svc with "quotes" and \ backslash` };
+
+        store.setSecret(query, 's3cret');
+
+        expect(store.findSecret(query)).toBe('s3cret');
+      });
+    });
+
     it('replaces a secret already held under the same service and account', () => {
       withKeychain((keychain) => {
         const store = createKeychainStore({ keychain });
