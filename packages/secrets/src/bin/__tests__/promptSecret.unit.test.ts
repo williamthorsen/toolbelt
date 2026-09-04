@@ -4,6 +4,9 @@ import { describe, expect, it } from 'vitest';
 
 import { promptSecret } from '../promptSecret.ts';
 
+const CTRL_C = Buffer.from([0x03]);
+const CTRL_D = Buffer.from([0x04]);
+
 describe(promptSecret, () => {
   it('returns the secret typed twice', async () => {
     const session = startSession('s3cret', 's3cret');
@@ -48,6 +51,17 @@ describe(promptSecret, () => {
     await expect(session.secret).rejects.toThrow(/ended before a secret was entered/);
   });
 
+  it.each([
+    { key: CTRL_C, label: 'Ctrl-C' },
+    { key: CTRL_D, label: 'Ctrl-D' },
+  ])('reports what became of the secret rather than the key pressed, on $label', async ({ key }) => {
+    const session = startSession();
+
+    session.type(key);
+
+    await expect(session.secret).rejects.toThrow(/ended before a secret was entered/);
+  });
+
   it('reads a secret past the 128 bytes that `security` would have taken', async () => {
     const long = 'a'.repeat(200);
     const session = startSession(long, long);
@@ -77,18 +91,25 @@ function startSession(...answers: string[]): Session {
     if (answer !== undefined) setImmediate(() => input.write(`${answer}\n`));
   });
 
-  // A prompt with no answer left to type is one whose input has ended, which is the stream reaching EOF.
+  // A session given answers ends its input once they run out, which is the stream reaching EOF mid-prompt. A
+  // session given none leaves the input open, so a test driving a keystroke cannot pass through that path.
   output.on('data', () => {
-    if (pending.length === 0) setImmediate(() => input.end());
+    if (answers.length > 0 && pending.length === 0) setImmediate(() => input.end());
   });
 
-  return { endInput: () => input.end(), readOutput: () => written.join(''), secret: promptSecret(input, output) };
+  return {
+    endInput: () => input.end(),
+    readOutput: () => written.join(''),
+    secret: promptSecret(input, output),
+    type: (keystroke: Buffer) => void input.write(keystroke),
+  };
 }
 
 interface Session {
   endInput: () => void;
   readOutput: () => string;
   secret: Promise<string>;
+  type: (keystroke: Buffer) => void;
 }
 
 // endregion | Helpers

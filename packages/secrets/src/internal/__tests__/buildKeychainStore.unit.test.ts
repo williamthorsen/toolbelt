@@ -150,6 +150,30 @@ describe(buildKeychainStore, () => {
       expect(() => buildKeychainStore(spy.run).setSecret(QUERY, 's3cret')).toThrow(/nothing was stored/);
     });
 
+    it('reports a verification that could not run, so a landed write is not read as a failed one', () => {
+      const spy = createWriteSpy(
+        's3cret',
+        {},
+        {
+          exitCode: 36,
+          stderr: 'security: SecKeychainItemCopyContent: User interaction is not allowed.\n',
+        },
+      );
+
+      expect(() => buildKeychainStore(spy.run).setSecret(QUERY, 's3cret')).toThrow(
+        /written but could not be read back to verify it.*User interaction is not allowed/s,
+      );
+    });
+
+    it('carries what the failed verification reported as the cause', () => {
+      const spy = createWriteSpy('s3cret', {}, { exitCode: 36, stderr: 'security: SecKeychainUnlock: locked.\n' });
+
+      // The message names the write's outcome, so the read's own failure survives only as the cause.
+      expect(() => buildKeychainStore(spy.run).setSecret(QUERY, 's3cret')).toThrow(
+        expect.objectContaining({ cause: expect.objectContaining({ message: expect.stringMatching(/locked/) }) }),
+      );
+    });
+
     it('rejects the empty secret without running anything', () => {
       const spy = createWriteSpy('');
 
