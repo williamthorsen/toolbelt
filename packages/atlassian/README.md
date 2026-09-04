@@ -14,8 +14,46 @@ Requires Node.js 24 or later.
 
 ## Scope
 
-Jira, Confluence, and Bitbucket Cloud. One Atlassian account API token authenticates all three, so credential resolution, the Basic auth transport, and the cloudId lookup are shared here rather than duplicated across a package per product.
+Jira, Confluence, and Bitbucket Cloud. A scoped API token authenticates one product, so a credential is held per product, while the cloudId lookup and the Basic auth transport are shared here rather than duplicated across a package per product.
 
-## Status
+## Usage
 
-The package is scaffolded and exports nothing yet. Its first exports arrive with [#267](https://github.com/williamthorsen/toolbelt/issues/267).
+```ts
+import {
+  createTokenTransport,
+  resolveJiraBaseUrl,
+  resolveJiraEmail,
+  resolveJiraToken,
+} from '@williamthorsen/toolbelt.atlassian/candidate';
+
+const email = resolveJiraEmail();
+const token = resolveJiraToken({ account: email });
+const baseUrl = await resolveJiraBaseUrl({ site: 'acme.atlassian.net' });
+
+const request = createTokenTransport({ baseUrl, email, token });
+const response = await request('GET', '/rest/api/3/myself');
+```
+
+### The base URL
+
+`resolveJiraBaseUrl` returns `https://api.atlassian.com/ex/jira/<cloudId>`, the gateway a scoped API token authenticates against. Where no `cloudId` is given, it is read from the site's `_edge/tenant_info` endpoint, which answers without authentication.
+
+Requests against the site URL (`https://acme.atlassian.net`) are not offered as a fallback. Atlassian ignores a scoped token sent there rather than rejecting it, so the request would return an anonymous response instead of failing.
+
+### The credential
+
+Basic auth pairs an email with an API token. They resolve on separate chains, because the email is not a secret and the token is, and the email names the keychain account under which the token is stored.
+
+`resolveJiraEmail` reads a supplied value, then `JIRA_EMAIL`.
+
+`resolveJiraToken` reads a supplied value, then `JIRA_API_TOKEN`, then a configured shell command (`tokenCommand`), then the macOS keychain. The keychain is opened only where the earlier sources miss. Store a token with:
+
+```sh
+tb-secret set toolbelt.atlassian.jira --account you@example.com
+```
+
+The service defaults to `toolbelt.atlassian.jira`; pass `service` to read another.
+
+### The transport
+
+`createTokenTransport` takes the email and token as values and reads no environment variable, file, or keystore of its own. It reports every status to the caller, a 401 or 403 included, so an authentication failure is a value to branch on rather than an exception.
