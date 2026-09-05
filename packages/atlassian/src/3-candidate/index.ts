@@ -7,6 +7,7 @@ export {
   type JiraResponse,
   type TokenTransportOptions,
 } from './createTokenTransport.ts';
+export { JiraRequestError, type JiraRequestErrorOptions } from './JiraRequestError.ts';
 export { parseProjectSpec } from './parseProjectSpec.ts';
 export type {
   ProjectConfiguration,
@@ -24,6 +25,7 @@ export type {
   StatusUpdate,
   TransitionRename,
 } from './ReconciliationPlan.ts';
+export { requestOk, type RequestOkOptions } from './requestOk.ts';
 export { type JiraBaseUrlOptions, resolveJiraBaseUrl } from './resolveJiraBaseUrl.ts';
 export { type JiraEmailOptions, resolveJiraEmail } from './resolveJiraEmail.ts';
 export { type JiraTokenOptions, resolveJiraToken } from './resolveJiraToken.ts';
