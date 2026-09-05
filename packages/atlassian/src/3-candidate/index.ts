@@ -10,6 +10,8 @@ export {
   type TokenTransportOptions,
 } from './createTokenTransport.ts';
 export { JiraRequestError, type JiraRequestErrorOptions } from './JiraRequestError.ts';
+export { listIssueKeys } from './listIssueKeys.ts';
+export { type BacklogMoveResult, moveIssuesToBacklog } from './moveIssuesToBacklog.ts';
 export { parseProjectSpec } from './parseProjectSpec.ts';
 export type {
   ProjectConfiguration,
