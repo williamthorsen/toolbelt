@@ -35,7 +35,7 @@ describe(readProjectConfiguration, () => {
     });
   });
 
-  it('carries a transition through with the fields this package does not model', async () => {
+  it('carries a transition through with the fields that this package does not model', async () => {
     const { request } = createFakeRequest(buildRoutes());
 
     const configuration = await readProjectConfiguration(request, KEY);
@@ -60,7 +60,7 @@ describe(readProjectConfiguration, () => {
     await expect(readProjectConfiguration(request, KEY)).rejects.toThrow(/not team-managed \(style: absent\)/);
   });
 
-  it('refuses a project reporting a style it does not recognize', async () => {
+  it('refuses a project reporting a style that it does not recognize', async () => {
     const { request } = createFakeRequest(buildRoutesForProject({ id: PROJECT_ID, style: 'something-new' }));
 
     await expect(readProjectConfiguration(request, KEY)).rejects.toThrow(/not team-managed \(style: something-new\)/);
@@ -160,7 +160,7 @@ describe(readProjectConfiguration, () => {
     expect([...configuration.features]).toStrictEqual([['jsw.agility.backlog', 'ENABLED']]);
   });
 
-  it('refuses a board entry it cannot read rather than passing over it', async () => {
+  it('refuses a board entry that it cannot read rather than passing over it', async () => {
     const routes = {
       ...buildRoutes(),
       'GET /rest/agile/1.0/board': { json: { values: [{ id: BOARD_ID }, { name: 'no id' }] } },
@@ -171,7 +171,7 @@ describe(readProjectConfiguration, () => {
     );
   });
 
-  it('refuses an issue type it cannot read, which would otherwise slip past the workflow count', async () => {
+  it('refuses an issue type that it cannot read, which would otherwise slip past the workflow count', async () => {
     const routes = {
       ...buildRoutes(),
       'GET /rest/api/3/project/THOR/statuses': { json: [{ id: '10001' }, { name: 'no id' }] },
@@ -182,7 +182,7 @@ describe(readProjectConfiguration, () => {
     );
   });
 
-  it('refuses a board feature it cannot read rather than reporting it absent', async () => {
+  it('refuses a board feature that it cannot read rather than reporting it absent', async () => {
     const routes = {
       ...buildRoutes(),
       [`GET /rest/agile/1.0/board/${BOARD_ID}/features`]: {
@@ -222,7 +222,7 @@ describe(readProjectConfiguration, () => {
     );
   });
 
-  it('refuses a status it cannot read rather than dropping it', async () => {
+  it('refuses a status that it cannot read rather than dropping it', async () => {
     const routes = {
       ...buildRoutes(),
       'POST /rest/api/3/workflows': {
@@ -247,7 +247,7 @@ describe(readProjectConfiguration, () => {
 
 // region | Helpers
 
-/** Builds the five routes a whole read walks, against a team-managed project on one workflow. */
+/** Builds the five routes that a whole read walks, against a team-managed project on one workflow. */
 function buildRoutes(): FakeRoutes {
   return {
     'GET /rest/agile/1.0/board': { json: { values: [{ id: BOARD_ID, name: 'THOR board' }] } },
@@ -273,7 +273,7 @@ function buildRoutesForProject(project: Record<string, unknown>): FakeRoutes {
   return { ...buildRoutes(), 'GET /rest/api/3/project/THOR': { json: project } };
 }
 
-/** Builds the workflow graph the read narrows, carrying a `conditions` field this package does not model. */
+/** Builds the workflow graph narrowed by the read, carrying a `conditions` field that this package does not model. */
 function buildWorkflow(): unknown {
   return {
     description: 'The project workflow.',

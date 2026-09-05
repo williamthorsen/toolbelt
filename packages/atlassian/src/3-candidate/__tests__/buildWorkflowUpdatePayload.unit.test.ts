@@ -7,7 +7,7 @@ import type { ReconciliationPlan } from '../ReconciliationPlan.ts';
 const configuration = buildProjectConfiguration();
 
 describe(buildWorkflowUpdatePayload, () => {
-  it('carries a transition through with the fields this package does not model', () => {
+  it('carries a transition through with the fields that this package does not model', () => {
     const [workflow] = buildWorkflowUpdatePayload(configuration, buildPlan()).workflows;
 
     expect(workflow.transitions[0]).toStrictEqual(configuration.workflow.transitions[0]);
@@ -82,7 +82,7 @@ describe(buildWorkflowUpdatePayload, () => {
     });
   });
 
-  it('keeps the description of a status the spec respells in different casing', () => {
+  it('keeps the description of a status that the spec respells in different casing', () => {
     const plan = buildPlan({
       statusUpdates: [
         {
@@ -156,7 +156,7 @@ describe(buildWorkflowUpdatePayload, () => {
     expect(workflow.transitions.map((transition) => transition.id)).toStrictEqual(['10']);
   });
 
-  it('carries every live status and transition into the payload it returns', () => {
+  it('carries every live status and transition into the payload that it returns', () => {
     const payload = buildWorkflowUpdatePayload(configuration, buildPlan());
     const [workflow] = payload.workflows;
 
@@ -171,7 +171,7 @@ describe(buildWorkflowUpdatePayload, () => {
 
 // region | Helpers
 
-/** Builds an empty plan, which amends nothing, with the entries a test needs. */
+/** Builds an empty plan, which amends nothing, with the entries that a test needs. */
 function buildPlan(overrides: Partial<ReconciliationPlan> = {}): ReconciliationPlan {
   return {
     creations: [],
