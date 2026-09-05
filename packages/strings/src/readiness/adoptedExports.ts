@@ -1,5 +1,5 @@
 /**
- * The package's callable exports. A call to one of them counts as adoption.
+ * The package's callable exports. A call to one of them counts toward adoption.
  *
  * The five `String.prototype` wrappers -- `toLowerCase`, `toUpperCase`, `trim`, `trimEnd`, and `trimStart` --
  * are held out. Adoption is counted by matching a call name in a file that imports the package, and those five

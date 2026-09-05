@@ -9,7 +9,7 @@ const WINDOW = { lookahead: 0, lookbehind: 80 };
  *
  * Takes the blanked code produced by `listMathIdioms`, so an idiom written in a comment or a literal is not one.
  *
- * A site in array-subscript position is left out: it is `toolbelt.arrays`' random-item idiom, whose kit
+ * A site in array-subscript position is left out: It is `toolbelt.arrays`' random-item idiom, whose kit
  * recommends `pickItem`. Leaving it out rather than reporting it under an unclaimed kind keeps it out of the
  * denominator too, which no check here could ever close.
  *
