@@ -70,11 +70,20 @@ async function readBoard(
   if (boards.length !== values.length) {
     throw new Error(`Project ${projectKey} answered with boards this cannot read.`);
   }
-  const owned = boards.length === 1 ? boards : boards.filter((entry) => entry.locationProjectId === projectId);
+  // A sole board is taken without a location, which Jira may omit, but never one whose location names another
+  // project: its id would carry this project's feature writes and backlog moves onto that project's board.
+  const owned = boards.filter(
+    (entry) => entry.locationProjectId === projectId || (boards.length === 1 && entry.locationProjectId === undefined),
+  );
   const [board] = owned;
-  if (board === undefined || owned.length !== 1) {
+  if (board === undefined) {
     throw new Error(
-      `Project ${projectKey} resolves to ${boards.length} boards, ${owned.length} of them its own. This reconciler configures one board, so an ambiguous set is refused rather than half-configured.`,
+      `Project ${projectKey} resolves to no board of its own (the query returned ${boards.length}). Refusing, since another project's board would take this project's feature writes and backlog moves.`,
+    );
+  }
+  if (owned.length > 1) {
+    throw new Error(
+      `Project ${projectKey} resolves to ${owned.length} boards of its own. This reconciler configures one board, so an ambiguous set is refused rather than half-configured.`,
     );
   }
 
@@ -112,17 +121,18 @@ async function readFeatures(request: JiraRequest, boardId: number): Promise<Read
     throw new Error(`Board ${boardId} answered without a 'features' array.`);
   }
 
-  const features = new Map<string, string>();
-  for (const value of values) {
-    if (!isRecord(value)) continue;
+  const entries: [string, string][] = values.flatMap((value) => {
+    if (!isRecord(value)) return [];
+
     const { feature, state } = value;
-    if (typeof feature === 'string' && typeof state === 'string') features.set(feature, state);
-  }
-  if (features.size !== values.length) {
+
+    return typeof feature === 'string' && typeof state === 'string' ? [[feature, state]] : [];
+  });
+  if (entries.length !== values.length) {
     throw new Error(`Board ${boardId} answered with features this cannot read.`);
   }
 
-  return features;
+  return new Map(entries);
 }
 
 /** Reads every issue-type id the project holds, which the workflow read resolves its workflows from. */

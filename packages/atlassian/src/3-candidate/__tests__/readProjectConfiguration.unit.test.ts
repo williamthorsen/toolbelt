@@ -95,6 +95,35 @@ describe(readProjectConfiguration, () => {
     expect(configuration.board).toStrictEqual({ id: BOARD_ID });
   });
 
+  it('refuses a sole board whose location names another project', async () => {
+    const routes = {
+      ...buildRoutes(),
+      'GET /rest/agile/1.0/board': { json: { values: [{ id: 99, location: { projectId: 20_000 } }] } },
+    };
+
+    await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
+      'resolves to no board of its own (the query returned 1)',
+    );
+  });
+
+  it('refuses a project owning several of the boards returned', async () => {
+    const routes = {
+      ...buildRoutes(),
+      'GET /rest/agile/1.0/board': {
+        json: {
+          values: [
+            { id: 98, location: { projectId: 10_000 } },
+            { id: 99, location: { projectId: 10_000 } },
+          ],
+        },
+      },
+    };
+
+    await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
+      'resolves to 2 boards of its own',
+    );
+  });
+
   it('refuses a project resolving to several boards none of which is its own', async () => {
     const routes = {
       ...buildRoutes(),
@@ -109,8 +138,26 @@ describe(readProjectConfiguration, () => {
     };
 
     await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'resolves to 2 boards, 0 of them its own',
+      'resolves to no board of its own (the query returned 2)',
     );
+  });
+
+  it('reads a feature reported twice rather than refusing over the repeat', async () => {
+    const routes = {
+      ...buildRoutes(),
+      [`GET /rest/agile/1.0/board/${BOARD_ID}/features`]: {
+        json: {
+          features: [
+            { feature: 'jsw.agility.backlog', state: 'DISABLED' },
+            { feature: 'jsw.agility.backlog', state: 'ENABLED' },
+          ],
+        },
+      },
+    };
+
+    const configuration = await readProjectConfiguration(createFakeRequest(routes).request, KEY);
+
+    expect([...configuration.features]).toStrictEqual([['jsw.agility.backlog', 'ENABLED']]);
   });
 
   it('refuses a board entry it cannot read rather than passing over it', async () => {
