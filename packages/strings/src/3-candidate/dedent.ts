@@ -24,14 +24,14 @@ export interface Dedent {
 
 export interface DedentOptions {
   /**
-   * Whether a multi-line value's continuation lines are indented to match the line it opened on.
+   * Whether a multi-line value's continuation lines are indented to match the line on which it opened.
    * Defaults to `'none'`, which splices every value exactly as given.
    */
   valueIndentationStyle?: 'line' | 'none' | undefined;
 }
 
 /**
- * The values a template may interpolate. Objects are excluded because they would coerce to
+ * The values that a template may interpolate. Objects are excluded because they would coerce to
  * `[object Object]`, and nullish values because they would silently render as `"null"`; both are
  * left for the caller to convert deliberately.
  */
@@ -51,7 +51,7 @@ interface TemplateLine {
 type TemplateSegment = { kind: 'literal'; text: string } | { kind: 'value'; valueIndex: number };
 
 /**
- * Splits the literals into lines, attributing each interpolation to the line it appears on.
+ * Splits the literals into lines, attributing each interpolation to the line on which it appears.
  */
 function buildTemplateLines(templateStrings: TemplateStringsArray): TemplateLine[] {
   const lines: TemplateLine[] = [];
@@ -75,7 +75,7 @@ function buildTemplateLines(templateStrings: TemplateStringsArray): TemplateLine
 }
 
 /**
- * Counts the line terminators a string contains.
+ * Counts the line terminators that a string contains.
  */
 function countLineTerminators(text: string): number {
   return splitLines(text).length - 1;
@@ -159,7 +159,7 @@ function renderTemplate(
 }
 
 /**
- * Measures the indent the template's content lines share, rejecting a template whose lines are all
+ * Measures the indent shared by the template's content lines, rejecting a template whose lines are all
  * indented but agree on no common prefix -- stripping nothing there would silently do nothing.
  */
 function resolveCommonIndent(lines: ReadonlyArray<TemplateLine>): string {
@@ -198,7 +198,7 @@ function trimTemplateEdges(lines: TemplateLine[]): TemplateLine[] {
 
 /**
  * Rejects a literal whose cooked and raw forms disagree on how many lines it spans. An escaped line
- * terminator, or a line continuation, would otherwise contribute a line the author never indented
+ * terminator, or a line continuation, would otherwise contribute a line that the author never indented
  * and silently reduce the common indent to nothing.
  */
 function validateEscapes(templateStrings: TemplateStringsArray): void {
