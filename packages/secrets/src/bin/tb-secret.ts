@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 
 import { createKeychainStore } from '../3-candidate/createKeychainStore.ts';
-import { promptSecret } from './promptSecret.ts';
+import { promptSecret } from '../3-candidate/promptSecret.ts';
 import { resolveSelfVersion } from './resolveSelfVersion.ts';
 import { runTbSecret } from './runTbSecret.ts';
 

@@ -120,3 +120,19 @@ projectStore.findSecret({ service: 'deploy-key' });
 ```
 
 A named keychain accepts a write like the default search list does. `SecretStore` remains the read-only half of the surface, for a backend that accepts no new secret.
+
+## `promptSecret`
+
+```ts
+promptSecret(input: NodeJS.ReadableStream, output: NodeJS.WritableStream): Promise<string>;
+```
+
+Reads a secret from a terminal without echoing it, asking twice and comparing, since nothing on screen shows what was typed. It rejects where the two entries differ, and where the input ends before a secret is entered, which is the one event that `Ctrl-C`, `Ctrl-D`, and a closed stream all share.
+
+```ts
+import { promptSecret } from '@williamthorsen/toolbelt.secrets/candidate';
+
+const secret = await promptSecret(process.stdin, process.stderr);
+```
+
+The prompts go to `output` and the line being edited does not, so a caller passing `process.stderr` leaves `stdout` free for the command's own result. `security` has a prompt of its own, but it fills a 128-byte buffer and hands back nothing to verify, which is why this reads the secret instead.
