@@ -218,7 +218,7 @@ var default_default = defineAdoptionKit({
       id: "no-hand-rolled-own-property",
       kinds: ["own-property-call"],
       severity: "recommend",
-      fix: `Object.hasOwn is the platform form and is enough wherever the result narrows nothing: it takes the target and the key directly. Take hasOwnProperty from ${PACKAGE_NAME}/candidate where the call guards a property read, since it returns a type predicate that narrows the target and Object.hasOwn returns a bare boolean. Reference: ${README_URL}`
+      fix: `Object.hasOwn is the platform form and is enough wherever the result narrows nothing: It takes the target and the key directly. Take hasOwnProperty from ${PACKAGE_NAME}/candidate where the call guards a property read, since it returns a type predicate that narrows the target and Object.hasOwn returns a bare boolean. Reference: ${README_URL}`
     },
     {
       name: "No source guards a record by hand",
@@ -232,7 +232,7 @@ var default_default = defineAdoptionKit({
       id: "no-stringify-comparison",
       kinds: ["stringify-compare"],
       severity: "warn",
-      fix: `Replace each comparison named above with isEqual from ${PACKAGE_NAME}/candidate. Comparing serializations answers the wrong question twice: the result is key-order dependent, so two objects carrying the same entries in a different order compare unequal, and a Set serializes as an empty object whatever it holds, so any two Sets compare equal. isEqual sorts keys and converts Sets to arrays before comparing. Mind what serialization drops: a value carrying a function, a symbol, or undefined compares by what survives, under isEqual as much as by hand. Reference: ${README_URL}`
+      fix: `Replace each comparison named above with isEqual from ${PACKAGE_NAME}/candidate. Comparing serializations answers the wrong question twice: The result is key-order dependent, so two objects carrying the same entries in a different order compare unequal, and a Set serializes as an empty object whatever it holds, so any two Sets compare equal. isEqual sorts keys and converts Sets to arrays before comparing. Mind what serialization drops: A value carrying a function, a symbol, or undefined compares by what survives, under isEqual as much as by hand. Reference: ${README_URL}`
     }
   ]
 });
