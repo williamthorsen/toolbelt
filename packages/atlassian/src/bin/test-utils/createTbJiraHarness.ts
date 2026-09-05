@@ -75,7 +75,7 @@ export function createTbJiraHarness(options: HarnessOptions = {}): TbJiraHarness
       cwd: () => cwd,
       env,
       fetch: (input) => {
-        fetchedUrls.push(input instanceof URL ? input.href : typeof input === 'string' ? input : input.url);
+        fetchedUrls.push(describeFetchTarget(input));
 
         return Promise.resolve(Response.json({ cloudId: CLOUD_ID }));
       },
@@ -142,6 +142,14 @@ export interface TbJiraHarness {
 /** Names the in-memory item a query addresses. */
 function buildKey(query: SecretQuery): string {
   return `${query.account ?? ''}|${query.service}`;
+}
+
+/** Names the URL a fetch was aimed at, whichever of the three forms the argument takes. */
+function describeFetchTarget(input: Parameters<typeof globalThis.fetch>[0]): string {
+  if (input instanceof URL) return input.href;
+  if (typeof input === 'string') return input;
+
+  return input.url;
 }
 
 /**
