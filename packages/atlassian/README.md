@@ -109,7 +109,7 @@ The scope set a scoped API token needs is not yet determined; #283 determines it
 | `5`  | The run wrote, and the project does not match the spec        |
 | `6`  | Jira could not be reached, with the URL and the reason        |
 
-A run that wrote and left the project short of the spec is `5` rather than `4`, so a script can tell a rejected call from a reconciliation that did not take. A run that never reached Jira is `6` rather than `2`, so a script can retry a name lookup or a refused connection and never retry a malformed spec. Two things never change the exit code, because no call could have changed either: a board column the spec has no counterpart for, and a board feature Jira has locked.
+A run that wrote and left the project short of the spec is `5` rather than `4`, so a script can tell a rejected call from a reconciliation that did not take. A run that never reached Jira is `6` rather than `2`, so a script can retry a name lookup or a refused connection and never retry a malformed spec. Two things never change the exit code, because no call could have changed either: a board column for which the spec has no counterpart, and a board feature locked by Jira.
 
 ## Library
 
@@ -148,12 +148,6 @@ tb-jira auth set --email you@example.com                      # or, equivalently
 tb-secret set toolbelt.atlassian.jira --account you@example.com
 ```
 
-### Errors
-
-Two error types separate a Jira that answered from a Jira that did not. `JiraRequestError` reports a status outside 2xx and carries `body`, `label`, `method`, `path`, and `status`, so a caller branches on the status rather than parsing the message. `JiraTransportError` reports a request that never arrived and carries the `url` it was aimed at, with the fault that the runtime raised as its `cause`.
-
-The split matters because node's `fetch` reports every transport failure as `TypeError: fetch failed` and names the reason on `cause` alone. Reading the chain is what turns that into `getaddrinfo ENOTFOUND acme.atlassian.net`, and a retry is worth attempting for the second type and never for the first.
-
 The service defaults to `toolbelt.atlassian.jira`; pass `service` to read another.
 
 `findJiraTokenSource` walks that same chain and answers which link would supply the token, or `undefined` where every one misses. It never returns the token: the keychain is probed with `hasSecret`, which reads the item's attributes rather than its data and so raises no keychain access prompt. A configured `tokenCommand` does run, and its output is discarded.
@@ -163,6 +157,12 @@ The service defaults to `toolbelt.atlassian.jira`; pass `service` to read anothe
 ### The transport
 
 `createTokenTransport` takes the email and token as values and reads no environment variable, file, or keystore of its own. It reports every status to the caller, a 401 or 403 included, so an authentication failure is a value to branch on rather than an exception.
+
+### Errors
+
+Two error types separate a Jira that answered from a Jira that did not. `JiraRequestError` reports a status outside 2xx and carries `body`, `label`, `method`, `path`, and `status`, so a caller branches on the status rather than parsing the message. `JiraTransportError` reports a request that never arrived and carries the `url` at which it was aimed, with the fault that the runtime raised as its `cause`.
+
+The split matters because node's `fetch` reports every transport failure as `TypeError: fetch failed` and names the reason on `cause` alone. Reading the chain is what turns that into `getaddrinfo ENOTFOUND acme.atlassian.net`, and a retry is worth attempting for the second type and never for the first.
 
 ### The project spec
 
@@ -186,7 +186,7 @@ A spec declares which statuses a Jira project should hold and which board featur
 
 `boardFeatures` maps a feature key to `ENABLED` or `DISABLED`. Jira also reports `COMING_SOON`, which no spec may request. `site` and `email` are the last source in their resolution chains.
 
-Jira locks some features, such as one belonging to a product the site does not hold. A write against a locked feature answers `200` and changes nothing, so a spec naming one is reported rather than written: the plan prints it as `locked`, the closing report marks it `LOCK`, and the exit code is unaffected. Without that, the toggle would be re-planned on every run and the project would never match.
+Jira locks some features, such as one belonging to a product not held by the site. A write against a locked feature answers `200` and changes nothing, so a spec naming one is reported rather than written: the plan prints it as `locked`, the closing report marks it `LOCK`, and the exit code is unaffected. Without that, the toggle would be re-planned on every run and the project would never match.
 
 A live status claimed by no entry is reported and left untouched, so a spec covers the statuses that it manages rather than the whole project.
 

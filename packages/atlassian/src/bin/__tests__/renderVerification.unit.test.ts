@@ -41,7 +41,7 @@ describe(renderVerification, () => {
     expect(rendered).toContain('  MISS jsw.agility.sprints = absent');
   });
 
-  it('marks a feature Jira has locked as neither met nor faulted', () => {
+  it('marks a feature locked by Jira as neither met nor faulted', () => {
     const rendered = renderVerification(
       buildReport({
         features: [{ feature: 'jsw.agility.goals', locked: true, matches: false, state: 'DISABLED' }],

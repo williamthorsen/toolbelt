@@ -37,7 +37,7 @@ describe(describeError, () => {
     );
   });
 
-  it('does not repeat a message a wrapper already quotes', () => {
+  it('does not repeat a message already quoted by a wrapper', () => {
     const cause = new SyntaxError('Unexpected end of JSON input');
     const error = new Error(`A spec is JSON: ${cause.message}`, { cause });
 

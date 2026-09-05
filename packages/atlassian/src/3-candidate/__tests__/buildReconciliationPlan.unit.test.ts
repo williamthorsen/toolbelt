@@ -118,7 +118,7 @@ describe(buildReconciliationPlan, () => {
     expect(plan.featureToggles).toStrictEqual([]);
   });
 
-  it('reports a feature Jira has locked rather than planning a toggle that cannot take', () => {
+  it('reports a feature locked by Jira rather than planning a toggle that cannot take', () => {
     const spec = { ...buildSpec(), boardFeatures: { 'jsw.agility.backlog': 'ENABLED' } } satisfies ProjectSpec;
     const configuration = buildProjectConfiguration({ lockedFeatures: new Set(['jsw.agility.backlog']) });
 

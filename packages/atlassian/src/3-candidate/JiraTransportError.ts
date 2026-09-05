@@ -9,7 +9,7 @@
  * @stage candidate
  */
 export class JiraTransportError extends Error {
-  /** The URL the request was aimed at. */
+  /** The URL at which the request was aimed. */
   readonly url: string;
 
   constructor(options: JiraTransportErrorOptions) {

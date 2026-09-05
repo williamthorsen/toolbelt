@@ -7,8 +7,8 @@ export interface ProjectConfiguration {
   /** Live board-feature states, keyed by feature key. Jira reports `COMING_SOON` alongside the requestable two. */
   readonly features: ReadonlyMap<string, string>;
   /**
-   * The features Jira has locked. A write against one answers 200 and changes nothing, so a toggle it would
-   * plan can never take, and the run would report a mismatch on every later pass.
+   * The features locked by Jira. A write against one answers 200 and changes nothing, so a toggle that it
+   * would plan can never take, and the run would report a mismatch on every later pass.
    */
   readonly lockedFeatures: ReadonlySet<string>;
   readonly project: { readonly id: string };

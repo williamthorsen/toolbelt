@@ -128,7 +128,7 @@ describe(createTokenTransport, () => {
     await expect(request('GET', '/rest/api/3/myself')).resolves.toMatchObject({ status: 401 });
   });
 
-  it('reports a transport failure as the URL it could not reach, keeping the fault as the cause', async () => {
+  it('reports a transport failure as the URL that it could not reach, keeping the fault as the cause', async () => {
     const cause = new TypeError('fetch failed');
     const fetchImpl = vi.fn().mockRejectedValue(cause);
     const request = createTokenTransport({ baseUrl: BASE_URL, email: EMAIL, fetch: fetchImpl, token: TOKEN });
