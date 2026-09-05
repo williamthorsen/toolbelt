@@ -66,6 +66,88 @@ describe(readProjectConfiguration, () => {
     await expect(readProjectConfiguration(request, KEY)).rejects.toThrow(/not team-managed \(style: something-new\)/);
   });
 
+  it('takes the sole board without consulting its location', async () => {
+    const routes = {
+      ...buildRoutes(),
+      'GET /rest/agile/1.0/board': { json: { values: [{ id: BOARD_ID, name: 'THOR board' }] } },
+    };
+
+    const configuration = await readProjectConfiguration(createFakeRequest(routes).request, KEY);
+
+    expect(configuration.board).toStrictEqual({ id: BOARD_ID });
+  });
+
+  it("takes the project's own board where another board also filters on the project", async () => {
+    const routes = {
+      ...buildRoutes(),
+      'GET /rest/agile/1.0/board': {
+        json: {
+          values: [
+            { id: 99, location: { projectId: 20_000 }, name: 'Programme board' },
+            { id: BOARD_ID, location: { projectId: 10_000 }, name: 'THOR board' },
+          ],
+        },
+      },
+    };
+
+    const configuration = await readProjectConfiguration(createFakeRequest(routes).request, KEY);
+
+    expect(configuration.board).toStrictEqual({ id: BOARD_ID });
+  });
+
+  it('refuses a project resolving to several boards none of which is its own', async () => {
+    const routes = {
+      ...buildRoutes(),
+      'GET /rest/agile/1.0/board': {
+        json: {
+          values: [
+            { id: 98, location: { projectId: 20_000 } },
+            { id: 99, location: { projectId: 30_000 } },
+          ],
+        },
+      },
+    };
+
+    await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
+      'resolves to 2 boards, 0 of them its own',
+    );
+  });
+
+  it('refuses a board entry it cannot read rather than passing over it', async () => {
+    const routes = {
+      ...buildRoutes(),
+      'GET /rest/agile/1.0/board': { json: { values: [{ id: BOARD_ID }, { name: 'no id' }] } },
+    };
+
+    await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
+      'answered with boards this cannot read',
+    );
+  });
+
+  it('refuses an issue type it cannot read, which would otherwise slip past the workflow count', async () => {
+    const routes = {
+      ...buildRoutes(),
+      'GET /rest/api/3/project/THOR/statuses': { json: [{ id: '10001' }, { name: 'no id' }] },
+    };
+
+    await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
+      'answered with issue types this cannot read',
+    );
+  });
+
+  it('refuses a board feature it cannot read rather than reporting it absent', async () => {
+    const routes = {
+      ...buildRoutes(),
+      [`GET /rest/agile/1.0/board/${BOARD_ID}/features`]: {
+        json: { features: [{ feature: 'jsw.agility.backlog', state: 'DISABLED' }, { feature: 'jsw.agility.sprints' }] },
+      },
+    };
+
+    await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
+      'answered with features this cannot read',
+    );
+  });
+
   it('refuses a project with no board', async () => {
     const routes = { ...buildRoutes(), [`GET /rest/agile/1.0/board`]: { json: { values: [] } } };
 

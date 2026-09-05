@@ -143,7 +143,7 @@ const report = buildVerificationReport(await readProjectConfiguration(request, '
 `readProjectConfiguration` fails closed. Each of these throws rather than reconciling part of a project:
 
 - **A project that is not team-managed.** A status renamed in a company-managed project is renamed in every project on the site that uses it. A project reporting no style, or one this does not recognize, is refused alongside a company-managed one: a project it cannot classify is not one to write to.
-- **A project with no board.** The board-feature and backlog calls are board-scoped.
+- **A project that does not resolve to a single board of its own.** The board-feature, column, and backlog calls are board-scoped. The board query answers with every board whose filter references the project, so a board another project owns can come back alongside it; where several come back, the project's own board is the one whose location names the project, and an ambiguous set is refused.
 - **A project whose issue types resolve to other than exactly one workflow.** Every issue type is carried into the workflow read, so a project running its issue types on several workflows is refused rather than having one of them reconciled and reported green.
 - **A response it cannot read.** A missing field is a refusal, not a default.
 

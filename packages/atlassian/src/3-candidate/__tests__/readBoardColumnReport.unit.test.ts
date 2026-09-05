@@ -70,6 +70,28 @@ describe(readBoardColumnReport, () => {
     expect(report.uncovered).toStrictEqual([]);
   });
 
+  it('refuses a column it cannot read rather than reporting its statuses uncovered', async () => {
+    const { request } = createFakeRequest({
+      [CONFIGURATION_PATH]: {
+        json: { columnConfig: { columns: [{ name: 'To Do', statuses: [{ id: 'id-to-do' }] }, { statuses: [] }] } },
+      },
+    });
+
+    await expect(readBoardColumnReport(request, buildProjectConfiguration(), SPEC)).rejects.toThrow(
+      'answered with columns this cannot read',
+    );
+  });
+
+  it('refuses a status id it cannot read rather than reporting that status uncovered', async () => {
+    const { request } = createFakeRequest({
+      [CONFIGURATION_PATH]: { json: { columnConfig: { columns: [{ name: 'To Do', statuses: [{ name: 'no id' }] }] } } },
+    });
+
+    await expect(readBoardColumnReport(request, buildProjectConfiguration(), SPEC)).rejects.toThrow(
+      'answered with columns this cannot read',
+    );
+  });
+
   it('throws naming the board where the configuration read is rejected', async () => {
     const { request } = createFakeRequest({ [CONFIGURATION_PATH]: { json: { errorMessages: [] }, status: 403 } });
 

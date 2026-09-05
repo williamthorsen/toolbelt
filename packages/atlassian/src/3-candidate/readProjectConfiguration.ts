@@ -15,9 +15,9 @@ const TEAM_MANAGED_STYLE = 'next-gen';
 
 /**
  * Reads the project, board, workflow, and board features a reconciliation is planned against. Refuses a project
- * this reconciler cannot safely write to: one that is not team-managed, one with no board, and one whose issue
- * types resolve to other than a single workflow. Each refusal fails closed, so a response it cannot read is a
- * refusal rather than a pass.
+ * this reconciler cannot safely write to: one that is not team-managed, one that does not resolve to a single
+ * board of its own, and one whose issue types resolve to other than a single workflow. Each refusal fails closed,
+ * so a response it cannot read is a refusal rather than a pass.
  *
  * @category Jira
  * @experimental
@@ -30,7 +30,7 @@ export async function readProjectConfiguration(
   const key = encodeURIComponent(projectKey);
 
   const project = await readProject(request, projectKey, key);
-  const board = await readBoard(request, projectKey, key);
+  const board = await readBoard(request, projectKey, key, project.id);
   const issueTypeIds = await readIssueTypeIds(request, projectKey, key);
   const { statuses, workflow } = await readWorkflow(request, projectKey, project.id, issueTypeIds);
   const features = await readFeatures(request, board.id);
@@ -40,8 +40,17 @@ export async function readProjectConfiguration(
 
 // region | Helpers
 
-/** Reads the project's board, refusing a project that has none: the features and backlog calls are board-scoped. */
-async function readBoard(request: JiraRequest, projectKey: string, key: string): Promise<{ id: number }> {
+/**
+ * Reads the project's own board, which the feature, column, and backlog calls are scoped to. The query answers
+ * with every board whose filter references the project, so a board another project owns can come back alongside
+ * it; the project's own board is the one whose location names the project.
+ */
+async function readBoard(
+  request: JiraRequest,
+  projectKey: string,
+  key: string,
+  projectId: string,
+): Promise<{ id: number }> {
   const response = await requestOk(request, {
     label: `read boards for ${projectKey}`,
     method: 'GET',
@@ -49,12 +58,45 @@ async function readBoard(request: JiraRequest, projectKey: string, key: string):
   });
 
   const values = readArrayField(response.json, 'values');
-  const id = values === undefined || !isRecord(values[0]) ? undefined : values[0]['id'];
-  if (typeof id !== 'number') {
-    throw new TypeError(`Project ${projectKey} has no board.`);
+  if (values === undefined || values.length === 0) {
+    throw new Error(`Project ${projectKey} has no board.`);
   }
 
-  return { id };
+  const boards = values.flatMap((value) => {
+    const board = readBoardEntry(value);
+
+    return board === undefined ? [] : [board];
+  });
+  if (boards.length !== values.length) {
+    throw new Error(`Project ${projectKey} answered with boards this cannot read.`);
+  }
+  const owned = boards.length === 1 ? boards : boards.filter((entry) => entry.locationProjectId === projectId);
+  const [board] = owned;
+  if (board === undefined || owned.length !== 1) {
+    throw new Error(
+      `Project ${projectKey} resolves to ${boards.length} boards, ${owned.length} of them its own. This reconciler configures one board, so an ambiguous set is refused rather than half-configured.`,
+    );
+  }
+
+  return { id: board.id };
+}
+
+/** Narrows one board to its id and the project its location names, which is what identifies the project's own. */
+function readBoardEntry(value: unknown): BoardEntry | undefined {
+  if (!isRecord(value) || typeof value['id'] !== 'number') return undefined;
+
+  const location = value['location'];
+  const projectId = isRecord(location) ? location['projectId'] : undefined;
+
+  return {
+    id: value['id'],
+    locationProjectId: typeof projectId === 'number' || typeof projectId === 'string' ? String(projectId) : undefined,
+  };
+}
+
+interface BoardEntry {
+  readonly id: number;
+  readonly locationProjectId: string | undefined;
 }
 
 /** Reads the board's live feature states, which the plan's toggles are resolved against. */
@@ -76,6 +118,9 @@ async function readFeatures(request: JiraRequest, boardId: number): Promise<Read
     const { feature, state } = value;
     if (typeof feature === 'string' && typeof state === 'string') features.set(feature, state);
   }
+  if (features.size !== values.length) {
+    throw new Error(`Board ${boardId} answered with features this cannot read.`);
+  }
 
   return features;
 }
@@ -89,11 +134,15 @@ async function readIssueTypeIds(request: JiraRequest, projectKey: string, key: s
   });
 
   const values = Array.isArray(response.json) ? response.json : undefined;
-  const ids = (values ?? []).flatMap((value) =>
-    isRecord(value) && typeof value['id'] === 'string' ? [value['id']] : [],
-  );
-  if (ids.length === 0) {
+  if (values === undefined || values.length === 0) {
     throw new Error(`Project ${projectKey} answered with no issue types.`);
+  }
+
+  // An issue type dropped here never reaches the workflow read, so a project on several workflows could pass the
+  // exactly-one refusal. The count is what keeps that refusal load-bearing.
+  const ids = values.flatMap((value) => (isRecord(value) && typeof value['id'] === 'string' ? [value['id']] : []));
+  if (ids.length !== values.length) {
+    throw new Error(`Project ${projectKey} answered with issue types this cannot read.`);
   }
 
   return ids;
@@ -119,7 +168,7 @@ async function readProject(request: JiraRequest, projectKey: string, key: string
   const project = isRecord(response.json) ? response.json : undefined;
   const id = project?.['id'];
   if (typeof id !== 'string') {
-    throw new TypeError(`Project ${projectKey} answered without an 'id'.`);
+    throw new Error(`Project ${projectKey} answered without an 'id'.`);
   }
 
   const style = project?.['style'];

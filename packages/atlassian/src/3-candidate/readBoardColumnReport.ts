@@ -28,7 +28,7 @@ export async function readBoardColumnReport(
     path: `/rest/agile/1.0/board/${board.id}/configuration`,
   });
 
-  const columns = readColumns(response.json);
+  const columns = readColumns(board.id, response.json);
   const columnNames = columns.map((column) => column.name);
   const mapped = new Set(columns.flatMap((column) => column.statusIds));
 
@@ -36,7 +36,7 @@ export async function readBoardColumnReport(
   const uncovered = spec.statuses.flatMap((wanted) => {
     const live = statuses.find((status) => normalizeStatusName(status.name) === normalizeStatusName(wanted.name));
 
-    return live === undefined || mapped.has(live.id) ? [] : [live.name];
+    return live === undefined || mapped.has(live.id) ? [] : [wanted.name];
   });
 
   return { columns: columnNames, order: findOrderMismatch(columnNames, spec), uncovered };
@@ -54,19 +54,30 @@ function findOrderMismatch(columnNames: readonly string[], spec: ProjectSpec): B
   return expected.join(' ') === actual.join(' ') ? undefined : { actual, expected };
 }
 
-/** Narrows the board configuration to each column's name and the ids of the statuses mapped to it. */
-function readColumns(payload: unknown): readonly ReadColumn[] {
+/**
+ * Narrows the board configuration to each column's name and the ids of the statuses mapped to it. A column or a
+ * status id it cannot read refuses the report: dropping either would report a covered status as uncovered.
+ */
+function readColumns(boardId: number, payload: unknown): readonly ReadColumn[] {
   const columnConfig = isRecord(payload) ? payload['columnConfig'] : undefined;
+  const values = readArrayField(columnConfig, 'columns') ?? [];
 
-  return (readArrayField(columnConfig, 'columns') ?? []).flatMap((column) => {
+  const columns = values.flatMap((column) => {
     if (!isRecord(column) || typeof column['name'] !== 'string') return [];
 
-    const statusIds = (readArrayField(column, 'statuses') ?? []).flatMap((status) =>
+    const mapped = readArrayField(column, 'statuses') ?? [];
+    const statusIds = mapped.flatMap((status) =>
       isRecord(status) && typeof status['id'] === 'string' ? [status['id']] : [],
     );
+    if (statusIds.length !== mapped.length) return [];
 
     return [{ name: column['name'], statusIds }];
   });
+  if (columns.length !== values.length) {
+    throw new Error(`Board ${boardId} answered with columns this cannot read.`);
+  }
+
+  return columns;
 }
 
 interface ReadColumn {

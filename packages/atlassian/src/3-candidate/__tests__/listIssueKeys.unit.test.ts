@@ -52,6 +52,14 @@ describe(listIssueKeys, () => {
     await expect(listIssueKeys(request, JQL)).resolves.toStrictEqual([]);
   });
 
+  it('refuses a work item it cannot read rather than dropping it from the walk', async () => {
+    const { request } = createFakeRequest({
+      [SEARCH_PATH]: { json: { issues: [{ key: 'THOR-1' }, { id: '10001' }] } },
+    });
+
+    await expect(listIssueKeys(request, JQL)).rejects.toThrow('answered with work items this cannot read');
+  });
+
   it('throws naming the query where the search is rejected', async () => {
     const { request } = createFakeRequest({ [SEARCH_PATH]: { json: { errorMessages: [] }, status: 400 } });
 

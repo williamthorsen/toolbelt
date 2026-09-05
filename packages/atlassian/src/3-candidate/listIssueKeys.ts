@@ -30,10 +30,13 @@ export async function listIssueKeys(request: JiraRequest, jql: string): Promise<
       path: '/rest/api/3/search/jql',
     });
 
+    // A key dropped here is a work item the caller never acts on, so an unreadable entry refuses the whole walk.
     const issues = readArrayField(response.json, 'issues') ?? [];
-    for (const issue of issues) {
-      if (isRecord(issue) && typeof issue['key'] === 'string') keys.push(issue['key']);
+    const page = issues.flatMap((issue) => (isRecord(issue) && typeof issue['key'] === 'string' ? [issue['key']] : []));
+    if (page.length !== issues.length) {
+      throw new Error(`Search '${jql}' answered with work items this cannot read.`);
     }
+    keys.push(...page);
 
     nextPageToken = readNextPageToken(response.json);
   } while (nextPageToken !== undefined);

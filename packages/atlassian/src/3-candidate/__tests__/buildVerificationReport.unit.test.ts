@@ -56,6 +56,23 @@ describe(buildVerificationReport, () => {
     });
   });
 
+  it('names no transition for a status the workflow does not hold, even where one carries no target', () => {
+    const configuration = buildProjectConfiguration({ statuses: [buildStatus({ name: 'To Do' })] });
+    const transitions = [{ id: '30', name: 'Create', type: 'GLOBAL' }];
+
+    const report = buildVerificationReport(
+      { ...configuration, workflow: { ...configuration.workflow, transitions } },
+      SPEC,
+    );
+
+    expect(report.statuses[2]).toStrictEqual({
+      category: undefined,
+      matches: false,
+      name: 'Done',
+      transition: undefined,
+    });
+  });
+
   it('reports a status whose live category differs as unmatched', () => {
     const statuses = [
       buildStatus({ name: 'To Do', statusCategory: 'TODO' }),

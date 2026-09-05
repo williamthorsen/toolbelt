@@ -19,9 +19,13 @@ export function buildVerificationReport(
 
   const verifiedStatuses: StatusVerification[] = spec.statuses.map((wanted) => {
     const live = findByName(statuses, wanted.name);
-    const transition = workflow.transitions.find(
-      (entry) => entry.type === 'GLOBAL' && entry.toStatusReference === live?.statusReference,
-    );
+    // A transition carrying no target would otherwise match a status the workflow does not hold, both being absent.
+    const transition =
+      live === undefined
+        ? undefined
+        : workflow.transitions.find(
+            (entry) => entry.type === 'GLOBAL' && entry.toStatusReference === live.statusReference,
+          );
 
     return {
       category: live?.statusCategory,
