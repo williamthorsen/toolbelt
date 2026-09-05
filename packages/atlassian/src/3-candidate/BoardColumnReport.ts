@@ -1,0 +1,17 @@
+/** The column order the spec implies, alongside the order the board holds. */
+export interface ColumnOrderMismatch {
+  readonly actual: readonly string[];
+  readonly expected: readonly string[];
+}
+
+/** What the board's columns cover and in what order, neither of which the public API can set. */
+export interface BoardColumnReport {
+  readonly columns: readonly string[];
+  /** The two orders where they differ, and `undefined` where the board already holds the spec's order. */
+  readonly order: ColumnOrderMismatch | undefined;
+  /**
+   * Spec statuses whose live status is mapped to no column. Their work items are absent from the board and the
+   * backlog alike, so they are reachable only through search.
+   */
+  readonly uncovered: readonly string[];
+}
