@@ -78,7 +78,7 @@ describe(pointArgvAt, () => {
       expect(process.argv).toBe(startArgv);
     });
 
-    it('leaves the array it found untouched, which is what disposal restores by reference', () => {
+    it('leaves the array that it found untouched, which is what disposal restores by reference', () => {
       const startArgv = process.argv;
       const startEntries = [...startArgv];
 

@@ -40,12 +40,12 @@ export interface PointArgvAtOptions {
   /** Entry for `process.argv[0]`, which Node fills with the path of the running executable. */
   execPath?: string;
 
-  /** Entry for `process.argv[1]`, which Node fills with the path of the script it is running. */
+  /** Entry for `process.argv[1]`, which Node fills with the path of the script that it is running. */
   scriptPath?: string;
 }
 
-/** Arguments `process.argv` carries for the length of a scope. */
+/** Arguments that `process.argv` carries for the length of a scope. */
 export interface PointedArgv extends Disposable {
-  /** Arguments the scope installed, which is what `process.argv.slice(2)` reports. */
+  /** Arguments installed by the scope, which is what `process.argv.slice(2)` reports. */
   readonly args: readonly string[];
 }

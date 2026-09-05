@@ -89,7 +89,7 @@ describe('The strings adoption kit', () => {
 /**
  * Loads a fresh kit and lists its adoption checks, which the flat checklist holds in declaration order.
  *
- * A kit holds its project sweep on its own closure, so one import would serve every test here the first
+ * A kit holds its project sweep on its own closure, so one import would give every test here the first
  * fixture repo's findings. Resetting the registry buys each test a kit that has swept nothing yet.
  */
 async function loadChecks(): Promise<RdyCheck[]> {

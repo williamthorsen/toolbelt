@@ -30,7 +30,7 @@ describe(pointCwdAt, () => {
 
 // region | Helpers
 
-/** Reports the directory a spawned child starts in, which it takes from the OS rather than from Node. */
+/** Reports the directory in which a spawned child starts, which it takes from the OS rather than from Node. */
 function readChildDir(): string {
   return execFileSync(process.execPath, ['--print', 'process.cwd()'], { encoding: 'utf8' }).trim();
 }
