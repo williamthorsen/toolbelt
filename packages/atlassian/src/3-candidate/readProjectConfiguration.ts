@@ -1,4 +1,5 @@
 import { isRecord } from '../internal/isRecord.ts';
+import { readArrayField } from '../internal/readArrayField.ts';
 import type { JiraRequest } from './createTokenTransport.ts';
 import type {
   ProjectConfiguration,
@@ -38,15 +39,6 @@ export async function readProjectConfiguration(
 }
 
 // region | Helpers
-
-/** Narrows a named field of a payload to an array, which every list-bearing Jira response nests under one. */
-function readArrayField(payload: unknown, field: string): readonly unknown[] | undefined {
-  if (!isRecord(payload)) return undefined;
-
-  const value = payload[field];
-
-  return Array.isArray(value) ? value : undefined;
-}
 
 /** Reads the project's board, refusing a project that has none: the features and backlog calls are board-scoped. */
 async function readBoard(request: JiraRequest, projectKey: string, key: string): Promise<{ id: number }> {

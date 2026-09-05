@@ -1,3 +1,5 @@
+export { applyBoardFeatures } from './applyBoardFeatures.ts';
+export { applyWorkflowUpdate, type WorkflowUpdateResult } from './applyWorkflowUpdate.ts';
 export { assertGraphPreserved } from './assertGraphPreserved.ts';
 export { buildReconciliationPlan, type ReconciliationPlanOptions } from './buildReconciliationPlan.ts';
 export { buildWorkflowUpdatePayload } from './buildWorkflowUpdatePayload.ts';
