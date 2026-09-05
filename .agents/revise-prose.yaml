@@ -1,0 +1,427 @@
+units:
+  williamthorsen-writing-preferences:
+    version: '2'
+    swept-at: 2026-09-05
+    roots:
+      - .
+rejections:
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: __tests__/kit-bundle-freshness.tool.test.ts
+    phrase: kit-bearing workspace's compiled
+    ground: 'Not a relative clause: a possessive noun phrase. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: afc2d4f67c6f9b35
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: __tests__/kit-check-ids.tool.test.ts
+    phrase: kit-bearing workspace's compiled
+    ground: 'Not a relative clause: a possessive noun phrase. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: afc2d4f67c6f9b35
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: AGENTS.md
+    phrase: test suite's shared
+    ground: 'Not a relative clause: a possessive noun phrase. (#255, child 2 record.)'
+    unit-version: '2'
+    hash: 4e05382137301b34
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: AGENTS.md
+    phrase: exactly two root files
+    ground: 'Outside the rule: a prepositional complement whose colon introduces an apposition. (#255, child 2 record.)'
+    unit-version: '2'
+    hash: b4f2b69f26269ba0
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/adoption/src/conventions/site-handoffs.ts
+    phrase: claims a given site turns
+    ground: 'Not a relative clause: `turns` is the verb of the clause whose subject is `which one claims a given site`. (#255, child 3 record.)'
+    unit-version: '2'
+    hash: 7adcc5b0c10ba323
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/adoption/src/kits/defineAdoptionKit.ts
+    phrase: kit leaves unbundled
+    ground: 'The relativizer is already present: the clause reads `which a compiled kit leaves unbundled`. (#255, child 3 record.)'
+    unit-version: '2'
+    hash: 42085f6eeb070876
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/adoption/src/portable/__tests__/listFunctionBodies.unit.test.ts
+    phrase: next three fix the documented
+    ground: "Not a relative clause: the reported verb is the sentence's own. (#255, child 3 record.)"
+    unit-version: '2'
+    hash: b33aedf9adf1775e
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/adoption/src/portable/readLiteral.ts
+    phrase: literal's characters replaced
+    ground: "Not a relative clause: `a literal's characters replaced with spaces` is the small-clause object of `sees`. (#255, child 3 record.)"
+    unit-version: '2'
+    hash: 1ee0b017cf511a31
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/arrays/.readyup/kits/default.ts
+    phrase: method the site used
+    ground: 'An embedded interrogative, not a relative clause: `which` already heads the clause. (#255, child 4 record.)'
+    unit-version: '2'
+    hash: 01932e1ed97800ed
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/arrays/.readyup/kits/default.ts
+    phrase: subscript yields undefined
+    ground: 'Not a relative clause: an adjunct clause whose subject is `the subscript`. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: 8366d0697828cbc1
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/arrays/README.md
+    phrase: name the subject tested
+    ground: "Not a relative clause: the reported verb is the sentence's own. (#255, child 2 record.)"
+    unit-version: '2'
+    hash: '8031961172066008'
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/arrays/README.md
+    phrase: id it covers
+    ground: 'Not a relative clause: `with no id` is a prepositional adjunct and `it covers every check` is a main clause. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: f91f2976ac83b983
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/arrays/src/readiness/__tests__/kit.tool.test.ts
+    phrase: here the first fixture repo's
+    ground: "Not a relative clause: `serve` is ditransitive, taking `every test here` and `the first fixture repo's findings` as its two objects. (#255, child 1 record.)"
+    unit-version: '2'
+    hash: 12a39a6d52f149a5
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/datetime/src/1-proposed/listDecadesContainingRange.ts
+    phrase: return a list of objects
+    ground: 'Not a relative clause: a verb phrase with its own object. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: ae19a3dfc2396616
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/datetime/src/1-proposed/listDecadesContainingYears.ts
+    phrase: return a list of objects
+    ground: 'Not a relative clause: a verb phrase with its own object. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: ae19a3dfc2396616
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/errors/.readyup/kits/default.ts
+    phrase: reports an unmet need
+    ground: "Not a relative clause: the reported verb is the sentence's own. (#255, child 4 record.)"
+    unit-version: '2'
+    hash: 16f8f242f9ec421e
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/errors/.readyup/kits/default.ts
+    phrase: bootstrap wrapper's hand-rolled
+    ground: 'Not a relative clause: a possessive noun phrase, subject of the sentence. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: 1c1f6ac2a5e5a9fd
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/errors/README.md
+    phrase: id it covers
+    ground: 'Not a relative clause: `with no id` is a prepositional adjunct and `it covers every check` is a main clause. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: f91f2976ac83b983
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/filesystem/README.md
+    phrase: intermediate directories created
+    ground: 'Not a relative clause: an absolute construction that already carries a passive participle. (#255, child 2 record.)'
+    unit-version: '2'
+    hash: 3412421a18a51c99
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/filesystem/README.md
+    phrase: convention a config declares
+    ground: 'Not a relative clause: a prepositional adjunct precedes the main clause. (#255, child 2 record.)'
+    unit-version: '2'
+    hash: 36e940eea6d890fb
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/filesystem/README.md
+    phrase: relative one resolves
+    ground: 'Not a relative clause: `a relative one` is the subject of `resolves`. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: 4c4214a9da69f0f9
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/filesystem/README.md
+    phrase: moment the target lives
+    ground: 'Outside the rule: a temporal adjunct headed by `the moment`. (#255, child 2 record.)'
+    unit-version: '2'
+    hash: 5dfdc915a91abfc4
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/filesystem/README.md
+    phrase: dangling one answers
+    ground: 'Not a relative clause: `a dangling one` is the subject of `answers`. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: cec119171f5c0a00
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/filesystem/README.md
+    phrase: creates the parent directories
+    ground: "Not a relative clause: `creates` is the sentence's own verb. The sentence's real instance was repaired by child 1. (#255, child 1 record.)"
+    unit-version: '2'
+    hash: de2d9e040bebcf38
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/filesystem/README.md
+    phrase: atomic one would silently widen
+    ground: 'Not a relative clause: the reported head is the subject of the verb reported with it. (#255, child 2 record.)'
+    unit-version: '2'
+    hash: de9bc35b454a9b11
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/filesystem/src/3-candidate/createTempTree.ts
+    phrase: relative one resolves
+    ground: 'Not a relative clause: `a relative one` is the subject of `resolves`. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: 4c4214a9da69f0f9
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/filesystem/src/3-candidate/createTempTree.ts
+    phrase: dangling one answers
+    ground: 'Not a relative clause: `a dangling one` is the subject of `answers`. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: cec119171f5c0a00
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/filesystem/src/3-candidate/createTempTree.ts
+    phrase: creates the parent directories
+    ground: "Not a relative clause: `creates` is the sentence's own verb. The sentence's real instance was repaired by child 1. (#255, child 1 record.)"
+    unit-version: '2'
+    hash: de2d9e040bebcf38
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/numbers/.readyup/kits/default.ts
+    phrase: bootstrap wrapper's hand-rolled
+    ground: 'Not a relative clause: a possessive noun phrase, subject of the sentence. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: 1c1f6ac2a5e5a9fd
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/numbers/README.md
+    phrase: id it covers
+    ground: 'Not a relative clause: `with no id` is a prepositional adjunct and `it covers every check` is a main clause. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: f91f2976ac83b983
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/numbers/src/readiness/__tests__/kit.tool.test.ts
+    phrase: here the first fixture repo's
+    ground: "Not a relative clause: `serve` is ditransitive, taking `every test here` and `the first fixture repo's findings` as its two objects. (#255, child 1 record.)"
+    unit-version: '2'
+    hash: 12a39a6d52f149a5
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/objects/.readyup/kits/default.ts
+    phrase: wherever the result narrows
+    ground: 'Outside the rule: `wherever` heads an adjunct, not a lexical noun with an object gap. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: ab59a2812b6d1a0c
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/objects/README.md
+    phrase: wherever the result narrows
+    ground: 'Outside the rule: `wherever` heads an adjunct, not a lexical noun with an object gap. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: ab59a2812b6d1a0c
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/objects/README.md
+    phrase: id it covers
+    ground: 'Not a relative clause: `with no id` is a prepositional adjunct and `it covers every check` is a main clause. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: f91f2976ac83b983
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/objects/src/readiness/__tests__/kit.tool.test.ts
+    phrase: here the first fixture repo's
+    ground: "Not a relative clause: `serve` is ditransitive, taking `every test here` and `the first fixture repo's findings` as its two objects. (#255, child 1 record.)"
+    unit-version: '2'
+    hash: 12a39a6d52f149a5
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/objects/src/readiness/__tests__/listRecordLines.unit.test.ts
+    phrase: leaves the other unguarded
+    ground: "Not a relative clause: the reported verb is the sentence's own. (#255, child 4 record.)"
+    unit-version: '2'
+    hash: 8f6feb17b6bc3f02
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/objects/src/readiness/__tests__/listRecordLines.unit.test.ts
+    phrase: strict one does
+    ground: 'Outside the rule: a fused head, `what the strict one does`. (#255, child 4 record.)'
+    unit-version: '2'
+    hash: afaf5c0131f0ddac
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/objects/src/readiness/__tests__/listStringifyCompareLines.unit.test.ts
+    phrase: strict one answers
+    ground: 'Outside the rule: a fused head, `what the strict one answers`. (#255, child 4 record.)'
+    unit-version: '2'
+    hash: 072eb6d34b01e4fd
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/objects/src/readiness/listRecordLines.ts
+    phrase: probe goes unclaimed
+    ground: "Not a relative clause: the reported verb is the sentence's own. (#255, child 4 record.)"
+    unit-version: '2'
+    hash: 9f8e7367463891fd
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/strings/.readyup/kits/default.ts
+    phrase: bootstrap wrapper's hand-rolled
+    ground: 'Not a relative clause: a possessive noun phrase, subject of the sentence. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: 1c1f6ac2a5e5a9fd
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/strings/README.md
+    phrase: regular endings would fix
+    ground: "Not a relative clause: the reported verb is the sentence's own. (#255, child 2 record.)"
+    unit-version: '2'
+    hash: 0d3d7f0c0169fb85
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/strings/README.md
+    phrase: value contains can change
+    ground: 'Outside the rule: a fused head, `Nothing a value contains`. (#255, child 2 record.)'
+    unit-version: '2'
+    hash: 73f92d009df01a98
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/strings/README.md
+    phrase: continuation each change how many lines
+    ground: "Not a relative clause: the reported verb is the sentence's own. (#255, child 2 record.)"
+    unit-version: '2'
+    hash: 80c511176461eb17
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/strings/README.md
+    phrase: exactly the same counts
+    ground: "Not a relative clause: the reported verb is the sentence's own. (#255, child 2 record.)"
+    unit-version: '2'
+    hash: 942da727b7997dc0
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/strings/README.md
+    phrase: id it covers
+    ground: 'Not a relative clause: `with no id` is a prepositional adjunct and `it covers every check` is a main clause. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: f91f2976ac83b983
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/strings/src/readiness/__tests__/kit.tool.test.ts
+    phrase: here the first fixture repo's
+    ground: "Not a relative clause: `serve` is ditransitive, taking `every test here` and `the first fixture repo's findings` as its two objects. (#255, child 1 record.)"
+    unit-version: '2'
+    hash: 12a39a6d52f149a5
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/testing/README.md
+    phrase: mode it runs
+    ground: 'Outside the rule: the oblique gap is already pied-piped in `in whichever mode it runs`, so the residue is an adjunct with no gap. (#255, child 2 addendum.)'
+    unit-version: '2'
+    hash: 12a97efcb328d9c7
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/testing/README.md
+    phrase: give the individual writes
+    ground: "Not a relative clause: the reported verb is the sentence's own. (#255, child 2 record.)"
+    unit-version: '2'
+    hash: 48de883994e79eae
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/testing/README.md
+    phrase: outer one resumes
+    ground: 'Not a relative clause: the reported head is the subject of the verb reported with it. (#255, child 2 record.)'
+    unit-version: '2'
+    hash: be266b0a96de6190
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/vitest/.readyup/kits/default.ts
+    phrase: console spy's recorded
+    ground: 'Not a relative clause: a possessive noun phrase. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: 147401bcf12b0e27
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/vitest/README.md
+    phrase: recorded calls unrendered
+    ground: 'Not a relative clause: `the recorded calls` is the object of `wants`, not a gap. (#255, child 2 record.)'
+    unit-version: '2'
+    hash: 0f69026771851973
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/vitest/README.md
+    phrase: file-scoped one does
+    ground: 'Not a relative clause: the reported head is the subject of the verb reported with it. (#255, child 2 record.)'
+    unit-version: '2'
+    hash: 282bc90215a1a820
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/vitest/README.md
+    phrase: outer one shares
+    ground: 'Not a relative clause: the reported head is the subject of the verb reported with it. (#255, child 2 record.)'
+    unit-version: '2'
+    hash: 38d3b086335a570c
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/vitest/README.md
+    phrase: console goes unsilenced
+    ground: "Not a relative clause: the reported verb is the sentence's own. (#255, child 2 record.)"
+    unit-version: '2'
+    hash: 980a57d7c6b852e2
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/vitest/README.md
+    phrase: call's arguments render
+    ground: 'Not a relative clause: a possessive noun phrase as subject. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: ae4f0ee013a06e8d
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/vitest/README.md
+    phrase: id it covers
+    ground: 'Not a relative clause: `with no id` is a prepositional adjunct and `it covers every check` is a main clause. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: f91f2976ac83b983
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/vitest/src/3-candidate/listConsoleLines.ts
+    phrase: call's arguments render
+    ground: 'Not a relative clause: a possessive noun phrase as subject. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: ae4f0ee013a06e8d
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/vitest/src/readiness/listConsoleSites.ts
+    phrase: console spy's recorded
+    ground: 'Not a relative clause: a possessive noun phrase. (#255, child 1 record.)'
+    unit-version: '2'
+    hash: 147401bcf12b0e27
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/vitest/src/readiness/listDisposalHooks.ts
+    phrase: enter the denominator shared
+    ground: 'A misparse of an earlier repair: the sentence reads `the denominator shared by every check in the kit`, and the detector reports its head and participle. (#255, child 4 record.)'
+    unit-version: '2'
+    hash: cd925d3c6f60aa30
+  - rule: reduced-object-relative
+    unit: williamthorsen-writing-preferences
+    file: packages/vitest/src/readiness/listSites.ts
+    phrase: console findings would otherwise
+    ground: 'Not a relative clause: a possessive noun phrase as subject. (#255, child 4 record.)'
+    unit-version: '2'
+    hash: e85ef8cacc7e85d5
