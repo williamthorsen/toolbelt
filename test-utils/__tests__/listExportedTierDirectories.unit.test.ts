@@ -6,7 +6,7 @@ import { createTempDir } from '../createTempDir.ts';
 import { listExportedTierDirectories } from '../listExportedTierDirectories.ts';
 
 describe(listExportedTierDirectories, () => {
-  it('lists the source directory of each tier an export subpath names', () => {
+  it('lists the source directory of each tier named by an export subpath', () => {
     using tree = createTempDir({
       'package.json': JSON.stringify({
         exports: {
@@ -24,7 +24,7 @@ describe(listExportedTierDirectories, () => {
     ]);
   });
 
-  it('omits a tier directory no export subpath names', () => {
+  it('omits a tier directory named by no export subpath', () => {
     using tree = createTempDir({
       'package.json': JSON.stringify({ exports: { '.': './dist/esm/4-release/index.js' } }),
       'src/0-strawman/pipe.ts': '',
