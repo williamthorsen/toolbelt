@@ -56,7 +56,7 @@ With no <branch>, the checked-out branch is used.`;
 
 /**
  * Runs the `tb-git` command line, returning what to write and exit with rather than doing either, so the
- * whole surface is exercisable without a process. Every failure is reported through the result: nothing throws.
+ * whole surface is exercisable without a process. Every failure is reported through the result: Nothing throws.
  *
  * @internal
  */
@@ -68,7 +68,7 @@ export function runTbGit(args: string[], effects: TbGitEffects): TbGitResult {
   }
 }
 
-/** The effects deferred to the entry point, which is what keeps the runner free of I/O. */
+/** The effects deferred to the entry point, which keeps the runner free of I/O. */
 export interface TbGitEffects {
   readonly resolveBranch: () => string;
   readonly resolveVersion: () => string;
@@ -83,12 +83,12 @@ export interface TbGitResult {
 
 // region | Helpers
 
-/** Extracts the message carried by an unknown thrown value. */
+/** Extracts the message from an unknown thrown value. */
 function describeError(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-/** Routes the arguments to a subcommand, or answers the root command's own options. */
+/** Routes the arguments to a subcommand, or handles the root command's own options. */
 function dispatch(args: string[], effects: TbGitEffects): TbGitResult {
   const [command, ...rest] = args;
 
@@ -108,7 +108,7 @@ function fail(message: string, command: string | undefined): TbGitResult {
   return { exitCode: EXIT_USAGE, stderr: `${message}\nTry \`${scope} --help\`.\n`, stdout: '' };
 }
 
-/** Parses the `branch-number` subcommand and prints the number its options derive. */
+/** Parses the `branch-number` subcommand and prints the number that its options derive. */
 function runBranchNumber(args: string[], effects: TbGitEffects): TbGitResult {
   const { positionals, values } = parseArgs({
     allowPositionals: true,

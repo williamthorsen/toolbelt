@@ -37,7 +37,7 @@ export function pipe<T extends [Fn, ...Fn[]]>(...fns: PipeReturn<T> extends neve
 
 /**
  * Like `pipe` but takes an argument as its first parameter and invokes the pipe with it.
- * Note: unlike in `pipe`, the first function of the pipe must take exactly one argument.
+ * Note: Unlike in `pipe`, the first function of the pipe must take exactly one argument.
  *
  * @example
  * ```

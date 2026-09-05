@@ -1,4 +1,4 @@
-// These functions were found in old code. I dont remember what purpose they served.
+// These functions were found in old code. I do not remember what purpose they served.
 
 /**
  * Returns an immutable version of the array if the array is non-empty; otherwise, throws an error.

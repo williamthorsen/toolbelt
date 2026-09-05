@@ -147,7 +147,7 @@ describe(pointCwdAt, () => {
       expect(process.cwd()).toBe(tree.dir);
     });
 
-    it('resolves a relative path against the directory an enclosing scope reports', () => {
+    it('resolves a relative path against the directory reported by an enclosing scope', () => {
       using tree = createTempTree({ 'inner/': '' });
 
       using _outer = pointCwdAt(tree.dir);
@@ -199,7 +199,7 @@ describe(pointCwdAt, () => {
 
 // region | Helpers
 
-/** Reads the directory the process is actually in, which a replaced `process.cwd` does not report. */
+/** Reads the directory that the process is actually in, which a replaced `process.cwd` does not report. */
 function readRealDir(): string {
   return nativeCwd();
 }

@@ -133,8 +133,7 @@ describe(defineAdoptionKit, () => {
 
     const [, inlineCheck] = listChecks(buildSpec());
 
-    // The exempt site is absent rather than unreported, which is what takes it out of both halves of the
-    // fraction.
+    // The exempt site is absent rather than unreported, which takes it out of both halves of the fraction.
     await expect(runCheck(inlineCheck)).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 6, path: 'src/doThing.ts', reported: true }],

@@ -4,7 +4,7 @@ import path from 'node:path';
 import { listDirectoryChain, type ListDirectoryChainOptions } from './listDirectoryChain.ts';
 
 export interface DirectoryChainMatch {
-  /** The chain level the match was found at, which differs from the entry's own directory for a nested name. */
+  /** The chain level at which the match was found, which differs from the entry's own directory for a nested name. */
   dir: string;
   entryName: string;
   entryPath: string;

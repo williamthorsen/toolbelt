@@ -9,7 +9,7 @@ import { isRecord } from '../test-utils/isRecord.ts';
 import { listExportedTierDirectories } from '../test-utils/listExportedTierDirectories.ts';
 import { readManifest } from '../test-utils/readManifest.ts';
 
-// A specifier naming a package rather than a sibling file. A bare side-effect import carries no `from`, so a
+// A specifier naming a package rather than a sibling file. A bare side-effect import contains no `from`, so a
 // dependency reached only that way would read as unreachable; no workspace writes one.
 const PACKAGE_SPECIFIER_PATTERN = /from\s+'([^.'][^']*)'/g;
 
@@ -26,8 +26,9 @@ describe('Runtime dependencies', () => {
 // region | Helpers
 
 /**
- * Audits every workspace's `dependencies` against what its export subpaths reach, reporting each dependency no
- * exported module imports. Such a dependency installs for every consumer while nothing they can import needs it.
+ * Audits every workspace's `dependencies` against what its export subpaths reach, reporting each dependency
+ * imported by no exported module. Such a dependency installs for every consumer while nothing they can import
+ * needs it.
  *
  * `devDependencies` stay out: they do not publish, and `packages/adoption` reaches its consumers through that
  * field. A type-only import counts, since a consumer typechecking against the shipped declarations needs it.
@@ -66,7 +67,7 @@ function auditDependencyReachability(monorepoRoot: string): {
   };
 }
 
-/** Collects every package specifier written by the modules a package's export subpaths reach. */
+/** Collects every package specifier written by the modules that a package's export subpaths reach. */
 function collectPackageSpecifierSet(packageDirectory: string): Set<string> {
   const specifiers = new Set<string>();
 
@@ -90,7 +91,7 @@ function isImported(dependency: string, specifiers: ReadonlySet<string>): boolea
   return specifiers.values().some((specifier) => specifier === dependency || specifier.startsWith(`${dependency}/`));
 }
 
-/** Lists the runtime dependencies a manifest declares. */
+/** Lists the runtime dependencies declared by a manifest. */
 function listDependencies(manifest: Record<string, unknown>): string[] {
   const dependencies = manifest['dependencies'];
 

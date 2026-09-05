@@ -5,7 +5,7 @@ const BOARD_FEATURE_REQUESTS: readonly string[] = ['DISABLED', 'ENABLED'];
 const STATUS_CATEGORIES: readonly string[] = ['DONE', 'IN_PROGRESS', 'TODO'];
 
 /**
- * Validates a project spec written as JSON, throwing on the first fault it finds. Text rather than a parsed
+ * Validates a project spec written as JSON, throwing on the first fault that it finds. Text rather than a parsed
  * value, so a malformed file and a malformed schema are one function's business and the file read stays with the
  * caller. Faults name what is wrong and not where it was read from, which the caller knows and this does not.
  *
@@ -27,7 +27,7 @@ export function parseProjectSpec(text: string): ProjectSpec {
 
 // region | Helpers
 
-/** Reports whether a value is a state a spec may request, which the two Jira also reports are not. */
+/** Reports whether a value is a state that a spec may request, which the two also reported by Jira are not. */
 function isBoardFeatureRequest(value: unknown): value is BoardFeatureRequest {
   return typeof value === 'string' && BOARD_FEATURE_REQUESTS.includes(value);
 }
@@ -37,12 +37,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-/** Reports whether a value is one of the three categories Jira sorts a status into. */
+/** Reports whether a value is one of the three categories into which Jira sorts a status. */
 function isStatusCategory(value: unknown): value is StatusCategory {
   return typeof value === 'string' && STATUS_CATEGORIES.includes(value);
 }
 
-/** Parses the spec text, reporting the position the parser stopped at. */
+/** Parses the spec text, reporting the position at which the parser stopped. */
 function parseJson(text: string): unknown {
   try {
     const document: unknown = JSON.parse(text);
@@ -52,7 +52,7 @@ function parseJson(text: string): unknown {
   }
 }
 
-/** Reads the live names an entry also claims, which are optional and each a non-empty name. */
+/** Reads the live names also claimed by an entry, which are optional and each a non-empty name. */
 function readAliases(value: unknown, name: string): readonly string[] | undefined {
   if (value === undefined) return undefined;
   if (!Array.isArray(value)) throw new Error(`The aliases of status '${name}' are a list of names.`);
@@ -68,10 +68,10 @@ function readAliases(value: unknown, name: string): readonly string[] | undefine
   return aliases;
 }
 
-/** Reads the requested board-feature states, refusing one no spec may request. */
+/** Reads the requested board-feature states, refusing one that no spec may request. */
 function readBoardFeatures(value: unknown): Readonly<Record<string, BoardFeatureRequest>> | undefined {
   if (value === undefined) return undefined;
-  if (!isRecord(value)) throw new Error('`boardFeatures` maps a feature key to the state it is requested in.');
+  if (!isRecord(value)) throw new Error('`boardFeatures` maps a feature key to the state in which it is requested.');
 
   const features: Record<string, BoardFeatureRequest> = {};
   for (const [feature, state] of Object.entries(value)) {

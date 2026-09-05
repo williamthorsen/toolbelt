@@ -182,12 +182,12 @@ Missing parent directories are created. `isDryRun` writes nothing and creates no
 
 | exists | differs | `conflictPolicy` | outcome       |
 | ------ | ------- | ---------------- | ------------- |
-| no     | —       | —                | `created`     |
+| no     | n/a     | n/a              | `created`     |
 | yes    | no      | either           | `up-to-date`  |
 | yes    | yes     | `replace`        | `overwritten` |
 | yes    | yes     | `skip`           | `skipped`     |
 
-What counts as differing follows the policy, which is the part worth reading twice. `'replace'` promises the file holds exactly `content` afterwards, so only byte-identical content reports `up-to-date`; a file differing from `content` only in trailing whitespace is rewritten, because calling it up to date would leave the caller holding a file that is not what it asked for. `'skip'` modifies nothing either way, so its comparison decides a message alone and ignores trailing whitespace per line and at end of file, which keeps formatter churn from reading as a conflict. `up-to-date` therefore means the same thing under both: this policy has no work to do.
+What counts as differing follows the policy, which is the part worth reading twice. `'replace'` promises the file holds exactly `content` afterwards, so only byte-identical content reports `up-to-date`; a file differing from `content` only in trailing whitespace is rewritten, because calling it up to date would leave the caller holding a file that is not what it asked for. `'skip'` modifies nothing either way, so its comparison decides a message alone and ignores trailing whitespace per line and at end of file, which keeps formatter churn from reading as a conflict. `up-to-date` therefore means the same thing under both: This policy has no work to do.
 
 The result discriminates on `outcome`, so a failure always carries its reason:
 
@@ -350,11 +350,11 @@ tree.exists('packages/app/tsconfig.json'); // false
 tree.rm('packages/app');
 ```
 
-`listFiles` reaches every depth and reports paths relative to the directory given to it, sorted, with `/` as the separator on every platform: a path in a test's assertion is a value rather than a location, so `'app/src/main.ts'` should not vary by platform. It parts from `list` twice. A directory that is not there answers `[]` where `list` raises `ENOENT`, which is what lets a suite assert that a build emitted nothing without guarding the call; a path that exists as a file still raises `ENOTDIR`, as `list` does. And a symlink below the directory given to it is neither named nor descended, so every path in the result names a file held inside the tree, where `list` reports a link by name at its own level. The directory given as the argument is the exception, followed as `list`, `read`, and `exists` follow theirs: one naming a link out of the tree lists the target's files.
+`listFiles` reaches every depth and reports paths relative to the directory given to it, sorted, with `/` as the separator on every platform: a path in a test's assertion is a value rather than a location, so `'app/src/main.ts'` should not vary by platform. It parts from `list` twice. A directory that is not there returns `[]` where `list` raises `ENOENT`, which is what lets a suite assert that a build emitted nothing without guarding the call; a path that exists as a file still raises `ENOTDIR`, as `list` does. And a symlink below the directory given to it is neither named nor descended, so every path in the result names a file held inside the tree, where `list` reports a link by name at its own level. The directory given as the argument is the exception, followed as `list`, `read`, and `exists` follow theirs: one naming a link out of the tree lists the target's files.
 
-`read` returns UTF-8 text, and a missing entry raises `ENOENT` rather than answering emptily -- `exists` is the check. `readJson` returns `unknown`, so a caller narrows it rather than trusting an asserted type; contents that do not parse raise an error naming the entry, which the parse error alone does not. `exists` follows a symlink, so a dangling one answers `false`. `rm` is recursive and silent on an entry that is not there.
+`read` returns UTF-8 text, and a missing entry raises `ENOENT` rather than returning an empty string -- `exists` is the check. `readJson` returns `unknown`, so a caller narrows it rather than trusting an asserted type; contents that do not parse raise an error naming the entry, which the parse error alone does not. `exists` follows a symlink, so it returns `false` for a dangling one. `rm` is recursive and silent on an entry that is not there.
 
-`writeJson` writes two-space-indented JSON ending in a newline, so a tree outliving a crashed run reads as a real config file would. A fixture needing exact bytes goes through `write` instead. A value `JSON.stringify` cannot represent -- `undefined`, a function, a symbol -- is refused rather than written, so an optional binding that arrived empty fails at the call that passed it instead of surfacing later as a parse error.
+`writeJson` writes two-space-indented JSON ending in a newline, so a tree outliving a crashed run reads as a real config file would. A fixture needing exact bytes goes through `write` instead. A value that `JSON.stringify` cannot represent -- `undefined`, a function, a symbol -- is refused rather than written, so an optional binding that arrived empty fails at the call that passed it instead of surfacing later as a parse error.
 
 Disposal is idempotent, and it removes a tree that has been made unwritable: unlinking an entry needs write permission on the directory containing it, so disposal restores permission across the tree and retries once before giving up. A suite that chmods a directory to exercise a write-failure path therefore needs no wrapper to chmod it back.
 

@@ -123,14 +123,14 @@ export interface TbSecretResult {
 /** Reports a failure to reach the keychain, which is neither a usage error nor an absent secret. */
 class KeystoreError extends Error {}
 
-/** Names the item a subcommand acts on. */
+/** Names the item on which a subcommand acts. */
 function buildQuery(positionals: string[], account: string | undefined): SecretQuery {
   return { account, service: selectService(positionals) };
 }
 
 /**
- * Runs a keychain operation, reporting what it threw as a failure to reach the keychain. A value the keychain
- * cannot carry passes through unwrapped, since nothing was reached: it is a usage error like any other.
+ * Runs a keychain operation, reporting what it threw as a failure to reach the keychain. A value that the
+ * keychain cannot carry passes through unwrapped, since nothing was reached: it is a usage error like any other.
  */
 function callKeystore<T>(operation: () => T): T {
   try {
@@ -169,7 +169,7 @@ function fail(message: string, command: string | undefined): TbSecretResult {
   return { exitCode: EXIT_USAGE, stderr: `${message}\nTry \`${scope} --help\`.\n`, stdout: '' };
 }
 
-/** Parses the `delete` subcommand and removes the secret it names. */
+/** Parses the `delete` subcommand and removes the secret that it names. */
 function runDelete(args: string[], effects: TbSecretEffects): TbSecretResult {
   const { positionals, values } = parseArgs({
     allowPositionals: true,
@@ -186,7 +186,7 @@ function runDelete(args: string[], effects: TbSecretEffects): TbSecretResult {
   return removed ? succeedSilently() : reportNoResult();
 }
 
-/** Parses the `get` subcommand and prints the secret it names. */
+/** Parses the `get` subcommand and prints the secret that it names. */
 function runGet(args: string[], effects: TbSecretEffects): TbSecretResult {
   const { positionals, values } = parseArgs({
     allowPositionals: true,
@@ -221,8 +221,8 @@ function runHas(args: string[], effects: TbSecretEffects): TbSecretResult {
 }
 
 /**
- * Parses the `set` subcommand and stores the secret it is given. A terminal is prompted twice with no echo; a
- * piped secret arrives on stdin, and one trailing newline is dropped, since `echo` adds one. The store is
+ * Parses the `set` subcommand and stores the secret that it is given. A terminal is prompted twice with no
+ * echo; a piped secret arrives on stdin, and one trailing newline is dropped, since `echo` adds one. The store is
  * opened first, so a platform that has no keychain is reported before a secret is typed into this process.
  */
 async function runSet(args: string[], effects: TbSecretEffects): Promise<TbSecretResult> {
@@ -270,7 +270,7 @@ function succeedSilently(): TbSecretResult {
   return { exitCode: EXIT_OK, stderr: '', stdout: '' };
 }
 
-/** Drops the newline a shell adds to a piped secret, leaving one written without a terminator untouched. */
+/** Drops the newline that a shell adds to a piped secret, leaving one written without a terminator untouched. */
 function stripOneTrailingNewline(input: string): string {
   return input.replace(/\r?\n$/, '');
 }

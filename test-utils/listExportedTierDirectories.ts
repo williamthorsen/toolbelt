@@ -4,9 +4,9 @@ import path from 'node:path';
 import { listExportTargets } from './listExportTargets.ts';
 
 /**
- * Lists the source directories of the maturity tiers a package's `exports` map exposes, so a caller walks the
- * tiers a consumer can import rather than every tier on disk. A workspace organized without maturity tiers, and
- * the strawman tier no subpath names, both yield nothing.
+ * Lists the source directories of the maturity tiers exposed by a package's `exports` map, so a caller walks
+ * the tiers that a consumer can import rather than every tier on disk. A workspace organized without maturity
+ * tiers, and the strawman tier named by no subpath, both yield nothing.
  */
 export function listExportedTierDirectories(packageDirectory: string): string[] {
   const tiers = new Set(

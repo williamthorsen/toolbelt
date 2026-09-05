@@ -11,7 +11,7 @@ import { readManifest } from '../test-utils/readManifest.ts';
 const BIN_TARGET_PATTERN = /^\.\/dist\/esm\/(?<modulePath>.+)\.js$/;
 
 describe('Declared bins', () => {
-  it('every bin target resolves to a source module carrying a shebang', () => {
+  it('every bin target resolves to a source module containing a shebang', () => {
     const { binCount, danglingTargets } = auditBinTargets(findMonorepoRoot());
 
     expect(danglingTargets).toStrictEqual([]);
@@ -24,7 +24,7 @@ describe('Declared bins', () => {
 
 /**
  * Audits every workspace's `bin` against the source that it names, reporting a target that reaches no module and
- * a module that carries no shebang. Either ships a command the package cannot run, which no suite run from
+ * a module that contains no shebang. Either ships a command that the package cannot run, which no suite run from
  * source otherwise reaches.
  */
 function auditBinTargets(monorepoRoot: string): { binCount: number; danglingTargets: string[] } {

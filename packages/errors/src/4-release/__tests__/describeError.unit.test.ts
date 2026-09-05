@@ -21,7 +21,7 @@ describe(describeError, () => {
     expect(describeError(new Error())).toBe('Error');
   });
 
-  it('describes a message-less subclass by the name it assigns', () => {
+  it('describes a message-less subclass by the name that it assigns', () => {
     class ConfigError extends Error {
       override name = 'ConfigError';
     }

@@ -46,7 +46,7 @@ describe(moveIssuesToBacklog, () => {
 
 // region | Helpers
 
-/** Builds sequentially numbered work-item keys, which is what makes a batch boundary readable in an assertion. */
+/** Builds sequentially numbered work-item keys, which makes a batch boundary readable in an assertion. */
 function buildKeys(count: number): string[] {
   return Array.from({ length: count }, (_, index) => `THOR-${index + 1}`);
 }

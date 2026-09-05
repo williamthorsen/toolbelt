@@ -83,7 +83,7 @@ describe(hashString, () => {
     expect(throwingFn).toThrow(RangeError);
   });
 
-  it('names the width the range may not exceed', () => {
+  it('names the width that the range may not exceed', () => {
     const throwingFn = () => hashString('sample', { max: UINT32_SIZE });
 
     expect(throwingFn).toThrow(`cannot span more than ${UINT32_SIZE} values`);

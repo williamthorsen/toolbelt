@@ -32,7 +32,7 @@ export async function readBoardColumnReport(
   const columnNames = columns.map((column) => column.name);
   const mapped = new Set(columns.flatMap((column) => column.statusIds));
 
-  // A spec status the workflow does not hold yet is a creation the plan reports, not a coverage gap.
+  // A spec status not yet held by the workflow is a creation that the plan reports, not a coverage gap.
   const uncovered = spec.statuses.flatMap((wanted) => {
     const live = statuses.find((status) => normalizeStatusName(status.name) === normalizeStatusName(wanted.name));
 
@@ -44,7 +44,7 @@ export async function readBoardColumnReport(
 
 // region | Helpers
 
-/** Answers the spec's column order against the board's, and nothing where the board already holds it. */
+/** Returns the spec's column order against the board's, and nothing where the board already holds it. */
 function findOrderMismatch(columnNames: readonly string[], spec: ProjectSpec): BoardColumnReport['order'] {
   const expected = spec.statuses
     .map((wanted) => columnNames.find((name) => normalizeStatusName(name) === normalizeStatusName(wanted.name)))
@@ -56,7 +56,7 @@ function findOrderMismatch(columnNames: readonly string[], spec: ProjectSpec): B
 
 /**
  * Narrows the board configuration to each column's name and the ids of the statuses mapped to it. A column or a
- * status id it cannot read refuses the report: dropping either would report a covered status as uncovered.
+ * status id that it cannot read refuses the report: dropping either would report a covered status as uncovered.
  */
 function readColumns(boardId: number, payload: unknown): readonly ReadColumn[] {
   const columnConfig = isRecord(payload) ? payload['columnConfig'] : undefined;
@@ -74,7 +74,7 @@ function readColumns(boardId: number, payload: unknown): readonly ReadColumn[] {
     return [{ name: column['name'], statusIds }];
   });
   if (columns.length !== values.length) {
-    throw new Error(`Board ${boardId} answered with columns this cannot read.`);
+    throw new Error(`Board ${boardId} answered with columns that this cannot read.`);
   }
 
   return columns;

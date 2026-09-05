@@ -41,7 +41,7 @@ tb-git branch-number 232_add-widget --min 3000 --max 3999
 # 3232
 ```
 
-A negative offset takes the `=` form, `--offset=-3`: a bare `-3` reads as an option rather than as the value.
+A negative offset takes the `=` form, `--offset=-3`: A bare `-3` reads as an option rather than as the value.
 
 ### `tb-git ticket-ref [<branch>] [options]`
 
@@ -144,7 +144,7 @@ deriveBranchNumber('main');
 // 663286764
 ```
 
-The number is the ticket's when the branch names one, and a [`hashString`](https://github.com/williamthorsen/toolbelt/tree/main/packages/strings#hashstring) digest of the whole name when it does not, so every branch yields something. `min`, `max`, and `offset` are `hashString`'s, and apply to both paths alike: the two land in one range, and `offset` stays a pure rotation.
+The number is the ticket's when the branch names one, and a [`hashString`](https://github.com/williamthorsen/toolbelt/tree/main/packages/strings#hashstring) digest of the whole name when it does not, so every branch yields something. `min`, `max`, and `offset` are `hashString`'s, and apply to both paths alike: The two land in one range, and `offset` stays a pure rotation.
 
 ```ts
 deriveBranchNumber('232_add-widget', { min: 3000, max: 3999 });

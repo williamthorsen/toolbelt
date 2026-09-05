@@ -1,7 +1,7 @@
 import { isRecord, isRecordOrArray } from '../4-release/is-object.ts';
 
 /**
- * Returns the value a dot-and-bracket path reaches, throwing where any segment is missing or the structure
+ * Returns the value reached by a dot-and-bracket path, throwing where any segment is missing or the structure
  * along the way is neither a record nor an array. Only own properties are traversed; inherited members are
  * treated as missing.
  *

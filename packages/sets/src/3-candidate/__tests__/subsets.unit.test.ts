@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { setIsSubset, setIsSuperset } from '../setIsSubset.ts';
 
 describe(setIsSubset, () => {
-  it('returns true all elements in set A are in set B', () => {
+  it('returns true if all elements in set A are in set B', () => {
     const aSet = new Set([1, 2]);
     const bSet = new Set([3, 2, 1]);
     const expected = true;

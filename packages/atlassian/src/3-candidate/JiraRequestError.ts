@@ -1,7 +1,7 @@
 import type { JiraResponse } from './createTokenTransport.ts';
 
 /**
- * A request Jira answered with a status outside 2xx. The status is carried as a field so a caller branches on it
+ * A request answered by Jira with a status outside 2xx. The status is carried as a field so a caller branches on it
  * rather than parsing the message.
  *
  * @category Jira

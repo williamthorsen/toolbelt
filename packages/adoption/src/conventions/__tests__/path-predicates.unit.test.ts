@@ -63,7 +63,7 @@ describe(isTestFile, () => {
     expect(isTestFile('src/read.spec.tsx')).toBe(true);
   });
 
-  it('does not claim a helper beside a suite, which carries no test suffix', () => {
+  it('does not claim a helper beside a suite, which has no test suffix', () => {
     expect(isTestFile('src/__tests__/fixtures/sample.ts')).toBe(false);
   });
 

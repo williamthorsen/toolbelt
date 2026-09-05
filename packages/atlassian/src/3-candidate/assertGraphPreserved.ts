@@ -2,9 +2,9 @@ import type { Workflow } from './ProjectConfiguration.ts';
 import type { WorkflowUpdatePayload } from './WorkflowUpdatePayload.ts';
 
 /**
- * Refuses a payload that would drop a status or a transition the workflow holds, or leave a status with no
+ * Refuses a payload that would drop a status or a transition held by the workflow, or leave a status with no
  * transition into it. `POST /rest/api/3/workflows/update` replaces the graph wholesale, and none of the three
- * fails loudly: each leaves work items in a state nothing can move them out of.
+ * fails loudly: each leaves work items in a state out of which nothing can move them.
  *
  * @category Jira
  * @experimental

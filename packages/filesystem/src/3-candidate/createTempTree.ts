@@ -4,17 +4,17 @@ import path from 'node:path';
 
 /**
  * Creates a throwaway directory tree and returns a handle that removes it on disposal. Each key of `entries` is a
- * path relative to the tree root: one ending in `/` becomes a directory, and any other becomes a file holding the
+ * path relative to the tree root: One ending in `/` becomes a directory, and any other becomes a file holding the
  * mapped contents, given as text or as the bytes themselves. A key resolving outside the root is rejected, and a
  * call that throws leaves nothing on disk.
  *
  * The handle writes into the tree after it is built, through `mkdir`, `symlink`, `write`, `writeAll`, and
- * `writeJson`. Each creates the parent directories that it needs and takes its entry path through the containment check
- * `resolve` applies; `symlink`'s target is the exception, stored verbatim. Every one but `writeAll`, which takes a
- * map, returns the absolute path it wrote. It reads the tree back through `exists`, `list`, `listFiles`, `read`,
- * and `readJson`, and removes an entry through `rm`.
+ * `writeJson`. Each creates the parent directories that it needs and takes its entry path through the containment
+ * check applied by `resolve`; `symlink`'s target is the exception, stored verbatim. Every one but `writeAll`,
+ * which takes a map, returns the absolute path that it wrote. It reads the tree back through `exists`, `list`,
+ * `listFiles`, `read`, and `readJson`, and removes an entry through `rm`.
  *
- * `prefix` names the directory, so a tree outliving a crashed run still says what made it.
+ * `prefix` names the directory, so a tree outliving a crashed run still shows what made it.
  *
  * @example
  * using tree = createTempTree({ '.git/': '', 'src/main.ts': 'export {};\n' });
@@ -162,7 +162,7 @@ export interface TempTree extends Disposable {
   /** Realpath of the tree root, resolved because `os.tmpdir()` is a symlink on macOS. */
   readonly dir: string;
 
-  /** Answers whether a tree-relative path exists, following a symlink, so a dangling one answers `false`. */
+  /** Reports whether a tree-relative path exists, following a symlink, so a dangling one yields `false`. */
   exists(entryPath: string): boolean;
 
   /** Lists the names directly inside a tree-relative directory, sorted, defaulting to the tree root. */
@@ -172,7 +172,7 @@ export interface TempTree extends Disposable {
    * Lists every file below a tree-relative directory, at any depth, as `/`-separated paths relative to it, sorted,
    * defaulting to the tree root. A symlink below that directory is neither listed nor descended, so every path in
    * the result names a file held inside the tree. The directory given as the argument is the exception, followed as
-   * `list`, `read`, and `exists` follow theirs: one naming a link out of the tree lists the target's files. A path
+   * `list`, `read`, and `exists` follow theirs: One naming a link out of the tree lists the target's files. A path
    * that does not exist yields an empty array, where `list` throws; one that exists as a file raises `ENOTDIR`, as
    * `list` does.
    */
@@ -203,7 +203,7 @@ export interface TempTree extends Disposable {
   /**
    * Links a tree-relative path to `targetPath`, taking the link first and so inverting `fs.symlinkSync`. The target
    * is stored verbatim and is not containment-checked, being a string held by the link rather than a location to
-   * which the tree writes: it may be absolute or relative, name something outside the tree, or dangle. A relative one
+   * which the tree writes: It may be absolute or relative, name something outside the tree, or dangle. A relative one
    * resolves against the link's own directory, as POSIX resolves it. An occupied link path raises `EEXIST`.
    *
    * The link type is the one portability difference. An absolute directory target is linked as a junction, which
@@ -216,9 +216,9 @@ export interface TempTree extends Disposable {
   write(entryPath: string, contents: string | Uint8Array): string;
 
   /**
-   * Writes a map of entries in the shape the constructor takes, so a fixture built in one call there can be added
-   * to in one call here. Unlike the constructor, a failure part-way leaves the entries already written in place,
-   * there being no whole tree to discard.
+   * Writes a map of entries in the shape taken by the constructor, so a fixture built in one call there can be
+   * added to in one call here. Unlike the constructor, a failure part-way leaves the entries already written in
+   * place, there being no whole tree to discard.
    */
   writeAll(entries: Record<string, string | Uint8Array>): void;
 
@@ -249,9 +249,9 @@ function assertNamesDirectChild(prefix: string): void {
 }
 
 /**
- * Answers with the link type to give a target, resolving a relative one against the link's own directory as POSIX
- * does. A directory target takes `junction` when absolute and `dir` when relative: Node normalizes a junction's
- * target to an absolute path, which would discard the relative string the link stores. Every other target, one that
+ * Returns the link type to give a target, resolving a relative one against the link's own directory as POSIX does.
+ * A directory target takes `junction` when absolute and `dir` when relative: Node normalizes a junction's target
+ * to an absolute path, which would discard the relative string stored by the link. Every other target, one that
  * does not exist included, takes `file`, which is what Node falls back to when no type is given.
  */
 function chooseLinkType(absoluteLinkPath: string, targetPath: string): 'dir' | 'file' | 'junction' {
@@ -269,7 +269,7 @@ function chooseLinkType(absoluteLinkPath: string, targetPath: string): 'dir' | '
  * caller's accumulated relative path. `Dirent` predicates read the entry itself, so a symlink is neither listed nor
  * descended.
  *
- * `readdirSync`'s `recursive` option cannot serve here: it descends a symlinked directory, so a link pointing out of
+ * `readdirSync`'s `recursive` option cannot serve here: It descends a symlinked directory, so a link pointing out of
  * the tree lists foreign files, and a link to an ancestor revisits the same entries until `ELOOP` stops it. Joining
  * segments with `/` leaves no platform separator to normalize away, a normalization that would corrupt a POSIX name
  * holding a backslash.
@@ -292,8 +292,8 @@ function listFilesBelow(dir: string, prefix: string): string[] {
 }
 
 /**
- * Grants `dir` and every directory beneath it write and execute permission, so a tree a test made unwritable can
- * still be removed. Only directories are touched, because unlinking an entry needs permission on its container
+ * Grants `dir` and every directory beneath it write and execute permission, so a tree made unwritable by a test
+ * can still be removed. Only directories are touched, because unlinking an entry needs permission on its container
  * rather than on the entry. Each directory is chmodded before it is read, so one denying its own listing is
  * readable by the time it is listed.
  */

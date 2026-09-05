@@ -32,9 +32,9 @@ const config = defineConfig({
       'scope:vitest': { color: '00ff96' },
     },
   },
-  // Historical tags predate the `toolbelt.`-scoped package names, so their prefixes (`arrays-v`, …) no longer match the
-  // prefixes release-kit derives from the names (`toolbelt.arrays-v`). Declare each prior prefix so release-kit resolves
-  // a baseline tag and scans only post-release commits instead of rescanning full history.
+  // Historical tags predate the `toolbelt.`-scoped package names, so their prefixes (`arrays-v`, …) no longer match
+  // the prefixes that release-kit derives from the names (`toolbelt.arrays-v`). Declare each prior prefix so
+  // release-kit resolves a baseline tag and scans only post-release commits instead of rescanning full history.
   workspaces: [
     // Private scaffolding template: Exclude from release processing entirely.
     { dir: '_template', shouldExclude: true },

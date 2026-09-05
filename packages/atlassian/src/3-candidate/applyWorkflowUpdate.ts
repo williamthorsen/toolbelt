@@ -10,8 +10,9 @@ import { requestOk } from './requestOk.ts';
 const STATUS_PAGE_SIZE = 100;
 
 /**
- * Writes the reconciled status and transition graph in one call, then reads the statuses back and writes again
- * through the status API any the workflow write did not take. A plan holding no workflow change issues no call.
+ * Writes the reconciled status and transition graph in one call, then reads the statuses back and writes again,
+ * through the status API, any status that the workflow write did not take. A plan holding no workflow change
+ * issues no call.
  *
  * @category Jira
  * @experimental
@@ -42,7 +43,7 @@ export async function applyWorkflowUpdate(
 
 /** What the workflow write landed. */
 export interface WorkflowUpdateResult {
-  /** Statuses the workflow write did not take, written again through the status API. */
+  /** Statuses that the workflow write did not take, written again through the status API. */
   readonly correctedStatuses: readonly StatusUpdate[];
   /** Whether anything was written. A plan holding no workflow change issues no call. */
   readonly written: boolean;
@@ -51,8 +52,8 @@ export interface WorkflowUpdateResult {
 // region | Helpers
 
 /**
- * Reads the statuses back and writes any the workflow write did not take through the status API, which is the
- * fallback channel for a name or category the workflow's own statuses array did not carry.
+ * Reads the statuses back and writes any status that the workflow write did not take through the status API,
+ * which is the fallback channel for a name or category that the workflow's own statuses array did not carry.
  */
 async function correctStatuses(
   request: JiraRequest,
@@ -92,9 +93,9 @@ async function correctStatuses(
 }
 
 /**
- * Answers whether a live status carries what an update asked for. Names are compared exactly here, unlike
- * everywhere else: this asks whether the write landed, and a rename that changed only casing is one it has to
- * be able to report as unlanded.
+ * Reports whether a live status carries what an update asked for. Names are compared exactly here, unlike
+ * everywhere else: this asks whether the write landed, and a rename that changed only casing is one that it has
+ * to be able to report as unlanded.
  */
 function hasLanded(status: unknown, update: StatusUpdate): boolean {
   if (!isRecord(status)) return false;
@@ -102,7 +103,7 @@ function hasLanded(status: unknown, update: StatusUpdate): boolean {
   return status['id'] === update.id && status['name'] === update.to && status['statusCategory'] === update.category;
 }
 
-/** Answers whether an update renames the status, which a change of casing or of category alone does not. */
+/** Reports whether an update renames the status, which a change of casing or of category alone does not. */
 function isRenamed(update: StatusUpdate): boolean {
   return normalizeStatusName(update.to) !== normalizeStatusName(update.from);
 }

@@ -120,7 +120,7 @@ describe(captureStdio, () => {
       expect(Object.hasOwn(process.stderr, 'write')).toBe(false);
     });
 
-    it('restores a property the stream owned to the value it held', () => {
+    it('restores a property owned by the stream to the value that it held', () => {
       using _pinned = pinIsTty(process.stdout, true);
 
       {
@@ -131,7 +131,7 @@ describe(captureStdio, () => {
       expect(process.stdout.isTTY).toBe(true);
     });
 
-    it('restores the absence of a property the stream did not own', () => {
+    it('restores the absence of a property that the stream did not own', () => {
       using _pinned = pinIsTty(process.stdout, undefined);
 
       {
@@ -184,7 +184,7 @@ describe(captureStdio, () => {
       expect(console.warn).toBe(originals.warn);
     });
 
-    it('routes each method to the stream Node routes it to', () => {
+    it('routes each method to the stream to which Node routes it', () => {
       using stdio = captureStdio({ includeConsole: true });
 
       console.debug('debug');
@@ -232,7 +232,7 @@ describe(captureStdio, () => {
   });
 
   describe('composition with a console spy', () => {
-    it('loses only the region an inner silence covers', () => {
+    it('loses only the region covered by an inner silence', () => {
       using stdio = captureStdio({ includeConsole: true });
 
       console.info('before');
@@ -247,7 +247,7 @@ describe(captureStdio, () => {
       expect(stdio.stdout).toBe('before\nafter\n');
     });
 
-    it('leaves an outer spy holding the calls it recorded', () => {
+    it('leaves an outer spy holding the calls that it recorded', () => {
       // rdy-ignore-next-line toolbelt.vitest/no-hand-rolled-console-silence -- toolbelt.testing cannot depend on toolbelt.vitest; the reverse edge closes a workspace cycle
       const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
 
@@ -280,7 +280,7 @@ describe(captureStdio, () => {
 // region | Helpers
 
 /**
- * Pins `isTTY` on a stream for the enclosing scope, putting back the state the stream had when it exits. A
+ * Pins `isTTY` on a stream for the enclosing scope, putting back the state that the stream had when it exits. A
  * failing assertion disposes the binding on its way out, so the value cannot outlive the test that set it.
  */
 function pinIsTty(stream: NodeJS.WriteStream, value: boolean | undefined): Disposable {

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { assertStorableSecret } from '../assertStorableSecret.ts';
 
 describe(assertStorableSecret, () => {
-  it('accepts a secret `security` stores faithfully', () => {
+  it('accepts a secret that `security` stores faithfully', () => {
     expect(() => assertStorableSecret('ATATT3xFfGF0-abc_123')).not.toThrow();
   });
 

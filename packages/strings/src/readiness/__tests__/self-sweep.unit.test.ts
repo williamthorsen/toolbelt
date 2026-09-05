@@ -23,7 +23,7 @@ describe(listStringIdioms, () => {
     expect(findings).toStrictEqual([]);
   });
 
-  // Guard against a vacuous pass: a broken walk would report no findings either.
+  // Guard against a vacuous pass: A broken walk would report no findings either.
   it('sweeps the modules and the compiled kit alike', () => {
     expect(listSweptFiles().map((file) => path.basename(file))).toContain('default.js');
     expect(listSweptFiles().length).toBeGreaterThan(4);

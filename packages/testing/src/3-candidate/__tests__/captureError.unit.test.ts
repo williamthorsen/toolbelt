@@ -4,7 +4,7 @@ import { captureError } from '../captureError.ts';
 
 describe(captureError, () => {
   describe('capture', () => {
-    it('returns the error a synchronous call throws', async () => {
+    it('returns the error thrown by a synchronous call', async () => {
       const thrown = new Error('sync failure');
 
       const error = await captureError(() => {
@@ -14,7 +14,7 @@ describe(captureError, () => {
       expect(error).toBe(thrown);
     });
 
-    it('returns the error an asynchronous call rejects with', async () => {
+    it('returns the error that an asynchronous call rejects with', async () => {
       const thrown = new Error('async failure');
 
       const error = await captureError(() => Promise.reject(thrown));

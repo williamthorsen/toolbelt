@@ -184,7 +184,7 @@ The caller passes the arguments alone, which is what `process.argv.slice(2)` rep
 
 ### The executable and script entries
 
-`process.argv[0]` and `process.argv[1]` are supplied, since a test reading `slice(2)` is about neither. They default to `process.execPath`, the binary Node itself names there, and the placeholder `script`:
+`process.argv[0]` and `process.argv[1]` are supplied, since a test reading `slice(2)` is about neither. They default to `process.execPath`, the binary that Node itself names there, and the placeholder `script`:
 
 ```ts
 using _argv = pointArgvAt(['--quiet']);
@@ -207,7 +207,7 @@ The default names no existing file, so code deriving its own directory from `pro
 
 ### What the swap does not reach
 
-The scope assigns a new array rather than mutating the one it found, which is what lets disposal restore the original by reference. A module that captured the array before the scope opened therefore goes on reporting the arguments that it captured. Code that reads `process.argv` when it runs, which is what a CLI entry point does, sees the pointed arguments.
+The scope assigns a new array rather than mutating the one that it found, which is what lets disposal restore the original by reference. A module that captured the array before the scope opened therefore goes on reporting the arguments that it captured. Code that reads `process.argv` when it runs, which is what a CLI entry point does, sees the pointed arguments.
 
 ### Setting a default for a whole file
 
@@ -269,7 +269,7 @@ Neither mode touches `process.env.PWD`, because `process.chdir` does not touch i
 
 Both modes resolve the argument through `realpathSync` and reject a path naming no existing directory, so one call reports one directory in whichever mode it runs. Without that, macOS would report `/var/folders/…` under the replacement and `/private/var/folders/…` under the move. The resolved path is what the handle reports as `dir`.
 
-A relative path resolves against the directory `process.cwd()` reports, which an enclosing scope may already have pointed elsewhere.
+A relative path resolves against the directory that `process.cwd()` reports, which an enclosing scope may already have pointed elsewhere.
 
 ### Nesting
 

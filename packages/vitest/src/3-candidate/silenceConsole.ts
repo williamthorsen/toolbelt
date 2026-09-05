@@ -46,7 +46,7 @@ export type ConsoleMethod = (typeof ALL_CONSOLE_METHODS)[number];
 
 /**
  * Spies on a single console method, replacing it with a no-op. Takes the full union rather than a narrowed
- * type parameter, which is what lets `mockImplementation` resolve against a settled signature.
+ * type parameter, which lets `mockImplementation` resolve against a settled signature.
  */
 function silenceMethod(method: ConsoleMethod): MockInstance {
   return vi.spyOn(console, method).mockImplementation(() => {});

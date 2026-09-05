@@ -19,7 +19,7 @@ export function listDirectoryChain(startDir: string, options: ListDirectoryChain
 
   const resolvedStartDir = path.resolve(startDir);
   // Resolve the ceiling as well, so a relative `stopAtDir` behaves like a relative `startDir`. Comparison stays
-  // exact after resolution: case-folding would be right on a case-insensitive volume and wrong on every other.
+  // exact after resolution: Case-folding would be right on a case-insensitive volume and wrong on every other.
   const resolvedStopAtDir = stopAtDir === undefined ? undefined : path.resolve(stopAtDir);
 
   const chain: [string, ...string[]] = [resolvedStartDir];

@@ -1,6 +1,6 @@
 /**
  * Returns the item at the index, or throws: a `RangeError` if the array has no item there, and a
- * `TypeError` if the index is not a safe integer. Presence is what is tested, so an item whose
+ * `TypeError` if the index is not a safe integer. This function tests presence, so an item whose
  * value is `undefined` is returned, not thrown on; "no item" means an index that is negative,
  * past the end, or on a hole in a sparse array.
  * Use this function to obtain `T` without a type assertion under `noUncheckedIndexedAccess` where
@@ -21,7 +21,7 @@ export function getItemAtIndexOrThrow<T>(array: ReadonlyArray<T>, index: number)
   }
 
   // `Object.hasOwn` proves an element is present at the index, but TypeScript cannot infer this:
-  // the `undefined` that `noUncheckedIndexedAccess` adds models possible absence, and no check on
+  // The `undefined` that `noUncheckedIndexedAccess` adds models possible absence, and no check on
   // the array (as opposed to the read value) narrows it away.
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- guaranteed by the presence check above, but uninferable
   return array[index] as T;

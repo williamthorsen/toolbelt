@@ -26,7 +26,7 @@ export function listExitMocks(source: string): ExitMock[] {
   const mocks: ExitMock[] = [];
 
   for (const match of source.matchAll(SPY)) {
-    // The anchor's own first character survives blanking exactly where the spy is code the runtime runs.
+    // The anchor's own first character survives blanking exactly where the spy is code that the runtime runs.
     if (code[match.index] !== source[match.index]) continue;
 
     const after = code.slice(match.index + match[0].length);

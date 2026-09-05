@@ -4,7 +4,10 @@ import { describe, expect, expectTypeOf, it, type Mock } from 'vitest';
 import { listConsoleLines } from '../listConsoleLines.ts';
 import { silenceConsole } from '../silenceConsole.ts';
 
-/** The type `vi.spyOn(console, 'error')` resolves to, narrower than the `MockInstance` `silenceConsole` returns. */
+/**
+ * The type to which `vi.spyOn(console, 'error')` resolves, narrower than the `MockInstance` returned by
+ * `silenceConsole`.
+ */
 type ConsoleMethodSpy = Mock<typeof console.error>;
 
 describe(listConsoleLines, () => {
@@ -48,7 +51,7 @@ describe(listConsoleLines, () => {
       expect(listConsoleLines(silent.error)).toStrictEqual(['failed: Error: boom']);
     });
 
-    it('reads only the method it was given', () => {
+    it('reads only the method that it was given', () => {
       using silent = silenceConsole(['error', 'warn']);
 
       console.warn('warned');
@@ -58,13 +61,13 @@ describe(listConsoleLines, () => {
   });
 
   describe('types', () => {
-    it('accepts the spy a silence hands back', () => {
+    it('accepts the spy handed back by a silence', () => {
       using silent = silenceConsole(['log']);
 
       expectTypeOf(listConsoleLines).toBeCallableWith(silent.log);
     });
 
-    it('accepts a spy typed by the method it replaces', () => {
+    it('accepts a spy typed by the method that it replaces', () => {
       expectTypeOf<ConsoleMethodSpy>().toExtend<Parameters<typeof listConsoleLines>[0]>();
     });
 

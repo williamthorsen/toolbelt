@@ -308,7 +308,7 @@ describe(Interpolator, () => {
       const mapping = { matched: 'value' };
       const interpolable = new Interpolator(template).setMapping(mapping);
 
-      it('if ifMissing=THROW and there are unmatched placeholders, throws  error listing the unused placeholders in lower case', () => {
+      it('if ifMissing=THROW and there are unmatched placeholders, throws an error listing the unused placeholders in lower case', () => {
         const ifMissing = 'THROW';
 
         const throwingFn = () => interpolable.interpolate({ ifMissing });

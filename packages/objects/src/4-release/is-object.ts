@@ -24,7 +24,7 @@ export function isPlainObject(value: unknown): value is PlainObject {
 
   const prototype: unknown = Object.getPrototypeOf(value);
 
-  // The symbol lookups walk the prototype chain: the third clause admits a prototype that can carry either.
+  // The symbol lookups walk the prototype chain: The third clause admits a prototype that can carry either.
   return (
     (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) &&
     !Reflect.has(value, Symbol.toStringTag) &&

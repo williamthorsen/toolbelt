@@ -4,9 +4,9 @@
  * The kit ships inside the package, so it runs only where the package is installed and always at the version
  * that the consumer has. Installing the package is the consent on which these checks rest.
  *
- * Two of the three checks take inventory rather than banning a pattern: a guarded prototype call and a
+ * Two of the three checks take inventory rather than banning a pattern: A guarded prototype call and a
  * hand-rolled record guard are correct code that a published utility expresses better. The serialization
- * comparison is a `warn`, because it is a defect: it answers the wrong question about the values that it compares.
+ * comparison is a `warn`, because it is a defect: It answers the wrong question about the values that it compares.
  *
  * The kit declares what to look for and what to advise. What it reports lives in `src/readiness/`, where the
  * package's own suite covers it, and how the looking is done lives in `packages/adoption`.
@@ -34,7 +34,7 @@ export default defineAdoptionKit({
       id: 'no-hand-rolled-own-property',
       kinds: ['own-property-call'],
       severity: 'recommend',
-      fix: `Object.hasOwn is the platform form and is enough wherever the result narrows nothing: it takes the target and the key directly. Take hasOwnProperty from ${PACKAGE_NAME}/candidate where the call guards a property read, since it returns a type predicate that narrows the target and Object.hasOwn returns a bare boolean. Reference: ${README_URL}`,
+      fix: `Object.hasOwn is the platform form and is enough wherever the result narrows nothing: It takes the target and the key directly. Take hasOwnProperty from ${PACKAGE_NAME}/candidate where the call guards a property read, since it returns a type predicate that narrows the target and Object.hasOwn returns a bare boolean. Reference: ${README_URL}`,
     },
     {
       name: 'No source guards a record by hand',
@@ -48,7 +48,7 @@ export default defineAdoptionKit({
       id: 'no-stringify-comparison',
       kinds: ['stringify-compare'],
       severity: 'warn',
-      fix: `Replace each comparison named above with isEqual from ${PACKAGE_NAME}/candidate. Comparing serializations answers the wrong question twice: the result is key-order dependent, so two objects carrying the same entries in a different order compare unequal, and a Set serializes as an empty object whatever it holds, so any two Sets compare equal. isEqual sorts keys and converts Sets to arrays before comparing. Mind what serialization drops: a value carrying a function, a symbol, or undefined compares by what survives, under isEqual as much as by hand. Reference: ${README_URL}`,
+      fix: `Replace each comparison named above with isEqual from ${PACKAGE_NAME}/candidate. Comparing serializations answers the wrong question twice: The result is key-order dependent, so two objects carrying the same entries in a different order compare unequal, and a Set serializes as an empty object whatever it holds, so any two Sets compare equal. isEqual sorts keys and converts Sets to arrays before comparing. Mind what serialization drops: A value carrying a function, a symbol, or undefined compares by what survives, under isEqual as much as by hand. Reference: ${README_URL}`,
     },
   ],
 });

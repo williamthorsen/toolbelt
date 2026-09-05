@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { resolveSelfVersion } from '../resolveSelfVersion.ts';
 
 describe(resolveSelfVersion, () => {
-  it('returns the version the owning package declares', () => {
+  it('returns the version declared by the owning package', () => {
     using tree = createTempTree({ 'package.json': manifest({ name: 'demo', version: '1.4.2' }) });
 
     expect(resolveSelfVersion(moduleUrl(tree.resolve('src/main.ts')))).toBe('1.4.2');
@@ -69,7 +69,7 @@ function manifest(fields: Record<string, unknown>): string {
   return `${JSON.stringify(fields, undefined, 2)}\n`;
 }
 
-/** Renders the `import.meta.url` a module at `filePath` would carry. The file need not exist. */
+/** Renders the `import.meta.url` that a module at `filePath` would carry. The file need not exist. */
 function moduleUrl(filePath: string): string {
   return pathToFileURL(filePath).href;
 }

@@ -6,7 +6,7 @@ import { requestOk } from './requestOk.ts';
 const SEARCH_PAGE_SIZE = 100;
 
 /**
- * Collects every work-item key a JQL query matches, following the search's page token to the end. The query
+ * Collects every work-item key matched by a JQL query, following the search's page token to the end. The query
  * arrives composed: nothing here quotes a value into it.
  *
  * @category Jira
@@ -30,11 +30,11 @@ export async function listIssueKeys(request: JiraRequest, jql: string): Promise<
       path: '/rest/api/3/search/jql',
     });
 
-    // A key dropped here is a work item the caller never acts on, so an unreadable entry refuses the whole walk.
+    // A key dropped here is a work item on which the caller never acts, so an unreadable entry refuses the whole walk.
     const issues = readArrayField(response.json, 'issues') ?? [];
     const page = issues.flatMap((issue) => (isRecord(issue) && typeof issue['key'] === 'string' ? [issue['key']] : []));
     if (page.length !== issues.length) {
-      throw new Error(`Search '${jql}' answered with work items this cannot read.`);
+      throw new Error(`Search '${jql}' answered with work items that this cannot read.`);
     }
     keys.push(...page);
 

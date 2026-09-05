@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { listFunctionBodies } from '../listFunctionBodies.ts';
 
-/** Names each reported function and the body text its offsets span. */
+/** Names each reported function and the body text spanned by its offsets. */
 function summarize(source: string): Array<{ body: string; name: string }> {
   return listFunctionBodies(source).map((fn) => ({ body: source.slice(fn.bodyStart, fn.bodyEnd), name: fn.name }));
 }

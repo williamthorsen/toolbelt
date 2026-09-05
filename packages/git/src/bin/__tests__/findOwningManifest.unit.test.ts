@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { findOwningManifest } from '../findOwningManifest.ts';
 
 describe(findOwningManifest, () => {
-  it('answers with the manifest of the package owning the directory', () => {
+  it('returns the manifest of the package owning the directory', () => {
     using tree = createTempTree({ 'package.json': renderManifest({ name: 'owner', version: '1.2.3' }) });
 
     const owning = findOwningManifest(tree.dir);

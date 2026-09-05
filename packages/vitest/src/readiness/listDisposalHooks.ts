@@ -17,7 +17,7 @@ const DISPOSAL = /\[\s*Symbol\s*\.\s*dispose\s*\]\s*\(/;
  * and `listConsoleSites` have to match the source and read their verdict off the blanked text at equal
  * offsets.
  *
- * The anchor is case-sensitive, which is what holds `disposeOnTestFinished` outside it, so an adopting
+ * The anchor is case-sensitive, which holds `disposeOnTestFinished` outside it, so an adopting
  * project's own calls are not reported. `\b` matches after a `.` as readily as at a line start, so the
  * test-context form `ctx.onTestFinished` is an anchor too.
  *

@@ -3,11 +3,11 @@ import { describe, expect, it } from 'vitest';
 import { firstFilled } from '../firstFilled.ts';
 
 describe(firstFilled, () => {
-  it('answers the first value carrying content', () => {
+  it('returns the first value carrying content', () => {
     expect(firstFilled(undefined, 'second', 'third')).toBe('second');
   });
 
-  it('trims the value it answers', () => {
+  it('trims the value that it returns', () => {
     expect(firstFilled('  padded  ')).toBe('padded');
   });
 
@@ -15,7 +15,7 @@ describe(firstFilled, () => {
     expect(firstFilled(' '.repeat(3), 'real')).toBe('real');
   });
 
-  it('answers undefined where every value is empty', () => {
+  it('returns undefined where every value is empty', () => {
     expect(firstFilled(undefined, '', '  ')).toBeUndefined();
   });
 });

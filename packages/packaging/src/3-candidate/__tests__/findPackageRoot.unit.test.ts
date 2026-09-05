@@ -52,7 +52,7 @@ function manifest(fields: Record<string, unknown>): string {
   return `${JSON.stringify(fields, undefined, 2)}\n`;
 }
 
-/** Renders the `import.meta.url` a module at `filePath` would carry. The file need not exist. */
+/** Renders the `import.meta.url` that a module at `filePath` would carry. The file need not exist. */
 function moduleUrl(filePath: string): string {
   return pathToFileURL(filePath).href;
 }

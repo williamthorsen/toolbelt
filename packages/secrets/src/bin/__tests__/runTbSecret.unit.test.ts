@@ -85,7 +85,7 @@ describe(runTbSecret, () => {
       expect(harness.secrets.get('default||token')).toBe('s3cret');
     });
 
-    it('drops the newline a shell adds to a piped secret', async () => {
+    it('drops the newline that a shell adds to a piped secret', async () => {
       const harness = createHarness({ stdin: 's3cret\n' });
 
       await runTbSecret(['set', 'token', '--account', 'me@example.com'], harness.effects);
@@ -107,7 +107,7 @@ describe(runTbSecret, () => {
       expect(harness.secrets.get('default||token')).toBe('typed');
     });
 
-    it('reports a prompt the typist abandoned', async () => {
+    it('reports a prompt abandoned by the typist', async () => {
       const harness = createHarness({ promptFailure: 'The two entries differ. Nothing was stored.', tty: true });
 
       const result = await runTbSecret(['set', 'token'], harness.effects);
@@ -133,7 +133,7 @@ describe(runTbSecret, () => {
       expect(harness.secrets.get(`${KEYCHAIN}||token`)).toBe('s3cret');
     });
 
-    it('exits 2 on a secret the keychain cannot carry, rather than 3', async () => {
+    it('exits 2 on a secret that the keychain cannot carry, rather than 3', async () => {
       const harness = createHarness({ stdin: '' });
 
       const result = await runTbSecret(['set', 'token'], harness.effects);
@@ -237,7 +237,7 @@ function createHarness(options: HarnessOptions = {}): Harness {
   };
 }
 
-/** Renders the key one item is held under, which is what a wrong keychain or account fails to match. */
+/** Renders the key under which one item is held, which is what a wrong keychain or account fails to match. */
 function buildKey({ account = '', service }: SecretQuery, keychain: string | undefined): string {
   return `${keychain ?? 'default'}|${account}|${service}`;
 }

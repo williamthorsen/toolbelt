@@ -67,7 +67,7 @@ export function buildReconciliationPlan(
 
 export interface ReconciliationPlanOptions {
   /**
-   * Mints the reference a created status is carried under, which the API requires rather than assigning.
+   * Mints the reference under which a created status is carried, which the API requires rather than assigning.
    * Defaults to `randomUUID`; supply one to make a plan reproducible.
    */
   readonly newStatusReference?: (() => string) | undefined;
@@ -75,7 +75,7 @@ export interface ReconciliationPlanOptions {
 
 // region | Helpers
 
-/** Finds the live status a spec entry resolves to, by its name and then by each of its aliases. */
+/** Finds the live status to which a spec entry resolves, by its name and then by each of its aliases. */
 function findLiveStatus(
   liveByName: ReadonlyMap<string, WorkflowStatus>,
   wanted: SpecStatus,
@@ -88,7 +88,7 @@ function findLiveStatus(
   return undefined;
 }
 
-/** Lists the board features whose live state differs from the one the spec requests. */
+/** Lists the board features whose live state differs from the one requested by the spec. */
 function listFeatureToggles(
   requested: Readonly<Record<string, BoardFeatureRequest>> | undefined,
   live: ReadonlyMap<string, string>,
@@ -98,7 +98,7 @@ function listFeatureToggles(
     .filter((toggle) => toggle.from !== toggle.to);
 }
 
-/** Lists the global transitions whose names no longer match the statuses they target. */
+/** Lists the global transitions whose names no longer match the statuses that they target. */
 function listTransitionRenames(
   statuses: readonly WorkflowStatus[],
   transitions: readonly WorkflowTransition[],
@@ -106,7 +106,7 @@ function listTransitionRenames(
 ): TransitionRename[] {
   const renames: TransitionRename[] = [];
 
-  // A transition's name is what the board's action menu shows, so it tracks the status it targets.
+  // A transition's name is what the board's action menu shows, so it tracks the status that it targets.
   for (const transition of transitions) {
     if (transition.type !== 'GLOBAL') continue;
 

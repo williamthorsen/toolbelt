@@ -1,7 +1,7 @@
 /**
  * Given a list of years, identify the decades containing those years and return a list of objects
  * containing the start, end, and label for each decade.
- * A decade starts a year that is a multiple of 10 (e.g., 1990, 2000, etc.).
+ * A decade starts in a year that is a multiple of 10 (e.g., 1990, 2000, etc.).
  * A decade ends 9 years after its start (e.g., 1990-1999, 2000-2009, etc.).
  *
  * @example

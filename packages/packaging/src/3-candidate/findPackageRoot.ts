@@ -5,9 +5,9 @@ import { resolveOwningManifest } from '../internal/resolveOwningManifest.ts';
  * alongside that package resolve from.
  *
  * The owning package is the nearest ancestor whose `package.json` declares a `name`, so a marker manifest --
- * the `{"type": "commonjs"}` file a dual-format build leaves in `dist/` -- is passed over rather than
- * answered with. Pass `import.meta.url`: a module's own URL is the only input that resolves correctly from
- * both a source tree and a compiled one, where the two sit at different depths.
+ * the `{"type": "commonjs"}` file left in `dist/` by a dual-format build -- is passed over rather than
+ * returned. Pass `import.meta.url`: A module's own URL is the only input that resolves correctly from both a
+ * source tree and a compiled one, where the two sit at different depths.
  *
  * A module belonging to no package is an error rather than a fallback, so the return is a bare directory.
  *

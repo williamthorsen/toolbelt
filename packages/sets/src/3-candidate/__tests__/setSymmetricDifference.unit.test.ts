@@ -13,7 +13,7 @@ describe(setSymmetricDifference, () => {
     expect(actual).toStrictEqual(expected);
   });
 
-  it('if the sets are the identical, returns an empty set', () => {
+  it('if the sets are identical, returns an empty set', () => {
     const aSet = new Set([1, 2]);
     const bSet = new Set([2, 1]);
     const expected = new Set();

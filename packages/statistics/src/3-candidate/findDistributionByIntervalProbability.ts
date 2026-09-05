@@ -43,7 +43,7 @@ export function findDistributionByIntervalProbability(params: Params, options: O
     return computeNormalIntervalProbabilities({ halfWidth, nIntervals, standardDeviation });
   }
 
-  // Confirm the target lies between the probabilities the range's endpoints can produce.
+  // Confirm the target lies between the probabilities that the range's endpoints can produce.
   let intervalProbabilities = computeIntervalProbabilities(sdMin);
   const minProbability = toFirstProbability(intervalProbabilities);
   const maxProbability = toFirstProbability(computeIntervalProbabilities(sdMax));

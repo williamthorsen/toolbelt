@@ -9,17 +9,17 @@
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
-          "hash": "de8695f2",
+          "hash": "02a58a07",
           "kind": "module",
           "path": "../../adoption/src/conventions/path-predicates.ts"
         },
         {
-          "hash": "a088bff7",
+          "hash": "84c99907",
           "kind": "module",
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "42835623",
+          "hash": "3372fb44",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -29,7 +29,7 @@
           "path": "../../adoption/src/mod.ts"
         },
         {
-          "hash": "8f288316",
+          "hash": "6fdaacac",
           "kind": "module",
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
@@ -49,17 +49,17 @@
           "path": "../../adoption/src/portable/readBalancedGroup.ts"
         },
         {
-          "hash": "a5c191f2",
+          "hash": "e9427d50",
           "kind": "module",
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "efb11767",
+          "hash": "b2aee730",
           "kind": "module",
           "path": "kits/default.ts"
         },
         {
-          "hash": "4b058b7d",
+          "hash": "5597e5e2",
           "kind": "module",
           "path": "../src/readiness/adoptedExports.ts"
         },
@@ -69,7 +69,7 @@
           "path": "../src/readiness/listCapitalizeLines.ts"
         },
         {
-          "hash": "5061bdb6",
+          "hash": "07de451e",
           "kind": "module",
           "path": "../src/readiness/listPluralizeLines.ts"
         },
@@ -83,7 +83,7 @@
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "efb11767",
+      "sourceHash": "b2aee730",
       "targetHash": "2316ca0c"
     }
   ]

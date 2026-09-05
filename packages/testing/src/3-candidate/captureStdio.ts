@@ -4,7 +4,7 @@ import { format } from 'node:util';
 
 const CONSOLE_METHODS = ['debug', 'error', 'info', 'log', 'warn'] as const;
 
-/** Stream each console method reports to, mirroring how Node routes them. */
+/** Stream to which each console method reports, mirroring how Node routes them. */
 const CONSOLE_STREAMS: Record<ConsoleMethod, 'stderr' | 'stdout'> = {
   debug: 'stdout',
   error: 'stderr',
@@ -73,7 +73,7 @@ export function captureStdio(options: CaptureStdioOptions = {}): CapturedStdio {
   };
 }
 
-/** Buffered output a command wrote while a capture scope was open. */
+/** Buffered output that a command wrote while a capture scope was open. */
 export interface CapturedStdio extends Disposable {
   readonly stderr: string;
   readonly stderrChunks: readonly string[];
@@ -87,7 +87,7 @@ export interface CapturedStdio extends Disposable {
 export interface CaptureStdioOptions {
   /** Whether console output joins the stream buffers, which a command reporting through `console` needs. */
   includeConsole?: boolean;
-  /** Value both streams report for `isTTY` while the scope is open, which exercises style detection. */
+  /** Value that both streams report for `isTTY` while the scope is open, which exercises style detection. */
   isTty?: boolean;
 }
 
@@ -118,7 +118,7 @@ function createWriteCapture(chunks: string[]): typeof process.stdout.write {
   };
 }
 
-/** Renders a chunk as the text Node writes: `encoding` reads a string chunk and has no bearing on bytes. */
+/** Renders a chunk as the text that Node writes: `encoding` reads a string chunk and has no bearing on bytes. */
 function decodeChunk(chunk: Uint8Array | string, encoding?: BufferEncoding | ((error?: Error) => void)): string {
   const bytes =
     typeof chunk === 'string'

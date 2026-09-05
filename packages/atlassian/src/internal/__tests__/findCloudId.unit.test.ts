@@ -15,7 +15,7 @@ describe(findCloudId, () => {
 
     await findCloudId('acme.atlassian.net', fetchImpl);
 
-    // Asserting the whole init is what proves no Authorization header rides along.
+    // Asserting the whole init is what proves no Authorization header is sent.
     expect(fetchImpl).toHaveBeenCalledWith(expect.any(String), { headers: { Accept: 'application/json' } });
   });
 

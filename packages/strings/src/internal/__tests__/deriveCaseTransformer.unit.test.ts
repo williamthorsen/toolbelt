@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { deriveCaseTransformer } from '../deriveCaseTransformer.ts';
 
 describe(deriveCaseTransformer, () => {
-  it('if the sourge and target are identical, returns an identity function', () => {
+  it('if the source and target are identical, returns an identity function', () => {
     const source = 'abCde';
 
     const transform = deriveCaseTransformer(source, source);

@@ -35,10 +35,10 @@ describe('The strawman tier', () => {
 
 /**
  * Audits every package holding a strawman tier, reporting those whose own `nmr` config does not drop it from the
- * build. A package that gains an incubation area without the exclusion publishes code no export subpath reaches.
+ * build. A package that gains an incubation area without the exclusion publishes code reached by no export subpath.
  *
- * The config is read as text, so a pattern the file no longer spells out fails the audit whether it was removed
- * or replaced by the `readiness/` exclusion a package gains later.
+ * The config is read as text, so a pattern no longer spelled out by the file fails the audit whether it was
+ * removed or replaced by the `readiness/` exclusion that a package gains later.
  */
 function auditStrawmanExclusions(monorepoRoot: string): { strawmanCount: number; unexcludedPackages: string[] } {
   const unexcludedPackages: string[] = [];

@@ -12,15 +12,15 @@ const SECRET_PROMPT = 'Secret: ';
  * @internal
  */
 export async function promptSecret(input: NodeJS.ReadableStream, output: NodeJS.WritableStream): Promise<string> {
-  // The reader draws the line it is editing into a sink, so what is typed never reaches the terminal. The
+  // The reader draws the line that it is editing into a sink, so what is typed never reaches the terminal. The
   // prompts are written to the real stream instead.
   const reader = readline.createInterface({ input, output: createSink(), terminal: true });
 
   // A pending question does not settle when the input stream ends under it, which would leave the caller
-  // reporting success over a secret it never received. Closing is the one event every abandonment shares, so
-  // cancelling on it covers the stream ending and the `Ctrl-C` and `Ctrl-D` that `readline` handles itself.
-  // Those two keystrokes therefore report the message below rather than `readline`'s own wording, which names
-  // the key pressed where a caller of `tb-secret` needs to know what became of the secret.
+  // reporting success over a secret that it never received. Closing is the one event shared by every
+  // abandonment, so cancelling on it covers the stream ending and the `Ctrl-C` and `Ctrl-D` that `readline`
+  // handles itself. Those two keystrokes therefore report the message below rather than `readline`'s own wording,
+  // which names the key pressed where a caller of `tb-secret` needs to know what became of the secret.
   const abandoned = new AbortController();
   reader.once('close', () => abandoned.abort());
 

@@ -3,7 +3,7 @@ import path from 'node:path';
 import { findDirectoryChainMatch } from '@williamthorsen/toolbelt.filesystem';
 
 /**
- * Names that identify a project root, in precedence order: when a directory carries more than one,
+ * Names that identify a project root, in precedence order: When a directory carries more than one,
  * the earliest in this list is the one reported.
  *
  * `.git` matches whether it is a directory (an ordinary clone) or a file (a worktree or submodule).

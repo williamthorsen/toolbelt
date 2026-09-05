@@ -11,9 +11,9 @@ import path from 'node:path';
  * which a bare `writeFile` would preserve by truncating in place and a rename would otherwise reset to the
  * platform default.
  *
- * Two guarantees it does not make. Nothing is fsynced, so a power loss can lose a write this function has already
- * returned from; "atomic" here means no torn reads. And the rename replaces the target's directory entry, so a
- * symlink at `filePath` becomes a regular file rather than being written through.
+ * Two guarantees that it does not make. Nothing is fsynced, so a power loss can lose a write from which this
+ * function has already returned; "atomic" here means no torn reads. And the rename replaces the target's directory
+ * entry, so a symlink at `filePath` becomes a regular file rather than being written through.
  *
  * A failure removes the temp file best-effort and rethrows the error that caused it. Where the cleanup itself
  * fails, the temp file survives beside the target under a dot-prefixed name ending in `.tmp`.

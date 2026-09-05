@@ -9,17 +9,17 @@
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
-          "hash": "de8695f2",
+          "hash": "02a58a07",
           "kind": "module",
           "path": "../../adoption/src/conventions/path-predicates.ts"
         },
         {
-          "hash": "a088bff7",
+          "hash": "84c99907",
           "kind": "module",
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "42835623",
+          "hash": "3372fb44",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -29,7 +29,7 @@
           "path": "../../adoption/src/mod.ts"
         },
         {
-          "hash": "8f288316",
+          "hash": "6fdaacac",
           "kind": "module",
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
@@ -49,17 +49,17 @@
           "path": "../../adoption/src/portable/readBalancedGroup.ts"
         },
         {
-          "hash": "a5c191f2",
+          "hash": "e9427d50",
           "kind": "module",
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "09bc7818",
+          "hash": "2868366b",
           "kind": "module",
           "path": "kits/default.ts"
         },
         {
-          "hash": "c2ffe238",
+          "hash": "6bb0411f",
           "kind": "module",
           "path": "../src/readiness/adoptedExports.ts"
         },
@@ -69,17 +69,17 @@
           "path": "../src/readiness/listObjectIdioms.ts"
         },
         {
-          "hash": "54e7d525",
+          "hash": "f2c8ebc0",
           "kind": "module",
           "path": "../src/readiness/listOwnPropertyCallLines.ts"
         },
         {
-          "hash": "fdcd7a1d",
+          "hash": "ac7b5496",
           "kind": "module",
           "path": "../src/readiness/listRecordLines.ts"
         },
         {
-          "hash": "530a3e4b",
+          "hash": "fb4152d2",
           "kind": "module",
           "path": "../src/readiness/listStringifyCompareLines.ts"
         }
@@ -88,8 +88,8 @@
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "09bc7818",
-      "targetHash": "e6955961"
+      "sourceHash": "2868366b",
+      "targetHash": "25bb01fb"
     }
   ]
 }

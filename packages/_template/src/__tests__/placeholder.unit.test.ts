@@ -1,5 +1,5 @@
 /*
- * Holds a freshly scaffolded package's suite non-empty. `passWithNoTests` is set on every Vitest project, so a
+ * Keeps a freshly scaffolded package's suite non-empty. `passWithNoTests` is set on every Vitest project, so a
  * package with no test file exits green rather than failing, and a new package has no API to test yet.
  *
  * Copy this file into the clone unchanged, and delete it once the package's first real tests land. It asserts

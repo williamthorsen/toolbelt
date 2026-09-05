@@ -57,7 +57,7 @@ export interface PointCwdAtOptions {
   chdir?: boolean;
 }
 
-/** A directory `process.cwd()` reports for the length of a scope. */
+/** A directory that `process.cwd()` reports for the length of a scope. */
 export interface PointedCwd extends Disposable {
   /** Realpath of the directory, which is what both modes report. */
   readonly dir: string;
@@ -67,7 +67,7 @@ export interface PointedCwd extends Disposable {
 
 /**
  * Resolves `dir` to its realpath, rejecting a path that names no existing directory. A relative path resolves
- * against the directory `process.cwd()` reports, which an enclosing scope may already have pointed elsewhere.
+ * against the directory that `process.cwd()` reports, which an enclosing scope may already have pointed elsewhere.
  */
 function resolveDirectory(dir: string): string {
   const resolvedDir = fs.realpathSync(path.resolve(dir));

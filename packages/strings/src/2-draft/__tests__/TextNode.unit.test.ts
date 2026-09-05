@@ -86,7 +86,7 @@ describe(TextNode, () => {
       expect(actual).toStrictEqual(expected);
     });
 
-    it('given a fingerprint, strips the seed and parses the decodes the indices', () => {
+    it('given a fingerprint, strips the seed and decodes the indices', () => {
       const fingerprint = '0[1]]:1236';
       const expected = TextNode.decodeIndices('0[1]]');
 

@@ -38,7 +38,7 @@ export interface AdoptionKitSpec<Kind extends string> {
    * it matches the import specifier, which is a string literal.
    */
   detect: (text: string) => ReadonlyArray<AdoptionSite<Kind>>;
-  /** The package's own callable exports, which is what adoption is counted in calls to. */
+  /** The package's own callable exports. A call to one of them counts toward adoption. */
   exportNames: readonly string[];
   /** Why the checks do not apply to a project in which the path filter matched nothing. */
   noSourcesReason: string;

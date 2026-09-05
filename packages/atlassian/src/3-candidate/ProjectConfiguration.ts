@@ -1,6 +1,6 @@
 /**
  * A project's live configuration, as the reads that compose it report it. Every Jira resource here is modelled
- * at the fields this package touches rather than at its documented shape.
+ * at the fields touched by this package rather than at its documented shape.
  */
 export interface ProjectConfiguration {
   readonly board: { readonly id: number };
@@ -23,7 +23,7 @@ export interface Workflow {
   readonly version: unknown;
 }
 
-/** Where something sits on the workflow diagram. Jira omits a coordinate it has not placed. */
+/** Where something sits on the workflow diagram. Jira omits a coordinate that it has not placed. */
 export interface WorkflowLayout {
   readonly x?: number | undefined;
   readonly y?: number | undefined;
@@ -44,9 +44,9 @@ export interface WorkflowStatusLayout {
 }
 
 /**
- * One transition of the workflow graph. The index signature carries the fields this package does not model, such
- * as `actions`, `conditions`, `validators`, `properties`, and `triggers`: the workflow write replaces the graph
- * wholesale, so a transition that reaches it short of them loses them.
+ * One transition of the workflow graph. The index signature carries the fields that this package does not model,
+ * such as `actions`, `conditions`, `validators`, `properties`, and `triggers`: the workflow write replaces the
+ * graph wholesale, so a transition that reaches it without them loses them.
  */
 export interface WorkflowTransition {
   readonly [field: string]: unknown;

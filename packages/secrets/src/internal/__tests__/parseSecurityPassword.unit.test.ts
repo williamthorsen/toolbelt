@@ -26,7 +26,7 @@ describe(parseSecurityPassword, () => {
     expect(parse(String.raw`password: 0x70C3A4C2A7E28692  "p\303\244\302\247\342\206\222"`)).toBe('pä§→');
   });
 
-  it('reads hex-looking text as the text it is, since only the hex form carries the 0x prefix', () => {
+  it('reads hex-looking text as the text that it is, since only the hex form carries the 0x prefix', () => {
     expect(parse('password: "610962"')).toBe('610962');
   });
 
@@ -36,7 +36,7 @@ describe(parseSecurityPassword, () => {
     ).toThrow(/No password line/);
   });
 
-  it('throws on a malformed hex run rather than returning the bytes it could read', () => {
+  it('throws on a malformed hex run rather than returning the bytes that it could read', () => {
     expect(() => parse('password: 0x61096  "a"')).toThrow(/Malformed hexadecimal password/);
   });
 

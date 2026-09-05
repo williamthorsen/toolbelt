@@ -32,7 +32,7 @@ describe('Package registration', () => {
  * domain list in AGENTS.md. A scaffolding pull request that misses one of them currently ships in silence.
  *
  * The check runs in one direction alone, so an entry naming no workspace stays legal: `.meta/label-map.json`
- * holds a lookup for the retired `nodejs` package, and the label configuration carries the private workspaces
+ * holds a lookup for the retired `nodejs` package, and the label configuration contains the private workspaces
  * and `root`.
  */
 function auditPackageRegistration(monorepoRoot: string): { unregistered: string[]; workspaceCount: number } {
@@ -71,8 +71,8 @@ function auditPackageRegistration(monorepoRoot: string): { unregistered: string[
 }
 
 /**
- * Reads the domains named by the parenthesized list on AGENTS.md's `packages/{domain}/` bullet. A reformatted
- * bullet throws rather than reporting every workspace as undocumented, so the failure names its own cause.
+ * Reads the domains named by the parenthesized list on AGENTS.md's `packages/{domain}/` bullet. Throws on a
+ * reformatted bullet rather than reporting every workspace as undocumented, so the failure names its own cause.
  */
 function readDocumentedDomains(monorepoRoot: string): Set<string> {
   const contents = fs.readFileSync(path.join(monorepoRoot, 'AGENTS.md'), 'utf8');

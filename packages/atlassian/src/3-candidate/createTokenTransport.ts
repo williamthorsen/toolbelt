@@ -33,7 +33,7 @@ export function createTokenTransport(options: TokenTransportOptions): JiraReques
 /** Issues one request against a resolved Jira base URL. */
 export type JiraRequest = (method: string, path: string, body?: unknown) => Promise<JiraResponse>;
 
-/** What one request answered with. */
+/** What one request returned. */
 export interface JiraResponse {
   /** The parsed body, or `undefined` where it was not JSON. */
   readonly json: unknown;
@@ -52,7 +52,7 @@ export interface TokenTransportOptions {
 
 // region | Helpers
 
-/** Reads a response into the shape callers branch on, keeping a body that is not JSON as text. */
+/** Reads a response into the shape on which callers branch, keeping a body that is not JSON as text. */
 async function readResponse(response: Response): Promise<JiraResponse> {
   const text = await response.text();
   if (text === '') return { json: undefined, status: response.status, text: undefined };

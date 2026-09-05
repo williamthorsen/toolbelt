@@ -7,9 +7,9 @@ import { listDirectoryChainMatches } from './directory-chain-matches.ts';
  *
  * At each level from `startDir` up to and including `stopAtDir`, the first of `fileNames` that exists
  * is taken as that level's config; levels holding none contribute nothing. The matched files are then
- * imported one at a time, nearest first, and `shouldStopAscent` is consulted after each: once it returns
+ * imported one at a time, nearest first, and `shouldStopAscent` is consulted after each: Once it returns
  * true, the ascent halts and no farther file is imported. Nothing above `stopAtDir` is ever read:
- * each name must stay within the level against which it is probed, so one that escapes is rejected up front.
+ * Each name must stay within the level against which it is probed, so one that escapes is rejected up front.
  *
  * The boundary is the caller's to choose, which is what keeps this function free of any notion of what
  * marks a project. `findProjectRoot` from `@williamthorsen/toolbelt.packaging` resolves one from markers.
@@ -40,7 +40,7 @@ export async function loadConfigCascade<TConfig = unknown>(
   let stopReason: CascadeStopReason = 'stop-dir';
 
   for (const { dir, entryPath } of matches) {
-    // Sequential by design: the predicate decides whether the next file is imported at all.
+    // Sequential by design: The predicate decides whether the next file is imported at all.
     const config = await importDefaultExport<TConfig>(entryPath);
     entries.push({ config, dir, filePath: entryPath });
 
@@ -63,7 +63,7 @@ export interface ConfigCascade<TConfig> {
 
 export interface ConfigEntry<TConfig> {
   config: TConfig;
-  /** The cascade level the file was found at, which differs from the file's own directory when `fileNames` holds a nested path. */
+  /** The cascade level at which the file was found, which differs from the file's own directory when `fileNames` holds a nested path. */
   dir: string;
   filePath: string;
 }
@@ -72,7 +72,7 @@ export interface LoadConfigCascadeOptions<TConfig> {
   /**
    * Paths relative to each level, in precedence order; the first that exists at a level is that level's config.
    * A name that leaves its level (an absolute path, or one whose `..` segments escape it) is rejected, since
-   * it would read outside the bounds the cascade exists to enforce.
+   * it would read outside the bounds that the cascade exists to enforce.
    */
   fileNames: ReadonlyArray<string>;
   /** Called after each config is loaded; returning true halts the ascent before the next import. */
@@ -99,7 +99,7 @@ async function importDefaultExport<TConfig>(filePath: string): Promise<TConfig> 
 
 interface ConfigModule<TConfig> {
   /**
-   * Optional because a module is free to declare no default export, which is the case the guard above rejects.
+   * Optional because a module is free to declare no default export, which is the case rejected by the guard above.
    * No runtime check can confirm the declared type; validating the config's contents stays with the caller.
    */
   default?: TConfig;

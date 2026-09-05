@@ -7,7 +7,7 @@ describe(listStringLeaves, () => {
     expect(listStringLeaves('./dist/esm/4-release/index.js')).toStrictEqual(['./dist/esm/4-release/index.js']);
   });
 
-  it('descends through the nested condition objects an exports map uses', () => {
+  it('descends through the nested condition objects used by an exports map', () => {
     const exports = { '.': { import: './a.js' }, './candidate': { import: './b.js' } };
 
     expect(listStringLeaves(exports)).toStrictEqual(['./a.js', './b.js']);

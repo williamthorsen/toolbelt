@@ -91,8 +91,8 @@ describe('The numbers adoption kit', () => {
 /**
  * Loads a fresh kit and lists its adoption checks, which the flat checklist holds in declaration order.
  *
- * A kit holds its project sweep on its own closure, so one import would serve every test here the first
- * fixture repo's findings. Resetting the registry buys each test a kit that has swept nothing yet.
+ * A kit holds its project sweep on its own closure, so one import would serve the first fixture repo's findings
+ * to every test here. Resetting the registry buys each test a kit that has swept nothing yet.
  */
 async function loadChecks(): Promise<RdyCheck[]> {
   vi.resetModules();

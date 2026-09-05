@@ -4,7 +4,7 @@
  * The kit ships inside the package, so it runs only where the package is installed and always at the version
  * that the consumer has. Installing the package is the consent on which these checks rest.
  *
- * The checks take inventory rather than banning a pattern. Both are a `recommend`: a hand-rolled
+ * The checks take inventory rather than banning a pattern. Both are a `recommend`: A hand-rolled
  * capitalization or pluralization is correct code that a published utility expresses better, not a defect.
  * Nothing here is `error`, and nothing is `warn`.
  *

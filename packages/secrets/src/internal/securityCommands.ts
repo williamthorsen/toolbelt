@@ -94,7 +94,7 @@ function encodeHex(secret: string): string {
 
 /**
  * Names the item to act on. The account is always passed, carrying the empty string where the caller gave
- * none, since a match on the service alone answers with an arbitrary one of the items holding it.
+ * none, since a match on the service alone returns an arbitrary one of the items holding it.
  */
 function itemArgs({ account = '', service }: SecretQuery): string[] {
   return ['-a', account, '-s', service];

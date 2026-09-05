@@ -2,8 +2,8 @@ import type { JiraRequest, JiraResponse } from './createTokenTransport.ts';
 import { JiraRequestError } from './JiraRequestError.ts';
 
 /**
- * Issues one request and answers its response, throwing where the status falls outside 2xx. Every call this
- * package makes goes through here, so the method and path reach the error without a call site restating them.
+ * Issues one request and returns its response, throwing where the status falls outside 2xx. Every call made by
+ * this package goes through here, so the method and path reach the error without a call site restating them.
  *
  * @category Jira
  * @experimental

@@ -4,7 +4,7 @@ import { requestOk } from './requestOk.ts';
 const BACKLOG_BATCH_SIZE = 50;
 
 /**
- * Moves work items off the board and into the backlog, in the batches the endpoint accepts. An empty key list
+ * Moves work items off the board and into the backlog, in the batches accepted by the endpoint. An empty key list
  * issues no call.
  *
  * @category Jira

@@ -7,7 +7,7 @@ import type {
 
 /**
  * Builds a project configuration around a three-status workflow, each status reachable through a global
- * transition named for it, which is the shape a team-managed project starts from.
+ * transition named for it, which is the shape from which a team-managed project starts.
  */
 export function buildProjectConfiguration(overrides: Partial<ProjectConfiguration> = {}): ProjectConfiguration {
   const statuses = overrides.statuses ?? buildStatuses();
@@ -44,7 +44,7 @@ export function buildStatuses(): WorkflowStatus[] {
 }
 
 /**
- * Builds one transition, carrying a `conditions` field this package does not model. The workflow write replaces
+ * Builds one transition, carrying a `conditions` field that this package does not model. The workflow write replaces
  * the graph wholesale, so a transition that reaches it short of such a field loses it.
  */
 export function buildTransition(

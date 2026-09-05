@@ -74,7 +74,7 @@ describe(parseProjectSpec, () => {
     expect(() => parseProjectSpec(text)).toThrow("'done' is claimed by both 'Done' and 'done'");
   });
 
-  it('throws where one entry claims a name another claims as an alias', () => {
+  it('throws where one entry claims a name that another claims as an alias', () => {
     const text = JSON.stringify({
       statuses: [
         { category: 'DONE', name: 'Done', aliases: ['Resolved'] },
@@ -85,7 +85,7 @@ describe(parseProjectSpec, () => {
     expect(() => parseProjectSpec(text)).toThrow("'resolved' is claimed by both 'Done' and 'resolved'");
   });
 
-  it('throws where a board feature is requested in a state no spec may request', () => {
+  it('throws where a board feature is requested in a state that no spec may request', () => {
     const text = JSON.stringify({
       boardFeatures: { 'jsw.agility.backlog': 'COMING_SOON' },
       statuses: [{ category: 'TODO', name: 'To Do' }],

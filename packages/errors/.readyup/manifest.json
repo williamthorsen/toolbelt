@@ -9,17 +9,17 @@
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
-          "hash": "de8695f2",
+          "hash": "02a58a07",
           "kind": "module",
           "path": "../../adoption/src/conventions/path-predicates.ts"
         },
         {
-          "hash": "a088bff7",
+          "hash": "84c99907",
           "kind": "module",
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "42835623",
+          "hash": "3372fb44",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -29,7 +29,7 @@
           "path": "../../adoption/src/mod.ts"
         },
         {
-          "hash": "8f288316",
+          "hash": "6fdaacac",
           "kind": "module",
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
@@ -49,7 +49,7 @@
           "path": "../../adoption/src/portable/readBalancedGroup.ts"
         },
         {
-          "hash": "a5c191f2",
+          "hash": "e9427d50",
           "kind": "module",
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
@@ -59,7 +59,7 @@
           "path": "kits/default.ts"
         },
         {
-          "hash": "3c53eeb1",
+          "hash": "584b75e9",
           "kind": "module",
           "path": "../src/readiness/adoptedExports.ts"
         },

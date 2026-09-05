@@ -9,17 +9,17 @@
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
-          "hash": "de8695f2",
+          "hash": "02a58a07",
           "kind": "module",
           "path": "../../adoption/src/conventions/path-predicates.ts"
         },
         {
-          "hash": "a088bff7",
+          "hash": "84c99907",
           "kind": "module",
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "42835623",
+          "hash": "3372fb44",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -29,7 +29,7 @@
           "path": "../../adoption/src/mod.ts"
         },
         {
-          "hash": "8f288316",
+          "hash": "6fdaacac",
           "kind": "module",
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
@@ -49,17 +49,17 @@
           "path": "../../adoption/src/portable/readBalancedGroup.ts"
         },
         {
-          "hash": "a5c191f2",
+          "hash": "e9427d50",
           "kind": "module",
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "2ed9da8b",
+          "hash": "24f6e6db",
           "kind": "module",
           "path": "kits/default.ts"
         },
         {
-          "hash": "f3d9105b",
+          "hash": "05bd292b",
           "kind": "module",
           "path": "../src/readiness/adoptedExports.ts"
         },
@@ -74,7 +74,7 @@
           "path": "../src/readiness/listMathIdioms.ts"
         },
         {
-          "hash": "254ea06a",
+          "hash": "827c07b2",
           "kind": "module",
           "path": "../src/readiness/listRandomIntegerLines.ts"
         },
@@ -88,8 +88,8 @@
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "2ed9da8b",
-      "targetHash": "1e88eb34"
+      "sourceHash": "24f6e6db",
+      "targetHash": "cee2ac4e"
     }
   ]
 }

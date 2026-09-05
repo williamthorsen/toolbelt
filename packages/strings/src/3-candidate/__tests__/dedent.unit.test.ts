@@ -11,7 +11,7 @@ describe(dedent, () => {
   });
 
   it('unindents a closing line that is not blank, rather than discarding it', () => {
-    // eslint-disable-next-line unicorn/template-indent -- the closing backtick sits on the content line deliberately; moving it to its own line is the case this test exists to distinguish from.
+    // eslint-disable-next-line unicorn/template-indent -- the closing backtick sits on the content line deliberately; moving it to its own line is the case that this test exists to distinguish from.
     expect(dedent`
       first line
       last line`).toBe('first line\nlast line');
@@ -27,7 +27,7 @@ describe(dedent, () => {
 
   it('strips nothing when a content line starts at column zero, rather than throwing', () => {
     expect(
-      // eslint-disable-next-line unicorn/template-indent -- the flush-left line is the case under test; indenting it would remove the column-zero line the escape hatch turns on.
+      // eslint-disable-next-line unicorn/template-indent -- the flush-left line is the case under test; indenting it would remove the column-zero line on which the escape hatch turns.
       dedent`
 alpha
   beta
@@ -105,7 +105,7 @@ alpha
       ).toThrow(/share no common indentation/);
     });
 
-    // D and E are compile-time rejections, so their regression tests are type assertions: widening
+    // D and E are compile-time rejections, so their regression tests are type assertions: Widening
     // `DedentValue` would restore the runtime coercions without failing a runtime assertion.
     it('D: rejects a nullish value, which coerced to the empty string', () => {
       expectTypeOf<null>().not.toExtend<DedentValue>();
@@ -128,7 +128,7 @@ alpha
       `).toBe('|new value|');
     });
 
-    it('renders a value holding a line the author did not indent', () => {
+    it('renders a value holding a line that the author did not indent', () => {
       expect(dedent`
         alpha
         ${'x\ny'}

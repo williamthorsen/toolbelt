@@ -8,7 +8,7 @@ describe(listRandomItemLines, () => {
   });
 
   // These are the sources that `toolbelt.numbers` asserts its own detector skips, so the two must agree on
-  // all of them: a form claimed by neither is a site that the consumer never hears about.
+  // all of them: A form claimed by neither is a site that the consumer never hears about.
   it('claims every subscript declined by the numbers kit, however it is spaced or chained', () => {
     const subscripts = [
       'const item = items?.[Math.floor(Math.random() * items.length)];\n',

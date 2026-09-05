@@ -29,14 +29,14 @@ export function createFakeRequest(routes: FakeRoutes): FakeTransport {
   return { calls, request };
 }
 
-/** One request the fake transport was asked to issue. */
+/** One request that the fake transport was asked to issue. */
 export interface FakeCall {
   readonly body: unknown;
   readonly method: string;
   readonly path: string;
 }
 
-/** What a route answers with. The status defaults to 200, and a body neither field carries is an empty one. */
+/** What a route answers with. The status defaults to 200, and a body carried by neither field is an empty one. */
 export interface FakeResponse {
   readonly json?: unknown;
   readonly status?: number | undefined;

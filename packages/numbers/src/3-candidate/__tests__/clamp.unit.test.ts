@@ -26,7 +26,7 @@ describe(clamp, () => {
     expect(clamp(value, bounds)).toBe(expected);
   });
 
-  // Asserts indirectly: under `exactOptionalPropertyTypes` the call stops compiling if `ClampBounds`
+  // Asserts indirectly: Under `exactOptionalPropertyTypes` the call stops compiling if `ClampBounds`
   // drops the explicit `undefined`.
   it('accepts a bound whose value may be undefined', () => {
     expect(clamp(-5, { min: findOptionalMin() })).toBe(0);
@@ -51,7 +51,7 @@ describe(clamp, () => {
     { bounds: { min: NaN }, received: 'Received min=NaN, max=undefined.' },
   ];
 
-  it.each(messageCases)('reports the bounds it was given as "$received"', ({ bounds, received }) => {
+  it.each(messageCases)('reports the bounds that it was given as "$received"', ({ bounds, received }) => {
     const throwingFn = () => clamp(5, bounds);
 
     expect(throwingFn).toThrow(received);

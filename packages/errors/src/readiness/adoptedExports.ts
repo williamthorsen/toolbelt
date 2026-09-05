@@ -1,5 +1,5 @@
 /**
- * The package's callable exports, which adoption is counted in calls to.
+ * The package's callable exports. A call to one of them counts toward adoption.
  *
  * @internal
  */

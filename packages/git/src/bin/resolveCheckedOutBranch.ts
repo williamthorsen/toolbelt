@@ -5,8 +5,8 @@ const FAILURE_SUFFIX = 'Pass a branch name explicitly.';
 
 /**
  * Resolves the branch checked out in the current directory. Throws when git is absent, the directory is
- * not a repository, or HEAD names no branch, since each leaves the caller without the name it asked to
- * derive from.
+ * not a repository, or HEAD names no branch, since each leaves the caller without the name that it asked
+ * to derive from.
  *
  * @internal
  */
@@ -25,7 +25,7 @@ export function resolveCheckedOutBranch(): string {
 // region | Helpers
 
 /**
- * Builds the one error every resolution failure raises, naming the cause and the way past it. The remedy
+ * Builds the one error raised by every resolution failure, naming the cause and the way past it. The remedy
  * starts its own line, since git's messages end without punctuation and would otherwise run into it.
  */
 function failToResolve(cause: string): Error {

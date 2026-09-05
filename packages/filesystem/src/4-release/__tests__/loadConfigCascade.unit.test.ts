@@ -4,7 +4,7 @@ import { createTempTree } from '../../3-candidate/createTempTree.ts';
 import { loadConfigCascade } from '../loadConfigCascade.ts';
 
 /** A module that fails loudly if it is ever imported, proving the loader skipped it rather than discarded it. */
-const POISONED_MODULE = "throw new Error('imported a config the cascade should have skipped');\n";
+const POISONED_MODULE = "throw new Error('imported a config that the cascade should have skipped');\n";
 
 interface LabelledConfig {
   level: string;

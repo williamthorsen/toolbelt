@@ -7,7 +7,7 @@ const SEARCH_PATH = 'POST /rest/api/3/search/jql';
 const JQL = 'project = "THOR" AND status = "To Do"';
 
 describe(listIssueKeys, () => {
-  it('follows the page token and answers every page in order', async () => {
+  it('follows the page token and returns every page in order', async () => {
     const { calls, request } = createFakeRequest({
       [SEARCH_PATH]: {
         sequence: [
@@ -46,18 +46,18 @@ describe(listIssueKeys, () => {
     expect(calls).toHaveLength(1);
   });
 
-  it('answers an empty list where nothing matches', async () => {
+  it('returns an empty list where nothing matches', async () => {
     const { request } = createFakeRequest({ [SEARCH_PATH]: { json: { issues: [] } } });
 
     await expect(listIssueKeys(request, JQL)).resolves.toStrictEqual([]);
   });
 
-  it('refuses a work item it cannot read rather than dropping it from the walk', async () => {
+  it('refuses a work item that it cannot read rather than dropping it from the walk', async () => {
     const { request } = createFakeRequest({
       [SEARCH_PATH]: { json: { issues: [{ key: 'THOR-1' }, { id: '10001' }] } },
     });
 
-    await expect(listIssueKeys(request, JQL)).rejects.toThrow('answered with work items this cannot read');
+    await expect(listIssueKeys(request, JQL)).rejects.toThrow('answered with work items that this cannot read');
   });
 
   it('throws naming the query where the search is rejected', async () => {
