@@ -57,7 +57,7 @@ describe(listIssueKeys, () => {
       [SEARCH_PATH]: { json: { issues: [{ key: 'THOR-1' }, { id: '10001' }] } },
     });
 
-    await expect(listIssueKeys(request, JQL)).rejects.toThrow('answered with work items this cannot read');
+    await expect(listIssueKeys(request, JQL)).rejects.toThrow('answered with work items that this cannot read');
   });
 
   it('throws naming the query where the search is rejected', async () => {

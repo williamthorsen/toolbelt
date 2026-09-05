@@ -34,7 +34,7 @@ export async function listIssueKeys(request: JiraRequest, jql: string): Promise<
     const issues = readArrayField(response.json, 'issues') ?? [];
     const page = issues.flatMap((issue) => (isRecord(issue) && typeof issue['key'] === 'string' ? [issue['key']] : []));
     if (page.length !== issues.length) {
-      throw new Error(`Search '${jql}' answered with work items this cannot read.`);
+      throw new Error(`Search '${jql}' answered with work items that this cannot read.`);
     }
     keys.push(...page);
 

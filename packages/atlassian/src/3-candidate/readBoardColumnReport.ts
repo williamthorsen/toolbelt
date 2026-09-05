@@ -74,7 +74,7 @@ function readColumns(boardId: number, payload: unknown): readonly ReadColumn[] {
     return [{ name: column['name'], statusIds }];
   });
   if (columns.length !== values.length) {
-    throw new Error(`Board ${boardId} answered with columns this cannot read.`);
+    throw new Error(`Board ${boardId} answered with columns that this cannot read.`);
   }
 
   return columns;

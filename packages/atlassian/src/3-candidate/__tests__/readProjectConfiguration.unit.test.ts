@@ -167,7 +167,7 @@ describe(readProjectConfiguration, () => {
     };
 
     await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'answered with boards this cannot read',
+      'answered with boards that this cannot read',
     );
   });
 
@@ -178,7 +178,7 @@ describe(readProjectConfiguration, () => {
     };
 
     await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'answered with issue types this cannot read',
+      'answered with issue types that this cannot read',
     );
   });
 
@@ -191,7 +191,7 @@ describe(readProjectConfiguration, () => {
     };
 
     await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'answered with features this cannot read',
+      'answered with features that this cannot read',
     );
   });
 
@@ -231,7 +231,7 @@ describe(readProjectConfiguration, () => {
     };
 
     await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'answered with statuses this cannot read',
+      'answered with statuses that this cannot read',
     );
   });
 

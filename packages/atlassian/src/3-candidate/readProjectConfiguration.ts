@@ -68,7 +68,7 @@ async function readBoard(
     return board === undefined ? [] : [board];
   });
   if (boards.length !== values.length) {
-    throw new Error(`Project ${projectKey} answered with boards this cannot read.`);
+    throw new Error(`Project ${projectKey} answered with boards that this cannot read.`);
   }
   // A sole board is taken without a location, which Jira may omit, but never one whose location names another
   // project: its id would carry this project's feature writes and backlog moves onto that project's board.
@@ -129,7 +129,7 @@ async function readFeatures(request: JiraRequest, boardId: number): Promise<Read
     return typeof feature === 'string' && typeof state === 'string' ? [[feature, state]] : [];
   });
   if (entries.length !== values.length) {
-    throw new Error(`Board ${boardId} answered with features this cannot read.`);
+    throw new Error(`Board ${boardId} answered with features that this cannot read.`);
   }
 
   return new Map(entries);
@@ -152,7 +152,7 @@ async function readIssueTypeIds(request: JiraRequest, projectKey: string, key: s
   // exactly-one refusal. The count is what keeps that refusal load-bearing.
   const ids = values.flatMap((value) => (isRecord(value) && typeof value['id'] === 'string' ? [value['id']] : []));
   if (ids.length !== values.length) {
-    throw new Error(`Project ${projectKey} answered with issue types this cannot read.`);
+    throw new Error(`Project ${projectKey} answered with issue types that this cannot read.`);
   }
 
   return ids;
@@ -234,7 +234,7 @@ async function readWorkflow(
 
   const workflow = readWorkflowGraph(workflows[0]);
   if (workflow === undefined) {
-    throw new Error(`Project ${projectKey} answered with a workflow this cannot read.`);
+    throw new Error(`Project ${projectKey} answered with a workflow that this cannot read.`);
   }
 
   const values = readArrayField(response.json, 'statuses') ?? [];
@@ -244,7 +244,7 @@ async function readWorkflow(
     return status === undefined ? [] : [status];
   });
   if (statuses.length !== values.length || statuses.length === 0) {
-    throw new Error(`Project ${projectKey} answered with statuses this cannot read.`);
+    throw new Error(`Project ${projectKey} answered with statuses that this cannot read.`);
   }
 
   return { statuses, workflow };
