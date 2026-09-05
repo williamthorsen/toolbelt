@@ -76,12 +76,25 @@ export function createDeferredStore(effects: TbJiraEffects): SecretStore {
 }
 
 /**
- * Extracts the message carried by an unknown thrown value.
+ * Extracts the message carried by an unknown thrown value, appending each cause beneath it. Node's `fetch`
+ * reports every transport failure as `fetch failed` and names the host and the fault on `cause` alone, so the
+ * chain is what makes such a failure diagnosable. A message already quoted by a wrapper is not repeated.
  *
  * @internal
  */
 export function describeError(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
+  if (!(error instanceof Error)) return String(error);
+
+  const messages: string[] = [];
+  const seen = new Set<Error>();
+
+  for (let current: unknown = error; current instanceof Error && !seen.has(current); current = current.cause) {
+    seen.add(current);
+    const { message } = current;
+    if (message !== '' && messages.every((carried) => !carried.includes(message))) messages.push(message);
+  }
+
+  return messages.join(': ');
 }
 
 /**

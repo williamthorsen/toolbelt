@@ -25,6 +25,7 @@ export function createTbJiraHarness(options: HarnessOptions = {}): TbJiraHarness
   const {
     cwd = '/repo',
     env = {},
+    fetchFault,
     files = {},
     isTty = false,
     keystoreFault,
@@ -76,6 +77,7 @@ export function createTbJiraHarness(options: HarnessOptions = {}): TbJiraHarness
       env,
       fetch: (input) => {
         fetchedUrls.push(describeFetchTarget(input));
+        if (fetchFault !== undefined) return Promise.reject(fetchFault);
 
         return Promise.resolve(Response.json({ cloudId: CLOUD_ID }));
       },
@@ -107,6 +109,8 @@ export function createTbJiraHarness(options: HarnessOptions = {}): TbJiraHarness
 export interface HarnessOptions {
   cwd?: string;
   env?: Record<string, string | undefined>;
+  /** Rejects the tenant-info read with this error, which is how an unreachable site is exercised. */
+  fetchFault?: Error;
   /** What `readTextFile` answers with, keyed by path. */
   files?: Record<string, string>;
   isTty?: boolean;

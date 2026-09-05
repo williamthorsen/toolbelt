@@ -216,6 +216,14 @@ describe('tb-jira configure-project', () => {
       await expect(run(harness, [KEY])).resolves.toBe(2);
       expect(harness.readErrors()).toContain('JIRA_SITE');
     });
+
+    it('names the host and the fault where the site cannot be reached', async () => {
+      const cause = new Error('getaddrinfo ENOTFOUND spec.atlassian.net');
+      const harness = createHarness({ fetchFault: new TypeError('fetch failed', { cause }) });
+
+      await expect(run(harness, [KEY])).resolves.toBe(2);
+      expect(harness.readErrors()).toContain('fetch failed: getaddrinfo ENOTFOUND spec.atlassian.net');
+    });
   });
 });
 
