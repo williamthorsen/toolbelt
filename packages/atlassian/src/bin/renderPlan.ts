@@ -3,7 +3,7 @@ import type { ReconciliationPlan } from '../3-candidate/ReconciliationPlan.ts';
 
 /**
  * Renders the reconciliation plan as the run's unit of review, listing every write it would make and reporting
- * a project that already matches the spec. Composes a string and prints nothing.
+ * a plan that holds none. Composes a string and prints nothing.
  *
  * @internal
  */
@@ -44,7 +44,13 @@ export function renderPlan(
     lines.push(`seed     move every '${options.seedBacklog}' work item off the board`);
   }
 
-  if (countChanges(plan) === 0) lines.push('no changes: the project already matches the spec');
+  if (countChanges(plan) === 0) {
+    lines.push(
+      plan.lockedFeatures.length === 0
+        ? 'no changes: the project already matches the spec'
+        : 'no changes to make: every remaining difference is locked by Jira',
+    );
+  }
 
   return lines.join('\n');
 }

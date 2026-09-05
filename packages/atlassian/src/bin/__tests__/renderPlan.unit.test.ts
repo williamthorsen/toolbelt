@@ -110,7 +110,7 @@ describe(renderPlan, () => {
     expect(rendered).toContain('no changes: the project already matches the spec');
   });
 
-  it('reports a feature Jira has locked as unsettable rather than as a change', () => {
+  it('reports a feature locked by Jira as unsettable rather than as a change', () => {
     const rendered = renderPlan(
       buildPlan({ lockedFeatures: [{ feature: 'jsw.agility.goals', from: 'DISABLED', to: 'ENABLED' }] }),
       CONFIGURATION,
@@ -120,7 +120,17 @@ describe(renderPlan, () => {
     expect(rendered).toContain(
       'locked   jsw.agility.goals is DISABLED and Jira has locked it; ENABLED cannot be set here',
     );
-    expect(rendered).toContain('no changes: the project already matches the spec');
+  });
+
+  it('does not report a project as matching the spec where the only difference is locked', () => {
+    const rendered = renderPlan(
+      buildPlan({ lockedFeatures: [{ feature: 'jsw.agility.goals', from: 'DISABLED', to: 'ENABLED' }] }),
+      CONFIGURATION,
+      { projectKey: PROJECT_KEY },
+    );
+
+    expect(rendered).toContain('no changes to make: every remaining difference is locked by Jira');
+    expect(rendered).not.toContain('the project already matches the spec');
   });
 
   it('reports the backlog seed the run was asked for', () => {
