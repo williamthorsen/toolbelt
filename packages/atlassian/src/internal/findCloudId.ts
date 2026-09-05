@@ -1,5 +1,7 @@
+import { JiraRequestError } from '../3-candidate/JiraRequestError.ts';
 import { fetchOrRaise } from './fetchOrRaise.ts';
 
+const SERVER_ERROR_STATUS = 500;
 const TENANT_INFO_PATH = '/_edge/tenant_info';
 
 /**
@@ -12,6 +14,16 @@ export async function findCloudId(host: string, fetchImpl: typeof globalThis.fet
   const url = `https://${host}${TENANT_INFO_PATH}`;
 
   const response = await fetchOrRaise(url, fetchImpl, { headers: { Accept: 'application/json' } });
+  // A gateway incident is retryable and a 4xx is not: below 500 the host is no Atlassian site, which is a
+  // usage error fixed by correcting the site.
+  if (response.status >= SERVER_ERROR_STATUS) {
+    throw new JiraRequestError({
+      label: `read the cloudId of '${host}'`,
+      method: 'GET',
+      path: TENANT_INFO_PATH,
+      response: { json: undefined, status: response.status, text: await response.text() },
+    });
+  }
   if (!response.ok) {
     throw new Error(`Could not read the cloudId of '${host}'. ${url} answered ${response.status}.`);
   }

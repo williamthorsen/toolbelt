@@ -19,7 +19,7 @@ describe(findCloudId, () => {
     expect(fetchImpl).toHaveBeenCalledWith(expect.any(String), { headers: { Accept: 'application/json' } });
   });
 
-  it('reports a transport failure as the tenant-info URL it could not reach', async () => {
+  it('reports a transport failure as the tenant-info URL that it could not reach', async () => {
     const cause = new TypeError('fetch failed');
     const fetchImpl = vi.fn().mockRejectedValue(cause);
 
@@ -34,6 +34,23 @@ describe(findCloudId, () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response('', { status: 404 }));
 
     await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toThrow('answered 404');
+  });
+
+  it('raises a request error for a gateway incident, which a caller retries rather than corrects', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(new Response('upstream down', { status: 503 }));
+
+    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toMatchObject({
+      name: 'JiraRequestError',
+      status: 503,
+    });
+  });
+
+  it('leaves a 4xx as a plain error, which names the site the caller corrects', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(new Response('', { status: 404 }));
+
+    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.not.toMatchObject({
+      name: 'JiraRequestError',
+    });
   });
 
   it('throws when the payload carries no cloudId', async () => {
