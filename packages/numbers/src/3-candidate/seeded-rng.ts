@@ -81,7 +81,8 @@ export class SeededRng implements SeededGenerator {
 
   /**
    * Given a seed-accepting function and an optional seed, returns a new function that passes the seed to the function.
-   * The spawned generator is an instance of the class the method is called on, so subclasses supply their own sequence.
+   * The spawned generator is an instance of the class on which the method is called, so subclasses supply their
+   * own sequence.
    */
   static withSeed<TOptions extends object, R>(
     fn: (options?: OptionsWithSeed<TOptions> | OptionsWithSeed<EmptyObject>) => R,
