@@ -19,7 +19,7 @@ export function buildVerificationReport(
 
   const verifiedStatuses: StatusVerification[] = spec.statuses.map((wanted) => {
     const live = findByName(statuses, wanted.name);
-    // A transition carrying no target would otherwise match a status the workflow does not hold, both being absent.
+    // A transition carrying no target would otherwise match a status not held by the workflow, both being absent.
     const transition =
       live === undefined
         ? undefined
@@ -50,12 +50,12 @@ export function buildVerificationReport(
 
 // region | Helpers
 
-/** Finds the live status a spec name claims. Jira reports one status under two casings across endpoints. */
+/** Finds the live status claimed by a spec name. Jira reports one status under two casings across endpoints. */
 function findByName(statuses: readonly WorkflowStatus[], name: string): WorkflowStatus | undefined {
   return statuses.find((status) => normalizeStatusName(status.name) === normalizeStatusName(name));
 }
 
-/** Answers whether two names are the same status name, which a difference of casing does not make them. */
+/** Reports whether two names are the same status name, which a difference of casing does not make them. */
 function hasSameName(left: string | undefined, right: string): boolean {
   return left !== undefined && normalizeStatusName(left) === normalizeStatusName(right);
 }

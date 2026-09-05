@@ -3,10 +3,10 @@ import { findCloudId } from '../internal/findCloudId.ts';
 const GATEWAY_ORIGIN = 'https://api.atlassian.com';
 
 /**
- * Resolves the gateway base URL a scoped API token authenticates against, reading the cloudId from the site
- * where the caller does not supply one. A site is accepted bare (`acme.atlassian.net`), with a scheme, or as a
- * URL copied from a browser, of which only the host is used. Requests against the site itself are not a
- * fallback this offers: a scoped token sent there is ignored rather than rejected.
+ * Resolves the gateway base URL against which a scoped API token authenticates, reading the cloudId from the
+ * site where the caller does not supply one. A site is accepted bare (`acme.atlassian.net`), with a scheme, or
+ * as a URL copied from a browser, of which only the host is used. Requests against the site itself are not a
+ * fallback that this offers: a scoped token sent there is ignored rather than rejected.
  *
  * @category Jira
  * @experimental

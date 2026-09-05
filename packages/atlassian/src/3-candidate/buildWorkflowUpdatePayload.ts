@@ -8,7 +8,7 @@ const TRANSITION_ID_SPACING = 10;
 
 /**
  * Composes the bulk workflow-update body from the live graph, so nothing the plan leaves unstated is discarded,
- * and refuses a payload the graph guards reject. Every payload this returns has passed those guards.
+ * and refuses a payload rejected by the graph guards. Every payload that this returns has passed those guards.
  *
  * @category Jira
  * @experimental
@@ -24,7 +24,7 @@ export function buildWorkflowUpdatePayload(
     const update = plan.statusUpdates.find((entry) => entry.statusReference === status.statusReference);
 
     return {
-      // A rename leaves behind a description written for the status it no longer is, so that description goes.
+      // A rename leaves behind a description written for the status that it no longer is, so that description goes.
       // A status whose name changes only in casing, or whose category alone changes, is still itself and keeps its own.
       description: isRenamed(update) ? '' : (status.description ?? ''),
       id: status.id,
@@ -34,15 +34,15 @@ export function buildWorkflowUpdatePayload(
     };
   });
 
-  // The write replaces the graph wholesale, so a transition reaching it short of the fields this package does not
-  // model would lose them.
+  // The write replaces the graph wholesale, so a transition reaching it short of the fields that this package
+  // does not model would lose them.
   const amendedTransitions: WorkflowTransition[] = workflow.transitions.map((transition) => {
     const rename = plan.transitionRenames.find((entry) => entry.id === transition.id);
     return rename === undefined ? transition : { ...transition, name: rename.to };
   });
 
-  // The API requires an id on a new transition rather than assigning one, so continue the decade spacing Jira
-  // uses for a team-managed project's global transitions. The floor covers a workflow holding no transition.
+  // The API requires an id on a new transition rather than assigning one, so continue the decade spacing used by
+  // Jira for a team-managed project's global transitions. The floor covers a workflow holding no transition.
   let nextTransitionId = Math.max(0, ...workflow.transitions.map((transition) => Number(transition.id)));
 
   const payload: WorkflowUpdatePayload = {

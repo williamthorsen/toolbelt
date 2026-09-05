@@ -4,7 +4,7 @@ import type { FeatureToggle, ReconciliationPlan } from './ReconciliationPlan.ts'
 import { requestOk } from './requestOk.ts';
 
 /**
- * Brings each board feature to the state the plan asks for, one call per toggle, and answers with the toggles
+ * Brings each board feature to the state that the plan asks for, one call per toggle, and returns the toggles
  * written. A plan with no toggle issues no call.
  *
  * @category Jira

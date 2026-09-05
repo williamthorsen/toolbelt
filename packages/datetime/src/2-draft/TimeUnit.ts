@@ -28,7 +28,7 @@ export class TimeUnit {
     options: TimeUnitOptions,
   ) {
     // MAX_SAFE_INTEGER is 2^53, so by representing our duration in milliseconds (the lowest
-    // common unit) the highest duration we can represent is
+    // common unit) the highest duration that we can represent is
     // 2^53 / 86*10^6 ~= 104 * 10^6 days (about 100 million days).
     this.abbrev = options.abbrev;
     this.singular = options.singular;

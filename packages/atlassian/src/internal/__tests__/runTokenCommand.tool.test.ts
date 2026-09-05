@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { runTokenCommand } from '../runTokenCommand.ts';
 
 describe(runTokenCommand, () => {
-  it('answers what the command printed, without its trailing newline', () => {
+  it('returns what the command printed, without its trailing newline', () => {
     expect(runTokenCommand(String.raw`printf "a-token\n"`)).toBe('a-token');
   });
 

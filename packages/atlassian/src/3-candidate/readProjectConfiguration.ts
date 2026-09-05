@@ -14,10 +14,10 @@ import { requestOk } from './requestOk.ts';
 const TEAM_MANAGED_STYLE = 'next-gen';
 
 /**
- * Reads the project, board, workflow, and board features a reconciliation is planned against. Refuses a project
- * this reconciler cannot safely write to: one that is not team-managed, one that does not resolve to a single
- * board of its own, and one whose issue types resolve to other than a single workflow. Each refusal fails closed,
- * so a response it cannot read is a refusal rather than a pass.
+ * Reads the project, board, workflow, and board features against which a reconciliation is planned. Refuses a
+ * project to which this reconciler cannot safely write: one that is not team-managed, one that does not resolve
+ * to a single board of its own, and one whose issue types resolve to other than a single workflow. Each refusal
+ * fails closed, so a response that it cannot read is a refusal rather than a pass.
  *
  * @category Jira
  * @experimental
@@ -41,8 +41,8 @@ export async function readProjectConfiguration(
 // region | Helpers
 
 /**
- * Reads the project's own board, which the feature, column, and backlog calls are scoped to. The query answers
- * with every board whose filter references the project, so a board another project owns can come back alongside
+ * Reads the project's own board, which the feature, column, and backlog calls are scoped to. The query returns
+ * every board whose filter references the project, so a board owned by another project can come back alongside
  * it; the project's own board is the one whose location names the project.
  */
 async function readBoard(
@@ -90,7 +90,7 @@ async function readBoard(
   return { id: board.id };
 }
 
-/** Narrows one board to its id and the project its location names, which is what identifies the project's own. */
+/** Narrows one board to its id and the project named by its location, which is what identifies the project's own. */
 function readBoardEntry(value: unknown): BoardEntry | undefined {
   if (!isRecord(value) || typeof value['id'] !== 'number') return undefined;
 
@@ -135,7 +135,7 @@ async function readFeatures(request: JiraRequest, boardId: number): Promise<Read
   return new Map(entries);
 }
 
-/** Reads every issue-type id the project holds, which the workflow read resolves its workflows from. */
+/** Reads every issue-type id held by the project, which the workflow read resolves its workflows from. */
 async function readIssueTypeIds(request: JiraRequest, projectKey: string, key: string): Promise<string[]> {
   const response = await requestOk(request, {
     label: `read issue types for ${projectKey}`,
@@ -184,7 +184,8 @@ async function readProject(request: JiraRequest, projectKey: string, key: string
   const style = project?.['style'];
 
   // A status renamed in a company-managed project is renamed in every project on the site that uses it. An
-  // unreadable style is refused alongside a company-managed one: a project this cannot classify is not one to write to.
+  // unreadable style is refused alongside a company-managed one: a project that this cannot classify is not one
+  // to write to.
   if (style !== TEAM_MANAGED_STYLE) {
     throw new Error(
       `Project ${projectKey} is not team-managed (style: ${typeof style === 'string' ? style : 'absent'}). Refusing to write, since a status renamed in a company-managed project is renamed in every project on the site that uses it.`,
@@ -194,7 +195,7 @@ async function readProject(request: JiraRequest, projectKey: string, key: string
   return { id };
 }
 
-/** Narrows one transition, carrying through every field this package does not model. */
+/** Narrows one transition, carrying through every field that this package does not model. */
 function readTransition(value: unknown): WorkflowTransition | undefined {
   if (!isRecord(value)) return undefined;
 
@@ -210,7 +211,7 @@ function readTransition(value: unknown): WorkflowTransition | undefined {
   };
 }
 
-/** Reads the workflow every issue type resolves to, refusing a project whose issue types span more than one. */
+/** Reads the workflow to which every issue type resolves, refusing a project whose issue types span more than one. */
 async function readWorkflow(
   request: JiraRequest,
   projectKey: string,

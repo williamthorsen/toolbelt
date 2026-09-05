@@ -1,5 +1,5 @@
 /**
- * Answers whether a value is an object whose fields can be read, which is where narrowing a JSON payload starts.
+ * Reports whether a value is an object whose fields can be read, which is where narrowing a JSON payload starts.
  *
  * @internal
  */
