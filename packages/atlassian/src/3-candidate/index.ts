@@ -11,6 +11,7 @@ export {
   type JiraResponse,
   type TokenTransportOptions,
 } from './createTokenTransport.ts';
+export { findJiraTokenSource, type JiraTokenSource } from './findJiraTokenSource.ts';
 export { JiraRequestError, type JiraRequestErrorOptions } from './JiraRequestError.ts';
 export { listIssueKeys } from './listIssueKeys.ts';
 export { type BacklogMoveResult, moveIssuesToBacklog } from './moveIssuesToBacklog.ts';
@@ -36,6 +37,7 @@ export type {
 export { requestOk, type RequestOkOptions } from './requestOk.ts';
 export { type JiraBaseUrlOptions, resolveJiraBaseUrl } from './resolveJiraBaseUrl.ts';
 export { type JiraEmailOptions, resolveJiraEmail } from './resolveJiraEmail.ts';
+export { type JiraSiteOptions, resolveJiraSite } from './resolveJiraSite.ts';
 export { type JiraTokenOptions, resolveJiraToken } from './resolveJiraToken.ts';
 export type { FeatureVerification, StatusVerification, VerificationReport } from './VerificationReport.ts';
 export type { WorkflowStatusUpdate, WorkflowUpdate, WorkflowUpdatePayload } from './WorkflowUpdatePayload.ts';

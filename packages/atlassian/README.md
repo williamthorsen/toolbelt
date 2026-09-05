@@ -44,7 +44,7 @@ Requests against the site URL (`https://acme.atlassian.net`) are not offered as 
 
 Basic auth pairs an email with an API token. They resolve on separate chains, because the email is not a secret and the token is, and the email names the keychain account under which the token is stored.
 
-`resolveJiraEmail` reads a supplied value, then `JIRA_EMAIL`.
+`resolveJiraEmail` reads a supplied value, then `JIRA_EMAIL`, then `fallback`, which is where a spec's `email` reaches the chain.
 
 `resolveJiraToken` reads a supplied value, then `JIRA_API_TOKEN`, then a configured shell command (`tokenCommand`), then the macOS keychain. The keychain is opened only where the earlier sources miss. Store a token with:
 
@@ -53,6 +53,10 @@ tb-secret set toolbelt.atlassian.jira --account you@example.com
 ```
 
 The service defaults to `toolbelt.atlassian.jira`; pass `service` to read another.
+
+`findJiraTokenSource` walks that same chain and answers which link would supply the token, or `undefined` where every one misses. It never returns the token: the keychain is probed with `hasSecret`, which reads the item's attributes rather than its data and so raises no keychain access prompt. A configured `tokenCommand` does run, and its output is discarded.
+
+`resolveJiraSite` reads a supplied value, then `JIRA_SITE`, then `fallback`, which is where a spec's `site` reaches the chain. What it answers is the site that `resolveJiraBaseUrl` derives the cloudId from.
 
 ### The transport
 
