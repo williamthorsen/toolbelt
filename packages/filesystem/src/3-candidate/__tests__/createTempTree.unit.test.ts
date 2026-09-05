@@ -53,7 +53,7 @@ describe(createTempTree, () => {
     expect(path.dirname(tree.dir)).toBe(fs.realpathSync(os.tmpdir()));
   });
 
-  // The backslash case covers the separator Windows resolves alongside `/`.
+  // The backslash case covers the separator that Windows resolves alongside `/`.
   it.each(['rdy/', 'rdy\\', '../escaped-'])('rejects the prefix %j, building nothing', (prefix) => {
     using mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
 
@@ -148,14 +148,14 @@ describe(createTempTree, () => {
 });
 
 describe('TempTree.exists', () => {
-  it('answers true for a written file and false for a missing entry', () => {
+  it('returns true for a written file and false for a missing entry', () => {
     using tree = createTempTree({ 'package.json': '{}' });
 
     expect(tree.exists('package.json')).toBe(true);
     expect(tree.exists('absent.json')).toBe(false);
   });
 
-  it('answers false for a dangling link, following it rather than reading the link itself', () => {
+  it('returns false for a dangling link, following it rather than reading the link itself', () => {
     using tree = createTempTree({});
     tree.symlink('link.json', 'absent.json');
 
@@ -495,7 +495,7 @@ describe('TempTree.symlink', () => {
     expect(relink).toThrow(/EEXIST/);
   });
 
-  // The link type is the argument Windows reads and every other platform ignores, so a spy is the only way to
+  // The link type is the argument that Windows reads and every other platform ignores, so a spy is the only way to
   // observe the choice from a POSIX run.
   describe('link type', () => {
     it('links an absolute directory target as a junction', () => {

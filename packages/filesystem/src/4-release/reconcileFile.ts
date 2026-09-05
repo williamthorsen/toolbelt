@@ -10,7 +10,7 @@ import { describeError } from '@williamthorsen/toolbelt.errors';
  * as a difference follows `conflictPolicy`: `'replace'` promises the file holds exactly `content` afterwards, so
  * only byte-identical content reports `up-to-date`; `'skip'` modifies nothing either way, so its comparison
  * ignores trailing whitespace per line and at end of file, which keeps formatter churn from reading as a
- * conflict. `up-to-date` therefore means the same thing under both policies: this one has no work to do.
+ * conflict. `up-to-date` therefore means the same thing under both policies: This one has no work to do.
  *
  * An I/O error is reported as `failed` rather than thrown, which is what lets a caller writing several files
  * collect a result for each instead of losing the rest to the first failure. A dry run writes nothing and
@@ -76,7 +76,7 @@ export type ReconciliationOutcome = FileReconciliation['outcome'];
 /**
  * Reports whether the existing file already satisfies `conflictPolicy`, and why it could not be read where
  * reading fails. An unreadable file is not up to date under either policy: `'replace'` overwrites it, and
- * `'skip'` reports the reason alongside the file it left alone.
+ * `'skip'` reports the reason alongside the file that it left alone.
  */
 function compareWithExisting(
   filePath: string,

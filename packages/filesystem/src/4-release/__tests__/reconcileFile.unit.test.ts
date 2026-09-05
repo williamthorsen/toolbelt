@@ -39,7 +39,7 @@ describe(reconcileFile, () => {
       expect(fs.readFileSync(filePath, 'utf8')).toBe('new\n');
     });
 
-    // The postcondition the policy promises: after a successful replace, the bytes on disk are exactly `content`.
+    // The postcondition promised by the policy: after a successful replace, the bytes on disk are exactly `content`.
     // A normalized comparison here would report `up-to-date` and leave the file differing from what was asked for.
     it('replaces content differing only in trailing whitespace', () => {
       using tree = createTempTree({ 'config.ts': 'line one  \nline two\n\n' });
