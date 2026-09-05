@@ -71,19 +71,26 @@ describe(buildVerificationReport, () => {
 
   it('reports a transition whose name no longer tracks its status as unmatched', () => {
     const configuration = buildProjectConfiguration();
-    const [first, ...rest] = configuration.workflow.transitions;
-    const workflow = { ...configuration.workflow, transitions: [{ ...first, name: 'Backlog' }, ...rest] };
+    const transitions = configuration.workflow.transitions.map((transition) =>
+      transition.toStatusReference === 'ref-to-do' ? { ...transition, name: 'Backlog' } : transition,
+    );
 
-    const report = buildVerificationReport({ ...configuration, workflow }, SPEC);
+    const report = buildVerificationReport(
+      { ...configuration, workflow: { ...configuration.workflow, transitions } },
+      SPEC,
+    );
 
     expect(report.matches).toBe(false);
     expect(report.statuses[0]).toMatchObject({ matches: false, transition: 'Backlog' });
   });
 
   it('reports each declared board feature against its live state', () => {
-    const spec = { ...SPEC, boardFeatures: { 'jsw.agility.backlog': 'ENABLED', 'jsw.agility.sprints': 'ENABLED' } };
+    const spec: ProjectSpec = {
+      ...SPEC,
+      boardFeatures: { 'jsw.agility.backlog': 'ENABLED', 'jsw.agility.sprints': 'ENABLED' },
+    };
 
-    const report = buildVerificationReport(buildProjectConfiguration(), spec satisfies ProjectSpec);
+    const report = buildVerificationReport(buildProjectConfiguration(), spec);
 
     expect(report.matches).toBe(false);
     expect(report.features).toStrictEqual([

@@ -102,3 +102,51 @@ const payload = buildWorkflowUpdatePayload(configuration, plan);
 The workflow write replaces the graph wholesale, so `buildWorkflowUpdatePayload` runs `assertGraphPreserved` before returning. That refuses a payload that would drop a status, drop a transition, or leave a status with no transition into it: none of the three fails loudly at Jira, and each leaves work items in a state nothing can move them out of. A status that already carried no transition is passed over, since that is not the write's doing.
 
 `assertGraphPreserved` is exported as well, for a payload composed some other way.
+
+### The API functions
+
+Each takes the transport as its first argument and constructs none of its own. A response outside 2xx throws `JiraRequestError`, which carries the method, path, status, and the server's reply as fields, so a caller branches on the status rather than parsing a message. Findings are returned rather than printed.
+
+| Function                                              | Reads or writes                                                                                                     |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `readProjectConfiguration(request, projectKey)`       | The project, board, issue types, workflow, and board features, as the `ProjectConfiguration` the planner takes      |
+| `applyWorkflowUpdate(request, configuration, plan)`   | The reconciled graph, then the statuses back, correcting through the status API any the workflow write did not take |
+| `applyBoardFeatures(request, configuration, plan)`    | One call per board-feature toggle the plan holds                                                                    |
+| `listIssueKeys(request, jql)`                         | Every work-item key a JQL query matches, following the search's page token                                          |
+| `moveIssuesToBacklog(request, boardId, keys)`         | Work items off the board and into the backlog, in batches of 50                                                     |
+| `readBoardColumnReport(request, configuration, spec)` | The board's columns, reporting coverage and order                                                                   |
+| `buildVerificationReport(configuration, spec)`        | Nothing: it compares a configuration already read against the spec                                                  |
+
+`requestOk` is exported too, for a call this package does not wrap.
+
+```ts
+import {
+  applyBoardFeatures,
+  applyWorkflowUpdate,
+  buildReconciliationPlan,
+  buildVerificationReport,
+  readProjectConfiguration,
+} from '@williamthorsen/toolbelt.atlassian/candidate';
+
+const configuration = await readProjectConfiguration(request, 'THOR');
+const plan = buildReconciliationPlan(spec, configuration);
+
+await applyWorkflowUpdate(request, configuration, plan);
+await applyBoardFeatures(request, configuration, plan);
+
+// The run reports what the server holds, not what it sent.
+const report = buildVerificationReport(await readProjectConfiguration(request, 'THOR'), spec);
+```
+
+### What the read refuses
+
+`readProjectConfiguration` fails closed. Each of these throws rather than reconciling part of a project:
+
+- **A project that is not team-managed.** A status renamed in a company-managed project is renamed in every project on the site that uses it. A project reporting no style, or one this does not recognize, is refused alongside a company-managed one: a project it cannot classify is not one to write to.
+- **A project with no board.** The board-feature and backlog calls are board-scoped.
+- **A project whose issue types resolve to other than exactly one workflow.** Every issue type is carried into the workflow read, so a project running its issue types on several workflows is refused rather than having one of them reconciled and reported green.
+- **A response it cannot read.** A missing field is a refusal, not a default.
+
+### Board columns
+
+Board columns cannot be set through the public API. `readBoardColumnReport` reports the gap: which spec statuses map to no column, whose work items are then absent from the board and the backlog alike, and the column order where it differs from the spec's. Both are fixed by dragging in the board settings.
