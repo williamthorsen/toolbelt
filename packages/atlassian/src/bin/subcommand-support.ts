@@ -57,7 +57,10 @@ export function callKeystore<T>(operation: () => T): T {
  */
 export function createDeferredStore(effects: TbJiraEffects): SecretStore {
   let opened: WritableSecretStore | undefined;
-  const open = (): WritableSecretStore => (opened ??= callKeystore(() => effects.createStore()));
+
+  function open(): WritableSecretStore {
+    return (opened ??= callKeystore(() => effects.createStore()));
+  }
 
   return {
     deleteSecret: (query) => open().deleteSecret(query),

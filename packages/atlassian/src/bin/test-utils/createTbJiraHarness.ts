@@ -36,21 +36,20 @@ export function createTbJiraHarness(options: HarnessOptions = {}): TbJiraHarness
   const errors: string[] = [];
   const { calls, request } = createFakeRequest(routes);
 
-  const refuse = (): never => {
+  function refuse(): never {
     throw new Error(keystoreFault);
-  };
-  const key = (query: SecretQuery): string => `${query.account ?? ''}|${query.service}`;
+  }
 
   let secretReads = 0;
   const store: WritableSecretStore = {
-    deleteSecret: (query) => (keystoreFault === undefined ? secrets.delete(key(query)) : refuse()),
+    deleteSecret: (query) => (keystoreFault === undefined ? secrets.delete(buildKey(query)) : refuse()),
     findSecret: (query) => {
       secretReads += 1;
 
-      return secrets.get(key(query));
+      return secrets.get(buildKey(query));
     },
-    hasSecret: (query) => (keystoreFault === undefined ? secrets.has(key(query)) : refuse()),
-    setSecret: (query, secret) => void (keystoreFault === undefined ? secrets.set(key(query), secret) : refuse()),
+    hasSecret: (query) => (keystoreFault === undefined ? secrets.has(buildKey(query)) : refuse()),
+    setSecret: (query, secret) => void (keystoreFault === undefined ? secrets.set(buildKey(query), secret) : refuse()),
   };
 
   return {
@@ -112,6 +111,11 @@ export interface TbJiraHarness {
 }
 
 // region | Helpers
+
+/** Names the in-memory item a query addresses. */
+function buildKey(query: SecretQuery): string {
+  return `${query.account ?? ''}|${query.service}`;
+}
 
 /**
  * Wraps a transport so that a call which is not a known read fails the test rather than reaching the fake

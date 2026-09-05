@@ -20,8 +20,8 @@ import {
   createDeferredStore,
   EXIT_MISMATCH,
   EXIT_OK,
-  succeed,
   stripOneTrailingNewline,
+  succeed,
   type TbJiraEffects,
 } from './subcommand-support.ts';
 
