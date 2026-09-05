@@ -18,6 +18,7 @@ export type {
   WorkflowTransition,
 } from './ProjectConfiguration.ts';
 export type { BoardFeatureRequest, ProjectSpec, SpecStatus, StatusCategory } from './ProjectSpec.ts';
+export { readProjectConfiguration } from './readProjectConfiguration.ts';
 export type {
   FeatureToggle,
   ReconciliationPlan,
