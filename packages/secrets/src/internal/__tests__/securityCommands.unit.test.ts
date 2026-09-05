@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { UnstorableSecretError } from '../../3-candidate/UnstorableSecretError.ts';
 import { composeSetLine } from '../securityCommands.ts';
-import { UnstorableSecretError } from '../UnstorableSecretError.ts';
 
 const KEYCHAIN = '/tmp/project.keychain-db';
 const MAX_LINE_BYTES = 4_095;

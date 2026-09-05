@@ -1,7 +1,7 @@
 import { parseArgs } from 'node:util';
 
 import type { SecretQuery, WritableSecretStore } from '../3-candidate/SecretStore.ts';
-import { UnstorableSecretError } from '../internal/UnstorableSecretError.ts';
+import { UnstorableSecretError } from '../3-candidate/UnstorableSecretError.ts';
 
 const EXIT_OK = 0;
 const EXIT_NO_RESULT = 1;
