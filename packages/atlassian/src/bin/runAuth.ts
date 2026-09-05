@@ -3,7 +3,15 @@ import { parseArgs } from 'node:util';
 import { findJiraTokenSource, type JiraTokenSource } from '../3-candidate/findJiraTokenSource.ts';
 import { resolveJiraEmail } from '../3-candidate/resolveJiraEmail.ts';
 import { DEFAULT_TOKEN_SERVICE } from '../internal/jiraTokenChain.ts';
-import { callKeystore, EXIT_NO_RESULT, EXIT_OK, succeed, type TbJiraEffects } from './subcommand-support.ts';
+import {
+  callKeystore,
+  createDeferredStore,
+  EXIT_NO_RESULT,
+  EXIT_OK,
+  stripOneTrailingNewline,
+  succeed,
+  type TbJiraEffects,
+} from './subcommand-support.ts';
 
 const SOURCE_DESCRIPTIONS: Record<JiraTokenSource, string> = {
   command: 'the configured token command',
@@ -16,7 +24,7 @@ const AUTH_HELP = `Usage: tb-jira auth <delete|set|status> [options]
 
 Manage the Jira API token. It is held in the macOS keychain under the service \`${DEFAULT_TOKEN_SERVICE}\`,
 with the Atlassian account email as the account, which is the same item that \`tb-secret\` reads and writes.
-Requires macOS: every subcommand here opens the keychain, \`status\` included.
+\`delete\` and \`set\` require macOS. \`status\` opens the keychain only where the earlier sources miss.
 
 Subcommands:
   delete  Remove the stored token, exiting 1 where none is stored
@@ -92,9 +100,13 @@ async function runSet(effects: TbJiraEffects, account: string, service: string):
 
 /** Reports which source would supply the token, naming it rather than printing what it holds. */
 function runStatus(effects: TbJiraEffects, account: string, service: string, tokenCommand: string | undefined): number {
-  const source = callKeystore(() =>
-    findJiraTokenSource({ account, env: effects.env, service, store: effects.createStore(), tokenCommand }),
-  );
+  const source = findJiraTokenSource({
+    account,
+    env: effects.env,
+    service,
+    store: createDeferredStore(effects),
+    tokenCommand,
+  });
 
   if (source === undefined) {
     effects.write(`No token would be found for ${account} under ${service}.\n`);
@@ -118,11 +130,6 @@ function selectCommand(positionals: string[]): 'delete' | 'set' | 'status' {
   }
 
   return command;
-}
-
-/** Drops the newline a shell adds to a piped token, leaving one written without a terminator untouched. */
-function stripOneTrailingNewline(input: string): string {
-  return input.replace(/\r?\n$/, '');
 }
 
 // endregion | Helpers

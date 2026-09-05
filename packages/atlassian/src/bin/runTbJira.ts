@@ -1,7 +1,10 @@
+import { JiraRequestError } from '../3-candidate/JiraRequestError.ts';
 import { runAuth } from './runAuth.ts';
+import { runConfigureProject } from './runConfigureProject.ts';
 import {
   describeError,
   EXIT_KEYSTORE,
+  EXIT_REQUEST,
   fail,
   KeystoreError,
   succeed,
@@ -10,10 +13,11 @@ import {
 
 const ROOT_HELP = `Usage: tb-jira <subcommand> [options]
 
-Manage the Jira API token that authenticates against a Jira Cloud site.
+Reconcile a Jira Cloud project against a declarative spec, and manage the API token it authenticates with.
 
 Subcommands:
-  auth  Store, remove, and report the Jira API token
+  auth               Store, remove, and report the Jira API token
+  configure-project  Reconcile a project's statuses, workflow, and board features against a spec
 
 Options:
   -h, --help     Print this help; each subcommand takes its own --help
@@ -23,7 +27,11 @@ Exit codes:
   0  The command succeeded
   1  No token is stored, or nothing was there to remove
   2  Usage or validation error
-  3  The keychain could not be reached`;
+  3  The keychain could not be reached
+  4  A Jira request failed
+  5  The run wrote, but the project does not match the spec
+
+Jira Cloud and team-managed projects only.`;
 
 /**
  * Runs the `tb-jira` command line, writing through the effects it is given and answering with the code to exit
@@ -42,6 +50,12 @@ export async function runTbJira(args: string[], effects: TbJiraEffects): Promise
       return EXIT_KEYSTORE;
     }
 
+    if (error instanceof JiraRequestError) {
+      effects.writeError(`${error.message}\n`);
+
+      return EXIT_REQUEST;
+    }
+
     return fail(effects, describeError(error), args[0]);
   }
 }
@@ -53,6 +67,7 @@ async function dispatch(args: string[], effects: TbJiraEffects): Promise<number>
   const [command, ...rest] = args;
 
   if (command === 'auth') return await runAuth(rest, effects);
+  if (command === 'configure-project') return await runConfigureProject(rest, effects);
   if (command === '--help' || command === '-h') return succeed(effects, ROOT_HELP);
   if (command === '--version') return succeed(effects, effects.resolveVersion());
   if (command === undefined) return fail(effects, 'A subcommand is required.', command);
