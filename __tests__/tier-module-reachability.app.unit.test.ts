@@ -21,7 +21,7 @@ describe('Maturity-tier modules', () => {
 // region | Helpers
 
 /**
- * Audits every module in a package's exported maturity tiers, reporting those no tier index reaches. Such a
+ * Audits every module in a package's exported maturity tiers, reporting those reached by no tier index. Such a
  * module compiles into `dist` while no export subpath exposes it, so nothing installed can import it.
  *
  * Reachability is taken across all of a package's exported tiers at once: a module imported by a neighbouring tier

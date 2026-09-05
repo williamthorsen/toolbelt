@@ -20,8 +20,8 @@ const EXPRESSION_KEYWORDS = new Set([
 /**
  * Reports whether the text preceding an offset puts it in array-subscript position.
  *
- * Two kits recognize `Math.floor(Math.random() * N)`, and which one claims a given site turns on this
- * question: a subscript is `toolbelt.arrays`' random-item idiom, and `toolbelt.numbers` declines it. Both read
+ * Two kits recognize `Math.floor(Math.random() * N)`, and this question decides which one claims a given
+ * site: a subscript is `toolbelt.arrays`' random-item idiom, and `toolbelt.numbers` declines it. Both read
  * the answer from here, so a consumer installing both packages cannot see one line reported twice under
  * conflicting advice.
  *

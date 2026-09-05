@@ -10,7 +10,7 @@ import { readManifest } from '../test-utils/readManifest.ts';
 const BUNDLE_PATH = path.join('.readyup', 'kits', 'default.js');
 
 describe('The readyup config', () => {
-  it('lists every kit-bearing workspace among the packages it runs', () => {
+  it('lists every kit-bearing workspace among the packages that it runs', () => {
     const { unlisted, workspaceCount } = auditConfiguredPackages(findMonorepoRoot());
 
     expect(unlisted).toStrictEqual([]);

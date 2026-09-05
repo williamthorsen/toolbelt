@@ -11,7 +11,7 @@ import { readManifest } from '../test-utils/readManifest.ts';
 const HOMEPAGE_PREFIX = 'https://github.com/williamthorsen/toolbelt/tree/main/packages/';
 const NPM_REGISTRY = 'https://registry.npmjs.org';
 const PUBLISHED_NAME_PREFIX = '@williamthorsen/toolbelt.';
-// release-kit injects each release's notes between these markers, so a README carrying neither loses them silently.
+// release-kit injects each release's notes between these markers, so a README containing neither loses them silently.
 const RELEASE_NOTES_MARKER = '<!-- section:release-notes -->';
 // The template's changelog holds its own release history, which belongs to the template rather than to a clone.
 const TEMPLATE_CHANGELOG_ENTRY = '_template-v';
@@ -19,7 +19,7 @@ const TEMPLATE_CHANGELOG_ENTRY = '_template-v';
 const TEMPLATE_DESCRIPTION = 'Template for new workspace';
 
 describe('Published package shape', () => {
-  it('every published workspace carries the manifest that a scaffolded clone must reach', () => {
+  it('every published workspace has the manifest that a scaffolded clone must reach', () => {
     const { defects, workspaceCount } = auditPublishedManifests(findMonorepoRoot());
 
     expect(defects).toStrictEqual([]);
@@ -27,7 +27,7 @@ describe('Published package shape', () => {
     expect(workspaceCount).toBeGreaterThan(0);
   });
 
-  it('every published workspace carries a README and a changelog of its own', () => {
+  it('every published workspace has a README and a changelog of its own', () => {
     const { defects, workspaceCount } = auditPublishedDocuments(findMonorepoRoot());
 
     expect(defects).toStrictEqual([]);
@@ -46,7 +46,7 @@ describe('Published package shape', () => {
 
 /**
  * Audits every published workspace's manifest against the shape that a clone of `packages/_template` reaches.
- * The template is private, so the fields read here are the ones that it cannot carry: the scoped name and
+ * The template is private, so the fields read here are the ones that it cannot declare: the scoped name and
  * homepage, the npm publish configuration, and a `prepublishOnly` build in place of the template's `build` no-op.
  */
 function auditPublishedManifests(monorepoRoot: string): { defects: string[]; workspaceCount: number } {
@@ -106,7 +106,7 @@ function auditPublishedManifests(monorepoRoot: string): { defects: string[]; wor
  * release-kit writes between, and the absence of the template's own release history.
  *
  * The title check is what the marker check alone cannot do. The template's README quotes the markers in a code
- * fence, so a clone that copied it whole would carry the string without carrying a place to inject into.
+ * fence, so a clone that copied it whole would contain the string without containing a place to inject into.
  */
 function auditPublishedDocuments(monorepoRoot: string): { defects: string[]; workspaceCount: number } {
   const defects: string[] = [];
@@ -134,7 +134,7 @@ function auditPublishedDocuments(monorepoRoot: string): { defects: string[]; wor
     if (changelog === undefined) {
       defects.push(`${workspace}: CHANGELOG.md is missing`);
     } else if (changelog.includes(TEMPLATE_CHANGELOG_ENTRY)) {
-      defects.push(`${workspace}: CHANGELOG.md carries the template's own release history`);
+      defects.push(`${workspace}: CHANGELOG.md contains the template's own release history`);
     }
   }
 

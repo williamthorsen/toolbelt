@@ -40,7 +40,7 @@ function auditWorkspaceGraph(monorepoRoot: string): { cycles: string[]; workspac
   return { cycles: listCycles(graph), workspaceCount: manifests.length };
 }
 
-/** Reports each cycle a depth-first walk of the graph closes, as `a -> b -> a`. */
+/** Reports each cycle closed by a depth-first walk of the graph, as `a -> b -> a`. */
 function listCycles(graph: Map<string, string[]>): string[] {
   const cycles: string[] = [];
   const states = new Map<string, 'visited' | 'visiting'>();
@@ -73,7 +73,10 @@ function listCycles(graph: Map<string, string[]>): string[] {
   return cycles.toSorted((a, b) => a.localeCompare(b));
 }
 
-/** Reads a workspace's name and the names it depends on, across every field that links one workspace to another. */
+/**
+ * Reads a workspace's name and the names on which it depends, across every field that links one workspace to
+ * another.
+ */
 function readGraphNode(packageDirectory: string): { dependencies: string[]; name: string } {
   const parsed = readManifest(packageDirectory);
 

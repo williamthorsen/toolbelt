@@ -28,7 +28,7 @@ describe('Runner-agnostic workspaces', () => {
 
 /**
  * Audits every workspace that declares no Vitest dependency, reporting source modules importing the runner
- * anyway. Such a module belongs in the `vitest` workspace, which carries the peer dependency that makes the
+ * anyway. Such a module belongs in the `vitest` workspace, which declares the peer dependency that makes the
  * import resolvable for a consumer.
  */
 function auditRunnerImports(monorepoRoot: string): { fileCount: number; importers: string[] } {

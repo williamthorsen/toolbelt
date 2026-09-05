@@ -24,7 +24,7 @@ describe('Maturity stage tags', () => {
 
 /**
  * Audits every `@stage` tag under a maturity tier directory, reporting those whose value disagrees
- * with the tier holding them. Files outside a `src/{n}-{tier}/` directory carry no tier and are skipped.
+ * with the tier holding them. Files outside a `src/{n}-{tier}/` directory have no tier and are skipped.
  */
 function auditStageTags(monorepoRoot: string): { misalignments: string[]; tagCount: number } {
   const misalignments: string[] = [];

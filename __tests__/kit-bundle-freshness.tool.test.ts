@@ -9,7 +9,7 @@ import { isRecord } from '../test-utils/isRecord.ts';
 
 const MANIFEST_PATH = path.join('.readyup', 'manifest.json');
 const RDY_BIN_PATH = path.join('node_modules', '.bin', 'rdy');
-// Every verdict `isPassingVerdict` weighs. A rebuild mismatch leaves the other three `ok`, so reporting a
+// Every verdict weighed by `isPassingVerdict`. A rebuild mismatch leaves the other three `ok`, so reporting a
 // subset can name none of what failed.
 const VERDICT_FIELDS = ['status', 'sourceStatus', 'inputsStatus', 'rebuildStatus'];
 
@@ -26,10 +26,10 @@ describe('Compiled kit bundles', () => {
 // region | Helpers
 
 /**
- * Verifies every kit-bearing workspace's compiled bundle against the hashes its manifest records, reporting
- * those that fail. A bundle is a build artifact held in the tree, so nothing but this check notices when a
- * source it inlines moves on without it -- least of all a source in another workspace, which the kit's own
- * package.json never mentions.
+ * Verifies every kit-bearing workspace's compiled bundle against the hashes recorded by its manifest,
+ * reporting those that fail. A bundle is a build artifact held in the tree, so nothing but this check notices
+ * when a source that it inlines moves on without it -- least of all a source in another workspace, which the
+ * kit's own package.json never mentions.
  *
  * Workspaces are discovered rather than listed, so a package that gains a kit is covered on arrival.
  */
@@ -51,8 +51,8 @@ function auditKitBundles(monorepoRoot: string): { failures: string[]; workspaceC
 /**
  * Reports why a workspace's bundles fail verification, or nothing where they pass.
  *
- * `--rebuild` recompiles and compares bytes, which catches a toolchain change the recorded hashes cannot: the
- * same sources emit a different bundle under a different esbuild.
+ * `--rebuild` recompiles and compares bytes, which catches a toolchain change that the recorded hashes
+ * cannot: the same sources emit a different bundle under a different esbuild.
  */
 function verifyBundles(directory: string): string | undefined {
   const result = spawnSync(path.join(directory, RDY_BIN_PATH), ['verify', '--rebuild', '--json'], {
@@ -83,12 +83,12 @@ function describeFailure(stdout: string): string | undefined {
     .join(', ');
 }
 
-/** Lists a kit's verdicts as reported, naming any the report omits so a silent absence reads as one. */
+/** Lists a kit's verdicts as reported, naming any that the report omits so a silent absence reads as one. */
 function describeVerdicts(kit: Record<string, unknown>): string {
   return VERDICT_FIELDS.map((field) => `${field}=${readVerdict(kit[field])}`).join(', ');
 }
 
-/** Names a verdict, or its absence, without stringifying a shape the report never promised. */
+/** Names a verdict, or its absence, without stringifying a shape never promised by the report. */
 function readVerdict(value: unknown): string {
   return typeof value === 'string' ? value : 'unreported';
 }

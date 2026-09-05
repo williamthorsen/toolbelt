@@ -28,7 +28,7 @@ describe('Compiled kit check ids', () => {
  * Loading is half the assertion: `defineAdoptionKit` refuses a kit giving one id to two checks, and the
  * bundle inlines that guard, so an import is what runs it. Only `numbers` assembles a kit in its own suite,
  * and this is what reaches the rest. The bundle is loaded rather than the source, which needs no built tree
- * and is the artifact a consumer runs.
+ * and is the artifact that a consumer runs.
  */
 async function auditCompiledKits(monorepoRoot: string): Promise<{ failures: string[]; workspaceCount: number }> {
   const failures: string[] = [];
@@ -53,7 +53,7 @@ async function findUnnamedChecks(bundlePath: string): Promise<string | undefined
   return unnamed === 0 ? undefined : `${String(unnamed)} of ${String(ids.length)} checks declare no id`;
 }
 
-/** Lists the id each of a compiled kit's checks declares, in declaration order. */
+/** Lists the id declared by each of a compiled kit's checks, in declaration order. */
 async function listCheckIds(bundlePath: string): Promise<Array<string | undefined>> {
   const module: unknown = await import(pathToFileURL(bundlePath).href);
   const kit = isRecord(module) ? module['default'] : undefined;

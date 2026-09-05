@@ -20,7 +20,7 @@ export function isAdoptableSource(path: string): boolean {
  * Reports whether a path is a bootstrap wrapper.
  *
  * Such a wrapper imports nothing, so its build-first message survives an incomplete install. The hand-rolled
- * handling that buys it is deliberate, not unadopted.
+ * handling that achieves it is deliberate, not unadopted.
  *
  * @internal
  */
