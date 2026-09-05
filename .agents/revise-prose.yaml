@@ -435,24 +435,10 @@ rejections:
   - rule: reduced-object-relative
     unit: williamthorsen-writing-preferences
     file: packages/numbers/src/3-candidate/__tests__/seeded-rng.unit.test.ts
-    phrase: input RNG's seed
-    ground: 'Not the construction: `input RNG` is a noun compound, not a head noun plus a relative clause.'
-    unit-version: '2'
-    hash: 08c291c43db23d06
-  - rule: reduced-object-relative
-    unit: williamthorsen-writing-preferences
-    file: packages/numbers/src/3-candidate/__tests__/seeded-rng.unit.test.ts
     phrase: intermediate RNG's seed
     ground: 'Not the construction: `intermediate RNG` is a noun compound, not a head noun plus a relative clause.'
     unit-version: '2'
     hash: 976d2f66c166f9ec
-  - rule: reduced-object-relative
-    unit: williamthorsen-writing-preferences
-    file: packages/numbers/src/3-candidate/__tests__/seeded-rng.unit.test.ts
-    phrase: clone RNG's seed
-    ground: 'Not the construction: `clone RNG` is a noun compound, not a head noun plus a relative clause.'
-    unit-version: '2'
-    hash: 97b3deb165d967c8
   - rule: reduced-object-relative
     unit: williamthorsen-writing-preferences
     file: packages/numbers/src/3-candidate/__tests__/seeded-rng.unit.test.ts
@@ -782,13 +768,6 @@ rejections:
     ground: 'Not a relative clause: the reported head is the subject of the verb reported with it. (#255, child 2 record.)'
     unit-version: '2'
     hash: 38d3b086335a570c
-  - rule: reduced-object-relative
-    unit: williamthorsen-writing-preferences
-    file: packages/vitest/README.md
-    phrase: back the existing spy for a method already being spied
-    ground: 'Not the construction: `already being spied on` is a participial modifier with no embedded subject.'
-    unit-version: '2'
-    hash: 43fcee4e3fb438bb
   - rule: reduced-object-relative
     unit: williamthorsen-writing-preferences
     file: packages/vitest/README.md

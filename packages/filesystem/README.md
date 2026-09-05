@@ -182,12 +182,12 @@ Missing parent directories are created. `isDryRun` writes nothing and creates no
 
 | exists | differs | `conflictPolicy` | outcome       |
 | ------ | ------- | ---------------- | ------------- |
-| no     | --      | --               | `created`     |
+| no     | n/a     | n/a              | `created`     |
 | yes    | no      | either           | `up-to-date`  |
 | yes    | yes     | `replace`        | `overwritten` |
 | yes    | yes     | `skip`           | `skipped`     |
 
-What counts as differing follows the policy, which is the part worth reading twice. `'replace'` promises the file holds exactly `content` afterwards, so only byte-identical content reports `up-to-date`; a file differing from `content` only in trailing whitespace is rewritten, because calling it up to date would leave the caller holding a file that is not what it asked for. `'skip'` modifies nothing either way, so its comparison decides a message alone and ignores trailing whitespace per line and at end of file, which keeps formatter churn from reading as a conflict. `up-to-date` therefore means the same thing under both: this policy has no work to do.
+What counts as differing follows the policy, which is the part worth reading twice. `'replace'` promises the file holds exactly `content` afterwards, so only byte-identical content reports `up-to-date`; a file differing from `content` only in trailing whitespace is rewritten, because calling it up to date would leave the caller holding a file that is not what it asked for. `'skip'` modifies nothing either way, so its comparison decides a message alone and ignores trailing whitespace per line and at end of file, which keeps formatter churn from reading as a conflict. `up-to-date` therefore means the same thing under both: This policy has no work to do.
 
 The result discriminates on `outcome`, so a failure always carries its reason:
 
