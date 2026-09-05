@@ -10,7 +10,7 @@ describe(TimeUnit, () => {
       expect(TimeUnit.coarsestFirst).toStrictEqual(expected);
     });
 
-    it('holds every unit the class declares', () => {
+    it('holds every unit declared by the class', () => {
       const declaredUnits = Object.values(TimeUnit).filter((value) => value instanceof TimeUnit);
 
       expect(new Set(TimeUnit.coarsestFirst)).toStrictEqual(new Set(declaredUnits));

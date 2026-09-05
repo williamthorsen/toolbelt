@@ -40,7 +40,7 @@ An `Error` carrying no message describes as its stringification rather than as t
 describeError(new Error()); // 'Error'
 ```
 
-Describing never throws. A null-prototype object, a `toString` that throws, and a `message` accessor that throws all answer `[unstringifiable value]` instead. The `unknown` parameter is a promise to accept any value, and a describer that fails inside a `catch` block discards the very error that it was called to report.
+Describing never throws. A null-prototype object, a `toString` that throws, and a `message` accessor that throws all describe as `[unstringifiable value]` instead. The `unknown` parameter is a promise to accept any value, and a describer that fails inside a `catch` block discards the very error that it was called to report.
 
 An `Error` whose `message` is not a string is stringified rather than returned as-is, so the declared `string` return holds for every input.
 

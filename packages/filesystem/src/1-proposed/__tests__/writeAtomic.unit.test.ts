@@ -92,7 +92,7 @@ describe(writeAtomic, () => {
     });
 
     // Compared against a control write rather than a literal, because the default depends on the runner's umask.
-    it('gives a new file the same mode a plain write would', async () => {
+    it('gives a new file the same mode that a plain write would', async () => {
       using tree = createTempTree({});
       const controlPath = tree.write('control.json', '{}\n');
       const filePath = tree.resolve('config.json');
