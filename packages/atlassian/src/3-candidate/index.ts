@@ -1,5 +1,9 @@
+export { applyBoardFeatures } from './applyBoardFeatures.ts';
+export { applyWorkflowUpdate, type WorkflowUpdateResult } from './applyWorkflowUpdate.ts';
 export { assertGraphPreserved } from './assertGraphPreserved.ts';
+export type { BoardColumnReport, ColumnOrderMismatch } from './BoardColumnReport.ts';
 export { buildReconciliationPlan, type ReconciliationPlanOptions } from './buildReconciliationPlan.ts';
+export { buildVerificationReport } from './buildVerificationReport.ts';
 export { buildWorkflowUpdatePayload } from './buildWorkflowUpdatePayload.ts';
 export {
   createTokenTransport,
@@ -7,6 +11,9 @@ export {
   type JiraResponse,
   type TokenTransportOptions,
 } from './createTokenTransport.ts';
+export { JiraRequestError, type JiraRequestErrorOptions } from './JiraRequestError.ts';
+export { listIssueKeys } from './listIssueKeys.ts';
+export { type BacklogMoveResult, moveIssuesToBacklog } from './moveIssuesToBacklog.ts';
 export { parseProjectSpec } from './parseProjectSpec.ts';
 export type {
   ProjectConfiguration,
@@ -17,6 +24,8 @@ export type {
   WorkflowTransition,
 } from './ProjectConfiguration.ts';
 export type { BoardFeatureRequest, ProjectSpec, SpecStatus, StatusCategory } from './ProjectSpec.ts';
+export { readBoardColumnReport } from './readBoardColumnReport.ts';
+export { readProjectConfiguration } from './readProjectConfiguration.ts';
 export type {
   FeatureToggle,
   ReconciliationPlan,
@@ -24,7 +33,9 @@ export type {
   StatusUpdate,
   TransitionRename,
 } from './ReconciliationPlan.ts';
+export { requestOk, type RequestOkOptions } from './requestOk.ts';
 export { type JiraBaseUrlOptions, resolveJiraBaseUrl } from './resolveJiraBaseUrl.ts';
 export { type JiraEmailOptions, resolveJiraEmail } from './resolveJiraEmail.ts';
 export { type JiraTokenOptions, resolveJiraToken } from './resolveJiraToken.ts';
+export type { FeatureVerification, StatusVerification, VerificationReport } from './VerificationReport.ts';
 export type { WorkflowStatusUpdate, WorkflowUpdate, WorkflowUpdatePayload } from './WorkflowUpdatePayload.ts';
