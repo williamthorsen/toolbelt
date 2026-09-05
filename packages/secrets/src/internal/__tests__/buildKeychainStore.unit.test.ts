@@ -31,7 +31,7 @@ describe(buildKeychainStore, () => {
       expect(spy.calls[0]?.args).toStrictEqual(['find-generic-password', '-a', '', '-s', 'token', '-g']);
     });
 
-    it('names the keychain it was built over', () => {
+    it('names the keychain that it was built over', () => {
       const spy = createRunnerSpy({ stderr: 'password: "s3cret"\n' });
 
       buildKeychainStore(spy.run, KEYCHAIN).findSecret({ service: 'token' });
@@ -45,7 +45,7 @@ describe(buildKeychainStore, () => {
       expect(buildKeychainStore(spy.run).findSecret(QUERY)).toBe('a\tb');
     });
 
-    it('answers undefined where no item is stored', () => {
+    it('returns undefined where no item is stored', () => {
       const spy = createRunnerSpy({ exitCode: 44, stderr: 'security: SecKeychainSearchCopyNext: not found\n' });
 
       expect(buildKeychainStore(spy.run).findSecret(QUERY)).toBeUndefined();
@@ -75,7 +75,7 @@ describe(buildKeychainStore, () => {
       ]);
     });
 
-    it('answers false where no item is stored', () => {
+    it('returns false where no item is stored', () => {
       const spy = createRunnerSpy({ exitCode: 44 });
 
       expect(buildKeychainStore(spy.run).hasSecret(QUERY)).toBe(false);
@@ -97,7 +97,7 @@ describe(buildKeychainStore, () => {
       ]);
     });
 
-    it('answers false where no item was there to remove', () => {
+    it('returns false where no item was there to remove', () => {
       const spy = createRunnerSpy({ exitCode: 44 });
 
       expect(buildKeychainStore(spy.run).deleteSecret(QUERY)).toBe(false);
@@ -113,7 +113,7 @@ describe(buildKeychainStore, () => {
       expect(spy.calls[0]).toStrictEqual({ args: ['-i'], input: `${SET_LINE}\n` });
     });
 
-    it('names the keychain it was built over, which the old write could not', () => {
+    it('names the keychain that it was built over, which the old write could not', () => {
       const spy = createWriteSpy('s3cret');
 
       buildKeychainStore(spy.run, KEYCHAIN).setSecret(QUERY, 's3cret');
@@ -225,7 +225,7 @@ function createRunnerSpy(result: Partial<SecurityResult> = {}): RunnerSpy {
 
 /**
  * Builds a runner for the write path, which runs twice: the write itself, then the readback that verifies it.
- * The readback answers with `stored` in the hexadecimal form, the one `security` prints for any secret.
+ * The readback returns `stored` in the hexadecimal form, the one that `security` prints for any secret.
  */
 function createWriteSpy(
   stored: string,

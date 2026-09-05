@@ -12,7 +12,7 @@ describe(composeSetLine, () => {
     expect(composeSetLine({ service: 'token' }, 'ab')).toBe('add-generic-password -U -a "" -s "token" -X 6162');
   });
 
-  it('names the account the query carries', () => {
+  it('names the account carried by the query', () => {
     expect(composeSetLine(QUERY, 'ab')).toContain('-a "me@example.com"');
   });
 
@@ -75,7 +75,7 @@ describe(composeSetLine, () => {
 
 // region | Helpers
 
-/** Finds the longest secret a query leaves room for, from the line that a one-byte secret composes to. */
+/** Finds the longest secret for which a query leaves room, from the line that a one-byte secret composes to. */
 function findMaxSecretBytes(query: { service: string }, keychain?: string): number {
   const fixedBytes = Buffer.byteLength(composeSetLine(query, 'a', keychain), 'utf8') - 2;
 

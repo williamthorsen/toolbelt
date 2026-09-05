@@ -12,7 +12,7 @@ export interface SecretStore {
   /** Removes a secret, reporting whether one was there to remove. */
   deleteSecret(query: SecretQuery): boolean;
 
-  /** Reads a secret, answering `undefined` where none is stored. */
+  /** Reads a secret, returning `undefined` where none is stored. */
   findSecret(query: SecretQuery): string | undefined;
 
   /** Reports whether a secret is stored, without reading it. */

@@ -24,13 +24,13 @@ const TAB_SECRET = 'a\tb';
 const BOUNDARY_LENGTHS = [127, 128, 129, 190, 1_900];
 
 describe.skipIf(process.platform !== 'darwin')(createKeychainStore, () => {
-  it('reads a secret `security` prints between quotes', () => {
+  it('reads a secret that `security` prints between quotes', () => {
     withKeychain((keychain) => {
       expect(createKeychainStore({ keychain }).findSecret({ service: PLAIN_SERVICE })).toBe('plain value');
     });
   });
 
-  it('reads a secret `security` prints as hexadecimal, which is any carrying an unprintable byte', () => {
+  it('reads a secret that `security` prints as hexadecimal, which is any carrying an unprintable byte', () => {
     withKeychain((keychain) => {
       const secret = createKeychainStore({ keychain }).findSecret({ account: 'me@example.com', service: HEX_SERVICE });
 
@@ -46,7 +46,7 @@ describe.skipIf(process.platform !== 'darwin')(createKeychainStore, () => {
     });
   });
 
-  it('answers undefined where the keychain holds no such item', () => {
+  it('returns undefined where the keychain holds no such item', () => {
     withKeychain((keychain) => {
       expect(createKeychainStore({ keychain }).findSecret({ service: ABSENT_SERVICE })).toBeUndefined();
     });

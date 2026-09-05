@@ -7,7 +7,7 @@ describe(assertMacosPlatform, () => {
     expect(() => assertMacosPlatform('darwin')).not.toThrow();
   });
 
-  it.each([['linux'], ['win32']])('names the platform it rejects: %s', (platform) => {
+  it.each([['linux'], ['win32']])('names the platform that it rejects: %s', (platform) => {
     expect(() => assertMacosPlatform(platform)).toThrow(new RegExp(String.raw`This platform is ${platform}\.`));
   });
 });
