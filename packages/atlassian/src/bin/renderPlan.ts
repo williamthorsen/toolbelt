@@ -32,6 +32,11 @@ export function renderPlan(
   for (const toggle of plan.featureToggles) {
     lines.push(`toggle   ${toggle.feature}: ${toggle.from ?? 'absent'} → ${toggle.to}`);
   }
+  for (const toggle of plan.lockedFeatures) {
+    lines.push(
+      `locked   ${toggle.feature} is ${toggle.from ?? 'absent'} and Jira has locked it; ${toggle.to} cannot be set here`,
+    );
+  }
   for (const status of plan.unmanaged) {
     lines.push(`unmanaged status '${status.name}' is not in the spec and will not be touched`);
   }

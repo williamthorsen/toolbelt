@@ -30,8 +30,8 @@ describe(renderVerification, () => {
     const rendered = renderVerification(
       buildReport({
         features: [
-          { feature: 'jsw.agility.backlog', matches: true, state: 'ENABLED' },
-          { feature: 'jsw.agility.sprints', matches: false, state: undefined },
+          { feature: 'jsw.agility.backlog', locked: false, matches: true, state: 'ENABLED' },
+          { feature: 'jsw.agility.sprints', locked: false, matches: false, state: undefined },
         ],
       }),
       buildColumns(),
@@ -39,6 +39,18 @@ describe(renderVerification, () => {
 
     expect(rendered).toContain('  ok   jsw.agility.backlog = ENABLED');
     expect(rendered).toContain('  MISS jsw.agility.sprints = absent');
+  });
+
+  it('marks a feature Jira has locked as neither met nor faulted', () => {
+    const rendered = renderVerification(
+      buildReport({
+        features: [{ feature: 'jsw.agility.goals', locked: true, matches: false, state: 'DISABLED' }],
+      }),
+      buildColumns(),
+    );
+
+    expect(rendered).toContain('  LOCK jsw.agility.goals = DISABLED, which Jira has locked and no call can set');
+    expect(rendered).not.toContain('MISS jsw.agility.goals');
   });
 
   it('lists the board columns', () => {

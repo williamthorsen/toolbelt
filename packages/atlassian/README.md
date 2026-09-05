@@ -108,7 +108,7 @@ The scope set a scoped API token needs is not yet determined; #283 determines it
 | `4`  | A Jira request failed, with the method, path, and status      |
 | `5`  | The run wrote, and the project does not match the spec        |
 
-A run that wrote and left the project short of the spec is `5` rather than `4`, so a script can tell a rejected call from a reconciliation that did not take. A board column the spec has no counterpart for never changes the exit code: the public API cannot set one.
+A run that wrote and left the project short of the spec is `5` rather than `4`, so a script can tell a rejected call from a reconciliation that did not take. Two things never change the exit code, because no call could have changed either: a board column the spec has no counterpart for, and a board feature Jira has locked.
 
 ## Library
 
@@ -179,6 +179,8 @@ A spec declares which statuses a Jira project should hold and which board featur
 
 `boardFeatures` maps a feature key to `ENABLED` or `DISABLED`. Jira also reports `COMING_SOON`, which no spec may request. `site` and `email` are the last source in their resolution chains.
 
+Jira locks some features, such as one belonging to a product the site does not hold. A write against a locked feature answers `200` and changes nothing, so a spec naming one is reported rather than written: the plan prints it as `locked`, the closing report marks it `LOCK`, and the exit code is unaffected. Without that, the toggle would be re-planned on every run and the project would never match.
+
 A live status claimed by no entry is reported and left untouched, so a spec covers the statuses that it manages rather than the whole project.
 
 ### Planning a reconciliation
@@ -247,5 +249,7 @@ const report = buildVerificationReport(await readProjectConfiguration(request, '
 - **A response it cannot read.** A missing field is a refusal, not a default.
 
 ### Board columns
+
+`readProjectConfiguration` carries the `toggleLocked` flag Jira reports per feature, which is what lets `buildReconciliationPlan` leave a locked toggle unplanned rather than issuing a write that silently does nothing.
 
 Board columns cannot be set through the public API. `readBoardColumnReport` reports the gap: which spec statuses map to no column, whose work items are then absent from the board and the backlog alike, and the column order where it differs from the spec's. Both are fixed by dragging in the board settings.

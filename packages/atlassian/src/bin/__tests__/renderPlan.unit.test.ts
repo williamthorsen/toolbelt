@@ -110,6 +110,19 @@ describe(renderPlan, () => {
     expect(rendered).toContain('no changes: the project already matches the spec');
   });
 
+  it('reports a feature Jira has locked as unsettable rather than as a change', () => {
+    const rendered = renderPlan(
+      buildPlan({ lockedFeatures: [{ feature: 'jsw.agility.goals', from: 'DISABLED', to: 'ENABLED' }] }),
+      CONFIGURATION,
+      { projectKey: PROJECT_KEY },
+    );
+
+    expect(rendered).toContain(
+      'locked   jsw.agility.goals is DISABLED and Jira has locked it; ENABLED cannot be set here',
+    );
+    expect(rendered).toContain('no changes: the project already matches the spec');
+  });
+
   it('reports the backlog seed the run was asked for', () => {
     const rendered = renderPlan(buildPlan(), CONFIGURATION, { projectKey: PROJECT_KEY, seedBacklog: 'To Do' });
 
@@ -120,7 +133,15 @@ describe(renderPlan, () => {
 // region | Helpers
 
 function buildPlan(overrides: Partial<ReconciliationPlan> = {}): ReconciliationPlan {
-  return { creations: [], featureToggles: [], statusUpdates: [], transitionRenames: [], unmanaged: [], ...overrides };
+  return {
+    creations: [],
+    featureToggles: [],
+    lockedFeatures: [],
+    statusUpdates: [],
+    transitionRenames: [],
+    unmanaged: [],
+    ...overrides,
+  };
 }
 
 // endregion | Helpers

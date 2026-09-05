@@ -111,9 +111,34 @@ describe(buildVerificationReport, () => {
 
     expect(report.matches).toBe(false);
     expect(report.features).toStrictEqual([
-      { feature: 'jsw.agility.backlog', matches: false, state: 'DISABLED' },
-      { feature: 'jsw.agility.sprints', matches: false, state: undefined },
+      { feature: 'jsw.agility.backlog', locked: false, matches: false, state: 'DISABLED' },
+      { feature: 'jsw.agility.sprints', locked: false, matches: false, state: undefined },
     ]);
+  });
+
+  it('reports a locked feature without counting it against the match', () => {
+    const spec: ProjectSpec = { ...SPEC, boardFeatures: { 'jsw.agility.backlog': 'ENABLED' } };
+    const configuration = buildProjectConfiguration({ lockedFeatures: new Set(['jsw.agility.backlog']) });
+
+    const report = buildVerificationReport(configuration, spec);
+
+    // The state genuinely differs, so the entry reports a miss; no call could have changed it, so the run
+    // is not held to have fallen short.
+    expect(report.features).toStrictEqual([
+      { feature: 'jsw.agility.backlog', locked: true, matches: false, state: 'DISABLED' },
+    ]);
+    expect(report.matches).toBe(true);
+  });
+
+  it('still faults a status where a locked feature is held out', () => {
+    const spec: ProjectSpec = {
+      ...SPEC,
+      boardFeatures: { 'jsw.agility.backlog': 'ENABLED' },
+      statuses: [{ category: 'TODO', name: 'Nowhere' }],
+    };
+    const configuration = buildProjectConfiguration({ lockedFeatures: new Set(['jsw.agility.backlog']) });
+
+    expect(buildVerificationReport(configuration, spec).matches).toBe(false);
   });
 
   it('reports no features where the spec declares none', () => {

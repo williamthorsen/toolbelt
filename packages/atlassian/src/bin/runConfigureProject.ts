@@ -57,7 +57,10 @@ Jira Cloud and team-managed projects only. A company-managed project is refused 
 status renamed there is renamed in every project on the site that uses it.
 
 Board columns cannot be set through the public API. The closing report names any spec status mapped to no
-column, and any column order differing from the spec's; both are fixed by dragging in the board settings.`;
+column, and any column order differing from the spec's; both are fixed by dragging in the board settings.
+
+A board feature Jira has locked is reported as \`locked\` in the plan and \`LOCK\` in the closing report, and is
+never written: the call would answer 200 and change nothing. Neither it nor a column gap affects the exit code.`;
 
 /**
  * Runs the `configure-project` subcommand: it resolves the credential, plans the reconciliation against the

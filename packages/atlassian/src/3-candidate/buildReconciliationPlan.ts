@@ -22,10 +22,10 @@ import type {
  */
 export function buildReconciliationPlan(
   spec: ProjectSpec,
-  configuration: Pick<ProjectConfiguration, 'features' | 'statuses' | 'workflow'>,
+  configuration: Pick<ProjectConfiguration, 'features' | 'lockedFeatures' | 'statuses' | 'workflow'>,
   options: ReconciliationPlanOptions = {},
 ): ReconciliationPlan {
-  const { features, statuses, workflow } = configuration;
+  const { features, lockedFeatures, statuses, workflow } = configuration;
   const { newStatusReference = randomUUID } = options;
 
   const liveByName = new Map(statuses.map((status) => [normalizeStatusName(status.name), status]));
@@ -56,9 +56,12 @@ export function buildReconciliationPlan(
     }
   }
 
+  const wantedToggles = listFeatureToggles(spec.boardFeatures, features);
+
   return {
     creations,
-    featureToggles: listFeatureToggles(spec.boardFeatures, features),
+    featureToggles: wantedToggles.filter((toggle) => !lockedFeatures.has(toggle.feature)),
+    lockedFeatures: wantedToggles.filter((toggle) => lockedFeatures.has(toggle.feature)),
     statusUpdates,
     transitionRenames: listTransitionRenames(statuses, workflow.transitions, statusUpdates),
     unmanaged: statuses.filter((status) => !claimed.has(normalizeStatusName(status.name))),

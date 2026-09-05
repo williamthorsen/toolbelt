@@ -33,9 +33,9 @@ export async function readProjectConfiguration(
   const board = await readBoard(request, projectKey, key, project.id);
   const issueTypeIds = await readIssueTypeIds(request, projectKey, key);
   const { statuses, workflow } = await readWorkflow(request, projectKey, project.id, issueTypeIds);
-  const features = await readFeatures(request, board.id);
+  const { features, lockedFeatures } = await readFeatures(request, board.id);
 
-  return { board, features, project, statuses, workflow };
+  return { board, features, lockedFeatures, project, statuses, workflow };
 }
 
 // region | Helpers
@@ -108,8 +108,12 @@ interface BoardEntry {
   readonly locationProjectId: string | undefined;
 }
 
-/** Reads the board's live feature states, which the plan's toggles are resolved against. */
-async function readFeatures(request: JiraRequest, boardId: number): Promise<ReadonlyMap<string, string>> {
+/**
+ * Reads the board's live feature states, which the plan's toggles are resolved against, alongside the features
+ * Jira has locked. A locked feature is reported rather than refused: the write against one answers 200 and
+ * changes nothing, so the lock has to reach the planner for the toggle to be left unplanned.
+ */
+async function readFeatures(request: JiraRequest, boardId: number): Promise<BoardFeatures> {
   const response = await requestOk(request, {
     label: `read features for board ${boardId}`,
     method: 'GET',
@@ -121,18 +125,30 @@ async function readFeatures(request: JiraRequest, boardId: number): Promise<Read
     throw new Error(`Board ${boardId} answered without a 'features' array.`);
   }
 
-  const entries: [string, string][] = values.flatMap((value) => {
-    if (!isRecord(value)) return [];
+  const entries: [string, string][] = [];
+  const locked = new Set<string>();
 
-    const { feature, state } = value;
+  for (const value of values) {
+    if (!isRecord(value)) continue;
 
-    return typeof feature === 'string' && typeof state === 'string' ? [[feature, state]] : [];
-  });
+    const { feature, state, toggleLocked } = value;
+    if (typeof feature !== 'string' || typeof state !== 'string') continue;
+
+    entries.push([feature, state]);
+    // Jira omits the flag on features it has never locked, so only an explicit `true` locks one.
+    if (toggleLocked === true) locked.add(feature);
+  }
+
   if (entries.length !== values.length) {
     throw new Error(`Board ${boardId} answered with features that this cannot read.`);
   }
 
-  return new Map(entries);
+  return { features: new Map(entries), lockedFeatures: locked };
+}
+
+interface BoardFeatures {
+  readonly features: ReadonlyMap<string, string>;
+  readonly lockedFeatures: ReadonlySet<string>;
 }
 
 /** Reads every issue-type id held by the project, which the workflow read resolves its workflows from. */

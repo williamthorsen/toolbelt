@@ -13,6 +13,11 @@ export interface FeatureToggle {
 export interface ReconciliationPlan {
   readonly creations: readonly StatusCreation[];
   readonly featureToggles: readonly FeatureToggle[];
+  /**
+   * Toggles the spec asks for that Jira has locked. They are reported and never written: the write answers 200
+   * and changes nothing, so planning one would leave the project short of the spec on every later run.
+   */
+  readonly lockedFeatures: readonly FeatureToggle[];
   readonly statusUpdates: readonly StatusUpdate[];
   readonly transitionRenames: readonly TransitionRename[];
   /** Live statuses claimed by no spec entry. They are reported and left untouched. */

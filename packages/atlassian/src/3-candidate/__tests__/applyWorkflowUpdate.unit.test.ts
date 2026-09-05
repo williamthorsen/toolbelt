@@ -115,7 +115,7 @@ describe(applyWorkflowUpdate, () => {
 
 /** Builds a plan carrying the given status updates and nothing else. */
 function buildPlan(statusUpdates: readonly StatusUpdate[]): ReconciliationPlan {
-  return { creations: [], featureToggles: [], statusUpdates, transitionRenames: [], unmanaged: [] };
+  return { creations: [], featureToggles: [], lockedFeatures: [], statusUpdates, transitionRenames: [], unmanaged: [] };
 }
 
 /** Builds the write and read-back routes, with the read-back answering the given live statuses. */

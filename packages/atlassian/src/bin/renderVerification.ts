@@ -17,7 +17,10 @@ export function renderVerification(report: VerificationReport, columns: BoardCol
     );
   }
   for (const feature of report.features) {
-    lines.push(`  ${mark(feature.matches)} ${feature.feature} = ${feature.state ?? 'absent'}`);
+    // A locked feature that does not match is neither ok nor a fault: no call could have changed it.
+    const marker = feature.locked && !feature.matches ? 'LOCK' : mark(feature.matches);
+    const suffix = feature.locked && !feature.matches ? ', which Jira has locked and no call can set' : '';
+    lines.push(`  ${marker} ${feature.feature} = ${feature.state ?? 'absent'}${suffix}`);
   }
 
   lines.push(`columns  ${columns.columns.join(' | ')}`);

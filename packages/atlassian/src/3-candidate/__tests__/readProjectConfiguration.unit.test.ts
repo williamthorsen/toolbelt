@@ -18,7 +18,27 @@ describe(readProjectConfiguration, () => {
     expect(configuration.statuses.map((status) => status.name)).toStrictEqual(['To Do', 'Done']);
     expect(configuration.workflow.id).toBe('workflow-1');
     expect([...configuration.features]).toStrictEqual([['jsw.agility.backlog', 'DISABLED']]);
+    expect([...configuration.lockedFeatures]).toStrictEqual([]);
     expect(calls).toHaveLength(5);
+  });
+
+  it('carries the features Jira reports as locked', async () => {
+    const routes = {
+      ...buildRoutes(),
+      [`GET /rest/agile/1.0/board/${BOARD_ID}/features`]: {
+        json: {
+          features: [
+            { feature: 'jsw.agility.backlog', state: 'DISABLED', toggleLocked: false },
+            { feature: 'jsw.agility.goals', state: 'DISABLED', toggleLocked: true },
+          ],
+        },
+      },
+    };
+
+    const configuration = await readProjectConfiguration(createFakeRequest(routes).request, KEY);
+
+    expect([...configuration.lockedFeatures]).toStrictEqual(['jsw.agility.goals']);
+    expect(configuration.features.get('jsw.agility.goals')).toBe('DISABLED');
   });
 
   it('carries every issue type into the workflow read rather than the first alone', async () => {
