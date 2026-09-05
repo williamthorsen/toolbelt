@@ -22,7 +22,7 @@ describe(listSites, () => {
     expect(findings).toStrictEqual([]);
   });
 
-  // Guard against a vacuous pass: a broken walk would report no findings either.
+  // Guard against a vacuous pass: A broken walk would report no findings either.
   it('sweeps the detector fixtures alongside the modules and the compiled kit', () => {
     const names = listSweptFiles().map((file) => path.basename(file));
 
