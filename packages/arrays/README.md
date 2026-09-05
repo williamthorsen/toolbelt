@@ -94,7 +94,7 @@ Index must be a safe integer, but received 0.5.
 
 This covers `NaN` and `Infinity` as well. `Array.prototype.at` truncates a fractional index toward zero, so `at(0.5)` and `at(NaN)` both return the first item; here they fail instead, since neither is a plausible thing to have meant.
 
-An item is returned whatever its value: `0`, `''`, `false`, `null`, and even `undefined` all pass through, because presence at the index is what is tested, not the value read from it. Only absence throws.
+An item is returned whatever its value: `0`, `''`, `false`, `null`, and even `undefined` all pass through, because the function tests presence at the index, not the value read from it. Only absence throws.
 
 ## Adoption checks
 
@@ -106,7 +106,7 @@ rdy run --packages
 
 The kit reads the project's tracked sources and reports three hand-rolled idioms in them, each counted against the calls that the project already makes into this package. Two report at `recommend`: they are correct code that a published utility expresses better. The first reports at `warn`, because it is a defect.
 
-A `sort` or `toSorted` comparator is claimed at `warn` where its body decides the order on `Math.random()` and nothing else. Such a comparator does not order consistently, and the engine sorting through it is free to produce any permutation, so the result is neither uniform nor the same across engines. `shuffle` from `/candidate` walks the array backward swapping each item with one drawn at or before it, and takes a seed where a test needs the draw to repeat; `shuffleInPlace` is the mutating form, and a `toSorted` site takes `shuffle`. Claiming the body rather than a spelling is what admits `() => Math.random() - 0.5`, its mirror, and the ternary variants together. A comparator that ranks by its operands and reaches for a draw only to break a tie is not claimed: its body names its own parameters, and `shuffle` does not reproduce it.
+A `sort` or `toSorted` comparator is claimed at `warn` where its body decides the order on `Math.random()` and nothing else. Such a comparator does not order consistently, and the engine sorting through it is free to produce any permutation, so the result is neither uniform nor the same across engines. `shuffle` from `/candidate` walks the array backward swapping each item with one drawn at or before it, and takes a seed where a test needs the draw to repeat; `shuffleInPlace` is the mutating form, and a `toSorted` site takes `shuffle`. Claiming the body rather than a spelling admits `() => Math.random() - 0.5`, its mirror, and the ternary variants together. A comparator that ranks by its operands and reaches for a draw only to break a tie is not claimed: its body names its own parameters, and `shuffle` does not reproduce it.
 
 A `Math.floor(Math.random() * ...)` expression standing in array-subscript position is claimed, whatever it scales the draw by. `pickItem` from `/candidate` replaces it and takes a seed. It is not a silent substitution: `pickItem` throws on an empty array, where the subscript yields `undefined` and pushes the failure downstream. Where the bound is not the subject's own length, check the substitution before taking it, since `pickItem` draws across the whole array. The same expression outside subscript position belongs to `@williamthorsen/toolbelt.numbers`, whose `pickInteger` covers it, and reporting it here would mean seeing one line twice under conflicting advice.
 

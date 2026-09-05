@@ -1,7 +1,7 @@
 /**
  * Collapses each whitespace run to a single space.
  *
- * An anchored window then reads the same however the source was wrapped, which is what lets a pattern span
+ * An anchored window then reads the same however the source was wrapped, which lets a pattern span
  * an expression broken across lines by a formatter.
  *
  * @internal
