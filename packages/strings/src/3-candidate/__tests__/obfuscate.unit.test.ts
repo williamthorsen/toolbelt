@@ -100,7 +100,7 @@ describe(obfuscate, () => {
     expect(() => obfuscate(str, options)).toThrow(new TypeError('fillChar must be a single character.'));
   });
 
-  it('if fillSize is given, display at most {fillSize} fill characters', () => {
+  it('if fillSize is given, displays at most {fillSize} fill characters', () => {
     const options = { bookendSize: 2, fillSize: 3 };
     const str = '123456789';
     const expected = '12***89';

@@ -69,9 +69,9 @@ describe(SeededRng, () => {
 
         // Using the second input: `constructor` + `clone`
         // - `constructor`: The input RNG is evaluated, yielding the 1st pseudorandom value.
-        //   Result: The input RGN's seed is incremented, and the intermediate RGN's seed is the 1st pseudorandom value.
-        // - `clone`: The intermediate RNG is cloned without yielding a value; is seed is inherited by the clone RNG.
-        //   Result: The clone RNG's seed is the same as 1st pseudorandom value.
+        //   Result: The input RNG's seed is incremented, and the intermediate RNG's seed is the 1st pseudorandom value.
+        // - `clone`: The intermediate RNG is cloned without yielding a value; its seed is inherited by the clone RNG.
+        //   Result: The clone RNG's seed is the same as the 1st pseudorandom value.
         const instanceRng = new SeededRng(seedInput2).clone(); // advances the input seed
         expect(seedInput2.seed).not.toBe(SEED_NUMBER); // the input seed is no longer the same as the input seed
         expect(instanceRng.seed).not.toBe(seedInput2.seed); // and the parent's seed has advanced

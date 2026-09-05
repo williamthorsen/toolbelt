@@ -120,7 +120,7 @@ describe(assertNonEmptyArray, () => {
     assertNonEmptyArray(mutableItems);
   });
 
-  it('does not guarantees immunity from side effects', () => {
+  it('does not guarantee immunity from side effects', () => {
     // Array is mutable in the scope of this function
     const items = [1];
 
