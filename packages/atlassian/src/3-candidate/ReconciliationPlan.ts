@@ -29,7 +29,7 @@ export interface StatusCreation {
 /** A live status whose name, category, or both differ from what the spec declares. */
 export interface StatusUpdate {
   readonly category: StatusCategory;
-  /** The live description, which the payload builder keeps or blanks by whether the name changes. */
+  /** The description the status currently carries. */
   readonly description: string;
   readonly from: string;
   readonly fromCategory: string;

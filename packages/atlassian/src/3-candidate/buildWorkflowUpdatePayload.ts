@@ -1,6 +1,7 @@
+import { normalizeStatusName } from '../internal/normalizeStatusName.ts';
 import { assertGraphPreserved } from './assertGraphPreserved.ts';
 import type { ProjectConfiguration, WorkflowTransition } from './ProjectConfiguration.ts';
-import type { ReconciliationPlan } from './ReconciliationPlan.ts';
+import type { ReconciliationPlan, StatusUpdate } from './ReconciliationPlan.ts';
 import type { WorkflowStatusUpdate, WorkflowUpdatePayload } from './WorkflowUpdatePayload.ts';
 
 const TRANSITION_ID_SPACING = 10;
@@ -23,9 +24,9 @@ export function buildWorkflowUpdatePayload(
     const update = plan.statusUpdates.find((entry) => entry.statusReference === status.statusReference);
 
     return {
-      // A renamed status keeps a description written for the status it no longer is; a status whose category
-      // alone changes is still itself, so its description stands.
-      description: update !== undefined && update.to !== update.from ? '' : (status.description ?? ''),
+      // A rename leaves behind a description written for the status it no longer is, so that description goes.
+      // A status whose name changes only in casing, or whose category alone changes, is still itself and keeps its own.
+      description: isRenamed(update) ? '' : (status.description ?? ''),
       id: status.id,
       name: update?.to ?? status.name,
       statusCategory: update?.category ?? status.statusCategory,
@@ -87,3 +88,12 @@ export function buildWorkflowUpdatePayload(
 
   return payload;
 }
+
+// region | Helpers
+
+/** Reports whether an amendment changes which status this is, which a difference of casing alone does not. */
+function isRenamed(update: StatusUpdate | undefined): boolean {
+  return update !== undefined && normalizeStatusName(update.to) !== normalizeStatusName(update.from);
+}
+
+// endregion | Helpers

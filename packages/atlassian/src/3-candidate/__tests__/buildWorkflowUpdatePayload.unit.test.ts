@@ -82,6 +82,32 @@ describe(buildWorkflowUpdatePayload, () => {
     });
   });
 
+  it('keeps the description of a status the spec respells in different casing', () => {
+    const plan = buildPlan({
+      statusUpdates: [
+        {
+          category: 'TODO',
+          description: 'Work not yet started.',
+          from: 'To Do',
+          fromCategory: 'TODO',
+          id: 'id-to-do',
+          statusReference: 'ref-to-do',
+          to: 'To do',
+        },
+      ],
+    });
+
+    const payload = buildWorkflowUpdatePayload(withDescribedStatus(), plan);
+
+    expect(payload.statuses[0]).toStrictEqual({
+      description: 'Work not yet started.',
+      id: 'id-to-do',
+      name: 'To do',
+      statusCategory: 'TODO',
+      statusReference: 'ref-to-do',
+    });
+  });
+
   it('adds a created status, its layout entry, and a transition into it', () => {
     const plan = buildPlan({
       creations: [{ category: 'IN_PROGRESS', name: 'In Review', statusReference: 'ref-in-review' }],
