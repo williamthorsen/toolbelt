@@ -36,7 +36,7 @@ export function throwOnProcessExit(): MockedProcessExit {
 }
 
 /**
- * Error thrown in place of a process exit, carrying the code the call passed.
+ * Error thrown in place of a process exit, carrying the code that the call passed.
  *
  * @category Testing
  * @experimental

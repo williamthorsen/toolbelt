@@ -12,7 +12,7 @@ import { silenceConsole } from '../silenceConsole.ts';
 const disposalLog: string[] = [];
 
 describe(disposeOnTestFinished, () => {
-  it('returns the value it was given', () => {
+  it('returns the value that it was given', () => {
     const probe = makeProbe('returned');
 
     expect(disposeOnTestFinished(probe)).toBe(probe);
@@ -35,7 +35,7 @@ describe(disposeOnTestFinished, () => {
 
       expect(disposalLog).not.toContain('failed');
 
-      throw new Error('the failure this test exists to produce');
+      throw new Error('the failure that this test exists to produce');
     });
 
     it('disposes the value of a test that failed', () => {
@@ -90,7 +90,7 @@ describe(disposeOnTestFinished, () => {
       expect(silent.warn).toHaveBeenCalledWith('hush');
     });
 
-    // Registered after the tree it points into, so the reverse order restores cwd before the directory is removed.
+    // Registered after the tree that it points into, so the reverse order restores cwd before the directory is removed.
     it('points the working directory at a tree', () => {
       const tree = disposeOnTestFinished(createTempTree({ 'src/': '' }));
       const cwd = disposeOnTestFinished(pointCwdAt(tree.dir));
@@ -104,11 +104,11 @@ describe(disposeOnTestFinished, () => {
       disposeOnTestFinished(makeProbe('before-hook'));
     });
 
-    it('registers against the test the hook is running for', () => {
+    it('registers against the test that the hook is running for', () => {
       expect(disposalLog).not.toContain('before-hook');
     });
 
-    it('disposes once per test the hook ran for', () => {
+    it('disposes once per test that the hook ran for', () => {
       expect(countOf(disposalLog, 'before-hook')).toBe(1);
     });
   });

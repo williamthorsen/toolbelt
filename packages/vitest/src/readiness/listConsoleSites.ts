@@ -34,7 +34,7 @@ const WINDOW = { lookahead: 0, lookbehind: 64 };
  * and scans the blanked code directly.
  *
  * A read reports only once its receiver resolves to a console spy, either a name bound to one or a member of a
- * `silenceConsole` result. That is what keeps a read of some other spy's calls silent. A read chained straight
+ * `silenceConsole` result. That keeps a read of some other spy's calls silent. A read chained straight
  * onto the spy call binds no name, so it reports at the spy's own site instead.
  *
  * @internal
@@ -45,7 +45,7 @@ export function listConsoleSites(source: string): ConsoleSite[] {
   const spyBindings = new Set<string>();
 
   for (const match of source.matchAll(SPY)) {
-    // The anchor's own first character survives blanking exactly where the spy is code the runtime runs.
+    // The anchor's own first character survives blanking exactly where the spy is code that the runtime runs.
     if (code[match.index] !== source[match.index]) continue;
 
     const binding = BINDING_TAIL.exec(readLookbehind(code, match.index))?.[1];

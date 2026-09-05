@@ -39,7 +39,7 @@ it('resolves a source directory', () => {
 });
 ```
 
-The builder is where this earns its place. It takes per-call arguments, so the resource cannot be built by a no-argument factory; it returns a value derived from the resource rather than the resource itself, so the caller has nothing to bind with `using`; and the tree has to outlive the builder's own scope, so `using` inside the builder would delete it before the test read a byte. Returning the value unchanged is what lets the construction be wrapped in place, leaving the call site with no lifetime code at all.
+The builder is where this earns its place. It takes per-call arguments, so the resource cannot be built by a no-argument factory; it returns a value derived from the resource rather than the resource itself, so the caller has nothing to bind with `using`; and the tree has to outlive the builder's own scope, so `using` inside the builder would delete it before the test read a byte. Returning the value unchanged lets the construction be wrapped in place, leaving the call site with no lifetime code at all.
 
 Making the returned value `Disposable` instead is the alternative, and it distorts the type: a `Catalog` that also deletes temporary directories is the wrong shape, and a builder assembling several trees has several disposals to carry rather than one.
 
@@ -48,7 +48,7 @@ Making the returned value `Disposable` instead is the alternative, and it distor
 The two divide by lifetime, not by call site:
 
 - `disposeOnTestFinished` for a resource scoped to one test. It registers against whichever test is running, so it works from the test body and from `beforeEach` or `afterEach` alike.
-- [`makeFixture`](#makefixture) for a resource that outlives one test. Scope belongs to `test.extend` there, which is what reaches `file` and `worker`.
+- [`makeFixture`](#makefixture) for a resource that outlives one test. Scope belongs to `test.extend` there, which reaches `file` and `worker`.
 
 Outside a test entirely -- at module scope, in a `describe` body, or in `beforeAll` or `afterAll` -- there is no test to register against, and Vitest throws `Hook onTestFinished() can only be called inside a test`. A resource wanted at that scope is a fixture, so `makeFixture` is the answer there rather than a workaround here.
 
@@ -102,7 +102,7 @@ console.error('failed:', 3, new Error('boom'));
 // 'failed: 3 Error: boom'
 ```
 
-`String` is what keeps that `Error` at its message rather than its stack. It is also where the rendering stops: an object reads as `[object Object]`, and a `%s` format specifier is not substituted. A test asserting on what the stream received, rather than on what the call was given, wants [`captureStdio`](https://github.com/williamthorsen/toolbelt/tree/main/packages/testing#capturestdio) in `@williamthorsen/toolbelt.testing`, which renders through `util.format`.
+`String` keeps that `Error` at its message rather than its stack. It is also where the rendering stops: an object reads as `[object Object]`, and a `%s` format specifier is not substituted. A test asserting on what the stream received, rather than on what the call was given, wants [`captureStdio`](https://github.com/williamthorsen/toolbelt/tree/main/packages/testing#capturestdio) in `@williamthorsen/toolbelt.testing`, which renders through `util.format`.
 
 A caller wanting one string joins the array:
 
@@ -166,7 +166,7 @@ it('resolves a path within the tree', () => {
 });
 ```
 
-That read site is bought per resource type, at around forty lines: a guard reporting reads that arrive outside the scope, a forward per method, and an interface of the handle's own, since a handle cannot forward `[Symbol.dispose]`. The cost pays for itself across many suites and not within one.
+That read site costs around forty lines per resource type: a guard reporting reads that arrive outside the scope, a forward per method, and an interface of the handle's own, since a handle cannot forward `[Symbol.dispose]`. The cost pays for itself across many suites and not within one.
 
 `makeFixture` costs nothing per type. It makes the out-of-scope read unrepresentable rather than guarded, the value existing only as a test parameter, and it builds only for the tests that name it, where a handle's `beforeEach` builds for every test in the file.
 
@@ -176,7 +176,7 @@ A resource that no test names -- one installed around a test rather than read by
 
 ### Wrapping tests with `aroundEach` and `aroundAll`
 
-A resource that a test reads is named by that test. A resource installed around a test is not: a pointed working directory exists to serve code resolving paths through `process.cwd()`, so the tests needing it hold no value and name no fixture, and a lazily built fixture leaves them running against the real working directory. Requesting the fixture from a wrapping hook is what builds it:
+A resource that a test reads is named by that test. A resource installed around a test is not: a pointed working directory exists to serve code resolving paths through `process.cwd()`, so the tests needing it hold no value and name no fixture, and a lazily built fixture leaves them running against the real working directory. Requesting the fixture from a wrapping hook builds it:
 
 ```ts
 const it = test.extend('tree', makeFixture(() => createTempTree({ 'tsconfig.json': '{}\n' })));
@@ -200,7 +200,7 @@ The suite pins the `aroundEach` request, the `aroundAll` counterpart, and the fi
 
 ### Scope
 
-Scope belongs to `test.extend` rather than to the adapter, so `test`, `file`, and `worker` all work through it. A fixture is built only when a test names it, which is what keeps a temporary directory from being created for tests that never touch one. `{ auto: true }` opts out of that laziness, for a fixture such as a console silencer that should apply whether or not a test names it.
+Scope belongs to `test.extend` rather than to the adapter, so `test`, `file`, and `worker` all work through it. A fixture is built only when a test names it, which keeps a temporary directory from being created for tests that never touch one. `{ auto: true }` opts out of that laziness, for a fixture such as a console silencer that should apply whether or not a test names it.
 
 `worker` scope reaches past a single file only where the runner shares a worker between files, which Vitest's default isolation prevents: each file takes its own process, so a worker-scoped fixture builds and disposes once per file exactly as a file-scoped one does. A resource worth building once for a whole run belongs in `globalSetup`, which runs outside the workers and gives up no isolation.
 
@@ -248,7 +248,7 @@ it('falls back to defaults when settings are missing', () => {
 });
 ```
 
-Each spy records its calls while suppressing the output, so a console call can be asserted on without reaching the terminal. [`listConsoleLines`](#listconsolelines) renders those calls as the lines that the method would have written. Binding with `using` is what restores the originals when the block exits.
+Each spy records its calls while suppressing the output, so a console call can be asserted on without reaching the terminal. [`listConsoleLines`](#listconsolelines) renders those calls as the lines that the method would have written. Binding with `using` restores the originals when the block exits.
 
 Called with no argument, it silences all five methods:
 
@@ -341,7 +341,7 @@ Each check prints one fraction, and it measures the kit rather than the check: c
 | `no-non-throwing-exit-mock`      | a `process.exit` mock that returns                                        | `warn`      |
 | `no-hand-rolled-exit-mock`       | a throwing or unreadable `process.exit` mock                              | `recommend` |
 | `no-lossy-console-capture`       | a console capture whose parameter list names its arguments                | `warn`      |
-| `no-hand-rolled-console-capture` | a console capture keeping every argument, or one the kit could not read   | `recommend` |
+| `no-hand-rolled-console-capture` | a console capture keeping every argument, or one that the kit cannot read | `recommend` |
 | `no-hand-rolled-console-silence` | a console method silenced with a no-op mock                               | `recommend` |
 | `no-console-calls-read`          | a read of a console spy's `mock.calls` or `mock.lastCall`                 | `recommend` |
 | `no-hand-rolled-test-disposal`   | an `onTestFinished` callback that disposes a value                        | `recommend` |
@@ -354,9 +354,9 @@ A console capture whose parameter list names its arguments drops every argument 
 
 ### What the kit reads
 
-Only test files are read, which inverts the exemption `@williamthorsen/toolbelt.errors` makes. That kit exempts tests because a test constructs error shapes deliberately; each of these idioms exists nowhere else.
+Only test files are read, which inverts the exemption that `@williamthorsen/toolbelt.errors` makes. That kit exempts tests because a test constructs error shapes deliberately; each of these idioms exists nowhere else.
 
-Only the five methods [`silenceConsole`](#silenceconsole) covers are anchored, and only through `vi.spyOn`. A spy on `console.table` gets no advice, because the package has none to give, and an assignment such as `console.error = vi.fn()` is not read, because the same anchor matches a restore as readily as a mock.
+Only the five methods that [`silenceConsole`](#silenceconsole) covers are anchored, and only through `vi.spyOn`. A spy on `console.table` gets no advice, because the package has none to give, and an assignment such as `console.error = vi.fn()` is not read, because the same anchor matches a restore as readily as a mock.
 
 A read of a spy's recorded calls reports once its receiver resolves to a console spy, either a name bound to one or a member of a `silenceConsole` result. A read of any other spy's calls stays silent, and one chained straight onto the spy call binds no name, so it reports at the spy's own site instead.
 

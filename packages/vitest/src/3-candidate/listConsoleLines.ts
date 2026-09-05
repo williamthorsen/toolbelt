@@ -3,7 +3,7 @@ import type { MockInstance } from 'vitest';
 /**
  * Lists the lines received by a spied console method, one per call.
  *
- * Reads the spy `silenceConsole` hands back, so the two compose; a `vi.spyOn` spy on a console method reads the
+ * Reads the spy that `silenceConsole` hands back, so the two compose; a `vi.spyOn` spy on a console method reads the
  * same way.
  *
  * Each call's arguments render through `String` and join on a space, so an `Error` reads as its message. A test
