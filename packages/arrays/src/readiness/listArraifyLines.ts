@@ -1,6 +1,6 @@
 import { getLineAtOffset } from '@williamthorsen/toolbelt.adoption';
 
-// The subject is captured once and matched again in both branches, which is what makes the ternary a wrap
+// The subject is captured once and matched again in both branches, which makes the ternary a wrap
 // rather than a choice between two unrelated values. `\s*` sits at every joint because the expression has no
 // fixed-width span to bound and a formatter may wrap it at any of them. Each bare backreference carries a
 // trailing lookahead, so a branch reading `xs` or `x.tail` is not mistaken for the subject `x`.

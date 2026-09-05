@@ -23,10 +23,10 @@ const IDENTIFIER_CHARACTER = /[A-Za-z_$]/;
  * Takes the blanked code produced by `listArrayIdioms`, so a comparator written in a comment or a literal is not
  * one.
  *
- * A comparator is claimed for what its body does not hold rather than for a spelling: strip the draw and a
+ * A comparator is claimed for what its body does not hold rather than for a spelling: Strip the draw and a
  * `return` from the body, and a residue carrying no identifier proves the body ordered on the draw alone. That
  * admits the subtractive forms, their mirror, and the ternary forms together, and it declines a comparator
- * that ranks by its operands and reaches for a draw only to break a tie -- a body naming its own parameters,
+ * that ranks by its operands and uses a draw only to break a tie -- a body naming its own parameters,
  * which a shuffle does not reproduce.
  *
  * @internal
@@ -80,9 +80,9 @@ function isRandomComparator(argument: string): boolean {
 /**
  * Returns a comparator's body, or nothing where the argument is neither an arrow nor an inline function.
  *
- * A block body is returned with its braces, which the residue test reads past: only an identifier disqualifies
- * a body, and a brace is not one. A named reference passed as the comparator yields nothing, its body not
- * being here to read.
+ * A block body is returned with its braces, which the residue test reads past: Only an identifier disqualifies
+ * a body, and a brace is not one. A named reference passed as the comparator yields nothing, since its body
+ * is not here to read.
  */
 function readComparatorBody(argument: string): string | undefined {
   const text = stripWrappingGroup(argument.trimStart());

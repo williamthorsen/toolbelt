@@ -10,7 +10,8 @@ import { ADOPTED_EXPORTS } from '../adoptedExports.ts';
 const PUBLISHED_TIERS = [proposedExports, draftExports, candidateExports, releaseExports];
 
 describe('ADOPTED_EXPORTS', () => {
-  // Fails when a published tier gains a callable export that nothing added to the list adoption is counted against.
+  // Fails when a published tier gains a callable export that nothing added to the list against which adoption is
+  // counted.
   it('names every export that a consumer calls', () => {
     const callable = PUBLISHED_TIERS.flatMap((tier) =>
       Object.entries(tier)
