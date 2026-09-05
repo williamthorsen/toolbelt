@@ -8,14 +8,14 @@ const MAX_UINT32 = 0xffff_ffff;
  * Derives a number from a branch name: the number of the ticket encoded by the name, or a hash of the name
  * when it encodes none, so a branch always yields a stable number. `min` and `max` bound the result
  * inclusively, and `offset` rotates it, wrapping at the bounds. Throws a RangeError on a malformed `key`,
- * or on a bound or offset hashString rejects.
+ * or on a bound or offset rejected by hashString.
  *
  * @category Git
  * @experimental
  * @stage candidate
  */
 export function deriveBranchNumber(branch: string, options: DeriveBranchNumberOptions = {}): number {
-  // Hashing before the branch decision is what makes hashString validate the bounds on both paths.
+  // Hashing before the branch decision makes hashString validate the bounds on both paths.
   const digest = hashString(branch, options);
   const ref = findBranchTicketRef(branch, options);
 
@@ -30,7 +30,7 @@ export interface DeriveBranchNumberOptions extends BranchTicketRefOptions {
 
 // region | Helpers
 
-/** Wraps a value into the inclusive range and rotates it, mirroring the bounding hashString applies to its digest. */
+/** Wraps a value into the inclusive range and rotates it, mirroring how hashString bounds its digest. */
 function wrapIntoRange(value: number, options: DeriveBranchNumberOptions): number {
   const { max = MAX_UINT32, min = 0, offset = 0 } = options;
 

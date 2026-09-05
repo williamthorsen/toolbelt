@@ -288,7 +288,7 @@ describe(SeededRng, () => {
     });
   });
 
-  describe('withSeed() - configured base function', () => {
+  describe('withSeed(): Configured base function', () => {
     function pickLetter(options?: { seed?: Seed | undefined }): string {
       const letterIndex = pickInteger({ min: 0, max: 25, seed: options?.seed });
 
@@ -316,7 +316,7 @@ describe(SeededRng, () => {
       expect(letters1).toStrictEqual(letters2);
     });
 
-    it('supplies a generator of the class the method is called on', () => {
+    it('supplies a generator of the class on which the method is called', () => {
       function captureSeed(options?: { seed?: Seed | undefined }): Seed | undefined {
         return options?.seed;
       }

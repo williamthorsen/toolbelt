@@ -49,9 +49,9 @@ round(3.14159, 2); // 3.14
 pickInteger(params?: { min?: number; max?: number; seed?: Seed }): number;
 ```
 
-Returns a random integer between the bounds, **inclusive** of both, and truncates a non-integer bound. Passing a seed makes the draw deterministic, which is what a test wants.
+Returns a random integer between the bounds, **inclusive** of both, and truncates a non-integer bound. Passing a seed makes the draw deterministic, which a test wants.
 
-Mind the bound when replacing `Math.floor(Math.random() * n)`: that idiom stops at `n - 1`, so the equivalent is `pickInteger({ max: n - 1 })`.
+Mind the bound when replacing `Math.floor(Math.random() * n)`: That idiom stops at `n - 1`, so the equivalent is `pickInteger({ max: n - 1 })`.
 
 ```ts
 import { pickInteger } from '@williamthorsen/toolbelt.numbers/candidate';
@@ -67,11 +67,11 @@ The package ships a ReadyUp kit, so a project that installs it can ask how far i
 rdy run --packages
 ```
 
-The kit reads the project's tracked sources and reports every hand-rolled clamp, decimal rounding, and random integer in them, each counted against the calls that the project already makes into this package. All three report at `recommend`: they are correct code that a published utility expresses better, not defects.
+The kit reads the project's tracked sources and reports every hand-rolled clamp, decimal rounding, and random integer in them, each counted against the calls that the project already makes into this package. All three report at `recommend`: They are correct code that a published utility expresses better, not defects.
 
 A random integer used as an array subscript is left alone. That site belongs to `@williamthorsen/toolbelt.arrays`, whose `pickItem` covers it, and reporting it here would mean seeing one line twice under conflicting advice.
 
-Bootstrap wrappers under `bin/` are exempt: such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they compute these values deliberately. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: the sweep drops it before the kit sees it, so committed bundler output yields no advice that anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
+Bootstrap wrappers under `bin/` are exempt: Such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they compute these values deliberately. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: The sweep drops it before the kit sees it, so committed bundler output yields no advice that anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
 
 A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
 

@@ -21,7 +21,7 @@ describe(assertIsNonNullable, () => {
     const value = asNullishUnion('');
     expectTypeOf(value).toEqualTypeOf<string | null | undefined>();
 
-    // @ts-expect-error `string | null` omits the `undefined` that the value's type carries.
+    // @ts-expect-error `string | null` omits the `undefined` that the value's type includes.
     assertIsNonNullable<string | null>(value);
   });
 });
@@ -41,7 +41,7 @@ describe(isNonNullable, () => {
   it('narrows each branch of a nullish union', () => {
     const value = asNullishUnion('');
 
-    // eslint-disable-next-line vitest/no-conditional-in-test -- the branches carry type assertions, not runtime logic.
+    // eslint-disable-next-line vitest/no-conditional-in-test -- the branches have type assertions, not runtime logic.
     if (isNonNullable(value)) {
       expectTypeOf(value).toEqualTypeOf<string>();
     } else {
@@ -53,7 +53,7 @@ describe(isNonNullable, () => {
     const value = asNullishUnion('');
     expectTypeOf(value).toEqualTypeOf<string | null | undefined>();
 
-    // @ts-expect-error `string | null` omits the `undefined` that the value's type carries.
+    // @ts-expect-error `string | null` omits the `undefined` that the value's type includes.
     isNonNullable<string | null>(value);
   });
 });
@@ -77,7 +77,7 @@ describe(isNullish, () => {
   it('narrows each branch of a nullish union', () => {
     const value = asNullishUnion('');
 
-    // eslint-disable-next-line vitest/no-conditional-in-test -- the branches carry type assertions, not runtime logic.
+    // eslint-disable-next-line vitest/no-conditional-in-test -- the branches have type assertions, not runtime logic.
     if (isNullish(value)) {
       expectTypeOf(value).toEqualTypeOf<null | undefined>();
     } else {

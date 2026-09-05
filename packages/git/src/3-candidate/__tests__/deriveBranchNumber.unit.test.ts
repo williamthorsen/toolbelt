@@ -28,8 +28,8 @@ describe(deriveBranchNumber, () => {
     );
   });
 
-  // A branch named for a digest reaches the ref path carrying the value hashString would have bounded, so the two
-  // bounding formulas have to agree. The option-free case is what catches a change to the default range.
+  // A branch named for a digest reaches the ref path with the value that hashString would have bounded, so the two
+  // bounding formulas have to agree. The option-free case catches a change to the default range.
   it.each([{}, { min: 3_000, max: 3_999, offset: 7 }])(
     'bounds a ref number as hashString bounds a digest',
     (options) => {
@@ -57,7 +57,7 @@ describe(deriveBranchNumber, () => {
   });
 
   describe('given a bad option', () => {
-    // The ref path discards the digest but still pays for hashString's option validation, which is what these cases pin.
+    // The ref path discards the digest but still pays for hashString's option validation, which these cases pin.
     it.each(['232', TICKETLESS])('rejects an inverted range for the branch %o', (branch) => {
       expect(() => deriveBranchNumber(branch, { min: 5, max: 1 })).toThrow(RangeError);
     });

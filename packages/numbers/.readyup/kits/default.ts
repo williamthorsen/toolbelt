@@ -4,7 +4,7 @@
  * The kit ships inside the package, so it runs only where the package is installed and always at the version
  * that the consumer has. Installing the package is the consent on which these checks rest.
  *
- * The checks take inventory rather than banning a pattern. Every one of them is a `recommend`: a hand-rolled
+ * The checks take inventory rather than banning a pattern. Every one of them is a `recommend`: A hand-rolled
  * clamp, decimal rounding, or random integer is correct code that a published utility expresses better, not a
  * defect. Nothing here is `error`, and nothing is `warn`.
  *
@@ -25,8 +25,8 @@ export default defineAdoptionKit({
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: 'the project holds no JavaScript or TypeScript sources outside the exempt paths',
   packageName: PACKAGE_NAME,
-  // A test computes these values deliberately, and a bootstrap wrapper's hand-rolled arithmetic is what keeps
-  // its build-first message alive through an incomplete install.
+  // A test computes these values deliberately, and a bootstrap wrapper's hand-rolled arithmetic keeps its
+  // build-first message alive through an incomplete install.
   pathFilter: isAdoptableSource,
   checks: [
     {
@@ -41,7 +41,7 @@ export default defineAdoptionKit({
       id: 'no-hand-rolled-round',
       kinds: ['round-scale'],
       severity: 'recommend',
-      fix: `Replace each expression named above with round from ${PACKAGE_NAME}/candidate, called as round(value, places). The substitution is exact: round scales by the same power of ten these sites write out. Reference: ${README_URL}`,
+      fix: `Replace each expression named above with round from ${PACKAGE_NAME}/candidate, called as round(value, places). The substitution is exact: round scales by the same power of ten that these sites write out. Reference: ${README_URL}`,
     },
     {
       name: 'No source derives a random integer by hand',
