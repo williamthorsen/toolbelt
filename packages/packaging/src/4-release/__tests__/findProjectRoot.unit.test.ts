@@ -79,7 +79,7 @@ describe(findProjectRoot, () => {
     expect(result).toStrictEqual({ marker: null, rootDir: tree.resolve('app/src'), source: 'start-dir' });
   });
 
-  it('probes no directory above the marker it finds', () => {
+  it('probes no directory above the marker that it finds', () => {
     using tree = createTempTree({ '.git/': '', 'app/src/': '' });
 
     findProjectRoot(tree.resolve('app/src'));

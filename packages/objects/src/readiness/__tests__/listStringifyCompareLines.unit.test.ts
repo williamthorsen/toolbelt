@@ -11,7 +11,7 @@ describe(listStringifyCompareLines, () => {
     expect(listStringifyCompareLines('const differs = JSON.stringify(a) !== JSON.stringify(b);\n')).toStrictEqual([1]);
   });
 
-  // Both operands are strings, so the loose test answers exactly what the strict one answers.
+  // Both operands are strings, so the loose test returns exactly what the strict one returns.
   it('claims a loose equality test', () => {
     expect(listStringifyCompareLines('const same = JSON.stringify(a) == JSON.stringify(b);\n')).toStrictEqual([1]);
   });

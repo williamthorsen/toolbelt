@@ -1,5 +1,5 @@
 /**
- * The package's callable exports, which adoption is counted in calls to.
+ * The package's callable exports. Adoption is counted in calls to them.
  *
  * `hasOwnProperty` names a method carried by every object, and adoption is counted by matching a call name in
  * a file that imports the package, so a call on the value itself would count as adoption. It is listed anyway:

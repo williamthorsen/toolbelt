@@ -188,7 +188,7 @@ describe(isRecordOrArray, () => {
     { label: 'null', value: null, expected: false },
     { label: 'undefined', value: undefined, expected: false },
     { label: 'a string', value: 'a', expected: false },
-  ])('answers $expected for $label', ({ value, expected }) => {
+  ])('returns $expected for $label', ({ value, expected }) => {
     expect(isRecordOrArray(value)).toBe(expected);
   });
 

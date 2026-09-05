@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { resolveOwningManifest } from '../resolveOwningManifest.ts';
 
 describe(resolveOwningManifest, () => {
-  it('answers with the nearest manifest declaring a name', () => {
+  it('returns the nearest manifest declaring a name', () => {
     using tree = createTempTree({
       'package.json': manifest({ name: 'outer', version: '1.0.0' }),
       'packages/app/package.json': manifest({ name: 'app', version: '2.0.0' }),
@@ -87,7 +87,7 @@ function manifest(fields: Record<string, unknown>): string {
 }
 
 /**
- * Renders the `import.meta.url` a module at `filePath` would carry. The file need not exist: the ascent
+ * Renders the `import.meta.url` that a module at `filePath` would carry. The file need not exist: The ascent
  * reads manifests alone, which is what lets a compiled layout be described without compiling one.
  */
 function moduleUrl(filePath: string): string {

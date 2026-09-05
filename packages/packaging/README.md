@@ -24,7 +24,7 @@ Resolves `startDir` to an absolute path, ascends from it, and returns the first 
 
 ```ts
 interface ProjectRoot {
-  marker: string | null; // the marker that matched, or null when a fallback answered
+  marker: string | null; // the marker that matched, or null when a fallback identified the root
   rootDir: string;
   source: 'marker' | 'package-json' | 'start-dir';
 }
@@ -47,7 +47,7 @@ import { DEFAULT_ROOT_MARKERS, findProjectRoot } from '@williamthorsen/toolbelt.
 findProjectRoot(process.cwd(), { markers: [...DEFAULT_ROOT_MARKERS, 'deno.json'] });
 ```
 
-Each marker is a path relative to the level against which it is probed, on the terms [`listDirectoryChainMatches`](https://github.com/williamthorsen/toolbelt/tree/main/packages/filesystem#listdirectorychainmatches) sets out: one that is absolute, or whose `..` segments escape its level, is rejected before any directory is probed.
+Each marker is a path relative to the level against which it is probed, on the terms set out by [`listDirectoryChainMatches`](https://github.com/williamthorsen/toolbelt/tree/main/packages/filesystem#listdirectorychainmatches): one that is absolute, or whose `..` segments escape its level, is rejected before any directory is probed.
 
 When no directory up to and including the filesystem root carries a marker, the result falls back in this order, reporting a `null` marker either way:
 
@@ -56,7 +56,7 @@ When no directory up to and including the filesystem root carries a marker, the 
 
 The ascent terminates at the filesystem root on every platform, so a Windows drive root or UNC share is as safe a starting point as a POSIX path.
 
-A project root is not a package root: this answers "which checkout am I in", where [`findPackageRoot`](#findpackageroot) answers "which package declares me". A monorepo has one project root and many package roots.
+A project root is not a package root: This answers "which checkout am I in", where [`findPackageRoot`](#findpackageroot) answers "which package declares me". A monorepo has one project root and many package roots.
 
 ## `findPackageRoot`
 
@@ -76,18 +76,18 @@ import { findPackageRoot } from '@williamthorsen/toolbelt.packaging/candidate';
 const templatesDir = path.join(findPackageRoot(import.meta.url), 'templates');
 ```
 
-Pass `import.meta.url`. A module's own URL is the only input that answers correctly from both a source tree and a compiled one, because the two sit at different depths and no fixed number of `..` hops suits both.
+Pass `import.meta.url`. A module's own URL is the only input that resolves correctly from both a source tree and a compiled one, because the two sit at different depths and no fixed number of `..` hops suits both.
 
 The owning package is the nearest ancestor whose `package.json` declares a `name`. That rule is what distinguishes this from `findPackageJSON` in `node:module`, which answers the different question of which manifest _governs_ a file:
 
 ```jsonc
-// dist/cjs/package.json -- a marker manifest, declaring no name
+// dist/cjs/package.json: a marker manifest, declaring no name
 { "type": "commonjs" }
 ```
 
 A dual-format build leaves that file so the runtime parses `dist/cjs/` as CommonJS. `findPackageJSON` stops there and reports it; `findPackageRoot` passes over it and keeps ascending to the manifest that declares the package's identity.
 
-A module belonging to no named package throws, rather than falling back to a directory that merely looks plausible, which is why the return is a bare string with no evidence to interpret. A manifest that is unreadable as JSON, or that parses to something other than an object, throws by name rather than being skipped: corruption is a defect, not an absence.
+A module belonging to no named package throws, rather than falling back to a directory that merely looks plausible, which is why the return is a bare string with no evidence to interpret. A manifest that is unreadable as JSON, or that parses to something other than an object, throws by name rather than being skipped: Corruption is a defect, not an absence.
 
 ## `resolveSelfVersion`
 

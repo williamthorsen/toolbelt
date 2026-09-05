@@ -2,8 +2,8 @@ import { getLineAtOffset, PARENTHESES, readBalancedGroup } from '@williamthorsen
 
 const STRINGIFY_CALL = /(?<![\w$.])JSON\s*\.\s*stringify\s*\(/g;
 // What must follow the first call's argument list. Sticky, so it anchors at the offset reported by the
-// balanced read rather than scanning forward from it. Loose equality counts: both operands are strings, so it
-// answers exactly what the strict test answers, and it is the same defect.
+// balanced read rather than scanning forward from it. Loose equality counts: Both operands are strings, so it
+// returns exactly what the strict test returns, and it is the same defect.
 const COMPARED_TO_STRINGIFY = /\s*[!=]==?\s*JSON\s*\.\s*stringify\s*\(/y;
 
 /**

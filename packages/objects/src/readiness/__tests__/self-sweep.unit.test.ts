@@ -12,7 +12,7 @@ const READINESS_DIR = fileURLToPath(new URL('..', import.meta.url));
 
 describe(listObjectIdioms, () => {
   // Every fix text describes its idiom without writing it out, which is what keeps the kit off its own report:
-  // a spelled-out idiom would be a site in the source and again in the bundle. readyup drops the compiled
+  // A spelled-out idiom would be a site in the source and again in the bundle. readyup drops the compiled
   // bundle from its own sweep, and nothing in CI runs `rdy run --packages`, so this suite is what fails on an
   // edit that spells one out.
   it('finds nothing in the sources describing what it looks for', () => {
@@ -23,7 +23,7 @@ describe(listObjectIdioms, () => {
     expect(findings).toStrictEqual([]);
   });
 
-  // Guard against a vacuous pass: a broken walk would report no findings either.
+  // Guard against a vacuous pass: A broken walk would report no findings either.
   it('sweeps the modules and the compiled kit alike', () => {
     expect(listSweptFiles().map((file) => path.basename(file))).toContain('default.js');
     expect(listSweptFiles().length).toBeGreaterThan(5);

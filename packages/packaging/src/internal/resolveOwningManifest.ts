@@ -7,10 +7,10 @@ import { listDirectoryChain } from '@williamthorsen/toolbelt.filesystem';
 /**
  * Returns the manifest of the package that owns the module at `fromUrl`, together with where it was found.
  *
- * Ascends from the module's own directory and answers with the first `package.json` declaring a `name`. One
- * that declares none is a marker manifest, such as the `{"type": "commonjs"}` file a dual-format build leaves
- * in `dist/`, and the ascent passes over it. That is the whole difference from `node:module`'s
- * `findPackageJSON`, which answers with the nearest manifest whatever it holds.
+ * Ascends from the module's own directory and returns the first `package.json` declaring a `name`. One that
+ * declares none is a marker manifest, such as the `{"type": "commonjs"}` file left in `dist/` by a dual-format
+ * build, and the ascent passes over it. That is the whole difference from `node:module`'s `findPackageJSON`,
+ * which returns the nearest manifest whatever it holds.
  *
  * @internal
  */
@@ -38,7 +38,7 @@ export interface OwningManifest {
   packageDir: string;
 }
 
-/** Only the fields this package reads are declared, and each as `unknown`, since a manifest is untrusted JSON. */
+/** Only the fields read by this package are declared, and each as `unknown`, since a manifest is untrusted JSON. */
 export interface PackageManifest {
   name?: unknown;
   version?: unknown;
@@ -46,7 +46,7 @@ export interface PackageManifest {
 
 // region | Helpers
 /**
- * Narrows parsed JSON to a manifest shape, which is any JSON object: every declared field is optional.
+ * Narrows parsed JSON to a manifest shape, which is any JSON object: Every declared field is optional.
  *
  * Arrays are excluded explicitly, since `typeof` reports one as an object. An array admitted here would be
  * passed over as nameless, making a malformed manifest resolve to an ancestor instead of raising.

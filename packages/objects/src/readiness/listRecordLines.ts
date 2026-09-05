@@ -2,7 +2,7 @@ import { getLineAtOffset, readLiteral } from '@williamthorsen/toolbelt.adoption'
 
 const OBJECT_TAG = 'object';
 const SUBJECT = String.raw`[\w$]+(?:\.[\w$]+)*`;
-// A quoted literal of any content: blanking replaces a literal's characters with spaces, so what it holds is
+// A quoted literal of any content: Blanking replaces a literal's characters with spaces, so what it holds is
 // read from the unblanked source instead.
 const QUOTED = String.raw`(?<literal>(?<quote>['"])[^'"\n]*\k<quote>)`;
 // The array exclusion omitted by the shorter form, then the guard that ends the claim where the conjunction
@@ -25,7 +25,7 @@ const NULL_FIRST = new RegExp(
  *
  * Takes both texts. The conjunction is matched on the blanked code, so a guard written in a comment is not
  * one, and the compared literal is then read from the unblanked source at the offset reported by the match:
- * blanking replaces a literal's characters with spaces in place, so the two texts stay aligned while only the
+ * Blanking replaces a literal's characters with spaces in place, so the two texts stay aligned while only the
  * unblanked one still says what the literal holds.
  *
  * Both operand orders count, and both lengths: the conjunction alone, which `isRecordOrArray` replaces, and

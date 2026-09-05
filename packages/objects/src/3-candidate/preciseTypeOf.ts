@@ -1,7 +1,7 @@
 import { isPlainObject } from '../4-release/is-object.ts';
 
 /**
- * Returns `typeof value`, except that the "object" type is replaced by more the precise types defined in
+ * Returns `typeof value`, except that the "object" type is replaced by the more precise types defined in
  * `preciseObjectTypeOf`.
  */
 export function preciseTypeOf(value: unknown): PreciseType {
