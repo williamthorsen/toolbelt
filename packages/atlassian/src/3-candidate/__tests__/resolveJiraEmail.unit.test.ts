@@ -13,7 +13,7 @@ describe(resolveJiraEmail, () => {
     expect(resolveJiraEmail({ env: { JIRA_EMAIL: EMAIL } })).toBe(EMAIL);
   });
 
-  it('trims what it answers', () => {
+  it('trims what it returns', () => {
     expect(resolveJiraEmail({ email: `  ${EMAIL}  ` })).toBe(EMAIL);
   });
 

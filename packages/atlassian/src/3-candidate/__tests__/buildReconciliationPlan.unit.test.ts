@@ -15,7 +15,7 @@ describe(buildReconciliationPlan, () => {
     expect(plan.transitionRenames).toStrictEqual([]);
   });
 
-  it('amends a status the spec spells with different casing', () => {
+  it('amends a status that the spec spells with different casing', () => {
     const spec = buildSpec([{ category: 'TODO', name: 'To do' }]);
 
     const plan = buildReconciliationPlan(spec, buildProjectConfiguration(), { newStatusReference });
@@ -52,7 +52,7 @@ describe(buildReconciliationPlan, () => {
     expect(plan.statusUpdates).toMatchObject([{ from: 'In Progress', to: 'Waiting' }]);
   });
 
-  it('creates a status the workflow does not hold, under the supplied reference', () => {
+  it('creates a status not held by the workflow, under the supplied reference', () => {
     const spec = buildSpec([{ category: 'IN_PROGRESS', name: 'In Review' }]);
 
     const plan = buildReconciliationPlan(spec, buildProjectConfiguration(), { newStatusReference });
@@ -70,7 +70,7 @@ describe(buildReconciliationPlan, () => {
     expect(plan.creations[0]?.statusReference).toMatch(/^[0-9a-f-]{36}$/);
   });
 
-  it('renames the transition into a status the spec renames', () => {
+  it('renames the transition into a status renamed by the spec', () => {
     const spec = buildSpec([{ category: 'TODO', name: 'Backlog', aliases: ['To Do'] }]);
 
     const plan = buildReconciliationPlan(spec, buildProjectConfiguration(), { newStatusReference });
@@ -86,7 +86,7 @@ describe(buildReconciliationPlan, () => {
     expect(plan.transitionRenames).toStrictEqual([]);
   });
 
-  it('reports the live statuses no spec entry claims', () => {
+  it('reports the live statuses claimed by no spec entry', () => {
     const spec = buildSpec([{ category: 'TODO', name: 'To Do' }]);
 
     const plan = buildReconciliationPlan(spec, buildProjectConfiguration(), { newStatusReference });
@@ -102,7 +102,7 @@ describe(buildReconciliationPlan, () => {
     expect(plan.featureToggles).toStrictEqual([{ feature: 'jsw.agility.backlog', from: 'DISABLED', to: 'ENABLED' }]);
   });
 
-  it('toggles a board feature the board does not report', () => {
+  it('toggles a board feature not reported by the board', () => {
     const spec = { ...buildSpec(), boardFeatures: { 'jsw.agility.sprints': 'ENABLED' } } satisfies ProjectSpec;
 
     const plan = buildReconciliationPlan(spec, buildProjectConfiguration(), { newStatusReference });
@@ -138,7 +138,7 @@ describe(buildReconciliationPlan, () => {
 
 // region | Helpers
 
-/** Builds a spec over the live statuses the default configuration holds, unless entries are supplied. */
+/** Builds a spec over the live statuses held by the default configuration, unless entries are supplied. */
 function buildSpec(statuses?: readonly SpecStatus[]): ProjectSpec {
   return {
     statuses: statuses ?? [

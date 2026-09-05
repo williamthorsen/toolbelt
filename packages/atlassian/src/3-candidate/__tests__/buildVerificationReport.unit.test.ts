@@ -42,7 +42,7 @@ describe(buildVerificationReport, () => {
     });
   });
 
-  it('reports a status the workflow does not hold as absent rather than matching', () => {
+  it('reports a status not held by the workflow as absent rather than matching', () => {
     const statuses = [buildStatus({ name: 'To Do', statusCategory: 'TODO' })];
 
     const report = buildVerificationReport(buildProjectConfiguration({ statuses }), SPEC);
@@ -56,7 +56,7 @@ describe(buildVerificationReport, () => {
     });
   });
 
-  it('names no transition for a status the workflow does not hold, even where one carries no target', () => {
+  it('names no transition for a status not held by the workflow, even where one carries no target', () => {
     const configuration = buildProjectConfiguration({ statuses: [buildStatus({ name: 'To Do' })] });
     const transitions = [{ id: '30', name: 'Create', type: 'GLOBAL' }];
 

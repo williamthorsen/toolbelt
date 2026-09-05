@@ -80,7 +80,7 @@ describe(createTokenTransport, () => {
 
     await request('GET', '/rest/api/3/myself');
 
-    // Asserting the whole init is what proves neither a body nor a content type rides along.
+    // Asserting the whole init is what proves neither a body nor a content type is sent.
     const authorization = `Basic ${Buffer.from(`${EMAIL}:${TOKEN}`, 'utf8').toString('base64')}`;
     expect(fetchImpl).toHaveBeenCalledWith(expect.any(String), {
       headers: { Accept: 'application/json', Authorization: authorization },

@@ -43,7 +43,7 @@ describe(readBoardColumnReport, () => {
     });
   });
 
-  it('passes over a column the spec does not name rather than reporting it out of order', async () => {
+  it('passes over a column that the spec does not name rather than reporting it out of order', async () => {
     const { request } = createFakeRequest(buildRoutes(['To Do', 'Blocked', 'In Progress', 'Done']));
 
     const report = await readBoardColumnReport(request, buildProjectConfiguration(), SPEC);
@@ -61,7 +61,7 @@ describe(readBoardColumnReport, () => {
     expect(report.order).toBeUndefined();
   });
 
-  it('passes over a spec status the workflow does not hold, which the plan reports as a creation', async () => {
+  it('passes over a spec status not held by the workflow, which the plan reports as a creation', async () => {
     const spec = { statuses: [...SPEC.statuses, { category: 'TODO', name: 'Triage' }] } satisfies ProjectSpec;
     const { request } = createFakeRequest(buildRoutes(['To Do', 'In Progress', 'Done']));
 
@@ -70,7 +70,7 @@ describe(readBoardColumnReport, () => {
     expect(report.uncovered).toStrictEqual([]);
   });
 
-  it('refuses a column it cannot read rather than reporting its statuses uncovered', async () => {
+  it('refuses a column that it cannot read rather than reporting its statuses uncovered', async () => {
     const { request } = createFakeRequest({
       [CONFIGURATION_PATH]: {
         json: { columnConfig: { columns: [{ name: 'To Do', statuses: [{ id: 'id-to-do' }] }, { statuses: [] }] } },
@@ -82,7 +82,7 @@ describe(readBoardColumnReport, () => {
     );
   });
 
-  it('refuses a status id it cannot read rather than reporting that status uncovered', async () => {
+  it('refuses a status id that it cannot read rather than reporting that status uncovered', async () => {
     const { request } = createFakeRequest({
       [CONFIGURATION_PATH]: { json: { columnConfig: { columns: [{ name: 'To Do', statuses: [{ name: 'no id' }] }] } } },
     });
@@ -104,7 +104,7 @@ describe(readBoardColumnReport, () => {
 
 // region | Helpers
 
-/** Builds the board configuration route, one column per name, each mapped to the status the name claims. */
+/** Builds the board configuration route, one column per name, each mapped to the status claimed by the name. */
 function buildRoutes(columnNames: readonly string[]): FakeRoutes {
   const columns = columnNames.map((name) => ({
     name,

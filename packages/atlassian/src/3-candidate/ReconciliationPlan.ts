@@ -1,7 +1,7 @@
 import type { WorkflowStatus } from './ProjectConfiguration.ts';
 import type { BoardFeatureRequest, StatusCategory } from './ProjectSpec.ts';
 
-/** One board feature whose live state differs from the state the spec requests. */
+/** One board feature whose live state differs from the state requested by the spec. */
 export interface FeatureToggle {
   readonly feature: string;
   /** The live state, or `undefined` where the board reports no such feature. */
@@ -15,11 +15,11 @@ export interface ReconciliationPlan {
   readonly featureToggles: readonly FeatureToggle[];
   readonly statusUpdates: readonly StatusUpdate[];
   readonly transitionRenames: readonly TransitionRename[];
-  /** Live statuses no spec entry claims. They are reported and left untouched. */
+  /** Live statuses claimed by no spec entry. They are reported and left untouched. */
   readonly unmanaged: readonly WorkflowStatus[];
 }
 
-/** A spec status the workflow does not hold, and the reference minted for it. */
+/** A spec status not held by the workflow, and the reference minted for it. */
 export interface StatusCreation {
   readonly category: StatusCategory;
   readonly name: string;
@@ -29,7 +29,7 @@ export interface StatusCreation {
 /** A live status whose name, category, or both differ from what the spec declares. */
 export interface StatusUpdate {
   readonly category: StatusCategory;
-  /** The description the status currently carries. */
+  /** The description that the status currently carries. */
   readonly description: string;
   readonly from: string;
   readonly fromCategory: string;
@@ -38,7 +38,7 @@ export interface StatusUpdate {
   readonly to: string;
 }
 
-/** A global transition whose name no longer matches the status it targets. */
+/** A global transition whose name no longer matches the status that it targets. */
 export interface TransitionRename {
   readonly from: string;
   readonly id: string;

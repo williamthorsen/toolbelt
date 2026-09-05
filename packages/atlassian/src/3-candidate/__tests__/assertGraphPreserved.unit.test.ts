@@ -8,7 +8,7 @@ import type { WorkflowUpdatePayload } from '../WorkflowUpdatePayload.ts';
 const { workflow } = buildProjectConfiguration();
 
 describe(assertGraphPreserved, () => {
-  it('passes a payload carrying every status and transition the workflow holds', () => {
+  it('passes a payload carrying every status and transition that the workflow holds', () => {
     expect(() => assertGraphPreserved(workflow, buildPayload(workflow))).not.toThrow();
   });
 
@@ -66,7 +66,7 @@ describe(assertGraphPreserved, () => {
 
 // region | Helpers
 
-/** Builds the payload a faithful write of a workflow composes, with the overrides a test needs to spoil it. */
+/** Builds the payload composed by a faithful write of a workflow, with the overrides that a test needs to spoil it. */
 function buildPayload(source: Workflow, overrides: Partial<Workflow> = {}): WorkflowUpdatePayload {
   const { statuses = source.statuses, transitions = source.transitions } = overrides;
 

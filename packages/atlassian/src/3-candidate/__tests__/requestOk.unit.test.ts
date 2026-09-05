@@ -7,7 +7,7 @@ import { requestOk } from '../requestOk.ts';
 const PATH = '/rest/api/3/project/THOR';
 
 describe(requestOk, () => {
-  it('answers with the response and issues the call it was given', async () => {
+  it('returns the response and issues the call that it was given', async () => {
     const { calls, request } = createFakeRequest({ [`POST ${PATH}`]: { json: { id: '10000' } } });
 
     const response = await requestOk(request, {
@@ -57,7 +57,7 @@ describe(requestOk, () => {
     });
   });
 
-  it('answers a 204 rather than treating an empty success as a failure', async () => {
+  it('returns a 204 rather than treating an empty success as a failure', async () => {
     const { request } = createFakeRequest({ [`PUT ${PATH}`]: { status: 204 } });
 
     await expect(requestOk(request, { label: 'write', method: 'PUT', path: PATH })).resolves.toMatchObject({

@@ -1,6 +1,6 @@
 import type { WorkflowLayout, WorkflowStatusLayout, WorkflowTransition } from './ProjectConfiguration.ts';
 
-/** One status as the workflow write takes it, which is a different shape from the one the read reports. */
+/** One status as the workflow write takes it, which is a different shape from the one reported by the read. */
 export interface WorkflowStatusUpdate {
   readonly description: string;
   /** Absent on a status being created, which has no id until the write assigns one. */
@@ -19,7 +19,7 @@ export interface WorkflowUpdate {
   readonly version: unknown;
 }
 
-/** The body `POST /rest/api/3/workflows/update` takes. It replaces the workflow graph wholesale. */
+/** The body that `POST /rest/api/3/workflows/update` takes. It replaces the workflow graph wholesale. */
 export interface WorkflowUpdatePayload {
   readonly statuses: readonly WorkflowStatusUpdate[];
   readonly workflows: readonly [WorkflowUpdate];

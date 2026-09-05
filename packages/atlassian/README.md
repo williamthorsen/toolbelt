@@ -36,7 +36,7 @@ const response = await request('GET', '/rest/api/3/myself');
 
 ### The base URL
 
-`resolveJiraBaseUrl` returns `https://api.atlassian.com/ex/jira/<cloudId>`, the gateway a scoped API token authenticates against. Where no `cloudId` is given, it is read from the site's `_edge/tenant_info` endpoint, which answers without authentication.
+`resolveJiraBaseUrl` returns `https://api.atlassian.com/ex/jira/<cloudId>`, the gateway against which a scoped API token authenticates. Where no `cloudId` is given, it is read from the site's `_edge/tenant_info` endpoint, which answers without authentication.
 
 Requests against the site URL (`https://acme.atlassian.net`) are not offered as a fallback. Atlassian ignores a scoped token sent there rather than rejecting it, so the request would return an anonymous response instead of failing.
 
@@ -60,7 +60,7 @@ The service defaults to `toolbelt.atlassian.jira`; pass `service` to read anothe
 
 ### The project spec
 
-A spec declares the statuses a Jira project should hold and the board features it should have on. The consuming repo owns the file; this package ships the validator and this schema, never a spec of its own.
+A spec declares which statuses a Jira project should hold and which board features it should have on. The consuming repo owns the file; this package ships the validator and this schema, never a spec of its own.
 
 ```json
 {
@@ -80,7 +80,7 @@ A spec declares the statuses a Jira project should hold and the board features i
 
 `boardFeatures` maps a feature key to `ENABLED` or `DISABLED`. Jira also reports `COMING_SOON`, which no spec may request. `site` and `email` are the last source in their resolution chains.
 
-A live status no entry claims is reported and left untouched, so a spec covers the statuses it manages rather than the whole project.
+A live status claimed by no entry is reported and left untouched, so a spec covers the statuses that it manages rather than the whole project.
 
 ### Planning a reconciliation
 
@@ -99,7 +99,7 @@ const plan = buildReconciliationPlan(spec, configuration);
 const payload = buildWorkflowUpdatePayload(configuration, plan);
 ```
 
-The workflow write replaces the graph wholesale, so `buildWorkflowUpdatePayload` runs `assertGraphPreserved` before returning. That refuses a payload that would drop a status, drop a transition, or leave a status with no transition into it: none of the three fails loudly at Jira, and each leaves work items in a state nothing can move them out of. A status that already carried no transition is passed over, since that is not the write's doing.
+The workflow write replaces the graph wholesale, so `buildWorkflowUpdatePayload` runs `assertGraphPreserved` before returning. That refuses a payload that would drop a status, drop a transition, or leave a status with no transition into it: none of the three fails loudly at Jira, and each leaves work items in a state out of which nothing can move them. A status that already carried no transition is passed over, since that is not the write's doing.
 
 `assertGraphPreserved` is exported as well, for a payload composed some other way.
 
@@ -107,17 +107,17 @@ The workflow write replaces the graph wholesale, so `buildWorkflowUpdatePayload`
 
 Each takes the transport as its first argument and constructs none of its own. A response outside 2xx throws `JiraRequestError`, which carries the method, path, status, and the server's reply as fields, so a caller branches on the status rather than parsing a message. Findings are returned rather than printed.
 
-| Function                                              | Reads or writes                                                                                                     |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `readProjectConfiguration(request, projectKey)`       | The project, board, issue types, workflow, and board features, as the `ProjectConfiguration` the planner takes      |
-| `applyWorkflowUpdate(request, configuration, plan)`   | The reconciled graph, then the statuses back, correcting through the status API any the workflow write did not take |
-| `applyBoardFeatures(request, configuration, plan)`    | One call per board-feature toggle the plan holds                                                                    |
-| `listIssueKeys(request, jql)`                         | Every work-item key a JQL query matches, following the search's page token                                          |
-| `moveIssuesToBacklog(request, boardId, keys)`         | Work items off the board and into the backlog, in batches of 50                                                     |
-| `readBoardColumnReport(request, configuration, spec)` | The board's columns, reporting coverage and order                                                                   |
-| `buildVerificationReport(configuration, spec)`        | Nothing: it compares a configuration already read against the spec                                                  |
+| Function                                              | Reads or writes                                                                                                          |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `readProjectConfiguration(request, projectKey)`       | The project, board, issue types, workflow, and board features, as the `ProjectConfiguration` taken by the planner        |
+| `applyWorkflowUpdate(request, configuration, plan)`   | The reconciled graph, then the statuses back, correcting through the status API any that the workflow write did not take |
+| `applyBoardFeatures(request, configuration, plan)`    | One call per board-feature toggle in the plan                                                                            |
+| `listIssueKeys(request, jql)`                         | Every work-item key matched by a JQL query, following the search's page token                                            |
+| `moveIssuesToBacklog(request, boardId, keys)`         | Work items off the board and into the backlog, in batches of 50                                                          |
+| `readBoardColumnReport(request, configuration, spec)` | The board's columns, reporting coverage and order                                                                        |
+| `buildVerificationReport(configuration, spec)`        | Nothing: it compares a configuration already read against the spec                                                       |
 
-`requestOk` is exported too, for a call this package does not wrap.
+`requestOk` is exported too, for a call that this package does not wrap.
 
 ```ts
 import {
@@ -142,8 +142,8 @@ const report = buildVerificationReport(await readProjectConfiguration(request, '
 
 `readProjectConfiguration` fails closed. Each of these throws rather than reconciling part of a project:
 
-- **A project that is not team-managed.** A status renamed in a company-managed project is renamed in every project on the site that uses it. A project reporting no style, or one this does not recognize, is refused alongside a company-managed one: a project it cannot classify is not one to write to.
-- **A project that does not resolve to a single board of its own.** The board-feature, column, and backlog calls are board-scoped. The board query answers with every board whose filter references the project, so a board another project owns can come back alongside it; where several come back, the project's own board is the one whose location names the project, and an ambiguous set is refused.
+- **A project that is not team-managed.** A status renamed in a company-managed project is renamed in every project on the site that uses it. A project reporting no style, or one that this does not recognize, is refused alongside a company-managed one: a project that it cannot classify is not one to write to.
+- **A project that does not resolve to a single board of its own.** The board-feature, column, and backlog calls are board-scoped. The board query returns every board whose filter references the project, so a board owned by another project can come back alongside it; where several come back, the project's own board is the one whose location names the project, and an ambiguous set is refused.
 - **A project whose issue types resolve to other than exactly one workflow.** Every issue type is carried into the workflow read, so a project running its issue types on several workflows is refused rather than having one of them reconciled and reported green.
 - **A response it cannot read.** A missing field is a refusal, not a default.
 
