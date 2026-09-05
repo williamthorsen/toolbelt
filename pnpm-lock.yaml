@@ -121,6 +121,10 @@ importers:
       '@williamthorsen/toolbelt.secrets':
         specifier: workspace:*
         version: link:../secrets
+    devDependencies:
+      '@williamthorsen/toolbelt.filesystem':
+        specifier: workspace:*
+        version: link:../filesystem
 
   packages/datetime:
     dependencies:
