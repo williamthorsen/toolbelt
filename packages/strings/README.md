@@ -35,7 +35,7 @@ pluralizeWithCount(3, 'match', 'matches');
 
 The plural defaults to the singular with an `s` appended, so anything else is the caller's to supply: `pluralize(2, 'box')` returns `'boxs'`. A rule set covering the regular endings would fix `box` and `category` while still returning `'heros'` and `'quizes'`, and the wrong forms that it left would be rarer without being easier to catch. A uniformly naive default is one that a caller learns to override.
 
-Selection is English: only a count whose absolute value is exactly 1 takes the singular, so `-1` takes the singular and `0`, `1.5`, `NaN`, and `Infinity` take the plural. Neither function throws.
+Selection is English: Only a count whose absolute value is exactly 1 takes the singular, so `-1` takes the singular and `0`, `1.5`, `NaN`, and `Infinity` take the plural. Neither function throws.
 
 `Intl.PluralRules` would change none of that, since CLDR's English `one` rule selects exactly the same counts. What it offers is other locales, and those need a form per plural category rather than a pair: Polish takes three, Arabic six. Reach for `Intl.PluralRules` or ICU message formatting there.
 
@@ -71,7 +71,7 @@ function describeNpc() {
 
 The opening line is discarded, and so is the closing line when it holds nothing but whitespace. A closing line carrying text is kept and dedented along with the rest, where `String.dedent` throws.
 
-Dropping the closing line takes with it the terminator that preceded it, so text on the last line comes back without a trailing newline. Where one is wanted, leave a blank line above the closing backtick: a blank line is emptied rather than discarded, and the terminator above it survives.
+Dropping the closing line removes the terminator that preceded it, so text on the last line comes back without a trailing newline. Where one is wanted, leave a blank line above the closing backtick: A blank line is emptied rather than discarded, and the terminator above it survives.
 
 ```ts
 dedent`
@@ -81,7 +81,7 @@ dedent`
 // 'alpha\n'
 ```
 
-Relative depth is preserved. What is removed is the longest indentation shared by every content line.
+Relative depth is preserved. The tag removes the longest indentation shared by every content line.
 
 ```ts
 dedent`
@@ -96,7 +96,7 @@ dedent`
 
 Only tabs and spaces, and they are compared as characters rather than as widths. A tab is never interchangeable with any number of spaces, because no width is knowable from the text alone.
 
-A consequence worth knowing before it surprises you: where every line is indented but the indentation disagrees in kind, the tag throws rather than removing nothing.
+A consequence worth knowing before it surprises you: Where every line is indented but the indentation disagrees in kind, the tag throws rather than removing nothing.
 
 ```ts
 dedent`
@@ -106,7 +106,7 @@ dedent`
 // Error: Every line of the template is indented, but they share no common indentation.
 ```
 
-Removing nothing would be silent, and a template that silently declines to dedent is the failure that this function exists to prevent. A template with a genuine column-zero line is a different case, and strips nothing without complaint.
+Removing nothing would be silent, and a template that silently declines to dedent is the failure that this function exists to prevent. A template with a genuine column-zero line is a different case, and the tag strips nothing from it without complaint.
 
 Blank lines are ignored when measuring and emptied in the output, so an editor's trailing whitespace on an otherwise empty line changes nothing. A line holding an interpolation counts as content even when the rest of it is blank, which means a value's **position** can affect the measurement even though its **content** cannot.
 
@@ -148,7 +148,7 @@ dedent.withOptions({ valueIndentationStyle: 'line' })`
 
 Interpolated values are limited to strings, numbers, bigints, and booleans. Objects are rejected at compile time because they would coerce to `[object Object]`, and `null` and `undefined` because they would render as the text `"null"` and `"undefined"`. Convert deliberately -- `${String(error)}`, `${value ?? ''}` -- so the reader can see what was intended.
 
-Migrating from `unindent`: a nullish value used to render as the empty string, so `${maybeMissing}` worked as an idiom for optional content. It is now a compile error, which is where to look first if a template stops typechecking. `Date`, `Error`, and `URL` are rejected on the same grounds, even though each has a meaningful `toString`; interpolate `String(value)` or the field you actually meant.
+Migrating from `unindent`: A nullish value used to render as the empty string, so `${maybeMissing}` worked as an idiom for optional content. It is now a compile error, which is where to look first if a template stops typechecking. `Date`, `Error`, and `URL` are rejected on the same grounds, even though each has a meaningful `toString`; interpolate `String(value)` or the field that you actually meant.
 
 ### Escaped line terminators
 
@@ -225,7 +225,7 @@ hashString('user-4821', { max: 999 });
 // 544
 ```
 
-The default range is the full 32-bit width, `[0, 4294967295]`. Bounding is opt-in through `min` and `max`, which are inclusive, because a narrow range imposes a collision floor that the caller should choose knowingly: at `{ max: 999 }`, two of roughly forty inputs collide more often than not.
+The default range is the full 32-bit width, `[0, 4294967295]`. Bounding is opt-in through `min` and `max`, which are inclusive, because a narrow range imposes a collision floor that the caller should choose knowingly: At `{ max: 999 }`, two of roughly forty inputs collide more often than not.
 
 `offset` rotates the result rather than salting the digest, so every input shifts by the same amount and `hashString(str, { offset })` stays derivable from `hashString(str)`. It wraps at both bounds, so a negative offset and one larger than the range are both fine.
 
@@ -246,13 +246,13 @@ The package ships a ReadyUp kit, so a project that installs it can ask how far i
 rdy run --packages
 ```
 
-The kit reads the project's tracked sources and reports every hand-rolled capitalization and pluralization in them, each counted against the calls that the project already makes into this package. Both report at `recommend`: they are correct code that a published utility expresses better, not defects.
+The kit reads the project's tracked sources and reports every hand-rolled capitalization and pluralization in them, each counted against the calls that the project already makes into this package. Both report at `recommend`: They are correct code that a published utility expresses better, not defects.
 
-A capitalization is claimed where the same subject supplies both halves, as in `word.charAt(0).toUpperCase() + word.slice(1)`. The subscript, `substring`, and template-substitution variants are claimed too. A tail that the source goes on to transform is not: in `word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()` the chained call reaches the tail alone, which `capitalize` does not reproduce. A call on the whole expression is claimed, since it applies to what `capitalize` returns. Taking `capitalize` from the `charAt(0)` form is an exact substitution; from the subscript form it is a correction, since indexing an empty string throws where `capitalize` returns the empty string.
+A capitalization is claimed where the same subject supplies both halves, as in `word.charAt(0).toUpperCase() + word.slice(1)`. The subscript, `substring`, and template-substitution variants are claimed too. A tail that the source goes on to transform is not: In `word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()` the chained call reaches the tail alone, which `capitalize` does not reproduce. A call on the whole expression is claimed, since it applies to what `capitalize` returns. Taking `capitalize` from the `charAt(0)` form is an exact substitution; from the subscript form it is a correction, since indexing an empty string throws where `capitalize` returns the empty string.
 
-A pluralization is claimed where a ternary tests a value against 1 and its branches are two string literals related as singular and singular plus `s`, covering `'item' : 'items'`, `'' : 's'`, and the `!==` mirror `'s' : ''`. A pair of identifiers is not claimed, and neither is a pair of unrelated literals such as `'active' : 'inactive'`: the plural relation is the only evidence available that the compared value counts something. `count > 1 ? 's' : ''` is not claimed either, since replacing it changes what the code prints at zero. Note that `pluralize` tests `Math.abs(count)`, so a count of `-1` takes the singular where a hand-rolled equality test takes the plural.
+A pluralization is claimed where a ternary tests a value against 1 and its branches are two string literals related as singular and singular plus `s`, covering `'item' : 'items'`, `'' : 's'`, and the `!==` mirror `'s' : ''`. A pair of identifiers is not claimed, and neither is a pair of unrelated literals such as `'active' : 'inactive'`: The plural relation is the only evidence available that the compared value counts something. `count > 1 ? 's' : ''` is not claimed either, since replacing it changes what the code prints at zero. Note that `pluralize` tests `Math.abs(count)`, so a count of `-1` takes the singular where a hand-rolled equality test takes the plural.
 
-Bootstrap wrappers under `bin/` are exempt: such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they write these forms deliberately. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: the sweep drops it before the kit sees it, so committed bundler output yields no advice that anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
+Bootstrap wrappers under `bin/` are exempt: Such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they write these forms deliberately. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: The sweep drops it before the kit sees it, so committed bundler output yields no advice that anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
 
 A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
 

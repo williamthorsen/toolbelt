@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { computeNormalIntervalProbabilities } from '../computeNormalIntervalProbabilities.ts';
 
 // Expectations computed from exact normal-distribution math, independent of the CDF approximation
-// under test, which carries ~7.5e-8 of absolute error.
+// under test, which has ~7.5e-8 of absolute error.
 const PRECISION = 6;
 
 describe(computeNormalIntervalProbabilities, () => {

@@ -10,7 +10,7 @@ import { toCumulativeSumsFromAddends } from './toCumulativeSumsFromAddends.ts';
  * `nIntervals` equal intervals spanning `mean ± halfWidth`. Mass falling outside that window is
  * excluded, so the probabilities describe the truncated distribution and sum to 1.
  *
- * The window is fixed independently of the standard deviation: a small standard deviation
+ * The window is fixed independently of the standard deviation: A small standard deviation
  * concentrates mass in the middle intervals, and a large one spreads it toward uniformity.
  *
  * @category Statistics
@@ -66,7 +66,7 @@ function toNormalProbabilities(params: WindowParams): number[] {
 }
 
 /**
- * Returns the limiting probabilities as the standard deviation approaches 0: all mass sits at the
+ * Returns the limiting probabilities as the standard deviation approaches 0: All mass sits at the
  * mean, which falls inside the middle interval when their count is odd and on the boundary between
  * the two central intervals when it is even.
  */
