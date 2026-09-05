@@ -1,4 +1,8 @@
-import type { SecretStore, WritableSecretStore } from '@williamthorsen/toolbelt.secrets/candidate';
+import {
+  type SecretStore,
+  UnstorableSecretError,
+  type WritableSecretStore,
+} from '@williamthorsen/toolbelt.secrets/candidate';
 
 import type { JiraRequest, TokenTransportOptions } from '../3-candidate/createTokenTransport.ts';
 
@@ -35,8 +39,8 @@ export interface TbJiraEffects {
 }
 
 /**
- * Runs a keychain operation, reporting what it threw as a failure to reach the keychain rather than as a usage
- * error.
+ * Runs a keychain operation, reporting what it threw as a failure to reach the keychain. A value the keychain
+ * cannot carry passes through unwrapped, since nothing was reached: it is a usage error like any other.
  *
  * @internal
  */
@@ -44,6 +48,8 @@ export function callKeystore<T>(operation: () => T): T {
   try {
     return operation();
   } catch (error) {
+    if (error instanceof UnstorableSecretError) throw error;
+
     throw new KeystoreError(describeError(error));
   }
 }
@@ -59,13 +65,13 @@ export function createDeferredStore(effects: TbJiraEffects): SecretStore {
   let opened: WritableSecretStore | undefined;
 
   function open(): WritableSecretStore {
-    return (opened ??= callKeystore(() => effects.createStore()));
+    return (opened ??= effects.createStore());
   }
 
   return {
-    deleteSecret: (query) => open().deleteSecret(query),
-    findSecret: (query) => open().findSecret(query),
-    hasSecret: (query) => open().hasSecret(query),
+    deleteSecret: (query) => callKeystore(() => open().deleteSecret(query)),
+    findSecret: (query) => callKeystore(() => open().findSecret(query)),
+    hasSecret: (query) => callKeystore(() => open().hasSecret(query)),
   };
 }
 

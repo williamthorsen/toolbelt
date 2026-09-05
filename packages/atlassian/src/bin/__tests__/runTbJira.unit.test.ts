@@ -121,6 +121,27 @@ describe(runTbJira, () => {
       expect(harness.readOutput()).toContain('No token would be found');
     });
 
+    it('reports a token the keychain cannot carry as a usage error, not an unreachable keychain', async () => {
+      // A token too long for `security`'s command line reaches the store and is refused there, which is the
+      // case the blank guard above does not cover.
+      const harness = createTbJiraHarness({
+        env: EMAIL_ENV,
+        stdin: 'a'.repeat(4_096),
+        unstorable: 'The secret is too long to store.',
+      });
+
+      await expect(runTbJira(['auth', 'set'], harness.effects)).resolves.toBe(2);
+      expect(harness.readErrors()).toContain('The secret is too long to store.');
+    });
+
+    it('refuses a blank token, which the resolver would drop and status would still report', async () => {
+      const harness = createTbJiraHarness({ env: EMAIL_ENV, stdin: '   \n' });
+
+      await expect(runTbJira(['auth', 'set'], harness.effects)).resolves.toBe(2);
+      expect(harness.readErrors()).toContain('The token is blank.');
+      expect(harness.stored()).toStrictEqual({});
+    });
+
     it('reports an unreachable keychain as its own exit code', async () => {
       const harness = createTbJiraHarness({ env: EMAIL_ENV, keystoreFault: 'the keychain is locked' });
 

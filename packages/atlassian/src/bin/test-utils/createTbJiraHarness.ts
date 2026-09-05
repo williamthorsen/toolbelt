@@ -1,8 +1,12 @@
 import path from 'node:path';
 
-import type { SecretQuery, WritableSecretStore } from '@williamthorsen/toolbelt.secrets/candidate';
+import {
+  type SecretQuery,
+  UnstorableSecretError,
+  type WritableSecretStore,
+} from '@williamthorsen/toolbelt.secrets/candidate';
 
-import type { JiraRequest } from '../../3-candidate/createTokenTransport.ts';
+import type { JiraRequest, TokenTransportOptions } from '../../3-candidate/createTokenTransport.ts';
 import { createFakeRequest, type FakeCall, type FakeRoutes } from '../../test-utils/createFakeRequest.ts';
 import type { TbJiraEffects } from '../subcommand-support.ts';
 
@@ -29,12 +33,15 @@ export function createTbJiraHarness(options: HarnessOptions = {}): TbJiraHarness
     routes = {},
     stdin = '',
     stored = {},
+    unstorable,
   } = options;
 
   const secrets = new Map(Object.entries(stored));
   const output: string[] = [];
   const errors: string[] = [];
+  const fetchedUrls: string[] = [];
   const { calls, request } = createFakeRequest(routes);
+  let transportOptions: TokenTransportOptions | undefined;
 
   function refuse(): never {
     throw new Error(keystoreFault);
@@ -46,20 +53,32 @@ export function createTbJiraHarness(options: HarnessOptions = {}): TbJiraHarness
     findSecret: (query) => {
       secretReads += 1;
 
-      return secrets.get(buildKey(query));
+      return keystoreFault === undefined ? secrets.get(buildKey(query)) : refuse();
     },
     hasSecret: (query) => (keystoreFault === undefined ? secrets.has(buildKey(query)) : refuse()),
-    setSecret: (query, secret) => void (keystoreFault === undefined ? secrets.set(buildKey(query), secret) : refuse()),
+    setSecret: (query, secret) => {
+      if (unstorable !== undefined) throw new UnstorableSecretError(unstorable);
+
+      void (keystoreFault === undefined ? secrets.set(buildKey(query), secret) : refuse());
+    },
   };
 
   return {
     calls,
     effects: {
-      createRequest: () => (readOnly ? guardReads(request) : request),
+      createRequest: (options) => {
+        transportOptions = options;
+
+        return readOnly ? guardReads(request) : request;
+      },
       createStore: () => store,
       cwd: () => cwd,
       env,
-      fetch: () => Promise.resolve(Response.json({ cloudId: CLOUD_ID })),
+      fetch: (input) => {
+        fetchedUrls.push(input instanceof URL ? input.href : typeof input === 'string' ? input : input.url);
+
+        return Promise.resolve(Response.json({ cloudId: CLOUD_ID }));
+      },
       // The real ascent is covered by `findSpecPath`'s own test; here the path is composed, and whether it
       // holds a spec is `files`' business.
       findSpecPath: (fromDir) => path.join(fromDir, 'jira-project-spec.json'),
@@ -76,10 +95,12 @@ export function createTbJiraHarness(options: HarnessOptions = {}): TbJiraHarness
       write: (text) => void output.push(text),
       writeError: (text) => void errors.push(text),
     },
+    fetchedUrls: () => fetchedUrls,
     readErrors: () => errors.join(''),
     readOutput: () => output.join(''),
     secretReads: () => secretReads,
     stored: () => Object.fromEntries(secrets),
+    transportOptions: () => transportOptions,
   };
 }
 
@@ -97,17 +118,23 @@ export interface HarnessOptions {
   routes?: FakeRoutes;
   stdin?: string;
   stored?: Record<string, string>;
+  /** Makes `setSecret` raise `UnstorableSecretError`, which the keychain never sees. */
+  unstorable?: string;
 }
 
 export interface TbJiraHarness {
   /** Every call the transport was asked to issue, in order. */
   calls: readonly FakeCall[];
   effects: TbJiraEffects;
+  /** Every URL `fetch` was called with, which is the site the cloudId was read from. */
+  fetchedUrls: () => string[];
   readErrors: () => string;
   readOutput: () => string;
   /** How many times the token itself was retrieved, which reporting a source must never do. */
   secretReads: () => number;
   stored: () => Record<string, string>;
+  /** The credential the transport was built with, or `undefined` where the run never reached it. */
+  transportOptions: () => TokenTransportOptions | undefined;
 }
 
 // region | Helpers

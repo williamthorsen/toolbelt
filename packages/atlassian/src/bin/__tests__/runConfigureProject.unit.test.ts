@@ -140,6 +140,50 @@ describe('tb-jira configure-project', () => {
       const harness = createHarness({ env: {}, stdin: 'piped-token\n' });
 
       await expect(run(harness, [KEY, '--token-stdin'])).resolves.toBe(0);
+      expect(harness.transportOptions()?.token).toBe('piped-token');
+    });
+
+    it('builds the transport with the resolved site, email, and token', async () => {
+      const harness = createHarness();
+
+      await run(harness, [KEY]);
+
+      expect(harness.transportOptions()).toMatchObject({
+        baseUrl: 'https://api.atlassian.com/ex/jira/cloud-1',
+        email: 'someone@example.com',
+        token: 'a-token',
+      });
+      expect(harness.fetchedUrls()).toStrictEqual(['https://spec.atlassian.net/_edge/tenant_info']);
+    });
+
+    it('prefers --site over the environment and the spec, reading the cloudId from it', async () => {
+      const harness = createHarness({
+        env: { JIRA_API_TOKEN: 'a-token', JIRA_EMAIL: 'someone@example.com', JIRA_SITE: 'env.atlassian.net' },
+      });
+
+      await run(harness, [KEY, '--site', 'flag.atlassian.net']);
+
+      expect(harness.fetchedUrls()).toStrictEqual(['https://flag.atlassian.net/_edge/tenant_info']);
+    });
+
+    it('falls back to JIRA_SITE before the spec', async () => {
+      const harness = createHarness({
+        env: { JIRA_API_TOKEN: 'a-token', JIRA_EMAIL: 'someone@example.com', JIRA_SITE: 'env.atlassian.net' },
+      });
+
+      await run(harness, [KEY]);
+
+      expect(harness.fetchedUrls()).toStrictEqual(['https://env.atlassian.net/_edge/tenant_info']);
+    });
+
+    it('exits 3 where the keychain could not be reached', async () => {
+      const harness = createHarness({
+        env: { JIRA_EMAIL: 'someone@example.com' },
+        keystoreFault: 'the keychain is locked',
+      });
+
+      await expect(run(harness, [KEY])).resolves.toBe(3);
+      expect(harness.readErrors()).toContain('the keychain is locked');
     });
 
     it('reports a token no source holds, naming the command that stores one', async () => {
@@ -153,7 +197,15 @@ describe('tb-jira configure-project', () => {
       const harness = createHarness({ env: { JIRA_API_TOKEN: 'a-token' } });
 
       await expect(run(harness, [KEY])).resolves.toBe(0);
-      expect(harness.readErrors()).toBe('');
+      expect(harness.transportOptions()?.email).toBe('spec@example.com');
+    });
+
+    it('prefers --email over the environment and the spec', async () => {
+      const harness = createHarness();
+
+      await run(harness, [KEY, '--email', 'flag@example.com']);
+
+      expect(harness.transportOptions()?.email).toBe('flag@example.com');
     });
 
     it('reports a site no source holds', async () => {

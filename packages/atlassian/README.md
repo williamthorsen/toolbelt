@@ -56,6 +56,23 @@ tb-jira configure-project THOR --seed-backlog 'To Do'       # also move every 'T
 
 The run prints the plan before it writes anything, and each write as it lands, so a process killed partway still leaves a record of what it did. It ends by re-reading the project and reporting each spec entry against what the server holds, followed by the board's column coverage and order.
 
+### Managing the credential
+
+```sh
+tb-jira auth set                                    # prompt for the token, echoing nothing
+pbpaste | tb-jira auth set                          # or pipe it
+tb-jira auth status                                 # name the source, print no token
+tb-jira auth delete
+```
+
+| Option                  | Effect                                                       |
+| ----------------------- | ------------------------------------------------------------ |
+| `--email <address>`     | Account holding the token (default: `$JIRA_EMAIL`)           |
+| `--service <name>`      | Keychain service (default: `toolbelt.atlassian.jira`)        |
+| `--token-command <cmd>` | `status` only: the shell line to probe as the command source |
+
+`set` refuses a blank token, which the resolver would drop while `status` still reported the item as present. An item written by hand or by `tb-secret` can still hold one: `status` reports what is stored, not what it contains.
+
 ### Finding the spec
 
 The consuming repo owns the file. `tb-jira` ascends from the working directory looking for `jira-project-spec.json` and takes the first one it reaches, so one spec at a repo root serves every directory under it. `--spec` names one directly and skips the search.

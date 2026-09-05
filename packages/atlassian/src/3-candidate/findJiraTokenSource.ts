@@ -12,6 +12,9 @@ const STORED = 'stored';
  * presence, which raises no keychain access prompt. A configured token command does run, and its output is
  * discarded.
  *
+ * Presence is not contents. A keychain item holding only whitespace answers here and is dropped by
+ * `resolveJiraToken`, which reads the value and treats a blank one as a miss.
+ *
  * @category Jira
  * @experimental
  * @stage candidate

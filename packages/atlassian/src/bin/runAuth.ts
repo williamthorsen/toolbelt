@@ -42,7 +42,8 @@ trailing newline, since \`echo\` adds one.
 
 \`status\` names the first of JIRA_API_TOKEN, a configured command, and the keychain that would answer. It
 probes the keychain for presence rather than reading it, so it raises no keychain access prompt; a configured
-command does run, and its output is discarded.`;
+command does run, and its output is discarded. Presence is not contents: an item holding only whitespace is
+reported here and dropped by the resolver, which \`set\` refuses to create.`;
 
 /**
  * Runs the `auth` subcommand, which stores, removes, and reports the token that the Jira transport
@@ -92,6 +93,10 @@ function runDelete(effects: TbJiraEffects, account: string, service: string): nu
 async function runSet(effects: TbJiraEffects, account: string, service: string): Promise<number> {
   const store = callKeystore(() => effects.createStore());
   const token = effects.isStdinTty() ? await effects.promptSecret() : stripOneTrailingNewline(effects.readStdin());
+
+  // The resolution chain drops a blank token, so storing one leaves an item that `auth status` reports and
+  // `configure-project` cannot use.
+  if (token.trim() === '') throw new Error('The token is blank. Nothing was stored.');
 
   callKeystore(() => store.setSecret({ account, service }, token));
 
