@@ -128,10 +128,23 @@ describe(createTokenTransport, () => {
     await expect(request('GET', '/rest/api/3/myself')).resolves.toMatchObject({ status: 401 });
   });
 
-  it('propagates a transport failure', async () => {
-    const fetchImpl = vi.fn().mockRejectedValue(new TypeError('fetch failed'));
+  it('reports a transport failure as the URL it could not reach, keeping the fault as the cause', async () => {
+    const cause = new TypeError('fetch failed');
+    const fetchImpl = vi.fn().mockRejectedValue(cause);
     const request = createTokenTransport({ baseUrl: BASE_URL, email: EMAIL, fetch: fetchImpl, token: TOKEN });
 
-    await expect(request('GET', '/rest/api/3/myself')).rejects.toThrow('fetch failed');
+    await expect(request('GET', '/rest/api/3/myself')).rejects.toMatchObject({
+      cause,
+      message: `Could not reach ${BASE_URL}/rest/api/3/myself`,
+      name: 'JiraTransportError',
+      url: `${BASE_URL}/rest/api/3/myself`,
+    });
+  });
+
+  it('reports a rejected status through the response rather than as a transport failure', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(Response.json({}, { status: 503 }));
+    const request = createTokenTransport({ baseUrl: BASE_URL, email: EMAIL, fetch: fetchImpl, token: TOKEN });
+
+    await expect(request('GET', '/rest/api/3/myself')).resolves.toMatchObject({ status: 503 });
   });
 });

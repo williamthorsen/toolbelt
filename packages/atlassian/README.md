@@ -107,8 +107,9 @@ The scope set a scoped API token needs is not yet determined; #283 determines it
 | `3`  | The keychain could not be reached, with the message on stderr |
 | `4`  | A Jira request failed, with the method, path, and status      |
 | `5`  | The run wrote, and the project does not match the spec        |
+| `6`  | Jira could not be reached, with the URL and the reason        |
 
-A run that wrote and left the project short of the spec is `5` rather than `4`, so a script can tell a rejected call from a reconciliation that did not take. Two things never change the exit code, because no call could have changed either: a board column the spec has no counterpart for, and a board feature Jira has locked.
+A run that wrote and left the project short of the spec is `5` rather than `4`, so a script can tell a rejected call from a reconciliation that did not take. A run that never reached Jira is `6` rather than `2`, so a script can retry a name lookup or a refused connection and never retry a malformed spec. Two things never change the exit code, because no call could have changed either: a board column the spec has no counterpart for, and a board feature Jira has locked.
 
 ## Library
 
@@ -146,6 +147,12 @@ Basic auth pairs an email with an API token. They resolve on separate chains, be
 tb-jira auth set --email you@example.com                      # or, equivalently:
 tb-secret set toolbelt.atlassian.jira --account you@example.com
 ```
+
+### Errors
+
+Two error types separate a Jira that answered from a Jira that did not. `JiraRequestError` reports a status outside 2xx and carries `body`, `label`, `method`, `path`, and `status`, so a caller branches on the status rather than parsing the message. `JiraTransportError` reports a request that never arrived and carries the `url` it was aimed at, with the fault that the runtime raised as its `cause`.
+
+The split matters because node's `fetch` reports every transport failure as `TypeError: fetch failed` and names the reason on `cause` alone. Reading the chain is what turns that into `getaddrinfo ENOTFOUND acme.atlassian.net`, and a retry is worth attempting for the second type and never for the first.
 
 The service defaults to `toolbelt.atlassian.jira`; pass `service` to read another.
 

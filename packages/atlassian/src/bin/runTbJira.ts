@@ -1,10 +1,12 @@
 import { JiraRequestError } from '../3-candidate/JiraRequestError.ts';
+import { JiraTransportError } from '../3-candidate/JiraTransportError.ts';
 import { runAuth } from './runAuth.ts';
 import { runConfigureProject } from './runConfigureProject.ts';
 import {
   describeError,
   EXIT_KEYSTORE,
   EXIT_REQUEST,
+  EXIT_TRANSPORT,
   fail,
   KeystoreError,
   succeed,
@@ -30,6 +32,7 @@ Exit codes:
   3  The keychain could not be reached
   4  A Jira request failed
   5  The run wrote, but the project does not match the spec
+  6  Jira could not be reached
 
 Jira Cloud and team-managed projects only.`;
 
@@ -54,6 +57,13 @@ export async function runTbJira(args: string[], effects: TbJiraEffects): Promise
       effects.writeError(`${error.message}\n`);
 
       return EXIT_REQUEST;
+    }
+
+    // A run that never reached Jira is retryable, and no help text can fix a network.
+    if (error instanceof JiraTransportError) {
+      effects.writeError(`${describeError(error)}\n`);
+
+      return EXIT_TRANSPORT;
     }
 
     return fail(effects, describeError(error), args[0]);

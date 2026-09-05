@@ -1,3 +1,5 @@
+import { fetchOrRaise } from './fetchOrRaise.ts';
+
 const TENANT_INFO_PATH = '/_edge/tenant_info';
 
 /**
@@ -9,7 +11,7 @@ const TENANT_INFO_PATH = '/_edge/tenant_info';
 export async function findCloudId(host: string, fetchImpl: typeof globalThis.fetch): Promise<string> {
   const url = `https://${host}${TENANT_INFO_PATH}`;
 
-  const response = await fetchImpl(url, { headers: { Accept: 'application/json' } });
+  const response = await fetchOrRaise(url, fetchImpl, { headers: { Accept: 'application/json' } });
   if (!response.ok) {
     throw new Error(`Could not read the cloudId of '${host}'. ${url} answered ${response.status}.`);
   }

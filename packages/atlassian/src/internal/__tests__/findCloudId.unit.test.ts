@@ -19,6 +19,17 @@ describe(findCloudId, () => {
     expect(fetchImpl).toHaveBeenCalledWith(expect.any(String), { headers: { Accept: 'application/json' } });
   });
 
+  it('reports a transport failure as the tenant-info URL it could not reach', async () => {
+    const cause = new TypeError('fetch failed');
+    const fetchImpl = vi.fn().mockRejectedValue(cause);
+
+    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toMatchObject({
+      cause,
+      name: 'JiraTransportError',
+      url: 'https://acme.atlassian.net/_edge/tenant_info',
+    });
+  });
+
   it('throws when the endpoint does not answer OK', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response('', { status: 404 }));
 

@@ -12,6 +12,7 @@ export const EXIT_USAGE = 2;
 export const EXIT_KEYSTORE = 3;
 export const EXIT_REQUEST = 4;
 export const EXIT_MISMATCH = 5;
+export const EXIT_TRANSPORT = 6;
 
 const SUBCOMMANDS = new Set(['auth', 'configure-project']);
 
