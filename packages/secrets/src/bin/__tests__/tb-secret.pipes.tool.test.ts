@@ -25,7 +25,7 @@ describe('tb-secret over a pipe', () => {
     expect(stderr).toContain('The secret is empty.');
   });
 
-  it.skipIf(!isMacos)('stores what a delayed producer wrote, dropping the newline it ends with', () => {
+  it.skipIf(!isMacos)('stores what a delayed producer wrote, dropping the newline with which it ends', () => {
     using keychain = createTempKeychain();
 
     const stored = runPipeline(

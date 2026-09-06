@@ -2,7 +2,7 @@ import { UnstorableSecretError } from '../3-candidate/UnstorableSecretError.ts';
 
 /**
  * Rejects an empty secret, which the keychain would hold as an item indistinguishable from a stray one. Every
- * other value is storable: the secret reaches `security` as hexadecimal, which carries any byte sequence.
+ * other value is storable: The secret reaches `security` as hexadecimal, which carries any byte sequence.
  *
  * @internal
  */

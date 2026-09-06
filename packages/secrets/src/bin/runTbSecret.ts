@@ -87,7 +87,7 @@ Options:
 
 /**
  * Runs the `tb-secret` command line, returning what to write and exit with rather than doing either, so the
- * whole surface is exercisable without a process. Every failure is reported through the result: nothing throws.
+ * whole surface is exercisable without a process. Every failure is reported through the result: Nothing throws.
  *
  * @internal
  */
@@ -130,7 +130,7 @@ function buildQuery(positionals: string[], account: string | undefined): SecretQ
 
 /**
  * Runs a keychain operation, reporting what it threw as a failure to reach the keychain. A value that the
- * keychain cannot carry passes through unwrapped, since nothing was reached: it is a usage error like any other.
+ * keychain cannot carry passes through unwrapped, since nothing was reached: It is a usage error like any other.
  */
 function callKeystore<T>(operation: () => T): T {
   try {
@@ -221,9 +221,10 @@ function runHas(args: string[], effects: TbSecretEffects): TbSecretResult {
 }
 
 /**
- * Parses the `set` subcommand and stores the secret that it is given. A terminal is prompted twice with no
- * echo; a piped secret arrives on stdin, and one trailing newline is dropped, since `echo` adds one. The store is
- * opened first, so a platform that has no keychain is reported before a secret is typed into this process.
+ * Parses the `set` subcommand and stores the secret that it is given. At a terminal the secret is prompted for
+ * twice with no echo; a piped secret arrives on stdin, and one trailing newline is dropped, since `echo` adds
+ * one. The store is opened first, so a platform that has no keychain is reported before a secret is typed into
+ * this process.
  */
 async function runSet(args: string[], effects: TbSecretEffects): Promise<TbSecretResult> {
   const { positionals, values } = parseArgs({
