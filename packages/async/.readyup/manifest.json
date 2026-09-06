@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "kits": [
+    {
+      "checklists": [
+        "adoption"
+      ],
+      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.async",
+      "esbuildVersion": "0.28.2",
+      "inputs": [
+        {
+          "hash": "017c7417",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/path-predicates.ts"
+        },
+        {
+          "hash": "84c99907",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/site-handoffs.ts"
+        },
+        {
+          "hash": "3372fb44",
+          "kind": "module",
+          "path": "../../adoption/src/kits/defineAdoptionKit.ts"
+        },
+        {
+          "hash": "dee2a3a3",
+          "kind": "module",
+          "path": "../../adoption/src/mod.ts"
+        },
+        {
+          "hash": "6fdaacac",
+          "kind": "module",
+          "path": "../../adoption/src/portable/condenseWhitespace.ts"
+        },
+        {
+          "hash": "15a78157",
+          "kind": "module",
+          "path": "../../adoption/src/portable/listFunctionBodies.ts"
+        },
+        {
+          "hash": "1d2261fb",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readAnchoredWindow.ts"
+        },
+        {
+          "hash": "498e3ca4",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readBalancedGroup.ts"
+        },
+        {
+          "hash": "e9427d50",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readLiteral.ts"
+        },
+        {
+          "hash": "ee1955ce",
+          "kind": "module",
+          "path": "kits/default.ts"
+        },
+        {
+          "hash": "b8fbd90f",
+          "kind": "module",
+          "path": "../src/readiness/adoptedExports.ts"
+        },
+        {
+          "hash": "9b67f701",
+          "kind": "module",
+          "path": "../src/readiness/listSleepSites.ts"
+        },
+        {
+          "hash": "4cfa13f2",
+          "kind": "module",
+          "path": "../src/readiness/readExecutor.ts"
+        }
+      ],
+      "name": "default",
+      "path": "kits/default.js",
+      "readyupVersion": "0.35.0",
+      "source": "kits/default.ts",
+      "sourceHash": "ee1955ce",
+      "targetHash": "f177569c"
+    }
+  ]
+}
