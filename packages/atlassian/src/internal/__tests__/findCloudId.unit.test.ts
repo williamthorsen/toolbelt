@@ -45,6 +45,14 @@ describe(findCloudId, () => {
     });
   });
 
+  it('names the absent body of a gateway incident rather than trailing off after the colon', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(new Response('', { status: 503 }));
+
+    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toThrow(
+      "read the cloudId of 'acme.atlassian.net' failed (HTTP 503): no body",
+    );
+  });
+
   it('leaves a 4xx as a plain error, which names the site the caller corrects', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response('', { status: 404 }));
 

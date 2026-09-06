@@ -17,11 +17,15 @@ export async function findCloudId(host: string, fetchImpl: typeof globalThis.fet
   // A gateway incident is retryable and a 4xx is not: below 500 the host is no Atlassian site, which is a
   // usage error fixed by correcting the site.
   if (response.status >= SERVER_ERROR_STATUS) {
+    // `JiraResponse.text` carries a body only where there is one, which is what every other site gets from
+    // `readResponse`; an empty string here would end the error's message at its colon.
+    const body = await response.text();
+
     throw new JiraRequestError({
       label: `read the cloudId of '${host}'`,
       method: 'GET',
       path: TENANT_INFO_PATH,
-      response: { json: undefined, status: response.status, text: await response.text() },
+      response: { json: undefined, status: response.status, text: body === '' ? undefined : body },
     });
   }
   if (!response.ok) {
