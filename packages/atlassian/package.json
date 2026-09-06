@@ -40,11 +40,12 @@
     }
   },
   "bin": {
-    "tb-jira": "./dist/esm/bin/tb-jira.js"
+    "tb-jira": "./bin/tb-jira.js"
   },
   "files": [
-    "dist/*",
-    "CHANGELOG.md"
+    "bin/*",
+    "CHANGELOG.md",
+    "dist/*"
   ],
   "scripts": {
     "prepublishOnly": "nmr build"
