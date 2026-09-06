@@ -44,7 +44,8 @@ export function renderPlan(
     lines.push(`seed     move every '${options.seedBacklog}' work item off the board`);
   }
 
-  if (countChanges(plan) === 0) {
+  // The seed is a write that the run will make, so a plan carrying one is never reported as holding nothing to do.
+  if (countChanges(plan) === 0 && options.seedBacklog === undefined) {
     lines.push(
       plan.lockedFeatures.length === 0
         ? 'no changes: the project already matches the spec'
@@ -63,7 +64,10 @@ export interface PlanRenderOptions {
 
 // region | Helpers
 
-/** Counts the writes a plan holds. An unmanaged status is a report rather than a change. */
+/**
+ * Counts the writes that a plan holds. An unmanaged status is a report rather than a change, and a backlog seed is
+ * not in the plan at all: it is asked for on the command line rather than derived from the project's state.
+ */
 function countChanges(plan: ReconciliationPlan): number {
   return plan.creations.length + plan.featureToggles.length + plan.statusUpdates.length + plan.transitionRenames.length;
 }

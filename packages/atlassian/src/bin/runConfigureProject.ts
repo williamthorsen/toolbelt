@@ -25,6 +25,12 @@ import {
   type TbJiraEffects,
 } from './subcommand-support.ts';
 
+/**
+ * What `POST /rest/agile/1.0/board/{boardId}/issue` accepts in one call, which bounds the undo that the
+ * seed prints.
+ */
+const BOARD_MOVE_LIMIT = 50;
+
 const CONFIGURE_HELP = `Usage: tb-jira configure-project <KEY> [options]
 
 Reconcile a Jira project's statuses, workflow transitions, and board features against a declarative spec, then
@@ -163,7 +169,8 @@ async function seedTheBacklog(
   projectKey: string,
   status: string,
 ): Promise<void> {
-  const keys = await listIssueKeys(request, `project = "${projectKey}" AND status = "${status}"`);
+  const jql = `project = "${projectKey}" AND status = "${status}"`;
+  const keys = await listIssueKeys(request, jql);
   if (keys.length === 0) {
     effects.write(`backlog  no '${status}' work items to move\n`);
 
@@ -172,7 +179,11 @@ async function seedTheBacklog(
 
   const { moved } = await moveIssuesToBacklog(request, configuration.board.id, keys);
   effects.write(`backlog  moved ${moved} '${status}' work items off the board\n`);
-  effects.write(`         undo: POST /rest/agile/1.0/board/${configuration.board.id}/issue with the same keys\n`);
+  // The run prints no keys, and a move leaves an item's status alone, so the query still selects the same set.
+  effects.write(
+    `         undo: POST /rest/agile/1.0/board/${configuration.board.id}/issue, ${BOARD_MOVE_LIMIT} keys per call\n`,
+  );
+  effects.write(`         keys: ${jql}\n`);
 }
 
 // endregion | Helpers
