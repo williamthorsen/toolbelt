@@ -4,11 +4,19 @@ import path from 'node:path';
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
+import { createTempDir } from '../test-utils/createTempDir.ts';
+import { hasSourceFile } from '../test-utils/hasSourceFile.ts';
 import { listExportTargets } from '../test-utils/listExportTargets.ts';
 
 const TIER_DIRECTORY_PATTERN = /^\d-[a-z]+$/;
 // The strawman tier is unexported by design, so it is the one tier that needs no export subpath.
 const UNEXPORTED_TIER = '0-strawman';
+
+const PACKAGE_MANIFEST = JSON.stringify({
+  exports: { './candidate': { import: './dist/esm/3-candidate/index.js' } },
+  name: 'fixture',
+});
+const WORKSPACE_MANIFEST = "packages:\n  - 'packages/*'\n";
 
 describe('Workspace exports', () => {
   it('every export target resolves to a maturity tier holding an index module', () => {
@@ -23,6 +31,34 @@ describe('Workspace exports', () => {
 
     expect(unexportedTiers).toStrictEqual([]);
     expect(tierCount).toBeGreaterThan(0);
+  });
+
+  it('counts no tier for a directory holding no source file', () => {
+    using tree = createTempDir({
+      'packages/fixture/package.json': PACKAGE_MANIFEST,
+      'packages/fixture/src/2-draft/': '',
+      'packages/fixture/src/3-candidate/index.ts': '',
+      'pnpm-workspace.yaml': WORKSPACE_MANIFEST,
+    });
+
+    const { tierCount, unexportedTiers } = auditWorkspaceExports(tree.dir);
+
+    expect(unexportedTiers).toStrictEqual([]);
+    expect(tierCount).toBe(1);
+  });
+
+  it('reports a populated tier that no export subpath reaches', () => {
+    using tree = createTempDir({
+      'packages/fixture/package.json': PACKAGE_MANIFEST,
+      'packages/fixture/src/2-draft/index.ts': '',
+      'packages/fixture/src/3-candidate/index.ts': '',
+      'pnpm-workspace.yaml': WORKSPACE_MANIFEST,
+    });
+
+    const { tierCount, unexportedTiers } = auditWorkspaceExports(tree.dir);
+
+    expect(unexportedTiers).toStrictEqual(['packages/fixture: src/2-draft has no export subpath']);
+    expect(tierCount).toBe(2);
   });
 });
 
@@ -85,7 +121,9 @@ function auditWorkspaceExports(monorepoRoot: string): {
 }
 
 /**
- * Lists the maturity-tier directory names under a package's `src`.
+ * Lists the maturity-tier directory names under a package's `src`, taking a tier as present only where it holds a
+ * TypeScript file. Git tracks files rather than directories, so a directory emptied of its modules survives in a
+ * working tree and in no fresh clone.
  */
 function listTierDirectories(packageDirectory: string): string[] {
   const sourceDirectory = path.join(packageDirectory, 'src');
@@ -95,6 +133,7 @@ function listTierDirectories(packageDirectory: string): string[] {
     .readdirSync(sourceDirectory, { withFileTypes: true })
     .filter((entry) => entry.isDirectory() && TIER_DIRECTORY_PATTERN.test(entry.name))
     .map((entry) => entry.name)
+    .filter((tier) => hasSourceFile(path.join(sourceDirectory, tier)))
     .toSorted((a, b) => a.localeCompare(b));
 }
 
