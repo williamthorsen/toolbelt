@@ -2,8 +2,8 @@
 export interface FeatureVerification {
   readonly feature: string;
   /**
-   * Whether Jira has locked the feature. A locked one is reported rather than faulted, as a board column the
-   * spec has no counterpart for is: no call can change it, so it is not something the run failed to do.
+   * Whether Jira has locked the feature. A locked one is reported rather than faulted, as a board column for
+   * which the spec has no counterpart is: no call can change it, so it is not something the run failed to do.
    */
   readonly locked: boolean;
   readonly matches: boolean;

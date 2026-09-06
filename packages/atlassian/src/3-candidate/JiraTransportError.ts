@@ -23,7 +23,7 @@ export class JiraTransportError extends Error {
 }
 
 export interface JiraTransportErrorOptions {
-  /** What the runtime threw, which names the fault the URL cannot. */
+  /** What the runtime threw, which names the fault that the URL cannot. */
   readonly cause: unknown;
   readonly url: string;
 }
