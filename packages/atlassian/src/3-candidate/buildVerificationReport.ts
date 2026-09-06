@@ -4,7 +4,7 @@ import type { ProjectSpec } from './ProjectSpec.ts';
 import type { FeatureVerification, StatusVerification, VerificationReport } from './VerificationReport.ts';
 
 /**
- * Reports each spec entry against what a read of the project holds. This takes no transport, so the post-write
+ * Reports each spec entry against what a read of the project returns. This takes no transport, so the post-write
  * check is a second call to `readProjectConfiguration` and the comparison is exercisable on its own.
  *
  * @category Jira
@@ -44,7 +44,7 @@ export function buildVerificationReport(
 
   return {
     features: verifiedFeatures,
-    // A locked feature is held out: no call can change it, so counting it would fail every run of a spec that
+    // A locked feature is held out: No call can change it, so counting it would fail every run of a spec that
     // names one, and the exit code would stop distinguishing a run that fell short from one that cannot proceed.
     matches: [...verifiedStatuses, ...verifiedFeatures.filter((entry) => !entry.locked)].every(
       (entry) => entry.matches,

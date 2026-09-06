@@ -8,7 +8,7 @@ const CONFIGURATION = buildProjectConfiguration();
 const PROJECT_KEY = 'THOR';
 
 describe(renderPlan, () => {
-  it('leads with the project, board, and workflow the plan was built against', () => {
+  it('leads with the project, board, and workflow against which the plan was built', () => {
     const rendered = renderPlan(buildPlan(), CONFIGURATION, { projectKey: PROJECT_KEY });
 
     expect(rendered).toContain('project  THOR (id 10000), board 1');
@@ -91,7 +91,7 @@ describe(renderPlan, () => {
     expect(rendered).toContain('toggle   jsw.agility.backlog: DISABLED → ENABLED');
   });
 
-  it('reports a feature the board does not hold as absent', () => {
+  it('reports a feature not held by the board as absent', () => {
     const rendered = renderPlan(
       buildPlan({ featureToggles: [{ feature: 'jsw.agility.backlog', from: undefined, to: 'ENABLED' }] }),
       CONFIGURATION,
@@ -133,7 +133,7 @@ describe(renderPlan, () => {
     expect(rendered).not.toContain('the project already matches the spec');
   });
 
-  it('reports the backlog seed the run was asked for', () => {
+  it('reports the backlog seed that the run was asked for', () => {
     const rendered = renderPlan(buildPlan(), CONFIGURATION, { projectKey: PROJECT_KEY, seedBacklog: 'To Do' });
 
     expect(rendered).toContain("seed     move every 'To Do' work item off the board");

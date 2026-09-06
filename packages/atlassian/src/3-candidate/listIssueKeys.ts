@@ -6,8 +6,8 @@ import { requestOk } from './requestOk.ts';
 const SEARCH_PAGE_SIZE = 100;
 
 /**
- * Collects every work-item key matched by a JQL query, following the search's page token to the end. The query
- * arrives composed: nothing here quotes a value into it.
+ * Collects every work-item key matched by a JQL query, following the search's page token to the end. The caller
+ * composes the query: Nothing here quotes a value into it.
  *
  * @category Jira
  * @experimental

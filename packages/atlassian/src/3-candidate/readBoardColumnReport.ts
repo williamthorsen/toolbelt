@@ -56,7 +56,7 @@ function findOrderMismatch(columnNames: readonly string[], spec: ProjectSpec): B
 
 /**
  * Narrows the board configuration to each column's name and the ids of the statuses mapped to it. A column or a
- * status id that it cannot read refuses the report: dropping either would report a covered status as uncovered.
+ * status id that it cannot read refuses the report: Dropping either would report a covered status as uncovered.
  */
 function readColumns(boardId: number, payload: unknown): readonly ReadColumn[] {
   const columnConfig = isRecord(payload) ? payload['columnConfig'] : undefined;

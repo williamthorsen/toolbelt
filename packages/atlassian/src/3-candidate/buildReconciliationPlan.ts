@@ -70,7 +70,7 @@ export function buildReconciliationPlan(
 
 export interface ReconciliationPlanOptions {
   /**
-   * Mints the reference under which a created status is carried, which the API requires rather than assigning.
+   * Generates the reference under which a created status is carried, which the API requires rather than assigning.
    * Defaults to `randomUUID`; supply one to make a plan reproducible.
    */
   readonly newStatusReference?: (() => string) | undefined;

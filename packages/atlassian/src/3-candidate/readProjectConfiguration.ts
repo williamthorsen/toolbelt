@@ -71,7 +71,7 @@ async function readBoard(
     throw new Error(`Project ${projectKey} answered with boards that this cannot read.`);
   }
   // A sole board is taken without a location, which Jira may omit, but never one whose location names another
-  // project: its id would carry this project's feature writes and backlog moves onto that project's board.
+  // project: Its id would send this project's feature writes and backlog moves to that project's board.
   const owned = boards.filter(
     (entry) => entry.locationProjectId === projectId || (boards.length === 1 && entry.locationProjectId === undefined),
   );
@@ -110,7 +110,7 @@ interface BoardEntry {
 
 /**
  * Reads the board's live feature states, which the plan's toggles are resolved against, alongside the features
- * Jira has locked. A locked feature is reported rather than refused: the write against one answers 200 and
+ * locked by Jira. A locked feature is reported rather than refused: The write against one returns 200 and
  * changes nothing, so the lock has to reach the planner for the toggle to be left unplanned.
  */
 async function readFeatures(request: JiraRequest, boardId: number): Promise<BoardFeatures> {
@@ -135,7 +135,7 @@ async function readFeatures(request: JiraRequest, boardId: number): Promise<Boar
     if (typeof feature !== 'string' || typeof state !== 'string') continue;
 
     entries.push([feature, state]);
-    // Jira omits the flag on features it has never locked, so only an explicit `true` locks one.
+    // Jira omits the flag on features that it has never locked, so only an explicit `true` locks one.
     if (toggleLocked === true) locked.add(feature);
   }
 
@@ -200,7 +200,7 @@ async function readProject(request: JiraRequest, projectKey: string, key: string
   const style = project?.['style'];
 
   // A status renamed in a company-managed project is renamed in every project on the site that uses it. An
-  // unreadable style is refused alongside a company-managed one: a project that this cannot classify is not one
+  // unreadable style is refused alongside a company-managed one: A project that this cannot classify is not one
   // to write to.
   if (style !== TEAM_MANAGED_STYLE) {
     throw new Error(

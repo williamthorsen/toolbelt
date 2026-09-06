@@ -10,7 +10,7 @@ import {
 /**
  * Resolves the Jira API token from a supplied value, then the environment, then a configured command, then the
  * keychain. A token is stored per account, so `account` is the email that Basic auth pairs it with. Throws
- * naming the command that stores one where every source misses.
+ * where every source misses, naming the command that stores one.
  *
  * @category Jira
  * @experimental

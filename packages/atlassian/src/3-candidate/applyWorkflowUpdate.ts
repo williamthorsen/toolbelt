@@ -53,7 +53,7 @@ export interface WorkflowUpdateResult {
 
 /**
  * Reads the statuses back and writes any status that the workflow write did not take through the status API,
- * which is the fallback channel for a name or category that the workflow's own statuses array did not carry.
+ * which is the fallback channel for a name or category that the workflow's own statuses array did not contain.
  */
 async function correctStatuses(
   request: JiraRequest,
@@ -77,7 +77,7 @@ async function correctStatuses(
   await requestOk(request, {
     body: {
       statuses: stale.map((update) => ({
-        // Mirrors the payload builder: both channels write this field, so both apply its rule.
+        // Mirrors the payload builder: Both channels write this field, so both apply its rule.
         description: isRenamed(update) ? '' : update.description,
         id: update.id,
         name: update.to,
@@ -93,8 +93,8 @@ async function correctStatuses(
 }
 
 /**
- * Reports whether a live status carries what an update asked for. Names are compared exactly here, unlike
- * everywhere else: this asks whether the write landed, and a rename that changed only casing is one that it has
+ * Reports whether a live status has what an update asked for. Names are compared exactly here, unlike
+ * everywhere else: This asks whether the write landed, and a rename that changed only casing is one that it has
  * to be able to report as unlanded.
  */
 function hasLanded(status: unknown, update: StatusUpdate): boolean {
