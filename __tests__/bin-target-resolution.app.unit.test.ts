@@ -28,8 +28,8 @@ describe('Declared bins', () => {
 // region | Helpers
 
 /**
- * Audits every workspace's `bin` against the wrapper that it names, reporting a target pnpm cannot link at
- * install time and a wrapper that reaches no source module. Either ships a command that the package cannot
+ * Audits every workspace's `bin` against the wrapper that it names, reporting a target that pnpm cannot link
+ * at install time and a wrapper that reaches no source module. Either ships a command that the package cannot
  * run, which no suite run from source otherwise reaches.
  */
 function auditBinTargets(monorepoRoot: string): { binCount: number; danglingTargets: string[] } {
@@ -61,10 +61,10 @@ function findTargetFault(packageDirectory: string, target: string): string | und
   if (!fs.existsSync(wrapperPath)) return `reaches no wrapper at bin/${wrapperName}`;
 
   const wrapper = fs.readFileSync(wrapperPath, 'utf8');
-  if (!wrapper.startsWith('#!')) return `reaches a wrapper with no shebang`;
+  if (!wrapper.startsWith('#!')) return 'reaches a wrapper with no shebang';
 
   const modulePath = BUILD_OUTPUT_PATTERN.exec(wrapper)?.groups?.['modulePath'];
-  if (modulePath === undefined) return `reaches a wrapper naming no build output`;
+  if (modulePath === undefined) return 'reaches a wrapper naming no build output';
 
   const sourcePath = path.join(packageDirectory, 'src', `${modulePath}.ts`);
   if (!fs.existsSync(sourcePath)) return `names a build output reaching no source module at src/${modulePath}.ts`;
