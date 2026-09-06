@@ -25,7 +25,7 @@ export async function findCloudId(host: string, fetchImpl: typeof globalThis.fet
       label: `read the cloudId of '${host}'`,
       method: 'GET',
       path: TENANT_INFO_PATH,
-      response: { json: undefined, status: response.status, text: body === '' ? undefined : body },
+      response: { json: undefined, status: response.status, text: body === '' ? undefined : body, url },
     });
   }
   if (!response.ok) {

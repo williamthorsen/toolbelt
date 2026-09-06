@@ -31,7 +31,7 @@ export function createTokenTransport(options: TokenTransportOptions): JiraReques
       ...(body !== undefined && { body: JSON.stringify(body) }),
     });
 
-    return readResponse(response);
+    return readResponse(response, url);
   };
 }
 
@@ -45,6 +45,8 @@ export interface JiraResponse {
   readonly status: number;
   /** The raw body, carried only where it did not parse as JSON. */
   readonly text: string | undefined;
+  /** The URL the request was aimed at, origin included. */
+  readonly url: string;
 }
 
 export interface TokenTransportOptions {
@@ -57,15 +59,18 @@ export interface TokenTransportOptions {
 
 // region | Helpers
 
-/** Reads a response into the shape on which callers branch, keeping a body that is not JSON as text. */
-async function readResponse(response: Response): Promise<JiraResponse> {
+/**
+ * Reads a response into the shape on which callers branch, keeping a body that is not JSON as text. The URL is
+ * supplied by the caller: a `Response` built by its constructor carries an empty `url`.
+ */
+async function readResponse(response: Response, url: string): Promise<JiraResponse> {
   const text = await response.text();
-  if (text === '') return { json: undefined, status: response.status, text: undefined };
+  if (text === '') return { json: undefined, status: response.status, text: undefined, url };
 
   try {
-    return { json: JSON.parse(text), status: response.status, text: undefined };
+    return { json: JSON.parse(text), status: response.status, text: undefined, url };
   } catch {
-    return { json: undefined, status: response.status, text };
+    return { json: undefined, status: response.status, text, url };
   }
 }
 
