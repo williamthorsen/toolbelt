@@ -138,6 +138,22 @@ describe(renderPlan, () => {
 
     expect(rendered).toContain("seed     move every 'To Do' work item off the board");
   });
+
+  it('does not report a matching project as having nothing to do where a seed was asked for', () => {
+    const rendered = renderPlan(buildPlan(), CONFIGURATION, { projectKey: PROJECT_KEY, seedBacklog: 'To Do' });
+
+    expect(rendered).not.toContain('no changes');
+  });
+
+  it('does not report a locked-only difference as having nothing to do where a seed was asked for', () => {
+    const rendered = renderPlan(
+      buildPlan({ lockedFeatures: [{ feature: 'jsw.agility.goals', from: 'DISABLED', to: 'ENABLED' }] }),
+      CONFIGURATION,
+      { projectKey: PROJECT_KEY, seedBacklog: 'To Do' },
+    );
+
+    expect(rendered).not.toContain('no changes');
+  });
 });
 
 // region | Helpers

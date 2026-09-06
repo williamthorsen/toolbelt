@@ -77,6 +77,7 @@ describe('tb-jira configure-project', () => {
       await run(harness, [KEY, '--dry-run', '--seed-backlog', 'To Do']);
 
       expect(harness.readOutput()).toContain("seed     move every 'To Do' work item off the board");
+      expect(harness.readOutput()).not.toContain('no changes');
     });
   });
 
@@ -106,7 +107,15 @@ describe('tb-jira configure-project', () => {
       await run(harness, [KEY, '--seed-backlog', 'To Do']);
 
       expect(harness.readOutput()).toContain("backlog  moved 2 'To Do' work items off the board");
-      expect(harness.readOutput()).toContain(`undo: POST /rest/agile/1.0/board/${BOARD_ID}/issue`);
+      expect(harness.readOutput()).toContain(`undo: POST /rest/agile/1.0/board/${BOARD_ID}/issue, 50 keys per call`);
+    });
+
+    it('names the query that recovers the keys, which the seed itself never prints', async () => {
+      const harness = createHarness();
+
+      await run(harness, [KEY, '--seed-backlog', 'To Do']);
+
+      expect(harness.readOutput()).toContain(`keys: project = "${KEY}" AND status = "To Do"`);
     });
 
     it('reports an empty seed rather than issuing a move', async () => {
