@@ -4,10 +4,9 @@ import { createKeychainStore, promptSecret } from '@williamthorsen/toolbelt.secr
 
 import { createTokenTransport } from '../3-candidate/createTokenTransport.ts';
 import { findSpecPath } from './findSpecPath.ts';
+import { readStreamText } from './readStreamText.ts';
 import { resolveSelfVersion } from './resolveSelfVersion.ts';
 import { runTbJira } from './runTbJira.ts';
-
-const STDIN_FD = 0;
 
 process.exitCode = await runTbJira(process.argv.slice(2), {
   createRequest: (options) => createTokenTransport(options),
@@ -18,7 +17,7 @@ process.exitCode = await runTbJira(process.argv.slice(2), {
   findSpecPath: (fromDir) => findSpecPath(fromDir),
   isStdinTty: () => process.stdin.isTTY,
   promptSecret: () => promptSecret(process.stdin, process.stderr),
-  readStdin: () => fs.readFileSync(STDIN_FD, 'utf8'),
+  readStdin: () => readStreamText(process.stdin),
   readTextFile: (filePath) => fs.readFileSync(filePath, 'utf8'),
   resolveVersion: () => resolveSelfVersion(),
   write: (text) => void process.stdout.write(text),
