@@ -95,7 +95,59 @@ The base URL is not configurable. It is the `api.atlassian.com` gateway, and the
 
 ### Token scopes
 
-The scope set a scoped API token needs is not yet determined; #283 determines it against a scratch project. What the reconciler requires of the acting user is known: **Administer Jira** for the workflow and status writes, **board administration** for the feature toggle, and **Schedule Issues** for the backlog move. Grant a token the scopes matching those and narrow from there rather than over-granting permanently.
+A scoped API token targets one app, so this needs a **Jira** token. Grant it these 23 granular scopes, which are what the reconciler's twelve endpoints require and nothing more:
+
+```
+read:application-role:jira            read:project-category:jira
+read:avatar:jira                      read:project-version:jira
+read:board-scope:jira-software        read:project.component:jira
+read:board-scope.admin:jira-software  read:project.property:jira
+read:field:jira                       read:project:jira
+read:field.default-value:jira         read:status:jira
+read:field.option:jira                read:user:jira
+read:group:jira                       read:workflow:jira
+read:issue-details:jira               write:board-scope:jira-software
+read:issue-status:jira                write:board-scope.admin:jira-software
+read:issue-type-hierarchy:jira        write:workflow:jira
+read:issue-type:jira
+```
+
+No classic scope is needed. Every endpoint has a granular path, and `/rest/agile/1.0/` accepts granular scopes alone, so a token holding classic scopes reaches none of it. The picker caps a token at 50, which leaves room. A token's scopes are fixed at creation, so adding one means creating a replacement.
+
+Which endpoint needs what, so a narrower grant can be derived for a subset of the CLI:
+
+| Endpoint                                       | Granular scopes                                                                                                                                                                                                                                                                              |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /rest/api/3/project/{key}`                | `read:application-role:jira`, `read:avatar:jira`, `read:group:jira`, `read:issue-type-hierarchy:jira`, `read:issue-type:jira`, `read:project-category:jira`, `read:project-version:jira`, `read:project.component:jira`, `read:project.property:jira`, `read:project:jira`, `read:user:jira` |
+| `GET /rest/api/3/project/{key}/statuses`       | `read:issue-status:jira`, `read:issue-type:jira`, `read:status:jira`                                                                                                                                                                                                                         |
+| `POST /rest/api/3/workflows?expand=statuses`   | `read:workflow:jira`                                                                                                                                                                                                                                                                         |
+| `POST /rest/api/3/workflows/update`            | `write:workflow:jira`                                                                                                                                                                                                                                                                        |
+| `GET /rest/api/3/statuses/search`              | `read:workflow:jira`                                                                                                                                                                                                                                                                         |
+| `PUT /rest/api/3/statuses`                     | `write:workflow:jira`                                                                                                                                                                                                                                                                        |
+| `POST /rest/api/3/search/jql`                  | `read:field.default-value:jira`, `read:field.option:jira`, `read:field:jira`, `read:group:jira`, `read:issue-details:jira`                                                                                                                                                                   |
+| `GET /rest/agile/1.0/board`                    | `read:board-scope:jira-software`, `read:project:jira`                                                                                                                                                                                                                                        |
+| `GET /rest/agile/1.0/board/{id}/features`      | `read:board-scope.admin:jira-software`                                                                                                                                                                                                                                                       |
+| `PUT /rest/agile/1.0/board/{id}/features`      | `write:board-scope.admin:jira-software`                                                                                                                                                                                                                                                      |
+| `GET /rest/agile/1.0/board/{id}/configuration` | `read:board-scope.admin:jira-software`, `read:project:jira`                                                                                                                                                                                                                                  |
+| `POST /rest/agile/1.0/backlog/{boardId}/issue` | `write:board-scope:jira-software`                                                                                                                                                                                                                                                            |
+
+Only `read:project:jira` sits in the grant for the Agile calls' sake as well as the project read; every other scope is required by the endpoint that names it.
+
+The status writes ride on `write:workflow:jira`. There is no `write:status:jira`, and `manage:jira-configuration` is only the classic alternative to the granular scope rather than a requirement, so `PUT /rest/api/3/statuses` needs no Jira administration scope of its own.
+
+The acting user still needs the Jira permissions the calls demand, which the scopes do not grant: **Administer Jira** for the workflow and status writes, **board administration** for the feature toggle, and **Schedule Issues** for the backlog move.
+
+### Diagnosing a rejected request
+
+Three failures look similar and mean different things. The gateway checks the token's scopes before Jira validates anything, so a scope shortfall arrives before any permission or payload error.
+
+| Response                                                            | Meaning                                                                  |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `401` `{"code":401,"message":"Unauthorized; scope does not match"}` | The credential is good and the token lacks a scope the endpoint requires |
+| `401` `{"code":401,"message":"Unauthorized"}`                       | The credential itself was rejected                                       |
+| `404` naming the project as not found                               | No credential reached the gateway, so the request ran anonymously        |
+
+A `403` comes from Jira rather than the gateway, and reports a permission the acting user lacks rather than a scope the token lacks.
 
 ### Exit codes
 
