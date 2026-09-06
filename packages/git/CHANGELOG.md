@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.1 — 2026-09-06
+
+### Bug fixes
+
+- Point every package bin at a committed wrapper (#296)
+
+  - Points the `tb-git`, `tb-jira`, and `tb-secret` commands at committed wrappers under each package's `bin/`, so the target exists when the package manager links the command rather than only after a build.
+
+- Fix piped-stdin reads and unhandled EPIPE in the CLIs (#301)
+
+  - Fixes an issue where `tb-secret set` and `tb-jira auth set` failed with `EAGAIN: resource temporarily unavailable` when the producer of a piped credential delayed its first byte, as `tb-secret get`, `op read`, and `gh auth token` all do.
+  - Stops `tb-secret`, `tb-jira`, and `tb-git` from crashing with an unhandled `EPIPE` when the reader on their stdout or stderr exits first, so that `tb-secret get | head -1` ends quietly, as a program that ignores `SIGPIPE` does.
+
+### Documentation
+
+- Repair reduced object relatives in the READMEs and AGENTS.md (#263)
+
+  Repairs the reduced object relative in `AGENTS.md`, the root `README.md`, and the package READMEs.
+
+- Repair the repository's prose and record every rejection's ground (#290)
+
+  Applies one repo-wide `revise-prose` sweep across the repository's READMEs, `AGENTS.md`, source comments, doc descriptions, and test names.
+
 ## 0.3.0 — 2026-08-30
 
 ### Features

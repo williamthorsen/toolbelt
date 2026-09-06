@@ -1,5 +1,58 @@
 [
   {
+    "version": "6.2.0",
+    "date": "2026-09-06",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add a ReadyUp adoption kit to toolbelt.arrays (#254)",
+            "body": "Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.arrays`. The kit recommends `pickItem` in place of a floored random draw standing in array-subscript position, and `arraify` in place of a ternary wrapping a value in an array. Its third check warns that a `sort` or `toSorted` comparator deciding the order on `Math.random()` alone does not order consistently and should be replaced by `shuffle` or `shuffleInPlace`.\n\nSeparately, fixes an issue where `arraify` treated an array constructed in another realm, such as a `node:vm` context, as a plain value and wrapped it in a new array. It now tests with `Array.isArray`.",
+            "hash": "d9424687514d2afb115f917e79c30bce329de329"
+          },
+          {
+            "description": "Add a ReadyUp adoption kit reporting hand-rolled sleeps (#303)",
+            "body": "- Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.async` that recommends the use of `delay` to replace a hand-rolled sleep.",
+            "hash": "6d75f66f3f8d1c8eed9bf87b69b583866838a761"
+          }
+        ]
+      },
+      {
+        "title": "Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Repair reduced object relatives in passages recurring across files (#262)",
+            "body": "Repairs the reduced object relative in the prose passages that recur across more than one file, in package READMEs, source comments, test titles, and the ReadyUp kits' check messages.",
+            "hash": "10e13b1b2e0d9b98b4924db5ecb86fcae08eb56b"
+          },
+          {
+            "description": "Repair reduced object relatives in the READMEs and AGENTS.md (#263)",
+            "body": "Repairs the reduced object relative in `AGENTS.md`, the root `README.md`, and the package READMEs.",
+            "hash": "0154bf51519c318d77e92fb5e8d8fbf9db9470ce"
+          },
+          {
+            "description": "Repair reduced object relatives in packages/adoption (#264)",
+            "body": "Repairs the reduced object relative in `packages/adoption`, in source comments, doc descriptions, and test titles.",
+            "hash": "638b16d74816dd4e24e44a9053f813cc2094bf7a"
+          },
+          {
+            "description": "Repair reduced object relatives in the readiness modules and kits (#265)",
+            "body": "Repairs the reduced object relative in the six kit-bearing packages' readiness modules and ReadyUp kit sources, across comments, doc descriptions, test titles, and the kits' check messages.",
+            "hash": "1552da8c179f803e3a90eed194746ecc8726e178"
+          },
+          {
+            "description": "Repair the repository's prose and record every rejection's ground (#290)",
+            "body": "Applies one repo-wide `revise-prose` sweep across the repository's READMEs, `AGENTS.md`, source comments, doc descriptions, and test names.",
+            "hash": "e04e58fb6172a585a9207d363f96c9e481031baf"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "6.1.0",
     "date": "2026-08-30",
     "sections": [

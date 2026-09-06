@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.5.1 — 2026-09-06
+
+### Documentation
+
+- Repair reduced object relatives in passages recurring across files (#262)
+
+  Repairs the reduced object relative in the prose passages that recur across more than one file, in package READMEs, source comments, test titles, and the ReadyUp kits' check messages.
+
+- Repair reduced object relatives in the READMEs and AGENTS.md (#263)
+
+  Repairs the reduced object relative in `AGENTS.md`, the root `README.md`, and the package READMEs.
+
+- Repair the repository's prose and record every rejection's ground (#290)
+
+  Applies one repo-wide `revise-prose` sweep across the repository's READMEs, `AGENTS.md`, source comments, doc descriptions, and test names.
+
 ## 0.5.0 — 2026-08-28
 
 ### Features

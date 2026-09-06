@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.1.1 — 2026-09-06
+
+### Documentation
+
+- Repair the repository's prose and record every rejection's ground (#290)
+
+  Applies one repo-wide `revise-prose` sweep across the repository's READMEs, `AGENTS.md`, source comments, doc descriptions, and test names.
+
 ## 4.1.0 — 2026-08-30
 
 ### Features

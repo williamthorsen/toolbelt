@@ -1,5 +1,37 @@
 [
   {
+    "version": "0.8.3",
+    "date": "2026-09-06",
+    "sections": [
+      {
+        "title": "Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Repair reduced object relatives in passages recurring across files (#262)",
+            "body": "Repairs the reduced object relative in the prose passages that recur across more than one file, in package READMEs, source comments, test titles, and the ReadyUp kits' check messages.",
+            "hash": "10e13b1b2e0d9b98b4924db5ecb86fcae08eb56b"
+          },
+          {
+            "description": "Repair reduced object relatives in the READMEs and AGENTS.md (#263)",
+            "body": "Repairs the reduced object relative in `AGENTS.md`, the root `README.md`, and the package READMEs.",
+            "hash": "0154bf51519c318d77e92fb5e8d8fbf9db9470ce"
+          },
+          {
+            "description": "Repair reduced object relatives in packages/adoption (#264)",
+            "body": "Repairs the reduced object relative in `packages/adoption`, in source comments, doc descriptions, and test titles.",
+            "hash": "638b16d74816dd4e24e44a9053f813cc2094bf7a"
+          },
+          {
+            "description": "Repair the repository's prose and record every rejection's ground (#290)",
+            "body": "Applies one repo-wide `revise-prose` sweep across the repository's READMEs, `AGENTS.md`, source comments, doc descriptions, and test names.",
+            "hash": "e04e58fb6172a585a9207d363f96c9e481031baf"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.8.2",
     "date": "2026-08-30",
     "sections": [

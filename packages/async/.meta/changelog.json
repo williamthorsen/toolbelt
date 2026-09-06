@@ -1,5 +1,22 @@
 [
   {
+    "version": "3.2.0",
+    "date": "2026-09-06",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add a ReadyUp adoption kit reporting hand-rolled sleeps (#303)",
+            "body": "- Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.async` that recommends the use of `delay` to replace a hand-rolled sleep.",
+            "hash": "6d75f66f3f8d1c8eed9bf87b69b583866838a761"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "3.1.1",
     "date": "2026-08-13",
     "sections": [

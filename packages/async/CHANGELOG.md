@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.2.0 — 2026-09-06
+
+### Features
+
+- Add a ReadyUp adoption kit reporting hand-rolled sleeps (#303)
+
+  - Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.async` that recommends the use of `delay` to replace a hand-rolled sleep.
+
 ## 3.1.1 — 2026-08-13
 
 ### Tooling

@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.numbers",
-  "version": "7.0.3",
+  "version": "7.1.0",
   "description": "Utility functions for working with numbers",
   "keywords": [
     "esm",

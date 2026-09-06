@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 
+## 6.2.0 — 2026-09-06
+
+### Features
+
+- Add a ReadyUp adoption kit to toolbelt.arrays (#254)
+
+  Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.arrays`. The kit recommends `pickItem` in place of a floored random draw standing in array-subscript position, and `arraify` in place of a ternary wrapping a value in an array. Its third check warns that a `sort` or `toSorted` comparator deciding the order on `Math.random()` alone does not order consistently and should be replaced by `shuffle` or `shuffleInPlace`.
+
+  Separately, fixes an issue where `arraify` treated an array constructed in another realm, such as a `node:vm` context, as a plain value and wrapped it in a new array. It now tests with `Array.isArray`.
+
+- Add a ReadyUp adoption kit reporting hand-rolled sleeps (#303)
+
+  - Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.async` that recommends the use of `delay` to replace a hand-rolled sleep.
+
+### Documentation
+
+- Repair reduced object relatives in passages recurring across files (#262)
+
+  Repairs the reduced object relative in the prose passages that recur across more than one file, in package READMEs, source comments, test titles, and the ReadyUp kits' check messages.
+
+- Repair reduced object relatives in the READMEs and AGENTS.md (#263)
+
+  Repairs the reduced object relative in `AGENTS.md`, the root `README.md`, and the package READMEs.
+
+- Repair reduced object relatives in packages/adoption (#264)
+
+  Repairs the reduced object relative in `packages/adoption`, in source comments, doc descriptions, and test titles.
+
+- Repair reduced object relatives in the readiness modules and kits (#265)
+
+  Repairs the reduced object relative in the six kit-bearing packages' readiness modules and ReadyUp kit sources, across comments, doc descriptions, test titles, and the kits' check messages.
+
+- Repair the repository's prose and record every rejection's ground (#290)
+
+  Applies one repo-wide `revise-prose` sweep across the repository's READMEs, `AGENTS.md`, source comments, doc descriptions, and test names.
+
 ## 6.1.0 — 2026-08-30
 
 ### Features

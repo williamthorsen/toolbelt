@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.9.0 — 2026-09-06
+
+### Features
+
+- Add a ReadyUp adoption kit (#253)
+
+  Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.objects`. The kit recommends `Object.hasOwn` or the package's own `hasOwnProperty` in place of a call reached through `Object.prototype`, and `isRecord` or `isRecordOrArray` in place of a guard written as `typeof value === 'object' && value !== null`. Its third check warns that a comparison of two `JSON.stringify` calls is key-order dependent and should be replaced by `isEqual`.
+
+- Add a ReadyUp adoption kit reporting hand-rolled sleeps (#303)
+
+  - Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.async` that recommends the use of `delay` to replace a hand-rolled sleep.
+
+### Dependencies
+
+- Upgrade all deps to latest version
+
+### Documentation
+
+- Repair reduced object relatives in passages recurring across files (#262)
+
+  Repairs the reduced object relative in the prose passages that recur across more than one file, in package READMEs, source comments, test titles, and the ReadyUp kits' check messages.
+
+- Repair reduced object relatives in the READMEs and AGENTS.md (#263)
+
+  Repairs the reduced object relative in `AGENTS.md`, the root `README.md`, and the package READMEs.
+
+- Repair reduced object relatives in packages/adoption (#264)
+
+  Repairs the reduced object relative in `packages/adoption`, in source comments, doc descriptions, and test titles.
+
+- Repair reduced object relatives in the readiness modules and kits (#265)
+
+  Repairs the reduced object relative in the six kit-bearing packages' readiness modules and ReadyUp kit sources, across comments, doc descriptions, test titles, and the kits' check messages.
+
+- Repair the repository's prose and record every rejection's ground (#290)
+
+  Applies one repo-wide `revise-prose` sweep across the repository's READMEs, `AGENTS.md`, source comments, doc descriptions, and test names.
+
 ## 0.8.0 — 2026-08-30
 
 ### Features

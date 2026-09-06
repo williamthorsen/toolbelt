@@ -1,0 +1,104 @@
+[
+  {
+    "version": "0.2.0",
+    "date": "2026-09-06",
+    "sections": [
+      {
+        "title": "Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add Jira gateway URL resolution, Basic auth, and credential chains (#285)",
+            "body": "Adds Jira access to `@williamthorsen/toolbelt.atlassian`. `resolveJiraBaseUrl`, `createTokenTransport`, `resolveJiraEmail`, and `resolveJiraToken`, which together compose an authenticated request against a scoped Atlassian API token, are now exported at the candidate tier.",
+            "hash": "9d7131cb53808d4e326f65c1ce4ae9f5d642fe75"
+          },
+          {
+            "description": "Add the planning layer for reconciling a Jira project to a spec (#286)",
+            "body": "Adds a planning layer to `@williamthorsen/toolbelt.atlassian/candidate` for reconciling a Jira project against a spec that declares the statuses and board features the project should have. It validates the spec, resolves it against the project's live configuration into the changes a run would apply, and composes the body Jira's workflow-update endpoint takes.",
+            "hash": "a3acecbdbd6eb6e1b0dc007e5ce1a44e085ff585"
+          },
+          {
+            "description": "Add the Jira API functions with fail-closed project refusals (#288)",
+            "body": "- Adds `readProjectConfiguration`, which reads a project's statuses, workflow, board, and board features.\n- Adds `applyWorkflowUpdate` and `applyBoardFeatures`, which write a reconciliation plan back to Jira.\n- Adds `buildVerificationReport`, which checks a write by comparing a freshly read configuration against the spec.\n- Adds `readBoardColumnReport`, which reports the spec statuses that have no board column and any difference in column order.",
+            "hash": "899cbf80610bce631e9f486770ad099f3af856a3"
+          },
+          {
+            "description": "Ship the tb-jira CLI and document toolbelt.atlassian (#295)",
+            "body": "- Adds the `tb-jira` binary to `@williamthorsen/toolbelt.atlassian`: Its `configure-project` subcommand reconciles a Jira project's statuses, workflow transitions, and board features against a spec file owned by the consuming repo, and `--dry-run` prints the plan and writes nothing.\n- Adds a `tb-jira auth` subcommand, which stores, replaces, and removes the Jira API token in the keychain and reports which source would supply it without printing the token.\n- Adds `resolveJiraSite`, `findJiraTokenSource`, and `JiraTransportError` to `@williamthorsen/toolbelt.atlassian/candidate`, so library code can resolve the site, name which link of the token chain would answer without reading the token, and tell a request that Jira rejected from one that never reached Jira.\n- Adds `promptSecret` and `UnstorableSecretError` to `@williamthorsen/toolbelt.secrets/candidate`, so a caller outside that package can prompt for a secret without echoing it and can tell a token refused by the keychain from a keychain that could not be reached.",
+            "hash": "b1f8c42d2b0d9ae3b691beb7141c301dbe363ba6"
+          },
+          {
+            "description": "Classify a rejected Jira request and carry the request URL into the error (#300)",
+            "body": "- Adds `reason` to `JiraRequestError`, naming the rejection as a scope shortfall, a rejected credential, a missing Jira permission, or an absent resource, avoiding the need to parse this information from the status and the body.\n- Adds `url` to `JiraResponse` and `JiraRequestError`, the request's full address.\n\nMigration: Return a `url` from any hand-written implementation of `JiraRequest`, since the field is required. Code using `createTokenTransport` needs no edit.",
+            "breaking": true,
+            "hash": "5d13a9bda43269f72b3a5f741ef6bbe071676175"
+          }
+        ]
+      },
+      {
+        "title": "Bug fixes",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Point every package bin at a committed wrapper (#296)",
+            "body": "- Points the `tb-git`, `tb-jira`, and `tb-secret` commands at committed wrappers under each package's `bin/`, so the target exists when the package manager links the command rather than only after a build.",
+            "hash": "920491782b81e31b9e3e626bf9a26d37dd99ea82"
+          },
+          {
+            "description": "Fix piped-stdin reads and unhandled EPIPE in the CLIs (#301)",
+            "body": "- Fixes an issue where `tb-secret set` and `tb-jira auth set` failed with `EAGAIN: resource temporarily unavailable` when the producer of a piped credential delayed its first byte, as `tb-secret get`, `op read`, and `gh auth token` all do.\n- Stops `tb-secret`, `tb-jira`, and `tb-git` from crashing with an unhandled `EPIPE` when the reader on their stdout or stderr exits first, so that `tb-secret get | head -1` ends quietly, as a program that ignores `SIGPIPE` does.",
+            "hash": "76bb91faf6da82e1d41f27e67b5055693f4c9168"
+          },
+          {
+            "description": "Correct and document the backlog seed's plan line and printed undo (#302)",
+            "body": "- Stops `tb-jira configure-project --seed-backlog` from reporting `no changes: the project already matches the spec` while planning to move work items off the board.\n- Corrects the undo that `--seed-backlog` prints, which failed after a seed of more than 50 keys by posting them all in one call to an endpoint that accepts 50.",
+            "hash": "b540e445006c7c5ba9b49fd892bec548b0e304da"
+          }
+        ]
+      },
+      {
+        "title": "Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Audit the published package shape and record the scaffolding procedure (#274)",
+            "body": "Reduces the placeholder test in the template workspace to a marker, and adds two root-level tests verifying that every published package has the manifest fields, the documentation, and the registration entries that a scaffolded clone must produce.\n\nAlso adds descriptions of the scaffolding procedure to AGENTS.md and the template workspace's README.md.",
+            "hash": "91f885776609314664d68e0fa2180c55dcdbe093"
+          }
+        ]
+      },
+      {
+        "title": "Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Repair the repository's prose and record every rejection's ground (#290)",
+            "body": "Applies one repo-wide `revise-prose` sweep across the repository's READMEs, `AGENTS.md`, source comments, doc descriptions, and test names.",
+            "hash": "e04e58fb6172a585a9207d363f96c9e481031baf"
+          },
+          {
+            "description": "Document the token scopes each reconciler endpoint needs (#298)",
+            "body": "- Replaces the `Token scopes` placeholder in `packages/atlassian/README.md`, which told a reader to over-grant, with the 23 granular scopes that a scoped Jira API token needs.\n- Adds a `Diagnosing a rejected request` section, since a missing scope reports `401` rather than `403` and a request carrying no credential reports `404` naming the project as not found.",
+            "hash": "2eb42fa28b26b14fcba17e65d7621d705e61c525"
+          },
+          {
+            "description": "Restore relativizers across atlassian, secrets, and the workflows (#304)",
+            "body": "- Revises documentation and comments to align with plain-speech doctrine and writing conventions.",
+            "hash": "78a36fb425be681c8f373fba87a687114b3f3943"
+          }
+        ]
+      },
+      {
+        "title": "Internal",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Rename toolbelt.jira to toolbelt.atlassian (#273)",
+            "body": "Renames the `jira` package to `atlassian`: `packages/jira/` becomes `packages/atlassian/`, the published name becomes `@williamthorsen/toolbelt.atlassian`, and `scope:jira` becomes `scope:atlassian`.",
+            "hash": "ff16d850fc890105305ecc942aeee80aaff865eb"
+          }
+        ]
+      }
+    ]
+  }
+]

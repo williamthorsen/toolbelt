@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.8.6",
+    "date": "2026-09-06",
+    "sections": [
+      {
+        "title": "Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Repair the repository's prose and record every rejection's ground (#290)",
+            "body": "Applies one repo-wide `revise-prose` sweep across the repository's READMEs, `AGENTS.md`, source comments, doc descriptions, and test names.",
+            "hash": "e04e58fb6172a585a9207d363f96c9e481031baf"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.8.5",
     "date": "2026-08-30",
     "sections": [
