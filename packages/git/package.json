@@ -37,11 +37,12 @@
     }
   },
   "bin": {
-    "tb-git": "./dist/esm/bin/tb-git.js"
+    "tb-git": "./bin/tb-git.js"
   },
   "files": [
-    "dist/*",
-    "CHANGELOG.md"
+    "bin/*",
+    "CHANGELOG.md",
+    "dist/*"
   ],
   "scripts": {
     "prepublishOnly": "nmr build"

@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { resolveCheckedOutBranch } from './resolveCheckedOutBranch.ts';
 import { resolveSelfVersion } from './resolveSelfVersion.ts';
 import { runTbGit } from './runTbGit.ts';
