@@ -1,8 +1,23 @@
+import { isRecord } from '../internal/isRecord.ts';
 import type { JiraResponse } from './createTokenTransport.ts';
 
+const FORBIDDEN = 403;
+const NOT_FOUND = 404;
+const REMEDIES: Record<JiraRejectionReason, string> = {
+  credential: 'The email and token did not authenticate.',
+  'not-found':
+    'Either the resource does not exist, or no credential reached the gateway and the request ran anonymously.',
+  permission: 'The credential authenticated, and the acting user lacks a Jira permission this call requires.',
+  scope:
+    "The token lacks a scope this endpoint requires. A token's scopes are fixed at creation, so a replacement token carrying the full grant is what resolves it.",
+};
+const SCOPE_MISMATCH_MESSAGE = 'scope does not match';
+const UNAUTHORIZED = 401;
+
 /**
- * A request answered by Jira with a status outside 2xx. The status is carried as a field so a caller branches on it
- * rather than parsing the message.
+ * A request answered by Jira with a status outside 2xx. The status, the URL, and the classification are carried as
+ * fields so a caller branches on them rather than parsing the message. The message states the classification too,
+ * since a command line that prints only the message is where most of these are read.
  *
  * @category Jira
  * @experimental
@@ -15,22 +30,36 @@ export class JiraRequestError extends Error {
   readonly label: string;
   readonly method: string;
   readonly path: string;
+  /** Which failure the status and body report, or `undefined` where they match none. */
+  readonly reason: JiraRejectionReason | undefined;
   readonly status: number;
+  /** The URL the request was aimed at, origin included. */
+  readonly url: string;
 
   constructor(options: JiraRequestErrorOptions) {
     const { label, method, path, response } = options;
-    const { json, status, text } = response;
+    const { json, status, text, url } = response;
 
-    super(`${label} failed (HTTP ${status}): ${text ?? (json === undefined ? 'no body' : JSON.stringify(json))}`);
+    const body = text ?? json;
+    const reason = findRejectionReason(status, body);
+    const reported = text ?? (json === undefined ? 'no body' : JSON.stringify(json));
+    const remedy = reason === undefined ? '' : ` ${REMEDIES[reason]}`;
 
-    this.body = text ?? json;
+    super(`${label} failed (HTTP ${status} at ${url}): ${reported}${remedy}`);
+
+    this.body = body;
     this.label = label;
     this.method = method;
     this.name = 'JiraRequestError';
     this.path = path;
+    this.reason = reason;
     this.status = status;
+    this.url = url;
   }
 }
+
+/** Which of the failures that a rejected request can report it is. */
+export type JiraRejectionReason = 'credential' | 'not-found' | 'permission' | 'scope';
 
 export interface JiraRequestErrorOptions {
   /** What the call was doing, in the imperative, such as `read project THOR`. */
@@ -39,3 +68,29 @@ export interface JiraRequestErrorOptions {
   readonly path: string;
   readonly response: JiraResponse;
 }
+
+// region | Helpers
+
+/**
+ * Classifies a rejection from its status and body, answering `undefined` where the two name no failure that a
+ * caller can act on. The gateway rejects a token missing a scope with a 401 of its own, ahead of anything Jira
+ * validates, so a scope shortfall and a bad credential are told apart by the message alone.
+ */
+function findRejectionReason(status: number, body: unknown): JiraRejectionReason | undefined {
+  if (status === UNAUTHORIZED) return namesScopeMismatch(body) ? 'scope' : 'credential';
+  if (status === FORBIDDEN) return 'permission';
+  if (status === NOT_FOUND) return 'not-found';
+
+  return undefined;
+}
+
+/** Reports whether a body carries the gateway's message for a token missing a scope. */
+function namesScopeMismatch(body: unknown): boolean {
+  if (!isRecord(body)) return false;
+
+  const { message } = body;
+
+  return typeof message === 'string' && message.toLowerCase().includes(SCOPE_MISMATCH_MESSAGE);
+}
+
+// endregion | Helpers

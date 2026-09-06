@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { createFakeRequest } from '../../test-utils/createFakeRequest.ts';
+import { createFakeRequest, FAKE_BASE_URL } from '../../test-utils/createFakeRequest.ts';
 import { JiraRequestError } from '../JiraRequestError.ts';
 import { requestOk } from '../requestOk.ts';
 
 const PATH = '/rest/api/3/project/THOR';
+const REQUEST_URL = `${FAKE_BASE_URL}${PATH}`;
 
 describe(requestOk, () => {
   it('returns the response and issues the call that it was given', async () => {
@@ -21,7 +22,7 @@ describe(requestOk, () => {
     expect(calls).toStrictEqual([{ body: { key: 'THOR' }, method: 'POST', path: PATH }]);
   });
 
-  it('throws carrying the method, path, status, and parsed reply', async () => {
+  it('throws carrying the method, path, status, URL, and parsed reply', async () => {
     const { request } = createFakeRequest({
       [`GET ${PATH}`]: { json: { errorMessages: ['No project could be found.'] }, status: 404 },
     });
@@ -31,10 +32,14 @@ describe(requestOk, () => {
     await expect(rejected).rejects.toBeInstanceOf(JiraRequestError);
     await expect(rejected).rejects.toMatchObject({
       body: { errorMessages: ['No project could be found.'] },
-      message: 'read project THOR failed (HTTP 404): {"errorMessages":["No project could be found."]}',
+      message: expect.stringContaining(
+        `read project THOR failed (HTTP 404 at ${REQUEST_URL}): {"errorMessages":["No project could be found."]}`,
+      ),
       method: 'GET',
       path: PATH,
+      reason: 'not-found',
       status: 404,
+      url: REQUEST_URL,
     });
   });
 
@@ -45,7 +50,7 @@ describe(requestOk, () => {
 
     await expect(requestOk(request, { label: 'read project', method: 'GET', path: PATH })).rejects.toMatchObject({
       body: '<html>Service Unavailable</html>',
-      message: 'read project failed (HTTP 503): <html>Service Unavailable</html>',
+      message: `read project failed (HTTP 503 at ${REQUEST_URL}): <html>Service Unavailable</html>`,
     });
   });
 
@@ -53,7 +58,7 @@ describe(requestOk, () => {
     const { request } = createFakeRequest({ [`GET ${PATH}`]: { status: 500 } });
 
     await expect(requestOk(request, { label: 'read project', method: 'GET', path: PATH })).rejects.toMatchObject({
-      message: 'read project failed (HTTP 500): no body',
+      message: `read project failed (HTTP 500 at ${REQUEST_URL}): no body`,
     });
   });
 

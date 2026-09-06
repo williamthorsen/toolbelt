@@ -1,6 +1,8 @@
 import type { JiraRequest } from '../3-candidate/createTokenTransport.ts';
 
-const DEFAULT_BASE_URL = 'https://api.atlassian.com/ex/jira/fake-cloud-id';
+/** The origin that a route's path resolves against where a caller names none. */
+export const FAKE_BASE_URL = 'https://api.atlassian.com/ex/jira/fake-cloud-id';
+
 const OK = 200;
 
 /**
@@ -8,7 +10,7 @@ const OK = 200;
  * answers with one response, with a response per call in order, or with a function of the request body.
  */
 export function createFakeRequest(routes: FakeRoutes, options: FakeRequestOptions = {}): FakeTransport {
-  const { baseUrl = DEFAULT_BASE_URL } = options;
+  const { baseUrl = FAKE_BASE_URL } = options;
   const calls: FakeCall[] = [];
   const consumed = new Map<string, number>();
 
