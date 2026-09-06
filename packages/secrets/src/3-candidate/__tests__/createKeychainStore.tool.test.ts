@@ -1,9 +1,9 @@
 import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 
-import { createTempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
 import { describe, expect, it } from 'vitest';
 
+import { createTempKeychain } from '../../test-utils/createTempKeychain.ts';
 import { createKeychainStore } from '../createKeychainStore.ts';
 
 const SECURITY_PATH = '/usr/bin/security';
@@ -150,28 +150,19 @@ function runSecurity(args: string[]): void {
 }
 
 /**
- * Places the fixtures in a keychain created for this call and deleted after it, so no test reaches the login
- * keychain. Seeding passes each value on argv, which the store itself refuses to do: these are fixtures rather
- * than secrets, and passing them this way keeps the seeding independent of the write under test.
+ * Places the fixtures in a keychain of this call's own. Seeding passes each value on argv, which the store
+ * itself refuses to do: these are fixtures rather than secrets, and passing them this way keeps the seeding
+ * independent of the write under test.
  */
 function withKeychain(use: (keychain: string) => void): void {
-  using tree = createTempTree({});
-  const keychain = tree.resolve('probe.keychain-db');
-  const password = randomUUID();
+  using keychain = createTempKeychain();
 
-  runSecurity(['create-keychain', '-p', password, keychain]);
+  seedItem(keychain.path, PLAIN_SERVICE, '', 'plain value');
+  seedItem(keychain.path, HEX_SERVICE, 'me@example.com', TAB_SECRET);
+  seedItem(keychain.path, SHARED_SERVICE, 'first', 'first value');
+  seedItem(keychain.path, SHARED_SERVICE, 'second', 'second value');
 
-  try {
-    runSecurity(['unlock-keychain', '-p', password, keychain]);
-    seedItem(keychain, PLAIN_SERVICE, '', 'plain value');
-    seedItem(keychain, HEX_SERVICE, 'me@example.com', TAB_SECRET);
-    seedItem(keychain, SHARED_SERVICE, 'first', 'first value');
-    seedItem(keychain, SHARED_SERVICE, 'second', 'second value');
-
-    use(keychain);
-  } finally {
-    runSecurity(['delete-keychain', keychain]);
-  }
+  use(keychain.path);
 }
 
 /** Places one fixture item in a keychain. */

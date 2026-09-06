@@ -107,7 +107,7 @@ export interface TbSecretEffects {
   readonly isStdinTty: () => boolean;
   /** Reads a secret from the terminal, echoing nothing and asking twice. */
   readonly promptSecret: () => Promise<string>;
-  readonly readStdin: () => string;
+  readonly readStdin: () => Promise<string>;
   readonly resolveVersion: () => string;
 }
 
@@ -237,7 +237,9 @@ async function runSet(args: string[], effects: TbSecretEffects): Promise<TbSecre
 
   const query = buildQuery(positionals, values.account);
   const store = callKeystore(() => effects.createStore(values.keychain));
-  const secret = effects.isStdinTty() ? await effects.promptSecret() : stripOneTrailingNewline(effects.readStdin());
+  const secret = effects.isStdinTty()
+    ? await effects.promptSecret()
+    : stripOneTrailingNewline(await effects.readStdin());
 
   callKeystore(() => store.setSecret(query, secret));
 

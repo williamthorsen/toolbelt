@@ -229,7 +229,7 @@ function createHarness(options: HarnessOptions = {}): Harness {
 
         return promptFailure === undefined ? Promise.resolve(promptAnswer) : Promise.reject(new Error(promptFailure));
       },
-      readStdin: () => stdin,
+      readStdin: () => Promise.resolve(stdin),
       resolveVersion: () => VERSION,
     },
     secrets,

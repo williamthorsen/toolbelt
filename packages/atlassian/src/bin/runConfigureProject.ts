@@ -103,7 +103,7 @@ export async function runConfigureProject(args: string[], effects: TbJiraEffects
       account: email,
       env: effects.env,
       store: createDeferredStore(effects),
-      token: values['token-stdin'] ? stripOneTrailingNewline(effects.readStdin()) : undefined,
+      token: values['token-stdin'] ? stripOneTrailingNewline(await effects.readStdin()) : undefined,
       tokenCommand: values['token-command'],
     }),
   });

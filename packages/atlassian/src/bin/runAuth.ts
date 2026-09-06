@@ -92,7 +92,9 @@ function runDelete(effects: TbJiraEffects, account: string, service: string): nu
  */
 async function runSet(effects: TbJiraEffects, account: string, service: string): Promise<number> {
   const store = callKeystore(() => effects.createStore());
-  const token = effects.isStdinTty() ? await effects.promptSecret() : stripOneTrailingNewline(effects.readStdin());
+  const token = effects.isStdinTty()
+    ? await effects.promptSecret()
+    : stripOneTrailingNewline(await effects.readStdin());
 
   // The resolution chain drops a blank token, so storing one leaves an item that `auth status` reports and
   // `configure-project` cannot use.

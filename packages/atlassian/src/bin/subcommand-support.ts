@@ -32,7 +32,7 @@ export interface TbJiraEffects {
   readonly isStdinTty: () => boolean;
   /** Reads a token from the terminal, echoing nothing and asking twice. */
   readonly promptSecret: () => Promise<string>;
-  readonly readStdin: () => string;
+  readonly readStdin: () => Promise<string>;
   readonly readTextFile: (filePath: string) => string;
   readonly resolveVersion: () => string;
   readonly write: (text: string) => void;

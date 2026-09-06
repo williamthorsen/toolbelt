@@ -89,7 +89,7 @@ export function createTbJiraHarness(options: HarnessOptions = {}): TbJiraHarness
       findSpecPath: (fromDir) => path.join(fromDir, 'jira-project-spec.json'),
       isStdinTty: () => isTty,
       promptSecret: () => Promise.resolve(prompted),
-      readStdin: () => stdin,
+      readStdin: () => Promise.resolve(stdin),
       readTextFile: (filePath) => {
         const text = files[filePath];
         if (text === undefined) throw new Error(`No fake file at '${filePath}'.`);
