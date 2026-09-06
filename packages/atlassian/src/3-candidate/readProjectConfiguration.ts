@@ -110,7 +110,7 @@ interface BoardEntry {
 
 /**
  * Reads the board's live feature states, against which the plan's toggles are resolved, alongside the features
- * locked by Jira. A locked feature is reported rather than refused: The write against one returns 200 and
+ * locked by Jira. A locked feature is reported rather than refused: The write against one answers 200 and
  * changes nothing, so the lock has to reach the planner for the toggle to be left unplanned.
  */
 async function readFeatures(request: JiraRequest, boardId: number): Promise<BoardFeatures> {

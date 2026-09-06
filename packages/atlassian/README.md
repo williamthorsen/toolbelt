@@ -209,7 +209,7 @@ The service defaults to `toolbelt.atlassian.jira`; pass `service` to read anothe
 
 `findJiraTokenSource` walks that same chain and answers which link would supply the token, or `undefined` where every one misses. It never returns the token: the keychain is probed with `hasSecret`, which reads the item's attributes rather than its data and so raises no keychain access prompt. A configured `tokenCommand` does run, and its output is discarded.
 
-`resolveJiraSite` reads a supplied value, then `JIRA_SITE`, then `fallback`, which is where a spec's `site` reaches the chain. It answers the site from which `resolveJiraBaseUrl` derives the cloudId.
+`resolveJiraSite` reads a supplied value, then `JIRA_SITE`, then `fallback`, which is where a spec's `site` reaches the chain. It returns the site from which `resolveJiraBaseUrl` derives the cloudId.
 
 ### The transport
 

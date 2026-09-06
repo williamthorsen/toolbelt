@@ -1,6 +1,6 @@
 /**
  * Reads a stream to end as text, awaiting a producer that has not yet written. A synchronous read of a
- * non-blocking pipe fails with `EAGAIN` rather than waiting, which is how a piped token arrives.
+ * non-blocking pipe fails with `EAGAIN` rather than waiting, and a piped token arrives on such a pipe.
  *
  * @internal
  */

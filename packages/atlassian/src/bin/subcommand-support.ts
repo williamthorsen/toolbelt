@@ -41,7 +41,7 @@ export interface TbJiraEffects {
 
 /**
  * Runs a keychain operation, reporting what it threw as a failure to reach the keychain. A value that the
- * keychain cannot carry passes through unwrapped, since nothing was reached: it is a usage error like any other.
+ * keychain cannot carry passes through unwrapped, since nothing was reached: It is a usage error like any other.
  *
  * @internal
  */
