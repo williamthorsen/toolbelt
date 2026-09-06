@@ -1,5 +1,6 @@
 export {
   isAdoptableSource,
+  isAdoptableSourceOrTest,
   isBinWrapper,
   isInTestDirectory,
   isJsTsSource,

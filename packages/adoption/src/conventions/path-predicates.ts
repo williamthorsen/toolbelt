@@ -8,12 +8,25 @@ const TEST_SUFFIX = /\.(?:spec|test)\.[cm]?[jt]sx?$/;
  *
  * The selection wanted by every kit sweeping a project's own sources: a JavaScript or TypeScript file that is
  * neither a bootstrap wrapper nor a test. A kit sweeping tests instead, as `toolbelt.vitest` does, inverts the
- * last of those and reaches for `isTestFile` directly.
+ * last of those and reaches for `isTestFile` directly, and one sweeping both takes `isAdoptableSourceOrTest`.
  *
  * @internal
  */
 export function isAdoptableSource(path: string): boolean {
   return isJsTsSource(path) && !isBinWrapper(path) && !isTestFile(path) && !isInTestDirectory(path);
+}
+
+/**
+ * Reports whether a path names a source or a test read by an adoption sweep.
+ *
+ * The selection wanted by a kit whose idiom lives in a project's tests as much as in its other sources, as
+ * `toolbelt.async`'s hand-rolled sleep does. Bootstrap wrappers stay exempt, their hand-rolled handling being
+ * deliberate wherever it appears.
+ *
+ * @internal
+ */
+export function isAdoptableSourceOrTest(path: string): boolean {
+  return isJsTsSource(path) && !isBinWrapper(path);
 }
 
 /**
