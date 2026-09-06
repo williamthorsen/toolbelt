@@ -9,7 +9,9 @@ const SECRET_PROMPT = 'Secret: ';
  * what was typed. `security` has a prompt of its own, but it fills a 128-byte buffer and hands back nothing to
  * verify, so the secret is read here instead.
  *
- * @internal
+ * @category Secrets
+ * @experimental
+ * @stage candidate
  */
 export async function promptSecret(input: NodeJS.ReadableStream, output: NodeJS.WritableStream): Promise<string> {
   // The reader draws the line that it is editing into a sink, so what is typed never reaches the terminal. The

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { SecretQuery, WritableSecretStore } from '../../3-candidate/SecretStore.ts';
-import { UnstorableSecretError } from '../../internal/UnstorableSecretError.ts';
+import { UnstorableSecretError } from '../../3-candidate/UnstorableSecretError.ts';
 import { runTbSecret, type TbSecretEffects } from '../runTbSecret.ts';
 
 const KEYCHAIN = '/tmp/project.keychain-db';

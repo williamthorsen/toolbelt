@@ -176,6 +176,7 @@ function buildPlan(overrides: Partial<ReconciliationPlan> = {}): ReconciliationP
   return {
     creations: [],
     featureToggles: [],
+    lockedFeatures: [],
     statusUpdates: [],
     transitionRenames: [],
     unmanaged: [],

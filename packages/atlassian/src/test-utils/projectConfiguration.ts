@@ -15,6 +15,7 @@ export function buildProjectConfiguration(overrides: Partial<ProjectConfiguratio
   return {
     board: { id: 1 },
     features: new Map([['jsw.agility.backlog', 'DISABLED']]),
+    lockedFeatures: new Set<string>(),
     project: { id: '10000' },
     statuses,
     workflow: buildWorkflow(statuses),

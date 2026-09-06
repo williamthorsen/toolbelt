@@ -1,9 +1,12 @@
 import { Buffer } from 'node:buffer';
 
+import { fetchOrRaise } from '../internal/fetchOrRaise.ts';
+
 /**
  * Builds a request function that authenticates over Basic auth with an email and an API token. The credential
  * arrives as a value: nothing here reads an environment variable, a file, or a keystore. Every status is
- * reported to the caller, a rejected one included, so only a transport failure throws.
+ * reported to the caller, a rejected one included, so only a transport failure throws, as a
+ * `JiraTransportError` naming the URL.
  *
  * @category Jira
  * @experimental
@@ -16,7 +19,9 @@ export function createTokenTransport(options: TokenTransportOptions): JiraReques
   const origin = baseUrl.replace(/\/+$/, '');
 
   return async function request(method: string, path: string, body?: unknown): Promise<JiraResponse> {
-    const response = await fetchImpl(`${origin}${path.startsWith('/') ? path : `/${path}`}`, {
+    const url = `${origin}${path.startsWith('/') ? path : `/${path}`}`;
+
+    const response = await fetchOrRaise(url, fetchImpl, {
       method,
       headers: {
         Accept: 'application/json',

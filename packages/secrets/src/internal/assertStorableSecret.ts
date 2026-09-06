@@ -1,4 +1,4 @@
-import { UnstorableSecretError } from './UnstorableSecretError.ts';
+import { UnstorableSecretError } from '../3-candidate/UnstorableSecretError.ts';
 
 /**
  * Rejects an empty secret, which the keychain would hold as an item indistinguishable from a stray one. Every

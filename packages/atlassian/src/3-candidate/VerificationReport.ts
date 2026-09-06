@@ -1,6 +1,11 @@
 /** How one board feature declared by the spec stands against what the board holds. */
 export interface FeatureVerification {
   readonly feature: string;
+  /**
+   * Whether Jira has locked the feature. A locked one is reported rather than faulted, as a board column the
+   * spec has no counterpart for is: no call can change it, so it is not something the run failed to do.
+   */
+  readonly locked: boolean;
   readonly matches: boolean;
   /** The live state, or `undefined` where the board reports no such feature. */
   readonly state: string | undefined;

@@ -118,6 +118,26 @@ describe(buildReconciliationPlan, () => {
     expect(plan.featureToggles).toStrictEqual([]);
   });
 
+  it('reports a feature locked by Jira rather than planning a toggle that cannot take', () => {
+    const spec = { ...buildSpec(), boardFeatures: { 'jsw.agility.backlog': 'ENABLED' } } satisfies ProjectSpec;
+    const configuration = buildProjectConfiguration({ lockedFeatures: new Set(['jsw.agility.backlog']) });
+
+    const plan = buildReconciliationPlan(spec, configuration, { newStatusReference });
+
+    expect(plan.featureToggles).toStrictEqual([]);
+    expect(plan.lockedFeatures).toStrictEqual([{ feature: 'jsw.agility.backlog', from: 'DISABLED', to: 'ENABLED' }]);
+  });
+
+  it('leaves a locked feature already in the requested state out of both lists', () => {
+    const spec = { ...buildSpec(), boardFeatures: { 'jsw.agility.backlog': 'DISABLED' } } satisfies ProjectSpec;
+    const configuration = buildProjectConfiguration({ lockedFeatures: new Set(['jsw.agility.backlog']) });
+
+    const plan = buildReconciliationPlan(spec, configuration, { newStatusReference });
+
+    expect(plan.featureToggles).toStrictEqual([]);
+    expect(plan.lockedFeatures).toStrictEqual([]);
+  });
+
   it('passes over a transition that is not global', () => {
     const statuses = [buildStatus({ name: 'To Do', statusCategory: 'TODO' })];
     const configuration = buildProjectConfiguration({ statuses });

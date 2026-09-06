@@ -16,7 +16,102 @@ Requires Node.js 24 or later.
 
 Jira, Confluence, and Bitbucket Cloud. A scoped API token authenticates one product, so a credential is held per product, while the cloudId lookup and the Basic auth transport are shared here rather than duplicated across a package per product.
 
-## Usage
+## CLI
+
+The package ships a `tb-jira` command exposing the reconciler and the credential to a shell caller.
+
+```sh
+pnpm add --global @williamthorsen/toolbelt.atlassian   # puts tb-jira on PATH
+npx @williamthorsen/toolbelt.atlassian configure-project THOR --dry-run
+```
+
+`tb-jira --help`, each subcommand's `--help`, and `tb-jira --version` report the surface and the installed version.
+
+| Subcommand                      | Effect                                                                    |
+| ------------------------------- | ------------------------------------------------------------------------- |
+| `tb-jira auth delete`           | Removes the stored token                                                  |
+| `tb-jira auth set`              | Stores a token, replacing one already held                                |
+| `tb-jira auth status`           | Reports which source would supply the token, printing the token nowhere   |
+| `tb-jira configure-project KEY` | Reconciles a project against the spec, then reports what the server holds |
+
+Jira Cloud only, and team-managed projects only. A company-managed project is refused rather than reconciled: a status renamed there is renamed in every project on the site that uses it. `auth delete` and `auth set` additionally require macOS, the keychain being the one credential store.
+
+### Reconciling a project
+
+```sh
+tb-jira configure-project THOR --dry-run                    # print the plan, write nothing
+tb-jira configure-project THOR                              # reconcile, then report what the server holds
+tb-jira configure-project THOR --seed-backlog 'To Do'       # also move every 'To Do' item off the board
+```
+
+| Option                  | Effect                                                              |
+| ----------------------- | ------------------------------------------------------------------- |
+| `--dry-run`             | Prints the plan and writes nothing                                  |
+| `--email <address>`     | Atlassian account email, which names the keychain account           |
+| `--seed-backlog <name>` | Moves every work item in that status off the board into the backlog |
+| `--site <host>`         | Jira site, such as `acme.atlassian.net`                             |
+| `--spec <path>`         | Spec file, rather than the upward search                            |
+| `--token-command <cmd>` | Shell line printing the API token                                   |
+| `--token-stdin`         | Reads the API token from stdin                                      |
+
+The run prints the plan before it writes anything, and each write as it lands, so a process killed partway still leaves a record of what it did. It ends by re-reading the project and reporting each spec entry against what the server holds, followed by the board's column coverage and order.
+
+### Managing the credential
+
+```sh
+tb-jira auth set                                    # prompt for the token, echoing nothing
+pbpaste | tb-jira auth set                          # or pipe it
+tb-jira auth status                                 # name the source, print no token
+tb-jira auth delete
+```
+
+| Option                  | Effect                                                       |
+| ----------------------- | ------------------------------------------------------------ |
+| `--email <address>`     | Account holding the token (default: `$JIRA_EMAIL`)           |
+| `--service <name>`      | Keychain service (default: `toolbelt.atlassian.jira`)        |
+| `--token-command <cmd>` | `status` only: the shell line to probe as the command source |
+
+`set` refuses a blank token, which the resolver would drop while `status` still reported the item as present. An item written by hand or by `tb-secret` can still hold one: `status` reports what is stored, not what it contains.
+
+### Finding the spec
+
+The consuming repo owns the file. `tb-jira` ascends from the working directory looking for `jira-project-spec.json` and takes the first one it reaches, so one spec at a repo root serves every directory under it. `--spec` names one directly and skips the search.
+
+### Resolution orders
+
+Each chain stops at the first source that answers.
+
+| Value | Order                                                                             |
+| ----- | --------------------------------------------------------------------------------- |
+| site  | `--site`, then `JIRA_SITE`, then the spec's `site`                                |
+| email | `--email`, then `JIRA_EMAIL`, then the spec's `email`                             |
+| token | `--token-stdin`, then `JIRA_API_TOKEN`, then `--token-command`, then the keychain |
+
+The keychain item is the service `toolbelt.atlassian.jira` with the email as the account, which is what `tb-jira auth set` writes and what `tb-secret set toolbelt.atlassian.jira --account you@example.com` writes too. It is opened only where the earlier sources miss, so a run authenticated from the environment reaches no keychain and raises no access prompt.
+
+`tb-jira auth status` names the source that would answer without printing what it holds. It probes the keychain for presence rather than reading it, so it raises no access prompt either; a configured token command does run, and its output is discarded.
+
+The base URL is not configurable. It is the `api.atlassian.com` gateway, and the cloudId is read from the site's `_edge/tenant_info` endpoint, which answers without authentication.
+
+### Token scopes
+
+The scope set a scoped API token needs is not yet determined; #283 determines it against a scratch project. What the reconciler requires of the acting user is known: **Administer Jira** for the workflow and status writes, **board administration** for the feature toggle, and **Schedule Issues** for the backlog move. Grant a token the scopes matching those and narrow from there rather than over-granting permanently.
+
+### Exit codes
+
+| Code | Meaning                                                       |
+| ---- | ------------------------------------------------------------- |
+| `0`  | The command succeeded                                         |
+| `1`  | No token is stored, or nothing was there to remove            |
+| `2`  | Usage or validation error, with the message on stderr         |
+| `3`  | The keychain could not be reached, with the message on stderr |
+| `4`  | A Jira request failed, with the method, path, and status      |
+| `5`  | The run wrote, and the project does not match the spec        |
+| `6`  | Jira could not be reached, with the URL and the reason        |
+
+A run that wrote and left the project short of the spec is `5` rather than `4`, so a script can tell a rejected call from a reconciliation that did not take. A run that never reached Jira is `6` rather than `2`, so a script can retry a name lookup or a refused connection and never retry a malformed spec. Two things never change the exit code, because no call could have changed either: a board column for which the spec has no counterpart, and a board feature locked by Jira.
+
+## Library
 
 ```ts
 import {
@@ -44,23 +139,34 @@ Requests against the site URL (`https://acme.atlassian.net`) are not offered as 
 
 Basic auth pairs an email with an API token. They resolve on separate chains, because the email is not a secret and the token is, and the email names the keychain account under which the token is stored.
 
-`resolveJiraEmail` reads a supplied value, then `JIRA_EMAIL`.
+`resolveJiraEmail` reads a supplied value, then `JIRA_EMAIL`, then `fallback`, which is where a spec's `email` reaches the chain.
 
 `resolveJiraToken` reads a supplied value, then `JIRA_API_TOKEN`, then a configured shell command (`tokenCommand`), then the macOS keychain. The keychain is opened only where the earlier sources miss. Store a token with:
 
 ```sh
+tb-jira auth set --email you@example.com                      # or, equivalently:
 tb-secret set toolbelt.atlassian.jira --account you@example.com
 ```
 
 The service defaults to `toolbelt.atlassian.jira`; pass `service` to read another.
 
+`findJiraTokenSource` walks that same chain and answers which link would supply the token, or `undefined` where every one misses. It never returns the token: the keychain is probed with `hasSecret`, which reads the item's attributes rather than its data and so raises no keychain access prompt. A configured `tokenCommand` does run, and its output is discarded.
+
+`resolveJiraSite` reads a supplied value, then `JIRA_SITE`, then `fallback`, which is where a spec's `site` reaches the chain. What it answers is the site that `resolveJiraBaseUrl` derives the cloudId from.
+
 ### The transport
 
 `createTokenTransport` takes the email and token as values and reads no environment variable, file, or keystore of its own. It reports every status to the caller, a 401 or 403 included, so an authentication failure is a value to branch on rather than an exception.
 
+### Errors
+
+Two error types separate a Jira that answered from a Jira that did not. `JiraRequestError` reports a status outside 2xx and carries `body`, `label`, `method`, `path`, and `status`, so a caller branches on the status rather than parsing the message. `JiraTransportError` reports a request that never arrived and carries the `url` at which it was aimed, with the fault that the runtime raised as its `cause`.
+
+The split matters because node's `fetch` reports every transport failure as `TypeError: fetch failed` and names the reason on `cause` alone. Reading the chain is what turns that into `getaddrinfo ENOTFOUND acme.atlassian.net`, and a retry is worth attempting for the second type and never for the first.
+
 ### The project spec
 
-A spec declares which statuses a Jira project should hold and which board features it should have on. The consuming repo owns the file; this package ships the validator and this schema, never a spec of its own.
+A spec declares which statuses a Jira project should hold and which board features it should have on. The consuming repo owns the file; this package ships the validator and this schema, never a spec of its own. `tb-jira` looks for it under the name `jira-project-spec.json`.
 
 ```json
 {
@@ -79,6 +185,8 @@ A spec declares which statuses a Jira project should hold and which board featur
 `statuses` is required and non-empty. Each entry needs a `name` and a `category` of `TODO`, `IN_PROGRESS`, or `DONE`. Its `aliases` are the live names that also resolve to it, which is how a status is renamed: the new name goes in `name` and the current one in `aliases`. Names match case-insensitively, since Jira reports one status under two casings across endpoints, and no name or alias may be claimed by two entries.
 
 `boardFeatures` maps a feature key to `ENABLED` or `DISABLED`. Jira also reports `COMING_SOON`, which no spec may request. `site` and `email` are the last source in their resolution chains.
+
+Jira locks some features, such as one belonging to a product not held by the site. A write against a locked feature answers `200` and changes nothing, so a spec naming one is reported rather than written: the plan prints it as `locked`, the closing report marks it `LOCK`, and the exit code is unaffected. Without that, the toggle would be re-planned on every run and the project would never match.
 
 A live status claimed by no entry is reported and left untouched, so a spec covers the statuses that it manages rather than the whole project.
 
@@ -148,5 +256,7 @@ const report = buildVerificationReport(await readProjectConfiguration(request, '
 - **A response it cannot read.** A missing field is a refusal, not a default.
 
 ### Board columns
+
+`readProjectConfiguration` carries the `toggleLocked` flag Jira reports per feature, which is what lets `buildReconciliationPlan` leave a locked toggle unplanned rather than issuing a write that silently does nothing.
 
 Board columns cannot be set through the public API. `readBoardColumnReport` reports the gap: which spec statuses map to no column, whose work items are then absent from the board and the backlog alike, and the column order where it differs from the spec's. Both are fixed by dragging in the board settings.

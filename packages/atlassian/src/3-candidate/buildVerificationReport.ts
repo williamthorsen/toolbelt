@@ -12,10 +12,10 @@ import type { FeatureVerification, StatusVerification, VerificationReport } from
  * @stage candidate
  */
 export function buildVerificationReport(
-  configuration: Pick<ProjectConfiguration, 'features' | 'statuses' | 'workflow'>,
+  configuration: Pick<ProjectConfiguration, 'features' | 'lockedFeatures' | 'statuses' | 'workflow'>,
   spec: ProjectSpec,
 ): VerificationReport {
-  const { features, statuses, workflow } = configuration;
+  const { features, lockedFeatures, statuses, workflow } = configuration;
 
   const verifiedStatuses: StatusVerification[] = spec.statuses.map((wanted) => {
     const live = findByName(statuses, wanted.name);
@@ -37,13 +37,18 @@ export function buildVerificationReport(
 
   const verifiedFeatures: FeatureVerification[] = Object.entries(spec.boardFeatures ?? {}).map(([feature, wanted]) => ({
     feature,
+    locked: lockedFeatures.has(feature),
     matches: features.get(feature) === wanted,
     state: features.get(feature),
   }));
 
   return {
     features: verifiedFeatures,
-    matches: [...verifiedStatuses, ...verifiedFeatures].every((entry) => entry.matches),
+    // A locked feature is held out: no call can change it, so counting it would fail every run of a spec that
+    // names one, and the exit code would stop distinguishing a run that fell short from one that cannot proceed.
+    matches: [...verifiedStatuses, ...verifiedFeatures.filter((entry) => !entry.locked)].every(
+      (entry) => entry.matches,
+    ),
     statuses: verifiedStatuses,
   };
 }

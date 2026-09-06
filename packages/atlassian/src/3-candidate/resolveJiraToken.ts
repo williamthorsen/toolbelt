@@ -1,10 +1,11 @@
 import { createKeychainStore, type SecretStore } from '@williamthorsen/toolbelt.secrets/candidate';
 
-import { firstFilled } from '../internal/firstFilled.ts';
-import { runTokenCommand, type TokenCommandRunner } from '../internal/runTokenCommand.ts';
-
-const DEFAULT_SERVICE = 'toolbelt.atlassian.jira';
-const TOKEN_VARIABLE = 'JIRA_API_TOKEN';
+import {
+  DEFAULT_TOKEN_SERVICE,
+  type JiraTokenChainOptions,
+  TOKEN_VARIABLE,
+  walkJiraTokenChain,
+} from '../internal/jiraTokenChain.ts';
 
 /**
  * Resolves the Jira API token from a supplied value, then the environment, then a configured command, then the
@@ -16,41 +17,25 @@ const TOKEN_VARIABLE = 'JIRA_API_TOKEN';
  * @stage candidate
  */
 export function resolveJiraToken(options: JiraTokenOptions): string {
-  const {
-    account,
-    env = process.env,
-    runCommand = runTokenCommand,
-    service = DEFAULT_SERVICE,
-    store,
-    token,
-    tokenCommand,
-  } = options;
+  const { account, service = DEFAULT_TOKEN_SERVICE, store } = options;
 
-  const supplied = firstFilled(token, env[TOKEN_VARIABLE]);
-  if (supplied !== undefined) return supplied;
+  // The store is opened only inside the reader: `createKeychainStore` throws off macOS, where the earlier
+  // sources still work.
+  const answer = walkJiraTokenChain(options, () => (store ?? createKeychainStore()).findSecret({ account, service }));
 
-  const fromCommand = tokenCommand === undefined ? undefined : firstFilled(runCommand(tokenCommand));
-  if (fromCommand !== undefined) return fromCommand;
+  if (answer === undefined) {
+    throw new Error(
+      `No Jira API token was found for '${account}'. Supply one, set ${TOKEN_VARIABLE}, or store one: tb-secret set ${service} --account ${account}`,
+    );
+  }
 
-  // The store is opened only here: `createKeychainStore` throws off macOS, where the sources above still work.
-  const fromStore = firstFilled((store ?? createKeychainStore()).findSecret({ account, service }));
-  if (fromStore !== undefined) return fromStore;
-
-  throw new Error(
-    `No Jira API token was found for '${account}'. Supply one, set ${TOKEN_VARIABLE}, or store one: tb-secret set ${service} --account ${account}`,
-  );
+  return answer.value;
 }
 
-export interface JiraTokenOptions {
+export interface JiraTokenOptions extends JiraTokenChainOptions {
   /** The Atlassian account email, which names the keychain account holding the token. */
   readonly account: string;
-  readonly env?: Record<string, string | undefined> | undefined;
-  readonly runCommand?: TokenCommandRunner | undefined;
   /** The keychain service holding the token. A scoped token authenticates one product, so this defaults per product. */
   readonly service?: string | undefined;
   readonly store?: SecretStore | undefined;
-  /** Takes precedence over every other source, so a caller that read one from its own surface passes it here. */
-  readonly token?: string | undefined;
-  /** A shell line that prints the token, consulted after the environment and before the keychain. */
-  readonly tokenCommand?: string | undefined;
 }
