@@ -268,7 +268,7 @@ The workflow write replaces the graph wholesale, so `buildWorkflowUpdatePayload`
 
 ### The API functions
 
-Each takes the transport as its first argument and constructs none of its own. A response outside 2xx throws `JiraRequestError`, which carries the method, path, status, and the server's reply as fields, so a caller branches on the status rather than parsing a message. Findings are returned rather than printed.
+Each takes the transport as its first argument and constructs none of its own. A response outside 2xx throws `JiraRequestError`, whose fields ["Errors"](#errors) lists. Findings are returned rather than printed.
 
 | Function                                              | Reads or writes                                                                                                          |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
