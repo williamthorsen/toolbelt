@@ -6,14 +6,22 @@ export const __readyupVersion = "0.35.0";
 // ../adoption/src/conventions/path-predicates.ts
 var BIN_DIRECTORY = /(?:^|\/)bin\//;
 var JS_TS_EXTENSION = /\.[cm]?[jt]sx?$/;
+var TEST_DIRECTORY = /(?:^|\/)__tests__\//;
+var TEST_SUFFIX = /\.(?:spec|test)\.[cm]?[jt]sx?$/;
 function isAdoptableSourceOrTest(path) {
-  return isJsTsSource(path) && !isBinWrapper(path);
+  return isJsTsSource(path) && (!isBinWrapper(path) || isTestFile(path) || isInTestDirectory(path));
 }
 function isBinWrapper(path) {
   return BIN_DIRECTORY.test(path);
 }
+function isInTestDirectory(path) {
+  return TEST_DIRECTORY.test(path);
+}
 function isJsTsSource(path) {
   return JS_TS_EXTENSION.test(path);
+}
+function isTestFile(path) {
+  return TEST_SUFFIX.test(path);
 }
 
 // ../adoption/src/kits/defineAdoptionKit.ts

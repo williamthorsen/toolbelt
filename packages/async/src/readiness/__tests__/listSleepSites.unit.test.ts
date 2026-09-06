@@ -15,6 +15,9 @@ const CLAIMED = [
   'await new Promise((resolve, reject) => setTimeout(resolve, 50));',
   'await new Promise((resolve) => setTimeout(() => resolve(), 50));',
   'await new Promise((resolve) => setTimeout(() => { resolve(); }, 50));',
+  'await new Promise((resolve) => setTimeout(() => { return resolve(); }, 50));',
+  // A delay expression carrying a comma of its own, which the argument split has to read as one argument.
+  'await new Promise((resolve) => setTimeout(resolve, Math.min(50, cap)));',
 ];
 
 // Code that legitimately holds the anchor and is no sleep. Each line is declined for a reason of its own, and

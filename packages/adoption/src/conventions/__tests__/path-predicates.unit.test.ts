@@ -28,10 +28,18 @@ describe(isAdoptableSourceOrTest, () => {
     expect(claimed.filter((path) => !isAdoptableSourceOrTest(path))).toStrictEqual([]);
   });
 
-  it('declines a bootstrap wrapper and a test beside one', () => {
-    const exempt = ['bin/run.js', 'src/bin/__tests__/read.unit.test.ts'];
+  it('declines a bootstrap wrapper', () => {
+    const exempt = ['bin/run.js', 'src/bin/cli.ts'];
 
     expect(exempt.filter((path) => isAdoptableSourceOrTest(path))).toStrictEqual([]);
+  });
+
+  // A wrapper's exemption rests on what it must import, which binds no test of it. The two paths reach the
+  // claim through different terms, so neither term alone carries the case.
+  it('claims a test covering a bootstrap wrapper, and a helper beside that test', () => {
+    const claimed = ['bin/run.unit.test.ts', 'src/bin/__tests__/fixtures/sample.ts'];
+
+    expect(claimed.filter((path) => !isAdoptableSourceOrTest(path))).toStrictEqual([]);
   });
 
   it('declines a file that is not a source', () => {

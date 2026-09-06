@@ -20,13 +20,13 @@ export function isAdoptableSource(path: string): boolean {
  * Reports whether a path names a source or a test read by an adoption sweep.
  *
  * The selection wanted by a kit whose idiom lives in a project's tests as much as in its other sources, as
- * `toolbelt.async`'s hand-rolled sleep does. Bootstrap wrappers stay exempt, their hand-rolled handling being
- * deliberate wherever it appears.
+ * `toolbelt.async`'s hand-rolled sleep does. A bootstrap wrapper is exempt, its hand-rolled handling being
+ * deliberate; a test covering one is swept, since the constraint behind that handling does not bind it.
  *
  * @internal
  */
 export function isAdoptableSourceOrTest(path: string): boolean {
-  return isJsTsSource(path) && !isBinWrapper(path);
+  return isJsTsSource(path) && (!isBinWrapper(path) || isTestFile(path) || isInTestDirectory(path));
 }
 
 /**
