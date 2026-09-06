@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { FakeRoutes } from '../../test-utils/createFakeRequest.ts';
 import { runTbJira } from '../runTbJira.ts';
-import { createTbJiraHarness, type HarnessOptions } from '../test-utils/createTbJiraHarness.ts';
+import { createTbJiraHarness, HARNESS_BASE_URL, type HarnessOptions } from '../test-utils/createTbJiraHarness.ts';
 
 const BOARD_ID = 1;
 const KEY = 'THOR';
@@ -134,6 +134,21 @@ describe('tb-jira configure-project', () => {
 
       await expect(run(harness, [KEY])).resolves.toBe(4);
       expect(harness.readErrors()).toContain('401');
+    });
+
+    it('exits 4 naming the scope shortfall and the URL when the gateway rejects the token', async () => {
+      const harness = createHarness({
+        routes: {
+          'GET /rest/api/3/project/THOR': {
+            json: { code: 401, message: 'Unauthorized; scope does not match' },
+            status: 401,
+          },
+        },
+      });
+
+      await expect(run(harness, [KEY])).resolves.toBe(4);
+      expect(harness.readErrors()).toContain('The token lacks a scope this endpoint requires.');
+      expect(harness.readErrors()).toContain(`${HARNESS_BASE_URL}/rest/api/3/project/THOR`);
     });
 
     it('reads the token from stdin, dropping the newline a shell adds', async () => {

@@ -1,12 +1,15 @@
 import type { JiraRequest } from '../3-candidate/createTokenTransport.ts';
 
+export const FAKE_BASE_URL = 'https://api.atlassian.com/ex/jira/fake-cloud-id';
+
 const OK = 200;
 
 /**
  * Builds a request function answering from a route table, alongside the log of what it was called with. A route
  * answers with one response, with a response per call in order, or with a function of the request body.
  */
-export function createFakeRequest(routes: FakeRoutes): FakeTransport {
+export function createFakeRequest(routes: FakeRoutes, options: FakeRequestOptions = {}): FakeTransport {
+  const { baseUrl = FAKE_BASE_URL } = options;
   const calls: FakeCall[] = [];
   const consumed = new Map<string, number>();
 
@@ -23,7 +26,12 @@ export function createFakeRequest(routes: FakeRoutes): FakeTransport {
 
     const answered = answerRoute(found.route, body, index, found.key);
 
-    return Promise.resolve({ json: answered.json, status: answered.status ?? OK, text: answered.text });
+    return Promise.resolve({
+      json: answered.json,
+      status: answered.status ?? OK,
+      text: answered.text,
+      url: `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`,
+    });
   };
 
   return { calls, request };
@@ -34,6 +42,11 @@ export interface FakeCall {
   readonly body: unknown;
   readonly method: string;
   readonly path: string;
+}
+
+export interface FakeRequestOptions {
+  /** The origin that a route's path is resolved against, which is what reaches `JiraResponse.url`. */
+  readonly baseUrl?: string | undefined;
 }
 
 /** What a route answers with. The status defaults to 200, and a body carried by neither field is an empty one. */

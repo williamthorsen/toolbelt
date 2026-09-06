@@ -58,6 +58,15 @@ describe(createTokenTransport, () => {
     expect(fetchImpl).toHaveBeenCalledWith(`${BASE_URL}/rest/api/3/myself`, expect.anything());
   });
 
+  it('carries the URL it resolved, which the response object does not hold', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(Response.json({}));
+    const request = createTokenTransport({ baseUrl: BASE_URL, email: EMAIL, fetch: fetchImpl, token: TOKEN });
+
+    await expect(request('GET', '/rest/api/3/myself')).resolves.toMatchObject({
+      url: `${BASE_URL}/rest/api/3/myself`,
+    });
+  });
+
   it('sends a JSON body with its content type', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(Response.json({}));
     const request = createTokenTransport({ baseUrl: BASE_URL, email: EMAIL, fetch: fetchImpl, token: TOKEN });
@@ -96,6 +105,7 @@ describe(createTokenTransport, () => {
       json: { id: '10000' },
       status: 200,
       text: undefined,
+      url: `${BASE_URL}/rest/api/3/myself`,
     });
   });
 
@@ -107,6 +117,7 @@ describe(createTokenTransport, () => {
       json: undefined,
       status: 502,
       text: '<html>gateway</html>',
+      url: `${BASE_URL}/rest/api/3/myself`,
     });
   });
 
@@ -118,6 +129,7 @@ describe(createTokenTransport, () => {
       json: undefined,
       status: 204,
       text: undefined,
+      url: `${BASE_URL}/rest/api/3/status/1`,
     });
   });
 

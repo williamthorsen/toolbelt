@@ -49,7 +49,7 @@ describe(findCloudId, () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response('', { status: 503 }));
 
     await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toThrow(
-      "read the cloudId of 'acme.atlassian.net' failed (HTTP 503): no body",
+      "read the cloudId of 'acme.atlassian.net' failed (HTTP 503 at https://acme.atlassian.net/_edge/tenant_info): no body",
     );
   });
 

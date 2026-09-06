@@ -12,7 +12,7 @@ export {
   type TokenTransportOptions,
 } from './createTokenTransport.ts';
 export { findJiraTokenSource, type JiraTokenSource } from './findJiraTokenSource.ts';
-export { JiraRequestError, type JiraRequestErrorOptions } from './JiraRequestError.ts';
+export { type JiraRejectionReason, JiraRequestError, type JiraRequestErrorOptions } from './JiraRequestError.ts';
 export { JiraTransportError, type JiraTransportErrorOptions } from './JiraTransportError.ts';
 export { listIssueKeys } from './listIssueKeys.ts';
 export { type BacklogMoveResult, moveIssuesToBacklog } from './moveIssuesToBacklog.ts';
