@@ -59,7 +59,6 @@ describe(createTokenTransport, () => {
   });
 
   it('carries the URL it resolved, which the response object does not hold', async () => {
-    // A `Response` built by its constructor carries an empty `url`, so a transport reading it would report ''.
     const fetchImpl = vi.fn().mockResolvedValue(Response.json({}));
     const request = createTokenTransport({ baseUrl: BASE_URL, email: EMAIL, fetch: fetchImpl, token: TOKEN });
 

@@ -61,7 +61,7 @@ export interface TokenTransportOptions {
 
 /**
  * Reads a response into the shape on which callers branch, keeping a body that is not JSON as text. The URL is
- * supplied by the caller: a `Response` built by its constructor carries an empty `url`.
+ * supplied by the caller: A `Response` built by its constructor carries an empty `url`.
  */
 async function readResponse(response: Response, url: string): Promise<JiraResponse> {
   const text = await response.text();
