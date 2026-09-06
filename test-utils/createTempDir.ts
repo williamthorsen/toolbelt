@@ -4,8 +4,9 @@ import path from 'node:path';
 
 /**
  * Creates a throwaway directory holding the given entries and returns a handle that removes it on disposal. Each
- * key is a directory-relative path to a text file, whose parent directories are created before the write. A key
- * ending in `/` is rejected, since this helper writes files alone. A call that throws leaves nothing on disk.
+ * key is a directory-relative path whose parent directories are created before it. A key ending in `/` names a
+ * directory and takes an empty value, which is what keeps a mistyped file key from losing its contents. A call
+ * that throws leaves nothing on disk.
  *
  * Scaffolding for the root test suite, held to node builtins because the root manifest declares no workspace
  * dependency.
@@ -16,11 +17,16 @@ export function createTempDir(entries: Record<string, string>): TempDir {
 
   try {
     for (const [entry, contents] of Object.entries(entries)) {
-      if (entry.endsWith('/')) {
-        throw new Error(`Entry "${entry}" names a directory; createTempDir writes files alone`);
-      }
-
       const entryPath = path.join(dir, entry);
+
+      if (entry.endsWith('/')) {
+        if (contents !== '') {
+          throw new Error(`Entry "${entry}" names a directory; its value must be empty`);
+        }
+
+        fs.mkdirSync(entryPath, { recursive: true });
+        continue;
+      }
 
       fs.mkdirSync(path.dirname(entryPath), { recursive: true });
       fs.writeFileSync(entryPath, contents);
