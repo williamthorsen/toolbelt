@@ -122,8 +122,7 @@ function auditWorkspaceExports(monorepoRoot: string): {
 
 /**
  * Lists the maturity-tier directory names under a package's `src`, taking a tier as present only where it holds a
- * TypeScript file. Git tracks files rather than directories, so a directory emptied of its modules survives in a
- * working tree and in no fresh clone.
+ * TypeScript file.
  */
 function listTierDirectories(packageDirectory: string): string[] {
   const sourceDirectory = path.join(packageDirectory, 'src');
