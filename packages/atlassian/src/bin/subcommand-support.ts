@@ -40,8 +40,8 @@ export interface TbJiraEffects {
 }
 
 /**
- * Runs a keychain operation, reporting what it threw as a failure to reach the keychain. A value the keychain
- * cannot carry passes through unwrapped, since nothing was reached: it is a usage error like any other.
+ * Runs a keychain operation, reporting what it threw as a failure to reach the keychain. A value that the
+ * keychain cannot carry passes through unwrapped, since nothing was reached: it is a usage error like any other.
  *
  * @internal
  */
@@ -111,7 +111,7 @@ export function fail(effects: TbJiraEffects, message: string, command: string | 
 }
 
 /**
- * Drops the newline a shell adds to a piped value, leaving one written without a terminator untouched.
+ * Drops the newline that a shell adds to a piped value, leaving one written without a terminator untouched.
  *
  * @internal
  */

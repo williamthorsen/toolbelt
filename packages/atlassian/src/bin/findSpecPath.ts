@@ -5,7 +5,8 @@ const SPEC_FILENAME = 'jira-project-spec.json';
 
 /**
  * Finds the project spec that the consuming repo owns, ascending from a directory to the filesystem root and
- * answering the first one it reaches. Throws naming the directory it searched from where no ancestor holds one.
+ * returning the first one that it reaches. Throws where no ancestor holds one, naming the directory from which
+ * it searched.
  *
  * @internal
  */

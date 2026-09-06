@@ -53,7 +53,7 @@ describe(findCloudId, () => {
     );
   });
 
-  it('leaves a 4xx as a plain error, which names the site the caller corrects', async () => {
+  it('leaves a 4xx as a plain error, which names the site that the caller corrects', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response('', { status: 404 }));
 
     await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.not.toMatchObject({

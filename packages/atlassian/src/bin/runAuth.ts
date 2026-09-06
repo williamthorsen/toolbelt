@@ -46,8 +46,8 @@ command does run, and its output is discarded. Presence is not contents: an item
 reported here and dropped by the resolver, which \`set\` refuses to create.`;
 
 /**
- * Runs the `auth` subcommand, which stores, removes, and reports the token that the Jira transport
- * authenticates with.
+ * Runs the `auth` subcommand, which stores, removes, and reports the token with which the Jira transport
+ * authenticates.
  *
  * @internal
  */

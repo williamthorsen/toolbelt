@@ -3,7 +3,7 @@ import path from 'node:path';
 
 /**
  * Finds the manifest of the package owning a directory, ascending to the first `package.json` declaring a
- * `name`. One declaring none is a marker manifest, such as the `{"type": "commonjs"}` file a dual-format
+ * `name`. One declaring none is a marker manifest, such as the `{"type": "commonjs"}` file that a dual-format
  * build leaves in `dist/`, and the ascent passes over it, so the answer is the owning package rather than
  * the nearest manifest. Throws where no ancestor declares a name.
  *

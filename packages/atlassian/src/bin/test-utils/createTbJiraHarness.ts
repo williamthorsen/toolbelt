@@ -114,7 +114,7 @@ export interface HarnessOptions {
   env?: Record<string, string | undefined>;
   /** Rejects the tenant-info read with this error, which is how an unreachable site is exercised. */
   fetchFault?: Error;
-  /** What `readTextFile` answers with, keyed by path. */
+  /** What `readTextFile` returns, keyed by path. */
   files?: Record<string, string>;
   isTty?: boolean;
   /** Makes every keychain call throw, which is how an unreachable keychain is exercised. */
@@ -130,28 +130,28 @@ export interface HarnessOptions {
 }
 
 export interface TbJiraHarness {
-  /** Every call the transport was asked to issue, in order. */
+  /** Every call that the transport was asked to issue, in order. */
   calls: readonly FakeCall[];
   effects: TbJiraEffects;
-  /** Every URL `fetch` was called with, which is the site the cloudId was read from. */
+  /** Every URL that `fetch` was called with, which is the site from which the cloudId was read. */
   fetchedUrls: () => string[];
   readErrors: () => string;
   readOutput: () => string;
   /** How many times the token itself was retrieved, which reporting a source must never do. */
   secretReads: () => number;
   stored: () => Record<string, string>;
-  /** The credential the transport was built with, or `undefined` where the run never reached it. */
+  /** The credential with which the transport was built, or `undefined` where the run never reached it. */
   transportOptions: () => TokenTransportOptions | undefined;
 }
 
 // region | Helpers
 
-/** Names the in-memory item a query addresses. */
+/** Names the in-memory item addressed by a query. */
 function buildKey(query: SecretQuery): string {
   return `${query.account ?? ''}|${query.service}`;
 }
 
-/** Names the URL a fetch was aimed at, whichever of the three forms the argument takes. */
+/** Names the URL at which a fetch was aimed, whichever of the three forms the argument takes. */
 function describeFetchTarget(input: Parameters<typeof globalThis.fetch>[0]): string {
   if (input instanceof URL) return input.href;
   if (typeof input === 'string') return input;
@@ -161,8 +161,8 @@ function describeFetchTarget(input: Parameters<typeof globalThis.fetch>[0]): str
 
 /**
  * Wraps a transport so that a call which is not a known read fails the test rather than reaching the fake
- * routes. The allowance is a list rather than a denial of the writes this package makes today, so a write added
- * later fails a dry run's test by default.
+ * routes. The allowance is a list rather than a denial of the writes that this package makes today, so a write
+ * added later fails a dry run's test by default.
  */
 function guardReads(request: JiraRequest): JiraRequest {
   return (method, path, body) => {
