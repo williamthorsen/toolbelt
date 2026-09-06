@@ -9,7 +9,7 @@
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
-          "hash": "02a58a07",
+          "hash": "017c7417",
           "kind": "module",
           "path": "../../adoption/src/conventions/path-predicates.ts"
         },
@@ -24,7 +24,7 @@
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "52127b8f",
+          "hash": "dee2a3a3",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
