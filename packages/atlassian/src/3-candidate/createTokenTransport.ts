@@ -3,10 +3,10 @@ import { Buffer } from 'node:buffer';
 import { fetchOrRaise } from '../internal/fetchOrRaise.ts';
 
 /**
- * Builds a request function that authenticates over Basic auth with an email and an API token. The credential
- * arrives as a value: nothing here reads an environment variable, a file, or a keystore. Every status is
- * reported to the caller, a rejected one included, so only a transport failure throws, as a
- * `JiraTransportError` naming the URL.
+ * Builds a request function that authenticates over Basic auth with an email and an API token. The caller supplies
+ * the credential as a value: Nothing here reads an environment variable, a file, or a keystore. Every status is
+ * reported to the caller, a rejected one included, so only a transport failure throws, as a `JiraTransportError`
+ * naming the URL.
  *
  * @category Jira
  * @experimental
@@ -45,7 +45,7 @@ export interface JiraResponse {
   readonly status: number;
   /** The raw body, carried only where it did not parse as JSON. */
   readonly text: string | undefined;
-  /** The URL the request was aimed at, origin included. */
+  /** The URL to which the request was sent, origin included. */
   readonly url: string;
 }
 

@@ -7,9 +7,9 @@ const REMEDIES: Record<JiraRejectionReason, string> = {
   credential: 'The email and token did not authenticate.',
   'not-found':
     'Either the resource does not exist, or no credential reached the gateway and the request ran anonymously.',
-  permission: 'The credential authenticated, and the acting user lacks a Jira permission this call requires.',
+  permission: 'The credential authenticated, and the acting user lacks a Jira permission required by this call.',
   scope:
-    "The token lacks a scope this endpoint requires. A token's scopes are fixed at creation, so a replacement token carrying the full grant is what resolves it.",
+    "The token lacks a scope required by this endpoint. A token's scopes are fixed at creation, so a replacement token carrying the full grant resolves it.",
 };
 const SCOPE_MISMATCH_MESSAGE = 'scope does not match';
 const UNAUTHORIZED = 401;
@@ -33,7 +33,7 @@ export class JiraRequestError extends Error {
   /** Which failure the status and body report, or `undefined` where they match none. */
   readonly reason: JiraRejectionReason | undefined;
   readonly status: number;
-  /** The URL the request was aimed at, origin included. */
+  /** The URL to which the request was sent, origin included. */
   readonly url: string;
 
   constructor(options: JiraRequestErrorOptions) {
@@ -72,7 +72,7 @@ export interface JiraRequestErrorOptions {
 // region | Helpers
 
 /**
- * Classifies a rejection from its status and body, answering `undefined` where the two name no failure that a
+ * Classifies a rejection from its status and body, returning `undefined` where the two name no failure that a
  * caller can act on. The gateway rejects a token missing a scope with a 401 of its own, ahead of anything Jira
  * validates, so a scope shortfall and a bad credential are told apart by the message alone.
  */
@@ -84,7 +84,7 @@ function findRejectionReason(status: number, body: unknown): JiraRejectionReason
   return undefined;
 }
 
-/** Reports whether a body carries the gateway's message for a token missing a scope. */
+/** Reports whether a body contains the gateway's message for a token missing a scope. */
 function namesScopeMismatch(body: unknown): boolean {
   if (!isRecord(body)) return false;
 

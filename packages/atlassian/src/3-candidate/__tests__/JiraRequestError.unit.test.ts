@@ -25,8 +25,8 @@ describe(JiraRequestError, () => {
     expect(error.reason).toBe('scope');
     expect(error.message).toBe(
       `read project THOR failed (HTTP 401 at ${REQUEST_URL}): {"code":401,"message":"Unauthorized; scope does not match"}` +
-        " The token lacks a scope this endpoint requires. A token's scopes are fixed at creation, so a replacement" +
-        ' token carrying the full grant is what resolves it.',
+        " The token lacks a scope required by this endpoint. A token's scopes are fixed at creation, so a" +
+        ' replacement token carrying the full grant resolves it.',
     );
   });
 
@@ -49,11 +49,11 @@ describe(JiraRequestError, () => {
     expect(error.reason).toBe('scope');
   });
 
-  it('reads a 403 as a permission the acting user lacks', () => {
+  it('reads a 403 as a permission that the acting user lacks', () => {
     const error = buildError({ json: { errorMessages: ['forbidden'] }, status: 403 });
 
     expect(error.reason).toBe('permission');
-    expect(error.message).toContain('lacks a Jira permission this call requires');
+    expect(error.message).toContain('lacks a Jira permission required by this call');
   });
 
   it('reads a 404 as either an absent resource or a request that ran anonymously', () => {
@@ -73,7 +73,7 @@ describe(JiraRequestError, () => {
 
 // region | Helpers
 
-/** Builds an error over a response, defaulting every field the test does not set. */
+/** Builds an error over a response, defaulting every field that the test does not set. */
 function buildError(response: Partial<JiraResponse>): JiraRequestError {
   return new JiraRequestError({
     label: 'read project THOR',

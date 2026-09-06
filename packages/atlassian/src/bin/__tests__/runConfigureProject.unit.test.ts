@@ -28,7 +28,7 @@ const RENAMING_SPEC = JSON.stringify({
 });
 
 describe('tb-jira configure-project', () => {
-  it('prints the help it is asked for', async () => {
+  it('prints the help that it is asked for', async () => {
     const harness = createHarness();
 
     await expect(run(harness, ['--help'])).resolves.toBe(0);
@@ -71,7 +71,7 @@ describe('tb-jira configure-project', () => {
       expect(harness.readOutput()).toContain('dry run: nothing was written');
     });
 
-    it('reports the seed it would run without moving anything', async () => {
+    it('reports the seed that it would run without moving anything', async () => {
       const harness = createHarness({ readOnly: true });
 
       await run(harness, [KEY, '--dry-run', '--seed-backlog', 'To Do']);
@@ -156,11 +156,11 @@ describe('tb-jira configure-project', () => {
       });
 
       await expect(run(harness, [KEY])).resolves.toBe(4);
-      expect(harness.readErrors()).toContain('The token lacks a scope this endpoint requires.');
+      expect(harness.readErrors()).toContain('The token lacks a scope required by this endpoint.');
       expect(harness.readErrors()).toContain(`${HARNESS_BASE_URL}/rest/api/3/project/THOR`);
     });
 
-    it('reads the token from stdin, dropping the newline a shell adds', async () => {
+    it('reads the token from stdin, dropping the newline added by a shell', async () => {
       const harness = createHarness({ env: {}, stdin: 'piped-token\n' });
 
       await expect(run(harness, [KEY, '--token-stdin'])).resolves.toBe(0);
@@ -210,7 +210,7 @@ describe('tb-jira configure-project', () => {
       expect(harness.readErrors()).toContain('the keychain is locked');
     });
 
-    it('reports a token no source holds, naming the command that stores one', async () => {
+    it('reports a token held by no source, naming the command that stores one', async () => {
       const harness = createHarness({ env: {} });
 
       await expect(run(harness, [KEY])).resolves.toBe(2);
@@ -232,7 +232,7 @@ describe('tb-jira configure-project', () => {
       expect(harness.transportOptions()?.email).toBe('flag@example.com');
     });
 
-    it('reports a site no source holds', async () => {
+    it('reports a site held by no source', async () => {
       const harness = createHarness({
         files: { [SPEC_PATH]: JSON.stringify({ statuses: [{ category: 'TODO', name: 'To Do' }] }) },
       });
@@ -277,7 +277,7 @@ async function run(harness: ReturnType<typeof createTbJiraHarness>, args: string
   return await runTbJira(['configure-project', ...args], harness.effects);
 }
 
-/** Builds every route a whole run walks, against a team-managed project on one workflow. */
+/** Builds every route that a whole run walks, against a team-managed project on one workflow. */
 function buildRoutes(): FakeRoutes {
   return {
     'GET /rest/agile/1.0/board': { json: { values: [{ id: BOARD_ID, name: 'THOR board' }] } },
@@ -313,7 +313,7 @@ function buildRoutes(): FakeRoutes {
   };
 }
 
-/** Builds the workflow graph the read narrows, reaching each status through a global transition named for it. */
+/** Builds the workflow graph that the read narrows, reaching each status through a global transition named for it. */
 function buildWorkflow(): unknown {
   return {
     description: 'The project workflow.',
