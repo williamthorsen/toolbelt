@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { FAKE_BASE_URL, type FakeRoutes } from '../../test-utils/createFakeRequest.ts';
+import type { FakeRoutes } from '../../test-utils/createFakeRequest.ts';
 import { runTbJira } from '../runTbJira.ts';
-import { createTbJiraHarness, type HarnessOptions } from '../test-utils/createTbJiraHarness.ts';
+import { createTbJiraHarness, HARNESS_BASE_URL, type HarnessOptions } from '../test-utils/createTbJiraHarness.ts';
 
 const BOARD_ID = 1;
 const KEY = 'THOR';
@@ -148,7 +148,7 @@ describe('tb-jira configure-project', () => {
 
       await expect(run(harness, [KEY])).resolves.toBe(4);
       expect(harness.readErrors()).toContain('The token lacks a scope this endpoint requires.');
-      expect(harness.readErrors()).toContain(`${FAKE_BASE_URL}/rest/api/3/project/THOR`);
+      expect(harness.readErrors()).toContain(`${HARNESS_BASE_URL}/rest/api/3/project/THOR`);
     });
 
     it('reads the token from stdin, dropping the newline a shell adds', async () => {
