@@ -113,12 +113,12 @@ describe(applyWorkflowUpdate, () => {
 
 // region | Helpers
 
-/** Builds a plan carrying the given status updates and nothing else. */
+/** Builds a plan containing the given status updates and nothing else. */
 function buildPlan(statusUpdates: readonly StatusUpdate[]): ReconciliationPlan {
   return { creations: [], featureToggles: [], lockedFeatures: [], statusUpdates, transitionRenames: [], unmanaged: [] };
 }
 
-/** Builds the write and read-back routes, with the read-back answering the given live statuses. */
+/** Builds the write and read-back routes, with the read-back returning the given live statuses. */
 function buildRoutes(live: readonly unknown[]): FakeRoutes {
   return {
     [`GET ${SEARCH_PATH}`]: { json: { values: live } },

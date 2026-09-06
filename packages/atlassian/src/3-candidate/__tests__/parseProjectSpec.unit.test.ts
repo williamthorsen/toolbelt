@@ -24,7 +24,7 @@ describe(parseProjectSpec, () => {
     expect(spec.site).toBe('acme.atlassian.net');
   });
 
-  it('reports no site and no email where the spec carries neither', () => {
+  it('reports no site and no email where the spec contains neither', () => {
     const spec = parseProjectSpec(JSON.stringify(prototypeSpec));
 
     expect(spec.email).toBeUndefined();
@@ -51,7 +51,7 @@ describe(parseProjectSpec, () => {
     expect(() => parseProjectSpec('{ "statuses": [{ "category": "TODO" }] }')).toThrow('Each status needs a name');
   });
 
-  it('throws where a status carries an unknown category', () => {
+  it('throws where a status has an unknown category', () => {
     const text = '{ "statuses": [{ "name": "To Do", "category": "BACKLOG" }] }';
 
     expect(() => parseProjectSpec(text)).toThrow("Status 'To Do' needs a category of DONE, IN_PROGRESS, TODO");

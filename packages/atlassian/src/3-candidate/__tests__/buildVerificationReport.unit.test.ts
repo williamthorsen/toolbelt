@@ -56,7 +56,7 @@ describe(buildVerificationReport, () => {
     });
   });
 
-  it('names no transition for a status not held by the workflow, even where one carries no target', () => {
+  it('names no transition for a status not held by the workflow, even where one has no target', () => {
     const configuration = buildProjectConfiguration({ statuses: [buildStatus({ name: 'To Do' })] });
     const transitions = [{ id: '30', name: 'Create', type: 'GLOBAL' }];
 

@@ -72,7 +72,7 @@ describe(requestOk, () => {
 });
 
 describe(createFakeRequest, () => {
-  it('answers a sequence route once per call and matches a path carrying a query string', async () => {
+  it('answers a sequence route once per call and matches a path containing a query string', async () => {
     const { request } = createFakeRequest({
       'GET /search': { sequence: [{ json: { page: 1 } }, { json: { page: 2 } }] },
     });
@@ -81,7 +81,7 @@ describe(createFakeRequest, () => {
     await expect(request('GET', '/search?token=b')).resolves.toMatchObject({ json: { page: 2 } });
   });
 
-  it('throws naming an unmatched route rather than answering a 404', () => {
+  it('throws naming an unmatched route rather than returning a 404', () => {
     const { request } = createFakeRequest({ 'GET /search': { json: {} } });
 
     expect(() => request('POST', '/other')).toThrow("No fake route for 'POST /other'");

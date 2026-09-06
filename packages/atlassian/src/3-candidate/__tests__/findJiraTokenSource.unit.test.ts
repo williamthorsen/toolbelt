@@ -63,7 +63,7 @@ describe(findJiraTokenSource, () => {
     expect(store.findSecret).not.toHaveBeenCalled();
   });
 
-  it('answers undefined where every source misses', () => {
+  it('returns undefined where every source misses', () => {
     expect(findJiraTokenSource({ account: ACCOUNT, env: {}, store: createStore(false) })).toBeUndefined();
   });
 
