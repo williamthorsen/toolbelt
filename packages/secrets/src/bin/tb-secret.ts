@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import fs from 'node:fs';
 
 import { createKeychainStore } from '../3-candidate/createKeychainStore.ts';

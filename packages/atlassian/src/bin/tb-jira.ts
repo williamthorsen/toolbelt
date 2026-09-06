@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import fs from 'node:fs';
 
 import { createKeychainStore, promptSecret } from '@williamthorsen/toolbelt.secrets/candidate';
