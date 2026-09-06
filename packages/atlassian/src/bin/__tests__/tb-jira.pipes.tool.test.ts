@@ -28,7 +28,8 @@ describe('tb-jira over a pipe', () => {
   });
 
   it('ends quietly where the reader exits before the output is written', () => {
-    const { status, stderr } = runPipeline(`{ ${buildCommand(['--help'])}; echo "exit:$?" >&2; } | true`);
+    // The `sleep` lets the reader exit first, so the CLI's write reaches a pipe that is already closed.
+    const { status, stderr } = runPipeline(`{ sleep 0.1; ${buildCommand(['--help'])}; echo "exit:$?" >&2; } | true`);
 
     expect(stderr).toBe('exit:0\n');
     expect(status).toBe(0);

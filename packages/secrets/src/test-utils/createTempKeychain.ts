@@ -12,30 +12,24 @@ const SECURITY_PATH = '/usr/bin/security';
  * @internal
  */
 export function createTempKeychain(): TempKeychain {
-  const tree = createTempTree({});
+  using stack = new DisposableStack();
+
+  // Registration order sets disposal order: the keychain is deleted before the directory that holds it.
+  const tree = stack.use(createTempTree({}));
   const keychainPath = tree.resolve('probe.keychain-db');
   const password = randomUUID();
 
   runSecurity(['create-keychain', '-p', password, keychainPath]);
+  stack.defer(() => runSecurity(['delete-keychain', keychainPath]));
+  runSecurity(['unlock-keychain', '-p', password, keychainPath]);
 
-  try {
-    runSecurity(['unlock-keychain', '-p', password, keychainPath]);
-  } catch (error) {
-    runSecurity(['delete-keychain', keychainPath]);
-    tree[Symbol.dispose]();
-
-    throw error;
-  }
+  const resources = stack.move();
 
   return {
     path: keychainPath,
 
     [Symbol.dispose](): void {
-      try {
-        runSecurity(['delete-keychain', keychainPath]);
-      } finally {
-        tree[Symbol.dispose]();
-      }
+      resources.dispose();
     },
   };
 }
