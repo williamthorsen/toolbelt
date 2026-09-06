@@ -19,7 +19,7 @@ describe(resolveJiraSite, () => {
     expect(resolveJiraSite({ env: {}, fallback: SITE })).toBe(SITE);
   });
 
-  it('trims what it answers', () => {
+  it('trims what it returns', () => {
     expect(resolveJiraSite({ site: `  ${SITE}  ` })).toBe(SITE);
   });
 

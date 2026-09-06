@@ -22,7 +22,7 @@ describe(readProjectConfiguration, () => {
     expect(calls).toHaveLength(5);
   });
 
-  it('carries the features Jira reports as locked', async () => {
+  it('carries the features that Jira reports as locked', async () => {
     const routes = {
       ...buildRoutes(),
       [`GET /rest/agile/1.0/board/${BOARD_ID}/features`]: {
@@ -187,7 +187,7 @@ describe(readProjectConfiguration, () => {
     };
 
     await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'answered with boards that this cannot read',
+      'returned boards that this cannot read',
     );
   });
 
@@ -198,7 +198,7 @@ describe(readProjectConfiguration, () => {
     };
 
     await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'answered with issue types that this cannot read',
+      'returned issue types that this cannot read',
     );
   });
 
@@ -211,7 +211,7 @@ describe(readProjectConfiguration, () => {
     };
 
     await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'answered with features that this cannot read',
+      'returned features that this cannot read',
     );
   });
 
@@ -251,7 +251,7 @@ describe(readProjectConfiguration, () => {
     };
 
     await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'answered with statuses that this cannot read',
+      'returned statuses that this cannot read',
     );
   });
 
@@ -288,12 +288,12 @@ function buildRoutes(): FakeRoutes {
   };
 }
 
-/** Builds the whole route set around a project resource answering as given. */
+/** Builds the whole route set around a project resource that returns the given project. */
 function buildRoutesForProject(project: Record<string, unknown>): FakeRoutes {
   return { ...buildRoutes(), 'GET /rest/api/3/project/THOR': { json: project } };
 }
 
-/** Builds the workflow graph narrowed by the read, carrying a `conditions` field that this package does not model. */
+/** Builds the workflow graph narrowed by the read, containing a `conditions` field that this package does not model. */
 function buildWorkflow(): unknown {
   return {
     description: 'The project workflow.',

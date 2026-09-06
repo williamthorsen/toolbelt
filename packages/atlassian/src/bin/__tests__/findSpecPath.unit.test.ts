@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { findSpecPath } from '../findSpecPath.ts';
 
 describe(findSpecPath, () => {
-  it('finds a spec in the directory it starts from', () => {
+  it('finds a spec in the directory from which it starts', () => {
     using tree = createTempTree({ 'jira-project-spec.json': '{}' });
 
     expect(findSpecPath(tree.dir)).toBe(path.join(tree.dir, 'jira-project-spec.json'));
@@ -18,7 +18,7 @@ describe(findSpecPath, () => {
     expect(findSpecPath(path.join(tree.dir, 'packages/app/src'))).toBe(path.join(tree.dir, 'jira-project-spec.json'));
   });
 
-  it('answers the nearest spec where an ancestor holds one too', () => {
+  it('returns the nearest spec where an ancestor holds one too', () => {
     using tree = createTempTree({
       'jira-project-spec.json': '{}',
       'packages/app/jira-project-spec.json': '{}',
@@ -29,7 +29,7 @@ describe(findSpecPath, () => {
     );
   });
 
-  it('names the directory it searched from, and the flag that skips the search', () => {
+  it('names the directory from which it searched, and the flag that skips the search', () => {
     using tree = createTempTree({ '.keep': '' });
     const startDir = path.join(tree.dir, 'nested');
 

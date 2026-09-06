@@ -5,7 +5,7 @@ import type { VerificationReport } from '../../3-candidate/VerificationReport.ts
 import { renderVerification } from '../renderVerification.ts';
 
 describe(renderVerification, () => {
-  it('marks a status the server holds as the spec declares it', () => {
+  it('marks a status held by the server as the spec declares it', () => {
     const rendered = renderVerification(
       buildReport({ statuses: [{ category: 'TODO', matches: true, name: 'To Do', transition: 'To Do' }] }),
       buildColumns(),
@@ -14,7 +14,7 @@ describe(renderVerification, () => {
     expect(rendered).toContain("  ok   To Do (TODO), transition 'To Do'");
   });
 
-  it('marks a status the server does not hold, naming what is absent', () => {
+  it('marks a status not held by the server, naming what is absent', () => {
     const rendered = renderVerification(
       buildReport({
         matches: false,
@@ -26,7 +26,7 @@ describe(renderVerification, () => {
     expect(rendered).toContain("  MISS Waiting (absent), transition 'absent'");
   });
 
-  it('reports each board feature against the state the spec requests', () => {
+  it('reports each board feature against the state that the spec requests', () => {
     const rendered = renderVerification(
       buildReport({
         features: [

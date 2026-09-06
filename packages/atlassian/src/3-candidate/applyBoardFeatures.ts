@@ -19,7 +19,7 @@ export async function applyBoardFeatures(
   const { id } = configuration.board;
 
   for (const toggle of plan.featureToggles) {
-    // The board-scoped endpoint carries the feature in the body; its project-scoped counterpart carries it in
+    // The board-scoped endpoint expects the feature in the body; its project-scoped counterpart expects it in
     // the path, so the two take different shapes.
 
     await requestOk(request, {

@@ -184,7 +184,7 @@ function buildPlan(overrides: Partial<ReconciliationPlan> = {}): ReconciliationP
   };
 }
 
-/** Builds the default configuration with a description on `To Do`, which the description rules turn on. */
+/** Builds the default configuration with a description on `To Do`, on which the description rules depend. */
 function withDescribedStatus(): ReturnType<typeof buildProjectConfiguration> {
   return buildProjectConfiguration({
     statuses: [

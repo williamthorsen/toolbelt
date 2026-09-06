@@ -2,8 +2,8 @@ import type { ProjectConfiguration } from '../3-candidate/ProjectConfiguration.t
 import type { ReconciliationPlan } from '../3-candidate/ReconciliationPlan.ts';
 
 /**
- * Renders the reconciliation plan as the run's unit of review, listing every write it would make and reporting
- * a plan that holds none. Composes a string and prints nothing.
+ * Renders the reconciliation plan as the run's unit of review, listing every write that it would make and
+ * reporting a plan that holds none. Composes a string and prints nothing.
  *
  * @internal
  */
@@ -56,7 +56,10 @@ export function renderPlan(
   return lines.join('\n');
 }
 
-/** What the plan alone does not carry: the key it was read for, and the backlog seed the run was asked for. */
+/**
+ * What the plan alone does not carry: the key for which it was read, and the backlog seed for which the run
+ * was asked.
+ */
 export interface PlanRenderOptions {
   readonly projectKey: string;
   readonly seedBacklog?: string | undefined;

@@ -15,7 +15,7 @@ import {
 
 const ROOT_HELP = `Usage: tb-jira <subcommand> [options]
 
-Reconcile a Jira Cloud project against a declarative spec, and manage the API token it authenticates with.
+Reconcile a Jira Cloud project against a declarative spec, and manage the API token with which it authenticates.
 
 Subcommands:
   auth               Store, remove, and report the Jira API token
@@ -37,7 +37,7 @@ Exit codes:
 Jira Cloud and team-managed projects only.`;
 
 /**
- * Runs the `tb-jira` command line, writing through the effects it is given and answering with the code to exit
+ * Runs the `tb-jira` command line, writing through the effects that it is given and returning the code to exit
  * with. Output streams as the run proceeds, so a process killed partway still leaves a record of what it did.
  * Every failure is reported through the effects: nothing throws.
  *
@@ -72,7 +72,7 @@ export async function runTbJira(args: string[], effects: TbJiraEffects): Promise
 
 // region | Helpers
 
-/** Routes the arguments to a subcommand, or answers the root command's own options. */
+/** Routes the arguments to a subcommand, or handles the root command's own options. */
 async function dispatch(args: string[], effects: TbJiraEffects): Promise<number> {
   const [command, ...rest] = args;
 

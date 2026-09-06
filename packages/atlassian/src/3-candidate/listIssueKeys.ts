@@ -6,8 +6,8 @@ import { requestOk } from './requestOk.ts';
 const SEARCH_PAGE_SIZE = 100;
 
 /**
- * Collects every work-item key matched by a JQL query, following the search's page token to the end. The query
- * arrives composed: nothing here quotes a value into it.
+ * Collects every work-item key matched by a JQL query, following the search's page token to the end. The caller
+ * composes the query: Nothing here quotes a value into it.
  *
  * @category Jira
  * @experimental
@@ -34,7 +34,7 @@ export async function listIssueKeys(request: JiraRequest, jql: string): Promise<
     const issues = readArrayField(response.json, 'issues') ?? [];
     const page = issues.flatMap((issue) => (isRecord(issue) && typeof issue['key'] === 'string' ? [issue['key']] : []));
     if (page.length !== issues.length) {
-      throw new Error(`Search '${jql}' answered with work items that this cannot read.`);
+      throw new Error(`Search '${jql}' returned work items that this cannot read.`);
     }
     keys.push(...page);
 

@@ -52,7 +52,7 @@ describe(resolveJiraBaseUrl, () => {
     await expect(resolveJiraBaseUrl({ cloudId: 'abc-123', site: 'not a host' })).rejects.toThrow('is not a site host');
   });
 
-  it('surfaces a failed tenant-info read', async () => {
+  it('throws on a failed tenant-info read', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response('', { status: 404 }));
 
     await expect(resolveJiraBaseUrl({ fetch: fetchImpl, site: 'acme.atlassian.net' })).rejects.toThrow('answered 404');

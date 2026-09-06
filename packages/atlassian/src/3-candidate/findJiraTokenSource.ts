@@ -7,12 +7,12 @@ import type { JiraTokenOptions } from './resolveJiraToken.ts';
 const STORED = 'stored';
 
 /**
- * Reports which source would supply the Jira API token, walking the same chain `resolveJiraToken` walks and
- * answering `undefined` where every source misses. The token itself is never read: the keychain is probed for
- * presence, which raises no keychain access prompt. A configured token command does run, and its output is
+ * Reports which source would supply the Jira API token, walking the same chain that `resolveJiraToken` walks
+ * and returning `undefined` where every source misses. The token itself is never read: The keychain is probed
+ * for presence, which raises no keychain access prompt. A configured token command does run, and its output is
  * discarded.
  *
- * Presence is not contents. A keychain item holding only whitespace answers here and is dropped by
+ * Presence is not contents. A keychain item holding only whitespace is reported here and dropped by
  * `resolveJiraToken`, which reads the value and treats a blank one as a miss.
  *
  * @category Jira

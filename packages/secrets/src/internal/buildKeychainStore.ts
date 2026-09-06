@@ -73,7 +73,7 @@ export function buildKeychainStore(run: SecurityRunner, keychain?: string): Writ
 
 /**
  * Raises a stored secret that differs from the one written. `security` reads a command line into a fixed
- * buffer, so a version whose buffer is smaller than this one accounts for would cut the secret; comparing
+ * buffer, so a version whose buffer is smaller than this code accounts for would cut the secret; comparing
  * what came back is what turns that into a failure at the write rather than a wrong answer at the caller.
  */
 function assertStoredIntact(stored: string | undefined, secret: string): void {

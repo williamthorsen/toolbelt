@@ -14,7 +14,7 @@ const SECURITY_PATH = '/usr/bin/security';
 export function createTempKeychain(): TempKeychain {
   using stack = new DisposableStack();
 
-  // Registration order sets disposal order: the keychain is deleted before the directory that holds it.
+  // Registration order sets disposal order: The keychain is deleted before the directory that holds it.
   const tree = stack.use(createTempTree({}));
   const keychainPath = tree.resolve('probe.keychain-db');
   const password = randomUUID();

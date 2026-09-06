@@ -68,10 +68,10 @@ async function readBoard(
     return board === undefined ? [] : [board];
   });
   if (boards.length !== values.length) {
-    throw new Error(`Project ${projectKey} answered with boards that this cannot read.`);
+    throw new Error(`Project ${projectKey} returned boards that this cannot read.`);
   }
   // A sole board is taken without a location, which Jira may omit, but never one whose location names another
-  // project: its id would carry this project's feature writes and backlog moves onto that project's board.
+  // project: Its id would send this project's feature writes and backlog moves to that project's board.
   const owned = boards.filter(
     (entry) => entry.locationProjectId === projectId || (boards.length === 1 && entry.locationProjectId === undefined),
   );
@@ -109,8 +109,8 @@ interface BoardEntry {
 }
 
 /**
- * Reads the board's live feature states, which the plan's toggles are resolved against, alongside the features
- * Jira has locked. A locked feature is reported rather than refused: the write against one answers 200 and
+ * Reads the board's live feature states, against which the plan's toggles are resolved, alongside the features
+ * locked by Jira. A locked feature is reported rather than refused: The write against one answers 200 and
  * changes nothing, so the lock has to reach the planner for the toggle to be left unplanned.
  */
 async function readFeatures(request: JiraRequest, boardId: number): Promise<BoardFeatures> {
@@ -122,7 +122,7 @@ async function readFeatures(request: JiraRequest, boardId: number): Promise<Boar
 
   const values = readArrayField(response.json, 'features');
   if (values === undefined) {
-    throw new Error(`Board ${boardId} answered without a 'features' array.`);
+    throw new Error(`Board ${boardId} returned no 'features' array.`);
   }
 
   const entries: [string, string][] = [];
@@ -135,12 +135,12 @@ async function readFeatures(request: JiraRequest, boardId: number): Promise<Boar
     if (typeof feature !== 'string' || typeof state !== 'string') continue;
 
     entries.push([feature, state]);
-    // Jira omits the flag on features it has never locked, so only an explicit `true` locks one.
+    // Jira omits the flag on features that it has never locked, so only an explicit `true` locks one.
     if (toggleLocked === true) locked.add(feature);
   }
 
   if (entries.length !== values.length) {
-    throw new Error(`Board ${boardId} answered with features that this cannot read.`);
+    throw new Error(`Board ${boardId} returned features that this cannot read.`);
   }
 
   return { features: new Map(entries), lockedFeatures: locked };
@@ -161,14 +161,14 @@ async function readIssueTypeIds(request: JiraRequest, projectKey: string, key: s
 
   const values = Array.isArray(response.json) ? response.json : undefined;
   if (values === undefined || values.length === 0) {
-    throw new Error(`Project ${projectKey} answered with no issue types.`);
+    throw new Error(`Project ${projectKey} returned no issue types.`);
   }
 
   // An issue type dropped here never reaches the workflow read, so a project on several workflows could pass the
   // exactly-one refusal. The count is what keeps that refusal load-bearing.
   const ids = values.flatMap((value) => (isRecord(value) && typeof value['id'] === 'string' ? [value['id']] : []));
   if (ids.length !== values.length) {
-    throw new Error(`Project ${projectKey} answered with issue types that this cannot read.`);
+    throw new Error(`Project ${projectKey} returned issue types that this cannot read.`);
   }
 
   return ids;
@@ -194,13 +194,13 @@ async function readProject(request: JiraRequest, projectKey: string, key: string
   const project = isRecord(response.json) ? response.json : undefined;
   const id = project?.['id'];
   if (typeof id !== 'string') {
-    throw new Error(`Project ${projectKey} answered without an 'id'.`);
+    throw new Error(`Project ${projectKey} returned no 'id'.`);
   }
 
   const style = project?.['style'];
 
   // A status renamed in a company-managed project is renamed in every project on the site that uses it. An
-  // unreadable style is refused alongside a company-managed one: a project that this cannot classify is not one
+  // unreadable style is refused alongside a company-managed one: A project that this cannot classify is not one
   // to write to.
   if (style !== TEAM_MANAGED_STYLE) {
     throw new Error(
@@ -250,7 +250,7 @@ async function readWorkflow(
 
   const workflow = readWorkflowGraph(workflows[0]);
   if (workflow === undefined) {
-    throw new Error(`Project ${projectKey} answered with a workflow that this cannot read.`);
+    throw new Error(`Project ${projectKey} returned a workflow that this cannot read.`);
   }
 
   const values = readArrayField(response.json, 'statuses') ?? [];
@@ -260,7 +260,7 @@ async function readWorkflow(
     return status === undefined ? [] : [status];
   });
   if (statuses.length !== values.length || statuses.length === 0) {
-    throw new Error(`Project ${projectKey} answered with statuses that this cannot read.`);
+    throw new Error(`Project ${projectKey} returned statuses that this cannot read.`);
   }
 
   return { statuses, workflow };

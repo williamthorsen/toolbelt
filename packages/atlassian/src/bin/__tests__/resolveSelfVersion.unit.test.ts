@@ -26,7 +26,7 @@ describe(resolveSelfVersion, () => {
 
 // region | Helpers
 
-/** Reads the version this package's own manifest declares, throwing where the manifest is malformed. */
+/** Reads the version declared by this package's own manifest, throwing where the manifest is malformed. */
 function readDeclaredVersion(): string {
   const manifestPath = path.resolve(import.meta.dirname, '../../..', 'package.json');
   const parsed: unknown = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));

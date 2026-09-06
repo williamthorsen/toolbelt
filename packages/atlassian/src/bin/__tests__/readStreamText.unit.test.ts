@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { readStreamText } from '../readStreamText.ts';
 
 describe(readStreamText, () => {
-  it('joins every chunk the stream carries', async () => {
+  it('joins every chunk that the stream carries', async () => {
     await expect(readStreamText(buildStream(['first ', 'second']))).resolves.toBe('first second');
   });
 

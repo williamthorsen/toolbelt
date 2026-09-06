@@ -8,7 +8,7 @@ export const TOKEN_VARIABLE = 'JIRA_API_TOKEN';
 const TOKEN_SOURCES = ['supplied', 'env', 'command', 'keychain'] as const;
 
 /**
- * Consults each source in turn, answering with the first that holds something. The keychain is read through the
+ * Consults each source in turn, returning the first that holds something. The keychain is read through the
  * supplied function, which is what lets a caller reporting the source probe for presence rather than retrieve
  * the secret, and every caller shares this one ordering.
  *

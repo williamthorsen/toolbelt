@@ -94,7 +94,7 @@ function readOptionalString(value: unknown, key: string): string | undefined {
 
 /**
  * Reads the status list, refusing a name or alias that two entries claim. Both would resolve to the one live
- * status, and the write would carry the first and drop the second without a word.
+ * status, and the write would apply the first and drop the second without a word.
  */
 function readStatuses(value: unknown): readonly SpecStatus[] {
   if (!Array.isArray(value) || value.length === 0) throw new Error('A spec needs a non-empty `statuses` array.');

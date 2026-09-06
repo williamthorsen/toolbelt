@@ -22,7 +22,7 @@ describe(createTokenTransport, () => {
     );
   });
 
-  it('encodes a credential carrying non-ASCII characters', async () => {
+  it('encodes a credential containing non-ASCII characters', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(Response.json({}));
     const request = createTokenTransport({
       baseUrl: BASE_URL,
@@ -58,7 +58,7 @@ describe(createTokenTransport, () => {
     expect(fetchImpl).toHaveBeenCalledWith(`${BASE_URL}/rest/api/3/myself`, expect.anything());
   });
 
-  it('carries the URL it resolved, which the response object does not hold', async () => {
+  it('carries the URL that it resolved, which the response object does not hold', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(Response.json({}));
     const request = createTokenTransport({ baseUrl: BASE_URL, email: EMAIL, fetch: fetchImpl, token: TOKEN });
 
@@ -89,7 +89,7 @@ describe(createTokenTransport, () => {
 
     await request('GET', '/rest/api/3/myself');
 
-    // Asserting the whole init is what proves neither a body nor a content type is sent.
+    // Asserting the whole init proves that neither a body nor a content type is sent.
     const authorization = `Basic ${Buffer.from(`${EMAIL}:${TOKEN}`, 'utf8').toString('base64')}`;
     expect(fetchImpl).toHaveBeenCalledWith(expect.any(String), {
       headers: { Accept: 'application/json', Authorization: authorization },
