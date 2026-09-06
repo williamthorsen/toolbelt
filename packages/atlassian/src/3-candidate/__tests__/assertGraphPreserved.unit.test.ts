@@ -17,7 +17,7 @@ describe(assertGraphPreserved, () => {
       statuses: workflow.statuses.filter((status) => status.statusReference !== 'ref-done'),
     });
 
-    expect(() => assertGraphPreserved(workflow, payload)).toThrow('status ref-done would be dropped');
+    expect(() => assertGraphPreserved(workflow, payload)).toThrow('Status ref-done would be dropped');
   });
 
   it('refuses a payload that would drop a transition', () => {
@@ -25,7 +25,7 @@ describe(assertGraphPreserved, () => {
       transitions: workflow.transitions.filter((transition) => transition.id !== '30'),
     });
 
-    expect(() => assertGraphPreserved(workflow, payload)).toThrow('transition 30 (Done) would be dropped');
+    expect(() => assertGraphPreserved(workflow, payload)).toThrow('Transition 30 (Done) would be dropped');
   });
 
   it('refuses a payload that would leave a status with no transition into it', () => {
@@ -35,10 +35,10 @@ describe(assertGraphPreserved, () => {
       ),
     });
 
-    expect(() => assertGraphPreserved(workflow, payload)).toThrow('status ref-done would be left with no transition');
+    expect(() => assertGraphPreserved(workflow, payload)).toThrow('Status ref-done would be left with no transition');
   });
 
-  it('passes over a status that already carried no transition into it', () => {
+  it('passes over a status that already had no transition into it', () => {
     const stranded: Workflow = {
       ...workflow,
       transitions: workflow.transitions.filter((transition) => transition.toStatusReference !== 'ref-done'),
@@ -59,7 +59,7 @@ describe(assertGraphPreserved, () => {
     });
 
     expect(() => assertGraphPreserved(stranded, payload)).toThrow(
-      'status ref-in-progress would be left with no transition',
+      'Status ref-in-progress would be left with no transition',
     );
   });
 });

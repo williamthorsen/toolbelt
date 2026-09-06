@@ -72,7 +72,7 @@ export async function runTbJira(args: string[], effects: TbJiraEffects): Promise
 
 // region | Helpers
 
-/** Routes the arguments to a subcommand, or answers the root command's own options. */
+/** Routes the arguments to a subcommand, or handles the root command's own options. */
 async function dispatch(args: string[], effects: TbJiraEffects): Promise<number> {
   const [command, ...rest] = args;
 

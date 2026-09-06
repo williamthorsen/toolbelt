@@ -122,8 +122,8 @@ describe(buildVerificationReport, () => {
 
     const report = buildVerificationReport(configuration, spec);
 
-    // The state genuinely differs, so the entry reports a miss; no call could have changed it, so the run
-    // is not held to have fallen short.
+    // The state genuinely differs, so the entry reports a miss; no call could have changed it, so the report
+    // still counts the run as matching.
     expect(report.features).toStrictEqual([
       { feature: 'jsw.agility.backlog', locked: true, matches: false, state: 'DISABLED' },
     ]);

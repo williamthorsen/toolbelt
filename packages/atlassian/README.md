@@ -264,7 +264,7 @@ const plan = buildReconciliationPlan(spec, configuration);
 const payload = buildWorkflowUpdatePayload(configuration, plan);
 ```
 
-The workflow write replaces the graph wholesale, so `buildWorkflowUpdatePayload` runs `assertGraphPreserved` before returning. That refuses a payload that would drop a status, drop a transition, or leave a status with no transition into it: none of the three fails loudly at Jira, and each leaves work items in a state out of which nothing can move them. A status that already carried no transition is passed over, since that is not the write's doing.
+The workflow write replaces the graph wholesale, so `buildWorkflowUpdatePayload` runs `assertGraphPreserved` before returning. That refuses a payload that would drop a status, drop a transition, or leave a status with no transition into it: none of the three fails loudly at Jira, and each leaves work items in a state out of which nothing can move them. A status that already had no transition is passed over, since that is not the write's doing.
 
 `assertGraphPreserved` is exported as well, for a payload composed some other way.
 

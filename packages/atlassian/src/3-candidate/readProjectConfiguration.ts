@@ -68,7 +68,7 @@ async function readBoard(
     return board === undefined ? [] : [board];
   });
   if (boards.length !== values.length) {
-    throw new Error(`Project ${projectKey} answered with boards that this cannot read.`);
+    throw new Error(`Project ${projectKey} returned boards that this cannot read.`);
   }
   // A sole board is taken without a location, which Jira may omit, but never one whose location names another
   // project: Its id would send this project's feature writes and backlog moves to that project's board.
@@ -109,7 +109,7 @@ interface BoardEntry {
 }
 
 /**
- * Reads the board's live feature states, which the plan's toggles are resolved against, alongside the features
+ * Reads the board's live feature states, against which the plan's toggles are resolved, alongside the features
  * locked by Jira. A locked feature is reported rather than refused: The write against one returns 200 and
  * changes nothing, so the lock has to reach the planner for the toggle to be left unplanned.
  */
@@ -122,7 +122,7 @@ async function readFeatures(request: JiraRequest, boardId: number): Promise<Boar
 
   const values = readArrayField(response.json, 'features');
   if (values === undefined) {
-    throw new Error(`Board ${boardId} answered without a 'features' array.`);
+    throw new Error(`Board ${boardId} returned no 'features' array.`);
   }
 
   const entries: [string, string][] = [];
@@ -140,7 +140,7 @@ async function readFeatures(request: JiraRequest, boardId: number): Promise<Boar
   }
 
   if (entries.length !== values.length) {
-    throw new Error(`Board ${boardId} answered with features that this cannot read.`);
+    throw new Error(`Board ${boardId} returned features that this cannot read.`);
   }
 
   return { features: new Map(entries), lockedFeatures: locked };
@@ -161,14 +161,14 @@ async function readIssueTypeIds(request: JiraRequest, projectKey: string, key: s
 
   const values = Array.isArray(response.json) ? response.json : undefined;
   if (values === undefined || values.length === 0) {
-    throw new Error(`Project ${projectKey} answered with no issue types.`);
+    throw new Error(`Project ${projectKey} returned no issue types.`);
   }
 
   // An issue type dropped here never reaches the workflow read, so a project on several workflows could pass the
   // exactly-one refusal. The count is what keeps that refusal load-bearing.
   const ids = values.flatMap((value) => (isRecord(value) && typeof value['id'] === 'string' ? [value['id']] : []));
   if (ids.length !== values.length) {
-    throw new Error(`Project ${projectKey} answered with issue types that this cannot read.`);
+    throw new Error(`Project ${projectKey} returned issue types that this cannot read.`);
   }
 
   return ids;
@@ -194,7 +194,7 @@ async function readProject(request: JiraRequest, projectKey: string, key: string
   const project = isRecord(response.json) ? response.json : undefined;
   const id = project?.['id'];
   if (typeof id !== 'string') {
-    throw new Error(`Project ${projectKey} answered without an 'id'.`);
+    throw new Error(`Project ${projectKey} returned no 'id'.`);
   }
 
   const style = project?.['style'];
@@ -250,7 +250,7 @@ async function readWorkflow(
 
   const workflow = readWorkflowGraph(workflows[0]);
   if (workflow === undefined) {
-    throw new Error(`Project ${projectKey} answered with a workflow that this cannot read.`);
+    throw new Error(`Project ${projectKey} returned a workflow that this cannot read.`);
   }
 
   const values = readArrayField(response.json, 'statuses') ?? [];
@@ -260,7 +260,7 @@ async function readWorkflow(
     return status === undefined ? [] : [status];
   });
   if (statuses.length !== values.length || statuses.length === 0) {
-    throw new Error(`Project ${projectKey} answered with statuses that this cannot read.`);
+    throw new Error(`Project ${projectKey} returned statuses that this cannot read.`);
   }
 
   return { statuses, workflow };

@@ -72,7 +72,7 @@ describe(requestOk, () => {
 });
 
 describe(createFakeRequest, () => {
-  it('answers a sequence route once per call and matches a path containing a query string', async () => {
+  it('returns one sequence reply per call and matches a path containing a query string', async () => {
     const { request } = createFakeRequest({
       'GET /search': { sequence: [{ json: { page: 1 } }, { json: { page: 2 } }] },
     });

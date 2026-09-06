@@ -64,13 +64,13 @@ describe(findCloudId, () => {
   it('throws when the payload carries no cloudId', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ tenant: 'acme' }));
 
-    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toThrow("without a 'cloudId' field");
+    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toThrow("returned no 'cloudId' field");
   });
 
   it('throws when the cloudId is empty', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ cloudId: '' }));
 
-    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toThrow("without a 'cloudId' field");
+    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toThrow("returned no 'cloudId' field");
   });
 });
 

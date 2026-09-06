@@ -35,7 +35,7 @@ export async function findCloudId(host: string, fetchImpl: typeof globalThis.fet
   const payload: unknown = await response.json();
   const cloudId = readCloudId(payload);
   if (cloudId === undefined) {
-    throw new Error(`Could not read the cloudId of '${host}'. ${url} answered without a 'cloudId' field.`);
+    throw new Error(`Could not read the cloudId of '${host}'. ${url} returned no 'cloudId' field.`);
   }
 
   return cloudId;

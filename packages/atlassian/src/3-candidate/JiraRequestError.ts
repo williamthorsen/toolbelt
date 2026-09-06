@@ -15,9 +15,9 @@ const SCOPE_MISMATCH_MESSAGE = 'scope does not match';
 const UNAUTHORIZED = 401;
 
 /**
- * A request answered by Jira with a status outside 2xx. The status, the URL, and the classification are carried as
- * fields so a caller branches on them rather than parsing the message, and the message states the classification as
- * well, so a command line printing only the message still reports it.
+ * A request answered by Jira with a status outside 2xx. The error exposes the status, the URL, and the
+ * classification as fields so a caller branches on them rather than parsing the message, and the message states the
+ * classification as well, so a command line printing only the message still reports it.
  *
  * @category Jira
  * @experimental

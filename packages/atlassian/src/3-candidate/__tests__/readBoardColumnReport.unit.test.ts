@@ -78,7 +78,7 @@ describe(readBoardColumnReport, () => {
     });
 
     await expect(readBoardColumnReport(request, buildProjectConfiguration(), SPEC)).rejects.toThrow(
-      'answered with columns that this cannot read',
+      'returned columns that this cannot read',
     );
   });
 
@@ -88,7 +88,7 @@ describe(readBoardColumnReport, () => {
     });
 
     await expect(readBoardColumnReport(request, buildProjectConfiguration(), SPEC)).rejects.toThrow(
-      'answered with columns that this cannot read',
+      'returned columns that this cannot read',
     );
   });
 
