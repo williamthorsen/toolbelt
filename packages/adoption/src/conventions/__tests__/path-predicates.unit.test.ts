@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { isAdoptableSource, isBinWrapper, isInTestDirectory, isJsTsSource, isTestFile } from '../path-predicates.ts';
+import {
+  isAdoptableSource,
+  isAdoptableSourceOrTest,
+  isBinWrapper,
+  isInTestDirectory,
+  isJsTsSource,
+  isTestFile,
+} from '../path-predicates.ts';
 
 describe(isAdoptableSource, () => {
   it('claims ordinary source', () => {
@@ -11,6 +18,32 @@ describe(isAdoptableSource, () => {
     const exempt = ['README.md', 'bin/run.js', 'src/read.unit.test.ts', 'src/__tests__/fixtures/sample.ts'];
 
     expect(exempt.filter((path) => isAdoptableSource(path))).toStrictEqual([]);
+  });
+});
+
+describe(isAdoptableSourceOrTest, () => {
+  it('claims ordinary source and a test alike', () => {
+    const claimed = ['src/read.ts', 'src/read.unit.test.ts', 'src/__tests__/fixtures/sample.ts'];
+
+    expect(claimed.filter((path) => !isAdoptableSourceOrTest(path))).toStrictEqual([]);
+  });
+
+  it('declines a bootstrap wrapper', () => {
+    const exempt = ['bin/run.js', 'src/bin/cli.ts'];
+
+    expect(exempt.filter((path) => isAdoptableSourceOrTest(path))).toStrictEqual([]);
+  });
+
+  // A wrapper's exemption rests on what it must import, which binds no test of it. The two paths reach the
+  // claim through different terms, so neither term alone carries the case.
+  it('claims a test covering a bootstrap wrapper, and a helper beside that test', () => {
+    const claimed = ['bin/run.unit.test.ts', 'src/bin/__tests__/fixtures/sample.ts'];
+
+    expect(claimed.filter((path) => !isAdoptableSourceOrTest(path))).toStrictEqual([]);
+  });
+
+  it('declines a file that is not a source', () => {
+    expect(isAdoptableSourceOrTest('README.md')).toBe(false);
   });
 });
 

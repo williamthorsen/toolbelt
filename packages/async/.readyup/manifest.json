@@ -5,7 +5,7 @@
       "checklists": [
         "adoption"
       ],
-      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.arrays",
+      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.async",
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
@@ -54,42 +54,32 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "055a9211",
+          "hash": "ee1955ce",
           "kind": "module",
           "path": "kits/default.ts"
         },
         {
-          "hash": "21ad7fec",
+          "hash": "b8fbd90f",
           "kind": "module",
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "9a930c6d",
+          "hash": "9b67f701",
           "kind": "module",
-          "path": "../src/readiness/listArraifyLines.ts"
+          "path": "../src/readiness/listSleepSites.ts"
         },
         {
-          "hash": "5d173bad",
+          "hash": "4cfa13f2",
           "kind": "module",
-          "path": "../src/readiness/listArrayIdioms.ts"
-        },
-        {
-          "hash": "b721c930",
-          "kind": "module",
-          "path": "../src/readiness/listBiasedShuffleLines.ts"
-        },
-        {
-          "hash": "ab352b57",
-          "kind": "module",
-          "path": "../src/readiness/listRandomItemLines.ts"
+          "path": "../src/readiness/readExecutor.ts"
         }
       ],
       "name": "default",
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "055a9211",
-      "targetHash": "6c96a267"
+      "sourceHash": "ee1955ce",
+      "targetHash": "0fa00b12"
     }
   ]
 }

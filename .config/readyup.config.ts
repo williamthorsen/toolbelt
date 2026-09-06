@@ -11,6 +11,7 @@ export default defineRdyConfig({
     '@williamthorsen/nmr',
     '@williamthorsen/release-kit',
     '@williamthorsen/toolbelt.arrays',
+    '@williamthorsen/toolbelt.async',
     '@williamthorsen/toolbelt.errors',
     '@williamthorsen/toolbelt.numbers',
     '@williamthorsen/toolbelt.objects',
