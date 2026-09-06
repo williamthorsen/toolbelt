@@ -25,7 +25,10 @@ import {
   type TbJiraEffects,
 } from './subcommand-support.ts';
 
-/** What `POST /rest/agile/1.0/board/{boardId}/issue` accepts in one call, which bounds the undo the seed prints. */
+/**
+ * What `POST /rest/agile/1.0/board/{boardId}/issue` accepts in one call, which bounds the undo that the
+ * seed prints.
+ */
 const BOARD_MOVE_LIMIT = 50;
 
 const CONFIGURE_HELP = `Usage: tb-jira configure-project <KEY> [options]

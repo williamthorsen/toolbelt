@@ -56,7 +56,7 @@ tb-jira configure-project THOR --seed-backlog 'To Do'       # also move every 'T
 
 The run prints the plan before it writes anything, and each write as it lands, so a process killed partway still leaves a record of what it did. It ends by re-reading the project and reporting each spec entry against what the server holds, followed by the board's column coverage and order.
 
-`--seed-backlog` selects by status rather than by board membership, so it moves every work item in that status and a repeat run re-sends the same keys, which Jira accepts as a no-op. The run reports the count it moved and prints the undo: `POST /rest/agile/1.0/board/{boardId}/issue`, which takes at most 50 keys per call and needs only `write:board-scope:jira-software`, already in the grant below. The seed prints no keys of its own, so it prints the query that recovers them; a move leaves an item's status alone, so that query still selects the same set.
+`--seed-backlog` selects by status rather than by board membership, so it moves every work item in that status and a repeat run re-sends the same keys, which Jira accepts as a no-op. The run reports the count that it moved and prints the undo: `POST /rest/agile/1.0/board/{boardId}/issue`, which takes at most 50 keys per call and needs only `write:board-scope:jira-software`, already in the grant below. The seed prints no keys of its own, so it prints the query that recovers them; a move leaves an item's status alone, so that query still selects the same set.
 
 ### Managing the credential
 
