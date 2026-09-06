@@ -137,8 +137,8 @@ importers:
         specifier: 1.6.27
         version: 1.6.27(@typescript-eslint/eslint-plugin@8.67.0(@typescript-eslint/parser@8.68.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)(vitest@4.1.11)
       '@williamthorsen/eslint-config-typescript':
-        specifier: 14.0.0
-        version: 14.0.0(@typescript-eslint/utils@8.68.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint-import-resolver-node@0.3.10(supports-color@7.2.0))(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(readyup@0.35.0(esbuild@0.28.2))(supports-color@7.2.0)(typescript@6.0.3)
+        specifier: 15.0.0
+        version: 15.0.0(@typescript-eslint/utils@8.68.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint-import-resolver-node@0.3.10(supports-color@7.2.0))(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(readyup@0.35.0(esbuild@0.28.2))(supports-color@7.2.0)(typescript@6.0.3)
       '@williamthorsen/nmr':
         specifier: 0.35.0
         version: 0.35.0(prettier@3.9.6)(typescript@6.0.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))(vitest@4.1.11)
@@ -146,11 +146,11 @@ importers:
         specifier: 10.5.0
         version: 10.5.0
       '@williamthorsen/strict-lint':
-        specifier: 12.0.0
-        version: 12.0.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))
+        specifier: 13.0.0
+        version: 13.0.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))
       '@williamthorsen/tsconfig':
-        specifier: 0.7.0
-        version: 0.7.0(readyup@0.35.0(esbuild@0.28.2))
+        specifier: 0.8.0
+        version: 0.8.0(readyup@0.35.0(esbuild@0.28.2))
       codeassembly:
         specifier: 0.13.0
         version: 0.13.0
@@ -1187,14 +1187,14 @@ packages:
   '@vitest/utils@4.1.11':
     resolution: {integrity: sha512-zTCVGpyFsGWBhllOyKlTw/vnr6D9qxsfSDyfbyZmTyjHw5N/VuvzHpHoQjm2ZJzn4RJgx5w4r7V0er69CmLgPQ==}
 
-  '@williamthorsen/eslint-config-typescript@14.0.0':
-    resolution: {integrity: sha512-tk9BC3sn8UUXzbnoqObYnYLWhH5LBeH6up5n3pGG2lDwkaVPKcAsCY/FVruUjmtHpQAqOx68pUC8jM9hGjPDlQ==}
+  '@williamthorsen/eslint-config-typescript@15.0.0':
+    resolution: {integrity: sha512-67MMMcJE5GGaEPGbVN4/BMJOeEc4quilahVJIhU8Lzbaes2TXOFwYjxGkAYoZvcWUFeBJJMOx9nFAPhYWLhWmg==}
     engines: {node: '>=24'}
     peerDependencies:
       '@typescript-eslint/utils': ^8.59.1
       eslint: '>=10'
       readyup: '>=0.33.0'
-      typescript: '>=5'
+      typescript: '>=5.7'
     peerDependenciesMeta:
       readyup:
         optional: true
@@ -1230,8 +1230,8 @@ packages:
     engines: {node: '>=24'}
     hasBin: true
 
-  '@williamthorsen/strict-lint@12.0.0':
-    resolution: {integrity: sha512-CVUGeBxANiGJq9rwPuVgTZ9+XOMYsXGQBaZbTL2U2ozS6/xaKBVQlN157bxcVGfIOEdY0sf5k5RPKolBCflj6A==}
+  '@williamthorsen/strict-lint@13.0.0':
+    resolution: {integrity: sha512-RG4l+s8nQX0vDj5SIhDH/do+qzc9rTE/CaNv1xMglbNLaTaDyAaCrgxGXwrZmNSVmdDdfFFciJhcoZaNuNxTKw==}
     engines: {node: '>=24'}
     hasBin: true
     peerDependencies:
@@ -1269,8 +1269,8 @@ packages:
     resolution: {integrity: sha512-JhfRwUfBnfADkD2T8iehmfK65V/bSmK4dctmSwzo0UPe1XAEsEHT1F8cPmnBA6v0PQtobNcrqn6Q6ULxDcwwhA==}
     engines: {node: '>=24.0.0'}
 
-  '@williamthorsen/tsconfig@0.7.0':
-    resolution: {integrity: sha512-vhPJGYAxjKkD98JTgsQJwP2JCMu2RqxMnNFHffantgmtrxbV4hTfj4IV+0jTFVgqvhAQAvudix9m0LRLPVRVAA==}
+  '@williamthorsen/tsconfig@0.8.0':
+    resolution: {integrity: sha512-SPquz244Sd49GljmFPRziMysBZIeMlnEeanyehpjvkKz90OmM7uepxRhBmIa6lpO1NrzHr093JQGsYhOesC2XA==}
     engines: {node: '>=24'}
     peerDependencies:
       readyup: '>=0.33.0'
@@ -3567,7 +3567,7 @@ snapshots:
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.1
 
-  '@williamthorsen/eslint-config-typescript@14.0.0(@typescript-eslint/utils@8.68.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint-import-resolver-node@0.3.10(supports-color@7.2.0))(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(readyup@0.35.0(esbuild@0.28.2))(supports-color@7.2.0)(typescript@6.0.3)':
+  '@williamthorsen/eslint-config-typescript@15.0.0(@typescript-eslint/utils@8.68.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint-import-resolver-node@0.3.10(supports-color@7.2.0))(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(readyup@0.35.0(esbuild@0.28.2))(supports-color@7.2.0)(typescript@6.0.3)':
     dependencies:
       '@eslint-community/eslint-plugin-eslint-comments': 4.7.2(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))
       '@eslint/js': 10.0.1(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))
@@ -3629,7 +3629,7 @@ snapshots:
       yaml: 2.9.0
       zod: 4.4.3
 
-  '@williamthorsen/strict-lint@12.0.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))':
+  '@williamthorsen/strict-lint@13.0.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))':
     dependencies:
       '@williamthorsen/toolbelt.filesystem': 0.8.2
       '@williamthorsen/toolbelt.packaging': 0.5.4
@@ -3662,7 +3662,7 @@ snapshots:
       '@williamthorsen/toolbelt.numbers': 7.0.3
       '@williamthorsen/toolbelt.sets': 3.0.11
 
-  '@williamthorsen/tsconfig@0.7.0(readyup@0.35.0(esbuild@0.28.2))':
+  '@williamthorsen/tsconfig@0.8.0(readyup@0.35.0(esbuild@0.28.2))':
     optionalDependencies:
       readyup: 0.35.0(esbuild@0.28.2)
 
@@ -4086,7 +4086,7 @@ snapshots:
 
   eslint-plugin-import-x@4.17.1(@typescript-eslint/utils@8.68.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint-import-resolver-node@0.3.10(supports-color@7.2.0))(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0):
     dependencies:
-      '@typescript-eslint/types': 8.67.0
+      '@typescript-eslint/types': 8.68.0
       comment-parser: 1.4.8
       debug: 4.4.3(supports-color@7.2.0)
       eslint: 10.9.1(jiti@2.7.0)(supports-color@7.2.0)
