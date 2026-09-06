@@ -5,6 +5,8 @@ import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/w
 import { describe, expect, it } from 'vitest';
 
 import { RELATIVE_SPECIFIER_PATTERN } from '../test-utils/collectReachableModuleSet.ts';
+import { createTempDir } from '../test-utils/createTempDir.ts';
+import { hasSourceFile } from '../test-utils/hasSourceFile.ts';
 import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
 import { NON_SOURCE_DIRS } from '../test-utils/non-source-dirs.ts';
 import { resolveSpecifier } from '../test-utils/resolveSpecifier.ts';
@@ -13,6 +15,9 @@ import { isScaffolding } from '../test-utils/scaffolding-dirs.ts';
 const PACKAGE_CONFIG_PATH = path.join('.config', 'nmr.config.ts');
 const STRAWMAN_DIR = '0-strawman';
 const STRAWMAN_IGNORE_PATTERN = "'**/0-strawman/**'";
+
+const PACKAGE_MANIFEST = JSON.stringify({ name: 'fixture' });
+const WORKSPACE_MANIFEST = "packages:\n  - 'packages/*'\n";
 
 describe('The strawman tier', () => {
   it('is dropped as a build entry point by every package holding one', () => {
@@ -29,6 +34,34 @@ describe('The strawman tier', () => {
     expect(strawmanImporters).toStrictEqual([]);
     expect(moduleCount).toBeGreaterThan(0);
   });
+
+  it('counts as absent where its directory holds no source file', () => {
+    using tree = createTempDir({
+      'packages/fixture/package.json': PACKAGE_MANIFEST,
+      'packages/fixture/src/0-strawman/': '',
+      'pnpm-workspace.yaml': WORKSPACE_MANIFEST,
+    });
+
+    const { strawmanCount, unexcludedPackages } = auditStrawmanExclusions(tree.dir);
+
+    expect(unexcludedPackages).toStrictEqual([]);
+    expect(strawmanCount).toBe(0);
+  });
+
+  it('is reported where it holds a source file and its package declares no exclusion', () => {
+    using tree = createTempDir({
+      'packages/fixture/package.json': PACKAGE_MANIFEST,
+      'packages/fixture/src/0-strawman/idea.ts': '',
+      'pnpm-workspace.yaml': WORKSPACE_MANIFEST,
+    });
+
+    const { strawmanCount, unexcludedPackages } = auditStrawmanExclusions(tree.dir);
+
+    expect(unexcludedPackages).toStrictEqual([
+      `packages/fixture: holds src/${STRAWMAN_DIR} and no ${PACKAGE_CONFIG_PATH}`,
+    ]);
+    expect(strawmanCount).toBe(1);
+  });
 });
 
 // region | Helpers
@@ -36,6 +69,8 @@ describe('The strawman tier', () => {
 /**
  * Audits every package holding a strawman tier, reporting those whose own `nmr` config does not drop it from the
  * build. A package that gains an incubation area without the exclusion publishes code reached by no export subpath.
+ *
+ * A strawman counts as present only where its directory holds a TypeScript file.
  *
  * The config is read as text, so a pattern no longer spelled out by the file fails the audit whether it was
  * removed or replaced by the `readiness/` exclusion that a package gains later.
@@ -45,7 +80,7 @@ function auditStrawmanExclusions(monorepoRoot: string): { strawmanCount: number;
   let strawmanCount = 0;
 
   for (const packageDirectory of getWorkspacePackageDirs(monorepoRoot)) {
-    if (!fs.existsSync(path.join(packageDirectory, 'src', STRAWMAN_DIR))) continue;
+    if (!hasSourceFile(path.join(packageDirectory, 'src', STRAWMAN_DIR))) continue;
 
     strawmanCount += 1;
 

@@ -13,6 +13,12 @@ describe(createTempDir, () => {
     expect(fs.readFileSync(path.join(tree.dir, 'src/nested/main.ts'), 'utf8')).toBe('export {};\n');
   });
 
+  it('creates an empty directory for a key naming one', () => {
+    using tree = createTempDir({ 'src/0-strawman/': '' });
+
+    expect(fs.readdirSync(path.join(tree.dir, 'src/0-strawman'))).toStrictEqual([]);
+  });
+
   it('resolves the directory root through symlinks, which is what a walk compares against', () => {
     using tree = createTempDir({});
 
@@ -34,15 +40,15 @@ describe(createTempDir, () => {
     expect(fs.existsSync(treeDir)).toBe(false);
   });
 
-  it('rejects a key naming a directory, leaving nothing on disk', () => {
+  it('rejects a key naming a directory and holding contents, leaving nothing on disk', () => {
     // Spy on the creation call, the only route to the root of a directory for which no handle was returned.
     // The call-count assertion keeps a spy that recorded nothing from passing the removal check vacuously.
     using mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
 
     // The rejected key follows a written one, so the removal covers an entry already on disk.
-    const create = () => createTempDir({ 'package.json': '{}', 'nested/': '' });
+    const create = () => createTempDir({ 'package.json': '{}', 'nested/': 'contents' });
 
-    expect(create).toThrow('names a directory');
+    expect(create).toThrow('its value must be empty');
     expect(mkdtempSyncSpy).toHaveBeenCalledTimes(1);
     expect(fs.existsSync(String(mkdtempSyncSpy.mock.results[0]?.value))).toBe(false);
   });
