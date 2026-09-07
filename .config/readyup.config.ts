@@ -16,6 +16,7 @@ export default defineRdyConfig({
     '@williamthorsen/toolbelt.numbers',
     '@williamthorsen/toolbelt.objects',
     '@williamthorsen/toolbelt.strings',
+    '@williamthorsen/toolbelt.testing',
     '@williamthorsen/toolbelt.vitest',
     '@williamthorsen/tsconfig',
     'codeassembly',
