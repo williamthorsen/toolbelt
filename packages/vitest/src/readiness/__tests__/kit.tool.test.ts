@@ -21,7 +21,6 @@ const DISPOSAL = [
   '});',
   '',
 ].join('\n');
-const EXIT_BY_REFERENCE = "vi.spyOn(process, 'exit').mockImplementation(handleExit);\n";
 const LOSSY_CAPTURE = "vi.spyOn(console, 'error').mockImplementation((message) => { lines.push(message); });\n";
 const NON_THROWING = "vi.spyOn(process, 'exit').mockImplementation(() => {});\n";
 const READ = ["using silent = silenceConsole(['warn']);", 'expect(silent.warn.mock.calls).toHaveLength(1);', ''].join(
@@ -41,7 +40,8 @@ const SILENCE = "vi.spyOn(console, 'warn').mockImplementation(() => {});\n";
 const THROWING = ["vi.spyOn(process, 'exit').mockImplementation(() => {", "  throw new Error('exit');", '});', ''].join(
   '\n',
 );
-// A spy on a method the package has no advice for, and a `mock.calls` read on a spy that is no console spy.
+const UNREADABLE_EXIT_MOCK = "vi.spyOn(process, 'exit').mockImplementation(handleExit);\n";
+// A spy on a method for which the package has no advice, and a `mock.calls` read on a spy that is no console spy.
 const UNCLAIMED = [
   "vi.spyOn(console, 'table').mockImplementation(() => {});",
   "const existsSyncSpy = vi.spyOn(fs, 'existsSync').mockReturnValue(true);",
@@ -64,7 +64,7 @@ const EVERY_IDIOM = {
   'src/silence.unit.test.ts': SILENCE,
   'src/spy-only.unit.test.ts': CONSOLE_SPY_ONLY,
   'src/throwing.unit.test.ts': THROWING,
-  'src/unreadable.unit.test.ts': EXIT_BY_REFERENCE,
+  'src/unreadable.unit.test.ts': UNREADABLE_EXIT_MOCK,
 };
 
 describe('The vitest adoption kit', () => {
@@ -112,7 +112,7 @@ describe('The vitest adoption kit', () => {
     await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
   });
 
-  it('neither reports nor counts a spy the package has no advice for', async () => {
+  it('neither reports nor counts a spy for which the package has no advice', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/probe.unit.test.ts': UNCLAIMED });
     using _cwd = pointCwdAt(tree.dir);
 
@@ -129,18 +129,21 @@ describe('The vitest adoption kit', () => {
     });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[5])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
+    await expect(runCheck(await findCheck('no-hand-rolled-console-silence'))).resolves.toStrictEqual({
+      adoptedCount: 1,
+      findings: [],
+    });
   });
 
   // The own-implementation exemption reaches a declaration exported under an adopted name, and this kit sweeps
-  // no file that could hold one: the package declares `silenceConsole` in `src/3-candidate/`, which `isTestFile`
+  // no file that could hold one: The package declares `silenceConsole` in `src/3-candidate/`, which `isTestFile`
   // never matches. So the repository publishing the utility is reported like any other consumer, which is why
   // its own suite shows findings.
   it('reports a silence in the publishing repository, which declares the utility elsewhere', async () => {
     using tree = createTrackedRepo({ 'package.json': PUBLISHER_MANIFEST, 'src/silence.unit.test.ts': SILENCE });
     using _cwd = pointCwdAt(tree.dir);
 
-    expect(listReportedFindings(await runCheck((await loadChecks())[5]))).toStrictEqual([
+    expect(listReportedFindings(await runCheck(await findCheck('no-hand-rolled-console-silence')))).toStrictEqual([
       { line: 1, path: 'src/silence.unit.test.ts', reported: true },
     ]);
   });
@@ -154,6 +157,11 @@ describe('The vitest adoption kit', () => {
 });
 
 // region | Helpers
+
+/** Finds a check by its id, for the assertions that turn on which of the eight checks reported. */
+async function findCheck(id: string): Promise<RdyCheck | undefined> {
+  return (await loadChecks()).find((check) => check.id === id);
+}
 
 /**
  * Loads a fresh kit and lists its adoption checks, which the flat checklist holds in declaration order.

@@ -7,8 +7,9 @@ import process from 'node:process';
  * The real process stays where it is: A sweep reads `process.cwd()`, and the git calls take `-C`.
  *
  * Scaffolding for a kit test, held to node builtins because the adoption layer declares no workspace
- * dependency. A package whose own devDep on `toolbelt.testing` would close a dependency cycle reaches
- * cwd-pointing here rather than through that package's `pointCwdAt`.
+ * dependency. Two conditions send a kit test here rather than to `toolbelt.testing`'s `pointCwdAt`: a devDep
+ * on that package would close a dependency cycle, as it would for `errors`; or the test must run on an unbuilt
+ * tree, which rules out `toolbelt.testing/candidate`, whose export maps to `dist/`.
  */
 export function pointCwdAt(dir: string): Disposable {
   const resolvedDir = fs.realpathSync(path.resolve(dir));
