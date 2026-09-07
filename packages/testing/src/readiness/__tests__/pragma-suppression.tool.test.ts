@@ -1,0 +1,124 @@
+import { spawnSync } from 'node:child_process';
+import path from 'node:path';
+
+import { createTrackedRepo } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { isRecord } from 'readyup/check-utils';
+import { describe, expect, it } from 'vitest';
+
+const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
+const ADOPTER = [
+  "import { captureError } from '@williamthorsen/toolbelt.testing';",
+  'const caught = await captureError(() => parseConfig(text));',
+  '',
+].join('\n');
+const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
+
+interface CheckReport {
+  count: number;
+  detail: string | undefined;
+  id: string;
+  passedCount: number;
+}
+
+describe('The testing adoption kit, run through rdy', () => {
+  it('names the site and counts it in the denominator', () => {
+    expect(runKit(buildCapture(''))).toStrictEqual([
+      { count: 2, detail: 'caught (src/config.unit.test.ts:3)', id: 'no-hand-rolled-error-capture', passedCount: 1 },
+    ]);
+  });
+
+  it('drops a site covered by an unqualified pragma from the detail and the fraction', () => {
+    expect(runKit(buildCapture(' // rdy-ignore -- reviewed'))).toStrictEqual([
+      { count: 1, detail: undefined, id: 'no-hand-rolled-error-capture', passedCount: 1 },
+    ]);
+  });
+
+  // A `dir:` kit source has no namespace, so the bare id stands. A consumer running the kit from the
+  // installed package writes `toolbelt.testing/no-hand-rolled-error-capture`.
+  it('drops a site covered by a qualified pragma', () => {
+    expect(runKit(buildCapture(' // rdy-ignore no-hand-rolled-error-capture -- reviewed'))).toStrictEqual([
+      { count: 1, detail: undefined, id: 'no-hand-rolled-error-capture', passedCount: 1 },
+    ]);
+  });
+});
+
+// region | Helpers
+
+/** Builds a captured-error test source whose `try` carries the given trailing pragma. */
+function buildCapture(pragma: string): string {
+  return [
+    'let caught: unknown;',
+    '',
+    `try {${pragma}`,
+    '  parseConfig(text);',
+    '} catch (error) {',
+    '  caught = error;',
+    '}',
+    '',
+  ].join('\n');
+}
+
+function isUnknownArray(value: unknown): value is unknown[] {
+  return Array.isArray(value);
+}
+
+/** Reads each adoption check's id, detail, and fraction out of an `rdy run --json` report. */
+function listCheckReports(report: string): CheckReport[] {
+  const parsed: unknown = JSON.parse(report);
+
+  return readFirstChecklistChecks(parsed).map((check) => readCheckReport(check));
+}
+
+/** Narrows one entry of the report to the fields on which these tests assert. */
+function readCheckReport(check: unknown): CheckReport {
+  const progress = isRecord(check) ? check['progress'] : undefined;
+  if (!isRecord(check) || !isRecord(progress)) throw new Error('the report holds a check with no fraction');
+
+  const { count, passedCount } = progress;
+  const { detail, id } = check;
+  if (typeof id !== 'string' || typeof count !== 'number' || typeof passedCount !== 'number') {
+    throw new TypeError('the report describes a check in a shape that these tests cannot read');
+  }
+
+  return { count, detail: typeof detail === 'string' ? detail : undefined, id, passedCount };
+}
+
+/** Reaches the checks of the run's one checklist, the kit declaring a single one. */
+function readFirstChecklistChecks(report: unknown): unknown[] {
+  const kits = isRecord(report) ? report['kits'] : undefined;
+  const kit = isUnknownArray(kits) ? kits[0] : undefined;
+  const checklists = isRecord(kit) ? kit['checklists'] : undefined;
+  const checklist = isUnknownArray(checklists) ? checklists[0] : undefined;
+  const checks = isRecord(checklist) ? checklist['checks'] : undefined;
+  if (!isUnknownArray(checks)) throw new Error('the run reported no adoption checks');
+
+  return checks;
+}
+
+/**
+ * Runs the package's compiled kit over a fixture repo holding the given capture source, and reports what the
+ * check named and counted.
+ *
+ * A consumer gets the compiled bundle, so this exercises it; `kit-bundle-freshness` keeps it current with the sources
+ * beneath it. A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report
+ * reaches the layer that acts on one.
+ */
+function runKit(captureSource: string): CheckReport[] {
+  using tree = createTrackedRepo({
+    'package.json': MANIFEST,
+    'src/adopter.unit.test.ts': ADOPTER,
+    'src/config.unit.test.ts': captureSource,
+  });
+
+  const result = spawnSync(
+    path.join(PACKAGE_DIR, 'node_modules', '.bin', 'rdy'),
+    ['run', '--from', `dir:${path.join(PACKAGE_DIR, '.readyup', 'kits')}`, '--json'],
+    { cwd: tree.dir, encoding: 'utf8' },
+  );
+  if (result.error !== undefined) throw result.error;
+  if (result.stdout === '') throw new Error(`rdy reported nothing: ${result.stderr}`);
+
+  return listCheckReports(result.stdout);
+}
+
+// endregion | Helpers

@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import process from 'node:process';
 
 import { createTempTree, type TempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
-import { captureStdio, pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
+import { captureError, captureStdio, pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
 import { afterEach, beforeAll, beforeEach, describe, expect, expectTypeOf, it } from 'vitest';
 
 import { disposeOnTestFinished } from '../disposeOnTestFinished.ts';
@@ -129,20 +129,14 @@ describe(disposeOnTestFinished, () => {
   });
 
   describe('outside any test', () => {
-    let thrown: unknown;
+    let thrown: Error | undefined;
 
-    // The call has to happen in the hook, which is why the error is recorded there rather than captured here.
-    beforeAll(() => {
-      try {
-        disposeOnTestFinished(makeProbe('no-test'));
-      } catch (error: unknown) {
-        thrown = error;
-      }
+    beforeAll(async () => {
+      thrown = await captureError(() => disposeOnTestFinished(makeProbe('no-test')));
     });
 
     it('refuses to register', () => {
-      expect(thrown).toBeInstanceOf(Error);
-      expect(thrown).toHaveProperty('message', 'Hook onTestFinished() can only be called inside a test');
+      expect(thrown?.message).toBe('Hook onTestFinished() can only be called inside a test');
       expect(disposalLog).not.toContain('no-test');
     });
   });

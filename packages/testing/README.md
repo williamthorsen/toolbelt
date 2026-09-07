@@ -288,3 +288,36 @@ expect(process.cwd()).toBe(tree.dir);
 A move nested inside a replacement reports its own directory, and its restoration puts the process back where it really was rather than where the enclosing scope claimed.
 
 A spy-based helper cannot offer this: `vi.spyOn` hands back the existing spy for a method already spied on, and `restoreMocks: true` restores it between tests, which at fixture scope would silently point a suite back at the real working directory. The swap-and-restore form is immune to both, which is why this utility lives here rather than in `@williamthorsen/toolbelt.vitest`.
+
+## Adoption checks
+
+The package ships a ReadyUp kit, so a project that installs it can ask how far its adoption got:
+
+```sh
+rdy run --packages
+```
+
+The kit reads the project's tracked test files and reports every place a thrown value is captured by hand, naming the variable the capture fills and counting it against the calls that the project already makes into this package. It reports at `recommend`, never at `warn` or `error`: a capture written by hand works, and `captureError` expresses it better rather than correcting it.
+
+A capture is claimed only where one import replaces the whole of it. The try block has to be a single call, and the catch block has to assign the caught value to a variable declared outside the try and do nothing else. A catch that logs, rethrows, or branches outlives the substitution, and a try block that keeps a result is doing something `captureError` does not preserve, so neither is reported. A `finally` clause disqualifies a site for the same reason: `captureError` throws where the call completes normally, so the clause would stop running on that path.
+
+| Check id                       | Reports                                                        | Severity    |
+| ------------------------------ | -------------------------------------------------------------- | ----------- |
+| `no-hand-rolled-error-capture` | a thrown value captured into a variable declared outside a try | `recommend` |
+
+Sources that are not test files are exempt, this being a testing utility: outside a test, the same shape is error handling rather than an unadopted capture. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well, so committed bundler output yields no advice that anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
+
+A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
+
+```ts
+// rdy-ignore-next-line toolbelt.testing/no-hand-rolled-error-capture -- the call belongs to the hook
+try {
+```
+
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+
+```ts
+export default defineRdyConfig({
+  packages: ['@williamthorsen/toolbelt.testing'],
+});
+```
