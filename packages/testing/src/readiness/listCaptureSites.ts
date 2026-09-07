@@ -11,12 +11,15 @@ import {
 
 export type TestingIdiomKind = 'hand-rolled-error-capture';
 
-// A member chain reached directly or through optional chaining. A subscript, a parenthesized callee, and an
-// immediately-invoked literal are each declined: the substitution wraps one named call.
-const CALLEE = /^[\w$]+(?:\??\.[\w$]+)*$/;
+// A member chain reached directly or through optional chaining, optionally called optionally, and optionally
+// given type arguments. A type argument holding a parenthesis, as a function type would, goes unspanned. A
+// subscript, a parenthesized callee, and an immediately-invoked literal are each declined: the substitution
+// wraps one named call.
+const CALLEE = /^[\w$]+(?:\??\.[\w$]+)*(?:\?\.)?(?:<[^<>()]*>)?$/;
 const CALL_PREFIX = /^(?:await )?(?:new )?/;
 // The catch clause opens the text past the try block, whose closing brace the group reader has just reported.
 const CATCH_CLAUSE = /^\s*catch\s*\(/;
+const FINALLY_CLAUSE = /^\s*finally\b/;
 // Whitespace is condensed by the time this reads, so one space is the most that can sit at a joint.
 const CAUGHT_ASSIGNMENT = /^(?<target>[\w$]+) ?= ?(?<caught>[\w$]+)(?: as .+)?$/;
 const IDENTIFIER = /^[\w$]+$/;
@@ -97,6 +100,10 @@ function isSingleCall(body: string): boolean {
  * A catch that logs, rethrows, or branches outlives the substitution, so only a lone assignment of the
  * parameter counts, with a cast admitted because it is how the hand-roll recovers the type it lost. A catch
  * binding no parameter, or destructuring one, has nothing to capture.
+ *
+ * A `finally` clause disqualifies the site. `captureError` throws where the call completes normally, so the
+ * substituted form skips whatever the clause holds on that path, and in a test that is a restore that stops
+ * happening. One import has to replace the whole of a site for it to be claimed.
  */
 function readCaughtTarget(tail: string): string | undefined {
   const clause = CATCH_CLAUSE.exec(tail);
@@ -114,6 +121,7 @@ function readCaughtTarget(tail: string): string | undefined {
 
   const block = readBalancedGroup(tail, bound.end, BRACES);
   if (block === undefined || tail.slice(bound.end, block.start).trim() !== '') return undefined;
+  if (FINALLY_CLAUSE.test(tail.slice(block.end))) return undefined;
 
   const body = condenseWhitespace(tail.slice(block.start + 1, block.end - 1));
   const assignment = CAUGHT_ASSIGNMENT.exec(body.trim().replace(TRAILING_SEMICOLON, '').trim());

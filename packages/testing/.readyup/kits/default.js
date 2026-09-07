@@ -118,9 +118,10 @@ import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
 var ADOPTED_EXPORTS = ["captureError", "captureStdio", "pointArgvAt", "pointCwdAt"];
 
 // src/readiness/listCaptureSites.ts
-var CALLEE = /^[\w$]+(?:\??\.[\w$]+)*$/;
+var CALLEE = /^[\w$]+(?:\??\.[\w$]+)*(?:\?\.)?(?:<[^<>()]*>)?$/;
 var CALL_PREFIX = /^(?:await )?(?:new )?/;
 var CATCH_CLAUSE = /^\s*catch\s*\(/;
+var FINALLY_CLAUSE = /^\s*finally\b/;
 var CAUGHT_ASSIGNMENT = /^(?<target>[\w$]+) ?= ?(?<caught>[\w$]+)(?: as .+)?$/;
 var IDENTIFIER = /^[\w$]+$/;
 var LOOKBEHIND_LENGTH = 400;
@@ -162,6 +163,7 @@ function readCaughtTarget(tail) {
   if (!IDENTIFIER.test(parameter)) return void 0;
   const block = readBalancedGroup(tail, bound.end, BRACES);
   if (block === void 0 || tail.slice(bound.end, block.start).trim() !== "") return void 0;
+  if (FINALLY_CLAUSE.test(tail.slice(block.end))) return void 0;
   const body = condenseWhitespace(tail.slice(block.start + 1, block.end - 1));
   const assignment = CAUGHT_ASSIGNMENT.exec(body.trim().replace(TRAILING_SEMICOLON, "").trim());
   return assignment?.groups?.["caught"] === parameter ? assignment.groups["target"] : void 0;

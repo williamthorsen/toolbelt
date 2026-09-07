@@ -60,13 +60,18 @@ describe('The testing adoption kit', () => {
     });
   });
 
-  // The inverse of the departure that `toolbelt.async` makes. This case exists to fail on widening the path
-  // filter: outside a test, a try/catch of this shape is error handling rather than an unadopted capture.
+  // The inverse of the departure that `toolbelt.async` makes. The test file beside it keeps the check running,
+  // so a widened filter reports the capture here rather than leaving the check skipped: outside a test, a
+  // try/catch of this shape is error handling rather than an unadopted capture.
   it('leaves a source that is no test alone', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/config.ts': CAPTURE });
+    using tree = createTrackedRepo({
+      'package.json': MANIFEST,
+      'src/adopter.unit.test.ts': ADOPTER,
+      'src/config.ts': CAPTURE,
+    });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runSkip((await loadChecks())[0])).resolves.toBe('the project holds no test files');
+    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
   });
 
   it('spans every site in the denominator', async () => {

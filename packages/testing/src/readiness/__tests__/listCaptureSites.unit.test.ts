@@ -65,6 +65,19 @@ const UNCLAIMED = [
     source: ['try {', '  parse(text);', '} catch (error) {', '  outcome.caught = error;', '}'],
   },
   {
+    label: 'a capture followed by a finally clause, which the substitution would skip',
+    source: [
+      'let caught: unknown;',
+      'try {',
+      '  parse(text);',
+      '} catch (error) {',
+      '  caught = error;',
+      '} finally {',
+      '  restore();',
+      '}',
+    ],
+  },
+  {
     label: 'the idiom written in a comment',
     source: ['// let caught; try { parse(text); } catch (error) { caught = error; }', 'const noop = 1;'],
   },
@@ -134,6 +147,32 @@ describe(listCaptureSites, () => {
     ].join('\n');
 
     expect(listCaptureSites(source)).toStrictEqual([{ kind: 'hand-rolled-error-capture', line: 2, symbol: 'caught' }]);
+  });
+
+  it('reads a generic call and an optionally-called one as the single calls they are', () => {
+    const generic = [
+      'let caught: unknown;',
+      'try {',
+      '  parse<Config>(text);',
+      '} catch (error) {',
+      '  caught = error;',
+      '}',
+    ];
+    const optional = [
+      'let caught: unknown;',
+      'try {',
+      '  parse?.(text);',
+      '} catch (error) {',
+      '  caught = error;',
+      '}',
+    ];
+
+    expect(listCaptureSites(generic.join('\n'))).toStrictEqual([
+      { kind: 'hand-rolled-error-capture', line: 2, symbol: 'caught' },
+    ]);
+    expect(listCaptureSites(optional.join('\n'))).toStrictEqual([
+      { kind: 'hand-rolled-error-capture', line: 2, symbol: 'caught' },
+    ]);
   });
 
   it('reports every capture a file holds', () => {

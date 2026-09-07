@@ -299,7 +299,7 @@ rdy run --packages
 
 The kit reads the project's tracked test files and reports every place a thrown value is captured by hand, naming the variable the capture fills and counting it against the calls that the project already makes into this package. It reports at `recommend`, never at `warn` or `error`: a capture written by hand works, and `captureError` expresses it better rather than correcting it.
 
-A capture is claimed only where one import replaces the whole of it. The try block has to be a single call, and the catch block has to assign the caught value to a variable declared outside the try and do nothing else. A catch that logs, rethrows, or branches outlives the substitution, and a try block that keeps a result is doing something `captureError` does not preserve, so neither is reported.
+A capture is claimed only where one import replaces the whole of it. The try block has to be a single call, and the catch block has to assign the caught value to a variable declared outside the try and do nothing else. A catch that logs, rethrows, or branches outlives the substitution, and a try block that keeps a result is doing something `captureError` does not preserve, so neither is reported. A `finally` clause disqualifies a site for the same reason: `captureError` throws where the call completes normally, so the clause would stop running on that path.
 
 | Check id                       | Reports                                                        | Severity    |
 | ------------------------------ | -------------------------------------------------------------- | ----------- |
