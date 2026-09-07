@@ -6,8 +6,9 @@ import process from 'node:process';
  * Points `process.cwd()` at a directory for the enclosing scope and restores the previous `process.cwd` on disposal.
  * The real process stays where it is: A sweep reads `process.cwd()`, and the git calls take `-C`.
  *
- * Scaffolding for adoption's own tests, held to node builtins because the adoption layer declares no workspace
- * dependency.
+ * Scaffolding for a kit test, held to node builtins because the adoption layer declares no workspace
+ * dependency. A package whose own devDep on `toolbelt.testing` would close a dependency cycle reaches
+ * cwd-pointing here rather than through that package's `pointCwdAt`.
  */
 export function pointCwdAt(dir: string): Disposable {
   const resolvedDir = fs.realpathSync(path.resolve(dir));
