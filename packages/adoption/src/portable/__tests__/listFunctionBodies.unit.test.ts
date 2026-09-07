@@ -94,4 +94,38 @@ describe(listFunctionBodies, () => {
   it('reports nothing for a concise arrow, which has no braced body', () => {
     expect(summarize('const m = (e) => e.message;')).toStrictEqual([]);
   });
+
+  it('reports the first parameter of a function declaration', () => {
+    expect(listFunctionBodies('function assert(condition) { throw condition; }')[0]?.firstParameter).toBe('condition');
+  });
+
+  it('reports the first parameter of an arrow', () => {
+    expect(listFunctionBodies('const isText = (value) => { return typeof value; };')[0]?.firstParameter).toBe('value');
+  });
+
+  it('strips a type annotation from the first parameter', () => {
+    expect(listFunctionBodies('function f(condition: unknown, e?: Error) { throw e; }')[0]?.firstParameter).toBe(
+      'condition',
+    );
+  });
+
+  it('strips a default from the first parameter', () => {
+    expect(listFunctionBodies('function f(a = { x: 1 }) { return a; }')[0]?.firstParameter).toBe('a');
+  });
+
+  it('reports the first parameter where it is optional', () => {
+    expect(listFunctionBodies('function f(a?: string) { return a; }')[0]?.firstParameter).toBe('a');
+  });
+
+  it('reports no first parameter where the list destructures', () => {
+    expect(listFunctionBodies('function g({ a, b }) { return a + b; }')[0]?.firstParameter).toBeUndefined();
+  });
+
+  it('reports no first parameter where the list opens with a rest element', () => {
+    expect(listFunctionBodies('function g(...values) { return values; }')[0]?.firstParameter).toBeUndefined();
+  });
+
+  it('reports no first parameter where the list is empty', () => {
+    expect(listFunctionBodies('function f() { return 1; }')[0]?.firstParameter).toBeUndefined();
+  });
 });
