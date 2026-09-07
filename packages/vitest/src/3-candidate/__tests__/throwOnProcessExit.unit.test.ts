@@ -34,7 +34,7 @@ describe(throwOnProcessExit, () => {
       expect(reached).toStrictEqual(['before']);
     });
 
-    it('throws an error carrying the exit code', async () => {
+    it('throws an error that contains the exit code', async () => {
       using _exit = throwOnProcessExit();
 
       const error = await captureError(ProcessExitError, () => process.exit(2));
@@ -86,7 +86,7 @@ describe(throwOnProcessExit, () => {
       expectTypeOf<ProcessExitError['code']>().toEqualTypeOf<number | undefined>();
     });
 
-    it('returns a Disposable carrying the spy', () => {
+    it('returns a Disposable that contains the spy', () => {
       expectTypeOf<MockedProcessExit>().toExtend<Disposable>();
       expectTypeOf<MockedProcessExit['spy']>().toEqualTypeOf<MockInstance<typeof process.exit>>();
     });

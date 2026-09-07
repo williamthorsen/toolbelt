@@ -90,7 +90,7 @@ async function readBoard(
   return { id: board.id };
 }
 
-/** Narrows one board to its id and the project named by its location, which is what identifies the project's own. */
+/** Narrows one board to its id and the project named by its location, which identifies the project's own. */
 function readBoardEntry(value: unknown): BoardEntry | undefined {
   if (!isRecord(value) || typeof value['id'] !== 'number') return undefined;
 
@@ -110,7 +110,7 @@ interface BoardEntry {
 
 /**
  * Reads the board's live feature states, against which the plan's toggles are resolved, alongside the features
- * locked by Jira. A locked feature is reported rather than refused: The write against one answers 200 and
+ * locked by Jira. A locked feature is reported rather than refused: The write against one returns 200 and
  * changes nothing, so the lock has to reach the planner for the toggle to be left unplanned.
  */
 async function readFeatures(request: JiraRequest, boardId: number): Promise<BoardFeatures> {
@@ -165,7 +165,7 @@ async function readIssueTypeIds(request: JiraRequest, projectKey: string, key: s
   }
 
   // An issue type dropped here never reaches the workflow read, so a project on several workflows could pass the
-  // exactly-one refusal. The count is what keeps that refusal load-bearing.
+  // exactly-one refusal. The count keeps that refusal load-bearing.
   const ids = values.flatMap((value) => (isRecord(value) && typeof value['id'] === 'string' ? [value['id']] : []));
   if (ids.length !== values.length) {
     throw new Error(`Project ${projectKey} returned issue types that this cannot read.`);
@@ -211,7 +211,7 @@ async function readProject(request: JiraRequest, projectKey: string, key: string
   return { id };
 }
 
-/** Narrows one transition, carrying through every field that this package does not model. */
+/** Narrows one transition, passing through every field that this package does not model. */
 function readTransition(value: unknown): WorkflowTransition | undefined {
   if (!isRecord(value)) return undefined;
 

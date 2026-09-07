@@ -101,7 +101,7 @@ export async function runTbSecret(args: string[], effects: TbSecretEffects): Pro
   }
 }
 
-/** The effects deferred to the entry point, which is what keeps the runner free of I/O. */
+/** The effects deferred to the entry point, which keeps the runner free of I/O. */
 export interface TbSecretEffects {
   readonly createStore: (keychain: string | undefined) => WritableSecretStore;
   readonly isStdinTty: () => boolean;
@@ -130,7 +130,7 @@ function buildQuery(positionals: string[], account: string | undefined): SecretQ
 
 /**
  * Runs a keychain operation, reporting what it threw as a failure to reach the keychain. A value that the
- * keychain cannot carry passes through unwrapped, since nothing was reached: It is a usage error like any other.
+ * keychain cannot store passes through unwrapped, since nothing was reached: It is a usage error like any other.
  */
 function callKeystore<T>(operation: () => T): T {
   try {
@@ -142,12 +142,12 @@ function callKeystore<T>(operation: () => T): T {
   }
 }
 
-/** Extracts the message carried by an unknown thrown value. */
+/** Extracts the message that an unknown thrown value contains. */
 function describeError(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-/** Routes the arguments to a subcommand, or answers the root command's own options. */
+/** Routes the arguments to a subcommand, or handles the root command's own options. */
 async function dispatch(args: string[], effects: TbSecretEffects): Promise<TbSecretResult> {
   const [command, ...rest] = args;
 
@@ -221,10 +221,9 @@ function runHas(args: string[], effects: TbSecretEffects): TbSecretResult {
 }
 
 /**
- * Parses the `set` subcommand and stores the secret that it is given. At a terminal the secret is prompted for
- * twice with no echo; a piped secret arrives on stdin, and one trailing newline is dropped, since `echo` adds
- * one. The store is opened first, so a platform that has no keychain is reported before a secret is typed into
- * this process.
+ * Parses the `set` subcommand and stores the secret that it is given. A terminal is prompted twice with no
+ * echo; a piped secret arrives on stdin, and one trailing newline is dropped, since `echo` adds one. The store is
+ * opened first, so a platform that has no keychain is reported before a secret is typed into this process.
  */
 async function runSet(args: string[], effects: TbSecretEffects): Promise<TbSecretResult> {
   const { positionals, values } = parseArgs({

@@ -1,5 +1,5 @@
 /**
- * Returns the first value carrying something other than whitespace, trimmed. This is what makes an empty
+ * Returns the first value that contains something other than whitespace, trimmed. This makes an empty
  * environment variable a miss rather than a credential.
  *
  * @internal

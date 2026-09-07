@@ -28,7 +28,7 @@ const RENAMING_SPEC = JSON.stringify({
 });
 
 describe('tb-jira configure-project', () => {
-  it('prints the help that it is asked for', async () => {
+  it('prints the help for which it is asked', async () => {
     const harness = createHarness();
 
     await expect(run(harness, ['--help'])).resolves.toBe(0);
@@ -46,7 +46,7 @@ describe('tb-jira configure-project', () => {
     const harness = createHarness();
 
     await expect(run(harness, [KEY])).resolves.toBe(0);
-    expect(harness.readOutput()).toContain('no changes: the project already matches the spec');
+    expect(harness.readOutput()).toContain('no changes: The project already matches the spec');
     expect(harness.readOutput()).toContain('configuration after the run:');
   });
 
@@ -68,7 +68,7 @@ describe('tb-jira configure-project', () => {
 
       await expect(run(harness, [KEY, '--dry-run'])).resolves.toBe(0);
       expect(harness.readOutput()).toContain("update   status id-1: 'To Do' → 'Todo'");
-      expect(harness.readOutput()).toContain('dry run: nothing was written');
+      expect(harness.readOutput()).toContain('dry run: Nothing was written');
     });
 
     it('reports the seed that it would run without moving anything', async () => {
@@ -160,7 +160,7 @@ describe('tb-jira configure-project', () => {
       expect(harness.readErrors()).toContain(`${HARNESS_BASE_URL}/rest/api/3/project/THOR`);
     });
 
-    it('reads the token from stdin, dropping the newline added by a shell', async () => {
+    it('reads the token from stdin, dropping the newline that a shell adds', async () => {
       const harness = createHarness({ env: {}, stdin: 'piped-token\n' });
 
       await expect(run(harness, [KEY, '--token-stdin'])).resolves.toBe(0);
@@ -277,7 +277,7 @@ async function run(harness: ReturnType<typeof createTbJiraHarness>, args: string
   return await runTbJira(['configure-project', ...args], harness.effects);
 }
 
-/** Builds every route that a whole run walks, against a team-managed project on one workflow. */
+/** Builds every route walked by a whole run, against a team-managed project on one workflow. */
 function buildRoutes(): FakeRoutes {
   return {
     'GET /rest/agile/1.0/board': { json: { values: [{ id: BOARD_ID, name: 'THOR board' }] } },
@@ -313,7 +313,7 @@ function buildRoutes(): FakeRoutes {
   };
 }
 
-/** Builds the workflow graph that the read narrows, reaching each status through a global transition named for it. */
+/** Builds the workflow graph narrowed by the read, reaching each status through a global transition named for it. */
 function buildWorkflow(): unknown {
   return {
     description: 'The project workflow.',

@@ -39,7 +39,7 @@ describe(preciseTypeOf, () => {
     expect(actual).toBe(expected);
   });
 
-  it('returns "instance" for an object carrying Symbol.iterator', () => {
+  it('returns "instance" for an object with Symbol.iterator', () => {
     const input = { a: 1, [Symbol.iterator]: () => [].values() };
     const expected = 'instance';
 

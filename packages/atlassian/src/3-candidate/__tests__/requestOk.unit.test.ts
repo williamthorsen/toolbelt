@@ -22,7 +22,7 @@ describe(requestOk, () => {
     expect(calls).toStrictEqual([{ body: { key: 'THOR' }, method: 'POST', path: PATH }]);
   });
 
-  it('throws carrying the method, path, status, URL, and parsed reply', async () => {
+  it('throws with the method, path, status, URL, and parsed reply', async () => {
     const { request } = createFakeRequest({
       [`GET ${PATH}`]: { json: { errorMessages: ['No project could be found.'] }, status: 404 },
     });
@@ -43,7 +43,7 @@ describe(requestOk, () => {
     });
   });
 
-  it('carries a reply that did not parse as JSON through as text', async () => {
+  it('passes a reply that did not parse as JSON through as text', async () => {
     const { request } = createFakeRequest({
       [`GET ${PATH}`]: { status: 503, text: '<html>Service Unavailable</html>' },
     });
@@ -72,7 +72,7 @@ describe(requestOk, () => {
 });
 
 describe(createFakeRequest, () => {
-  it('returns one sequence reply per call and matches a path containing a query string', async () => {
+  it('returns one sequence reply per call and matches a path with a query string', async () => {
     const { request } = createFakeRequest({
       'GET /search': { sequence: [{ json: { page: 1 } }, { json: { page: 2 } }] },
     });

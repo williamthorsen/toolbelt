@@ -10,7 +10,7 @@ import { listPublishedWorkspaceDirectories } from '../test-utils/private-workspa
 
 // The bullet in AGENTS.md whose parenthesized list names every published domain.
 const DOMAIN_BULLET_PREFIX = '- `packages/{domain}/`:';
-// Matched by line rather than parsed: the root installs no YAML parser, and `release-kit sync-labels generate`
+// Matched by line rather than parsed: The root installs no YAML parser, and `release-kit sync-labels generate`
 // emits this file with a fixed shape.
 const LABEL_NAME_PATTERN = /^- name: (\S+)$/gm;
 
@@ -19,7 +19,7 @@ describe('Package registration', () => {
     const { unregistered, workspaceCount } = auditPackageRegistration(findMonorepoRoot());
 
     expect(unregistered).toStrictEqual([]);
-    // Guard against a vacuous pass: a broken walk would report nothing unregistered either.
+    // Guard against a vacuous pass: A broken walk would report nothing unregistered either.
     expect(workspaceCount).toBeGreaterThan(0);
   });
 });

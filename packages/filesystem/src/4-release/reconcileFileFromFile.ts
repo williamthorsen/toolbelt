@@ -10,7 +10,7 @@ import { type FileReconciliation, reconcileFile, type ReconcileFileOptions } fro
  * Everything past the read is `reconcileFile`: The comparison, the conflict policy, the created parent directories,
  * and the outcome vocabulary are its. A source that cannot be read reports `failed`, and a missing source is not
  * distinguished from an unreadable one. The reason names `sourcePath` and the cause; the path is interpolated
- * because a read-stage failure carries none of its own (`EISDIR: illegal operation on a directory, read`) and the
+ * because a read-stage failure has none of its own (`EISDIR: illegal operation on a directory, read`) and the
  * result's `filePath` is the destination.
  *
  * The source is read even under `isDryRun`, because the outcome depends on comparing its content, so a dry run can

@@ -32,7 +32,7 @@ export function hashString(str: string, options: HashStringOptions = {}): number
   const size = max - min + 1;
   if (size > UINT32_SIZE) {
     const received = `Received min=${min}, max=${max}.`;
-    throw new RangeError(`Invalid range: the range cannot span more than ${UINT32_SIZE} values. ${received}`);
+    throw new RangeError(`Invalid range: The range cannot span more than ${UINT32_SIZE} values. ${received}`);
   }
 
   // Reduce the offset before adding it, so the sum stays within the exactly-representable integers.

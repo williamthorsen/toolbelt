@@ -76,7 +76,7 @@ function readFirstParameter(parameters: string): string | undefined {
  *
  * A `function` expression's body is the brace group past its parameters, and an arrow's is whatever follows the
  * arrow. Anything between the parameter list and either one is a return-type annotation. A parenthesized value
- * that is no function literal reaches neither, which is what makes a wrapped reference yield nothing.
+ * that is no function literal reaches neither, which makes a wrapped reference yield nothing.
  */
 function readTrailingBody(text: string, parametersEnd: number): string | undefined {
   if (FUNCTION_KEYWORD.test(text)) {

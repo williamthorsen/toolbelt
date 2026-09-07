@@ -23,7 +23,7 @@ describe(buildKeychainStore, () => {
       ]);
     });
 
-    it('carries the empty account where the query names none', () => {
+    it('passes the empty account where the query names none', () => {
       const spy = createRunnerSpy({ stderr: 'password: "s3cret"\n' });
 
       buildKeychainStore(spy.run).findSecret({ service: 'token' });
@@ -165,7 +165,7 @@ describe(buildKeychainStore, () => {
       );
     });
 
-    it('carries what the failed verification reported as the cause', () => {
+    it('sets what the failed verification reported as the cause', () => {
       const spy = createWriteSpy('s3cret', {}, { exitCode: 36, stderr: 'security: SecKeychainUnlock: locked.\n' });
 
       // The message names the write's outcome, so the read's own failure survives only as the cause.
@@ -188,7 +188,7 @@ describe(buildKeychainStore, () => {
       expect(spy.calls).toStrictEqual([]);
     });
 
-    it('stores a secret carrying a line break, which the hexadecimal form carries', () => {
+    it('stores a secret that contains a line break, which the hexadecimal form encodes', () => {
       const spy = createWriteSpy('a\nb');
 
       buildKeychainStore(spy.run).setSecret({ service: 'token' }, 'a\nb');
@@ -209,7 +209,7 @@ describe(buildKeychainStore, () => {
 
 // region | Helpers
 
-/** Builds a runner that answers every call the same way and records what it was asked to run. */
+/** Builds a runner that responds to every call the same way and records what it was asked to run. */
 function createRunnerSpy(result: Partial<SecurityResult> = {}): RunnerSpy {
   const calls: RunnerCall[] = [];
 

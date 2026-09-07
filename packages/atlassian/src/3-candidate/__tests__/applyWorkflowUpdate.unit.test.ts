@@ -113,7 +113,7 @@ describe(applyWorkflowUpdate, () => {
 
 // region | Helpers
 
-/** Builds a plan containing the given status updates and nothing else. */
+/** Builds a plan with the given status updates and nothing else. */
 function buildPlan(statusUpdates: readonly StatusUpdate[]): ReconciliationPlan {
   return { creations: [], featureToggles: [], lockedFeatures: [], statusUpdates, transitionRenames: [], unmanaged: [] };
 }

@@ -12,7 +12,7 @@ export interface DescribeClone {
  * Takes the blanked code produced by `listErrorSites`, so a body's string and comment text reads as spaces.
  *
  * A local re-implementation is the strongest adoption finding available, because one substitution retires a
- * whole function rather than a single expression. Detection deliberately under-matches: a body is a clone only
+ * whole function rather than a single expression. Detection deliberately under-matches: A body is a clone only
  * where every statement in it is a `return` or an `if` guarding one, so a function doing anything besides
  * describing is left to the per-site classification.
  *

@@ -14,7 +14,7 @@ const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.asyn
 const SLEEP = 'export const waited = new Promise((resolve) => setTimeout(resolve, 50));\n';
 // The package's own `delay`, holding the idiom that its check recommends replacing.
 const OWN_DELAY = 'export function delay(ms) {\n  return new Promise((resolve) => setTimeout(resolve, ms));\n}\n';
-// A timer call carrying a value, a callback that settles nothing, and an executor doing more than the timer.
+// A timer call with a value, a callback that settles nothing, and an executor doing more than the timer.
 const UNCLAIMED = [
   'export const tagged = new Promise((resolve) => setTimeout(resolve, 50, token));',
   'export const stalled = new Promise((resolve) => setTimeout(done, 50));',
@@ -34,8 +34,8 @@ describe('The async adoption kit', () => {
     });
   });
 
-  // The departure from the five source-oriented kits, which exempt tests. Reverting the kit's path filter is
-  // what this case exists to fail on.
+  // The departure from the five source-oriented kits, which exempt tests. This case exists to fail on
+  // reverting the kit's path filter.
   it('reports a sleep in a test, where the idiom mostly lives', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/wait.unit.test.ts': SLEEP });
     using _cwd = pointCwdAt(tree.dir);

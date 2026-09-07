@@ -87,8 +87,8 @@ function manifest(fields: Record<string, unknown>): string {
 }
 
 /**
- * Renders the `import.meta.url` that a module at `filePath` would carry. The file need not exist: The ascent
- * reads manifests alone, which is what lets a compiled layout be described without compiling one.
+ * Renders the `import.meta.url` that a module at `filePath` would have. The file need not exist: The ascent
+ * reads manifests alone, which lets a compiled layout be described without compiling one.
  */
 function moduleUrl(filePath: string): string {
   return pathToFileURL(filePath).href;

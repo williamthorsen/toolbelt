@@ -35,7 +35,7 @@ describe(isAdoptableSourceOrTest, () => {
   });
 
   // A wrapper's exemption rests on what it must import, which binds no test of it. The two paths reach the
-  // claim through different terms, so neither term alone carries the case.
+  // claim through different terms, so neither term alone makes the case.
   it('claims a test covering a bootstrap wrapper, and a helper beside that test', () => {
     const claimed = ['bin/run.unit.test.ts', 'src/bin/__tests__/fixtures/sample.ts'];
 

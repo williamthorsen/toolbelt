@@ -4,8 +4,8 @@
  * The kit ships inside the package, so it runs only where the package is installed and always at the version
  * that the consumer has. Installing the package is the consent on which these checks rest.
  *
- * The checks take inventory rather than banning a pattern, and severity carries the judgment. A defect is a
- * `warn`: an exit mock that does not throw lets a suite cover a path that the process never reaches, and a console
+ * The checks take inventory rather than banning a pattern, and severity reports the judgment. A defect is a
+ * `warn`: An exit mock that does not throw lets a suite cover a path that the process never reaches, and a console
  * capture naming its arguments asserts on a message that the console never wrote. A working hand-roll is a
  * `recommend`, being a substitution rather than a correction. Nothing here is `error`.
  *
@@ -34,7 +34,7 @@ export default defineAdoptionKit({
       name: 'No test declares its own process-exit sentinel error',
       id: 'no-exit-sentinel-clone',
       kinds: ['sentinel-clone'],
-      fix: `Delete the class named above and use throwOnProcessExit from ${PACKAGE_NAME}/candidate, whose ProcessExitError carries the code. One substitution retires the class and the mock together. Reference: ${README_URL}`,
+      fix: `Delete the class named above and use throwOnProcessExit from ${PACKAGE_NAME}/candidate, whose ProcessExitError contains the code. One substitution retires the class and the mock together. Reference: ${README_URL}`,
     },
     {
       name: 'No test mocks process.exit without throwing',
@@ -60,7 +60,7 @@ export default defineAdoptionKit({
       id: 'no-hand-rolled-console-capture',
       kinds: ['console-capture', 'console-unclassified'],
       severity: 'recommend',
-      fix: `Replace each capture named above with silenceConsole from ${PACKAGE_NAME}/candidate and listConsoleLines, which renders each call's arguments through String and joins them on a space. An unclassified mock is one that these checks could not read: a spy carrying no implementation, an implementation given as a bare reference, attached away from the spy's own call chain, or whose delimiters never balance.`,
+      fix: `Replace each capture named above with silenceConsole from ${PACKAGE_NAME}/candidate and listConsoleLines, which renders each call's arguments through String and joins them on a space. An unclassified mock is one that these checks could not read: a spy with no implementation, an implementation given as a bare reference, attached away from the spy's own call chain, or whose delimiters never balance.`,
     },
     {
       name: 'No test silences a console method by hand',
@@ -81,7 +81,7 @@ export default defineAdoptionKit({
       id: 'no-hand-rolled-test-disposal',
       kinds: ['disposal-hook'],
       severity: 'recommend',
-      fix: `Wrap each resource named above in disposeOnTestFinished from ${PACKAGE_NAME}/candidate, which registers the disposal and returns the resource at the type that it was given. Moving registration to the construction site retires the hook, and with it the unicorn/no-nonstandard-builtin-properties disable comment carried by the hand-written disposal where that rule is enabled, since unicorn's Symbol allowlist omits Symbol.dispose. Reference: ${README_URL}`,
+      fix: `Wrap each resource named above in disposeOnTestFinished from ${PACKAGE_NAME}/candidate, which registers the disposal and returns the resource at the type that it was given. Moving registration to the construction site retires the hook, and with it the unicorn/no-nonstandard-builtin-properties disable comment that the hand-written disposal contains where that rule is enabled, since unicorn's Symbol allowlist omits Symbol.dispose. Reference: ${README_URL}`,
     },
   ],
 });

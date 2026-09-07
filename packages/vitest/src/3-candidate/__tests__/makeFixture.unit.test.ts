@@ -48,7 +48,7 @@ const it = baseIt
     makeFixture(() => makeProbe('hook-file-probe')),
   );
 
-// A second extended API, carrying none of the fixtures above.
+// A second extended API, with none of the fixtures above.
 // eslint-disable-next-line vitest/consistent-test-it -- the lone `.extend` is a declaration; the test that it declares sits in a `describe`.
 const otherIt = baseIt.extend(
   'unshared',

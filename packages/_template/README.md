@@ -11,7 +11,7 @@ Replace this README in the clone. It documents the scaffold rather than the pack
 Identity:
 
 - `name`: `@williamthorsen/toolbelt.{domain}`.
-- `description` and `keywords`: the package's own, with the keywords sorted.
+- `description` and `keywords`: The package's own, with the keywords sorted.
 - `homepage`: `https://github.com/williamthorsen/toolbelt/tree/main/packages/{domain}#readme`.
 - `repository.directory`: `packages/{domain}`.
 - `version`: `0.1.0`. A scaffolded package has published nothing, so it does not inherit the template's version.
@@ -41,10 +41,10 @@ The changelog starts empty: the title, and the line `All notable changes to this
 
 Four files record a package, and none is generated from another except where noted:
 
-- `.config/release-kit.config.ts`: add `'scope:{domain}': { color: '00ff96' }` under `repoLabels.labels`. Leave the `workspaces` list alone. It contains only a workspace with a legacy tag prefix or an exclusion, and a new package has neither.
-- `.github/labels.yaml`: regenerate it with `release-kit sync-labels generate`, which reads the entry added above.
-- `.meta/label-map.json`: add `"{domain}": "scope:{domain}"` under `scopes`, by hand.
-- `AGENTS.md`: add the domain to the list on the `packages/{domain}/` bullet.
+- `.config/release-kit.config.ts`: Add `'scope:{domain}': { color: '00ff96' }` under `repoLabels.labels`. Leave the `workspaces` list alone. It contains only a workspace with a legacy tag prefix or an exclusion, and a new package has neither.
+- `.github/labels.yaml`: Regenerate it with `release-kit sync-labels generate`, which reads the entry added above.
+- `.meta/label-map.json`: Add `"{domain}": "scope:{domain}"` under `scopes`, by hand.
+- `AGENTS.md`: Add the domain to the list on the `packages/{domain}/` bullet.
 
 Then run `pnpm install`, which adds the workspace's importer to `pnpm-lock.yaml`.
 
@@ -54,10 +54,10 @@ One registration happens off the repo and no test can reach it: npm must know th
 
 ## 4. Keep the placeholder test
 
-Copy `src/__tests__/placeholder.unit.test.ts` unchanged. `passWithNoTests` is set on every Vitest project, so a package with no test file exits green rather than failing, and this file is what keeps a scaffolded package from being the first such case.
+Copy `src/__tests__/placeholder.unit.test.ts` unchanged. `passWithNoTests` is set on every Vitest project, so a package with no test file exits green rather than failing, and this file keeps a scaffolded package from being the first such case.
 
 Delete it once the package's first real tests land.
 
 ## What the scaffold does not do
 
-The API that the package will hold, and any migration of an existing package onto it, belong to later tickets. A scaffolded package exports nothing: each of `src/1-proposed`, `src/2-draft`, `src/3-candidate`, and `src/4-release` holds an `index.ts` of `export {}`.
+The API that the package will hold, and any migration of an existing package onto it, belong to later tickets. A scaffolded package exports nothing: Each of `src/1-proposed`, `src/2-draft`, `src/3-candidate`, and `src/4-release` holds an `index.ts` of `export {}`.

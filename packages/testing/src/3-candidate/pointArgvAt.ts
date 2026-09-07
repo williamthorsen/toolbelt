@@ -2,7 +2,7 @@ import process from 'node:process';
 
 /**
  * Points `process.argv` at a set of CLI arguments for the enclosing scope and restores the previous value when
- * the scope exits. The caller passes the arguments alone, which is what `process.argv.slice(2)` reports; the
+ * the scope exits. The caller passes the arguments alone, which `process.argv.slice(2)` reports; the
  * executable and script entries are supplied.
  *
  * @category Testing
@@ -44,8 +44,8 @@ export interface PointArgvAtOptions {
   scriptPath?: string;
 }
 
-/** Arguments that `process.argv` carries for the length of a scope. */
+/** Arguments that `process.argv` contains for the length of a scope. */
 export interface PointedArgv extends Disposable {
-  /** Arguments installed by the scope, which is what `process.argv.slice(2)` reports. */
+  /** Arguments installed by the scope, which `process.argv.slice(2)` reports. */
   readonly args: readonly string[];
 }

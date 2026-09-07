@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { type ErrorSiteKind, listErrorSites } from '../listErrorSites.ts';
 
-/** Names the kind of every site in a source, which is what each case asserts on. */
+/** Names the kind of every site in a source, on which each case asserts. */
 function listKinds(source: string): ErrorSiteKind[] {
   return listErrorSites(source).map((site) => site.kind);
 }

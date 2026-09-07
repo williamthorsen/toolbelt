@@ -7,7 +7,7 @@ const BOARD_ID = 7;
 const BACKLOG_PATH = `POST /rest/agile/1.0/backlog/${BOARD_ID}/issue`;
 
 describe(moveIssuesToBacklog, () => {
-  it('splits 51 keys into a batch of 50 and a batch of 1, carrying the right keys in each', async () => {
+  it('splits 51 keys into a batch of 50 and a batch of 1, with the right keys in each', async () => {
     const keys = buildKeys(51);
     const { calls, request } = createFakeRequest({ [BACKLOG_PATH]: { json: {} } });
 

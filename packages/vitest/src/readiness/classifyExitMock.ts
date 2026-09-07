@@ -22,7 +22,7 @@ const BARE_REFERENCE = /^[\w$.]+$/;
  * mock that it also is, so one finding names the class to retire alongside the mock.
  *
  * `non-throwing` is claimed only against a body that this read in full and found no `throw` in, because that
- * kind carries the defect severity. Everything else is `unclassified`: an implementation given as a bare reference,
+ * kind has the defect severity. Everything else is `unclassified`: an implementation given as a bare reference,
  * one attached anywhere but the spy's own call chain, and one whose parentheses never balance.
  *
  * @internal

@@ -13,7 +13,7 @@ describe('Maturity-tier modules', () => {
     const { moduleCount, unreachableModules } = auditTierModules(findMonorepoRoot());
 
     expect(unreachableModules).toStrictEqual([]);
-    // Guard against a vacuous pass: a broken walk would report no unreachable modules either.
+    // Guard against a vacuous pass: A broken walk would report no unreachable modules either.
     expect(moduleCount).toBeGreaterThan(0);
   });
 });
@@ -24,7 +24,7 @@ describe('Maturity-tier modules', () => {
  * Audits every module in a package's exported maturity tiers, reporting those reached by no tier index. Such a
  * module compiles into `dist` while no export subpath exposes it, so nothing installed can import it.
  *
- * Reachability is taken across all of a package's exported tiers at once: a module imported by a neighbouring tier
+ * Reachability is taken across all of a package's exported tiers at once: A module imported by a neighbouring tier
  * is published through that tier's index, whether or not its own index names it.
  */
 function auditTierModules(monorepoRoot: string): { moduleCount: number; unreachableModules: string[] } {

@@ -32,7 +32,7 @@ describe('tb-git wrapper', () => {
 
     expect(status).toBe(1);
     expect(stderr).toMatch(/failed to load/);
-    // The absence is the assertion: the gate reads the entry file, where the error code that it would otherwise
+    // The absence is the assertion: The gate reads the entry file, where the error code that it would otherwise
     // key on fires for any unresolved module in the graph.
     expect(stderr).not.toMatch(/build output not found/);
   });

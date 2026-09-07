@@ -15,13 +15,13 @@ describe(chainError, () => {
     expect(error.message).toBe('Failed to load config: ENOENT');
   });
 
-  it('carries an Error cause unchanged', () => {
+  it('attaches an Error cause unchanged', () => {
     const cause = new Error('ENOENT');
 
     expect(chainError('Failed to load config', cause).cause).toBe(cause);
   });
 
-  it('carries a cause that is not an Error unchanged', () => {
+  it('attaches a cause that is not an Error unchanged', () => {
     const cause = { code: 'ENOENT' };
 
     expect(chainError('Failed to load config', cause).cause).toBe(cause);

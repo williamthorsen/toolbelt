@@ -14,7 +14,7 @@ pnpm add @williamthorsen/toolbelt.filesystem
 
 `createTempTree`, `findDirectoryChainMatch`, `listDirectoryChainMatches`, `loadConfigCascade`, `reconcileFile`, `reconcileFileFromFile`, and `writeAtomic` reach the filesystem through `node:` builtins, so they run under Node.js 24 or later, Bun, and Deno. They do not run in browsers, nor in edge runtimes that expose no filesystem. `listDirectoryChain` and `replaceFileExtension` touch no filesystem, so an edge runtime that exposes none runs them; they still import `node:path`, which a browser bundle has to supply.
 
-`loadConfigCascade` imports each config through the host runtime, so a `.ts` config is subject to whatever that runtime does with TypeScript. Node strips types rather than compiling them, which admits erasable syntax alone: an `enum`, a `namespace`, or a parameter property in a config file fails to parse. A `.mjs` or `.js` config sidesteps the question.
+`loadConfigCascade` imports each config through the host runtime, so a `.ts` config is subject to whatever that runtime does with TypeScript. Node strips types rather than compiling them, which admits erasable syntax alone: An `enum`, a `namespace`, or a parameter property in a config file fails to parse. A `.mjs` or `.js` config sidesteps the question.
 
 ## `listDirectoryChain`
 
@@ -36,7 +36,7 @@ listDirectoryChain('/home/dev/app/src', { stopAtDir: '/home/dev' });
 
 `stopAtDir` bounds the ascent inclusively and is resolved the same way `startDir` is, so a relative ceiling behaves like a relative start. One that is neither the start directory nor an ancestor of it throws, naming both, rather than being ignored and letting the ascent run past the bound. The comparison is exact, so a `stopAtDir` differing from its target only in case is off the chain even on a volume that would open it.
 
-The result type records that the chain is never empty, which is what spares the nearest directory an undefined check:
+The result type records that the chain is never empty, which spares the nearest directory an undefined check:
 
 ```ts
 const [nearestDir] = listDirectoryChain(process.cwd()); // string, not string | undefined
@@ -71,7 +71,7 @@ listDirectoryChainMatches('/home/dev/app/src', ['.git'], { stopAtDir: '/home/dev
 // [{ dir: '/home/dev/app', entryName: '.git', entryPath: '/home/dev/app/.git' }]
 ```
 
-A level yields at most one match, the earliest of `names` found there, and a level holding none contributes nothing, so an empty result is an ordinary outcome rather than an error. A name matches a directory as readily as a file, which is what lets `.git` be probed without knowing whether the clone is ordinary or a worktree.
+A level yields at most one match, the earliest of `names` found there, and a level holding none contributes nothing, so an empty result is an ordinary outcome rather than an error. A name matches a directory as readily as a file, which lets `.git` be probed without knowing whether the clone is ordinary or a worktree.
 
 Each name is a path relative to the level against which it is probed, so a nested location such as `.config/stack.config.mjs` works. A name that would leave its level (an absolute path, or one whose `..` segments escape it) is rejected before any level is probed, so the rejection never depends on what happens to exist on disk.
 
@@ -98,7 +98,7 @@ findDirectoryChainMatch('/home/dev/app/src', ['.git']);
 // { dir: '/home/dev/app', entryName: '.git', entryPath: '/home/dev/app/.git' }
 ```
 
-Probing stops at the first level that matches, so no level beyond it is touched -- the reason to reach for this rather than read element zero off `listDirectoryChainMatches`, which probes to the ceiling regardless. The nullable return type is the other reason: a result that may be absent says so, where an array leaves the caller to narrow.
+Probing stops at the first level that matches, so no level beyond it is touched -- the reason to reach for this rather than read element zero off `listDirectoryChainMatches`, which probes to the ceiling regardless. The nullable return type is the other reason: A result that may be absent says so, where an array leaves the caller to narrow.
 
 ## `loadConfigCascade`
 
@@ -113,9 +113,9 @@ loadConfigCascade<TConfig>(options: {
 
 Loads every config file between `startDir` and `stopAtDir`, nearest first, and reads nothing above that boundary.
 
-Discovery is [`listDirectoryChainMatches`](#listdirectorychainmatches) bounded at `stopAtDir`: the first of `fileNames` that exists at a level becomes that level's config, a level holding none contributes nothing, and a name that would leave its level is rejected before any file is read. A `stopAtDir` that is neither the start directory nor one of its ancestors throws, on the same terms `listDirectoryChain` sets out.
+Discovery is [`listDirectoryChainMatches`](#listdirectorychainmatches) bounded at `stopAtDir`: The first of `fileNames` that exists at a level becomes that level's config, a level holding none contributes nothing, and a name that would leave its level is rejected before any file is read. A `stopAtDir` that is neither the start directory nor one of its ancestors throws, on the same terms that `listDirectoryChain` sets out.
 
-The boundary is required, and it is the caller's to choose. That is what keeps this function free of any notion of what marks a project: it never asks whether a directory holds a lockfile or a workspace manifest. Where the boundary should be a project root, [`findProjectRoot`](https://github.com/williamthorsen/toolbelt/tree/main/packages/packaging#findprojectroot) in `@williamthorsen/toolbelt.packaging` resolves one from markers.
+The boundary is required, and it is the caller's to choose. That keeps this function free of any notion of what marks a project: It never asks whether a directory holds a lockfile or a workspace manifest. Where the boundary should be a project root, [`findProjectRoot`](https://github.com/williamthorsen/toolbelt/tree/main/packages/packaging#findprojectroot) in `@williamthorsen/toolbelt.packaging` resolves one from markers.
 
 The matched files are then imported one at a time, and `shouldStopAscent` is consulted after each. Once it returns true, the ascent halts and no farther file is imported at all, rather than being loaded and discarded:
 
@@ -130,7 +130,7 @@ interface ConfigCascade<TConfig> {
 }
 ```
 
-A config is the module's default export. A matched module declaring none is rejected by name; validating what a config contains stays with the caller, which is what lets one mechanism serve schemas sharing no fields.
+A config is the module's default export. A matched module declaring none is rejected by name; validating what a config contains stays with the caller, which lets one mechanism serve schemas sharing no fields.
 
 ### The `shouldStopAscent` convention
 
@@ -176,9 +176,9 @@ reconcileFile('.config/tool.config.ts', template);
 // { filePath: '.config/tool.config.ts', outcome: 'created' }
 ```
 
-Missing parent directories are created. `isDryRun` writes nothing and creates no directory, returning the outcome that the real call would have produced, which is what lets a `--dry-run` flag print what the run itself would. A write that would fail is the exception: nothing detects that without attempting it, so a dry run reports the write's intended outcome.
+Missing parent directories are created. `isDryRun` writes nothing and creates no directory, returning the outcome that the real call would have produced, which lets a `--dry-run` flag print what the run itself would. A write that would fail is the exception: Nothing detects that without attempting it, so a dry run reports the write's intended outcome.
 
-`conflictPolicy` decides what becomes of an existing file whose content differs, and decides nothing else: it is consulted in that case alone. The default, `'skip'`, never replaces a file that the user may have edited.
+`conflictPolicy` decides what becomes of an existing file whose content differs, and decides nothing else: It is consulted in that case alone. The default, `'skip'`, never replaces a file that the user may have edited.
 
 | exists | differs | `conflictPolicy` | outcome       |
 | ------ | ------- | ---------------- | ------------- |
@@ -189,7 +189,7 @@ Missing parent directories are created. `isDryRun` writes nothing and creates no
 
 What counts as differing follows the policy, which is the part worth reading twice. `'replace'` promises the file holds exactly `content` afterwards, so only byte-identical content reports `up-to-date`; a file differing from `content` only in trailing whitespace is rewritten, because calling it up to date would leave the caller holding a file that is not what it asked for. `'skip'` modifies nothing either way, so its comparison decides a message alone and ignores trailing whitespace per line and at end of file, which keeps formatter churn from reading as a conflict. `up-to-date` therefore means the same thing under both: This policy has no work to do.
 
-The result discriminates on `outcome`, so a failure always carries its reason:
+The result discriminates on `outcome`, so a failure always names its reason:
 
 ```ts
 type FileReconciliation =
@@ -198,13 +198,13 @@ type FileReconciliation =
   | { filePath: string; outcome: 'failed'; error: string };
 ```
 
-An I/O error on the write path reports `failed` rather than throwing, which is what lets a command writing several files collect a result for each instead of losing the rest to the first failure.
+An I/O error on the write path reports `failed` rather than throwing, which lets a command writing several files collect a result for each instead of losing the rest to the first failure.
 
 Three behaviors are worth knowing before they surprise you:
 
-- A `skipped` result carrying an `error` means the existing file could not be read for comparison. The file was left alone, which is exactly what `'skip'` promises, so this is not a failure and a command exiting non-zero on failures should not count it as one.
-- The existence probe follows symlinks. A dangling symlink therefore reports as non-existent: the outcome is `created`, the result names the link, and the bytes land at the link's target.
-- The probe and the write are separate calls, leaving a window in which another process can create or remove the file. That gap is left open deliberately: the callers that this serves are scaffolding commands with no competing writer, and an exclusive-create flag would close only the create half of it.
+- A `skipped` result with an `error` means the existing file could not be read for comparison. The file was left alone, which is exactly what `'skip'` promises, so this is not a failure and a command exiting non-zero on failures should not count it as one.
+- The existence probe follows symlinks. A dangling symlink therefore reports as non-existent: The outcome is `created`, the result names the link, and the bytes land at the link's target.
+- The probe and the write are separate calls, leaving a window in which another process can create or remove the file. That gap is left open deliberately: The callers that this serves are scaffolding commands with no competing writer, and an exclusive-create flag would close only the create half of it.
 
 ## `reconcileFileFromFile`
 
@@ -216,7 +216,7 @@ reconcileFileFromFile(
 ): FileReconciliation;
 ```
 
-Reconciles `filePath` against the content of `sourcePath`, which is what a command copying a bundled template reaches for:
+Reconciles `filePath` against the content of `sourcePath`, for which a command copying a bundled template reaches:
 
 ```ts
 import { reconcileFileFromFile } from '@williamthorsen/toolbelt.filesystem';
@@ -225,9 +225,9 @@ reconcileFileFromFile('.config/git-cliff.toml', bundledTemplatePath);
 // { filePath: '.config/git-cliff.toml', outcome: 'created' }
 ```
 
-It is [`reconcileFile`](#reconcilefile) with the read supplied: the outcome table, the conflict policy, the created parent directories, and the result type are that function's, unchanged. Three things are this one's own.
+It is [`reconcileFile`](#reconcilefile) with the read supplied: The outcome table, the conflict policy, the created parent directories, and the result type are that function's, unchanged. Three things are this one's own.
 
-The source is read as utf8 text, so a binary source is not supported: it would be decoded and re-encoded on the way through.
+The source is read as utf8 text, so a binary source is not supported: It would be decoded and re-encoded on the way through.
 
 A source that cannot be read reports `failed` rather than throwing, and a missing source is not distinguished from an unreadable one. The reason names the source and the cause:
 
@@ -235,13 +235,13 @@ A source that cannot be read reports `failed` rather than throwing, and a missin
 Failed to read /pkg/cliff.toml.template: ENOENT: no such file or directory, open '/pkg/cliff.toml.template'
 ```
 
-The path is interpolated rather than left to the underlying message, which carries none of its own at the read stage: reading a directory yields `EISDIR: illegal operation on a directory, read`. Under `ENOENT` the path therefore reads twice. The result's `filePath` is the destination on this path as on every other, so a caller copying several templates keys its results by destination and still sees which source failed.
+The path is interpolated rather than left to the underlying message, which has none of its own at the read stage: Reading a directory yields `EISDIR: illegal operation on a directory, read`. Under `ENOENT` the path therefore reads twice. The result's `filePath` is the destination on this path as on every other, so a caller copying several templates keys its results by destination and still sees which source failed.
 
 The source is read even under `isDryRun`, because the outcome depends on comparing its content. A dry run can therefore report `failed` where `reconcileFile`'s cannot, and it still writes nothing.
 
 ## `createTempTree`
 
-Candidate tier: imported from `@williamthorsen/toolbelt.filesystem/candidate` rather than the package root, and subject to change.
+Candidate tier: Imported from `@williamthorsen/toolbelt.filesystem/candidate` rather than the package root, and subject to change.
 
 ```ts
 createTempTree(entries: Record<string, string | Uint8Array>, options?: { prefix?: string }): TempTree;
@@ -321,11 +321,11 @@ Each creates the parent directories that it needs, resolves through the same con
 tree.writeAll({ 'packages/empty/': '', 'packages/app/src/main.ts': 'export {};\n' });
 ```
 
-It returns nothing, there being no single path to return, and unlike the constructor it is not atomic: a failure part-way leaves the entries already written in place, there being no whole tree to discard.
+It returns nothing, there being no single path to return, and unlike the constructor it is not atomic: A failure part-way leaves the entries already written in place, there being no whole tree to discard.
 
 They part company on an entry that already exists: `write` replaces it, `mkdir` leaves it and its contents alone, and `symlink` raises `EEXIST`.
 
-`symlink` takes the link first and the target second, inverting `fs.symlinkSync`, so that it reads like the other methods: the path being created leads. The target is stored verbatim, so it may be absolute or relative, name something outside the tree, or dangle until the target appears; a relative one resolves against the link's own directory, as POSIX resolves it. Code under test that reads a link rather than following it therefore sees the string that was passed, which is what a consumer hashing a link's target depends on.
+`symlink` takes the link first and the target second, inverting `fs.symlinkSync`, so that it reads like the other methods: The path being created leads. The target is stored verbatim, so it may be absolute or relative, name something outside the tree, or dangle until the target appears; a relative one resolves against the link's own directory, as POSIX resolves it. Code under test that reads a link rather than following it therefore sees the string that was passed, on which a consumer hashing a link's target depends.
 
 ```ts
 using tree = createTempTree({ 'store/kit/package.json': '{ "name": "kit" }' });
@@ -350,19 +350,19 @@ tree.exists('packages/app/tsconfig.json'); // false
 tree.rm('packages/app');
 ```
 
-`listFiles` reaches every depth and reports paths relative to the directory given to it, sorted, with `/` as the separator on every platform: a path in a test's assertion is a value rather than a location, so `'app/src/main.ts'` should not vary by platform. It parts from `list` twice. A directory that is not there returns `[]` where `list` raises `ENOENT`, which is what lets a suite assert that a build emitted nothing without guarding the call; a path that exists as a file still raises `ENOTDIR`, as `list` does. And a symlink below the directory given to it is neither named nor descended, so every path in the result names a file held inside the tree, where `list` reports a link by name at its own level. The directory given as the argument is the exception, followed as `list`, `read`, and `exists` follow theirs: one naming a link out of the tree lists the target's files.
+`listFiles` reaches every depth and reports paths relative to the directory given to it, sorted, with `/` as the separator on every platform: A path in a test's assertion is a value rather than a location, so `'app/src/main.ts'` should not vary by platform. It parts from `list` twice. A directory that is not there returns `[]` where `list` raises `ENOENT`, which lets a suite assert that a build emitted nothing without guarding the call; a path that exists as a file still raises `ENOTDIR`, as `list` does. And a symlink below the directory given to it is neither named nor descended, so every path in the result names a file held inside the tree, where `list` reports a link by name at its own level. The directory given as the argument is the exception, followed as `list`, `read`, and `exists` follow theirs: One naming a link out of the tree lists the target's files.
 
 `read` returns UTF-8 text, and a missing entry raises `ENOENT` rather than returning an empty string -- `exists` is the check. `readJson` returns `unknown`, so a caller narrows it rather than trusting an asserted type; contents that do not parse raise an error naming the entry, which the parse error alone does not. `exists` follows a symlink, so it returns `false` for a dangling one. `rm` is recursive and silent on an entry that is not there.
 
 `writeJson` writes two-space-indented JSON ending in a newline, so a tree outliving a crashed run reads as a real config file would. A fixture needing exact bytes goes through `write` instead. A value that `JSON.stringify` cannot represent -- `undefined`, a function, a symbol -- is refused rather than written, so an optional binding that arrived empty fails at the call that passed it instead of surfacing later as a parse error.
 
-Disposal is idempotent, and it removes a tree that has been made unwritable: unlinking an entry needs write permission on the directory containing it, so disposal restores permission across the tree and retries once before giving up. A suite that chmods a directory to exercise a write-failure path therefore needs no wrapper to chmod it back.
+Disposal is idempotent, and it removes a tree that has been made unwritable: Unlinking an entry needs write permission on the directory containing it, so disposal restores permission across the tree and retries once before giving up. A suite that chmods a directory to exercise a write-failure path therefore needs no wrapper to chmod it back.
 
 `Disposable` is declared in `lib.esnext.disposable.d.ts` alone, so consuming this export requires `ESNext.Disposable` in your `lib`.
 
 ## `replaceFileExtension`
 
-Proposed tier: imported from `@williamthorsen/toolbelt.filesystem/proposed` rather than the package root, and subject to change.
+Proposed tier: Imported from `@williamthorsen/toolbelt.filesystem/proposed` rather than the package root, and subject to change.
 
 ```ts
 replaceFileExtension(filePath: string, newExtension: string, options?: { oldExtension?: string }): string;
@@ -390,7 +390,7 @@ Two inputs throw rather than returning a path that would quietly be wrong: a `fi
 
 ## `writeAtomic`
 
-Proposed tier: imported from `@williamthorsen/toolbelt.filesystem/proposed` rather than the package root, and subject to change.
+Proposed tier: Imported from `@williamthorsen/toolbelt.filesystem/proposed` rather than the package root, and subject to change.
 
 ```ts
 writeAtomic(filePath: string, content: string | Uint8Array): Promise<void>;
@@ -404,14 +404,14 @@ import { writeAtomic } from '@williamthorsen/toolbelt.filesystem/proposed';
 await writeAtomic('.agents/manifest.json', `${JSON.stringify(manifest, null, 2)}\n`);
 ```
 
-The temp file is a sibling of the target, which is the part that a hand-rolled copy most often gets wrong: `rename` is atomic only within one filesystem, so a temp file staged under the system temporary directory fails with `EXDEV` the moment the target lives on another volume. Its name is dot-prefixed and carries a random component, so it stays out of `*` globs and two processes writing the same target do not collide.
+The temp file is a sibling of the target, which is the part that a hand-rolled copy most often gets wrong: `rename` is atomic only within one filesystem, so a temp file staged under the system temporary directory fails with `EXDEV` the moment the target lives on another volume. Its name is dot-prefixed and contains a random component, so it stays out of `*` globs and two processes writing the same target do not collide.
 
 Missing parent directories are created, as they are for [`reconcileFile`](#reconcilefile).
 
-An existing target's permission bits are carried onto the replacement. A plain `writeFile` truncates the file in place and so preserves its mode, while a rename replaces the inode and would otherwise reset it to the platform default; without this, swapping a plain write for an atomic one would silently widen a `0o600` file to world-readable. A target that does not exist yet gets the platform default, exactly as a plain write would.
+An existing target's permission bits are copied onto the replacement. A plain `writeFile` truncates the file in place and so preserves its mode, while a rename replaces the inode and would otherwise reset it to the platform default; without this, swapping a plain write for an atomic one would silently widen a `0o600` file to world-readable. A target that does not exist yet gets the platform default, exactly as a plain write would.
 
 Three behaviors are worth knowing before they surprise you:
 
-- Nothing is fsynced. "Atomic" here means no torn reads, not survives-power-loss: a write from which this function has returned can still be lost to a power failure. A durability option is additive if a caller ever needs one.
+- Nothing is fsynced. "Atomic" here means no torn reads, not survives-power-loss: A write from which this function has returned can still be lost to a power failure. A durability option is additive if a caller ever needs one.
 - A symlink at `filePath` is replaced by a regular file rather than written through, because the rename replaces the target's directory entry. The link's former target is left untouched.
 - A failure removes the temp file best-effort and rethrows the error that caused it, never the cleanup's own. Where the cleanup also fails, the temp file survives beside the target under its dot-prefixed name ending in `.tmp`, which is where to look for one.

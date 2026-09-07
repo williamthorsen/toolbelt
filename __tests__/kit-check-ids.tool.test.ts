@@ -11,11 +11,11 @@ import { isUnknownArray } from '../test-utils/isUnknownArray.ts';
 const BUNDLE_PATH = path.join('.readyup', 'kits', 'default.js');
 
 describe('Compiled kit check ids', () => {
-  it('every kit-bearing workspace assembles its kit and names every check', async () => {
+  it('every workspace with a kit assembles its kit and names every check', async () => {
     const { failures, workspaceCount } = await auditCompiledKits(findMonorepoRoot());
 
     expect(failures).toStrictEqual([]);
-    // Guard against a vacuous pass: a broken walk would report no failures either.
+    // Guard against a vacuous pass: A broken walk would report no failures either.
     expect(workspaceCount).toBeGreaterThan(0);
   });
 });
@@ -23,11 +23,11 @@ describe('Compiled kit check ids', () => {
 // region | Helpers
 
 /**
- * Assembles every kit-bearing workspace's compiled kit and reports those whose checks are not all named.
+ * Assembles the compiled kit of every workspace with a kit and reports those whose checks are not all named.
  *
  * Loading is half the assertion: `defineAdoptionKit` refuses a kit giving one id to two checks, and the
- * bundle inlines that guard, so an import is what runs it. Only `numbers` assembles a kit in its own suite,
- * and this is what reaches the rest. The bundle is loaded rather than the source, which needs no built tree
+ * bundle inlines that guard, so an import runs it. Only `numbers` assembles a kit in its own suite,
+ * and this reaches the rest. The bundle is loaded rather than the source, which needs no built tree
  * and is the artifact that a consumer runs.
  */
 async function auditCompiledKits(monorepoRoot: string): Promise<{ failures: string[]; workspaceCount: number }> {

@@ -36,7 +36,7 @@ describe(findBranchTicketRef, () => {
       branch: 'author/JIRA-123.4-branch-description',
       expected: { id: 'JIRA-123', key: 'JIRA', number: 123, revisit: 4 },
     },
-    { scenario: 'a digit-bearing key', branch: 'AB2-123-fix', expected: { id: 'AB2-123', key: 'AB2', number: 123 } },
+    { scenario: 'a key with a digit', branch: 'AB2-123-fix', expected: { id: 'AB2-123', key: 'AB2', number: 123 } },
     { scenario: 'a rejected key ahead of a bare number', branch: 'feat-2/232', expected: { id: '232', number: 232 } },
     { scenario: 'a lowercase key with none declared', branch: 'mac-22/feat/x', expected: undefined },
     { scenario: 'a kebab-case word at the start', branch: 'feat-2', expected: undefined },

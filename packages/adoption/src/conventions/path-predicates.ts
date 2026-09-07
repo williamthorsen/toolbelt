@@ -44,7 +44,7 @@ export function isBinWrapper(path: string): boolean {
 /**
  * Reports whether a path sits inside a test directory.
  *
- * Separate from `isTestFile` because the two select different sets: a helper module beside a suite is in a test
+ * Separate from `isTestFile` because the two select different sets: A helper module beside a suite is in a test
  * directory without being a test, and a sweep excluding tests must drop it while a sweep of tests must not
  * claim it.
  *

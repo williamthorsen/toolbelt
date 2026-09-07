@@ -21,7 +21,7 @@ pnpm add --global @williamthorsen/toolbelt.git   # puts tb-git on PATH
 npx @williamthorsen/toolbelt.git branch-number   # or run it without installing
 ```
 
-The short `npx` form works because the package declares exactly one bin, which npm falls back to whatever its name. Were a second bin added, the invocation would become `npx --package @williamthorsen/toolbelt.git tb-git ...`.
+The short `npx` form works because the package declares exactly one bin, which npm falls back to, whatever its name. Were a second bin added, the invocation would become `npx --package @williamthorsen/toolbelt.git tb-git ...`.
 
 `tb-git --help`, each subcommand's `--help`, and `tb-git --version` report the surface and the installed version.
 
@@ -72,7 +72,7 @@ With no `<branch>`, both subcommands resolve the checked-out branch with `git br
 | `1`  | `ticket-ref` found no ticket in the branch name; both streams are empty |
 | `2`  | Usage or validation error, with the message on stderr                   |
 
-A bound, offset, or key rejected by the library exits `2` carrying the message that it raises. So does an empty option value, so `--min "$PORT_MIN"` with `PORT_MIN` unset fails instead of bounding at `0`.
+A bound, offset, or key rejected by the library exits `2`, reporting the message that it raises. So does an empty option value, so `--min "$PORT_MIN"` with `PORT_MIN` unset fails instead of bounding at `0`.
 
 ```sh
 if ref=$(tb-git ticket-ref); then
@@ -105,11 +105,11 @@ findBranchTicketRef('232_add-widget');
 // { id: '232', number: 232 }
 ```
 
-A ref must begin a segment. `/` and `_` both delimit one, so an author prefix and a worktree-safe spelling parse alike, and the leftmost segment carrying a ref wins. Anchoring to a segment is what keeps a kebab-case description from reading as a ticket: `feat/add-widget-2` encodes none, because `widget` follows a hyphen rather than a separator.
+A ref must begin a segment. `/` and `_` both delimit one, so an author prefix and a worktree-safe spelling parse alike, and the leftmost segment with a ref wins. Anchoring to a segment keeps a kebab-case description from reading as a ticket: `feat/add-widget-2` encodes none, because `widget` follows a hyphen rather than a separator.
 
 Two forms are recognized, each taking an optional `.N` revisit suffix. A **keyed** ref is a Jira-style key and number, the key matching Jira's own rule of a letter followed by letters and digits. A **bare-numeric** ref is the number alone. `id` and `key` are emitted uppercased, since a branch name may be lowercase but the ticket that it names is `MAC-22`.
 
-By default a key must be uppercase, which is what Jira permits and the only property separating a real key from an ordinary word: without it, `feat-2` would read as ticket `FEAT-2`. Declaring the project's own key through `key` is both more permissive and more precise, since it then matches in any casing and is the only key that matches at all.
+By default a key must be uppercase, which Jira permits and which is the only property separating a real key from an ordinary word: Without it, `feat-2` would read as ticket `FEAT-2`. Declaring the project's own key through `key` is both more permissive and more precise, since it then matches in any casing and is the only key that matches at all.
 
 ```ts
 findBranchTicketRef('mac-22/add-widget');
@@ -124,7 +124,7 @@ findBranchTicketRef('feat-2', { key: 'mac' });
 
 The bare-numeric form stays active whether or not a key is declared. A `RangeError` names the fault when `key` is not a well-formed key, which would otherwise match nothing at all.
 
-A trailing `-N` is not read as a sub-ID, being indistinguishable from a description: `232-3-column-layout` carries no revisit. Neither suffix affects `number`.
+A trailing `-N` is not read as a sub-ID, being indistinguishable from a description: `232-3-column-layout` has no revisit. Neither suffix affects `number`.
 
 ## `deriveBranchNumber`
 

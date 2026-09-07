@@ -82,7 +82,7 @@ function countLineTerminators(text: string): number {
 }
 
 function createDedent(options: ResolvedDedentOptions): Dedent {
-  // Declared rather than assigned from an arrow so that `fn.name` is `dedent`, which is what
+  // Declared rather than assigned from an arrow so that `fn.name` is `dedent`, which
   // `describe(dedent, ...)` reports as the suite name.
   function dedent(templateStrings: TemplateStringsArray, ...values: DedentValue[]): string {
     return renderTemplate(templateStrings, values, options);

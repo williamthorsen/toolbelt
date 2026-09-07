@@ -7,7 +7,7 @@ import type { ReconciliationPlan } from '../ReconciliationPlan.ts';
 const configuration = buildProjectConfiguration();
 
 describe(buildWorkflowUpdatePayload, () => {
-  it('carries a transition through with the fields that this package does not model', () => {
+  it('passes a transition through with the fields that this package does not model', () => {
     const [workflow] = buildWorkflowUpdatePayload(configuration, buildPlan()).workflows;
 
     expect(workflow.transitions[0]).toStrictEqual(configuration.workflow.transitions[0]);
@@ -22,7 +22,7 @@ describe(buildWorkflowUpdatePayload, () => {
     expect(workflow.transitions[0]).toStrictEqual({ ...configuration.workflow.transitions[0], name: 'Backlog' });
   });
 
-  it('carries the workflow description, version, and start point through', () => {
+  it('passes the workflow description, version, and start point through', () => {
     const [workflow] = buildWorkflowUpdatePayload(configuration, buildPlan()).workflows;
 
     expect(workflow.description).toBe('The project workflow.');
@@ -156,7 +156,7 @@ describe(buildWorkflowUpdatePayload, () => {
     expect(workflow.transitions.map((transition) => transition.id)).toStrictEqual(['10']);
   });
 
-  it('carries every live status and transition into the payload that it returns', () => {
+  it('copies every live status and transition into the payload that it returns', () => {
     const payload = buildWorkflowUpdatePayload(configuration, buildPlan());
     const [workflow] = payload.workflows;
 

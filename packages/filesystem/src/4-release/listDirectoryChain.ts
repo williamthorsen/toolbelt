@@ -4,7 +4,7 @@ import path from 'node:path';
  * Returns `startDir` resolved to an absolute path, followed by each of its ancestors, nearest first.
  *
  * The chain runs to the filesystem root unless `stopAtDir` bounds it, and always holds at least the start
- * directory, which is what the return type records. Paths are manipulated as strings; nothing is read from disk.
+ * directory, which the return type records. Paths are manipulated as strings; nothing is read from disk.
  *
  * @example
  * listDirectoryChain('/home/dev/app/src', { stopAtDir: '/home/dev' });

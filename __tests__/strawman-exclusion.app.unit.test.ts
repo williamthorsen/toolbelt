@@ -24,7 +24,7 @@ describe('The strawman tier', () => {
     const { strawmanCount, unexcludedPackages } = auditStrawmanExclusions(findMonorepoRoot());
 
     expect(unexcludedPackages).toStrictEqual([]);
-    // Guard against a vacuous pass: a broken walk would find no package holding a strawman either.
+    // Guard against a vacuous pass: A broken walk would find no package holding a strawman either.
     expect(strawmanCount).toBeGreaterThan(0);
   });
 

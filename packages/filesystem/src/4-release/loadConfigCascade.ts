@@ -11,7 +11,7 @@ import { listDirectoryChainMatches } from './directory-chain-matches.ts';
  * true, the ascent halts and no farther file is imported. Nothing above `stopAtDir` is ever read:
  * Each name must stay within the level against which it is probed, so one that escapes is rejected up front.
  *
- * The boundary is the caller's to choose, which is what keeps this function free of any notion of what
+ * The boundary is the caller's to choose, which keeps this function free of any notion of what
  * marks a project. `findProjectRoot` from `@williamthorsen/toolbelt.packaging` resolves one from markers.
  *
  * Each config is the module's default export; validating its contents is the caller's job.

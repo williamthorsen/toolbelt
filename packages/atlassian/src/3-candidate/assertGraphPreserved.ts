@@ -27,8 +27,8 @@ export function assertGraphPreserved(workflow: Workflow, payload: WorkflowUpdate
     }
   }
 
-  // A status left untargeted is reachable by no route and offers the board no way into it. A status that already had no
-  // transition is passed over: It is not this write's doing, and refusing over it would block every
+  // A status left untargeted is reachable by no route and offers the board no way into it. A status that already
+  // had no transition is passed over: It is not this write's doing, and refusing over it would block every
   // reconciliation of the project in which it sits.
   const targeted = new Set(updated.transitions.map((transition) => transition.toStatusReference));
   const targetedBefore = new Set(workflow.transitions.map((transition) => transition.toStatusReference));

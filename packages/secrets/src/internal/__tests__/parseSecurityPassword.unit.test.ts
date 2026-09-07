@@ -17,7 +17,7 @@ describe(parseSecurityPassword, () => {
     expect(parse('password: ')).toBe('');
   });
 
-  it('decodes the hex form, which carries a byte outside printable ASCII', () => {
+  it('decodes the hex form, which contains a byte outside printable ASCII', () => {
     expect(parse(String.raw`password: 0x610962  "a\011b"`)).toBe('a\tb');
     expect(parse(String.raw`password: 0x6C696E65310A6C696E6532  "line1\012line2"`)).toBe('line1\nline2');
   });
@@ -26,11 +26,11 @@ describe(parseSecurityPassword, () => {
     expect(parse(String.raw`password: 0x70C3A4C2A7E28692  "p\303\244\302\247\342\206\222"`)).toBe('pä§→');
   });
 
-  it('reads hex-looking text as the text that it is, since only the hex form carries the 0x prefix', () => {
+  it('reads hex-looking text as the text that it is, since only the hex form has the 0x prefix', () => {
     expect(parse('password: "610962"')).toBe('610962');
   });
 
-  it('throws where the output carries no password line', () => {
+  it('throws where the output contains no password line', () => {
     expect(() =>
       parseSecurityPassword('security: SecKeychainSearchCopyNext: The specified item could not be found'),
     ).toThrow(/No password line/);

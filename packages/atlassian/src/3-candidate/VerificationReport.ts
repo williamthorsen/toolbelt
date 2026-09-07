@@ -2,8 +2,8 @@
 export interface FeatureVerification {
   readonly feature: string;
   /**
-   * Whether Jira has locked the feature. A locked one is reported rather than faulted, as a board column for
-   * which the spec has no counterpart is: no call can change it, so it is not something the run failed to do.
+   * Whether Jira has locked the feature. A locked one is reported rather than faulted, as a board column for which the
+   * spec has no counterpart is: No call can change it, so it is not something the run failed to do.
    */
   readonly locked: boolean;
   readonly matches: boolean;
@@ -16,7 +16,7 @@ export interface StatusVerification {
   /** The live category, or `undefined` where no live status claims the name. */
   readonly category: string | undefined;
   readonly matches: boolean;
-  /** The name declared by the spec, which is what a reader is looking for in the report. */
+  /** The name declared by the spec, which a reader is looking for in the report. */
   readonly name: string;
   /** The global transition into the status, or `undefined` where none targets it. */
   readonly transition: string | undefined;

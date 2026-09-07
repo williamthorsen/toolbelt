@@ -1,7 +1,7 @@
 import { describeError } from '../4-release/describeError.ts';
 
 /**
- * Returns an `Error` prefixing `message` to a description of `cause`, and carrying `cause` as its own.
+ * Returns an `Error` prefixing `message` to a description of `cause`, and containing `cause` as its own.
  *
  * The original value reaches `cause` whatever its type, so a handler further up can still inspect what was
  * actually thrown rather than only the text describing it. Where the runtime supports it, this function's own

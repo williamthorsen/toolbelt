@@ -17,7 +17,7 @@ describe(describeError, () => {
     expect(describeError(foreignError)).toBe('connection refused');
   });
 
-  it('describes an Error carrying no message by its name', () => {
+  it('describes an Error with no message by its name', () => {
     expect(describeError(new Error())).toBe('Error');
   });
 

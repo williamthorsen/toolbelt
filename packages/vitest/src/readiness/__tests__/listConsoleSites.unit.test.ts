@@ -26,7 +26,7 @@ describe(listConsoleSites, () => {
       expect(listConsoleSites(source)).toStrictEqual([{ kind: 'console-capture', line: 1 }]);
     });
 
-    it('names a spy carrying no implementation', () => {
+    it('names a spy with no implementation', () => {
       const source = `vi.spyOn(console, 'debug');`;
 
       expect(listConsoleSites(source)).toStrictEqual([{ kind: 'console-unclassified', line: 1 }]);
@@ -108,7 +108,7 @@ it('warns', () => { expect(spy.mock.calls).toHaveLength(1); });`;
       ]);
     });
 
-    it('resolves a binding carrying a type annotation', () => {
+    it('resolves a binding with a type annotation', () => {
       const source = `const spy: MockInstance = vi.spyOn(console, 'error').mockImplementation(() => {});
 expect(spy.mock.calls).toHaveLength(1);`;
 

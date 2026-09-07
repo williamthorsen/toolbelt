@@ -5,7 +5,7 @@ const EXPORT_TARGET_PATTERN = /^\.\/dist\/esm\/(?<tier>[^/]+)\/index\.js$/;
 
 /**
  * Reads a package's `exports` map, pairing each target with the maturity tier named by its path. A target naming no
- * tier pairs with `undefined`, which is what lets a caller tell an unrecognized entry point from a missing one.
+ * tier pairs with `undefined`, which lets a caller tell an unrecognized entry point from a missing one.
  */
 export function listExportTargets(packageDirectory: string): ExportTarget[] {
   return listStringLeaves(readManifest(packageDirectory)['exports']).map((target) => ({

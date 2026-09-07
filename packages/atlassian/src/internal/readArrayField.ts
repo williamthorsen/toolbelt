@@ -1,7 +1,7 @@
 import { isRecord } from './isRecord.ts';
 
 /**
- * Narrows a named field of a payload to an array, which is how every list-bearing Jira response nests its values.
+ * Narrows a named field of a payload to an array, which is how every Jira response with a list nests its values.
  *
  * @internal
  */

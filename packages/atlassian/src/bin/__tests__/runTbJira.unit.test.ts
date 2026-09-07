@@ -9,7 +9,7 @@ const EMAIL_ENV = { JIRA_EMAIL: EMAIL };
 
 describe(runTbJira, () => {
   describe('the root command', () => {
-    it('prints the help that it is asked for', async () => {
+    it('prints the help for which it is asked', async () => {
       const harness = createTbJiraHarness({ env: EMAIL_ENV });
 
       await expect(runTbJira(['--help'], harness.effects)).resolves.toBe(0);
@@ -51,14 +51,14 @@ describe(runTbJira, () => {
   });
 
   describe('auth', () => {
-    it('prints the help that it is asked for', async () => {
+    it('prints the help for which it is asked', async () => {
       const harness = createTbJiraHarness({ env: EMAIL_ENV });
 
       await expect(runTbJira(['auth', '--help'], harness.effects)).resolves.toBe(0);
       expect(harness.readOutput()).toContain('Usage: tb-jira auth');
     });
 
-    it('stores a piped token under the resolved email, dropping the newline added by a shell', async () => {
+    it('stores a piped token under the resolved email, dropping the newline that a shell adds', async () => {
       const harness = createTbJiraHarness({ env: EMAIL_ENV, stdin: 'a-token\n' });
 
       await expect(runTbJira(['auth', 'set'], harness.effects)).resolves.toBe(0);
@@ -121,9 +121,9 @@ describe(runTbJira, () => {
       expect(harness.readOutput()).toContain('No token would be found');
     });
 
-    it('reports a token that the keychain cannot carry as a usage error, not an unreachable keychain', async () => {
+    it('reports a token that the keychain cannot store as a usage error, not an unreachable keychain', async () => {
       // A token too long for `security`'s command line reaches the store and is refused there, which is the
-      // case that the blank guard above does not cover.
+      // case not covered by the blank guard above.
       const harness = createTbJiraHarness({
         env: EMAIL_ENV,
         stdin: 'a'.repeat(4_096),

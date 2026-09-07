@@ -181,8 +181,8 @@ var default_default = defineAdoptionKit({
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: "the project holds no JavaScript or TypeScript sources outside the exempt paths",
   packageName: PACKAGE_NAME,
-  // A test writes these forms deliberately, and a bootstrap wrapper's hand-rolled string handling is what
-  // keeps its build-first message alive through an incomplete install.
+  // A test writes these forms deliberately, and a bootstrap wrapper's hand-rolled string handling keeps its
+  // build-first message alive through an incomplete install.
   pathFilter: isAdoptableSource,
   checks: [
     {

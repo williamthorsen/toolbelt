@@ -27,7 +27,7 @@ describe(readLiteral, () => {
     expect(readLiteral(SOURCE, undefined)).toBeUndefined();
   });
 
-  it('reads nothing where the span carries no end', () => {
+  it('reads nothing where the span has no end', () => {
     expect(readLiteral(SOURCE, [12])).toBeUndefined();
   });
 });

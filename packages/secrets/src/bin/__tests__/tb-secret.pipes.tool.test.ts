@@ -25,7 +25,7 @@ describe('tb-secret over a pipe', () => {
     expect(stderr).toContain('The secret is empty.');
   });
 
-  it.skipIf(!isMacos)('stores what a delayed producer wrote, dropping the newline with which it ends', () => {
+  it.skipIf(!isMacos)('stores what a delayed producer wrote, dropping the newline that it ends with', () => {
     using keychain = createTempKeychain();
 
     const stored = runPipeline(
@@ -69,7 +69,7 @@ function quoteForShell(value: string): string {
 }
 
 /**
- * Runs a shell pipeline, which is what puts a real OS pipe between the two processes. Piping one child's stdout
+ * Runs a shell pipeline, which puts a real OS pipe between the two processes. Piping one child's stdout
  * into another's stdin from here would route the bytes through this process, where neither end sees the other
  * close.
  */

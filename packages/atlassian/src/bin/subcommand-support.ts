@@ -19,7 +19,7 @@ const SUBCOMMANDS = new Set(['auth', 'configure-project']);
 /** Reports a failure to reach the keychain, which is neither a usage error nor an absent secret. */
 export class KeystoreError extends Error {}
 
-/** The effects deferred to the entry point, which is what keeps every subcommand free of I/O. */
+/** The effects deferred to the entry point, which keeps every subcommand free of I/O. */
 export interface TbJiraEffects {
   /** Builds the transport that every Jira call is issued through. */
   readonly createRequest: (options: TokenTransportOptions) => JiraRequest;
@@ -41,7 +41,7 @@ export interface TbJiraEffects {
 
 /**
  * Runs a keychain operation, reporting what it threw as a failure to reach the keychain. A value that the
- * keychain cannot carry passes through unwrapped, since nothing was reached: It is a usage error like any other.
+ * keychain cannot store passes through unwrapped, since nothing was reached: It is a usage error like any other.
  *
  * @internal
  */
@@ -77,9 +77,9 @@ export function createDeferredStore(effects: TbJiraEffects): SecretStore {
 }
 
 /**
- * Extracts the message carried by an unknown thrown value, appending each cause beneath it. Node's `fetch`
+ * Extracts the message contained in an unknown thrown value, appending each cause beneath it. Node's `fetch`
  * reports every transport failure as `fetch failed` and names the host and the fault on `cause` alone, so the
- * chain is what makes such a failure diagnosable. A message already quoted by a wrapper is not repeated.
+ * chain makes such a failure diagnosable. A message already quoted by a wrapper is not repeated.
  *
  * @internal
  */

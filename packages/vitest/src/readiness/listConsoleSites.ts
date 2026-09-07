@@ -26,7 +26,7 @@ const WINDOW = { lookahead: 0, lookbehind: 64 };
  * it is doing.
  *
  * Only the five methods covered by `silenceConsole` are anchored, because they are the ones for which the
- * package has advice. The anchor is `vi.spyOn`, not an assignment to a console method: an assignment anchor
+ * package has advice. The anchor is `vi.spyOn`, not an assignment to a console method: An assignment anchor
  * matches a restore as readily as a mock.
  *
  * The spy anchor reads the spied method's name out of a string literal, so like `listExitMocks` it matches the

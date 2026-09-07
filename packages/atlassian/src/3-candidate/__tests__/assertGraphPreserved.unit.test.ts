@@ -8,7 +8,7 @@ import type { WorkflowUpdatePayload } from '../WorkflowUpdatePayload.ts';
 const { workflow } = buildProjectConfiguration();
 
 describe(assertGraphPreserved, () => {
-  it('passes a payload carrying every status and transition that the workflow holds', () => {
+  it('passes a payload with every status and transition that the workflow holds', () => {
     expect(() => assertGraphPreserved(workflow, buildPayload(workflow))).not.toThrow();
   });
 

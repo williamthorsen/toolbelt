@@ -77,7 +77,7 @@ describe(isPlainObject, () => {
       }
     });
 
-    it('returns false for an object carrying Symbol.toStringTag or Symbol.iterator', () => {
+    it('returns false for an object with Symbol.toStringTag or Symbol.iterator', () => {
       expect(isPlainObject({ [Symbol.toStringTag]: 'Tagged' })).toBe(false);
       expect(isPlainObject({ [Symbol.iterator]: () => [].values() })).toBe(false);
     });

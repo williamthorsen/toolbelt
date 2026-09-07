@@ -19,7 +19,7 @@ describe(createTempDir, () => {
     expect(fs.readdirSync(path.join(tree.dir, 'src/0-strawman'))).toStrictEqual([]);
   });
 
-  it('resolves the directory root through symlinks, which is what a walk compares against', () => {
+  it('resolves the directory root through symlinks, against which a walk compares', () => {
     using tree = createTempDir({});
 
     expect(tree.dir).toBe(fs.realpathSync(tree.dir));

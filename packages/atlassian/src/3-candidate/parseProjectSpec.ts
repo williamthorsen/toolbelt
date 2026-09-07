@@ -94,7 +94,7 @@ function readOptionalString(value: unknown, key: string): string | undefined {
 
 /**
  * Reads the status list, refusing a name or alias that two entries claim. Both would resolve to the one live
- * status, and the write would apply the first and drop the second without a word.
+ * status, and the write would set the first and drop the second without a word.
  */
 function readStatuses(value: unknown): readonly SpecStatus[] {
   if (!Array.isArray(value) || value.length === 0) throw new Error('A spec needs a non-empty `statuses` array.');
@@ -103,7 +103,7 @@ function readStatuses(value: unknown): readonly SpecStatus[] {
   const statuses: SpecStatus[] = [];
 
   for (const entry of value) {
-    if (!isRecord(entry)) throw new Error('Each status is an object carrying a name and a category.');
+    if (!isRecord(entry)) throw new Error('Each status is an object with a name and a category.');
 
     const name = entry['name'];
     if (typeof name !== 'string' || name.trim() === '') throw new Error('Each status needs a name.');

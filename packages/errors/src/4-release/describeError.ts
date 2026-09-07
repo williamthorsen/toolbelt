@@ -3,7 +3,7 @@ import { isError } from './isError.ts';
 /**
  * Returns a human-readable description of a thrown value: an `Error`'s message, or the value stringified.
  *
- * An `Error` carrying no message describes as its stringification -- `Error`, or the class's own `name` where
+ * An `Error` with no message describes as its stringification -- `Error`, or the class's own `name` where
  * it sets one -- so a caller composing a longer message never interpolates an empty string.
  *
  * Describing never throws. A null-prototype object, a `toString` that throws, and a `message` accessor that

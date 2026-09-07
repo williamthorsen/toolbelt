@@ -13,7 +13,7 @@ const RETURN_KEYWORD = /\breturn\b/g;
 // is the most that can sit at the joint.
 const BARE_PARAMETER_ARROW = /^[\w$]+\s?=>/;
 const FUNCTION_KEYWORD = /^function\b/;
-// Digits are left out: a body is claimed for holding nothing but the draw and numeric literals, so what a
+// Digits are left out: A body is claimed for holding nothing but the draw and numeric literals, so what a
 // subtraction or a ternary leaves behind has to read as empty.
 const IDENTIFIER_CHARACTER = /[A-Za-z_$]/;
 
@@ -24,7 +24,7 @@ const IDENTIFIER_CHARACTER = /[A-Za-z_$]/;
  * one.
  *
  * A comparator is claimed for what its body does not hold rather than for a spelling: Strip the draw and a
- * `return` from the body, and a residue carrying no identifier proves the body ordered on the draw alone. That
+ * `return` from the body, and a residue with no identifier proves the body ordered on the draw alone. That
  * admits the subtractive forms, their mirror, and the ternary forms together, and it declines a comparator
  * that ranks by its operands and uses a draw only to break a tie -- a body naming its own parameters,
  * which a shuffle does not reproduce.
@@ -100,7 +100,7 @@ function readComparatorBody(argument: string): string | undefined {
 /**
  * Returns the comparator text with every parenthesis group wrapping the whole comparator stripped.
  *
- * A redundant parenthesis and the operand of a cast both wrap the arrow rather than opening it, which is what
+ * A redundant parenthesis and the operand of a cast both wrap the arrow rather than opening it, which
  * an opening group holding no arrow past it reports. Stripping cannot admit a combinator, whose group opens
  * past offset zero and is left as it stands.
  */

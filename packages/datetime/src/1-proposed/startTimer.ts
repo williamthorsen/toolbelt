@@ -3,7 +3,7 @@
  * elapsed since this call. Because the clock is monotonic, an adjustment to the wall clock during
  * the span cannot shorten the reported duration or make it negative.
  *
- * The returned function reads the timer rather than stopping it: each call reports the time elapsed
+ * The returned function reads the timer rather than stopping it: Each call reports the time elapsed
  * at that moment, so a span can be sampled more than once.
  *
  * @category DateTime

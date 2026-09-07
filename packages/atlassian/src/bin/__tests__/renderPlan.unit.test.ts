@@ -17,7 +17,7 @@ describe(renderPlan, () => {
 
   it('reports a project that already matches the spec', () => {
     expect(renderPlan(buildPlan(), CONFIGURATION, { projectKey: PROJECT_KEY })).toContain(
-      'no changes: the project already matches the spec',
+      'no changes: The project already matches the spec',
     );
   });
 
@@ -107,7 +107,7 @@ describe(renderPlan, () => {
     });
 
     expect(rendered).toContain("unmanaged status 'Blocked' is not in the spec and will not be touched");
-    expect(rendered).toContain('no changes: the project already matches the spec');
+    expect(rendered).toContain('no changes: The project already matches the spec');
   });
 
   it('reports a feature locked by Jira as unsettable rather than as a change', () => {
@@ -129,11 +129,11 @@ describe(renderPlan, () => {
       { projectKey: PROJECT_KEY },
     );
 
-    expect(rendered).toContain('no changes to make: every remaining difference is locked by Jira');
+    expect(rendered).toContain('no changes to make: Every remaining difference is locked by Jira');
     expect(rendered).not.toContain('the project already matches the spec');
   });
 
-  it('reports the backlog seed that the run was asked for', () => {
+  it('reports the backlog seed for which the run was asked', () => {
     const rendered = renderPlan(buildPlan(), CONFIGURATION, { projectKey: PROJECT_KEY, seedBacklog: 'To Do' });
 
     expect(rendered).toContain("seed     move every 'To Do' work item off the board");

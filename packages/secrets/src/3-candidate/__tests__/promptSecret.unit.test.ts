@@ -86,7 +86,7 @@ function startSession(...answers: string[]): Session {
     if (!text.endsWith(': ')) return;
 
     // A stream emits this event during the write itself, which is before the reader has asked its question.
-    // Typing on the next tick is what a person at a terminal does anyway.
+    // A person at a terminal types on the next tick anyway.
     const answer = pending.shift();
     if (answer !== undefined) setImmediate(() => input.write(`${answer}\n`));
   });

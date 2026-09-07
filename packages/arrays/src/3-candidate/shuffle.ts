@@ -26,7 +26,7 @@ export function shuffle<T>(items: ReadonlyArray<T>, options: Options = {}): T[] 
 export function shuffleInPlace(items: unknown[], options: Options = {}): void {
   const seed = SeededRng.spawn(options.seed);
 
-  // Fisher-Yates: walk backward, swapping each item with a randomly chosen item at or before it.
+  // Fisher-Yates: Walk backward, swapping each item with a randomly chosen item at or before it.
   for (let i = items.length - 1; i > 0; i--) {
     const j = pickInteger({ max: i, seed });
     const swapped = getItemAtIndexOrThrow(items, i);

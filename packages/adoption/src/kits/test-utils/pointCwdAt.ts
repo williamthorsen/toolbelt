@@ -4,7 +4,7 @@ import process from 'node:process';
 
 /**
  * Points `process.cwd()` at a directory for the enclosing scope and restores the previous `process.cwd` on disposal.
- * The real process stays where it is: a sweep reads `process.cwd()`, and the git calls take `-C`.
+ * The real process stays where it is: A sweep reads `process.cwd()`, and the git calls take `-C`.
  *
  * Scaffolding for adoption's own tests, held to node builtins because the adoption layer declares no workspace
  * dependency.

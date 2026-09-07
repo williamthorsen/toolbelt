@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { firstFilled } from '../firstFilled.ts';
 
 describe(firstFilled, () => {
-  it('returns the first value carrying content', () => {
+  it('returns the first value that contains content', () => {
     expect(firstFilled(undefined, 'second', 'third')).toBe('second');
   });
 

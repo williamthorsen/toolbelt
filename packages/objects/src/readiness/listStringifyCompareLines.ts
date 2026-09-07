@@ -12,7 +12,7 @@ const COMPARED_TO_STRINGIFY = /\s*[!=]==?\s*JSON\s*\.\s*stringify\s*\(/y;
  * Takes the blanked code produced by `listObjectIdioms`, so a comparison written in a comment or a literal is not
  * one.
  *
- * The argument list is read as a balanced group rather than matched, because an argument may carry
+ * The argument list is read as a balanced group rather than matched, because an argument may contain
  * parentheses of its own. Both equality operators count, strict and loose alike. A call compared against
  * anything else is serializing rather than comparing, and is not claimed.
  *

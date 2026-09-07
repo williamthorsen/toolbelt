@@ -29,7 +29,7 @@ const NULL_FIRST = new RegExp(
  * unblanked one still says what the literal holds.
  *
  * Both operand orders count, and both lengths: the conjunction alone, which `isRecordOrArray` replaces, and
- * the same conjunction closing with the array exclusion, which `isRecord` replaces. A conjunction carrying a
+ * the same conjunction closing with the array exclusion, which `isRecord` replaces. A conjunction with a
  * further operand is declined, since adoption there is a rewrite rather than a substitution.
  *
  * @internal

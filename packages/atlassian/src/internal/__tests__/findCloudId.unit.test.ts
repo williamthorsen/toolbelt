@@ -15,7 +15,7 @@ describe(findCloudId, () => {
 
     await findCloudId('acme.atlassian.net', fetchImpl);
 
-    // Asserting the whole init is what proves no Authorization header is sent.
+    // Asserting the whole init proves no Authorization header is sent.
     expect(fetchImpl).toHaveBeenCalledWith(expect.any(String), { headers: { Accept: 'application/json' } });
   });
 
@@ -61,7 +61,7 @@ describe(findCloudId, () => {
     });
   });
 
-  it('throws when the payload carries no cloudId', async () => {
+  it('throws when the payload contains no cloudId', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ tenant: 'acme' }));
 
     await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toThrow("returned no 'cloudId' field");

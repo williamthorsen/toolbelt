@@ -26,7 +26,7 @@ describe(renderVerification, () => {
     expect(rendered).toContain("  MISS Waiting (absent), transition 'absent'");
   });
 
-  it('reports each board feature against the state that the spec requests', () => {
+  it('reports each board feature against the state requested by the spec', () => {
     const rendered = renderVerification(
       buildReport({
         features: [

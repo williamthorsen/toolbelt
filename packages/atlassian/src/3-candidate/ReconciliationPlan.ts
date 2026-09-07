@@ -14,7 +14,7 @@ export interface ReconciliationPlan {
   readonly creations: readonly StatusCreation[];
   readonly featureToggles: readonly FeatureToggle[];
   /**
-   * Toggles that the spec asks for and Jira has locked. They are reported and never written: the write answers 200
+   * Toggles that the spec asks for and Jira has locked. They are reported and never written: The write returns 200
    * and changes nothing, so planning one would leave the project short of the spec on every later run.
    */
   readonly lockedFeatures: readonly FeatureToggle[];
@@ -34,7 +34,7 @@ export interface StatusCreation {
 /** A live status whose name, category, or both differ from what the spec declares. */
 export interface StatusUpdate {
   readonly category: StatusCategory;
-  /** The description that the status currently carries. */
+  /** The description that the status currently has. */
   readonly description: string;
   readonly from: string;
   readonly fromCategory: string;

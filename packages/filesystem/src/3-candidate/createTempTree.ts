@@ -252,7 +252,7 @@ function assertNamesDirectChild(prefix: string): void {
  * Returns the link type to give a target, resolving a relative one against the link's own directory as POSIX does.
  * A directory target takes `junction` when absolute and `dir` when relative: Node normalizes a junction's target
  * to an absolute path, which would discard the relative string stored by the link. Every other target, one that
- * does not exist included, takes `file`, which is what Node falls back to when no type is given.
+ * does not exist included, takes `file`, to which Node falls back when no type is given.
  */
 function chooseLinkType(absoluteLinkPath: string, targetPath: string): 'dir' | 'file' | 'junction' {
   const resolvedTarget = path.resolve(path.dirname(absoluteLinkPath), targetPath);

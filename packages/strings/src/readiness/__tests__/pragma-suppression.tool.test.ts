@@ -33,7 +33,7 @@ describe('The strings adoption kit, run through rdy', () => {
     ]);
   });
 
-  // A `dir:` kit source carries no namespace, so the bare id stands. A consumer running the kit from the
+  // A `dir:` kit source has no namespace, so the bare id stands. A consumer running the kit from the
   // installed package writes `toolbelt.strings/no-hand-rolled-capitalize`.
   it('drops a site covered by a qualified pragma from the named check alone', () => {
     expect(runKit(`${CAPITALIZE} // rdy-ignore no-hand-rolled-capitalize -- reviewed\n`)).toStrictEqual([
@@ -59,7 +59,7 @@ function listCheckReports(report: string): CheckReport[] {
 /** Narrows one entry of the report to the fields on which these tests assert. */
 function readCheckReport(check: unknown): CheckReport {
   const progress = isRecord(check) ? check['progress'] : undefined;
-  if (!isRecord(check) || !isRecord(progress)) throw new Error('the report holds a check carrying no fraction');
+  if (!isRecord(check) || !isRecord(progress)) throw new Error('the report holds a check with no fraction');
 
   const { count, passedCount } = progress;
   const { detail, id } = check;
@@ -86,9 +86,9 @@ function readFirstChecklistChecks(report: unknown): unknown[] {
  * Runs the package's compiled kit over a fixture repo holding the given capitalize source, and reports what
  * each check named and counted.
  *
- * The compiled bundle is what a consumer gets, so it is what this exercises; `kit-bundle-freshness` is what
- * keeps it current with the sources beneath it. A pragma is honored by the runner rather than by the kit, so
- * only a run can show that a kit's report reaches the layer that acts on one.
+ * A consumer gets the compiled bundle, so this exercises it; `kit-bundle-freshness` keeps it current with the sources
+ * beneath it. A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report
+ * reaches the layer that acts on one.
  */
 function runKit(capitalizeSource: string): CheckReport[] {
   using tree = createTrackedRepo({

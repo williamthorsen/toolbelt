@@ -18,7 +18,7 @@ export interface AdoptionCheck<Kind extends string> {
   fix: string;
   /**
    * What an `rdy-ignore` pragma names to suppress this check's findings alone, the runner namespacing it under
-   * the publishing package. Required, though readyup's own field is optional: a check that declares none can
+   * the publishing package. Required, though readyup's own field is optional: A check that declares none can
    * be silenced only along with every other check on the line, and nothing reports the loss.
    */
   id: string;
@@ -35,7 +35,7 @@ export interface AdoptionKitSpec<Kind extends string> {
   /**
    * Lists a source's sites. Blank the text with `blankNonCode` before the anchor scan, or an idiom written in a
    * comment or a literal reports as one written in code. What `countPackageUsage` reads must stay unblanked:
-   * it matches the import specifier, which is a string literal.
+   * It matches the import specifier, which is a string literal.
    */
   detect: (text: string) => ReadonlyArray<AdoptionSite<Kind>>;
   /** The package's own callable exports. A call to one of them counts toward adoption. */
@@ -53,13 +53,13 @@ interface ProjectSummary<Kind extends string> {
 }
 
 const NOT_A_REPO = 'the project is not a git working tree, and these checks read the files that git tracks';
-/** What a check reports where the project could not be read. The runner resolves it to a pass carrying nothing. */
+/** What a check reports where the project could not be read. The runner resolves it to a pass that contains nothing. */
 const NOTHING_TO_REPORT: FindingOutcome = { findings: [] };
 
 /**
  * Assembles a package's adoption checks into a kit, given the detector and the checks that read it.
  *
- * A kit built here holds its detector and its advice and nothing else: the source sweep, the adoption count,
+ * A kit built here holds its detector and its advice and nothing else: The source sweep, the adoption count,
  * the exemption covering the package's own implementation, and the finding report are shared, so a package
  * adopting these checks declares what it looks for rather than how the looking is done.
  *
@@ -139,7 +139,7 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
    * inside the declaration exported by the package under one of its adopted names is dropped from the report
    * altogether, because the implementation of an idiom cannot adopt itself.
    *
-   * The runner reads the verdict, the detail, and the fraction off the report, so a pragma carried by the
+   * The runner reads the verdict, the detail, and the fraction off the report, so a pragma contained in the
    * sources is honored where it is written rather than in each kit.
    */
   async function reportKinds(kinds: readonly Kind[]): Promise<FindingOutcome> {

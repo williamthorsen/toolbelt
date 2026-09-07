@@ -20,7 +20,7 @@ Every export reaches the filesystem through `node:` builtins, so they run under 
 findProjectRoot(startDir: string, options?: { markers?: ReadonlyArray<string> }): ProjectRoot;
 ```
 
-Resolves `startDir` to an absolute path, ascends from it, and returns the first directory carrying a root marker, along with the evidence that identified it:
+Resolves `startDir` to an absolute path, ascends from it, and returns the first directory that contains a root marker, along with the evidence that identified it:
 
 ```ts
 interface ProjectRoot {
@@ -30,7 +30,7 @@ interface ProjectRoot {
 }
 ```
 
-`DEFAULT_ROOT_MARKERS` is consulted in order, so the earliest entry wins when one directory carries several:
+`DEFAULT_ROOT_MARKERS` is consulted in order, so the earliest entry wins when one directory contains several:
 
 1. `.git`, matching either a directory (an ordinary clone) or a file (a worktree or submodule);
 2. `pnpm-workspace.yaml`;
@@ -47,9 +47,9 @@ import { DEFAULT_ROOT_MARKERS, findProjectRoot } from '@williamthorsen/toolbelt.
 findProjectRoot(process.cwd(), { markers: [...DEFAULT_ROOT_MARKERS, 'deno.json'] });
 ```
 
-Each marker is a path relative to the level against which it is probed, on the terms set out by [`listDirectoryChainMatches`](https://github.com/williamthorsen/toolbelt/tree/main/packages/filesystem#listdirectorychainmatches): one that is absolute, or whose `..` segments escape its level, is rejected before any directory is probed.
+Each marker is a path relative to the level against which it is probed, on the terms set out by [`listDirectoryChainMatches`](https://github.com/williamthorsen/toolbelt/tree/main/packages/filesystem#listdirectorychainmatches): One that is absolute, or whose `..` segments escape its level, is rejected before any directory is probed.
 
-When no directory up to and including the filesystem root carries a marker, the result falls back in this order, reporting a `null` marker either way:
+When no directory up to and including the filesystem root contains a marker, the result falls back in this order, reporting a `null` marker either way:
 
 1. the nearest ancestor holding a `package.json`, reported as `source: 'package-json'`;
 2. `startDir` itself, reported as `source: 'start-dir'`.
@@ -60,7 +60,7 @@ A project root is not a package root: This answers "which checkout am I in", whe
 
 ## `findPackageRoot`
 
-Candidate tier: imported from `@williamthorsen/toolbelt.packaging/candidate` rather than the package root, and subject to change.
+Candidate tier: Imported from `@williamthorsen/toolbelt.packaging/candidate` rather than the package root, and subject to change.
 
 ```ts
 findPackageRoot(fromUrl: string): string;
@@ -78,7 +78,7 @@ const templatesDir = path.join(findPackageRoot(import.meta.url), 'templates');
 
 Pass `import.meta.url`. A module's own URL is the only input that resolves correctly from both a source tree and a compiled one, because the two sit at different depths and no fixed number of `..` hops suits both.
 
-The owning package is the nearest ancestor whose `package.json` declares a `name`. That rule is what distinguishes this from `findPackageJSON` in `node:module`, which answers the different question of which manifest _governs_ a file:
+The owning package is the nearest ancestor whose `package.json` declares a `name`. That rule distinguishes this from `findPackageJSON` in `node:module`, which answers the different question of which manifest _governs_ a file:
 
 ```jsonc
 // dist/cjs/package.json: a marker manifest, declaring no name
@@ -91,7 +91,7 @@ A module belonging to no named package throws, rather than falling back to a dir
 
 ## `resolveSelfVersion`
 
-Candidate tier: imported from `@williamthorsen/toolbelt.packaging/candidate` rather than the package root, and subject to change.
+Candidate tier: Imported from `@williamthorsen/toolbelt.packaging/candidate` rather than the package root, and subject to change.
 
 ```ts
 resolveSelfVersion(fromUrl: string): string;

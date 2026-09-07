@@ -13,7 +13,7 @@ const NEGATED_OPERAND = /!\(\s*[\w.]+\s*$/;
  * Both windows are read from the blanked code produced by `listErrorSites`, so a comment sitting mid-expression
  * collapses to a single space rather than hiding the operand behind it.
  *
- * Every unrecognized site is a `narrow` rather than being dropped: the substitution there is often a
+ * Every unrecognized site is a `narrow` rather than being dropped: The substitution there is often a
  * correction rather than a tidy-up, as with a guard that reads `.message` off a value that the runtime may
  * not deliver as an `Error` at all.
  *

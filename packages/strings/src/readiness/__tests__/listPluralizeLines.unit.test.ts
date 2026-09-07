@@ -52,7 +52,7 @@ describe(listPluralizeLines, () => {
     expect(listLines("const noun = count === 1 ? 'items' : 'item';\n")).toStrictEqual([]);
   });
 
-  // Its fix is a behavioral correction, not a substitution: it prints "0 item".
+  // Its fix is a behavioral correction, not a substitution: It prints "0 item".
   it('declines a suffix chosen by a greater-than test', () => {
     expect(listLines("const label = `${count} file${count > 1 ? 's' : ''}`;\n")).toStrictEqual([]);
   });

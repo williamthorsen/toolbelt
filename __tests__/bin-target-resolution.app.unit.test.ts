@@ -20,7 +20,7 @@ describe('Declared bins', () => {
     const { binCount, danglingTargets } = auditBinTargets(findMonorepoRoot());
 
     expect(danglingTargets).toStrictEqual([]);
-    // Guard against a vacuous pass: a broken walk would report no dangling targets either.
+    // Guard against a vacuous pass: A broken walk would report no dangling targets either.
     expect(binCount).toBeGreaterThan(0);
   });
 });

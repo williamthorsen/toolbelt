@@ -4,10 +4,10 @@ import path from 'node:path';
 
 /**
  * Writes `content` to `filePath` through a sibling temp file and a rename, so a concurrent reader sees either the
- * previous file or the complete new one, never a partial write. Siting the temp file beside the target is what
+ * previous file or the complete new one, never a partial write. Siting the temp file beside the target
  * keeps the rename within one filesystem, where it is atomic.
  *
- * Missing parent directories are created. An existing target's permission bits are carried onto the replacement,
+ * Missing parent directories are created. An existing target's permission bits are copied onto the replacement,
  * which a bare `writeFile` would preserve by truncating in place and a rename would otherwise reset to the
  * platform default.
  *
@@ -34,7 +34,7 @@ export async function writeAtomic(filePath: string, content: string | Uint8Array
   const tempPath = path.join(dir, `.${path.basename(filePath)}.${randomBytes(8).toString('hex')}.tmp`);
 
   try {
-    // The creation mode is umask-filtered, so `chmod` is what restores the exact bits; creating at the filtered
+    // The creation mode is umask-filtered, so `chmod` restores the exact bits; creating at the filtered
     // mode first keeps the interim from ever being wider than the target.
     await fs.writeFile(tempPath, content, { mode });
     if (mode !== undefined) await fs.chmod(tempPath, mode);
@@ -44,7 +44,7 @@ export async function writeAtomic(filePath: string, content: string | Uint8Array
     try {
       await fs.rm(tempPath, { force: true });
     } catch {
-      // The write or rename failure is what the caller needs, so a failed cleanup must not replace it.
+      // The caller needs the write or rename failure, so a failed cleanup must not replace it.
     }
 
     throw error;

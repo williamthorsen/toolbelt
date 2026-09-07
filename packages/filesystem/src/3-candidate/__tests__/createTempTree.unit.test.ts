@@ -113,7 +113,7 @@ describe(createTempTree, () => {
     expect(fs.existsSync(treeDir)).toBe(false);
   });
 
-  // A directory denying its own listing is what separates chmodding each directory before reading it from after.
+  // A directory denying its own listing separates chmodding each directory before reading it from after.
   it('removes a tree whose nested directory denies its own listing', () => {
     let treeDir: string;
 
