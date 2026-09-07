@@ -14,11 +14,11 @@ const RDY_BIN_PATH = path.join('node_modules', '.bin', 'rdy');
 const VERDICT_FIELDS = ['status', 'sourceStatus', 'inputsStatus', 'rebuildStatus'];
 
 describe('Compiled kit bundles', () => {
-  it('every kit-bearing workspace holds a bundle current with its sources', () => {
+  it('every workspace with a kit holds a bundle current with its sources', () => {
     const { failures, workspaceCount } = auditKitBundles(findMonorepoRoot());
 
     expect(failures).toStrictEqual([]);
-    // Guard against a vacuous pass: a broken walk would report no failures either.
+    // Guard against a vacuous pass: A broken walk would report no failures either.
     expect(workspaceCount).toBeGreaterThan(0);
   });
 });
@@ -26,7 +26,7 @@ describe('Compiled kit bundles', () => {
 // region | Helpers
 
 /**
- * Verifies every kit-bearing workspace's compiled bundle against the hashes recorded by its manifest,
+ * Verifies the compiled bundle of every workspace with a kit against the hashes recorded by its manifest,
  * reporting those that fail. A bundle is a build artifact held in the tree, so nothing but this check notices
  * when a source that it inlines moves on without it -- least of all a source in another workspace, which the
  * kit's own package.json never mentions.
@@ -52,7 +52,7 @@ function auditKitBundles(monorepoRoot: string): { failures: string[]; workspaceC
  * Reports why a workspace's bundles fail verification, or nothing where they pass.
  *
  * `--rebuild` recompiles and compares bytes, which catches a toolchain change that the recorded hashes
- * cannot: the same sources emit a different bundle under a different esbuild.
+ * cannot: The same sources emit a different bundle under a different esbuild.
  */
 function verifyBundles(directory: string): string | undefined {
   const result = spawnSync(path.join(directory, RDY_BIN_PATH), ['verify', '--rebuild', '--json'], {

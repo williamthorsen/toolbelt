@@ -39,7 +39,7 @@ Jira Cloud and team-managed projects only.`;
 /**
  * Runs the `tb-jira` command line, writing through the effects that it is given and returning the code to exit
  * with. Output streams as the run proceeds, so a process killed partway still leaves a record of what it did.
- * Every failure is reported through the effects: nothing throws.
+ * Every failure is reported through the effects: Nothing throws.
  *
  * @internal
  */

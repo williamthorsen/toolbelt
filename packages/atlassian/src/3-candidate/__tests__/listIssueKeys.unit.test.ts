@@ -24,7 +24,7 @@ describe(listIssueKeys, () => {
     expect(calls).toHaveLength(3);
   });
 
-  it('carries the previous page token into the next request and none into the first', async () => {
+  it('passes the previous page token into the next request and none into the first', async () => {
     const { calls, request } = createFakeRequest({
       [SEARCH_PATH]: {
         sequence: [{ json: { issues: [], nextPageToken: 'page-2' } }, { json: { issues: [] } }],

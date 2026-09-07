@@ -1,6 +1,6 @@
 /**
  * Reports a value that cannot reach `security` intact. It is distinct from a failure to reach the keychain,
- * since nothing was attempted: the caller gave a secret, service, or account that no command line can carry.
+ * since nothing was attempted: The caller gave a secret, service, or account that no command line can contain.
  *
  * @category Secrets
  * @experimental

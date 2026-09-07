@@ -5,8 +5,8 @@ export const FAKE_BASE_URL = 'https://api.atlassian.com/ex/jira/fake-cloud-id';
 const OK = 200;
 
 /**
- * Builds a request function answering from a route table, alongside the log of what it was called with. A route
- * answers with one response, with a response per call in order, or with a function of the request body.
+ * Builds a request function that responds from a route table, alongside the log of what it was called with. A route
+ * returns one response, one response per call in order, or one computed from the request body.
  */
 export function createFakeRequest(routes: FakeRoutes, options: FakeRequestOptions = {}): FakeTransport {
   const { baseUrl = FAKE_BASE_URL } = options;
@@ -45,21 +45,21 @@ export interface FakeCall {
 }
 
 export interface FakeRequestOptions {
-  /** The origin that a route's path is resolved against, which is what reaches `JiraResponse.url`. */
+  /** The origin that a route's path is resolved against, which reaches `JiraResponse.url`. */
   readonly baseUrl?: string | undefined;
 }
 
-/** What a route answers with. The status defaults to 200, and a body carried by neither field is an empty one. */
+/** What a route returns. The status defaults to 200, and a body set by neither field is an empty one. */
 export interface FakeResponse {
   readonly json?: unknown;
   readonly status?: number | undefined;
   readonly text?: string | undefined;
 }
 
-/** A route answering the same way every time, once per call in order, or as a function of the request body. */
+/** A route returning the same response every time, one per call in order, or one computed from the request body. */
 export type FakeRoute = FakeResponse | FakeRouteSequence | ((body: unknown) => FakeResponse);
 
-/** A route answering with a different response per call, which is what fixtures a paginated read. */
+/** A route returning a different response per call, which fixtures a paginated read. */
 export interface FakeRouteSequence {
   readonly sequence: readonly FakeResponse[];
 }

@@ -1,6 +1,6 @@
 /**
  * A request that never reached Jira, because the transport failed before any response arrived. The URL is
- * carried as a field so a caller branches on it rather than parsing the message, and what the runtime reported
+ * declared as a field so a caller branches on it rather than parsing the message, and what the runtime reported
  * is the `cause`: node's `fetch` says only `fetch failed`, a DNS miss names the host, and a refused connection
  * names an address, so none of the three alone says which call was in flight.
  *

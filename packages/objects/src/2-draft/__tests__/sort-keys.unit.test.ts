@@ -42,7 +42,7 @@ describe(sortKeys, () => {
     expect(Object.getPrototypeOf(actual)).toBe(Object.prototype);
   });
 
-  it('returns an object carrying Symbol.iterator unsorted', () => {
+  it('returns an object with Symbol.iterator unsorted', () => {
     // `PlainObject`'s string index signature does not admit a symbol-keyed literal.
     const input: PlainObject = { z: 1, a: 2 };
     Object.defineProperty(input, Symbol.iterator, { enumerable: true, value: () => [].values() });
@@ -126,7 +126,7 @@ describe(sortObjectKeys, () => {
     expect(Object.getPrototypeOf(actual.m)).toBe(Object.prototype);
   });
 
-  it('returns a nested object carrying Symbol.iterator unsorted', () => {
+  it('returns a nested object with Symbol.iterator unsorted', () => {
     const nested = { y: 1, b: 2, [Symbol.iterator]: () => [].values() };
     const input = { z: 1, a: 2, m: nested };
 

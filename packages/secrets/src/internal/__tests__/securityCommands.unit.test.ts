@@ -12,7 +12,7 @@ describe(composeSetLine, () => {
     expect(composeSetLine({ service: 'token' }, 'ab')).toBe('add-generic-password -U -a "" -s "token" -X 6162');
   });
 
-  it('names the account carried by the query', () => {
+  it('names the account that the query contains', () => {
     expect(composeSetLine(QUERY, 'ab')).toContain('-a "me@example.com"');
   });
 
@@ -26,7 +26,7 @@ describe(composeSetLine, () => {
     expect(composeSetLine({ service: String.raw`a"b\c` }, 'ab')).toContain(String.raw`-s "a\"b\\c"`);
   });
 
-  it('encodes a secret carrying a line break, which is what the hexadecimal form is for', () => {
+  it('encodes a secret that contains a line break, which the hexadecimal form is for', () => {
     expect(composeSetLine({ service: 'token' }, 'a\nb')).toContain('-X 610a62');
   });
 
@@ -60,15 +60,15 @@ describe(composeSetLine, () => {
     expect(findMaxSecretBytes({ service: 'token' }, KEYCHAIN)).toBeLessThan(findMaxSecretBytes({ service: 'token' }));
   });
 
-  it('refuses an account carrying a line break', () => {
+  it('refuses an account that contains a line break', () => {
     expect(() => composeSetLine({ account: 'a\nb', service: 'token' }, 'ab')).toThrow(/line break/);
   });
 
-  it('refuses a service carrying a line break', () => {
+  it('refuses a service that contains a line break', () => {
     expect(() => composeSetLine({ service: 'a\nb' }, 'ab')).toThrow(/line break/);
   });
 
-  it('refuses a keychain carrying a line break', () => {
+  it('refuses a keychain that contains a line break', () => {
     expect(() => composeSetLine({ service: 'token' }, 'ab', 'a\nb')).toThrow(/line break/);
   });
 });

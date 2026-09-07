@@ -37,7 +37,7 @@ describe(listCapitalizeLines, () => {
     expect(listCapitalizeLines(source)).toStrictEqual([1, 2]);
   });
 
-  // The trailing call reaches the whole expression, which is what `capitalize` returns.
+  // The trailing call reaches the whole expression, which `capitalize` returns.
   it('claims a capitalization that the source transforms as a whole', () => {
     const source = 'const label = (word.charAt(0).toUpperCase() + word.slice(1)).trim();\n';
 
@@ -53,7 +53,7 @@ describe(listCapitalizeLines, () => {
     expect(listCapitalizeLines('const label = sX.charAt(0).toUpperCase() + X.slice(1);\n')).toStrictEqual([]);
   });
 
-  // `deriveCaseTransformer` builds exactly this: capitalizing while lower-casing the tail is a different
+  // `deriveCaseTransformer` builds exactly this: Capitalizing while lower-casing the tail is a different
   // transformation, and this package publishes nothing that performs it.
   it('declines a tail re-cased by the source', () => {
     const source = 'const t = (text) => text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();\n';

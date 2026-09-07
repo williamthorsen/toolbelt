@@ -20,7 +20,7 @@ const WRITTEN_SERVICE = `${SERVICE_PREFIX}-written`;
 const TAB_SECRET = 'a\tb';
 
 // 128 is where `security` cut a secret read from stdin, and 129 is the shortest one that exposed the cut. The
-// longest is a little under the 4,095-byte command line that carries the secret as hexadecimal.
+// longest is a little under the 4,095-byte command line that contains the secret as hexadecimal.
 const BOUNDARY_LENGTHS = [127, 128, 129, 190, 1_900];
 
 describe.skipIf(process.platform !== 'darwin')(createKeychainStore, () => {
@@ -30,7 +30,7 @@ describe.skipIf(process.platform !== 'darwin')(createKeychainStore, () => {
     });
   });
 
-  it('reads a secret that `security` prints as hexadecimal, which is any carrying an unprintable byte', () => {
+  it('reads a secret that `security` prints as hexadecimal, which is any that contains an unprintable byte', () => {
     withKeychain((keychain) => {
       const secret = createKeychainStore({ keychain }).findSecret({ account: 'me@example.com', service: HEX_SERVICE });
 
@@ -95,7 +95,7 @@ describe.skipIf(process.platform !== 'darwin')(createKeychainStore, () => {
       { label: 'a backslash', secret: String.raw`a\b` },
       { label: 'a tab', secret: TAB_SECRET },
       { label: 'multi-byte characters', secret: 'ünïcodé' },
-    ])('stores a secret carrying $label byte for byte', ({ secret }) => {
+    ])('stores a secret that contains $label byte for byte', ({ secret }) => {
       withKeychain((keychain) => {
         const store = createKeychainStore({ keychain });
 
@@ -151,7 +151,7 @@ function runSecurity(args: string[]): void {
 
 /**
  * Places the fixtures in a keychain of this call's own. Seeding passes each value on argv, which the store
- * itself refuses to do: these are fixtures rather than secrets, and passing them this way keeps the seeding
+ * itself refuses to do: These are fixtures rather than secrets, and passing them this way keeps the seeding
  * independent of the write under test.
  */
 function withKeychain(use: (keychain: string) => void): void {

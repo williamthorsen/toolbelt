@@ -14,7 +14,7 @@ import { inspect } from 'node:util';
 export function captureError(run: () => unknown): Promise<Error>;
 /**
  * Runs a call expected to fail and returns the error that it threw or rejected with, narrowed to the expected
- * class. Fails the test when the call completes normally or throws anything else, carrying what it did throw
+ * class. Fails the test when the call completes normally or throws anything else, setting what it did throw
  * as the failure's `cause`.
  *
  * @category Testing
@@ -51,8 +51,8 @@ type ErrorClass<E extends Error> = abstract new (...args: never[]) => E;
 // region | Helpers
 
 /**
- * Renders a thrown value for a failure message. An `Error` gives its class and message, because the class is
- * what the expectation was tested against and `inspect` would print the whole stack in its place.
+ * Renders a thrown value for a failure message. An `Error` gives its class and message, because the expectation
+ * was tested against the class and `inspect` would print the whole stack in its place.
  */
 function renderThrown(value: unknown): string {
   return value instanceof Error ? `${value.constructor.name}: ${value.message}` : inspect(value);

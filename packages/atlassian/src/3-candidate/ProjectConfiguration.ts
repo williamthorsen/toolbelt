@@ -7,7 +7,7 @@ export interface ProjectConfiguration {
   /** Live board-feature states, keyed by feature key. Jira reports `COMING_SOON` alongside the requestable two. */
   readonly features: ReadonlyMap<string, string>;
   /**
-   * The features locked by Jira. A write against one answers 200 and changes nothing, so a toggle that it
+   * The features locked by Jira. A write against one returns 200 and changes nothing, so a toggle that it
    * would plan can never take, and the run would report a mismatch on every later pass.
    */
   readonly lockedFeatures: ReadonlySet<string>;
@@ -49,8 +49,8 @@ export interface WorkflowStatusLayout {
 }
 
 /**
- * One transition of the workflow graph. The index signature carries the fields that this package does not model,
- * such as `actions`, `conditions`, `validators`, `properties`, and `triggers`: the workflow write replaces the
+ * One transition of the workflow graph. The index signature contains the fields that this package does not model,
+ * such as `actions`, `conditions`, `validators`, `properties`, and `triggers`: The workflow write replaces the
  * graph wholesale, so a transition that reaches it without them loses them.
  */
 export interface WorkflowTransition {

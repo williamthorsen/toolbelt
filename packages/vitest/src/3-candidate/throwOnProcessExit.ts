@@ -7,7 +7,7 @@ import { type MockInstance, vi } from 'vitest';
  * backing it and restoring the original when the scope exits.
  *
  * The mock throws because a mock that returns lets execution continue past the exit, and the test then
- * asserts against a path never reached by the process in production. Nothing reports that: the suite passes
+ * asserts against a path never reached by the process in production. Nothing reports that: The suite passes
  * while covering code that cannot run.
  *
  * @category Testing
@@ -36,7 +36,7 @@ export function throwOnProcessExit(): MockedProcessExit {
 }
 
 /**
- * Error thrown in place of a process exit, carrying the code that the call passed.
+ * Error thrown in place of a process exit, with the code that the call passed.
  *
  * @category Testing
  * @experimental

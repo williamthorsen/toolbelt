@@ -33,7 +33,7 @@ it('names every unresolvable import', async () => {
 });
 ```
 
-Naming the class is what makes the narrowing a type-level fact. `expect(error).toBeInstanceOf(X)` asserts without narrowing, so a test reaching `error.cause` or a custom field on the error needs a separate `assert.ok(error instanceof X)` to get there.
+Naming the class makes the narrowing a type-level fact. `expect(error).toBeInstanceOf(X)` asserts without narrowing, so a test reaching `error.cause` or a custom field on the error needs a separate `assert.ok(error instanceof X)` to get there.
 
 The class may be an abstract base, and an error of any subclass satisfies it.
 
@@ -45,7 +45,7 @@ const error = await captureError(() => parseConfig('{'));
 expect(error.message).toContain('Unexpected end of JSON input');
 ```
 
-One form serves synchronous and asynchronous calls: the thunk's return value is awaited, so a thrown error and a rejected promise arrive by the same path. The `await` is required either way.
+One form serves synchronous and asynchronous calls: The thunk's return value is awaited, so a thrown error and a rejected promise arrive by the same path. The `await` is required either way.
 
 ### When the call does not fail as expected
 
@@ -57,7 +57,7 @@ Three cases throw instead of returning, each failing the test with a message nam
 | It threw a non-`Error`        | `Expected the call to throw Error, but it threw: 'boom'`                              |
 | It threw another class        | `Expected the call to throw KitError, but it threw: TypeError: url is not a function` |
 
-The first names no class: with nothing thrown, nothing was compared against one. The last two carry the thrown value as the failure's `cause`, so the real error's stack survives into the report.
+The first names no class: With nothing thrown, nothing was compared against one. The last two set the thrown value as the failure's `cause`, so the real error's stack survives into the report.
 
 ## `captureStdio`
 
@@ -79,7 +79,7 @@ it('reports the version', async () => {
 });
 ```
 
-Binding with `using` is what restores the streams. Nothing else does, so a capture bound with `const` leaves both streams swapped for the rest of the file.
+Binding with `using` restores the streams. Nothing else does, so a capture bound with `const` leaves both streams swapped for the rest of the file.
 
 ### Reading the output
 
@@ -95,7 +95,7 @@ expect(stdio.stdoutChunks).toStrictEqual(['{"worstSeverity":null}\n']);
 
 Each chunk list is a copy, so one read before a `reset()` is not emptied underneath the caller.
 
-`reset()` empties both buffers, which is what lets a single test compare two invocations of one command:
+`reset()` empties both buffers, which lets a single test compare two invocations of one command:
 
 ```ts
 using stdio = captureStdio();
@@ -137,7 +137,7 @@ await routeCommand(['verify']);
 expect(stdio.stdout).toContain('[PASS] passing');
 ```
 
-Both streams are saved and restored whether or not the option is passed, so the value cannot leak into later tests either way. Restoration puts back the state that it found: a stream that owned no `isTTY` owns none again afterwards, rather than being left holding `undefined`.
+Both streams are saved and restored whether or not the option is passed, so the value cannot leak into later tests either way. Restoration puts back the state that it found: A stream that owned no `isTTY` owns none again afterwards, rather than being left holding `undefined`.
 
 Style detection reads the stream to which it writes, so the value is set on both. A test needing them to differ has to assign directly.
 
@@ -158,7 +158,7 @@ console.info('captured again');
 expect(stdio.stdout).toBe('captured\ncaptured again\n');
 ```
 
-The reverse order holds too: a capture opened inside a silence takes the output for its own scope and hands the console back on exit, with the calls recorded by the silence still intact.
+The reverse order holds too: A capture opened inside a silence takes the output for its own scope and hands the console back on exit, with the calls recorded by the silence still intact.
 
 ## `pointArgvAt`
 
@@ -180,7 +180,7 @@ it('pins ESLint to the config named by --config', async () => {
 });
 ```
 
-The caller passes the arguments alone, which is what `process.argv.slice(2)` reports, and the handle reports them back as `args`, copied so a later mutation of the caller's array does not change the scope. Binding with `using` is what restores the previous value. Nothing else does, so a scope bound with `const` leaves the arguments installed for the rest of the file.
+The caller passes the arguments alone, which `process.argv.slice(2)` reports, and the handle reports them back as `args`, copied so a later mutation of the caller's array does not change the scope. Binding with `using` restores the previous value. Nothing else does, so a scope bound with `const` leaves the arguments installed for the rest of the file.
 
 ### The executable and script entries
 
@@ -203,11 +203,11 @@ The default names no existing file, so code deriving its own directory from `pro
 
 ### One mode, not two
 
-`pointCwdAt` offers `chdir` because the OS holds a working directory of its own, which a spawned child inherits and which `process.cwd()` can be made to disagree with. Node offers no counterpart to `chdir` for `process.argv`, so there is one mode here: a spawned child receives whatever arguments its own `spawn` call passes, not the ones installed by the scope.
+`pointCwdAt` offers `chdir` because the OS holds a working directory of its own, which a spawned child inherits and which `process.cwd()` can be made to disagree with. Node offers no counterpart to `chdir` for `process.argv`, so there is one mode here: A spawned child receives whatever arguments its own `spawn` call passes, not the ones installed by the scope.
 
 ### What the swap does not reach
 
-The scope assigns a new array rather than mutating the one that it found, which is what lets disposal restore the original by reference. A module that captured the array before the scope opened therefore goes on reporting the arguments that it captured. Code that reads `process.argv` when it runs, which is what a CLI entry point does, sees the pointed arguments.
+The scope assigns a new array rather than mutating the one that it found, which lets disposal restore the original by reference. A module that captured the array before the scope opened therefore goes on reporting the arguments that it captured. Code that reads `process.argv` when it runs, which a CLI entry point does, sees the pointed arguments.
 
 ### Setting a default for a whole file
 
@@ -251,7 +251,7 @@ The default replaces `process.cwd` and leaves the process where it is, which sat
 using cwd = pointCwdAt(tree.dir);
 ```
 
-`chdir` moves the real process, which is what a spawned child inherits and what code asking the OS rather than Node observes:
+`chdir` moves the real process, which a spawned child inherits and which code asking the OS rather than Node observes:
 
 ```ts
 using cwd = pointCwdAt(tree.dir, { chdir: true });
@@ -267,7 +267,7 @@ Neither mode touches `process.env.PWD`, because `process.chdir` does not touch i
 
 ### Resolution and rejection
 
-Both modes resolve the argument through `realpathSync` and reject a path naming no existing directory, so one call reports one directory in whichever mode it runs. Without that, macOS would report `/var/folders/…` under the replacement and `/private/var/folders/…` under the move. The resolved path is what the handle reports as `dir`.
+Both modes resolve the argument through `realpathSync` and reject a path naming no existing directory, so one call reports one directory in whichever mode it runs. Without that, macOS would report `/var/folders/…` under the replacement and `/private/var/folders/…` under the move. The handle reports the resolved path as `dir`.
 
 A relative path resolves against the directory that `process.cwd()` reports, which an enclosing scope may already have pointed elsewhere.
 
@@ -287,4 +287,4 @@ expect(process.cwd()).toBe(tree.dir);
 
 A move nested inside a replacement reports its own directory, and its restoration puts the process back where it really was rather than where the enclosing scope claimed.
 
-This is what a spy-based helper cannot offer: `vi.spyOn` hands back the existing spy for a method already spied on, and `restoreMocks: true` restores it between tests, which at fixture scope would silently point a suite back at the real working directory. The swap-and-restore form is immune to both, which is why this utility lives here rather than in `@williamthorsen/toolbelt.vitest`.
+A spy-based helper cannot offer this: `vi.spyOn` hands back the existing spy for a method already spied on, and `restoreMocks: true` restores it between tests, which at fixture scope would silently point a suite back at the real working directory. The swap-and-restore form is immune to both, which is why this utility lives here rather than in `@williamthorsen/toolbelt.vitest`.

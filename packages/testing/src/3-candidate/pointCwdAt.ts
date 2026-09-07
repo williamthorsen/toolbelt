@@ -59,7 +59,7 @@ export interface PointCwdAtOptions {
 
 /** A directory that `process.cwd()` reports for the length of a scope. */
 export interface PointedCwd extends Disposable {
-  /** Realpath of the directory, which is what both modes report. */
+  /** Realpath of the directory, which both modes report. */
   readonly dir: string;
 }
 

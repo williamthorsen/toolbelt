@@ -17,7 +17,7 @@ export const PARENTHESES: Delimiters = { close: ')', open: '(' };
  * Locates the first balanced delimiter group at or after an offset, or nothing where it never balances.
  *
  * Returning nothing rather than the remainder is load-bearing for any caller whose verdict rests on what a
- * group does not contain: past the unbalanced point the text is invisible rather than absent, so a group read
+ * group does not contain: Past the unbalanced point the text is invisible rather than absent, so a group read
  * only in part must not be treated as a group read in full.
  *
  * @internal

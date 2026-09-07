@@ -11,7 +11,7 @@ describe('The workspace dependency graph', () => {
     const { cycles, workspaceCount } = auditWorkspaceGraph(findMonorepoRoot());
 
     expect(cycles).toStrictEqual([]);
-    // Guard against a vacuous pass: a broken walk would report no cycle either.
+    // Guard against a vacuous pass: A broken walk would report no cycle either.
     expect(workspaceCount).toBeGreaterThan(0);
   });
 });
@@ -25,7 +25,7 @@ describe('The workspace dependency graph', () => {
  * while each still needs the others' output. It says so once at install, where the warning is easy to miss.
  *
  * Workspaces are discovered rather than listed, so a package added later is covered on arrival. The root
- * manifest stays out: nothing depends on it, so it cannot sit in a cycle.
+ * manifest stays out: Nothing depends on it, so it cannot sit in a cycle.
  */
 function auditWorkspaceGraph(monorepoRoot: string): { cycles: string[]; workspaceCount: number } {
   const manifests = getWorkspacePackageDirs(monorepoRoot).map((directory) => readGraphNode(directory));

@@ -53,7 +53,7 @@ alpha
     expect(() => dedent`not empty`).toThrow(/first line/);
   });
 
-  it('accepts an opening line carrying trailing whitespace', () => {
+  it('accepts an opening line with trailing whitespace', () => {
     // Built by hand because `.editorconfig` and the formatter strip trailing whitespace from source,
     // so this case cannot be written as a template literal.
     const source = '   \n      alpha\n    ';

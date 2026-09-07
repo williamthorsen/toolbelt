@@ -60,7 +60,7 @@ describe(reconcileFileFromFile, () => {
     });
 
     // A directory stands in for any existing entry that cannot be read as text. Its `EISDIR` names no path of its
-    // own, so it is the case that proves the reason carries one.
+    // own, so it is the case that proves the reason contains one.
     it('reports failure naming the source when the source cannot be read', () => {
       using tree = createTempTree({ 'template.toml/': '' });
       const filePath = tree.resolve('config.toml');

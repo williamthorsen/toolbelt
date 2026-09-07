@@ -43,9 +43,9 @@ export interface JiraResponse {
   /** The parsed body, or `undefined` where it was not JSON. */
   readonly json: unknown;
   readonly status: number;
-  /** The raw body, carried only where it did not parse as JSON. */
+  /** The raw body, set only where it did not parse as JSON. */
   readonly text: string | undefined;
-  /** The URL to which the request was sent, origin included. */
+  /** The URL at which the request was aimed, origin included. */
   readonly url: string;
 }
 
@@ -61,7 +61,7 @@ export interface TokenTransportOptions {
 
 /**
  * Reads a response into the shape on which callers branch, keeping a body that is not JSON as text. The URL is
- * supplied by the caller: A `Response` built by its constructor carries an empty `url`.
+ * supplied by the caller: A `Response` built by its constructor has an empty `url`.
  */
 async function readResponse(response: Response, url: string): Promise<JiraResponse> {
   const text = await response.text();

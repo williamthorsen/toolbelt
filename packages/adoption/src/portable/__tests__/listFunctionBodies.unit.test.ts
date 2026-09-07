@@ -53,7 +53,7 @@ describe(listFunctionBodies, () => {
     expect(summarize('function f(a = { x: 1 }) { return a; }')).toStrictEqual([{ body: '{ return a; }', name: 'f' }]);
   });
 
-  it('reports the body of a function whose parameter carries an inline type literal', () => {
+  it('reports the body of a function whose parameter has an inline type literal', () => {
     expect(summarize('function h(a: { x: number }): void { return; }')).toStrictEqual([
       { body: '{ return; }', name: 'h' },
     ]);
@@ -69,11 +69,11 @@ describe(listFunctionBodies, () => {
     expect(summarize('function broken(a = { x: 1 } { return a; }')).toStrictEqual([]);
   });
 
-  it('reports nothing for an overload signature whose return type carries no brace', () => {
+  it('reports nothing for an overload signature whose return type has no brace', () => {
     expect(summarize('declare function f(a: string): void;')).toStrictEqual([]);
   });
 
-  // The next three fix the documented limit: a return-type annotation's brace group wins over the body, because
+  // The next three fix the documented limit: A return-type annotation's brace group wins over the body, because
   // telling a type's braces from a block's takes a parser rather than delimiter counting.
   it('reports the annotation of a function whose return type is an object literal', () => {
     expect(summarize('function r(): { a: number } { return { a: 1 }; }')).toStrictEqual([
@@ -87,11 +87,11 @@ describe(listFunctionBodies, () => {
     ]);
   });
 
-  it('reports a brace-bearing overload signature as though it carried a body', () => {
+  it('reports an overload signature with a brace as though it had a body', () => {
     expect(summarize('declare function o(): { a: number };')).toStrictEqual([{ body: '{ a: number }', name: 'o' }]);
   });
 
-  it('reports nothing for a concise arrow, which carries no braced body', () => {
+  it('reports nothing for a concise arrow, which has no braced body', () => {
     expect(summarize('const m = (e) => e.message;')).toStrictEqual([]);
   });
 });

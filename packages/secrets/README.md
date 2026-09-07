@@ -10,15 +10,15 @@ Utilities for storing and retrieving secrets in the OS credential store.
 pnpm add @williamthorsen/toolbelt.secrets
 ```
 
-Requires Node.js 24 or later, and macOS: the one backend is the macOS keychain, reached through `/usr/bin/security`. Constructing a store on another platform throws, naming the platform, rather than failing later at the first call.
+Requires Node.js 24 or later, and macOS: The one backend is the macOS keychain, reached through `/usr/bin/security`. Constructing a store on another platform throws, naming the platform, rather than failing later at the first call.
 
 ## How a secret is stored
 
-An item is named by a **service** and an **account**. The service is the caller's own name for the secret, never derived from a host or a URL, so one item can serve every product that accepts the same token. The account is optional and defaults to the empty account, which is matched exactly: a lookup on a service holding several accounts returns the one that is asked for, rather than an arbitrary one.
+An item is named by a **service** and an **account**. The service is the caller's own name for the secret, never derived from a host or a URL, so one item can serve every product that accepts the same token. The account is optional and defaults to the empty account, which is matched exactly: A lookup on a service holding several accounts returns the one that is asked for, rather than an arbitrary one.
 
-A secret reaches `security` through its interactive mode, which takes a whole command on stdin, so the secret never sits in an argument vector that any local process could read. It travels as hexadecimal, which carries every byte, a line break included, and every write is read back and compared before it is reported as stored.
+A secret reaches `security` through its interactive mode, which takes a whole command on stdin, so the secret never sits in an argument vector that any local process could read. It travels as hexadecimal, which encodes every byte, a line break included, and every write is read back and compared before it is reported as stored.
 
-One command line carries the secret together with the service, the account, and the keychain, and `security` reads at most 4,095 bytes of it. That leaves room for a secret of roughly 2,000 bytes, and the exact ceiling falls as the other three grow. A secret that would not fit is refused, naming the room left; none is ever stored in part.
+One command line contains the secret together with the service, the account, and the keychain, and `security` reads at most 4,095 bytes of it. That leaves room for a secret of roughly 2,000 bytes, and the exact ceiling falls as the other three grow. A secret that would not fit is refused, naming the room left; none is ever stored in part.
 
 An item created here is local to the Mac that created it. `security` offers no iCloud Keychain synchronization, so a secret stored on one machine has to be stored again on the next.
 
@@ -109,9 +109,9 @@ store.findSecret({ account: 'me@example.com', service: 'atlassian-api-token' });
 
 `findSecret` returns `undefined` where no item is stored, and throws where the keychain could not be reached, so absence is never confused with a failure. `deleteSecret` reports whether an item was there to remove.
 
-`hasSecret` reads the item's attributes rather than its data. That is the difference worth knowing: retrieving a secret can raise a keychain access prompt where the item was created by another program, and an attribute lookup cannot.
+`hasSecret` reads the item's attributes rather than its data. That is the difference worth knowing: Retrieving a secret can raise a keychain access prompt where the item was created by another program, and an attribute lookup cannot.
 
-`setSecret` rejects an empty secret, which the keychain would hold as an item indistinguishable from a stray one, and one too long for the command line that carries it. Both are `UnstorableSecretError`, which is exported: nothing was attempted, so a caller can tell a value that the keychain cannot carry from a keychain that it could not reach. Every other secret is stored and returned byte for byte, whatever it holds. Each write is read back and compared, so a secret that did not survive the round trip fails at the write rather than at a later caller. That readback retrieves the secret, so replacing an item created by another program can raise the keychain access prompt described above, and a write whose readback is refused is reported as unverified rather than as stored.
+`setSecret` rejects an empty secret, which the keychain would hold as an item indistinguishable from a stray one, and one too long for the command line that contains it. Both are `UnstorableSecretError`, which is exported: Nothing was attempted, so a caller can tell a value that the keychain cannot store from a keychain that it could not reach. Every other secret is stored and returned byte for byte, whatever it holds. Each write is read back and compared, so a secret that did not survive the round trip fails at the write rather than at a later caller. That readback retrieves the secret, so replacing an item created by another program can raise the keychain access prompt described above, and a write whose readback is refused is reported as unverified rather than as stored.
 
 ```ts
 const projectStore = createKeychainStore({ keychain: '/Users/me/Library/Keychains/project.keychain-db' });

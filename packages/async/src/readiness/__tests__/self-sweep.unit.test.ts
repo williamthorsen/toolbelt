@@ -11,9 +11,9 @@ const KITS_DIR = fileURLToPath(new URL('../../../.readyup/kits', import.meta.url
 const READINESS_DIR = fileURLToPath(new URL('..', import.meta.url));
 
 describe(listSleepSites, () => {
-  // The fix text describes the idiom without writing it out, which is what keeps the kit off its own report: a
+  // The fix text describes the idiom without writing it out, which keeps the kit off its own report: A
   // spelled-out idiom would be a site in the source and again in the bundle. readyup drops the compiled bundle
-  // from its own sweep, and nothing in CI runs `rdy run --packages`, so this suite is what fails on an edit
+  // from its own sweep, and nothing in CI runs `rdy run --packages`, so this suite fails on an edit
   // that spells one out.
   it('finds nothing in the sources describing what it looks for', () => {
     const findings = listSweptFiles().flatMap((file) =>

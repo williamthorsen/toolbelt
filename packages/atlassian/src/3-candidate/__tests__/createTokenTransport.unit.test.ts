@@ -9,7 +9,7 @@ const EMAIL = 'someone@example.com';
 const TOKEN = 'a-token';
 
 describe(createTokenTransport, () => {
-  it('carries the Basic credential and resolves the path against the base URL', async () => {
+  it('sends the Basic credential and resolves the path against the base URL', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(Response.json({ ok: true }));
     const request = createTokenTransport({ baseUrl: BASE_URL, email: EMAIL, fetch: fetchImpl, token: TOKEN });
 
@@ -22,7 +22,7 @@ describe(createTokenTransport, () => {
     );
   });
 
-  it('encodes a credential containing non-ASCII characters', async () => {
+  it('encodes a credential with non-ASCII characters', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(Response.json({}));
     const request = createTokenTransport({
       baseUrl: BASE_URL,
@@ -58,7 +58,7 @@ describe(createTokenTransport, () => {
     expect(fetchImpl).toHaveBeenCalledWith(`${BASE_URL}/rest/api/3/myself`, expect.anything());
   });
 
-  it('carries the URL that it resolved, which the response object does not hold', async () => {
+  it('reports the URL that it resolved, which the response object does not hold', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(Response.json({}));
     const request = createTokenTransport({ baseUrl: BASE_URL, email: EMAIL, fetch: fetchImpl, token: TOKEN });
 

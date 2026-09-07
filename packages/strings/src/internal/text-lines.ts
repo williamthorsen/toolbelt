@@ -1,6 +1,6 @@
 /**
- * A line of text paired with the terminator that followed it. The final line of any text carries an
- * empty terminator.
+ * A line of text paired with the terminator that followed it. The final line of any text has an empty
+ * terminator.
  */
 export interface TextLine {
   terminator: string;

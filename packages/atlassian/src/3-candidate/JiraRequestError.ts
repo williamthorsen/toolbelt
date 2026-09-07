@@ -9,7 +9,7 @@ const REMEDIES: Record<JiraRejectionReason, string> = {
     'Either the resource does not exist, or no credential reached the gateway and the request ran anonymously.',
   permission: 'The credential authenticated, and the acting user lacks a Jira permission required by this call.',
   scope:
-    "The token lacks a scope required by this endpoint. A token's scopes are fixed at creation, so a replacement token carrying the full grant resolves it.",
+    "The token lacks a scope required by this endpoint. A token's scopes are fixed at creation, so a replacement token with the full grant resolves it.",
 };
 const SCOPE_MISMATCH_MESSAGE = 'scope does not match';
 const UNAUTHORIZED = 401;
@@ -33,7 +33,7 @@ export class JiraRequestError extends Error {
   /** Which failure the status and body report, or `undefined` where they match none. */
   readonly reason: JiraRejectionReason | undefined;
   readonly status: number;
-  /** The URL to which the request was sent, origin included. */
+  /** The URL at which the request was aimed, origin included. */
   readonly url: string;
 
   constructor(options: JiraRequestErrorOptions) {

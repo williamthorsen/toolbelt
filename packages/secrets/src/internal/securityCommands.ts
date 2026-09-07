@@ -17,8 +17,7 @@ export function buildDeleteArgs(query: SecretQuery, keychain?: string): string[]
 }
 
 /**
- * Builds the arguments that read a secret. `-g` is what prints it, in the two forms that
- * `parseSecurityPassword` reads.
+ * Builds the arguments that read a secret. `-g` prints it, in the two forms that `parseSecurityPassword` reads.
  *
  * @internal
  */
@@ -39,7 +38,7 @@ export function buildHasArgs(query: SecretQuery, keychain?: string): string[] {
 /**
  * Composes the one command line that `security -i` runs to store a secret. Interactive mode takes the whole
  * command on stdin, which keeps the secret off argv, where any local process could read it, and away from the
- * 128-byte buffer that `security` fills when `-w` carries no value.
+ * 128-byte buffer that `security` fills when `-w` has no value.
  *
  * The secret goes in as `-X <hex>`. Its alphabet is closed, so no secret can alter the line's structure, and
  * every byte sequence is representable, a line break included. The service, account, and keychain have no such
@@ -78,12 +77,12 @@ function assertLineFits(line: string, fixedBytes: number): void {
   );
 }
 
-/** Refuses a value that cannot sit on a command line, which is any carrying the break that ends one. */
+/** Refuses a value that cannot sit on a command line, which is any that contains the break that ends one. */
 function assertOneLine(value: string, field: string): void {
   if (!LINE_BREAK_PATTERN.test(value)) return;
 
   throw new UnstorableSecretError(
-    `The ${field} carries a line break, which \`security\` reads as the end of a command.`,
+    `The ${field} contains a line break, which \`security\` reads as the end of a command.`,
   );
 }
 
@@ -93,8 +92,8 @@ function encodeHex(secret: string): string {
 }
 
 /**
- * Names the item to act on. The account is always passed, carrying the empty string where the caller gave
- * none, since a match on the service alone returns an arbitrary one of the items holding it.
+ * Names the item to act on. The account is always passed, as the empty string where the caller gave none,
+ * since a match on the service alone returns an arbitrary one of the items holding it.
  */
 function itemArgs({ account = '', service }: SecretQuery): string[] {
   return ['-a', account, '-s', service];

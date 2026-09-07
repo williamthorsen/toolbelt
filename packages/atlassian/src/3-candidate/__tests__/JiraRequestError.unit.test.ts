@@ -7,7 +7,7 @@ const PATH = '/rest/api/3/project/THOR';
 const REQUEST_URL = `https://api.atlassian.com/ex/jira/cloud-1${PATH}`;
 
 describe(JiraRequestError, () => {
-  it('carries the status, the URL, and the body', () => {
+  it('has the status, the URL, and the body', () => {
     const error = buildError({ json: { errorMessages: ['nope'] }, status: 400 });
 
     expect(error).toMatchObject({
@@ -25,8 +25,8 @@ describe(JiraRequestError, () => {
     expect(error.reason).toBe('scope');
     expect(error.message).toBe(
       `read project THOR failed (HTTP 401 at ${REQUEST_URL}): {"code":401,"message":"Unauthorized; scope does not match"}` +
-        " The token lacks a scope required by this endpoint. A token's scopes are fixed at creation, so a" +
-        ' replacement token carrying the full grant resolves it.',
+        " The token lacks a scope required by this endpoint. A token's scopes are fixed at creation, so a replacement" +
+        ' token with the full grant resolves it.',
     );
   });
 

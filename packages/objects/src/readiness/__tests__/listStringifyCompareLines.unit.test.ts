@@ -22,7 +22,7 @@ describe(listStringifyCompareLines, () => {
 
   // The anchor alone would stop at the first inner parenthesis, which is why the argument list is read as a
   // balanced group.
-  it('claims a comparison whose arguments carry parentheses of their own', () => {
+  it('claims a comparison whose arguments contain parentheses of their own', () => {
     const source = 'const same = JSON.stringify(pick(a, keys())) === JSON.stringify(pick(b, keys()));\n';
 
     expect(listStringifyCompareLines(source)).toStrictEqual([1]);

@@ -5,7 +5,7 @@ import path from 'node:path';
 /**
  * Creates a throwaway directory holding the given entries and returns a handle that removes it on disposal. Each
  * key is a directory-relative path whose parent directories are created before it. A key ending in `/` names a
- * directory and takes an empty value, which is what keeps a mistyped file key from losing its contents. A call
+ * directory and takes an empty value, which keeps a mistyped file key from losing its contents. A call
  * that throws leaves nothing on disk.
  *
  * Scaffolding for the root test suite, held to node builtins because the root manifest declares no workspace

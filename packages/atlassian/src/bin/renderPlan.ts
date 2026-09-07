@@ -2,8 +2,8 @@ import type { ProjectConfiguration } from '../3-candidate/ProjectConfiguration.t
 import type { ReconciliationPlan } from '../3-candidate/ReconciliationPlan.ts';
 
 /**
- * Renders the reconciliation plan as the run's unit of review, listing every write that it would make and
- * reporting a plan that holds none. Composes a string and prints nothing.
+ * Renders the reconciliation plan as the run's unit of review, listing every write that it would make and reporting
+ * a plan that holds none. Composes a string and prints nothing.
  *
  * @internal
  */
@@ -44,12 +44,12 @@ export function renderPlan(
     lines.push(`seed     move every '${options.seedBacklog}' work item off the board`);
   }
 
-  // The seed is a write that the run will make, so a plan carrying one is never reported as holding nothing to do.
+  // The seed is a write that the run will make, so a plan with one is never reported as holding nothing to do.
   if (countChanges(plan) === 0 && options.seedBacklog === undefined) {
     lines.push(
       plan.lockedFeatures.length === 0
-        ? 'no changes: the project already matches the spec'
-        : 'no changes to make: every remaining difference is locked by Jira',
+        ? 'no changes: The project already matches the spec'
+        : 'no changes to make: Every remaining difference is locked by Jira',
     );
   }
 
@@ -57,7 +57,7 @@ export function renderPlan(
 }
 
 /**
- * What the plan alone does not carry: the key for which it was read, and the backlog seed for which the run
+ * What the plan alone does not contain: the key for which it was read, and the backlog seed for which the run
  * was asked.
  */
 export interface PlanRenderOptions {
@@ -69,7 +69,7 @@ export interface PlanRenderOptions {
 
 /**
  * Counts the writes that a plan holds. An unmanaged status is a report rather than a change, and a backlog seed is
- * not in the plan at all: it is asked for on the command line rather than derived from the project's state.
+ * not in the plan at all: It is asked for on the command line rather than derived from the project's state.
  */
 function countChanges(plan: ReconciliationPlan): number {
   return plan.creations.length + plan.featureToggles.length + plan.statusUpdates.length + plan.transitionRenames.length;

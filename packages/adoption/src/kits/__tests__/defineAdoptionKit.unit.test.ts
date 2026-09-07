@@ -25,7 +25,7 @@ const SPEC: AdoptionKitSpec<Kind> = {
 };
 
 describe(defineAdoptionKit, () => {
-  it('assembles one adoption checklist carrying a check per declaration', () => {
+  it('assembles one adoption checklist with a check per declaration', () => {
     const kit = defineAdoptionKit(SPEC);
     const [checklist] = kit.checklists;
 
@@ -37,14 +37,14 @@ describe(defineAdoptionKit, () => {
     ]);
   });
 
-  it('carries each declaration’s fix text through to its check', () => {
+  it('passes each declaration’s fix text through to its check', () => {
     expect(listChecks(defineAdoptionKit(SPEC)).map((check) => check.fix)).toStrictEqual([
       'delete the clone',
       'replace the expression',
     ]);
   });
 
-  it('carries each declaration’s id through to its check, which is what a pragma names', () => {
+  it('passes each declaration’s id through to its check, which a pragma names', () => {
     expect(listChecks(defineAdoptionKit(SPEC)).map((check) => check.id)).toStrictEqual(['no-clone', 'no-inline']);
   });
 

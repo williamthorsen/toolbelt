@@ -32,7 +32,7 @@ describe(readExecutor, () => {
     expect(readExecutor('function sleep(resolve) { settle(resolve); }')?.parameter).toBe('resolve');
   });
 
-  it('reads the name of a parameter carrying a type annotation', () => {
+  it('reads the name of a parameter with a type annotation', () => {
     expect(readExecutor('(resolve: () => void) => settle(resolve)')?.parameter).toBe('resolve');
   });
 

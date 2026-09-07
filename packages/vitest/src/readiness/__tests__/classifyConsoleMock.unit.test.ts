@@ -4,7 +4,7 @@ import { classifyConsoleMock } from '../classifyConsoleMock.ts';
 
 describe(classifyConsoleMock, () => {
   describe('an implementation that it cannot read', () => {
-    it('declines a spy carrying no implementation', () => {
+    it('declines a spy with no implementation', () => {
       expect(classifyConsoleMock(';')).toBe('console-unclassified');
     });
 

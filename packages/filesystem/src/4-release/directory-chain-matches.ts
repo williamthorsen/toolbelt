@@ -90,7 +90,7 @@ export function listDirectoryChainMatches(
 
 // region | Helpers
 /**
- * Rejects any name that would resolve outside the level against which it is probed, which is what keeps a bounded
+ * Rejects any name that would resolve outside the level against which it is probed, which keeps a bounded
  * ascent bounded for a caller-supplied name rather than merely intended. Validated once against the names themselves,
  * so the rejection does not depend on what happens to exist on disk.
  */

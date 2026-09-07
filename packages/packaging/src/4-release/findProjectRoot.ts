@@ -3,7 +3,7 @@ import path from 'node:path';
 import { findDirectoryChainMatch } from '@williamthorsen/toolbelt.filesystem';
 
 /**
- * Names that identify a project root, in precedence order: When a directory carries more than one,
+ * Names that identify a project root, in precedence order: When a directory contains more than one,
  * the earliest in this list is the one reported.
  *
  * `.git` matches whether it is a directory (an ordinary clone) or a file (a worktree or submodule).
@@ -23,8 +23,8 @@ export const DEFAULT_ROOT_MARKERS: ReadonlyArray<string> = [
 /**
  * Returns the project root at or above `startDir`, along with the evidence that identified it.
  *
- * Ascends from `startDir` (resolved to an absolute path) and returns the first directory carrying one of
- * `markers`. If no directory up to and including the filesystem root carries one, falls back to the nearest
+ * Ascends from `startDir` (resolved to an absolute path) and returns the first directory that contains one of
+ * `markers`. If no directory up to and including the filesystem root contains one, falls back to the nearest
  * ancestor holding a `package.json`, then to `startDir` itself; both fallbacks report a `null` marker.
  *
  * @example

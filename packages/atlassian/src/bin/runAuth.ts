@@ -42,7 +42,7 @@ trailing newline, since \`echo\` adds one.
 
 \`status\` names the first of JIRA_API_TOKEN, a configured command, and the keychain that would answer. It
 probes the keychain for presence rather than reading it, so it raises no keychain access prompt; a configured
-command does run, and its output is discarded. Presence is not contents: an item holding only whitespace is
+command does run, and its output is discarded. Presence is not contents: An item holding only whitespace is
 reported here and dropped by the resolver, which \`set\` refuses to create.`;
 
 /**

@@ -23,7 +23,7 @@ describe('Published package shape', () => {
     const { defects, workspaceCount } = auditPublishedManifests(findMonorepoRoot());
 
     expect(defects).toStrictEqual([]);
-    // Guard against a vacuous pass: a broken walk would report no defects either.
+    // Guard against a vacuous pass: A broken walk would report no defects either.
     expect(workspaceCount).toBeGreaterThan(0);
   });
 
@@ -142,9 +142,9 @@ function auditPublishedDocuments(monorepoRoot: string): { defects: string[]; wor
 }
 
 /**
- * Audits the declared private set against what the manifests say, in both directions. The set is what every
- * other audit here filters by, so a workspace privately publishing nothing while absent from the set would be
- * held to the published shape, and one named in the set while publishing would escape every check.
+ * Audits the declared private set against what the manifests say, in both directions. Every other audit here
+ * filters by the set, so a workspace privately publishing nothing while absent from the set would be held to
+ * the published shape, and one named in the set while publishing would escape every check.
  */
 function auditPrivateSet(monorepoRoot: string): { mismatches: string[]; workspaceCount: number } {
   const mismatches: string[] = [];

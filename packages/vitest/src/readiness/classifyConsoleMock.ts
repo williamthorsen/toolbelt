@@ -21,7 +21,7 @@ const EMPTY_EXPRESSION = /^(?:undefined|void 0)$/;
  * Names what a console mock is doing, from the text following the spy.
  *
  * The text comes from the blanked code produced by `listConsoleSites`, so an implementation written in a comment
- * or a string is not one that the spy carries.
+ * or a string is not one that the spy has.
  *
  * A mock that captures nothing is a silence whatever its parameter list names, which is why the empty-body test
  * runs ahead of the parameter test: `(_message) => {}` names a parameter and still loses nothing. Past that, a
@@ -29,7 +29,7 @@ const EMPTY_EXPRESSION = /^(?:undefined|void 0)$/;
  * last that it names is dropped.
  *
  * `console-unclassified` covers what this could not read: an implementation given as a bare reference, one
- * attached anywhere but the spy's own call chain, one whose delimiters never balance, and a spy carrying no
+ * attached anywhere but the spy's own call chain, one whose delimiters never balance, and a spy with no
  * implementation at all.
  *
  * @internal
@@ -55,7 +55,7 @@ export function classifyConsoleMock(after: string): ConsoleMockKind {
 
 /**
  * Locates a `function` expression's body past any return-type annotation, whose own braces are not the body's.
- * Telling a type's braces from a block's takes a parser, so an annotation carrying one leaves the body starting
+ * Telling a type's braces from a block's takes a parser, so an annotation that contains one leaves the body starting
  * inside the type, where `isNoOp` declines it rather than mistaking it for an empty block.
  */
 function findBodyPastAnnotation(rest: string): string | undefined {

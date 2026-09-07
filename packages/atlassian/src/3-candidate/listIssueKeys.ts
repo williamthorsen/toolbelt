@@ -46,7 +46,7 @@ export async function listIssueKeys(request: JiraRequest, jql: string): Promise<
 
 // region | Helpers
 
-/** Narrows a search response's page token, whose absence is what ends the walk. */
+/** Narrows a search response's page token, whose absence ends the walk. */
 function readNextPageToken(payload: unknown): string | undefined {
   if (!isRecord(payload)) return undefined;
 

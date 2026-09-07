@@ -15,7 +15,7 @@ describe('Maturity stage tags', () => {
     const { misalignments, tagCount } = auditStageTags(findMonorepoRoot());
 
     expect(misalignments).toStrictEqual([]);
-    // Guard against a vacuous pass: a broken walk would report no misalignments either.
+    // Guard against a vacuous pass: A broken walk would report no misalignments either.
     expect(tagCount).toBeGreaterThan(0);
   });
 });

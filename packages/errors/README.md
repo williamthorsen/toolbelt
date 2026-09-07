@@ -34,7 +34,7 @@ try {
 }
 ```
 
-An `Error` carrying no message describes as its stringification rather than as the empty string, so a composed message never trails off after its colon. That is `Error` for a plain one, and the class's own `name` where a subclass assigns one:
+An `Error` with no message describes as its stringification rather than as the empty string, so a composed message never trails off after its colon. That is `Error` for a plain one, and the class's own `name` where a subclass assigns one:
 
 ```ts
 describeError(new Error()); // 'Error'
@@ -50,7 +50,7 @@ An `Error` whose `message` is not a string is stringified rather than returned a
 chainError(message: string, cause: unknown): Error;
 ```
 
-Returns an `Error` prefixing `message` to a description of `cause`, and carrying `cause` itself as its `cause` property.
+Returns an `Error` prefixing `message` to a description of `cause`, and containing `cause` itself as its `cause` property.
 
 ```ts
 import { chainError } from '@williamthorsen/toolbelt.errors/candidate';
@@ -63,7 +63,7 @@ try {
 // Error: Could not read the config: ENOENT: no such file or directory
 ```
 
-Attaching the cause is what makes the chain inspectable rather than merely readable, and it happens whatever the cause's type: a handler further up can examine what was actually thrown instead of parsing the text describing it.
+Attaching the cause makes the chain inspectable rather than merely readable, and it happens whatever the cause's type: A handler further up can examine what was actually thrown instead of parsing the text describing it.
 
 Where the runtime implements `Error.captureStackTrace` (Node.js, Deno, Bun, and Chromium), this function's own frame is dropped from the stack, leaving the throwing call site on top. Elsewhere the stack is unmodified.
 

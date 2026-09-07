@@ -9,17 +9,17 @@
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
-          "hash": "b9007d48",
+          "hash": "1dc83619",
           "kind": "module",
           "path": "../../adoption/src/conventions/path-predicates.ts"
         },
         {
-          "hash": "84c99907",
+          "hash": "5a5a91a8",
           "kind": "module",
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "3372fb44",
+          "hash": "d24e0182",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -34,17 +34,17 @@
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
         {
-          "hash": "15a78157",
+          "hash": "307a835d",
           "kind": "module",
           "path": "../../adoption/src/portable/listFunctionBodies.ts"
         },
         {
-          "hash": "1d2261fb",
+          "hash": "b0751395",
           "kind": "module",
           "path": "../../adoption/src/portable/readAnchoredWindow.ts"
         },
         {
-          "hash": "498e3ca4",
+          "hash": "0eb1daf1",
           "kind": "module",
           "path": "../../adoption/src/portable/readBalancedGroup.ts"
         },
@@ -54,7 +54,7 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "055a9211",
+          "hash": "33ee2c2d",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -64,7 +64,7 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "9a930c6d",
+          "hash": "551d6e2a",
           "kind": "module",
           "path": "../src/readiness/listArraifyLines.ts"
         },
@@ -74,7 +74,7 @@
           "path": "../src/readiness/listArrayIdioms.ts"
         },
         {
-          "hash": "b721c930",
+          "hash": "38274c88",
           "kind": "module",
           "path": "../src/readiness/listBiasedShuffleLines.ts"
         },
@@ -88,7 +88,7 @@
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "055a9211",
+      "sourceHash": "33ee2c2d",
       "targetHash": "6c96a267"
     }
   ]

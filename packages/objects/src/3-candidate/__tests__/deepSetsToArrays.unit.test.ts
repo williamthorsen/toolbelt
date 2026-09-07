@@ -89,7 +89,7 @@ describe(deepSetsToArrays, () => {
     expect(actual).toStrictEqual(expected);
   });
 
-  // A built-in instance has no own enumerable keys, so `Object.entries` yields nothing to carry over.
+  // A built-in instance has no own enumerable keys, so `Object.entries` yields nothing to copy over.
   it('reduces a built-in instance to an empty object', () => {
     expect(deepSetsToArrays(new Date())).toStrictEqual({});
   });

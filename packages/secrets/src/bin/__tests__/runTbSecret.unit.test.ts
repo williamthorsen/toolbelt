@@ -93,7 +93,7 @@ describe(runTbSecret, () => {
       expect(harness.secrets.get('default|me@example.com|token')).toBe('s3cret');
     });
 
-    it('stores a secret carrying a line break, which the keychain now holds faithfully', async () => {
+    it('stores a secret that contains a line break, which the keychain now holds faithfully', async () => {
       const harness = createHarness({ stdin: 'first\nsecond' });
 
       expect((await runTbSecret(['set', 'token'], harness.effects)).exitCode).toBe(0);
@@ -133,7 +133,7 @@ describe(runTbSecret, () => {
       expect(harness.secrets.get(`${KEYCHAIN}||token`)).toBe('s3cret');
     });
 
-    it('exits 2 on a secret that the keychain cannot carry, rather than 3', async () => {
+    it('exits 2 on a secret that the keychain cannot store, rather than 3', async () => {
       const harness = createHarness({ stdin: '' });
 
       const result = await runTbSecret(['set', 'token'], harness.effects);
@@ -237,7 +237,7 @@ function createHarness(options: HarnessOptions = {}): Harness {
   };
 }
 
-/** Renders the key under which one item is held, which is what a wrong keychain or account fails to match. */
+/** Renders the key under which one item is held, which a wrong keychain or account fails to match. */
 function buildKey({ account = '', service }: SecretQuery, keychain: string | undefined): string {
   return `${keychain ?? 'default'}|${account}|${service}`;
 }

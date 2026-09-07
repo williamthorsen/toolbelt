@@ -123,7 +123,7 @@ describe(listRecordLines, () => {
 
 // region | Helpers
 
-/** Blanks the source the way the merging detector does, which is what the scan reads. */
+/** Blanks the source the way the merging detector does, which the scan reads. */
 function listLines(source: string): number[] {
   return listRecordLines(blankNonCode(source), source);
 }

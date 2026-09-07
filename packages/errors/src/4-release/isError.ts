@@ -1,14 +1,14 @@
 /**
  * Reports whether a value is an `Error`, narrowing it where it is.
  *
- * The `instanceof` test alone answers only for the realm in which it runs: an `Error` thrown across a worker,
+ * The `instanceof` test alone holds only for the realm in which it runs: An `Error` thrown across a worker,
  * an iframe, or a `vm` context fails it despite being a genuine one. Falling back to the object tag catches
  * those, because the tag reads from the internal slot set by every `Error` constructor rather than from a
  * prototype chain broken by the realm boundary.
  *
  * Neither test subsumes the other, so both run. `instanceof` alone misses the cross-realm cases; the tag alone
  * misses `DOMException` -- `AbortError` and `QuotaExceededError` among them -- which inherits from `Error` but
- * carries a tag of its own.
+ * has a tag of its own.
  *
  * A plain object assigning itself the `Error` tag passes, which no accidental value does.
  *

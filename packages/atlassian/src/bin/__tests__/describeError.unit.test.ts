@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { describeError } from '../subcommand-support.ts';
 
 describe(describeError, () => {
-  it('reports the message of an error carrying no cause', () => {
+  it('reports the message of an error with no cause', () => {
     expect(describeError(new Error('the keychain is locked'))).toBe('the keychain is locked');
   });
 
@@ -27,7 +27,7 @@ describe(describeError, () => {
     );
   });
 
-  it('skips a link carrying no message, which an AggregateError often is', () => {
+  it('skips a link with no message, which an AggregateError often is', () => {
     const root = new Error('certificate has expired');
     // eslint-disable-next-line unicorn/error-message -- an empty message is the shape under test.
     const empty = new AggregateError([root], '', { cause: root });
@@ -53,7 +53,7 @@ describe(describeError, () => {
     expect(describeError(outer)).toBe('outer: inner');
   });
 
-  it('ignores a cause that is not an error, which carries no message to append', () => {
+  it('ignores a cause that is not an error, which has no message to append', () => {
     expect(describeError(new Error('fetch failed', { cause: 'ENOTFOUND' }))).toBe('fetch failed');
   });
 });

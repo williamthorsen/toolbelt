@@ -13,7 +13,7 @@ export type AsyncIdiomKind = 'hand-rolled-sleep';
 
 const CLOSERS = ')]}';
 const OPENERS = '([{';
-// Digits are left out: a body is claimed for holding nothing but the timer call, so what remains beside it has
+// Digits are left out: A body is claimed for holding nothing but the timer call, so what remains beside it has
 // to read as empty, and a literal delay sits inside that call rather than beside it.
 const IDENTIFIER_CHARACTER = /[A-Za-z_$]/;
 // A simple type argument is spanned, so the group that is read is the executor's own parameter list. One
@@ -63,7 +63,7 @@ function isSleepArguments(argumentsText: string, parameter: string): boolean {
 /**
  * Reports whether a promise executor sleeps and does nothing else.
  *
- * The body is claimed for what it does not hold: Strip the timer call and a `return`, and a residue carrying no
+ * The body is claimed for what it does not hold: Strip the timer call and a `return`, and a residue with no
  * identifier proves the executor set the timer alone. That admits the concise arrow, the braced body, and the
  * `function` form together, and declines an executor that also assigns or reports.
  */

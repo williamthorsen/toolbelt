@@ -66,7 +66,7 @@ describe(listBiasedShuffleLines, () => {
     expect(listBiasedShuffleLines('const mixed = items.sort(a => Math.random() - 0.5);\n')).toStrictEqual([1]);
   });
 
-  it('claims an arrow carrying a return-type annotation', () => {
+  it('claims an arrow with a return-type annotation', () => {
     const source = 'const mixed = items.sort((a: Row, b: Row): number => Math.random() - 0.5);\n';
 
     expect(listBiasedShuffleLines(source)).toStrictEqual([1]);

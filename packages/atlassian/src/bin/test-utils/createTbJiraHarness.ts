@@ -12,10 +12,10 @@ import type { TbJiraEffects } from '../subcommand-support.ts';
 
 const CLOUD_ID = 'cloud-1';
 
-/** The gateway origin that the harness's fake transport reports, matching the cloudId that its tenant-info read answers with. */
+/** The gateway origin that the harness's fake transport reports, matching the cloudId that its tenant-info read returns. */
 export const HARNESS_BASE_URL = `https://api.atlassian.com/ex/jira/${CLOUD_ID}`;
 
-/** Jira reads the workflow graph through a POST, since the request carries the issue types in a body. */
+/** Jira reads the workflow graph through a POST, since the request contains the issue types in a body. */
 const READ_ONLY_POSTS = new Set(['/rest/api/3/workflows']);
 
 export const HARNESS_VERSION = '9.9.9';
@@ -133,7 +133,7 @@ export interface TbJiraHarness {
   /** Every call that the transport was asked to issue, in order. */
   calls: readonly FakeCall[];
   effects: TbJiraEffects;
-  /** Every URL that `fetch` was called with, which is the site from which the cloudId was read. */
+  /** Every URL with which `fetch` was called, which is the site from which the cloudId was read. */
   fetchedUrls: () => string[];
   readErrors: () => string;
   readOutput: () => string;
@@ -161,8 +161,8 @@ function describeFetchTarget(input: Parameters<typeof globalThis.fetch>[0]): str
 
 /**
  * Wraps a transport so that a call which is not a known read fails the test rather than reaching the fake
- * routes. The allowance is a list rather than a denial of the writes that this package makes today, so a write
- * added later fails a dry run's test by default.
+ * routes. The allowance is a list rather than a denial of the writes made by this package today, so a write added
+ * later fails a dry run's test by default.
  */
 function guardReads(request: JiraRequest): JiraRequest {
   return (method, path, body) => {

@@ -22,7 +22,7 @@ describe(readProjectConfiguration, () => {
     expect(calls).toHaveLength(5);
   });
 
-  it('carries the features that Jira reports as locked', async () => {
+  it('names the features that Jira reports as locked', async () => {
     const routes = {
       ...buildRoutes(),
       [`GET /rest/agile/1.0/board/${BOARD_ID}/features`]: {
@@ -41,7 +41,7 @@ describe(readProjectConfiguration, () => {
     expect(configuration.features.get('jsw.agility.goals')).toBe('DISABLED');
   });
 
-  it('carries every issue type into the workflow read rather than the first alone', async () => {
+  it('passes every issue type into the workflow read rather than the first alone', async () => {
     const { calls, request } = createFakeRequest(buildRoutes());
 
     await readProjectConfiguration(request, KEY);
@@ -55,7 +55,7 @@ describe(readProjectConfiguration, () => {
     });
   });
 
-  it('carries a transition through with the fields that this package does not model', async () => {
+  it('passes a transition through with the fields that this package does not model', async () => {
     const { request } = createFakeRequest(buildRoutes());
 
     const configuration = await readProjectConfiguration(request, KEY);
@@ -293,7 +293,7 @@ function buildRoutesForProject(project: Record<string, unknown>): FakeRoutes {
   return { ...buildRoutes(), 'GET /rest/api/3/project/THOR': { json: project } };
 }
 
-/** Builds the workflow graph narrowed by the read, containing a `conditions` field that this package does not model. */
+/** Builds the workflow graph narrowed by the read, with a `conditions` field that this package does not model. */
 function buildWorkflow(): unknown {
   return {
     description: 'The project workflow.',

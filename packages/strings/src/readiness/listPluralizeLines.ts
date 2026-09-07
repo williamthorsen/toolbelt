@@ -2,7 +2,7 @@ import { getLineAtOffset, readLiteral } from '@williamthorsen/toolbelt.adoption'
 
 const QUOTED = '\'[^\']*\'|"[^"]*"';
 // The ternary, anchored on its comparison against 1. `\)*` covers a parenthesized condition; a condition
-// carrying anything else between the comparison and the `?`, such as a second operand, goes unmatched.
+// that contains anything else between the comparison and the `?`, such as a second operand, goes unmatched.
 const PLURALIZE_TERNARY = new RegExp(
   String.raw`(?<op>===|!==)\s*1\s*\)*\s*\?\s*(?<first>${QUOTED})\s*:\s*(?<second>${QUOTED})`,
   'dg',
@@ -13,7 +13,7 @@ const PLURALIZE_TERNARY = new RegExp(
  *
  * Takes both texts. The ternary is matched on the blanked code, so a pluralization written in a comment is not
  * one, and the two literals are then read from the unblanked source at the offsets that match reports:
- * blanking replaces a literal's characters with spaces in place, so the two texts stay aligned while only the
+ * Blanking replaces a literal's characters with spaces in place, so the two texts stay aligned while only the
  * unblanked one still says what the literals hold.
  *
  * A site is a pluralization where the plural is the singular plus `s`, which covers `'x' : 'xs'`, `'' : 's'`,

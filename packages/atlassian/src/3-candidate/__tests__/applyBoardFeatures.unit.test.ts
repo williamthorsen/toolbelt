@@ -7,7 +7,7 @@ const BOARD = { id: 7 };
 const FEATURES_PATH = '/rest/agile/1.0/board/7/features';
 
 describe(applyBoardFeatures, () => {
-  it('writes one call per toggle, carrying the feature in the body', async () => {
+  it('writes one call per toggle, sending the feature in the body', async () => {
     const { calls, request } = createFakeRequest({ [`PUT ${FEATURES_PATH}`]: { json: {} } });
     const featureToggles = [
       { feature: 'jsw.agility.backlog', from: 'DISABLED', to: 'ENABLED' },

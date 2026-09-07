@@ -10,7 +10,7 @@ export function listReportedFindings(outcome: FindingOutcome): OutcomeFinding[] 
 
 /**
  * Runs a check and returns the report that it produced, which is the whole of what an adoption check declares:
- * the verdict, the detail, and the fraction are the runner's to derive, and are asserted where that
+ * The verdict, the detail, and the fraction are the runner's to derive, and are asserted where that
  * derivation lives.
  */
 export async function runCheck(check: RdyCheck | undefined): Promise<FindingOutcome> {
@@ -22,7 +22,7 @@ export async function runCheck(check: RdyCheck | undefined): Promise<FindingOutc
 
 /** Runs a check's skip, which every adoption check declares. */
 export async function runSkip(check: RdyCheck | undefined): Promise<false | string> {
-  if (check?.skip === undefined) throw new Error('the check carries no skip');
+  if (check?.skip === undefined) throw new Error('the check declares no skip');
   return check.skip();
 }
 

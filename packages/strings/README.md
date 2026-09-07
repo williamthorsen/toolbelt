@@ -69,7 +69,7 @@ function describeNpc() {
 // 'You are assisting the Game Master of a roleplaying game.\nCreate an ordinary, everyday person in a high-fantasy setting.'
 ```
 
-The opening line is discarded, and so is the closing line when it holds nothing but whitespace. A closing line carrying text is kept and dedented along with the rest, where `String.dedent` throws.
+The opening line is discarded, and so is the closing line when it holds nothing but whitespace. A closing line that contains text is kept and dedented along with the rest, where `String.dedent` throws.
 
 Dropping the closing line removes the terminator that preceded it, so text on the last line comes back without a trailing newline. Where one is wanted, leave a blank line above the closing backtick: A blank line is emptied rather than discarded, and the terminator above it survives.
 
@@ -201,11 +201,11 @@ Unlike the tag, this function never throws. It has no author's intent to check a
 | Common indentation       | longest exactly-matching prefix           | same                                      |
 | Blank lines              | ignored when measuring, emptied in output | proposal issue #23, open                  |
 | Opening line             | whitespace-only accepted                  | must be a bare newline, else throws       |
-| Closing line             | dropped only when whitespace-only         | throws when it carries text               |
+| Closing line             | dropped only when whitespace-only         | throws when it contains text              |
 | Escaped line terminators | throws                                    | dedents the raw strings and re-cooks them |
 | Value indentation        | opt-in via `valueIndentationStyle`        | none; declined in proposal issue #88      |
 
-The two lenient edge rules are deliberate. Requiring a bare opening line would reject invisible trailing whitespace after the backtick, which no formatter shows and every editor tolerates; throwing on a closing line that carries text would reject `` dedent`\n  a\n  b` ``, which is a reasonable thing to write.
+The two lenient edge rules are deliberate. Requiring a bare opening line would reject invisible trailing whitespace after the backtick, which no formatter shows and every editor tolerates; throwing on a closing line that contains text would reject `` dedent`\n  a\n  b` ``, which is a reasonable thing to write.
 
 ## `hashString`
 

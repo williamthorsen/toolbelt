@@ -79,7 +79,7 @@ describe(writeAtomic, () => {
       expect(fs.statSync(filePath).mode & 0o777).toBe(0o600);
     });
 
-    // The umask clears the group and other bits at creation, so a permissive mode is what exercises the chmod
+    // The umask clears the group and other bits at creation, so a permissive mode exercises the chmod
     // that restores them.
     it('preserves the mode of a group-writable target', async () => {
       using tree = createTempTree({ 'shared.json': '{}\n' });

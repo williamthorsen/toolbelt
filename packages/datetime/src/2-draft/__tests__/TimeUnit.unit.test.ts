@@ -60,7 +60,7 @@ describe(TimeUnit, () => {
       }
 
       expect(misconversions).toStrictEqual([]);
-      // Guard against a vacuous pass: a broken loop would report no misconversions either.
+      // Guard against a vacuous pass: A broken loop would report no misconversions either.
       expect(comparisons).toBeGreaterThan(0);
     });
 

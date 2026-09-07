@@ -19,7 +19,7 @@ export function buildVerificationReport(
 
   const verifiedStatuses: StatusVerification[] = spec.statuses.map((wanted) => {
     const live = findByName(statuses, wanted.name);
-    // A transition carrying no target would otherwise match a status not held by the workflow, both being absent.
+    // A transition with no target would otherwise match a status not held by the workflow, both being absent.
     const transition =
       live === undefined
         ? undefined

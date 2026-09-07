@@ -58,7 +58,7 @@ describe(classifyExitMock, () => {
     expect(classifyExitMock(after, after)).toStrictEqual({ kind: 'unclassified' });
   });
 
-  it('leaves a spy carrying no implementation call unclassified', () => {
+  it('leaves a spy with no implementation call unclassified', () => {
     const after = ';\n    spy.mockImplementation((code) => { throw new ExitError(code); });';
 
     expect(classifyExitMock(after, after)).toStrictEqual({ kind: 'unclassified' });

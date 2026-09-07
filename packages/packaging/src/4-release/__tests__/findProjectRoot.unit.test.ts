@@ -14,7 +14,7 @@ describe(findProjectRoot, () => {
     existsSyncSpy.mockClear();
   });
 
-  it('returns the start directory when it carries a marker', () => {
+  it('returns the start directory when it contains a marker', () => {
     using tree = createTempTree({ '.git/': '' });
 
     const result = findProjectRoot(tree.dir);
@@ -22,7 +22,7 @@ describe(findProjectRoot, () => {
     expect(result).toStrictEqual({ marker: '.git', rootDir: tree.dir, source: 'marker' });
   });
 
-  it('returns the nearest ancestor carrying a marker', () => {
+  it('returns the nearest ancestor that contains a marker', () => {
     using tree = createTempTree({ 'packages/app/src/': '', 'pnpm-workspace.yaml': '' });
 
     const result = findProjectRoot(tree.resolve('packages/app/src'));
@@ -38,7 +38,7 @@ describe(findProjectRoot, () => {
     expect(result).toStrictEqual({ marker: '.git', rootDir: tree.dir, source: 'marker' });
   });
 
-  it('reports the earliest matching marker when a directory carries several', () => {
+  it('reports the earliest matching marker when a directory contains several', () => {
     using tree = createTempTree({ 'yarn.lock': '', 'pnpm-workspace.yaml': '' });
 
     const result = findProjectRoot(tree.dir);

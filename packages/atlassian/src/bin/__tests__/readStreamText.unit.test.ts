@@ -5,11 +5,11 @@ import { describe, expect, it } from 'vitest';
 import { readStreamText } from '../readStreamText.ts';
 
 describe(readStreamText, () => {
-  it('joins every chunk that the stream carries', async () => {
+  it('joins every chunk that the stream contains', async () => {
     await expect(readStreamText(buildStream(['first ', 'second']))).resolves.toBe('first second');
   });
 
-  it('returns an empty string where the stream carries nothing', async () => {
+  it('returns an empty string where the stream contains nothing', async () => {
     await expect(readStreamText(buildStream([]))).resolves.toBe('');
   });
 

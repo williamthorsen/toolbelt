@@ -19,7 +19,7 @@ describe('Runner-agnostic workspaces', () => {
     const { fileCount, importers } = auditRunnerImports(findMonorepoRoot());
 
     expect(importers).toStrictEqual([]);
-    // Guard against a vacuous pass: a broken walk would report no importers either.
+    // Guard against a vacuous pass: A broken walk would report no importers either.
     expect(fileCount).toBeGreaterThan(0);
   });
 });

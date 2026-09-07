@@ -49,7 +49,7 @@ function quoteForShell(value: string): string {
 }
 
 /**
- * Runs a shell pipeline, which is what puts a real OS pipe between the two processes. Piping one child's stdout
+ * Runs a shell pipeline, which puts a real OS pipe between the two processes. Piping one child's stdout
  * into another's stdin from here would route the bytes through this process, where neither end sees the other
  * close.
  */

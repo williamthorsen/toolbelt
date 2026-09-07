@@ -2,11 +2,11 @@
  * Adoption checks for a project consuming @williamthorsen/toolbelt.errors.
  *
  * The kit ships inside the package, so it runs only where the package is installed and always at the version
- * that the consumer has. Installing the package is the consent on which these checks rest: a lint rule reaching every
+ * that the consumer has. Installing the package is the consent on which these checks rest: A lint rule reaching every
  * repository would press the same opinion on projects that never asked for it.
  *
  * The checks take inventory rather than banning a pattern. Every `instanceof Error` in the project is
- * accounted for and named, and severity carries the judgment: a hand-rolled description is a `warn`, a
+ * accounted for and named, and severity reports the judgment: a hand-rolled description is a `warn`, a
  * narrowing that a guard would express better is a `recommend`. Nothing here is `error`, because none of it
  * breaks the package -- it reports how far adoption got.
  *
@@ -27,8 +27,8 @@ export default defineAdoptionKit({
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: 'the project holds no JavaScript or TypeScript sources outside the exempt paths',
   packageName: PACKAGE_NAME,
-  // A test constructs error shapes deliberately, and a bootstrap wrapper's hand-rolled handling is what keeps
-  // its build-first message alive through an incomplete install.
+  // A test constructs error shapes deliberately, and a bootstrap wrapper's hand-rolled handling keeps its
+  // build-first message alive through an incomplete install.
   pathFilter: isAdoptableSource,
   checks: [
     {

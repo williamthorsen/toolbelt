@@ -21,14 +21,14 @@ const EXPRESSION_KEYWORDS = new Set([
  * Reports whether the text preceding an offset puts it in array-subscript position.
  *
  * Two kits recognize `Math.floor(Math.random() * N)`, and this question decides which one claims a given
- * site: a subscript is `toolbelt.arrays`' random-item idiom, and `toolbelt.numbers` declines it. Both read
+ * site: A subscript is `toolbelt.arrays`' random-item idiom, and `toolbelt.numbers` declines it. Both read
  * the answer from here, so a consumer installing both packages cannot see one line reported twice under
  * conflicting advice.
  *
  * Takes the condensed lookbehind produced by `readAnchoredWindow`. Condensing collapses each whitespace run to
- * a single space without removing it, which is what keeps `arr[` distinguishable from `return [`. A single
+ * a single space without removing it, which keeps `arr[` distinguishable from `return [`. A single
  * space is tolerated on either side of the bracket, so a subscript wrapped by a formatter reads the same as one
- * that it left on a line: the detectors reading this answer are formatter-tolerant at their own anchors, and a
+ * that it left on a line: The detectors reading this answer are formatter-tolerant at their own anchors, and a
  * rule deciding which of them owns a site has to be tolerant at the same points or the two disagree.
  *
  * @internal

@@ -16,7 +16,7 @@ const CLAIMED = [
   'await new Promise((resolve) => setTimeout(() => resolve(), 50));',
   'await new Promise((resolve) => setTimeout(() => { resolve(); }, 50));',
   'await new Promise((resolve) => setTimeout(() => { return resolve(); }, 50));',
-  // A delay expression carrying a comma of its own, which the argument split has to read as one argument.
+  // A delay expression with a comma of its own, which the argument split has to read as one argument.
   'await new Promise((resolve) => setTimeout(resolve, Math.min(50, cap)));',
 ];
 

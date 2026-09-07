@@ -30,7 +30,7 @@ describe(isError, () => {
     ]);
   });
 
-  it('returns true for a DOMException, which carries a tag of its own', () => {
+  it('returns true for a DOMException, which has a tag of its own', () => {
     const aborted = new DOMException('aborted', 'AbortError');
 
     expect([Object.prototype.toString.call(aborted), isError(aborted)]).toStrictEqual(['[object DOMException]', true]);

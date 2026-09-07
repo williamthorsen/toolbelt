@@ -105,7 +105,7 @@ describe(captureError, () => {
       await expect(failure).rejects.toThrow('but it threw: KitError: bad kit');
     });
 
-    it('carries the actual error as the cause', async () => {
+    it('sets the actual error as the cause', async () => {
       const thrown = new TypeError('wrong');
 
       const failure = await captureError(() =>

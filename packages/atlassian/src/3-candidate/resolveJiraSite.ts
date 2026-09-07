@@ -3,8 +3,8 @@ import { firstFilled } from '../internal/firstFilled.ts';
 const SITE_VARIABLE = 'JIRA_SITE';
 
 /**
- * Resolves the Jira site from which the gateway base URL is derived, from a supplied value, then the
- * environment, then the fallback. Throws where every source misses.
+ * Resolves the Jira site from which the gateway base URL is derived, from a supplied value, then the environment,
+ * then the fallback. Throws where every source misses.
  *
  * @category Jira
  * @experimental

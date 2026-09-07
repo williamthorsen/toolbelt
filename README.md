@@ -83,19 +83,19 @@ npx @williamthorsen/release-kit prepare
 npx @williamthorsen/release-kit commit
 npx @williamthorsen/release-kit tag
 
-# Push the commit and the new tags; the tag push is what triggers publishing
+# Push the commit and the new tags; the tag push triggers publishing
 git push
 git push --tags
 ```
 
 Each pushed release tag (`{package}-v{version}`) triggers:
 
-- `.github/workflows/publish.yaml`: publishes the tagged package(s) to npm with provenance attestations.
-- `.github/workflows/create-github-release.yaml`: creates the matching GitHub Release.
+- `.github/workflows/publish.yaml`: Publishes the tagged package(s) to npm with provenance attestations.
+- `.github/workflows/create-github-release.yaml`: Creates the matching GitHub Release.
 
 Tags must be pushed from a developer machine, not by the dispatch `release.yaml` workflow: GitHub does not trigger workflows for tags pushed with the built-in `GITHUB_TOKEN`, so a bot-pushed tag would publish nothing.
 
-**One-time setup (per published package):** register the package as a trusted publisher on npm, bound to `publish.yaml`. Requires npm ≥ 11.15.0 and account-level 2FA:
+**One-time setup (per published package):** Register the package as a trusted publisher on npm, bound to `publish.yaml`. Requires npm ≥ 11.15.0 and account-level 2FA:
 
 ```shell
 npm trust github @williamthorsen/toolbelt.arrays --file publish.yaml --repo williamthorsen/toolbelt --allow-publish

@@ -41,14 +41,14 @@ export default defineAdoptionKit({
       id: 'no-hand-rolled-record-guard',
       kinds: ['record-inline'],
       severity: 'recommend',
-      fix: `Replace each expression named above with isRecord from ${PACKAGE_NAME} where it excludes arrays, and isRecordOrArray where it admits them. Both return a type predicate, so the narrowing performed by the expression is preserved. For the stricter question of whether a value carries Object.prototype and nothing exotic, isPlainObject answers it; the expressions named above do not ask it. Reference: ${README_URL}`,
+      fix: `Replace each expression named above with isRecord from ${PACKAGE_NAME} where it excludes arrays, and isRecordOrArray where it admits them. Both return a type predicate, so the narrowing performed by the expression is preserved. For the stricter question of whether a value has Object.prototype and nothing exotic, isPlainObject answers it; the expressions named above do not ask it. Reference: ${README_URL}`,
     },
     {
       name: 'No source compares two serializations',
       id: 'no-stringify-comparison',
       kinds: ['stringify-compare'],
       severity: 'warn',
-      fix: `Replace each comparison named above with isEqual from ${PACKAGE_NAME}/candidate. Comparing serializations answers the wrong question twice: The result is key-order dependent, so two objects carrying the same entries in a different order compare unequal, and a Set serializes as an empty object whatever it holds, so any two Sets compare equal. isEqual sorts keys and converts Sets to arrays before comparing. Mind what serialization drops: A value carrying a function, a symbol, or undefined compares by what survives, under isEqual as much as by hand. Reference: ${README_URL}`,
+      fix: `Replace each comparison named above with isEqual from ${PACKAGE_NAME}/candidate. Comparing serializations answers the wrong question twice: The result is key-order dependent, so two objects with the same entries in a different order compare unequal, and a Set serializes as an empty object whatever it holds, so any two Sets compare equal. isEqual sorts keys and converts Sets to arrays before comparing. Mind what serialization drops: A value that contains a function, a symbol, or undefined compares by what survives, under isEqual as much as by hand. Reference: ${README_URL}`,
     },
   ],
 });

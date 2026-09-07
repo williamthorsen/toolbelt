@@ -13,7 +13,7 @@ describe(createTempDir, () => {
     expect(fs.readFileSync(path.join(tree.dir, 'src/nested/main.ts'), 'utf8')).toBe('export {};\n');
   });
 
-  it('resolves the directory root through symlinks, which is what a sweep compares against', () => {
+  it('resolves the directory root through symlinks, against which a sweep compares', () => {
     using tree = createTempDir({});
 
     expect(tree.dir).toBe(fs.realpathSync(tree.dir));
@@ -35,7 +35,7 @@ describe(createTempDir, () => {
   });
 
   // `createTempTree` reads a key ending in a separator as a directory. Without this rejection, a caller
-  // carrying that idiom over would get a file of the same name and no error.
+  // copying that idiom over would get a file of the same name and no error.
   it('rejects an entry naming a directory, leaving nothing on disk', () => {
     // Spy on the creation call, which is the only route to the root of a directory for which no handle was
     // returned.

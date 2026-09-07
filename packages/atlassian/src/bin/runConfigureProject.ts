@@ -34,7 +34,7 @@ const BOARD_MOVE_LIMIT = 50;
 const CONFIGURE_HELP = `Usage: tb-jira configure-project <KEY> [options]
 
 Reconcile a Jira project's statuses, workflow transitions, and board features against a declarative spec, then
-report what the server holds afterwards. The run is idempotent: a project already matching the spec is left
+report what the server holds afterwards. The run is idempotent: A project already matching the spec is left
 untouched.
 
 Options:
@@ -50,7 +50,7 @@ Options:
 The spec is the consuming repo's file, found by ascending from the working directory for
 \`jira-project-spec.json\`; \`--spec\` names one directly.
 
-Resolution orders, each stopping at the first source that answers:
+Resolution orders, each stopping at the first source that supplies a value:
   site   --site, then JIRA_SITE, then the spec's \`site\`
   email  --email, then JIRA_EMAIL, then the spec's \`email\`
   token  --token-stdin, then JIRA_API_TOKEN, then --token-command, then the macOS keychain
@@ -59,17 +59,17 @@ The token is read from the keychain under the service \`${DEFAULT_TOKEN_SERVICE}
 account. Store one with \`tb-jira auth set\`. The base URL is the \`api.atlassian.com\` gateway, whose cloudId
 is read from the site without authentication.
 
-Jira Cloud and team-managed projects only. A company-managed project is refused rather than reconciled: a
+Jira Cloud and team-managed projects only. A company-managed project is refused rather than reconciled: A
 status renamed there is renamed in every project on the site that uses it.
 
 Board columns cannot be set through the public API. The closing report names any spec status mapped to no
 column, and any column order differing from the spec's; both are fixed by dragging in the board settings.
 
 A board feature locked by Jira is reported as \`locked\` in the plan and \`LOCK\` in the closing report, and is
-never written: the call would answer 200 and change nothing. Neither it nor a column gap affects the exit code.`;
+never written: The call would answer 200 and change nothing. Neither it nor a column gap affects the exit code.`;
 
 /**
- * Runs the `configure-project` subcommand: it resolves the credential, plans the reconciliation against the
+ * Runs the `configure-project` subcommand: It resolves the credential, plans the reconciliation against the
  * project's live configuration, writes what the plan holds, and reports what the server holds afterwards.
  *
  * @internal
@@ -119,7 +119,7 @@ export async function runConfigureProject(args: string[], effects: TbJiraEffects
   effects.write(`${renderPlan(plan, configuration, { projectKey, seedBacklog })}\n`);
 
   if (values['dry-run']) {
-    effects.write('\ndry run: nothing was written\n');
+    effects.write('\ndry run: Nothing was written\n');
 
     return EXIT_OK;
   }

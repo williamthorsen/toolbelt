@@ -35,7 +35,7 @@ export default defineAdoptionKit({
       id: 'no-hand-rolled-sleep',
       kinds: ['hand-rolled-sleep'],
       severity: 'recommend',
-      fix: `Replace each promise named above with delay from ${PACKAGE_NAME}/candidate, whose promise carries a cancel that clears the timer and settles at once. A hand-rolled sleep hands back no such handle, so a caller that finishes early still waits out the whole delay, and in a test the pending timer holds the event loop open past the assertion that it was waiting for. Reference: ${README_URL}`,
+      fix: `Replace each promise named above with delay from ${PACKAGE_NAME}/candidate, whose promise comes with a cancel that clears the timer and settles at once. A hand-rolled sleep hands back no such handle, so a caller that finishes early still waits out the whole delay, and in a test the pending timer holds the event loop open past the assertion that it was waiting for. Reference: ${README_URL}`,
     },
   ],
 });

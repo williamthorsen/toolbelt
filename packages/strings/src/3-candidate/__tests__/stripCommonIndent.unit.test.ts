@@ -35,7 +35,7 @@ describe(stripCommonIndent, () => {
     expect(stripCommonIndent('    alpha\r\n\r\n    beta\r\n')).toBe('alpha\r\n\r\nbeta\r\n');
   });
 
-  it('dedents a text carrying a byte-order mark, keeping the mark', () => {
+  it('dedents a text with a byte-order mark, keeping the mark', () => {
     expect(stripCommonIndent('\u{FEFF}  alpha\n  beta')).toBe('\u{FEFF}alpha\nbeta');
   });
 

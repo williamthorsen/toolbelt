@@ -34,7 +34,7 @@ npx @williamthorsen/toolbelt.atlassian configure-project THOR --dry-run
 | `tb-jira auth status`           | Reports which source would supply the token, printing the token nowhere   |
 | `tb-jira configure-project KEY` | Reconciles a project against the spec, then reports what the server holds |
 
-Jira Cloud only, and team-managed projects only. A company-managed project is refused rather than reconciled: a status renamed there is renamed in every project on the site that uses it. `auth delete` and `auth set` additionally require macOS, the keychain being the one credential store.
+Jira Cloud only, and team-managed projects only. A company-managed project is refused rather than reconciled: A status renamed there is renamed in every project on the site that uses it. `auth delete` and `auth set` additionally require macOS, the keychain being the one credential store.
 
 ### Reconciling a project
 
@@ -81,7 +81,7 @@ The consuming repo owns the file. `tb-jira` ascends from the working directory l
 
 ### Resolution orders
 
-Each chain stops at the first source that answers.
+Each chain stops at the first source that supplies a value.
 
 | Value | Order                                                                             |
 | ----- | --------------------------------------------------------------------------------- |
@@ -89,15 +89,15 @@ Each chain stops at the first source that answers.
 | email | `--email`, then `JIRA_EMAIL`, then the spec's `email`                             |
 | token | `--token-stdin`, then `JIRA_API_TOKEN`, then `--token-command`, then the keychain |
 
-The keychain item is the service `toolbelt.atlassian.jira` with the email as the account, which is what `tb-jira auth set` writes and what `tb-secret set toolbelt.atlassian.jira --account you@example.com` writes too. It is opened only where the earlier sources miss, so a run authenticated from the environment reaches no keychain and raises no access prompt.
+The keychain item is the service `toolbelt.atlassian.jira` with the email as the account, which `tb-jira auth set` writes and `tb-secret set toolbelt.atlassian.jira --account you@example.com` writes too. It is opened only where the earlier sources miss, so a run authenticated from the environment reaches no keychain and raises no access prompt.
 
 `tb-jira auth status` names the source that would answer without printing what it holds. It probes the keychain for presence rather than reading it, so it raises no access prompt either; a configured token command does run, and its output is discarded.
 
-The base URL is not configurable. It is the `api.atlassian.com` gateway, and the cloudId is read from the site's `_edge/tenant_info` endpoint, which answers without authentication.
+The base URL is not configurable. It is the `api.atlassian.com` gateway, and the cloudId is read from the site's `_edge/tenant_info` endpoint, which responds without authentication.
 
 ### Token scopes
 
-A scoped API token targets one app, so this needs a **Jira** token. Grant it these 23 granular scopes, which are what the reconciler's twelve endpoints require and nothing more:
+A scoped API token targets one app, so this needs a **Jira** token. Grant it these 23 granular scopes, which the reconciler's twelve endpoints require and nothing more:
 
 ```
 read:application-role:jira            read:project-category:jira
@@ -152,7 +152,7 @@ Four failures look similar and mean different things. The gateway checks the tok
 
 The `403` comes from Jira rather than the gateway, and reports a permission that the acting user lacks rather than a scope that the token lacks.
 
-`JiraRequestError` carries the matching row as `reason` and states it, with the remedy, in its message, so `tb-jira` reports which failure this is on stderr. A status outside the table, a 5xx included, leaves `reason` undefined and the message without a remedy.
+`JiraRequestError` has the matching row as `reason` and states it, with the remedy, in its message, so `tb-jira` reports which failure this is on stderr. A status outside the table, a 5xx included, leaves `reason` undefined and the message without a remedy.
 
 ### Exit codes
 
@@ -188,7 +188,7 @@ const response = await request('GET', '/rest/api/3/myself');
 
 ### The base URL
 
-`resolveJiraBaseUrl` returns `https://api.atlassian.com/ex/jira/<cloudId>`, the gateway against which a scoped API token authenticates. Where no `cloudId` is given, it is read from the site's `_edge/tenant_info` endpoint, which answers without authentication.
+`resolveJiraBaseUrl` returns `https://api.atlassian.com/ex/jira/<cloudId>`, the gateway against which a scoped API token authenticates. Where no `cloudId` is given, it is read from the site's `_edge/tenant_info` endpoint, which responds without authentication.
 
 Requests against the site URL (`https://acme.atlassian.net`) are not offered as a fallback. Atlassian ignores a scoped token sent there rather than rejecting it, so the request would return an anonymous response instead of failing.
 
@@ -207,17 +207,17 @@ tb-secret set toolbelt.atlassian.jira --account you@example.com
 
 The service defaults to `toolbelt.atlassian.jira`; pass `service` to read another.
 
-`findJiraTokenSource` walks that same chain and answers which link would supply the token, or `undefined` where every one misses. It never returns the token: the keychain is probed with `hasSecret`, which reads the item's attributes rather than its data and so raises no keychain access prompt. A configured `tokenCommand` does run, and its output is discarded.
+`findJiraTokenSource` walks that same chain and reports which link would supply the token, or `undefined` where every one misses. It never returns the token: The keychain is probed with `hasSecret`, which reads the item's attributes rather than its data and so raises no keychain access prompt. A configured `tokenCommand` does run, and its output is discarded.
 
 `resolveJiraSite` reads a supplied value, then `JIRA_SITE`, then `fallback`, which is where a spec's `site` reaches the chain. It returns the site from which `resolveJiraBaseUrl` derives the cloudId.
 
 ### The transport
 
-`createTokenTransport` takes the email and token as values and reads no environment variable, file, or keystore of its own. It reports every status to the caller, a 401 or 403 included, so an authentication failure is a value to branch on rather than an exception. Each response carries the `url` at which it was aimed, origin and cloudId included, alongside the status and the body.
+`createTokenTransport` takes the email and token as values and reads no environment variable, file, or keystore of its own. It reports every status to the caller, a 401 or 403 included, so an authentication failure is a value to branch on rather than an exception. Each response contains the `url` at which it was aimed, origin and cloudId included, alongside the status and the body.
 
 ### Errors
 
-Two error types separate a Jira that answered from a Jira that did not. `JiraRequestError` reports a status outside 2xx and carries `body`, `label`, `method`, `path`, `reason`, `status`, and `url`, so a caller branches on those rather than parsing the message; `reason` is the classification that ["Diagnosing a rejected request"](#diagnosing-a-rejected-request) tabulates. `JiraTransportError` reports a request that never arrived and carries the `url` at which it was aimed, with the fault that the runtime raised as its `cause`.
+Two error types separate a Jira that answered from a Jira that did not. `JiraRequestError` reports a status outside 2xx and has `body`, `label`, `method`, `path`, `reason`, `status`, and `url`, so a caller branches on those rather than parsing the message; `reason` is the classification that ["Diagnosing a rejected request"](#diagnosing-a-rejected-request) tabulates. `JiraTransportError` reports a request that never arrived and has the `url` at which it was aimed, with the fault that the runtime raised as its `cause`.
 
 The split matters because node's `fetch` reports every transport failure as `TypeError: fetch failed` and names the reason on `cause` alone. Reading the chain turns that into `getaddrinfo ENOTFOUND acme.atlassian.net`, and a retry is worth attempting for the second type and never for the first.
 
@@ -239,11 +239,11 @@ A spec declares which statuses a Jira project should hold and which board featur
 }
 ```
 
-`statuses` is required and non-empty. Each entry needs a `name` and a `category` of `TODO`, `IN_PROGRESS`, or `DONE`. Its `aliases` are the live names that also resolve to it, which is how a status is renamed: the new name goes in `name` and the current one in `aliases`. Names match case-insensitively, since Jira reports one status under two casings across endpoints, and no name or alias may be claimed by two entries.
+`statuses` is required and non-empty. Each entry needs a `name` and a `category` of `TODO`, `IN_PROGRESS`, or `DONE`. Its `aliases` are the live names that also resolve to it, which is how a status is renamed: The new name goes in `name` and the current one in `aliases`. Names match case-insensitively, since Jira reports one status under two casings across endpoints, and no name or alias may be claimed by two entries.
 
 `boardFeatures` maps a feature key to `ENABLED` or `DISABLED`. Jira also reports `COMING_SOON`, which no spec may request. `site` and `email` are the last source in their resolution chains.
 
-Jira locks some features, such as one belonging to a product not held by the site. A write against a locked feature answers `200` and changes nothing, so a spec naming one is reported rather than written: the plan prints it as `locked`, the closing report marks it `LOCK`, and the exit code is unaffected. Without that, the toggle would be re-planned on every run and the project would never match.
+Jira locks some features, such as one belonging to a product not held by the site. A write against a locked feature returns `200` and changes nothing, so a spec naming one is reported rather than written: The plan prints it as `locked`, the closing report marks it `LOCK`, and the exit code is unaffected. Without that, the toggle would be re-planned on every run and the project would never match.
 
 A live status claimed by no entry is reported and left untouched, so a spec covers the statuses that it manages rather than the whole project.
 
@@ -264,7 +264,7 @@ const plan = buildReconciliationPlan(spec, configuration);
 const payload = buildWorkflowUpdatePayload(configuration, plan);
 ```
 
-The workflow write replaces the graph wholesale, so `buildWorkflowUpdatePayload` runs `assertGraphPreserved` before returning. That refuses a payload that would drop a status, drop a transition, or leave a status with no transition into it: none of the three fails loudly at Jira, and each leaves work items in a state out of which nothing can move them. A status that already had no transition is passed over, since that is not the write's doing.
+The workflow write replaces the graph wholesale, so `buildWorkflowUpdatePayload` runs `assertGraphPreserved` before returning. That refuses a payload that would drop a status, drop a transition, or leave a status with no transition into it: None of the three fails loudly at Jira, and each leaves work items in a state out of which nothing can move them. A status that already had no transition is passed over, since that is not the write's doing.
 
 `assertGraphPreserved` is exported as well, for a payload composed some other way.
 
@@ -280,7 +280,7 @@ Each takes the transport as its first argument and constructs none of its own. A
 | `listIssueKeys(request, jql)`                         | Every work-item key matched by a JQL query, following the search's page token                                            |
 | `moveIssuesToBacklog(request, boardId, keys)`         | Work items off the board and into the backlog, in batches of 50                                                          |
 | `readBoardColumnReport(request, configuration, spec)` | The board's columns, reporting coverage and order                                                                        |
-| `buildVerificationReport(configuration, spec)`        | Nothing: it compares a configuration already read against the spec                                                       |
+| `buildVerificationReport(configuration, spec)`        | Nothing: It compares a configuration already read against the spec                                                       |
 
 `requestOk` is exported too, for a call that this package does not wrap.
 
@@ -307,13 +307,13 @@ const report = buildVerificationReport(await readProjectConfiguration(request, '
 
 `readProjectConfiguration` fails closed. Each of these throws rather than reconciling part of a project:
 
-- **A project that is not team-managed.** A status renamed in a company-managed project is renamed in every project on the site that uses it. A project reporting no style, or one that this does not recognize, is refused alongside a company-managed one: a project that it cannot classify is not one to write to.
+- **A project that is not team-managed.** A status renamed in a company-managed project is renamed in every project on the site that uses it. A project reporting no style, or one that this does not recognize, is refused alongside a company-managed one: A project that it cannot classify is not one to write to.
 - **A project that does not resolve to a single board of its own.** The board-feature, column, and backlog calls are board-scoped. The board query returns every board whose filter references the project, so a board owned by another project can come back alongside it; where several come back, the project's own board is the one whose location names the project, and an ambiguous set is refused.
-- **A project whose issue types resolve to other than exactly one workflow.** Every issue type is carried into the workflow read, so a project running its issue types on several workflows is refused rather than having one of them reconciled and reported green.
-- **A response it cannot read.** A missing field is a refusal, not a default.
+- **A project whose issue types resolve to other than exactly one workflow.** Every issue type is passed into the workflow read, so a project running its issue types on several workflows is refused rather than having one of them reconciled and reported green.
+- **A response that it cannot read.** A missing field is a refusal, not a default.
 
 ### Board columns
 
-`readProjectConfiguration` carries the `toggleLocked` flag reported by Jira per feature, which is what lets `buildReconciliationPlan` leave a locked toggle unplanned rather than issuing a write that silently does nothing.
+`readProjectConfiguration` returns the `toggleLocked` flag that Jira reports per feature, which lets `buildReconciliationPlan` leave a locked toggle unplanned rather than issuing a write that silently does nothing.
 
 Board columns cannot be set through the public API. `readBoardColumnReport` reports the gap: which spec statuses map to no column, whose work items are then absent from the board and the backlog alike, and the column order where it differs from the spec's. Both are fixed by dragging in the board settings.

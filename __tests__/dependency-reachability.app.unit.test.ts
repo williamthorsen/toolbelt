@@ -18,7 +18,7 @@ describe('Runtime dependencies', () => {
     const { dependencyCount, unreachableDependencies } = auditDependencyReachability(findMonorepoRoot());
 
     expect(unreachableDependencies).toStrictEqual([]);
-    // Guard against a vacuous pass: a broken walk would report no unreachable dependencies either.
+    // Guard against a vacuous pass: A broken walk would report no unreachable dependencies either.
     expect(dependencyCount).toBeGreaterThan(0);
   });
 });
@@ -30,7 +30,7 @@ describe('Runtime dependencies', () => {
  * imported by no exported module. Such a dependency installs for every consumer while nothing they can import
  * needs it.
  *
- * `devDependencies` stay out: they do not publish, and `packages/adoption` reaches its consumers through that
+ * `devDependencies` stay out: They do not publish, and `packages/adoption` reaches its consumers through that
  * field. A type-only import counts, since a consumer typechecking against the shipped declarations needs it.
  */
 function auditDependencyReachability(monorepoRoot: string): {
