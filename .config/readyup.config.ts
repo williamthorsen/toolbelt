@@ -13,6 +13,7 @@ export default defineRdyConfig({
     '@williamthorsen/toolbelt.arrays',
     '@williamthorsen/toolbelt.async',
     '@williamthorsen/toolbelt.errors',
+    '@williamthorsen/toolbelt.guards',
     '@williamthorsen/toolbelt.numbers',
     '@williamthorsen/toolbelt.objects',
     '@williamthorsen/toolbelt.strings',

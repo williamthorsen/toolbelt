@@ -5,7 +5,7 @@
       "checklists": [
         "adoption"
       ],
-      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.arrays",
+      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.guards",
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
@@ -54,42 +54,42 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "33ee2c2d",
+          "hash": "5538264f",
           "kind": "module",
           "path": "kits/default.ts"
         },
         {
-          "hash": "21ad7fec",
+          "hash": "71740f32",
           "kind": "module",
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "551d6e2a",
+          "hash": "8680e638",
           "kind": "module",
-          "path": "../src/readiness/listArraifyLines.ts"
+          "path": "../src/readiness/findAssertionClone.ts"
         },
         {
-          "hash": "5d173bad",
+          "hash": "57276059",
           "kind": "module",
-          "path": "../src/readiness/listArrayIdioms.ts"
+          "path": "../src/readiness/findPredicateClone.ts"
         },
         {
-          "hash": "38274c88",
+          "hash": "6f88b311",
           "kind": "module",
-          "path": "../src/readiness/listBiasedShuffleLines.ts"
+          "path": "../src/readiness/listGuardClones.ts"
         },
         {
-          "hash": "ab352b57",
+          "hash": "dc1fae0c",
           "kind": "module",
-          "path": "../src/readiness/listRandomItemLines.ts"
+          "path": "../src/readiness/nullish-tests.ts"
         }
       ],
       "name": "default",
       "path": "kits/default.js",
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
-      "sourceHash": "33ee2c2d",
-      "targetHash": "6c96a267"
+      "sourceHash": "5538264f",
+      "targetHash": "41d733bc"
     }
   ]
 }
