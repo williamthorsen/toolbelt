@@ -119,7 +119,7 @@ describe(listGuardClones, () => {
   });
 
   // The two kinds that narrow to a caller-named type: neither can be written without a type parameter, so a
-  // head that admits none leaves both unreachable in the only spelling they have.
+  // head that admits none leaves both unreachable in the only spelling that they have.
   it('reports a generic presence guard and a generic presence assertion', () => {
     const guard = [
       'export function isDefined<T>(value: T): value is NonNullable<T> {',
