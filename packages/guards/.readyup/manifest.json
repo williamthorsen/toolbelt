@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "kits": [
+    {
+      "checklists": [
+        "adoption"
+      ],
+      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.guards",
+      "esbuildVersion": "0.28.2",
+      "inputs": [
+        {
+          "hash": "1dc83619",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/path-predicates.ts"
+        },
+        {
+          "hash": "5a5a91a8",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/site-handoffs.ts"
+        },
+        {
+          "hash": "d24e0182",
+          "kind": "module",
+          "path": "../../adoption/src/kits/defineAdoptionKit.ts"
+        },
+        {
+          "hash": "dee2a3a3",
+          "kind": "module",
+          "path": "../../adoption/src/mod.ts"
+        },
+        {
+          "hash": "6fdaacac",
+          "kind": "module",
+          "path": "../../adoption/src/portable/condenseWhitespace.ts"
+        },
+        {
+          "hash": "9505b835",
+          "kind": "module",
+          "path": "../../adoption/src/portable/listFunctionBodies.ts"
+        },
+        {
+          "hash": "b0751395",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readAnchoredWindow.ts"
+        },
+        {
+          "hash": "0eb1daf1",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readBalancedGroup.ts"
+        },
+        {
+          "hash": "e9427d50",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readLiteral.ts"
+        },
+        {
+          "hash": "5538264f",
+          "kind": "module",
+          "path": "kits/default.ts"
+        },
+        {
+          "hash": "71740f32",
+          "kind": "module",
+          "path": "../src/readiness/adoptedExports.ts"
+        },
+        {
+          "hash": "8680e638",
+          "kind": "module",
+          "path": "../src/readiness/findAssertionClone.ts"
+        },
+        {
+          "hash": "4bdebadd",
+          "kind": "module",
+          "path": "../src/readiness/findPredicateClone.ts"
+        },
+        {
+          "hash": "6f88b311",
+          "kind": "module",
+          "path": "../src/readiness/listGuardClones.ts"
+        },
+        {
+          "hash": "dc1fae0c",
+          "kind": "module",
+          "path": "../src/readiness/nullish-tests.ts"
+        }
+      ],
+      "name": "default",
+      "path": "kits/default.js",
+      "readyupVersion": "0.35.0",
+      "source": "kits/default.ts",
+      "sourceHash": "5538264f",
+      "targetHash": "f3911ae9"
+    }
+  ]
+}

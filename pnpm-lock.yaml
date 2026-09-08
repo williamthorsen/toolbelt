@@ -282,7 +282,17 @@ importers:
         specifier: workspace:*
         version: link:../filesystem
 
-  packages/guards: {}
+  packages/guards:
+    devDependencies:
+      '@williamthorsen/toolbelt.adoption':
+        specifier: workspace:*
+        version: link:../adoption
+      esbuild:
+        specifier: 'catalog:'
+        version: 0.28.2
+      readyup:
+        specifier: 'catalog:'
+        version: 0.35.0(esbuild@0.28.2)
 
   packages/hof:
     devDependencies:
