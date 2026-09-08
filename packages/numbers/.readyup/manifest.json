@@ -34,7 +34,7 @@
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
         {
-          "hash": "307a835d",
+          "hash": "9505b835",
           "kind": "module",
           "path": "../../adoption/src/portable/listFunctionBodies.ts"
         },

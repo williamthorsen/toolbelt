@@ -119,25 +119,43 @@ function readBalancedGroup(source, from, delimiters) {
 }
 
 // ../adoption/src/portable/listFunctionBodies.ts
-var FUNCTION_HEAD = /(?:function\s+(\w+)\s*\(|(?:const|let|var)\s+(\w+)[^=;]*=\s*(?:async\s+)?(?:function\s*)?\([^)]*\)[^=;{]*=>)/g;
+var FUNCTION_HEAD = /(?:function\s+(?<declared>\w+)\s*\(|(?:const|let|var)\s+(?<bound>\w+)[^=;]*=\s*(?:async\s+)?(?:function\s*)?\((?<arrowParameters>[^)]*)\)[^=;{]*=>)/g;
+var PLAIN_PARAMETER = /^\s*(?<name>[A-Za-z_$][\w$]*)\s*(?=[,:=?]|$)/;
 function listFunctionBodies(source) {
   const bodies = [];
   FUNCTION_HEAD.lastIndex = 0;
   let head = FUNCTION_HEAD.exec(source);
   while (head !== null) {
-    const name = head[1] ?? head[2];
+    const name = head.groups?.["declared"] ?? head.groups?.["bound"];
     const from = findBodySearchStart(source, head);
     const body = from === void 0 ? void 0 : readBalancedGroup(source, from, BRACES);
     if (name !== void 0 && from !== void 0 && body !== void 0 && !source.slice(from, body.start).includes(";")) {
-      bodies.push({ bodyEnd: body.end, bodyStart: body.start, headStart: head.index, name });
+      const firstParameter = findFirstParameterName(readParameterText(source, head));
+      bodies.push({
+        bodyEnd: body.end,
+        bodyStart: body.start,
+        ...firstParameter !== void 0 && { firstParameter },
+        headStart: head.index,
+        name
+      });
     }
     head = FUNCTION_HEAD.exec(source);
   }
   return bodies;
 }
 function findBodySearchStart(source, head) {
-  if (head[1] === void 0) return head.index + head[0].length;
+  if (head.groups?.["declared"] === void 0) return head.index + head[0].length;
   return readBalancedGroup(source, head.index, PARENTHESES)?.end;
+}
+function findFirstParameterName(parameterText) {
+  if (parameterText === void 0) return void 0;
+  return PLAIN_PARAMETER.exec(parameterText)?.groups?.["name"];
+}
+function readParameterText(source, head) {
+  const arrowParameters = head.groups?.["arrowParameters"];
+  if (arrowParameters !== void 0) return arrowParameters;
+  const group = readBalancedGroup(source, head.index, PARENTHESES);
+  return group === void 0 ? void 0 : source.slice(group.start + 1, group.end - 1);
 }
 
 // ../adoption/src/portable/readAnchoredWindow.ts
