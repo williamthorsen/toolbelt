@@ -12,8 +12,11 @@ export interface FunctionBody {
   name: string;
 }
 
+// A type-parameter list sits between the name and the parameters, and a guard that narrows to a type its
+// caller names cannot be written without one. `[^<>]*` declines a list nesting a further `<...>`, which leaves
+// such a head unreported rather than matching a prefix of it.
 const FUNCTION_HEAD =
-  /(?:function\s+(?<declared>\w+)\s*\(|(?:const|let|var)\s+(?<bound>\w+)[^=;]*=\s*(?:async\s+)?(?:function\s*)?\((?<arrowParameters>[^)]*)\)[^=;{]*=>)/g;
+  /(?:function\s+(?<declared>\w+)\s*(?:<[^<>]*>\s*)?\(|(?:const|let|var)\s+(?<bound>\w+)[^=;]*=\s*(?:async\s+)?(?:function\s*)?(?:<[^<>]*>\s*)?\((?<arrowParameters>[^)]*)\)[^=;{]*=>)/g;
 // A plain first parameter runs to the delimiter that ends it: another parameter, a type annotation, a default,
 // or the optional marker. A destructuring pattern, a rest element, and an empty list all fail the opening
 // character class.

@@ -119,7 +119,7 @@ function readBalancedGroup(source, from, delimiters) {
 }
 
 // ../adoption/src/portable/listFunctionBodies.ts
-var FUNCTION_HEAD = /(?:function\s+(?<declared>\w+)\s*\(|(?:const|let|var)\s+(?<bound>\w+)[^=;]*=\s*(?:async\s+)?(?:function\s*)?\((?<arrowParameters>[^)]*)\)[^=;{]*=>)/g;
+var FUNCTION_HEAD = /(?:function\s+(?<declared>\w+)\s*(?:<[^<>]*>\s*)?\(|(?:const|let|var)\s+(?<bound>\w+)[^=;]*=\s*(?:async\s+)?(?:function\s*)?(?:<[^<>]*>\s*)?\((?<arrowParameters>[^)]*)\)[^=;{]*=>)/g;
 var PLAIN_PARAMETER = /^\s*(?<name>[A-Za-z_$][\w$]*)\s*(?=[,:=?]|$)/;
 function listFunctionBodies(source) {
   const bodies = [];

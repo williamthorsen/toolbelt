@@ -95,6 +95,26 @@ describe(listFunctionBodies, () => {
     expect(summarize('const m = (e) => e.message;')).toStrictEqual([]);
   });
 
+  it('reports a generic function declaration', () => {
+    expect(summarize('function isDefined<T>(value: T): boolean { return true; }')).toStrictEqual([
+      { body: '{ return true; }', name: 'isDefined' },
+    ]);
+  });
+
+  it('reports a generic arrow assigned to a binding', () => {
+    expect(summarize('const isDefined = <T,>(value: T) => { return true; };')).toStrictEqual([
+      { body: '{ return true; }', name: 'isDefined' },
+    ]);
+  });
+
+  it('reports the first parameter past a type-parameter list', () => {
+    expect(listFunctionBodies('function isDefined<T>(value: T) { return true; }')[0]?.firstParameter).toBe('value');
+  });
+
+  it('reports nothing for a head whose type-parameter list nests another', () => {
+    expect(summarize('function f<T extends Record<string, number>>(a: T) { return a; }')).toStrictEqual([]);
+  });
+
   it('reports the first parameter of a function declaration', () => {
     expect(listFunctionBodies('function assert(condition) { throw condition; }')[0]?.firstParameter).toBe('condition');
   });

@@ -118,6 +118,28 @@ describe(listGuardClones, () => {
     expect(summarize(source)).toStrictEqual([{ kind: 'assert-clone', line: 1, symbol: 'assert' }]);
   });
 
+  // The two kinds that narrow to a caller-named type: neither can be written without a type parameter, so a
+  // head that admits none leaves both unreachable in the only spelling they have.
+  it('reports a generic presence guard and a generic presence assertion', () => {
+    const guard = [
+      'export function isDefined<T>(value: T): value is NonNullable<T> {',
+      '  return value !== null && value !== undefined;',
+      '}',
+      '',
+    ].join('\n');
+    const assertion = [
+      'export function assertDefined<T>(value: T): asserts value is NonNullable<T> {',
+      '  if (value === null || value === undefined) throw new Error(MISSING);',
+      '}',
+      '',
+    ].join('\n');
+
+    expect([guard, assertion].flatMap(summarize)).toStrictEqual([
+      { kind: 'non-nullable-clone', line: 1, symbol: 'isDefined' },
+      { kind: 'nullish-assert-clone', line: 1, symbol: 'assertDefined' },
+    ]);
+  });
+
   it('names the line that the function head holds', () => {
     expect(summarize(['const x = 1;', '', STRING_CLONE].join('\n'))).toStrictEqual([
       { kind: 'string-clone', line: 3, symbol: 'isText' },
