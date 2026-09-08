@@ -69,7 +69,7 @@
           "path": "../src/readiness/findAssertionClone.ts"
         },
         {
-          "hash": "4bdebadd",
+          "hash": "57276059",
           "kind": "module",
           "path": "../src/readiness/findPredicateClone.ts"
         },
@@ -89,7 +89,7 @@
       "readyupVersion": "0.35.0",
       "source": "kits/default.ts",
       "sourceHash": "5538264f",
-      "targetHash": "f3911ae9"
+      "targetHash": "556c3d4e"
     }
   ]
 }

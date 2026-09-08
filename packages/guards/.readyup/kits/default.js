@@ -254,8 +254,8 @@ function testsOwnArgumentForNullish({ condition, outcome }, parameter) {
 }
 
 // src/readiness/findPredicateClone.ts
-var RETURNED_EXPRESSION = /^\{\s*return\s+(?<expression>[^;{}]+?)\s*;?\s*\}$/;
-var TYPEOF_BODY = /^\{\s*return\s+typeof\s+(?<subject>[\w$]+)\s*===\s*(?<literal>(?<quote>['"])[^'"\n]*\k<quote>)(?:\s*&&\s*!\s*Number\s*\.\s*isNaN\s*\(\s*\k<subject>\s*\))?\s*;?\s*\}$/d;
+var RETURNED_EXPRESSION = /^\{\s*return\b(?<expression>[^;{}]*)[\s;]*\}$/;
+var TYPEOF_BODY = /^\{\s*return\s+typeof\s+(?<subject>[\w$]+)\s*===\s*(?<literal>(?<quote>['"])[^'"\n]*\k<quote>)(?:\s*&&\s*!\s*Number\s*\.\s*isNaN\s*\(\s*\k<subject>\s*\))?[\s;]*\}$/d;
 var TAG_KINDS = /* @__PURE__ */ new Map([
   ["boolean", "boolean-clone"],
   ["number", "number-clone"],
@@ -267,8 +267,8 @@ function findPredicateClone(body, source, bodyStart, parameter) {
     const tag = readLiteral(source, shiftSpan(typeofMatch.indices?.groups?.["literal"], bodyStart));
     return tag === void 0 ? void 0 : TAG_KINDS.get(tag);
   }
-  const expression = RETURNED_EXPRESSION.exec(body)?.groups?.["expression"];
-  if (expression === void 0) return void 0;
+  const expression = RETURNED_EXPRESSION.exec(body)?.groups?.["expression"]?.trim();
+  if (expression === void 0 || expression === "") return void 0;
   if (isNonNullableTest(expression, parameter)) return "non-nullable-clone";
   if (isNullishTest(expression, parameter)) return "nullish-clone";
   return void 0;

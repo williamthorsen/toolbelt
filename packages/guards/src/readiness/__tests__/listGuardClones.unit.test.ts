@@ -202,6 +202,14 @@ describe(listGuardClones, () => {
     expect(summarize(source)).toStrictEqual([]);
   });
 
+  // Blanking replaces a template literal's characters with spaces, so a body holding a large one becomes a long
+  // whitespace run. The test fails by timing out where the body pattern backtracks over it.
+  it('returns promptly on a body that blanking turns into a long whitespace run', () => {
+    const source = ['function render(value) {', '  return `' + 'x'.repeat(40_000) + '`;', '}', ''].join('\n');
+
+    expect(summarize(source)).toStrictEqual([]);
+  }, 2_000);
+
   it('declines a guard written in a comment or a string', () => {
     const source = [
       "// function isText(value) { return typeof value === 'string'; }",

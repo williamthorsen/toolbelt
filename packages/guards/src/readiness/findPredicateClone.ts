@@ -6,13 +6,17 @@ export type PredicateCloneKind =
   'boolean-clone' | 'non-nullable-clone' | 'nullish-clone' | 'number-clone' | 'string-clone';
 
 // One `return` of one expression and nothing else: a second statement or a nested block fails the class, which
-// is what holds the finding to a function the import retires outright.
-const RETURNED_EXPRESSION = /^\{\s*return\s+(?<expression>[^;{}]+?)\s*;?\s*\}$/;
+// is what holds the finding to a function the import retires outright. The expression is matched greedily and
+// trimmed by the caller rather than by a lazy quantifier against a trailing `\s*`: blanking replaces a template
+// literal's characters with spaces, so a body holding one becomes a long whitespace run, and the two ways of
+// dividing it between the quantifiers make that pairing backtrack quadratically. Both patterns close on
+// `[\s;]*` for the same reason, a single class admitting one division where `\s*;?\s*` admits two.
+const RETURNED_EXPRESSION = /^\{\s*return\b(?<expression>[^;{}]*)[\s;]*\}$/;
 // The NaN exclusion is optional because `isNumber` performs it and a hand-roll often does not; the tail is
 // tolerated so both forms report, and the fix text carries the difference. A yoda comparison is not matched:
 // the tag reads on the right in every form this repository and its lint configuration admit.
 const TYPEOF_BODY =
-  /^\{\s*return\s+typeof\s+(?<subject>[\w$]+)\s*===\s*(?<literal>(?<quote>['"])[^'"\n]*\k<quote>)(?:\s*&&\s*!\s*Number\s*\.\s*isNaN\s*\(\s*\k<subject>\s*\))?\s*;?\s*\}$/d;
+  /^\{\s*return\s+typeof\s+(?<subject>[\w$]+)\s*===\s*(?<literal>(?<quote>['"])[^'"\n]*\k<quote>)(?:\s*&&\s*!\s*Number\s*\.\s*isNaN\s*\(\s*\k<subject>\s*\))?[\s;]*\}$/d;
 const TAG_KINDS = new Map<string, PredicateCloneKind>([
   ['boolean', 'boolean-clone'],
   ['number', 'number-clone'],
@@ -40,8 +44,8 @@ export function findPredicateClone(
     return tag === undefined ? undefined : TAG_KINDS.get(tag);
   }
 
-  const expression = RETURNED_EXPRESSION.exec(body)?.groups?.['expression'];
-  if (expression === undefined) return undefined;
+  const expression = RETURNED_EXPRESSION.exec(body)?.groups?.['expression']?.trim();
+  if (expression === undefined || expression === '') return undefined;
   if (isNonNullableTest(expression, parameter)) return 'non-nullable-clone';
   if (isNullishTest(expression, parameter)) return 'nullish-clone';
 
