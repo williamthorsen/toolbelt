@@ -291,7 +291,6 @@ function pinIsTty(stream: NodeJS.WriteStream, value: boolean | undefined): Dispo
   else stream.isTTY = value;
 
   return {
-    // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's Symbol allowlist omits Symbol.dispose and accepts no options.
     [Symbol.dispose]() {
       if (hadOwnProperty) stream.isTTY = previous;
       else Reflect.deleteProperty(stream, 'isTTY');

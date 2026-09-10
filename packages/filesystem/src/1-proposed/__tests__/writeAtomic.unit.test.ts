@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 import fsPromises from 'node:fs/promises';
 
+import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { createTempTree } from '../../3-candidate/createTempTree.ts';
 import { writeAtomic } from '../writeAtomic.ts';
 
 describe(writeAtomic, () => {

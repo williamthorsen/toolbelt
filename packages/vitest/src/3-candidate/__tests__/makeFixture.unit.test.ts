@@ -3,8 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 
-import { createTempTree, type TempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
-import { captureStdio, pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
+import { captureStdio, createTempTree, pointCwdAt, type TempTree } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, expectTypeOf, it as baseIt } from 'vitest';
 
 import { makeFixture } from '../makeFixture.ts';
@@ -171,7 +170,7 @@ function makeProbe(label: string): Probe {
 
   return {
     label,
-    // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's Symbol allowlist omits Symbol.dispose and accepts no options.
+
     [Symbol.dispose]() {
       disposalLog.push(label);
     },

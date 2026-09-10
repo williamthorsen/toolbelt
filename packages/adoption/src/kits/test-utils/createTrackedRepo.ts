@@ -16,7 +16,6 @@ export function createTrackedRepo(entries: Record<string, string>): TempDir {
     runGit(tree.dir, 'add', '--all');
     return tree;
   } catch (error) {
-    // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's `Symbol` list omits `dispose`, standard since ES2026.
     tree[Symbol.dispose]();
     throw error;
   }

@@ -12,7 +12,7 @@ describe('tb-jira over a pipe', () => {
   it.skipIf(process.platform !== 'darwin')('reads a token whose producer writes after a delay', () => {
     // A blank token is refused before anything is stored, so this reaches no keychain item.
     const { stderr } = runPipeline(
-      `{ sleep 0.3; printf '\\n'; echo "producer-exit:$?" >&2; } | ${buildCommand([
+      String.raw`{ sleep 0.3; printf '\n'; echo "producer-exit:$?" >&2; } | ${buildCommand([
         'auth',
         'set',
         '--email',
@@ -45,7 +45,7 @@ function buildCommand(args: string[]): string {
 
 /** Wraps a value for `bash -c`, so a path holding a space or a quote survives. */
 function quoteForShell(value: string): string {
-  return `'${value.replaceAll("'", `'\\''`)}'`;
+  return `'${value.replaceAll("'", String.raw`'\''`)}'`;
 }
 
 /**

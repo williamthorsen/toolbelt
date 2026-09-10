@@ -28,7 +28,6 @@ export function pointArgvAt(args: readonly string[], options: PointArgvAtOptions
   return {
     args: pointedArgs,
 
-    // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's Symbol allowlist omits Symbol.dispose and accepts no options.
     [Symbol.dispose]() {
       process.argv = previousArgv;
     },

@@ -1,8 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { createTempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
-import { pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
+import { createTempTree, pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { DEFAULT_ROOT_MARKERS, findProjectRoot } from '../findProjectRoot.ts';

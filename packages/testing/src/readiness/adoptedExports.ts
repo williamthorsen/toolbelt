@@ -3,4 +3,10 @@
  *
  * @internal
  */
-export const ADOPTED_EXPORTS: readonly string[] = ['captureError', 'captureStdio', 'pointArgvAt', 'pointCwdAt'];
+export const ADOPTED_EXPORTS: readonly string[] = [
+  'captureError',
+  'captureStdio',
+  'createTempTree',
+  'pointArgvAt',
+  'pointCwdAt',
+];

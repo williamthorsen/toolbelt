@@ -128,7 +128,7 @@ describe(createTempTree, () => {
 
   it('disposes a second time without throwing', () => {
     const tree = createTempTree({ '.git/': '' });
-    // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's `Symbol` list omits `dispose`, standard since ES2026.
+
     const dispose = () => tree[Symbol.dispose]();
 
     dispose();

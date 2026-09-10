@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 
+import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, it } from 'vitest';
 
-import { createTempTree } from '../../3-candidate/createTempTree.ts';
 import { reconcileFile } from '../reconcileFile.ts';
 
 describe(reconcileFile, () => {

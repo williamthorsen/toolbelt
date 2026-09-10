@@ -21,7 +21,6 @@ export function makeFixture<T extends Disposable>(build: () => T) {
   return ({}: object, { onCleanup }: { onCleanup: (cleanup: () => void) => void }): T => {
     const resource = build();
 
-    // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's Symbol allowlist omits Symbol.dispose and accepts no options.
     onCleanup(() => resource[Symbol.dispose]());
 
     return resource;

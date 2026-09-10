@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 
+import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { createTempTree } from '../../3-candidate/createTempTree.ts';
 import { findDirectoryChainMatch } from '../directory-chain-matches.ts';
 
 describe(findDirectoryChainMatch, () => {

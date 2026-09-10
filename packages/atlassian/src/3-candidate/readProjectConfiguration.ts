@@ -194,6 +194,7 @@ async function readProject(request: JiraRequest, projectKey: string, key: string
   const project = isRecord(response.json) ? response.json : undefined;
   const id = project?.['id'];
   if (typeof id !== 'string') {
+    // eslint-disable-next-line unicorn/prefer-type-error -- one of nine refusals of a malformed Jira response in this module, which report `Error` uniformly.
     throw new Error(`Project ${projectKey} returned no 'id'.`);
   }
 

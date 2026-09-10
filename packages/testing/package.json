@@ -8,6 +8,7 @@
     "error",
     "esm",
     "stdio",
+    "temp-directory",
     "test-utilities",
     "testing",
     "toolbelt",
@@ -52,7 +53,6 @@
   },
   "devDependencies": {
     "@williamthorsen/toolbelt.adoption": "workspace:*",
-    "@williamthorsen/toolbelt.filesystem": "workspace:*",
     "esbuild": "catalog:",
     "readyup": "catalog:"
   },

@@ -236,9 +236,9 @@ importers:
         specifier: workspace:*
         version: link:../secrets
     devDependencies:
-      '@williamthorsen/toolbelt.filesystem':
+      '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
-        version: link:../filesystem
+        version: link:../testing
 
   packages/datetime:
     dependencies:
@@ -271,6 +271,10 @@ importers:
       '@williamthorsen/toolbelt.errors':
         specifier: workspace:*
         version: link:../errors
+    devDependencies:
+      '@williamthorsen/toolbelt.testing':
+        specifier: workspace:*
+        version: link:../testing
 
   packages/git:
     dependencies:
@@ -278,9 +282,9 @@ importers:
         specifier: workspace:*
         version: link:../strings
     devDependencies:
-      '@williamthorsen/toolbelt.filesystem':
+      '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
-        version: link:../filesystem
+        version: link:../testing
 
   packages/guards:
     devDependencies:
@@ -342,9 +346,9 @@ importers:
 
   packages/secrets:
     devDependencies:
-      '@williamthorsen/toolbelt.filesystem':
+      '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
-        version: link:../filesystem
+        version: link:../testing
 
   packages/sets: {}
 
@@ -390,9 +394,6 @@ importers:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
         version: link:../adoption
-      '@williamthorsen/toolbelt.filesystem':
-        specifier: workspace:*
-        version: link:../filesystem
       esbuild:
         specifier: 'catalog:'
         version: 0.28.2
@@ -407,9 +408,6 @@ importers:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
         version: link:../adoption
-      '@williamthorsen/toolbelt.filesystem':
-        specifier: workspace:*
-        version: link:../filesystem
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
         version: link:../testing

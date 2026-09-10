@@ -20,7 +20,7 @@ import path from 'node:path';
  * using tree = createTempTree({ '.git/': '', 'src/main.ts': 'export {};\n' });
  * tree.resolve('src/main.ts'); // '/private/var/folders/…/toolbelt-a1b2c3/src/main.ts'
  *
- * @category Filesystem
+ * @category Testing
  * @experimental
  * @stage candidate
  */
@@ -141,7 +141,6 @@ export function createTempTree(
     writeAll,
     writeJson,
 
-    // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's `Symbol` list omits `dispose`, standard since ES2026.
     [Symbol.dispose](): void {
       try {
         fs.rmSync(dir, { force: true, recursive: true });

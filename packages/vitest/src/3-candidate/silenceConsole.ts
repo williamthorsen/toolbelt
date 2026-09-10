@@ -31,7 +31,6 @@ export function silenceConsole(
   const entries = methods.map((method): [ConsoleMethod, MockInstance] => [method, silenceMethod(method)]);
 
   return Object.assign(toTypedRecord(entries), {
-    // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's Symbol allowlist omits Symbol.dispose and accepts no options.
     [Symbol.dispose]() {
       for (const [, spy] of entries) {
         spy.mockRestore();

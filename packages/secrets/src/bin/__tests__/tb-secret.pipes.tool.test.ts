@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { createTempKeychain } from '../../test-utils/createTempKeychain.ts';
+import { canCreateKeychain, createTempKeychain } from '../../test-utils/createTempKeychain.ts';
 
 const ENTRY_POINT = path.join(import.meta.dirname, '../tb-secret.ts');
 
@@ -17,7 +17,7 @@ describe('tb-secret over a pipe', () => {
   it.skipIf(!isMacos)('reads a secret whose producer writes after a delay', () => {
     // A blank secret is refused before `security` runs, so this reaches no keychain.
     const { stderr } = runPipeline(
-      `{ sleep 0.3; printf '\\n'; echo "producer-exit:$?" >&2; } | ${buildCommand(['set', SERVICE])}`,
+      String.raw`{ sleep 0.3; printf '\n'; echo "producer-exit:$?" >&2; } | ${buildCommand(['set', SERVICE])}`,
     );
 
     expect(stderr).not.toMatch(/EAGAIN|EPIPE/);
@@ -25,11 +25,11 @@ describe('tb-secret over a pipe', () => {
     expect(stderr).toContain('The secret is empty.');
   });
 
-  it.skipIf(!isMacos)('stores what a delayed producer wrote, dropping the newline that it ends with', () => {
+  it.skipIf(!canCreateKeychain)('stores what a delayed producer wrote, dropping the newline that it ends with', () => {
     using keychain = createTempKeychain();
 
     const stored = runPipeline(
-      `{ sleep 0.3; printf '%s\\n' ${quoteForShell(SECRET)}; echo "producer-exit:$?" >&2; } | ${buildCommand([
+      String.raw`{ sleep 0.3; printf '%s\n' ${quoteForShell(SECRET)}; echo "producer-exit:$?" >&2; } | ${buildCommand([
         'set',
         SERVICE,
         '--keychain',
@@ -65,7 +65,7 @@ function buildCommand(args: string[]): string {
 
 /** Wraps a value for `bash -c`, so a path holding a space or a quote survives. */
 function quoteForShell(value: string): string {
-  return `'${value.replaceAll("'", `'\\''`)}'`;
+  return `'${value.replaceAll("'", String.raw`'\''`)}'`;
 }
 
 /**
