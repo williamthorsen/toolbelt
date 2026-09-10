@@ -62,8 +62,9 @@ export function createTbJiraHarness(options: HarnessOptions = {}): TbJiraHarness
     hasSecret: (query) => (keystoreFault === undefined ? secrets.has(buildKey(query)) : refuse()),
     setSecret: (query, secret) => {
       if (unstorable !== undefined) throw new UnstorableSecretError(unstorable);
+      if (keystoreFault !== undefined) refuse();
 
-      void (keystoreFault === undefined ? secrets.set(buildKey(query), secret) : refuse());
+      secrets.set(buildKey(query), secret);
     },
   };
 

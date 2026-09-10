@@ -76,10 +76,10 @@
       ],
       "name": "default",
       "path": "kits/default.js",
-      "readyupVersion": "0.35.0",
+      "readyupVersion": "0.35.1",
       "source": "kits/default.ts",
       "sourceHash": "5be0054e",
-      "targetHash": "ecad7426"
+      "targetHash": "00ab38ab"
     }
   ]
 }
