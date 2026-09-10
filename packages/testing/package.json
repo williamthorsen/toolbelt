@@ -8,6 +8,7 @@
     "error",
     "esm",
     "stdio",
+    "temp-directory",
     "test-utilities",
     "testing",
     "toolbelt",
