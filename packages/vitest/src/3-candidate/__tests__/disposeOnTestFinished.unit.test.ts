@@ -165,7 +165,6 @@ function countOf(log: readonly string[], label: string): number {
 /** Records every disposal, so a test can assert on a lifecycle without holding the instance. */
 function makeProbe(label: string): Disposable {
   return {
-    // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's Symbol allowlist omits Symbol.dispose and accepts no options.
     [Symbol.dispose]() {
       disposalLog.push(label);
     },

@@ -141,7 +141,6 @@ export function createTempTree(
     writeAll,
     writeJson,
 
-    // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's `Symbol` list omits `dispose`, standard since ES2026.
     [Symbol.dispose](): void {
       try {
         fs.rmSync(dir, { force: true, recursive: true });

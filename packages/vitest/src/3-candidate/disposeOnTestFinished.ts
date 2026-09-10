@@ -18,7 +18,6 @@ import { onTestFinished } from 'vitest';
  * }
  */
 export function disposeOnTestFinished<T extends Disposable>(resource: T): T {
-  // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's Symbol allowlist omits Symbol.dispose and accepts no options.
   onTestFinished(() => resource[Symbol.dispose]());
 
   return resource;

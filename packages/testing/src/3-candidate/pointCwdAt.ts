@@ -39,7 +39,6 @@ export function pointCwdAt(dir: string, options: PointCwdAtOptions = {}): Pointe
   return {
     dir: resolvedDir,
 
-    // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's Symbol allowlist omits Symbol.dispose and accepts no options.
     [Symbol.dispose]() {
       // Restored first, so a `chdir` that fails cannot strand the replacement.
       process.cwd = previousCwd;

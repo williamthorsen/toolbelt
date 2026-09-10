@@ -24,7 +24,7 @@ function buildCommand(args: string[]): string {
 
 /** Wraps a value for `bash -c`, so a path holding a space or a quote survives. */
 function quoteForShell(value: string): string {
-  return `'${value.replaceAll("'", `'\\''`)}'`;
+  return `'${value.replaceAll("'", String.raw`'\''`)}'`;
 }
 
 /**

@@ -34,7 +34,6 @@ export function createTempDir(entries: Record<string, string>): TempDir {
   return {
     dir,
 
-    // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's `Symbol` list omits `dispose`, standard since ES2026.
     [Symbol.dispose](): void {
       fs.rmSync(dir, { force: true, recursive: true });
     },

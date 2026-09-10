@@ -171,7 +171,6 @@ function makeProbe(label: string): Probe {
   return {
     label,
 
-    // eslint-disable-next-line unicorn/no-nonstandard-builtin-properties -- the rule's Symbol allowlist omits Symbol.dispose and accepts no options.
     [Symbol.dispose]() {
       disposalLog.push(label);
     },

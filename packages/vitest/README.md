@@ -224,7 +224,7 @@ const it = test
   });
 ```
 
-That hand-written disposal is where `unicorn/no-nonstandard-builtin-properties` fires: The rule's `Symbol` allowlist omits `Symbol.dispose` and it accepts no options, so a project on unicorn's `recommended` or `unopinionated` set has a disable comment at every such site. A dependent resource that only wraps the test needs no fixture of its own, and no disposal to write; see [Wrapping tests with `aroundEach` and `aroundAll`](#wrapping-tests-with-aroundeach-and-aroundall).
+`makeFixture` disposes what it builds, so a fixture written as a plain callback, as `project` is here, calls `Symbol.dispose` through `onCleanup` itself. A dependent resource that only wraps the test needs no fixture of its own, and no disposal to write; see [Wrapping tests with `aroundEach` and `aroundAll`](#wrapping-tests-with-aroundeach-and-aroundall).
 
 Passing a wrapper that takes the context opaquely fails collection with `FixtureParseError`, naming the offending parameter.
 
