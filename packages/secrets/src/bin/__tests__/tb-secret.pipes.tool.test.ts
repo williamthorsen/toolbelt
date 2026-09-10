@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { createTempKeychain } from '../../test-utils/createTempKeychain.ts';
+import { canCreateKeychain, createTempKeychain } from '../../test-utils/createTempKeychain.ts';
 
 const ENTRY_POINT = path.join(import.meta.dirname, '../tb-secret.ts');
 
@@ -25,7 +25,7 @@ describe('tb-secret over a pipe', () => {
     expect(stderr).toContain('The secret is empty.');
   });
 
-  it.skipIf(!isMacos)('stores what a delayed producer wrote, dropping the newline that it ends with', () => {
+  it.skipIf(!canCreateKeychain)('stores what a delayed producer wrote, dropping the newline that it ends with', () => {
     using keychain = createTempKeychain();
 
     const stored = runPipeline(

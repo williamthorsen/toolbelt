@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 
 import { describe, expect, it } from 'vitest';
 
-import { createTempKeychain } from '../../test-utils/createTempKeychain.ts';
+import { canCreateKeychain, createTempKeychain } from '../../test-utils/createTempKeychain.ts';
 import { createKeychainStore } from '../createKeychainStore.ts';
 
 const SECURITY_PATH = '/usr/bin/security';
@@ -23,7 +23,7 @@ const TAB_SECRET = 'a\tb';
 // longest is a little under the 4,095-byte command line that contains the secret as hexadecimal.
 const BOUNDARY_LENGTHS = [127, 128, 129, 190, 1_900];
 
-describe.skipIf(process.platform !== 'darwin')(createKeychainStore, () => {
+describe.skipIf(!canCreateKeychain)(createKeychainStore, () => {
   it('reads a secret that `security` prints between quotes', () => {
     withKeychain((keychain) => {
       expect(createKeychainStore({ keychain }).findSecret({ service: PLAIN_SERVICE })).toBe('plain value');
