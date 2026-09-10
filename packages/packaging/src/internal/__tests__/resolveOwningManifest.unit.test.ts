@@ -1,6 +1,6 @@
 import { pathToFileURL } from 'node:url';
 
-import { createTempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
+import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, it } from 'vitest';
 
 import { resolveOwningManifest } from '../resolveOwningManifest.ts';

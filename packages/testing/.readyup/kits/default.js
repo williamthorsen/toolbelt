@@ -115,7 +115,13 @@ function readAnchoredWindow(source, offset, lengths) {
 import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
 
 // src/readiness/adoptedExports.ts
-var ADOPTED_EXPORTS = ["captureError", "captureStdio", "pointArgvAt", "pointCwdAt"];
+var ADOPTED_EXPORTS = [
+  "captureError",
+  "captureStdio",
+  "createTempTree",
+  "pointArgvAt",
+  "pointCwdAt"
+];
 
 // src/readiness/listCaptureSites.ts
 var CALLEE = /^[\w$]+(?:\??\.[\w$]+)*(?:\?\.)?(?:<[^<>()]*>)?$/;

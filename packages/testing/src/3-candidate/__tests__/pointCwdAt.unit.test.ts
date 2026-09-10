@@ -1,9 +1,9 @@
 import path from 'node:path';
 import process from 'node:process';
 
-import { createTempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
 import { describe, expect, it, onTestFinished, vi } from 'vitest';
 
+import { createTempTree } from '../createTempTree.ts';
 import { pointCwdAt } from '../pointCwdAt.ts';
 
 // Bound before any scope replaces `process.cwd`, so a test can read where the process actually is.

@@ -20,7 +20,7 @@ import path from 'node:path';
  * using tree = createTempTree({ '.git/': '', 'src/main.ts': 'export {};\n' });
  * tree.resolve('src/main.ts'); // '/private/var/folders/…/toolbelt-a1b2c3/src/main.ts'
  *
- * @category Filesystem
+ * @category Testing
  * @experimental
  * @stage candidate
  */

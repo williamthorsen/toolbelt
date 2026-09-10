@@ -23,7 +23,7 @@ disposeOnTestFinished<T extends Disposable>(resource: T): T;
 Registers a `Disposable`'s disposal with the current test and returns it unchanged.
 
 ```ts
-import { createTempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
+import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
 import { disposeOnTestFinished } from '@williamthorsen/toolbelt.vitest/candidate';
 
 function buildSource(files: Record<string, string>, name = 'fixture'): SourceSpec {
@@ -121,7 +121,7 @@ makeFixture<T extends Disposable>(
 Adapts a `Disposable` factory into a Vitest fixture that disposes the value when its scope ends.
 
 ```ts
-import { createTempTree } from '@williamthorsen/toolbelt.filesystem/candidate';
+import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
 import { makeFixture } from '@williamthorsen/toolbelt.vitest/candidate';
 import { expect, test } from 'vitest';
 

@@ -1,6 +1,6 @@
+import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, it } from 'vitest';
 
-import { createTempTree } from '../../3-candidate/createTempTree.ts';
 import { listDirectoryChainMatches } from '../directory-chain-matches.ts';
 
 describe(listDirectoryChainMatches, () => {
