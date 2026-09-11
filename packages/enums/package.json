@@ -47,6 +47,9 @@
   "dependencies": {
     "@williamthorsen/toolbelt.arrays": "workspace:*"
   },
+  "devDependencies": {
+    "@williamthorsen/toolbelt.adoption": "workspace:*"
+  },
   "engines": {
     "node": ">=24.0.0"
   },

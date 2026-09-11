@@ -253,6 +253,10 @@ importers:
       '@williamthorsen/toolbelt.arrays':
         specifier: workspace:*
         version: link:../arrays
+    devDependencies:
+      '@williamthorsen/toolbelt.adoption':
+        specifier: workspace:*
+        version: link:../adoption
 
   packages/errors:
     devDependencies:
