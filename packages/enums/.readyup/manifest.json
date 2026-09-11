@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "kits": [
+    {
+      "checklists": [
+        "adoption"
+      ],
+      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.enums",
+      "esbuildVersion": "0.28.2",
+      "inputs": [
+        {
+          "hash": "1dc83619",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/path-predicates.ts"
+        },
+        {
+          "hash": "5a5a91a8",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/site-handoffs.ts"
+        },
+        {
+          "hash": "d24e0182",
+          "kind": "module",
+          "path": "../../adoption/src/kits/defineAdoptionKit.ts"
+        },
+        {
+          "hash": "dee2a3a3",
+          "kind": "module",
+          "path": "../../adoption/src/mod.ts"
+        },
+        {
+          "hash": "6fdaacac",
+          "kind": "module",
+          "path": "../../adoption/src/portable/condenseWhitespace.ts"
+        },
+        {
+          "hash": "07c8358f",
+          "kind": "module",
+          "path": "../../adoption/src/portable/listFunctionBodies.ts"
+        },
+        {
+          "hash": "b0751395",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readAnchoredWindow.ts"
+        },
+        {
+          "hash": "0eb1daf1",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readBalancedGroup.ts"
+        },
+        {
+          "hash": "e9427d50",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readLiteral.ts"
+        },
+        {
+          "hash": "4a308663",
+          "kind": "module",
+          "path": "kits/default.ts"
+        },
+        {
+          "hash": "817bf176",
+          "kind": "module",
+          "path": "../src/readiness/adoptedExports.ts"
+        },
+        {
+          "hash": "1d9484fe",
+          "kind": "module",
+          "path": "../src/readiness/listMembershipSites.ts"
+        }
+      ],
+      "name": "default",
+      "path": "kits/default.js",
+      "readyupVersion": "0.35.1",
+      "source": "kits/default.ts",
+      "sourceHash": "4a308663",
+      "targetHash": "dab778e6"
+    }
+  ]
+}

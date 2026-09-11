@@ -253,6 +253,16 @@ importers:
       '@williamthorsen/toolbelt.arrays':
         specifier: workspace:*
         version: link:../arrays
+    devDependencies:
+      '@williamthorsen/toolbelt.adoption':
+        specifier: workspace:*
+        version: link:../adoption
+      esbuild:
+        specifier: 'catalog:'
+        version: 0.28.2
+      readyup:
+        specifier: 'catalog:'
+        version: 0.35.1(esbuild@0.28.2)
 
   packages/errors:
     devDependencies:
