@@ -11,7 +11,6 @@ export type EnumIdiomKind = 'values-includes';
 // A parenthesis flush against one of these opens an argument list: a callee's name, a call, a subscript, a type
 // argument list, or an optional call.
 const CALLEE_END = /[\w$).>\]]/;
-// Sticky, so a test reads from the offset handed to `startsAt` and searches no further.
 const INCLUDES_CALL = /\s*\.\s*includes\s*\(/y;
 // A name, or names joined by dots. Code refers to an enum by name, so no other argument is an enum.
 const MEMBER_CHAIN = /^\s*[A-Za-z_$][\w$]*(?:\s*\.\s*[A-Za-z_$][\w$]*)*\s*$/;
