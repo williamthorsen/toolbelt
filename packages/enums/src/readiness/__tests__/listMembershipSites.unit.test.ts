@@ -22,7 +22,7 @@ const DECLINED = [
   'const position = Object.values(Color).indexOf(value);',
   'const known = Object.values(Color).some((member) => member === value);',
   'const known = new Set(Object.values(Color)).has(value);',
-  'const known = values.includes(value);',
+  'const values = Object.values(Color); const known = values.includes(value);',
   'const known = Object.keys(Color).includes(key);',
   'const known = key in Color;',
   'const count = Object.values(Color).length;',
