@@ -14,7 +14,7 @@
           "path": "../../adoption/src/conventions/path-predicates.ts"
         },
         {
-          "hash": "5a5a91a8",
+          "hash": "05c02e77",
           "kind": "module",
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
@@ -24,7 +24,7 @@
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "dee2a3a3",
+          "hash": "5b2fd386",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },

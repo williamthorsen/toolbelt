@@ -38,3 +38,22 @@ export function isArraySubscript(before: string): boolean {
 
   return token !== undefined && !EXPRESSION_KEYWORDS.has(token);
 }
+
+/**
+ * Reports whether the names probed at one level of a directory walk make the walk a project-root search.
+ *
+ * Two kits recognize an ascent that probes each level for a name, and this question decides which one claims a
+ * given site: A walk looking for `package.json` is `toolbelt.packaging`'s project-root idiom, which
+ * `findProjectRoot` covers, and `toolbelt.filesystem` declines it. Both read the answer from here, so a
+ * consumer installing both packages cannot see one loop reported twice under conflicting advice.
+ *
+ * One manifest among the names carries the verdict, however many names sit beside it. A walk probing
+ * `package.json` and `.git` together looks for the directory that holds a project, which is what
+ * `findProjectRoot` resolves from exactly such a marker list; a walk probing `.git` alone looks for a named
+ * entry on the chain, which `findDirectoryChainMatch` returns, so it stays with `toolbelt.filesystem`.
+ *
+ * @internal
+ */
+export function isProjectRootSearch(names: readonly string[]): boolean {
+  return names.includes('package.json');
+}
