@@ -6,7 +6,7 @@ export {
   isJsTsSource,
   isTestFile,
 } from './conventions/path-predicates.ts';
-export { isArraySubscript, isProjectRootSearch } from './conventions/site-handoffs.ts';
+export { isArraySubscript, isManifestSearch } from './conventions/site-handoffs.ts';
 export {
   type AdoptionCheck,
   type AdoptionKitSpec,
@@ -14,6 +14,7 @@ export {
   defineAdoptionKit,
 } from './kits/defineAdoptionKit.ts';
 export { condenseWhitespace } from './portable/condenseWhitespace.ts';
+export { type DirectoryAscent, listDirectoryAscents } from './portable/listDirectoryAscents.ts';
 export { type FunctionBody, listFunctionBodies } from './portable/listFunctionBodies.ts';
 export { type AnchoredWindow, readAnchoredWindow, type WindowLengths } from './portable/readAnchoredWindow.ts';
 export {

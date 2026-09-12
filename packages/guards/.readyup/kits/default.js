@@ -118,6 +118,13 @@ function readBalancedGroup(source, from, delimiters) {
   return void 0;
 }
 
+// ../adoption/src/portable/readLiteral.ts
+function readLiteral(source, span) {
+  const start = span?.[0];
+  const end = span?.[1];
+  return start === void 0 || end === void 0 ? void 0 : source.slice(start + 1, end - 1);
+}
+
 // ../adoption/src/portable/listFunctionBodies.ts
 var FUNCTION_HEAD = /(?:function\s+(?<declared>\w+)\s*(?:<[^<>]*>\s*)?\(|(?:const|let|var)\s+(?<bound>\w+)[^=;]*=\s*(?:async\s+)?(?:function\s*)?(?:<[^<>]*>\s*)?\((?<arrowParameters>[^)]*)\)[^=;{]*=>)/g;
 var PLAIN_PARAMETER = /^\s*(?<name>[A-Za-z_$][\w$]*)\s*(?=[,:=?]|$)/;
@@ -156,13 +163,6 @@ function readParameterText(source, head) {
   if (arrowParameters !== void 0) return arrowParameters;
   const group = readBalancedGroup(source, head.index, PARENTHESES);
   return group === void 0 ? void 0 : source.slice(group.start + 1, group.end - 1);
-}
-
-// ../adoption/src/portable/readLiteral.ts
-function readLiteral(source, span) {
-  const start = span?.[0];
-  const end = span?.[1];
-  return start === void 0 || end === void 0 ? void 0 : source.slice(start + 1, end - 1);
 }
 
 // ../adoption/src/mod.ts

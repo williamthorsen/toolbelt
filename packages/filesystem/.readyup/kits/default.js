@@ -25,7 +25,7 @@ function isTestFile(path) {
 }
 
 // ../adoption/src/conventions/site-handoffs.ts
-function isProjectRootSearch(names) {
+function isManifestSearch(names) {
   return names.includes("package.json");
 }
 
@@ -106,6 +106,17 @@ function condenseWhitespace(text) {
   return text.replaceAll(/\s+/g, " ");
 }
 
+// ../adoption/src/portable/listDirectoryAscents.ts
+import { getLineAtOffset } from "readyup/check-utils";
+
+// ../adoption/src/portable/readAnchoredWindow.ts
+function readAnchoredWindow(source, offset, lengths) {
+  return {
+    after: condenseWhitespace(source.slice(offset, offset + lengths.lookahead)),
+    before: condenseWhitespace(source.slice(Math.max(0, offset - lengths.lookbehind), offset))
+  };
+}
+
 // ../adoption/src/portable/readBalancedGroup.ts
 var BRACES = { close: "}", open: "{" };
 var PARENTHESES = { close: ")", open: "(" };
@@ -123,54 +134,6 @@ function readBalancedGroup(source, from, delimiters) {
   return void 0;
 }
 
-// ../adoption/src/portable/listFunctionBodies.ts
-var FUNCTION_HEAD = /(?:function\s+(?<declared>\w+)\s*(?:<[^<>]*>\s*)?\(|(?:const|let|var)\s+(?<bound>\w+)[^=;]*=\s*(?:async\s+)?(?:function\s*)?(?:<[^<>]*>\s*)?\((?<arrowParameters>[^)]*)\)[^=;{]*=>)/g;
-var PLAIN_PARAMETER = /^\s*(?<name>[A-Za-z_$][\w$]*)\s*(?=[,:=?]|$)/;
-function listFunctionBodies(source) {
-  const bodies = [];
-  FUNCTION_HEAD.lastIndex = 0;
-  let head = FUNCTION_HEAD.exec(source);
-  while (head !== null) {
-    const name = head.groups?.["declared"] ?? head.groups?.["bound"];
-    const from = findBodySearchStart(source, head);
-    const body = from === void 0 ? void 0 : readBalancedGroup(source, from, BRACES);
-    if (name !== void 0 && from !== void 0 && body !== void 0 && !source.slice(from, body.start).includes(";")) {
-      const firstParameter = findFirstParameterName(readParameterText(source, head));
-      bodies.push({
-        bodyEnd: body.end,
-        bodyStart: body.start,
-        ...firstParameter !== void 0 && { firstParameter },
-        headStart: head.index,
-        name
-      });
-    }
-    head = FUNCTION_HEAD.exec(source);
-  }
-  return bodies;
-}
-function findBodySearchStart(source, head) {
-  if (head.groups?.["declared"] === void 0) return head.index + head[0].length;
-  return readBalancedGroup(source, head.index, PARENTHESES)?.end;
-}
-function findFirstParameterName(parameterText) {
-  if (parameterText === void 0) return void 0;
-  return PLAIN_PARAMETER.exec(parameterText)?.groups?.["name"];
-}
-function readParameterText(source, head) {
-  const arrowParameters = head.groups?.["arrowParameters"];
-  if (arrowParameters !== void 0) return arrowParameters;
-  const group = readBalancedGroup(source, head.index, PARENTHESES);
-  return group === void 0 ? void 0 : source.slice(group.start + 1, group.end - 1);
-}
-
-// ../adoption/src/portable/readAnchoredWindow.ts
-function readAnchoredWindow(source, offset, lengths) {
-  return {
-    after: condenseWhitespace(source.slice(offset, offset + lengths.lookahead)),
-    before: condenseWhitespace(source.slice(Math.max(0, offset - lengths.lookbehind), offset))
-  };
-}
-
 // ../adoption/src/portable/readLiteral.ts
 function readLiteral(source, span) {
   const start = span?.[0];
@@ -178,58 +141,7 @@ function readLiteral(source, span) {
   return start === void 0 || end === void 0 ? void 0 : source.slice(start + 1, end - 1);
 }
 
-// ../adoption/src/mod.ts
-import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
-
-// src/readiness/adoptedExports.ts
-var ADOPTED_EXPORTS = [
-  "findDirectoryChainMatch",
-  "listDirectoryChain",
-  "listDirectoryChainMatches",
-  "loadConfigCascade",
-  "reconcileFile",
-  "reconcileFileFromFile",
-  "replaceFileExtension",
-  "writeAtomic"
-];
-
-// src/readiness/listAtomicWriteSites.ts
-var BOUND_PATH_ARGUMENT = /^\s*(?<name>[A-Za-z_$][\w$]*)\s*(?:,|$)/;
-var RENAME_CALL = /\brename(?:Sync)?\s*\(/g;
-var WRITE_CALL = /\bwriteFile(?:Sync)?\s*\(/g;
-function listAtomicWriteSites(code) {
-  const claims = /* @__PURE__ */ new Map();
-  for (const fn of listFunctionBodies(code)) {
-    const body = code.slice(fn.bodyStart, fn.bodyEnd);
-    const writes = listPathArguments(body, WRITE_CALL);
-    const bodyLength = fn.bodyEnd - fn.bodyStart;
-    for (const rename of listPathArguments(body, RENAME_CALL)) {
-      const isPaired = writes.some((write) => write.name === rename.name && write.offset < rename.offset);
-      if (!isPaired) continue;
-      const offset = fn.bodyStart + rename.offset;
-      const claimed = claims.get(offset);
-      if (claimed !== void 0 && claimed.bodyLength <= bodyLength) continue;
-      claims.set(offset, {
-        bodyLength,
-        offset,
-        site: { kind: "temp-write-rename", line: getLineAtOffset(code, offset), symbol: fn.name }
-      });
-    }
-  }
-  return claims.values().toArray().toSorted((a, b) => a.offset - b.offset).map((claim) => claim.site);
-}
-function listPathArguments(body, pattern) {
-  const calls = [];
-  for (const match of body.matchAll(pattern)) {
-    const argumentList = readBalancedGroup(body, match.index + match[0].length - 1, PARENTHESES);
-    if (argumentList === void 0) continue;
-    const name = BOUND_PATH_ARGUMENT.exec(body.slice(argumentList.start + 1, argumentList.end - 1))?.groups?.["name"];
-    if (name !== void 0) calls.push({ name, offset: match.index });
-  }
-  return calls;
-}
-
-// src/readiness/listChainWalkSites.ts
+// ../adoption/src/portable/listDirectoryAscents.ts
 var ASSIGNED_TARGET = /(?<target>[A-Za-z_$][\w$]*) ?= ?$/;
 var ASSIGNMENT_WINDOW = { lookahead: 0, lookbehind: 80 };
 var BLANKED_LITERAL = /(?<quote>['"`])[^'"`]*\k<quote>/g;
@@ -241,19 +153,14 @@ var LEVEL_PROBE = /\b(?:access|exists|lstat|readdir|readFile|stat)(?:Sync)?\s*\(
 var LOOP_KEYWORD = /\b(?<keyword>do|for|while)\b/g;
 var SIMPLE_ASSIGNMENT = /(?<![\w$])(?<target>[A-Za-z_$][\w$]*)\s*=(?!=)\s*(?<value>[A-Za-z_$][\w$]*)(?![\w$.([])/g;
 var WHITESPACE = /\s/;
-function listChainWalkSites(code, source) {
-  const walks = listLoops(code).flatMap((loop) => describeChainWalk(code, source, loop) ?? []);
-  return walks.filter((walk) => walks.every((other) => other === walk || !isNested(other.loop, walk.loop))).map((walk) => walk.site);
+function listDirectoryAscents(code, source) {
+  const ascents = listLoops(code).flatMap((loop) => describeAscent(code, source, loop) ?? []);
+  return ascents.filter((ascent) => ascents.every((other) => other === ascent || !isNested(other.loop, ascent.loop))).map((ascent) => ({ line: getLineAtOffset(code, ascent.loop.start), probedNames: ascent.probedNames }));
 }
-function describeChainWalk(code, source, loop) {
+function describeAscent(code, source, loop) {
   const subject = findAscendedBinding(code.slice(loop.start, loop.end));
   if (subject === void 0) return void 0;
-  const probedNames = listProbedNames(code, source, loop, subject);
-  if (probedNames !== void 0 && isProjectRootSearch(probedNames)) return void 0;
-  return {
-    loop,
-    site: { kind: probedNames === void 0 ? "chain-walk" : "chain-probe", line: getLineAtOffset(code, loop.start) }
-  };
+  return { loop, probedNames: listProbedNames(code, source, loop, subject) };
 }
 function findAscendedBinding(region) {
   const assignments = listSimpleAssignments(region);
@@ -331,6 +238,105 @@ function readAssignedTarget(region, offset) {
   return ASSIGNED_TARGET.exec(before)?.groups?.["target"];
 }
 
+// ../adoption/src/portable/listFunctionBodies.ts
+var FUNCTION_HEAD = /(?:function\s+(?<declared>\w+)\s*(?:<[^<>]*>\s*)?\(|(?:const|let|var)\s+(?<bound>\w+)[^=;]*=\s*(?:async\s+)?(?:function\s*)?(?:<[^<>]*>\s*)?\((?<arrowParameters>[^)]*)\)[^=;{]*=>)/g;
+var PLAIN_PARAMETER = /^\s*(?<name>[A-Za-z_$][\w$]*)\s*(?=[,:=?]|$)/;
+function listFunctionBodies(source) {
+  const bodies = [];
+  FUNCTION_HEAD.lastIndex = 0;
+  let head = FUNCTION_HEAD.exec(source);
+  while (head !== null) {
+    const name = head.groups?.["declared"] ?? head.groups?.["bound"];
+    const from = findBodySearchStart(source, head);
+    const body = from === void 0 ? void 0 : readBalancedGroup(source, from, BRACES);
+    if (name !== void 0 && from !== void 0 && body !== void 0 && !source.slice(from, body.start).includes(";")) {
+      const firstParameter = findFirstParameterName(readParameterText(source, head));
+      bodies.push({
+        bodyEnd: body.end,
+        bodyStart: body.start,
+        ...firstParameter !== void 0 && { firstParameter },
+        headStart: head.index,
+        name
+      });
+    }
+    head = FUNCTION_HEAD.exec(source);
+  }
+  return bodies;
+}
+function findBodySearchStart(source, head) {
+  if (head.groups?.["declared"] === void 0) return head.index + head[0].length;
+  return readBalancedGroup(source, head.index, PARENTHESES)?.end;
+}
+function findFirstParameterName(parameterText) {
+  if (parameterText === void 0) return void 0;
+  return PLAIN_PARAMETER.exec(parameterText)?.groups?.["name"];
+}
+function readParameterText(source, head) {
+  const arrowParameters = head.groups?.["arrowParameters"];
+  if (arrowParameters !== void 0) return arrowParameters;
+  const group = readBalancedGroup(source, head.index, PARENTHESES);
+  return group === void 0 ? void 0 : source.slice(group.start + 1, group.end - 1);
+}
+
+// ../adoption/src/mod.ts
+import { blankNonCode, getLineAtOffset as getLineAtOffset2 } from "readyup/check-utils";
+
+// src/readiness/adoptedExports.ts
+var ADOPTED_EXPORTS = [
+  "findDirectoryChainMatch",
+  "listDirectoryChain",
+  "listDirectoryChainMatches",
+  "loadConfigCascade",
+  "reconcileFile",
+  "reconcileFileFromFile",
+  "replaceFileExtension",
+  "writeAtomic"
+];
+
+// src/readiness/listAtomicWriteSites.ts
+var BOUND_PATH_ARGUMENT = /^\s*(?<name>[A-Za-z_$][\w$]*)\s*(?:,|$)/;
+var RENAME_CALL = /\brename(?:Sync)?\s*\(/g;
+var WRITE_CALL = /\bwriteFile(?:Sync)?\s*\(/g;
+function listAtomicWriteSites(code) {
+  const claims = /* @__PURE__ */ new Map();
+  for (const fn of listFunctionBodies(code)) {
+    const body = code.slice(fn.bodyStart, fn.bodyEnd);
+    const writes = listPathArguments(body, WRITE_CALL);
+    const bodyLength = fn.bodyEnd - fn.bodyStart;
+    for (const rename of listPathArguments(body, RENAME_CALL)) {
+      const isPaired = writes.some((write) => write.name === rename.name && write.offset < rename.offset);
+      if (!isPaired) continue;
+      const offset = fn.bodyStart + rename.offset;
+      const claimed = claims.get(offset);
+      if (claimed !== void 0 && claimed.bodyLength <= bodyLength) continue;
+      claims.set(offset, {
+        bodyLength,
+        offset,
+        site: { kind: "temp-write-rename", line: getLineAtOffset2(code, offset), symbol: fn.name }
+      });
+    }
+  }
+  return claims.values().toArray().toSorted((a, b) => a.offset - b.offset).map((claim) => claim.site);
+}
+function listPathArguments(body, pattern) {
+  const calls = [];
+  for (const match of body.matchAll(pattern)) {
+    const argumentList = readBalancedGroup(body, match.index + match[0].length - 1, PARENTHESES);
+    if (argumentList === void 0) continue;
+    const name = BOUND_PATH_ARGUMENT.exec(body.slice(argumentList.start + 1, argumentList.end - 1))?.groups?.["name"];
+    if (name !== void 0) calls.push({ name, offset: match.index });
+  }
+  return calls;
+}
+
+// src/readiness/listChainWalkSites.ts
+function listChainWalkSites(code, source) {
+  return listDirectoryAscents(code, source).flatMap(({ line, probedNames }) => {
+    if (probedNames === void 0) return [{ kind: "chain-walk", line }];
+    return isManifestSearch(probedNames) ? [] : [{ kind: "chain-probe", line }];
+  });
+}
+
 // src/readiness/listFilesystemIdioms.ts
 function listFilesystemIdioms(source) {
   const code = blankNonCode(source);
@@ -343,6 +349,7 @@ function listFilesystemIdioms(source) {
 
 // .readyup/kits/default.ts
 var PACKAGE_NAME = "@williamthorsen/toolbelt.filesystem";
+var PACKAGING_README_URL = "https://github.com/williamthorsen/toolbelt/tree/main/packages/packaging#readme";
 var README_URL = "https://github.com/williamthorsen/toolbelt/tree/main/packages/filesystem#readme";
 var default_default = defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
@@ -366,7 +373,7 @@ var default_default = defineAdoptionKit({
       id: "no-hand-rolled-directory-walk",
       kinds: ["chain-probe", "chain-walk"],
       severity: "recommend",
-      fix: `Replace the loop named above with the directory-chain function that matches what it does, all three from ${PACKAGE_NAME}. A loop that only ascends takes listDirectoryChain, which returns the levels as strings and reads nothing from disk. A loop that probes each level for a name takes findDirectoryChainMatch where it stops at the nearest match, and listDirectoryChainMatches where every level's match matters; the first touches no level beyond the one that matches. All three take a stopAtDir that bounds the ascent, which a hand-rolled loop usually runs without. A loop probing for package.json is left to toolbelt.packaging, whose findProjectRoot covers it. Reference: ${README_URL}`
+      fix: `Replace the loop named above with the directory-chain function that matches what it does, all three from ${PACKAGE_NAME}. A loop that only ascends takes listDirectoryChain, which returns the levels as strings and reads nothing from disk. A loop that probes each level for a name takes findDirectoryChainMatch where it stops at the nearest match, and listDirectoryChainMatches where every level's match matters; the first touches no level beyond the one that matches. All three take a stopAtDir that bounds the ascent, which a hand-rolled loop usually runs without. A loop probing for package.json is left to toolbelt.packaging, whose own kit reports it: ${PACKAGING_README_URL}. Reference: ${README_URL}`
     }
   ]
 });

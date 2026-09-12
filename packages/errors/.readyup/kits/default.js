@@ -101,6 +101,14 @@ function condenseWhitespace(text) {
   return text.replaceAll(/\s+/g, " ");
 }
 
+// ../adoption/src/portable/readAnchoredWindow.ts
+function readAnchoredWindow(source, offset, lengths) {
+  return {
+    after: condenseWhitespace(source.slice(offset, offset + lengths.lookahead)),
+    before: condenseWhitespace(source.slice(Math.max(0, offset - lengths.lookbehind), offset))
+  };
+}
+
 // ../adoption/src/portable/readBalancedGroup.ts
 var BRACES = { close: "}", open: "{" };
 var PARENTHESES = { close: ")", open: "(" };
@@ -156,14 +164,6 @@ function readParameterText(source, head) {
   if (arrowParameters !== void 0) return arrowParameters;
   const group = readBalancedGroup(source, head.index, PARENTHESES);
   return group === void 0 ? void 0 : source.slice(group.start + 1, group.end - 1);
-}
-
-// ../adoption/src/portable/readAnchoredWindow.ts
-function readAnchoredWindow(source, offset, lengths) {
-  return {
-    after: condenseWhitespace(source.slice(offset, offset + lengths.lookahead)),
-    before: condenseWhitespace(source.slice(Math.max(0, offset - lengths.lookbehind), offset))
-  };
 }
 
 // ../adoption/src/mod.ts
