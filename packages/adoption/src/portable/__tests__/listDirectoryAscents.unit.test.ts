@@ -80,6 +80,38 @@ describe(listDirectoryAscents, () => {
     expect(listAscents(source)).toStrictEqual([{ line: 2, probedNames: ['.git'] }]);
   });
 
+  it('reads one name from a path however its literal segments are joined', () => {
+    const probes = [
+      "fs.existsSync(path.join(dir, 'node_modules', 'x', 'package.json'))",
+      "fs.existsSync(dir + '/node_modules/x' + '/package.json')",
+      'fs.existsSync(`${dir}/node_modules/x/package.json`)',
+    ].map((probe) => `let dir = start;\nwhile (true) {\n  if (${probe}) break;\n  dir = path.dirname(dir);\n}\n`);
+
+    expect(probes.map((source) => listAscents(source))).toStrictEqual(
+      Array.from({ length: 3 }, () => [{ line: 2, probedNames: ['node_modules/x/package.json'] }]),
+    );
+  });
+
+  // Reading the literals alone would name `package.json`, which is a different probe.
+  it('reads no name from a path holding another binding past the level', () => {
+    const probes = [
+      "fs.existsSync(path.join(dir, 'node_modules', name, 'package.json'))",
+      "fs.existsSync(path.join(dir, name, 'package.json'))",
+      'fs.existsSync(`${dir}/${name}/package.json`)',
+    ].map((probe) => `let dir = start;\nwhile (true) {\n  if (${probe}) break;\n  dir = path.dirname(dir);\n}\n`);
+
+    expect(probes.map((source) => listAscents(source))).toStrictEqual(
+      Array.from({ length: 3 }, () => [{ line: 2, probedNames: [] }]),
+    );
+  });
+
+  it('reads the name from the path alone, passing over an argument beside it', () => {
+    const source =
+      "let dir = start;\nwhile (true) {\n  const text = fs.readFileSync(path.join(dir, 'package.json'), 'utf8');\n  dir = path.dirname(dir);\n}\n";
+
+    expect(listAscents(source)).toStrictEqual([{ line: 2, probedNames: ['package.json'] }]);
+  });
+
   it('reads no name from a read of the level itself', () => {
     const source =
       'let dir = start;\nwhile (true) {\n  if (fs.readdirSync(dir).length > 0) break;\n  dir = path.dirname(dir);\n}\n';

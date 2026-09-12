@@ -18,18 +18,20 @@ const ASSIGNED_TARGET = /(?<target>[A-Za-z_$][\w$]*) ?= ?$/;
 const ASSIGNMENT_WINDOW = { lookahead: 0, lookbehind: 80 };
 // A literal that blanking emptied and whose quotes it kept. What it holds is read from the source beneath.
 const BLANKED_LITERAL = /(?<quote>['"`])[^'"`]*\k<quote>/g;
+// The brackets that hold a comma inside one argument: a call's, an array's, an object's, and an interpolation's.
+const BRACKET_CLOSERS = new Set([')', ']', '}']);
+const BRACKET_OPENERS = new Set(['(', '[', '{']);
 // `dirname` called on a bare binding, through any receiver or none, so `path.dirname`, an aliased import, and a
 // destructured import all match. The assignment-back rule carries the precision, so the anchor need not.
 const DIRNAME_ASCENT = /(?:[A-Za-z_$][\w$]*\s*\.\s*)?\bdirname\s*\(\s*(?<subject>[A-Za-z_$][\w$]*)\s*\)/g;
 // Every name read as a value, which leaves out the name of a member.
 const IDENTIFIER = /(?<![\w$.])[A-Za-z_$][\w$]*/g;
-// What blanking leaves of an interpolation, which is the expression itself. Dropping it and the separator behind
-// it leaves the level-relative name that a probe built from the loop's binding looks for.
-const INTERPOLATION = /\$\{[^{}]*\}/g;
 const LEADING_SEPARATOR = /^[/\\]+/;
-// The reads by which a walk asks what a level holds, in their synchronous and their promise spelling alike.
+// The reads by which a walk asks what a level holds, in their synchronous and their promise spelling alike. Each
+// takes the path that it reads as its first argument.
 const LEVEL_PROBE = /\b(?:access|exists|lstat|readdir|readFile|stat)(?:Sync)?\s*\(/g;
 const LOOP_KEYWORD = /\b(?<keyword>do|for|while)\b/g;
+const SEPARATOR_RUN = /[/\\]+/g;
 // One bare binding assigned to another and nothing else, which is the step carrying an ascent back to the binding
 // that it ascends.
 const SIMPLE_ASSIGNMENT = /(?<![\w$])(?<target>[A-Za-z_$][\w$]*)\s*=(?!=)\s*(?<value>[A-Za-z_$][\w$]*)(?![\w$.([])/g;
@@ -65,6 +67,10 @@ interface LoopAscent {
  *
  * The scanner under-matches on purpose. A recursive walk-up function is no loop and goes unreported, as does an
  * ascent written as `resolve(dir, '..')` and a loop whose body is a single unbraced statement.
+ *
+ * A probed name is read only where the path is written out literally past the ascended binding. A path reading
+ * another binding there, such as `${dir}/node_modules/${name}/package.json`, contributes no name, because a name
+ * read from its literals alone would name a different path.
  *
  * @internal
  */
@@ -154,25 +160,13 @@ function listLoops(code: string): Loop[] {
   return loops;
 }
 
-/** Lists the level-relative names held by the literals of a probe's arguments. */
-function listProbedLiterals(source: string, argumentText: string, offset: number): string[] {
-  const names: string[] = [];
-
-  for (const match of argumentText.matchAll(BLANKED_LITERAL)) {
-    const text = readLiteral(source, [offset + match.index, offset + match.index + match[0].length]);
-    const name = text?.replaceAll(INTERPOLATION, '').replace(LEADING_SEPARATOR, '');
-    if (name !== undefined && name !== '') names.push(name);
-  }
-
-  return names;
-}
-
 /**
  * Returns the names that a loop probes each level for, or nothing where it probes for none.
  *
  * A probe is a read of a path built from the binding that the loop ascends, which is what separates a search of
- * the chain from a bare ascent. The list is empty where the loop reads the level itself rather than a name under
- * it, as a read of its entries does.
+ * the chain from a bare ascent. Only the path is read, so an encoding or an option passed beside it is no name.
+ * The list is empty where the loop reads the level itself rather than a name under it, as a read of its entries
+ * does.
  */
 function listProbedNames(code: string, source: string, loop: Loop, subject: string): string[] | undefined {
   const region = code.slice(loop.start, loop.end);
@@ -183,11 +177,14 @@ function listProbedNames(code: string, source: string, loop: Loop, subject: stri
     const argumentList = readBalancedGroup(region, match.index + match[0].length - 1, PARENTHESES);
     if (argumentList === undefined) continue;
 
-    const argumentText = region.slice(argumentList.start + 1, argumentList.end - 1);
-    if (!listIdentifiers(argumentText).includes(subject)) continue;
+    const pathText = readFirstArgument(region.slice(argumentList.start + 1, argumentList.end - 1));
+    const subjectRead = pathText.matchAll(IDENTIFIER).find((read) => read[0] === subject);
+    if (subjectRead === undefined) continue;
 
     isProbing = true;
-    names.push(...listProbedLiterals(source, argumentText, loop.start + argumentList.start + 1));
+    const pathOffset = loop.start + argumentList.start + 1;
+    const name = readProbedName(source, pathText, pathOffset, subjectRead.index + subject.length);
+    if (name !== undefined) names.push(name);
   }
 
   return isProbing ? names : undefined;
@@ -211,6 +208,47 @@ function readAssignedTarget(region: string, offset: number): string | undefined 
   const { before } = readAnchoredWindow(region, offset, ASSIGNMENT_WINDOW);
 
   return ASSIGNED_TARGET.exec(before)?.groups?.['target'];
+}
+
+/** Returns a call's first argument, read from the text between its parentheses. */
+function readFirstArgument(argumentText: string): string {
+  let depth = 0;
+
+  for (let index = 0; index < argumentText.length; index += 1) {
+    const character = argumentText.charAt(index);
+    if (BRACKET_OPENERS.has(character)) depth += 1;
+    else if (BRACKET_CLOSERS.has(character)) depth -= 1;
+    else if (character === ',' && depth === 0) return argumentText.slice(0, index);
+  }
+
+  return argumentText;
+}
+
+/**
+ * Returns the level-relative name that a probe's path holds past the ascended binding, or nothing where it holds
+ * none that the scan can read.
+ *
+ * Each literal past the binding is a segment of the name, so `join(dir, 'a', 'b')`, `dir + '/a/b'`, and
+ * `${dir}/a/b` all read as `a/b`. `from` is the offset in `pathText` just past the binding's read.
+ */
+function readProbedName(source: string, pathText: string, offset: number, from: number): string | undefined {
+  if (listIdentifiers(pathText.slice(from)).length > 0) return undefined;
+
+  const segments = pathText
+    .matchAll(BLANKED_LITERAL)
+    .filter((match) => match.index + match[0].length > from)
+    .map((match) => {
+      const end = match.index + match[0].length;
+      if (match.index >= from) return readLiteral(source, [offset + match.index, offset + end]) ?? '';
+
+      // The binding is interpolated into this literal, so the name begins where that interpolation closes.
+      const rest = source.slice(offset + from, offset + end - 1);
+      return rest.slice(rest.indexOf('}') + 1);
+    })
+    .toArray();
+  const name = segments.join('/').replaceAll(SEPARATOR_RUN, '/').replace(LEADING_SEPARATOR, '');
+
+  return name === '' ? undefined : name;
 }
 
 // endregion | Helpers
