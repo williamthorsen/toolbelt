@@ -50,6 +50,7 @@
     "@williamthorsen/toolbelt.errors": "workspace:*"
   },
   "devDependencies": {
+    "@williamthorsen/toolbelt.adoption": "workspace:*",
     "@williamthorsen/toolbelt.testing": "workspace:*"
   },
   "engines": {
