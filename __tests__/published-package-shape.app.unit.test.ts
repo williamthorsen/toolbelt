@@ -122,7 +122,7 @@ function auditPublishedDocuments(monorepoRoot: string): { defects: string[]; wor
     if (readme === undefined) {
       defects.push(`${workspace}: README.md is missing`);
     } else {
-      if (!readme.startsWith(`# ${PUBLISHED_NAME_PREFIX}${workspace}\n`)) {
+      if (readTitleLine(readme) !== `# ${PUBLISHED_NAME_PREFIX}${workspace}`) {
         defects.push(`${workspace}: README.md does not open with the title # ${PUBLISHED_NAME_PREFIX}${workspace}`);
       }
 
@@ -174,6 +174,18 @@ function readDocument(packageDirectory: string, fileName: string): string | unde
   const filePath = path.join(packageDirectory, fileName);
 
   return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : undefined;
+}
+
+/**
+ * Returns the first line of a README that is neither blank nor an HTML comment, which is where its title sits.
+ *
+ * A README records its type on its first line, as an HTML comment that no reader sees rendered, so the title
+ * check reads past whatever comments precede it rather than counting one as a missing title.
+ */
+function readTitleLine(readme: string): string {
+  const lines = readme.split('\n').map((line) => line.trim());
+
+  return lines.find((line) => line !== '' && !line.startsWith('<!--')) ?? '';
 }
 
 // endregion | Helpers
