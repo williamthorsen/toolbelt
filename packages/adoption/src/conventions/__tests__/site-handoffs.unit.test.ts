@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { isArraySubscript } from '../site-handoffs.ts';
+import { isArraySubscript, isProjectRootSearch } from '../site-handoffs.ts';
 
 describe(isArraySubscript, () => {
   it('claims a bracket following an identifier', () => {
@@ -43,5 +43,30 @@ describe(isArraySubscript, () => {
 
   it('declines text ending anywhere but an opening bracket', () => {
     expect(isArraySubscript('const total = items.length * ')).toBe(false);
+  });
+});
+
+describe(isProjectRootSearch, () => {
+  it('claims a walk probing for a manifest', () => {
+    expect(isProjectRootSearch(['package.json'])).toBe(true);
+  });
+
+  it('claims a walk probing for a manifest beside other markers', () => {
+    expect(isProjectRootSearch(['.git', 'package.json', 'pnpm-workspace.yaml'])).toBe(true);
+  });
+
+  it('declines a walk probing for a repository marker alone', () => {
+    expect(isProjectRootSearch(['.git'])).toBe(false);
+  });
+
+  it('declines a walk probing for a name that merely ends in the manifest name', () => {
+    const names = ['my-package.json', 'packages/package.json'];
+
+    expect(names.filter((name) => isProjectRootSearch([name]))).toStrictEqual([]);
+  });
+
+  // A bare ascent probes for nothing, and the detector reading this answer asks the question for it all the same.
+  it('declines a walk that probes for no name', () => {
+    expect(isProjectRootSearch([])).toBe(false);
   });
 });

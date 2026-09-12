@@ -23,7 +23,7 @@ import path from 'node:path';
  *
  * @category Filesystem
  * @experimental
- * @stage proposed
+ * @stage candidate
  */
 export async function writeAtomic(filePath: string, content: string | Uint8Array): Promise<void> {
   const dir = path.dirname(filePath);

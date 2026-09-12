@@ -5,7 +5,7 @@
       "checklists": [
         "adoption"
       ],
-      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.guards",
+      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.filesystem",
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
@@ -54,42 +54,37 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "5538264f",
+          "hash": "70f09556",
           "kind": "module",
           "path": "kits/default.ts"
         },
         {
-          "hash": "71740f32",
+          "hash": "065da837",
           "kind": "module",
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "8680e638",
+          "hash": "454f687a",
           "kind": "module",
-          "path": "../src/readiness/findAssertionClone.ts"
+          "path": "../src/readiness/listAtomicWriteSites.ts"
         },
         {
-          "hash": "57276059",
+          "hash": "513d62ff",
           "kind": "module",
-          "path": "../src/readiness/findPredicateClone.ts"
+          "path": "../src/readiness/listChainWalkSites.ts"
         },
         {
-          "hash": "6f88b311",
+          "hash": "612ff5f3",
           "kind": "module",
-          "path": "../src/readiness/listGuardClones.ts"
-        },
-        {
-          "hash": "dc1fae0c",
-          "kind": "module",
-          "path": "../src/readiness/nullish-tests.ts"
+          "path": "../src/readiness/listFilesystemIdioms.ts"
         }
       ],
       "name": "default",
       "path": "kits/default.js",
       "readyupVersion": "0.35.1",
       "source": "kits/default.ts",
-      "sourceHash": "5538264f",
-      "targetHash": "93e47cea"
+      "sourceHash": "70f09556",
+      "targetHash": "d25b6cfc"
     }
   ]
 }

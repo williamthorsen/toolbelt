@@ -14,6 +14,7 @@ export default defineRdyConfig({
     '@williamthorsen/toolbelt.async',
     '@williamthorsen/toolbelt.enums',
     '@williamthorsen/toolbelt.errors',
+    '@williamthorsen/toolbelt.filesystem',
     '@williamthorsen/toolbelt.guards',
     '@williamthorsen/toolbelt.numbers',
     '@williamthorsen/toolbelt.objects',

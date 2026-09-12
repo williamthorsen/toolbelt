@@ -1,3 +1,5 @@
+<!-- readme-type: library -->
+
 # @williamthorsen/toolbelt.filesystem
 
 Filesystem utilities for TypeScript and JavaScript.
@@ -15,6 +17,41 @@ pnpm add @williamthorsen/toolbelt.filesystem
 `findDirectoryChainMatch`, `listDirectoryChainMatches`, `loadConfigCascade`, `reconcileFile`, `reconcileFileFromFile`, and `writeAtomic` reach the filesystem through `node:` builtins, so they run under Node.js 24 or later, Bun, and Deno. They do not run in browsers, nor in edge runtimes that expose no filesystem. `listDirectoryChain` and `replaceFileExtension` touch no filesystem, so an edge runtime that exposes none runs them; they still import `node:path`, which a browser bundle has to supply.
 
 `loadConfigCascade` imports each config through the host runtime, so a `.ts` config is subject to whatever that runtime does with TypeScript. Node strips types rather than compiling them, which admits erasable syntax alone: An `enum`, a `namespace`, or a parameter property in a config file fails to parse. A `.mjs` or `.js` config sidesteps the question.
+
+## Adoption checks
+
+The package ships a ReadyUp kit, so a project that installs it can ask how far its adoption got:
+
+```sh
+rdy run --packages
+```
+
+The kit reads the project's tracked sources and reports two idioms, each counted against the calls that the project already makes into this package. Both report at `recommend`: They are correct code that a published function expresses better, not defects.
+
+`no-hand-rolled-atomic-write` reports a function body that writes a path held in a binding and renames that same binding, naming the function that holds it. A write alone, a rename alone, a `copyFile` followed by a rename, and a rename of a path that the body never wrote report nothing. The site reports at `recommend` however the temp file is staged, because a text scan cannot tell whether two paths share a volume, and one staged under the system temporary directory is the case worth checking by hand: `rename` is atomic only within one filesystem.
+
+`no-hand-rolled-directory-walk` reports a loop that ascends by `dirname` until it reaches the filesystem root, naming the line the loop opens on. A loop that only ascends takes [`listDirectoryChain`](#listdirectorychain); one that probes each level for a name takes [`findDirectoryChainMatch`](#finddirectorychainmatch) or [`listDirectoryChainMatches`](#listdirectorychainmatches). The report names the site rather than the shape, so the fix text describes both and the reader chooses from the loop itself. A loop probing for `package.json` is left alone: That site belongs to [`@williamthorsen/toolbelt.packaging`](https://github.com/williamthorsen/toolbelt/tree/main/packages/packaging#readme), whose `findProjectRoot` covers it, and reporting it here would mean seeing one loop twice under conflicting advice.
+
+The walk detector under-matches by design. A recursive walk-up function is no loop, an ascent written as `path.resolve(dir, '..')` carries a different anchor, and a loop that computes a parent per item without assigning it back is no ascent. None of the three reports.
+
+Bootstrap wrappers under `bin/` are exempt: Such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they write these shapes deliberately. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: The sweep drops it before the kit sees it, so committed bundler output yields no advice that anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
+
+A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
+
+```ts
+// rdy-ignore-next-line toolbelt.filesystem/no-hand-rolled-directory-walk -- the ascent stops at a ceiling
+while (dir !== stopAtDir) {
+  dir = path.dirname(dir);
+}
+```
+
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+
+```ts
+export default defineRdyConfig({
+  packages: ['@williamthorsen/toolbelt.filesystem'],
+});
+```
 
 ## `listDirectoryChain`
 
@@ -269,7 +306,7 @@ Two inputs throw rather than returning a path that would quietly be wrong: a `fi
 
 ## `writeAtomic`
 
-Proposed tier: Imported from `@williamthorsen/toolbelt.filesystem/proposed` rather than the package root, and subject to change.
+Candidate tier: Imported from `@williamthorsen/toolbelt.filesystem/candidate` rather than the package root, and subject to change.
 
 ```ts
 writeAtomic(filePath: string, content: string | Uint8Array): Promise<void>;
@@ -278,7 +315,7 @@ writeAtomic(filePath: string, content: string | Uint8Array): Promise<void>;
 Writes `content` to `filePath` through a temp file and a rename, so a concurrent reader sees either the previous file or the complete new one, never a partial write:
 
 ```ts
-import { writeAtomic } from '@williamthorsen/toolbelt.filesystem/proposed';
+import { writeAtomic } from '@williamthorsen/toolbelt.filesystem/candidate';
 
 await writeAtomic('.agents/manifest.json', `${JSON.stringify(manifest, null, 2)}\n`);
 ```

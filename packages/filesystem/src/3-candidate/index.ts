@@ -1,1 +1,1 @@
-export {};
+export { writeAtomic } from './writeAtomic.ts';
