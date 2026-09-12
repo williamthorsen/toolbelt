@@ -288,6 +288,12 @@ importers:
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
         version: link:../testing
+      esbuild:
+        specifier: 'catalog:'
+        version: 0.28.2
+      readyup:
+        specifier: 'catalog:'
+        version: 0.35.1(esbuild@0.28.2)
 
   packages/git:
     dependencies:
