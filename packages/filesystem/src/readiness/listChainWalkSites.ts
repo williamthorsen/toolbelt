@@ -1,4 +1,4 @@
-import { type AdoptionSite, isProjectRootSearch, listDirectoryAscents } from '@williamthorsen/toolbelt.adoption';
+import { type AdoptionSite, isManifestSearch, listDirectoryAscents } from '@williamthorsen/toolbelt.adoption';
 
 export type ChainWalkKind = 'chain-probe' | 'chain-walk';
 
@@ -7,14 +7,14 @@ export type ChainWalkKind = 'chain-probe' | 'chain-walk';
  * finds in the blanked code produced by `listFilesystemIdioms`.
  *
  * A walk probing each level for a name reports as `chain-probe` and a bare ascent as `chain-walk`, the two
- * taking different substitutions. A walk probing for `package.json` is `toolbelt.packaging`'s and is dropped
- * here, on the rule that both kits read.
+ * taking different substitutions. A walk probing for `package.json` is `toolbelt.packaging`'s, reported by its
+ * kit, and is dropped here on `isManifestSearch`, the rule that both kits read.
  *
  * @internal
  */
 export function listChainWalkSites(code: string, source: string): Array<AdoptionSite<ChainWalkKind>> {
   return listDirectoryAscents(code, source).flatMap(({ line, probedNames }): Array<AdoptionSite<ChainWalkKind>> => {
     if (probedNames === undefined) return [{ kind: 'chain-walk', line }];
-    return isProjectRootSearch(probedNames) ? [] : [{ kind: 'chain-probe', line }];
+    return isManifestSearch(probedNames) ? [] : [{ kind: 'chain-probe', line }];
   });
 }

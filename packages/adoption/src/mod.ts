@@ -6,7 +6,7 @@ export {
   isJsTsSource,
   isTestFile,
 } from './conventions/path-predicates.ts';
-export { isArraySubscript, isProjectRootSearch } from './conventions/site-handoffs.ts';
+export { isArraySubscript, isManifestSearch } from './conventions/site-handoffs.ts';
 export {
   type AdoptionCheck,
   type AdoptionKitSpec,

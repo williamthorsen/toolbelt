@@ -42,7 +42,7 @@ describe(listChainWalkSites, () => {
     expect(listSites(source)).toStrictEqual([{ kind: 'chain-probe', line: 2 }]);
   });
 
-  // The site is `toolbelt.packaging`'s, whose kit recommends `findProjectRoot`.
+  // The site is `toolbelt.packaging`'s, whose kit reports it.
   it('declines a probe for a manifest, regardless of how the path is built', () => {
     const probes = ["fs.existsSync(path.join(dir, 'package.json'))", 'fs.existsSync(`${dir}/package.json`)'].map(
       (probe) => `let dir = start;\nwhile (true) {\n  if (${probe}) break;\n  dir = path.dirname(dir);\n}\n`,

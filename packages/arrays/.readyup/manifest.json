@@ -14,7 +14,7 @@
           "path": "../../adoption/src/conventions/path-predicates.ts"
         },
         {
-          "hash": "05c02e77",
+          "hash": "0237a871",
           "kind": "module",
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
@@ -24,7 +24,7 @@
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "5b2fd386",
+          "hash": "6dc12ee9",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -32,6 +32,11 @@
           "hash": "6fdaacac",
           "kind": "module",
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
+        },
+        {
+          "hash": "d28102d6",
+          "kind": "module",
+          "path": "../../adoption/src/portable/listDirectoryAscents.ts"
         },
         {
           "hash": "07c8358f",
@@ -89,7 +94,7 @@
       "readyupVersion": "0.35.1",
       "source": "kits/default.ts",
       "sourceHash": "33ee2c2d",
-      "targetHash": "af63d946"
+      "targetHash": "448480ac"
     }
   ]
 }
