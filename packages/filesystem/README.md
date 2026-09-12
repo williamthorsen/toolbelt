@@ -269,7 +269,7 @@ Two inputs throw rather than returning a path that would quietly be wrong: a `fi
 
 ## `writeAtomic`
 
-Proposed tier: Imported from `@williamthorsen/toolbelt.filesystem/proposed` rather than the package root, and subject to change.
+Candidate tier: Imported from `@williamthorsen/toolbelt.filesystem/candidate` rather than the package root, and subject to change.
 
 ```ts
 writeAtomic(filePath: string, content: string | Uint8Array): Promise<void>;
@@ -278,7 +278,7 @@ writeAtomic(filePath: string, content: string | Uint8Array): Promise<void>;
 Writes `content` to `filePath` through a temp file and a rename, so a concurrent reader sees either the previous file or the complete new one, never a partial write:
 
 ```ts
-import { writeAtomic } from '@williamthorsen/toolbelt.filesystem/proposed';
+import { writeAtomic } from '@williamthorsen/toolbelt.filesystem/candidate';
 
 await writeAtomic('.agents/manifest.json', `${JSON.stringify(manifest, null, 2)}\n`);
 ```
