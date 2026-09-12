@@ -88,7 +88,7 @@ describe(listChainWalkSites, () => {
   });
 
   // The site is `toolbelt.packaging`'s, whose kit recommends `findProjectRoot`.
-  it('declines a probe for a manifest, however the path is built', () => {
+  it('declines a probe for a manifest, regardless of how the path is built', () => {
     const probes = ["fs.existsSync(path.join(dir, 'package.json'))", 'fs.existsSync(`${dir}/package.json`)'].map(
       (probe) => `let dir = start;\nwhile (true) {\n  if (${probe}) break;\n  dir = path.dirname(dir);\n}\n`,
     );
@@ -96,7 +96,7 @@ describe(listChainWalkSites, () => {
     expect(probes.map((source) => listSites(source))).toStrictEqual([[], []]);
   });
 
-  it('claims a probe for a manifest beside a marker nowhere, the manifest deciding', () => {
+  it('declines a probe for a manifest, regardless of how many markers sit beside it', () => {
     const source = [
       'let dir = start;',
       'while (true) {',
