@@ -41,6 +41,7 @@ export function listKitCheckReports(packageDir: string, entries: Record<string, 
 
 // region | Helpers
 
+/** Narrows to `unknown[]`, where `Array.isArray` narrows to `any[]`. */
 function isUnknownArray(value: unknown): value is unknown[] {
   return Array.isArray(value);
 }
