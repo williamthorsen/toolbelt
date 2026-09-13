@@ -19,10 +19,10 @@ const ASSIGNMENT_WINDOW = { lookahead: 0, lookbehind: 80 };
 // The brackets that hold a comma inside one expression: a call's, an array's, an object's, and an interpolation's.
 const BRACKET_CLOSERS = new Set([')', ']', '}']);
 const BRACKET_OPENERS = new Set(['(', '[', '{']);
+// A declaration assigning a value, matched through its `=` so that the value opens at the end of the match.
+const DECLARATION = /\b(?:const|let|var)\s+(?<name>[A-Za-z_$][\w$]*)\s*(?::[^=;\n]*)?=(?![=>])/g;
 // A declaration of a name, whether or not it assigns a value.
 const DECLARED_NAME = /\b(?:const|let|var)\s+(?<name>[A-Za-z_$][\w$]*)/g;
-// A declaration assigning a value, matched through its `=` so that the value opens where the match ends.
-const DECLARATION = /\b(?:const|let|var)\s+(?<name>[A-Za-z_$][\w$]*)\s*(?::[^=;\n]*)?=(?![=>])/g;
 // `dirname` called on a bare binding, through any receiver or none, so `path.dirname`, an aliased import, and a
 // destructured import all match. The assignment-back rule carries the precision, so the anchor need not.
 const DIRNAME_ASCENT = /(?:[A-Za-z_$][\w$]*\s*\.\s*)?\bdirname\s*\(\s*(?<subject>[A-Za-z_$][\w$]*)\s*\)/g;
@@ -102,9 +102,9 @@ interface TemplateParts {
  * The scanner under-matches on purpose. A recursive walk-up function is no loop and goes unreported, as does an
  * ascent written as `resolve(dir, '..')` and a loop whose body is a single unbraced statement.
  *
- * A probe's path is read through a binding that the loop declares with a value and never reassigns, and through a
- * `const` string literal that is the source's only declaration of its name, as though each value were written in
- * place. A name read past the ascended binding that neither resolves, such as `name` in
+ * A probe's path is read through a binding that the loop declares once with a value and never reassigns, and through
+ * a `const` that holds a string literal and is the source's only declaration of its name, as though each value were
+ * written in place. A name read past the ascended binding that neither resolves, such as `name` in
  * `${dir}/node_modules/${name}/package.json`, contributes no probed name, because a name read from the literals
  * alone would name a different path. A constant imported from another module or declared more than once is such a
  * name. A path reaching the level through a binding declared outside the loop or assigned more than once in it is
