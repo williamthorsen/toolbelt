@@ -18,6 +18,7 @@ export default defineRdyConfig({
     '@williamthorsen/toolbelt.guards',
     '@williamthorsen/toolbelt.numbers',
     '@williamthorsen/toolbelt.objects',
+    '@williamthorsen/toolbelt.packaging',
     '@williamthorsen/toolbelt.strings',
     '@williamthorsen/toolbelt.testing',
     '@williamthorsen/toolbelt.vitest',
