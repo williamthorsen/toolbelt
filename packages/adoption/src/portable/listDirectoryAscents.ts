@@ -65,8 +65,8 @@ interface LoopAscent {
 
 interface LoopBinding {
   name: string;
-  /** The parts of the value that the declaration assigns. */
-  parts: PathPart[];
+  /** The parts of the value that the declaration assigns, with each binding and constant in them expanded. */
+  parts: readonly PathPart[];
 }
 
 /** A name that a path reads as a value, or the text of a literal that it holds. */
@@ -124,12 +124,16 @@ export function listDirectoryAscents(code: string, source: string): DirectoryAsc
 
 // region | Helpers
 
-/** Counts the matches of a pattern that capture a given name. */
-function countMatchesNaming(text: string, pattern: RegExp, name: string): number {
-  return text
-    .matchAll(pattern)
-    .filter((match) => match.groups?.['name'] === name)
-    .toArray().length;
+/** Counts the matches of a pattern by the name that each captures. */
+function countMatchesByName(text: string, pattern: RegExp): Map<string, number> {
+  const counts = new Map<string, number>();
+
+  for (const match of text.matchAll(pattern)) {
+    const name = match.groups?.['name'];
+    if (name !== undefined) counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
+
+  return counts;
 }
 
 /** Describes the ascent that a loop performs, or nothing where it performs none. */
@@ -142,29 +146,23 @@ function describeAscent(
   const subject = findAscendedBinding(code.slice(loop.start, loop.end));
   if (subject === undefined) return undefined;
 
-  const scope: PathScope = { bindings: listLoopBindings(code, source, loop), constants };
+  const scope: PathScope = { bindings: listLoopBindings(code, source, loop, subject, constants), constants };
 
   return { loop, probedNames: listProbedNames(code, source, loop, subject, scope) };
 }
 
 /**
- * Replaces each read of a loop binding with the parts of its value, and each read of a string constant with its
- * text.
- *
- * A name in `expanding` stays a read, which keeps the ascended binding and a binding whose value reads itself
- * unexpanded.
+ * Replaces each read of a loop binding with the expanded parts of its value, and each read of a string constant
+ * with its text. A read of the ascended binding stays a read.
  */
-function expandPathParts(parts: readonly PathPart[], scope: PathScope, expanding: ReadonlySet<string>): PathPart[] {
-  return parts.flatMap((part): PathPart[] => {
-    if (part.kind === 'text' || expanding.has(part.name)) return [part];
+function expandPathParts(parts: readonly PathPart[], scope: PathScope, subject: string): PathPart[] {
+  return parts.flatMap((part): readonly PathPart[] => {
+    if (part.kind === 'text' || part.name === subject) return [part];
 
     const constant = scope.constants.find((candidate) => candidate.name === part.name);
     if (constant !== undefined) return [{ kind: 'text', text: constant.value }];
 
-    const binding = scope.bindings.find((candidate) => candidate.name === part.name);
-    if (binding === undefined) return [part];
-
-    return expandPathParts(binding.parts, scope, new Set([...expanding, part.name]));
+    return scope.bindings.find((candidate) => candidate.name === part.name)?.parts ?? [part];
   });
 }
 
@@ -237,25 +235,35 @@ function isNested(inner: Loop, outer: Loop): boolean {
 }
 
 /**
- * Lists every binding that a loop declares with a value and never assigns again, with the parts of that value.
+ * Lists every binding that a loop declares with a value and never assigns again, with the expanded parts of that
+ * value.
  *
  * A binding declared more than once in the loop, or reassigned there, holds no one value and is left out. A value
  * ends at the first comma or semicolon outside every bracket, so in a source written without semicolons it runs on
  * into the statements after it, and a path read through it holds no name.
  */
-function listLoopBindings(code: string, source: string, loop: Loop): LoopBinding[] {
+function listLoopBindings(
+  code: string,
+  source: string,
+  loop: Loop,
+  subject: string,
+  constants: readonly StringConstant[],
+): LoopBinding[] {
   const region = code.slice(loop.start, loop.end);
+  const declarationCounts = countMatchesByName(region, DECLARED_NAME);
+  const reassignmentCounts = countMatchesByName(region, REASSIGNMENT);
   const bindings: LoopBinding[] = [];
 
   for (const match of region.matchAll(DECLARATION)) {
     const name = match.groups?.['name'];
-    if (name === undefined) continue;
-    if (countMatchesNaming(region, DECLARED_NAME, name) !== 1) continue;
-    if (countMatchesNaming(region, REASSIGNMENT, name) > 0) continue;
+    if (name === undefined || declarationCounts.get(name) !== 1 || reassignmentCounts.has(name)) continue;
 
     const valueStart = loop.start + match.index + match[0].length;
     const parts = readPathParts(code, source, valueStart, findExpressionEnd(code, valueStart, loop.end));
-    if (parts !== undefined) bindings.push({ name, parts });
+    if (parts === undefined) continue;
+
+    // A value can read only the bindings declared before it, so each expands against those already listed.
+    bindings.push({ name, parts: expandPathParts(parts, { bindings, constants }, subject) });
   }
 
   return bindings;
@@ -298,7 +306,7 @@ function listProbedNames(
 
     const pathStart = argumentList.start + 1;
     const parts = readPathParts(code, source, pathStart, findExpressionEnd(code, pathStart, argumentList.end - 1));
-    const expanded = parts === undefined ? [] : expandPathParts(parts, scope, new Set([subject]));
+    const expanded = parts === undefined ? [] : expandPathParts(parts, scope, subject);
     const subjectIndex = expanded.findIndex((part) => part.kind === 'read' && part.name === subject);
     if (subjectIndex === -1) continue;
 
@@ -330,11 +338,13 @@ function listSimpleAssignments(region: string): BindingAssignment[] {
 function listStringConstants(code: string, source: string): StringConstant[] {
   const constants: StringConstant[] = [];
 
+  const declarationCounts = countMatchesByName(code, DECLARED_NAME);
+
   for (const match of code.matchAll(STRING_CONSTANT)) {
     const name = match.groups?.['name'];
     const value = readLiteral(source, match.indices?.groups?.['literal']);
     if (name === undefined || value === undefined) continue;
-    if (countMatchesNaming(code, DECLARED_NAME, name) === 1) constants.push({ name, value });
+    if (declarationCounts.get(name) === 1) constants.push({ name, value });
   }
 
   return constants;
