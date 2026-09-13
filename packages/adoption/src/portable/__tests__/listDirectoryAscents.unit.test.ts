@@ -219,14 +219,23 @@ describe(listDirectoryAscents, () => {
     expect(listAscents(source)).toStrictEqual([{ line: 2, probedNames: [] }]);
   });
 
-  // Neither binding holds one value per level, so the probe reaches no level that the scan can see.
-  it('reads no probe through a binding declared outside the loop or reassigned in it', () => {
+  // No such binding holds one value per level, so the probe reaches no level that the scan can see.
+  it('reads no probe through a binding declared outside the loop, declared twice in it, or reassigned in it', () => {
     const sources = [
       [
         'let dir = start;',
         "const manifestPath = path.join(dir, 'package.json');",
         'while (true) {',
         '  if (existsSync(manifestPath)) break;',
+        '  dir = path.dirname(dir);',
+        '}',
+        '',
+      ].join('\n'),
+      [
+        'let dir = start;',
+        'while (true) {',
+        "  if (isPackage) { const candidate = path.join(dir, 'package.json'); if (existsSync(candidate)) break; }",
+        "  else { const candidate = path.join(dir, '.git'); if (existsSync(candidate)) break; }",
         '  dir = path.dirname(dir);',
         '}',
         '',
@@ -246,7 +255,22 @@ describe(listDirectoryAscents, () => {
     expect(sources.map((source) => listAscents(source))).toStrictEqual([
       [{ line: 3, probedNames: undefined }],
       [{ line: 2, probedNames: undefined }],
+      [{ line: 2, probedNames: undefined }],
     ]);
+  });
+
+  it('reads no name through a binding in a source written without semicolons', () => {
+    const source = [
+      'let dir = start',
+      'while (true) {',
+      "  const manifestPath = path.join(dir, 'package.json')",
+      '  if (existsSync(manifestPath)) break',
+      '  dir = path.dirname(dir)',
+      '}',
+      '',
+    ].join('\n');
+
+    expect(listAscents(source)).toStrictEqual([{ line: 2, probedNames: [] }]);
   });
 
   it('reads no name through a constant that is imported, declared twice, or declared in a comment', () => {
