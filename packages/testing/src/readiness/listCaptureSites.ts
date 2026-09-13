@@ -49,8 +49,9 @@ const TRY_ANCHOR = /\btry\s*\{/g;
  * Lists every hand-rolled error capture in a source file, which is a try/catch whose try block is a single
  * call and whose catch block assigns the caught value to a variable declared outside the try.
  *
- * A capture whose enclosing block asserts the captured value `toBe` a literal is not reported: the call threw
- * something other than an `Error`, on which `captureError` fails the test.
+ * A capture whose enclosing block asserts the captured value `toBe` a literal, before anything reassigns the
+ * variable, is not reported: the call threw something other than an `Error`, on which `captureError` fails the
+ * test.
  *
  * The source is blanked before the anchor scan reads it, so a try written in a comment or a literal is
  * invisible here. Blanking preserves every offset, so a reported line still names the line held by the source.
@@ -75,7 +76,8 @@ export function listCaptureSites(source: string): Array<AdoptionSite<TestingIdio
 
     const catchEnd = block.end + capture.end;
     const blockRest = code.slice(catchEnd, findEnclosingBlockEnd(code, catchEnd) ?? code.length);
-    if (hasNonErrorLiteralAssertion(condenseWhitespace(blockRest), capture.target, before)) continue;
+    const captureRest = blockRest.slice(0, findReassignmentStart(blockRest, capture.target));
+    if (hasNonErrorLiteralAssertion(condenseWhitespace(captureRest), capture.target, before)) continue;
 
     sites.push({
       kind: 'hand-rolled-error-capture',
@@ -130,7 +132,16 @@ function findLiteralEnd(text: string): number | undefined {
 }
 
 /**
- * Reports whether the rest of a capture's block asserts the captured value `toBe` a literal, written inline or
+ * Returns the offset at which a text first assigns a name, or nothing where it never assigns one.
+ *
+ * An assertion past that offset reads whatever the assignment stored rather than the captured value.
+ */
+function findReassignmentStart(text: string, name: string): number | undefined {
+  return new RegExp(String.raw`(?<![\w$.])${escapeIdentifier(name)}\s*=(?![=>])`).exec(text)?.index;
+}
+
+/**
+ * Reports whether the text past a capture asserts the captured value `toBe` a literal, written inline or
  * through a `const` that the lookbehind declares.
  *
  * `toBe` alone compares identity, so its pass shows that the value thrown is the literal itself.

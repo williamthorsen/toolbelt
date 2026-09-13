@@ -252,6 +252,28 @@ describe(listCaptureSites, () => {
 
     expect(listCaptureSites(source)).toStrictEqual([{ kind: 'hand-rolled-error-capture', line: 3, symbol: 'caught' }]);
   });
+
+  it('claims a capture whose variable a later capture reassigns ahead of the literal assertion', () => {
+    const source = [
+      "it('describes what it parses and rethrows the rest', () => {",
+      'let caught: unknown;',
+      'try {',
+      '  parse(text);',
+      '} catch (error) {',
+      '  caught = error;',
+      '}',
+      'expect(caught).toBeInstanceOf(SyntaxError);',
+      'try {',
+      '  assertIsError(thrown);',
+      '} catch (error) {',
+      '  caught = error;',
+      '}',
+      "expect(caught).toBe('ENOENT');",
+      '});',
+    ].join('\n');
+
+    expect(listCaptureSites(source)).toStrictEqual([{ kind: 'hand-rolled-error-capture', line: 3, symbol: 'caught' }]);
+  });
 });
 
 // region | Helpers

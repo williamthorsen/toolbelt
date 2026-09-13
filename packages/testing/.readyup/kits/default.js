@@ -152,7 +152,8 @@ function listCaptureSites(source) {
     if (!hasOuterDeclaration(before, capture.target)) continue;
     const catchEnd = block.end + capture.end;
     const blockRest = code.slice(catchEnd, findEnclosingBlockEnd(code, catchEnd) ?? code.length);
-    if (hasNonErrorLiteralAssertion(condenseWhitespace(blockRest), capture.target, before)) continue;
+    const captureRest = blockRest.slice(0, findReassignmentStart(blockRest, capture.target));
+    if (hasNonErrorLiteralAssertion(condenseWhitespace(captureRest), capture.target, before)) continue;
     sites.push({
       kind: "hand-rolled-error-capture",
       line: getLineAtOffset(code, match.index),
@@ -184,6 +185,9 @@ function findLiteralEnd(text) {
     return close === -1 ? void 0 : close + 1;
   }
   return SCALAR_LITERAL.exec(text)?.[0].length;
+}
+function findReassignmentStart(text, name) {
+  return new RegExp(String.raw`(?<![\w$.])${escapeIdentifier(name)}\s*=(?![=>])`).exec(text)?.index;
 }
 function hasNonErrorLiteralAssertion(blockRest, target, before) {
   const assertion = new RegExp(String.raw`\bexpect\( ?${escapeIdentifier(target)} ?\) ?\.toBe\(`, "g");
