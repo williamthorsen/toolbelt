@@ -124,13 +124,19 @@ var ADOPTED_EXPORTS = [
 ];
 
 // src/readiness/listCaptureSites.ts
+var BRACKETS = { close: "]", open: "[" };
 var CALLEE = /^[\w$]+(?:\??\.[\w$]+)*(?:\?\.)?(?:<[^<>()]*>)?$/;
 var CALL_PREFIX = /^(?:await )?(?:new )?/;
 var CATCH_CLAUSE = /^\s*catch\s*\(/;
 var FINALLY_CLAUSE = /^\s*finally\b/;
 var CAUGHT_ASSIGNMENT = /^(?<target>[\w$]+) ?= ?(?<caught>[\w$]+)(?: as .+)?$/;
 var IDENTIFIER = /^[\w$]+$/;
+var LITERAL_ARGUMENT_TAIL = /^(?: as .+)?$/;
+var LITERAL_INITIALIZER_TAIL = /^ ?(?: as [^;]+)?;/;
 var LOOKBEHIND_LENGTH = 400;
+var SCALAR_LITERAL = /^(?:-?\.?\d(?:[eE][+-]|[\w.])*|(?:false|null|true|undefined)(?![\w$]))/;
+var STRING_DELIMITERS = /* @__PURE__ */ new Set(['"', "'", "`"]);
+var TRAILING_COMMA = /,$/;
 var TRAILING_SEMICOLON = /;$/;
 var TRY_ANCHOR = /\btry\s*\{/g;
 function listCaptureSites(source) {
@@ -140,19 +146,70 @@ function listCaptureSites(source) {
     const block = readBalancedGroup(code, match.index, BRACES);
     if (block === void 0) continue;
     if (!isSingleCall(condenseWhitespace(code.slice(block.start + 1, block.end - 1)))) continue;
-    const target = readCaughtTarget(code.slice(block.end));
-    if (target === void 0) continue;
+    const capture = readCatchCapture(code.slice(block.end));
+    if (capture === void 0) continue;
     const { before } = readAnchoredWindow(code, match.index, { lookahead: 0, lookbehind: LOOKBEHIND_LENGTH });
-    if (!hasOuterDeclaration(before, target)) continue;
-    sites.push({ kind: "hand-rolled-error-capture", line: getLineAtOffset(code, match.index), symbol: target });
+    if (!hasOuterDeclaration(before, capture.target)) continue;
+    const catchEnd = block.end + capture.end;
+    const blockRest = code.slice(catchEnd, findEnclosingBlockEnd(code, catchEnd) ?? code.length);
+    if (hasNonErrorLiteralAssertion(condenseWhitespace(blockRest), capture.target, before)) continue;
+    sites.push({
+      kind: "hand-rolled-error-capture",
+      line: getLineAtOffset(code, match.index),
+      symbol: capture.target
+    });
   }
   return sites;
 }
 function escapeIdentifier(name) {
   return name.replaceAll("$", String.raw`\$`);
 }
+function findEnclosingBlockEnd(code, from) {
+  let depth = 0;
+  for (let index = from; index < code.length; index += 1) {
+    if (code[index] === "{") depth += 1;
+    else if (code[index] === "}") {
+      if (depth === 0) return index;
+      depth -= 1;
+    }
+  }
+  return void 0;
+}
+function findLiteralEnd(text) {
+  const opener = text[0];
+  if (opener === "{") return readBalancedGroup(text, 0, BRACES)?.end;
+  if (opener === "[") return readBalancedGroup(text, 0, BRACKETS)?.end;
+  if (opener !== void 0 && STRING_DELIMITERS.has(opener)) {
+    const close = text.indexOf(opener, 1);
+    return close === -1 ? void 0 : close + 1;
+  }
+  return SCALAR_LITERAL.exec(text)?.[0].length;
+}
+function hasNonErrorLiteralAssertion(blockRest, target, before) {
+  const assertion = new RegExp(String.raw`\bexpect\( ?${escapeIdentifier(target)} ?\) ?\.toBe\(`, "g");
+  for (const match of blockRest.matchAll(assertion)) {
+    const args = readBalancedGroup(blockRest, match.index + match[0].length - 1, PARENTHESES);
+    if (args === void 0) continue;
+    const expected = blockRest.slice(args.start + 1, args.end - 1).trim().replace(TRAILING_COMMA, "").trim();
+    if (isNonErrorLiteral(expected) || isBoundToNonErrorLiteral(before, expected)) return true;
+  }
+  return false;
+}
 function hasOuterDeclaration(before, name) {
   return new RegExp(String.raw`\b(?:let|var) ${escapeIdentifier(name)}\b`).test(before);
+}
+function isBoundToNonErrorLiteral(before, name) {
+  if (!IDENTIFIER.test(name)) return false;
+  const declaration = new RegExp(String.raw`\bconst ${escapeIdentifier(name)}(?: ?:[^=;]*)? ?= ?`, "g");
+  const nearest = before.matchAll(declaration).toArray().at(-1);
+  if (nearest === void 0) return false;
+  const initializer = before.slice(nearest.index + nearest[0].length);
+  const end = findLiteralEnd(initializer);
+  return end !== void 0 && LITERAL_INITIALIZER_TAIL.test(initializer.slice(end));
+}
+function isNonErrorLiteral(expression) {
+  const end = findLiteralEnd(expression);
+  return end !== void 0 && LITERAL_ARGUMENT_TAIL.test(expression.slice(end));
 }
 function isSingleCall(body) {
   const statement = body.trim().replace(TRAILING_SEMICOLON, "").trim().replace(CALL_PREFIX, "");
@@ -160,7 +217,7 @@ function isSingleCall(body) {
   if (args === void 0 || args.end !== statement.length) return false;
   return CALLEE.test(statement.slice(0, args.start).trim());
 }
-function readCaughtTarget(tail) {
+function readCatchCapture(tail) {
   const clause = CATCH_CLAUSE.exec(tail);
   if (clause === null) return void 0;
   const bound = readBalancedGroup(tail, clause[0].length - 1, PARENTHESES);
@@ -172,7 +229,9 @@ function readCaughtTarget(tail) {
   if (FINALLY_CLAUSE.test(tail.slice(block.end))) return void 0;
   const body = condenseWhitespace(tail.slice(block.start + 1, block.end - 1));
   const assignment = CAUGHT_ASSIGNMENT.exec(body.trim().replace(TRAILING_SEMICOLON, "").trim());
-  return assignment?.groups?.["caught"] === parameter ? assignment.groups["target"] : void 0;
+  const target = assignment?.groups?.["target"];
+  if (target === void 0 || assignment?.groups?.["caught"] !== parameter) return void 0;
+  return { end: block.end, target };
 }
 
 // .readyup/kits/default.ts

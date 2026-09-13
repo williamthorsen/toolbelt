@@ -86,6 +86,26 @@ const UNCLAIMED = [
     source: ['const sample = `let caught; try { parse(text); } catch (error) { caught = error; }`;'],
   },
 ];
+// Each a `toBe` argument from which the scan cannot tell that the thrown value is no `Error`, with the
+// declarations ahead of the capture.
+const STILL_CLAIMED = [
+  { label: 'an Error bound to a const', declarations: ["const thrown = new Error('ENOENT');"], expected: 'thrown' },
+  { label: 'a value bound to a call', declarations: ['const thrown = makeThrown();'], expected: 'thrown' },
+  { label: 'a literal bound to a let', declarations: ["let thrown = { code: 'ENOENT' };"], expected: 'thrown' },
+  { label: 'a binding declared nowhere the scan can see', declarations: [], expected: 'thrown' },
+  { label: 'a literal opening a longer expression', declarations: [], expected: 'null ?? fallback' },
+];
+const LITERALS = [
+  "{ code: 'ENOENT' }",
+  "['ENOENT']",
+  "'ENOENT'",
+  '"ENOENT"',
+  '`ENOENT`',
+  '-2',
+  'false',
+  'null',
+  'undefined',
+];
 
 describe(listCaptureSites, () => {
   it('reports a capture, naming its line and the variable it fills', () => {
@@ -184,4 +204,72 @@ describe(listCaptureSites, () => {
   it.each(UNCLAIMED)('claims nothing in $label', ({ source }) => {
     expect(listCaptureSites(source.join('\n'))).toStrictEqual([]);
   });
+
+  it('declines a capture whose test asserts the captured value toBe a literal bound to a const', () => {
+    const source = buildAssertedCapture(["const thrown = { code: 'ENOENT' };"], 'expect(caught).toBe(thrown);');
+
+    expect(listCaptureSites(source)).toStrictEqual([]);
+  });
+
+  it.each(LITERALS)('declines a capture whose test asserts the captured value toBe the literal %s', (literal) => {
+    expect(listCaptureSites(buildAssertedCapture([], `expect(caught).toBe(${literal});`))).toStrictEqual([]);
+  });
+
+  it('reads a literal through a type annotation, a cast, and an argument the formatter broke across lines', () => {
+    const annotated = buildAssertedCapture(
+      ["const thrown: unknown = { code: 'ENOENT' };"],
+      'expect(caught).toBe(thrown);',
+    );
+    const cast = buildAssertedCapture(["const thrown = { code: 'ENOENT' } as const;"], 'expect(caught).toBe(thrown);');
+    const broken = buildAssertedCapture([], ['expect(caught).toBe(', "  'ENOENT' as unknown,", ');'].join('\n'));
+
+    expect(listCaptureSites(annotated)).toStrictEqual([]);
+    expect(listCaptureSites(cast)).toStrictEqual([]);
+    expect(listCaptureSites(broken)).toStrictEqual([]);
+  });
+
+  it.each(STILL_CLAIMED)('claims a capture asserted toBe $label', ({ declarations, expected }) => {
+    const source = buildAssertedCapture(declarations, `expect(caught).toBe(${expected});`);
+
+    expect(listCaptureSites(source)).toHaveLength(1);
+  });
+
+  it('claims a capture whose literal assertion is negated, compares by equality, or names another variable', () => {
+    const negated = buildAssertedCapture([], "expect(caught).not.toBe('ENOENT');");
+    const equal = buildAssertedCapture([], "expect(caught).toStrictEqual({ code: 'ENOENT' });");
+    const other = buildAssertedCapture([], "expect(caughtCode).toBe('ENOENT');");
+
+    expect(listCaptureSites(negated)).toHaveLength(1);
+    expect(listCaptureSites(equal)).toHaveLength(1);
+    expect(listCaptureSites(other)).toHaveLength(1);
+  });
+
+  it('claims a capture whose literal assertion sits in the following test', () => {
+    const source = [
+      buildAssertedCapture([], 'expect(caught).toBeInstanceOf(TypeError);'),
+      buildAssertedCapture([], "expect(caught).toBe('ENOENT');"),
+    ].join('\n');
+
+    expect(listCaptureSites(source)).toStrictEqual([{ kind: 'hand-rolled-error-capture', line: 3, symbol: 'caught' }]);
+  });
 });
+
+// region | Helpers
+
+/** Builds a test holding a capture, with the declarations ahead of it and the assertion after it. */
+function buildAssertedCapture(declarations: string[], assertion: string): string {
+  return [
+    "it('rethrows what it cannot describe', () => {",
+    ...declarations,
+    'let caught: unknown;',
+    'try {',
+    '  assertIsError(thrown);',
+    '} catch (error) {',
+    '  caught = error;',
+    '}',
+    assertion,
+    '});',
+  ].join('\n');
+}
+
+// endregion | Helpers
