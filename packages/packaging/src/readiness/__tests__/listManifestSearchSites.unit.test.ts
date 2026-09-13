@@ -51,6 +51,35 @@ const PROBE_BESIDE_MARKER = [
   '',
 ].join('\n');
 
+// The compile-root walk from `readyup`, which probes through a module constant.
+const PROBE_BY_CONSTANT = [
+  "const PACKAGE_MANIFEST = 'package.json';",
+  '',
+  'export function resolveCompileRoot(inputPath: string): string {',
+  '  const sourceDir = path.dirname(path.resolve(inputPath));',
+  '',
+  '  for (let directory = sourceDir; ; directory = path.dirname(directory)) {',
+  '    if (existsSync(path.join(directory, PACKAGE_MANIFEST))) return toRealPath(directory);',
+  '    if (path.dirname(directory) === directory) return toRealPath(sourceDir);',
+  '  }',
+  '}',
+  '',
+].join('\n');
+
+// The owning-package walk from `readyup`, which probes through a binding declared in the loop.
+const PROBE_BY_BINDING = [
+  'function identifyPackage(directory: string): { name: string; version: string } | undefined {',
+  '  for (let current = directory; isDependencyFile(current); current = path.dirname(current)) {',
+  "    const manifestPath = path.join(current, 'package.json');",
+  '    if (!existsSync(manifestPath)) continue;',
+  '    const identity = readPackageIdentity(manifestPath);',
+  '    if (identity !== undefined) return identity;',
+  '  }',
+  '  return undefined;',
+  '}',
+  '',
+].join('\n');
+
 // A repository-root walk, which `toolbelt.filesystem` claims.
 const MARKER_ONLY = [
   'export function findRepositoryRoot(startDir) {',
@@ -90,6 +119,44 @@ const NAMED_DEPENDENCY_MANIFEST = [
   "    if (existsSync(path.join(dir, 'node_modules', name, 'package.json'))) return path.join(dir, 'node_modules', name);",
   '    const parent = path.dirname(dir);',
   '    if (parent === dir) return undefined;',
+  '    dir = parent;',
+  '  }',
+  '}',
+  '',
+].join('\n');
+
+// The installed-package lookup from `readyup`, whose binding holds a dependency named by another binding.
+const NAMED_DEPENDENCY_BY_BINDING = [
+  'export function resolvePackageRoot(packageName: string, fromDir: string = process.cwd()): string | undefined {',
+  '  let dir = path.resolve(fromDir);',
+  '',
+  '  for (;;) {',
+  "    const candidate = path.join(dir, 'node_modules', packageName);",
+  "    if (existsSync(path.join(candidate, 'package.json'))) {",
+  '      return realpathSync(candidate);',
+  '    }',
+  '',
+  '    const parent = path.dirname(dir);',
+  '    if (parent === dir) return undefined;',
+  '    dir = parent;',
+  '  }',
+  '}',
+  '',
+].join('\n');
+
+// The release-kit lookup from `codeassembly` as written there, through a binding. The scan does not read
+// `pathExists` as a probe, so the loop is read through its `readFile` of the same binding.
+const DEPENDENCY_MANIFEST_BY_BINDING = [
+  'export async function readReleaseKitVersion(): Promise<string> {',
+  '  let dir = path.dirname(fileURLToPath(import.meta.url));',
+  '  for (;;) {',
+  "    const candidate = path.join(dir, 'node_modules', '@williamthorsen', 'release-kit', 'package.json');",
+  '    if (await pathExists(candidate, { treatErrorsAsAbsent: true })) {',
+  "      const parsed: unknown = JSON.parse(await readFile(candidate, 'utf8'));",
+  '      if (isReleaseKitPackageJson(parsed)) return parsed.version;',
+  '    }',
+  '    const parent = path.dirname(dir);',
+  "    if (parent === dir) throw new Error('release-kit is not installed');",
   '    dir = parent;',
   '  }',
   '}',
@@ -139,6 +206,13 @@ describe(listManifestSearchSites, () => {
     ]);
   });
 
+  it('reports a walk probing for a manifest through a constant or a binding declared in its loop', () => {
+    expect([PROBE_BY_CONSTANT, PROBE_BY_BINDING].map((source) => listManifestSearchSites(source))).toStrictEqual([
+      [{ kind: 'manifest-search', line: 6 }],
+      [{ kind: 'manifest-search', line: 2 }],
+    ]);
+  });
+
   it('reports a walk probing for a manifest beside a repository marker', () => {
     expect(listManifestSearchSites(PROBE_BESIDE_MARKER)).toStrictEqual([{ kind: 'manifest-search', line: 3 }]);
   });
@@ -147,10 +221,15 @@ describe(listManifestSearchSites, () => {
     expect(listManifestSearchSites(MARKER_ONLY)).toStrictEqual([]);
   });
 
-  it('reports nothing for a walk probing for a manifest below the level', () => {
-    const sources = [DEPENDENCY_MANIFEST, NAMED_DEPENDENCY_MANIFEST];
+  it('reports nothing for a walk probing for a manifest below the level, written in place or through a binding', () => {
+    const sources = [
+      DEPENDENCY_MANIFEST,
+      NAMED_DEPENDENCY_MANIFEST,
+      DEPENDENCY_MANIFEST_BY_BINDING,
+      NAMED_DEPENDENCY_BY_BINDING,
+    ];
 
-    expect(sources.map((source) => listManifestSearchSites(source))).toStrictEqual([[], []]);
+    expect(sources.map((source) => listManifestSearchSites(source))).toStrictEqual([[], [], [], []]);
   });
 
   it('reports nothing for a read of a manifest outside any loop', () => {
