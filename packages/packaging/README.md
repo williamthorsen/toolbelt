@@ -1,3 +1,5 @@
+<!-- readme-type: library -->
+
 # @williamthorsen/toolbelt.packaging
 
 Package and project layout utilities for TypeScript and JavaScript: where a package or project boundary begins, and what the manifest at that boundary declares.
@@ -108,3 +110,38 @@ console.log(`my-cli ${resolveSelfVersion(import.meta.url)}`);
 Ownership is resolved exactly as [`findPackageRoot`](#findpackageroot) resolves it, so a marker manifest is passed over here too. Without that, a dual-format build would read its version as `undefined` rather than raising, since the marker manifest declares none.
 
 A manifest that declares a `name` but no string `version` throws, naming the manifest. The ascent does not continue past it, so a versionless package never reports an ancestor's version as its own.
+
+## Adoption checks
+
+The package ships a ReadyUp kit, so a project that installs it can ask how far its adoption got:
+
+```sh
+rdy run --packages
+```
+
+The kit reads the project's tracked sources and reports one idiom, counted against the calls that the project already makes into this package. It reports at `recommend`: A hand-rolled search is correct code that a published function expresses better, not a defect.
+
+`no-hand-rolled-manifest-search` reports a loop that ascends by `dirname` and probes each level for `package.json`, naming the line on which the loop opens. The scan reads which names a loop probes, but not where the loop starts or what it does with the manifest, so the fix text sets out the choice by purpose. The package that owns the running module takes [`findPackageRoot`](#findpackageroot), or [`resolveSelfVersion`](#resolveselfversion) where the loop goes on to read the manifest's version; both pass over a manifest that declares no name. The project that holds a directory takes [`findProjectRoot`](#findprojectroot), which prefers `.git` and lockfiles to a manifest and so returns the repository root in a monorepo. The nearest manifest, whatever it declares, takes `findDirectoryChainMatch` from `@williamthorsen/toolbelt.filesystem`.
+
+Every other walk up the directory chain belongs to [`@williamthorsen/toolbelt.filesystem`](https://github.com/williamthorsen/toolbelt/tree/main/packages/filesystem#adoption-checks), whose own kit reports it: a loop probing for root markers alone, such as `.git`; a loop probing for a manifest below the level, such as `node_modules/x/package.json`; and a loop that probes nothing. Reporting one here as well would show one loop twice under conflicting advice. A read of `package.json` outside any loop, and a loop over the directories listed by `listDirectoryChain`, ascend nothing by hand, and neither kit reports them.
+
+The detector under-matches by design. A recursive walk-up function is no loop, an ascent written as `path.resolve(dir, '..')` carries a different anchor, and a loop whose body is a single unbraced statement goes unread. A probe for `package.json` made through an intermediate binding, a helper, or a constant names no manifest that the scan can read, and neither does a path holding another binding past the level, as `${dir}/${name}/package.json` does. `toolbelt.filesystem` reports each such loop as a walk instead.
+
+Bootstrap wrappers under `bin/` are exempt: Such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they write this walk deliberately. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: The sweep drops it before the kit sees it, so committed bundler output yields no advice that anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
+
+A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
+
+```ts
+// rdy-ignore-next-line toolbelt.packaging/no-hand-rolled-manifest-search -- runs before dependencies are installed
+while (!fs.existsSync(path.join(dir, 'package.json'))) {
+  dir = path.dirname(dir);
+}
+```
+
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+
+```ts
+export default defineRdyConfig({
+  packages: ['@williamthorsen/toolbelt.packaging'],
+});
+```
