@@ -43,7 +43,7 @@ describe(listChainWalkSites, () => {
   });
 
   // The site is `toolbelt.packaging`'s, whose kit reports it.
-  it('declines a probe for a manifest, regardless of how the path is built', () => {
+  it('declines a probe for a manifest, however its literal segments are joined', () => {
     const probes = ["fs.existsSync(path.join(dir, 'package.json'))", 'fs.existsSync(`${dir}/package.json`)'].map(
       (probe) => `let dir = start;\nwhile (true) {\n  if (${probe}) break;\n  dir = path.dirname(dir);\n}\n`,
     );
@@ -63,6 +63,19 @@ describe(listChainWalkSites, () => {
     ].join('\n');
 
     expect(listSites(source)).toStrictEqual([]);
+  });
+
+  // A dependency's manifest is no manifest search, so the site stays with this kit.
+  it('names a probe for a manifest below the level as a search of the chain', () => {
+    const probes = [
+      "fs.existsSync(path.join(dir, 'node_modules', 'x', 'package.json'))",
+      'fs.existsSync(`${dir}/node_modules/x/package.json`)',
+    ].map((probe) => `let dir = start;\nwhile (true) {\n  if (${probe}) break;\n  dir = path.dirname(dir);\n}\n`);
+
+    expect(probes.map((source) => listSites(source))).toStrictEqual([
+      [{ kind: 'chain-probe', line: 2 }],
+      [{ kind: 'chain-probe', line: 2 }],
+    ]);
   });
 });
 

@@ -145,12 +145,14 @@ function readLiteral(source, span) {
 var ASSIGNED_TARGET = /(?<target>[A-Za-z_$][\w$]*) ?= ?$/;
 var ASSIGNMENT_WINDOW = { lookahead: 0, lookbehind: 80 };
 var BLANKED_LITERAL = /(?<quote>['"`])[^'"`]*\k<quote>/g;
+var BRACKET_CLOSERS = /* @__PURE__ */ new Set([")", "]", "}"]);
+var BRACKET_OPENERS = /* @__PURE__ */ new Set(["(", "[", "{"]);
 var DIRNAME_ASCENT = /(?:[A-Za-z_$][\w$]*\s*\.\s*)?\bdirname\s*\(\s*(?<subject>[A-Za-z_$][\w$]*)\s*\)/g;
 var IDENTIFIER = /(?<![\w$.])[A-Za-z_$][\w$]*/g;
-var INTERPOLATION = /\$\{[^{}]*\}/g;
 var LEADING_SEPARATOR = /^[/\\]+/;
 var LEVEL_PROBE = /\b(?:access|exists|lstat|readdir|readFile|stat)(?:Sync)?\s*\(/g;
 var LOOP_KEYWORD = /\b(?<keyword>do|for|while)\b/g;
+var SEPARATOR_RUN = /[/\\]+/g;
 var SIMPLE_ASSIGNMENT = /(?<![\w$])(?<target>[A-Za-z_$][\w$]*)\s*=(?!=)\s*(?<value>[A-Za-z_$][\w$]*)(?![\w$.([])/g;
 var WHITESPACE = /\s/;
 function listDirectoryAscents(code, source) {
@@ -201,15 +203,6 @@ function listLoops(code) {
   }
   return loops;
 }
-function listProbedLiterals(source, argumentText, offset) {
-  const names = [];
-  for (const match of argumentText.matchAll(BLANKED_LITERAL)) {
-    const text = readLiteral(source, [offset + match.index, offset + match.index + match[0].length]);
-    const name = text?.replaceAll(INTERPOLATION, "").replace(LEADING_SEPARATOR, "");
-    if (name !== void 0 && name !== "") names.push(name);
-  }
-  return names;
-}
 function listProbedNames(code, source, loop, subject) {
   const region = code.slice(loop.start, loop.end);
   const names = [];
@@ -217,10 +210,13 @@ function listProbedNames(code, source, loop, subject) {
   for (const match of region.matchAll(LEVEL_PROBE)) {
     const argumentList = readBalancedGroup(region, match.index + match[0].length - 1, PARENTHESES);
     if (argumentList === void 0) continue;
-    const argumentText = region.slice(argumentList.start + 1, argumentList.end - 1);
-    if (!listIdentifiers(argumentText).includes(subject)) continue;
+    const pathText = readFirstArgument(region.slice(argumentList.start + 1, argumentList.end - 1));
+    const subjectRead = pathText.matchAll(IDENTIFIER).find((read) => read[0] === subject);
+    if (subjectRead === void 0) continue;
     isProbing = true;
-    names.push(...listProbedLiterals(source, argumentText, loop.start + argumentList.start + 1));
+    const pathOffset = loop.start + argumentList.start + 1;
+    const name = readProbedName(source, pathText, pathOffset, subjectRead.index + subject.length);
+    if (name !== void 0) names.push(name);
   }
   return isProbing ? names : void 0;
 }
@@ -236,6 +232,27 @@ function listSimpleAssignments(region) {
 function readAssignedTarget(region, offset) {
   const { before } = readAnchoredWindow(region, offset, ASSIGNMENT_WINDOW);
   return ASSIGNED_TARGET.exec(before)?.groups?.["target"];
+}
+function readFirstArgument(argumentText) {
+  let depth = 0;
+  for (let index = 0; index < argumentText.length; index += 1) {
+    const character = argumentText.charAt(index);
+    if (BRACKET_OPENERS.has(character)) depth += 1;
+    else if (BRACKET_CLOSERS.has(character)) depth -= 1;
+    else if (character === "," && depth === 0) return argumentText.slice(0, index);
+  }
+  return argumentText;
+}
+function readProbedName(source, pathText, offset, from) {
+  if (listIdentifiers(pathText.slice(from)).length > 0) return void 0;
+  const segments = pathText.matchAll(BLANKED_LITERAL).filter((match) => match.index + match[0].length > from).map((match) => {
+    const end = match.index + match[0].length;
+    if (match.index >= from) return readLiteral(source, [offset + match.index, offset + end]) ?? "";
+    const rest = source.slice(offset + from, offset + end - 1);
+    return rest.slice(rest.indexOf("}") + 1);
+  }).toArray();
+  const name = segments.join("/").replaceAll(SEPARATOR_RUN, "/").replace(LEADING_SEPARATOR, "");
+  return name === "" ? void 0 : name;
 }
 
 // ../adoption/src/portable/listFunctionBodies.ts
