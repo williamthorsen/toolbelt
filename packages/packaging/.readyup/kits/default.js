@@ -163,23 +163,26 @@ function listDirectoryAscents(code, source) {
   const ascents = listLoops(code).flatMap((loop) => describeAscent(code, source, loop, constants) ?? []);
   return ascents.filter((ascent) => ascents.every((other) => other === ascent || !isNested(other.loop, ascent.loop))).map((ascent) => ({ line: getLineAtOffset(code, ascent.loop.start), probedNames: ascent.probedNames }));
 }
-function countMatchesNaming(text, pattern, name) {
-  return text.matchAll(pattern).filter((match) => match.groups?.["name"] === name).toArray().length;
+function countMatchesByName(text, pattern) {
+  const counts = /* @__PURE__ */ new Map();
+  for (const match of text.matchAll(pattern)) {
+    const name = match.groups?.["name"];
+    if (name !== void 0) counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
+  return counts;
 }
 function describeAscent(code, source, loop, constants) {
   const subject = findAscendedBinding(code.slice(loop.start, loop.end));
   if (subject === void 0) return void 0;
-  const scope = { bindings: listLoopBindings(code, source, loop), constants };
+  const scope = { bindings: listLoopBindings(code, source, loop, subject, constants), constants };
   return { loop, probedNames: listProbedNames(code, source, loop, subject, scope) };
 }
-function expandPathParts(parts, scope, expanding) {
+function expandPathParts(parts, scope, subject) {
   return parts.flatMap((part) => {
-    if (part.kind === "text" || expanding.has(part.name)) return [part];
+    if (part.kind === "text" || part.name === subject) return [part];
     const constant = scope.constants.find((candidate) => candidate.name === part.name);
     if (constant !== void 0) return [{ kind: "text", text: constant.value }];
-    const binding = scope.bindings.find((candidate) => candidate.name === part.name);
-    if (binding === void 0) return [part];
-    return expandPathParts(binding.parts, scope, /* @__PURE__ */ new Set([...expanding, part.name]));
+    return scope.bindings.find((candidate) => candidate.name === part.name)?.parts ?? [part];
   });
 }
 function findAscendedBinding(region) {
@@ -221,17 +224,18 @@ function findExpressionEnd(code, from, limit) {
 function isNested(inner, outer) {
   return outer.start <= inner.start && inner.end <= outer.end;
 }
-function listLoopBindings(code, source, loop) {
+function listLoopBindings(code, source, loop, subject, constants) {
   const region = code.slice(loop.start, loop.end);
+  const declarationCounts = countMatchesByName(region, DECLARED_NAME);
+  const reassignmentCounts = countMatchesByName(region, REASSIGNMENT);
   const bindings = [];
   for (const match of region.matchAll(DECLARATION)) {
     const name = match.groups?.["name"];
-    if (name === void 0) continue;
-    if (countMatchesNaming(region, DECLARED_NAME, name) !== 1) continue;
-    if (countMatchesNaming(region, REASSIGNMENT, name) > 0) continue;
+    if (name === void 0 || declarationCounts.get(name) !== 1 || reassignmentCounts.has(name)) continue;
     const valueStart = loop.start + match.index + match[0].length;
     const parts = readPathParts(code, source, valueStart, findExpressionEnd(code, valueStart, loop.end));
-    if (parts !== void 0) bindings.push({ name, parts });
+    if (parts === void 0) continue;
+    bindings.push({ name, parts: expandPathParts(parts, { bindings, constants }, subject) });
   }
   return bindings;
 }
@@ -252,7 +256,7 @@ function listProbedNames(code, source, loop, subject, scope) {
     if (argumentList === void 0) continue;
     const pathStart = argumentList.start + 1;
     const parts = readPathParts(code, source, pathStart, findExpressionEnd(code, pathStart, argumentList.end - 1));
-    const expanded = parts === void 0 ? [] : expandPathParts(parts, scope, /* @__PURE__ */ new Set([subject]));
+    const expanded = parts === void 0 ? [] : expandPathParts(parts, scope, subject);
     const subjectIndex = expanded.findIndex((part) => part.kind === "read" && part.name === subject);
     if (subjectIndex === -1) continue;
     isProbing = true;
@@ -272,11 +276,12 @@ function listSimpleAssignments(region) {
 }
 function listStringConstants(code, source) {
   const constants = [];
+  const declarationCounts = countMatchesByName(code, DECLARED_NAME);
   for (const match of code.matchAll(STRING_CONSTANT)) {
     const name = match.groups?.["name"];
     const value = readLiteral(source, match.indices?.groups?.["literal"]);
     if (name === void 0 || value === void 0) continue;
-    if (countMatchesNaming(code, DECLARED_NAME, name) === 1) constants.push({ name, value });
+    if (declarationCounts.get(name) === 1) constants.push({ name, value });
   }
   return constants;
 }
