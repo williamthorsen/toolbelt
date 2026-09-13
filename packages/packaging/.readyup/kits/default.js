@@ -144,25 +144,46 @@ function readLiteral(source, span) {
 // ../adoption/src/portable/listDirectoryAscents.ts
 var ASSIGNED_TARGET = /(?<target>[A-Za-z_$][\w$]*) ?= ?$/;
 var ASSIGNMENT_WINDOW = { lookahead: 0, lookbehind: 80 };
-var BLANKED_LITERAL = /(?<quote>['"`])[^'"`]*\k<quote>/g;
 var BRACKET_CLOSERS = /* @__PURE__ */ new Set([")", "]", "}"]);
 var BRACKET_OPENERS = /* @__PURE__ */ new Set(["(", "[", "{"]);
+var DECLARATION = /\b(?:const|let|var)\s+(?<name>[A-Za-z_$][\w$]*)\s*(?::[^=;\n]*)?=(?![=>])/g;
+var DECLARED_NAME = /\b(?:const|let|var)\s+(?<name>[A-Za-z_$][\w$]*)/g;
 var DIRNAME_ASCENT = /(?:[A-Za-z_$][\w$]*\s*\.\s*)?\bdirname\s*\(\s*(?<subject>[A-Za-z_$][\w$]*)\s*\)/g;
-var IDENTIFIER = /(?<![\w$.])[A-Za-z_$][\w$]*/g;
 var LEADING_SEPARATOR = /^[/\\]+/;
 var LEVEL_PROBE = /\b(?:access|exists|lstat|readdir|readFile|stat)(?:Sync)?\s*\(/g;
 var LOOP_KEYWORD = /\b(?<keyword>do|for|while)\b/g;
+var PATH_TOKEN = /(?<quoted>(?<quote>['"])[^'"]*\k<quote>)|`|(?<![\w$.])(?<name>[A-Za-z_$][\w$]*)/g;
+var REASSIGNMENT = /(?<![\w$.])(?<!\b(?:const|let|var)\s+)(?<name>[A-Za-z_$][\w$]*)\s*(?:\*\*|<<|>>>?|&&|\|\||\?\?|[-+*/%&|^])?=(?![=>])/g;
 var SEPARATOR_RUN = /[/\\]+/g;
 var SIMPLE_ASSIGNMENT = /(?<![\w$])(?<target>[A-Za-z_$][\w$]*)\s*=(?!=)\s*(?<value>[A-Za-z_$][\w$]*)(?![\w$.([])/g;
+var STRING_CONSTANT = /\bconst\s+(?<name>[A-Za-z_$][\w$]*)\s*(?::\s*string\s*)?=\s*(?<literal>(?<quote>['"`])[^'"`$]*\k<quote>)\s*(?:as\s+const\s*)?(?=[;,)\n]|$)/dg;
 var WHITESPACE = /\s/;
 function listDirectoryAscents(code, source) {
-  const ascents = listLoops(code).flatMap((loop) => describeAscent(code, source, loop) ?? []);
+  const constants = listStringConstants(code, source);
+  const ascents = listLoops(code).flatMap((loop) => describeAscent(code, source, loop, constants) ?? []);
   return ascents.filter((ascent) => ascents.every((other) => other === ascent || !isNested(other.loop, ascent.loop))).map((ascent) => ({ line: getLineAtOffset(code, ascent.loop.start), probedNames: ascent.probedNames }));
 }
-function describeAscent(code, source, loop) {
+function countMatchesByName(text, pattern) {
+  const counts = /* @__PURE__ */ new Map();
+  for (const match of text.matchAll(pattern)) {
+    const name = match.groups?.["name"];
+    if (name !== void 0) counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
+  return counts;
+}
+function describeAscent(code, source, loop, constants) {
   const subject = findAscendedBinding(code.slice(loop.start, loop.end));
   if (subject === void 0) return void 0;
-  return { loop, probedNames: listProbedNames(code, source, loop, subject) };
+  const scope = { bindings: listLoopBindings(code, source, loop, subject, constants), constants };
+  return { loop, probedNames: listProbedNames(code, source, loop, subject, scope) };
+}
+function expandPathParts(parts, scope, subject) {
+  return parts.flatMap((part) => {
+    if (part.kind === "text" || part.name === subject) return [part];
+    const constant = scope.constants.find((candidate) => candidate.name === part.name);
+    if (constant !== void 0) return [{ kind: "text", text: constant.value }];
+    return scope.bindings.find((candidate) => candidate.name === part.name)?.parts ?? [part];
+  });
 }
 function findAscendedBinding(region) {
   const assignments = listSimpleAssignments(region);
@@ -188,11 +209,35 @@ function findBodyStart(code, afterKeyword, isDoLoop) {
   while (index < code.length && WHITESPACE.test(code.charAt(index))) index += 1;
   return code.charAt(index) === "{" ? index : void 0;
 }
+function findExpressionEnd(code, from, limit) {
+  let depth = 0;
+  for (let index = from; index < limit; index += 1) {
+    const character = code.charAt(index);
+    if (BRACKET_OPENERS.has(character)) depth += 1;
+    else if (BRACKET_CLOSERS.has(character)) {
+      if (depth === 0) return index;
+      depth -= 1;
+    } else if ((character === "," || character === ";") && depth === 0) return index;
+  }
+  return limit;
+}
 function isNested(inner, outer) {
   return outer.start <= inner.start && inner.end <= outer.end;
 }
-function listIdentifiers(text) {
-  return text.match(IDENTIFIER) ?? [];
+function listLoopBindings(code, source, loop, subject, constants) {
+  const region = code.slice(loop.start, loop.end);
+  const declarationCounts = countMatchesByName(region, DECLARED_NAME);
+  const reassignmentCounts = countMatchesByName(region, REASSIGNMENT);
+  const bindings = [];
+  for (const match of region.matchAll(DECLARATION)) {
+    const name = match.groups?.["name"];
+    if (name === void 0 || declarationCounts.get(name) !== 1 || reassignmentCounts.has(name)) continue;
+    const valueStart = loop.start + match.index + match[0].length;
+    const parts = readPathParts(code, source, valueStart, findExpressionEnd(code, valueStart, loop.end));
+    if (parts === void 0) continue;
+    bindings.push({ name, parts: expandPathParts(parts, { bindings, constants }, subject) });
+  }
+  return bindings;
 }
 function listLoops(code) {
   const loops = [];
@@ -203,19 +248,19 @@ function listLoops(code) {
   }
   return loops;
 }
-function listProbedNames(code, source, loop, subject) {
-  const region = code.slice(loop.start, loop.end);
+function listProbedNames(code, source, loop, subject, scope) {
   const names = [];
   let isProbing = false;
-  for (const match of region.matchAll(LEVEL_PROBE)) {
-    const argumentList = readBalancedGroup(region, match.index + match[0].length - 1, PARENTHESES);
+  for (const match of code.slice(loop.start, loop.end).matchAll(LEVEL_PROBE)) {
+    const argumentList = readBalancedGroup(code, loop.start + match.index + match[0].length - 1, PARENTHESES);
     if (argumentList === void 0) continue;
-    const pathText = readFirstArgument(region.slice(argumentList.start + 1, argumentList.end - 1));
-    const subjectRead = pathText.matchAll(IDENTIFIER).find((read) => read[0] === subject);
-    if (subjectRead === void 0) continue;
+    const pathStart = argumentList.start + 1;
+    const parts = readPathParts(code, source, pathStart, findExpressionEnd(code, pathStart, argumentList.end - 1));
+    const expanded = parts === void 0 ? [] : expandPathParts(parts, scope, subject);
+    const subjectIndex = expanded.findIndex((part) => part.kind === "read" && part.name === subject);
+    if (subjectIndex === -1) continue;
     isProbing = true;
-    const pathOffset = loop.start + argumentList.start + 1;
-    const name = readProbedName(source, pathText, pathOffset, subjectRead.index + subject.length);
+    const name = readProbedName(expanded.slice(subjectIndex + 1));
     if (name !== void 0) names.push(name);
   }
   return isProbing ? names : void 0;
@@ -229,30 +274,70 @@ function listSimpleAssignments(region) {
   }
   return assignments;
 }
+function listStringConstants(code, source) {
+  const constants = [];
+  const declarationCounts = countMatchesByName(code, DECLARED_NAME);
+  for (const match of code.matchAll(STRING_CONSTANT)) {
+    const name = match.groups?.["name"];
+    const value = readLiteral(source, match.indices?.groups?.["literal"]);
+    if (name === void 0 || value === void 0) continue;
+    if (declarationCounts.get(name) === 1) constants.push({ name, value });
+  }
+  return constants;
+}
 function readAssignedTarget(region, offset) {
   const { before } = readAnchoredWindow(region, offset, ASSIGNMENT_WINDOW);
   return ASSIGNED_TARGET.exec(before)?.groups?.["target"];
 }
-function readFirstArgument(argumentText) {
-  let depth = 0;
-  for (let index = 0; index < argumentText.length; index += 1) {
-    const character = argumentText.charAt(index);
-    if (BRACKET_OPENERS.has(character)) depth += 1;
-    else if (BRACKET_CLOSERS.has(character)) depth -= 1;
-    else if (character === "," && depth === 0) return argumentText.slice(0, index);
+function readPathParts(code, source, start, end) {
+  const parts = [];
+  let resumeAt = start;
+  for (const match of code.slice(start, end).matchAll(PATH_TOKEN)) {
+    const offset = start + match.index;
+    if (offset < resumeAt) continue;
+    const name = match.groups?.["name"];
+    const quoted = match.groups?.["quoted"];
+    if (name !== void 0) {
+      parts.push({ kind: "read", name });
+    } else if (quoted !== void 0) {
+      parts.push({ kind: "text", text: source.slice(offset + 1, offset + quoted.length - 1) });
+    } else {
+      const template = readTemplateParts(code, source, offset, end);
+      if (template === void 0) return void 0;
+      parts.push(...template.parts);
+      resumeAt = template.end;
+    }
   }
-  return argumentText;
+  return parts;
 }
-function readProbedName(source, pathText, offset, from) {
-  if (listIdentifiers(pathText.slice(from)).length > 0) return void 0;
-  const segments = pathText.matchAll(BLANKED_LITERAL).filter((match) => match.index + match[0].length > from).map((match) => {
-    const end = match.index + match[0].length;
-    if (match.index >= from) return readLiteral(source, [offset + match.index, offset + end]) ?? "";
-    const rest = source.slice(offset + from, offset + end - 1);
-    return rest.slice(rest.indexOf("}") + 1);
-  }).toArray();
+function readProbedName(parts) {
+  const segments = [];
+  for (const part of parts) {
+    if (part.kind === "read") return void 0;
+    if (part.text !== "") segments.push(part.text);
+  }
   const name = segments.join("/").replaceAll(SEPARATOR_RUN, "/").replace(LEADING_SEPARATOR, "");
   return name === "" ? void 0 : name;
+}
+function readTemplateParts(code, source, open, end) {
+  const parts = [];
+  let textStart = open + 1;
+  for (; ; ) {
+    const close = code.indexOf("`", textStart);
+    if (close === -1 || close >= end) return void 0;
+    const interpolation = code.indexOf("${", textStart);
+    if (interpolation === -1 || interpolation > close) {
+      parts.push({ kind: "text", text: source.slice(textStart, close) });
+      return { end: close + 1, parts };
+    }
+    parts.push({ kind: "text", text: source.slice(textStart, interpolation) });
+    const group = readBalancedGroup(code, interpolation + 1, BRACES);
+    if (group === void 0 || group.end > end) return void 0;
+    const interpolated = readPathParts(code, source, group.start + 1, group.end - 1);
+    if (interpolated === void 0) return void 0;
+    parts.push(...interpolated);
+    textStart = group.end;
+  }
 }
 
 // ../adoption/src/mod.ts

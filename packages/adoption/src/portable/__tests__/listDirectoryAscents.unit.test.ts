@@ -133,6 +133,161 @@ describe(listDirectoryAscents, () => {
     expect(listAscents(source)).toStrictEqual([{ line: 2, probedNames: ['.git', 'package.json'] }]);
   });
 
+  it('reads the name that a path held in a binding declared in the loop looks for', () => {
+    const source = [
+      'for (let current = start; isDependencyFile(current); current = path.dirname(current)) {',
+      "  const manifestPath = path.join(current, 'package.json');",
+      '  if (!existsSync(manifestPath)) continue;',
+      '  const identity = readPackageIdentity(manifestPath);',
+      '  if (identity !== undefined) return identity;',
+      '}',
+      '',
+    ].join('\n');
+
+    expect(listAscents(source)).toStrictEqual([{ line: 1, probedNames: ['package.json'] }]);
+  });
+
+  it('reads the name that a path built from a string constant looks for, however the path is built', () => {
+    const probes = ['path.join(directory, PACKAGE_MANIFEST)', '`${directory}/${PACKAGE_MANIFEST}`'].map((probe) =>
+      [
+        "const PACKAGE_MANIFEST = 'package.json';",
+        'for (let directory = start; ; directory = path.dirname(directory)) {',
+        `  if (existsSync(${probe})) return directory;`,
+        '}',
+        '',
+      ].join('\n'),
+    );
+
+    expect(probes.map((source) => listAscents(source))).toStrictEqual(
+      Array.from({ length: 2 }, () => [{ line: 2, probedNames: ['package.json'] }]),
+    );
+  });
+
+  it('reads a string constant however its declaration is written', () => {
+    const declarations = [
+      "export const MANIFEST: string = 'package.json';",
+      'const MANIFEST = "package.json" as const;',
+      'const MANIFEST = `package.json`;',
+    ].map((declaration) => `${declaration}\n${probeWalk('path.join(dir, MANIFEST)')}`);
+
+    expect(declarations.map((source) => listAscents(source))).toStrictEqual(
+      Array.from({ length: 3 }, () => [{ line: 3, probedNames: ['package.json'] }]),
+    );
+  });
+
+  it('reads one name through a binding built from another binding and a constant', () => {
+    const source = [
+      "const MANIFEST = 'package.json';",
+      'let dir = start;',
+      'while (true) {',
+      "  const modulesDir = path.join(dir, 'node_modules');",
+      "  const candidate = path.join(modulesDir, 'x', MANIFEST);",
+      '  if (existsSync(candidate)) break;',
+      '  dir = path.dirname(dir);',
+      '}',
+      '',
+    ].join('\n');
+
+    expect(listAscents(source)).toStrictEqual([{ line: 3, probedNames: ['node_modules/x/package.json'] }]);
+  });
+
+  it('reads one name from a path that appends to a binding holding the level', () => {
+    const source = [
+      'let dir = start;',
+      'while (true) {',
+      "  const candidate = path.join(dir, 'node_modules', 'x');",
+      "  if (existsSync(path.join(candidate, 'package.json'))) break;",
+      '  dir = path.dirname(dir);',
+      '}',
+      '',
+    ].join('\n');
+
+    expect(listAscents(source)).toStrictEqual([{ line: 2, probedNames: ['node_modules/x/package.json'] }]);
+  });
+
+  it('reads no name through a binding holding another binding past the level', () => {
+    const source = [
+      'let dir = start;',
+      'while (true) {',
+      "  const candidate = path.join(dir, 'node_modules', packageName);",
+      "  if (existsSync(path.join(candidate, 'package.json'))) return candidate;",
+      '  dir = path.dirname(dir);',
+      '}',
+      '',
+    ].join('\n');
+
+    expect(listAscents(source)).toStrictEqual([{ line: 2, probedNames: [] }]);
+  });
+
+  // No such binding holds one value per level, so the probe reaches no level that the scan can see.
+  it('reads no probe through a binding declared outside the loop, declared twice in it, or reassigned in it', () => {
+    const sources = [
+      [
+        'let dir = start;',
+        "const manifestPath = path.join(dir, 'package.json');",
+        'while (true) {',
+        '  if (existsSync(manifestPath)) break;',
+        '  dir = path.dirname(dir);',
+        '}',
+        '',
+      ].join('\n'),
+      [
+        'let dir = start;',
+        'while (true) {',
+        "  if (isPackage) { const candidate = path.join(dir, 'package.json'); if (existsSync(candidate)) break; }",
+        "  else { const candidate = path.join(dir, '.git'); if (existsSync(candidate)) break; }",
+        '  dir = path.dirname(dir);',
+        '}',
+        '',
+      ].join('\n'),
+      [
+        'let dir = start;',
+        'while (true) {',
+        "  let manifestPath = path.join(dir, 'package.json');",
+        "  if (isNested) manifestPath = path.join(dir, '..', 'package.json');",
+        '  if (existsSync(manifestPath)) break;',
+        '  dir = path.dirname(dir);',
+        '}',
+        '',
+      ].join('\n'),
+    ];
+
+    expect(sources.map((source) => listAscents(source))).toStrictEqual([
+      [{ line: 3, probedNames: undefined }],
+      [{ line: 2, probedNames: undefined }],
+      [{ line: 2, probedNames: undefined }],
+    ]);
+  });
+
+  it('reads no name through a binding in a source written without semicolons', () => {
+    const source = [
+      'let dir = start',
+      'while (true) {',
+      "  const manifestPath = path.join(dir, 'package.json')",
+      '  if (existsSync(manifestPath)) break',
+      '  dir = path.dirname(dir)',
+      '}',
+      '',
+    ].join('\n');
+
+    expect(listAscents(source)).toStrictEqual([{ line: 2, probedNames: [] }]);
+  });
+
+  it('reads no name through a constant that is imported, declared twice, or declared in a comment', () => {
+    const preambles = [
+      "import { MANIFEST } from './names.ts';",
+      "const MANIFEST = 'package.json';\nfunction readMarker() {\n  const MANIFEST = '.git';\n}",
+      "// const MANIFEST = 'package.json';",
+    ];
+    const sources = preambles.map((preamble) => `${preamble}\n${probeWalk('path.join(dir, MANIFEST)')}`);
+
+    expect(sources.map((source) => listAscents(source).map(({ probedNames }) => probedNames))).toStrictEqual([
+      [[]],
+      [[]],
+      [[]],
+    ]);
+  });
+
   it('reports nothing for a loop that computes a parent per item without assigning it back', () => {
     const source = [
       'for (const file of files) {',
@@ -213,6 +368,11 @@ describe(listDirectoryAscents, () => {
 /** Blanks a source as a kit's detector does, then lists the ascents that the scanner finds in it. */
 function listAscents(source: string) {
   return listDirectoryAscents(blankNonCode(source), source);
+}
+
+/** Builds a walk whose loop opens on its second line and probes each level through the given path. */
+function probeWalk(probedPath: string): string {
+  return `let dir = start;\nwhile (true) {\n  if (existsSync(${probedPath})) break;\n  dir = path.dirname(dir);\n}\n`;
 }
 
 // endregion | Helpers

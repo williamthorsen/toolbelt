@@ -51,6 +51,15 @@ describe(listChainWalkSites, () => {
     expect(probes.map((source) => listSites(source))).toStrictEqual([[], []]);
   });
 
+  it('declines a probe for a manifest made through a constant or a binding declared in the loop', () => {
+    const sources = [
+      "const MANIFEST = 'package.json';\nlet dir = start;\nwhile (true) {\n  if (fs.existsSync(path.join(dir, MANIFEST))) break;\n  dir = path.dirname(dir);\n}\n",
+      "let dir = start;\nwhile (true) {\n  const manifestPath = path.join(dir, 'package.json');\n  if (fs.existsSync(manifestPath)) break;\n  dir = path.dirname(dir);\n}\n",
+    ];
+
+    expect(sources.map((source) => listSites(source))).toStrictEqual([[], []]);
+  });
+
   it('declines a probe for a manifest, regardless of how many markers sit beside it', () => {
     const source = [
       'let dir = start;',
@@ -71,11 +80,12 @@ describe(listChainWalkSites, () => {
       "fs.existsSync(path.join(dir, 'node_modules', 'x', 'package.json'))",
       'fs.existsSync(`${dir}/node_modules/x/package.json`)',
     ].map((probe) => `let dir = start;\nwhile (true) {\n  if (${probe}) break;\n  dir = path.dirname(dir);\n}\n`);
+    const throughBinding =
+      "let dir = start;\nwhile (true) {\n  const candidate = path.join(dir, 'node_modules', name);\n  if (fs.existsSync(path.join(candidate, 'package.json'))) break;\n  dir = path.dirname(dir);\n}\n";
 
-    expect(probes.map((source) => listSites(source))).toStrictEqual([
-      [{ kind: 'chain-probe', line: 2 }],
-      [{ kind: 'chain-probe', line: 2 }],
-    ]);
+    expect([...probes, throughBinding].map((source) => listSites(source))).toStrictEqual(
+      Array.from({ length: 3 }, () => [{ kind: 'chain-probe', line: 2 }]),
+    );
   });
 });
 
