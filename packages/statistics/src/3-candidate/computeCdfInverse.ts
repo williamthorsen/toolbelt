@@ -1,5 +1,9 @@
+import { computeCdf } from './computeCdf.ts';
+
 /**
- * Returns the inverse of the cumulative distribution function (CDF) for a normal distribution.
+ * Returns the inverse of the cumulative distribution function (CDF) for a normal distribution. A round
+ * trip through `computeCdf` recovers the value to near double precision up to about 3.5 standard
+ * deviations above the mean; farther above, probabilities round toward 1 and the round trip loses precision.
  *
  * @category Statistics
  * @stage candidate
@@ -11,17 +15,35 @@ export function computeCdfInverse(probability: number, options: Options): number
     throw new Error('Standard deviation must be greater than zero.');
   }
 
-  return mean + standardDeviation * standardNormalInverse(probability);
+  return mean + standardDeviation * computeStandardNormalInverse(probability);
+}
+
+// region | Helpers
+
+/**
+ * Returns the inverse of the standard-normal CDF: Acklam's estimate, corrected by one Halley step against
+ * `computeCdf`. Returns -Infinity at 0 and Infinity at 1.
+ */
+function computeStandardNormalInverse(p: number): number {
+  if (p <= 0) return -Infinity;
+  if (p >= 1) return Infinity;
+  if (p > 0.5) return -computeStandardNormalInverse(1 - p);
+
+  const estimate = estimateStandardNormalInverse(p);
+  const error = computeCdf({ value: estimate }) - p;
+  const correction = error * Math.sqrt(2 * Math.PI) * Math.exp((estimate * estimate) / 2);
+
+  // For a probability below about 6e-311, exp(estimate^2 / 2) overflows.
+  if (!Number.isFinite(correction)) return estimate;
+
+  return estimate - correction / (1 + (estimate * correction) / 2);
 }
 
 /**
- * Inverse of the standard-normal CDF, via Acklam's algorithm (relative error < 1.15e-9 on (0, 1)).
- * Returns -Infinity at 0 and Infinity at 1.
+ * Estimates the inverse of the standard-normal CDF on (0, 0.5] by Acklam's algorithm, to a relative error
+ * below 1.15e-9.
  */
-function standardNormalInverse(p: number): number {
-  if (p <= 0) return -Infinity;
-  if (p >= 1) return Infinity;
-
+function estimateStandardNormalInverse(p: number): number {
   const a = [
     -3.969_683_028_665_376e1, 2.209_460_984_245_205e2, -2.759_285_104_469_687e2, 1.383_577_518_672_69e2,
     -3.066_479_806_614_716e1, 2.506_628_277_459_239,
@@ -46,22 +68,15 @@ function standardNormalInverse(p: number): number {
     );
   }
 
-  const pHigh = 1 - pLow;
-  if (p <= pHigh) {
-    const q = p - 0.5;
-    const r = q * q;
-    return (
-      ((((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q) /
-      (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1)
-    );
-  }
-
-  const q = Math.sqrt(-2 * Math.log(1 - p));
+  const q = p - 0.5;
+  const r = q * q;
   return (
-    -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
-    ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1)
+    ((((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q) /
+    (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1)
   );
 }
+
+// endregion | Helpers
 
 interface Options {
   mean?: number | undefined;
