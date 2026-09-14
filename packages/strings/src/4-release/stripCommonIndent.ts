@@ -12,8 +12,7 @@ const BYTE_ORDER_MARK = '\u{FEFF}';
  * still dedents.
  *
  * @category String
- * @experimental
- * @stage candidate
+ * @stage release
  */
 export function stripCommonIndent(text: string): string {
   const byteOrderMark = text.startsWith(BYTE_ORDER_MARK) ? BYTE_ORDER_MARK : '';
