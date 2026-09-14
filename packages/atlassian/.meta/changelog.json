@@ -4,7 +4,7 @@
     "date": "2026-09-06",
     "sections": [
       {
-        "title": "Features",
+        "title": "🎉 Features",
         "audience": "all",
         "items": [
           {
@@ -36,7 +36,7 @@
         ]
       },
       {
-        "title": "Bug fixes",
+        "title": "🐛 Bug fixes",
         "audience": "all",
         "items": [
           {
@@ -57,7 +57,7 @@
         ]
       },
       {
-        "title": "Tests",
+        "title": "🧪 Tests",
         "audience": "dev",
         "items": [
           {
@@ -68,7 +68,7 @@
         ]
       },
       {
-        "title": "Documentation",
+        "title": "📚 Documentation",
         "audience": "dev",
         "items": [
           {
@@ -89,7 +89,7 @@
         ]
       },
       {
-        "title": "Internal",
+        "title": "🏗️ Internal features",
         "audience": "all",
         "items": [
           {

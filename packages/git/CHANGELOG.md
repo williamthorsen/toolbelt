@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.3.1 — 2026-09-06
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Point every package bin at a committed wrapper (#296)
 
@@ -15,7 +15,7 @@ All notable changes to this project will be documented in this file.
   - Fixes an issue where `tb-secret set` and `tb-jira auth set` failed with `EAGAIN: resource temporarily unavailable` when the producer of a piped credential delayed its first byte, as `tb-secret get`, `op read`, and `gh auth token` all do.
   - Stops `tb-secret`, `tb-jira`, and `tb-git` from crashing with an unhandled `EPIPE` when the reader on their stdout or stderr exits first, so that `tb-secret get | head -1` ends quietly, as a program that ignores `SIGPIPE` does.
 
-### Documentation
+### 📚 Documentation
 
 - Repair reduced object relatives in the READMEs and AGENTS.md (#263)
 
@@ -27,7 +27,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.3.0 — 2026-08-30
 
-### Features
+### 🎉 Features
 
 - Add a tb-git CLI for branch-number and ticket-ref (#250)
 
@@ -35,7 +35,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.2.0 — 2026-08-28
 
-### Features
+### 🎉 Features
 
 - Add findBranchTicketRef and deriveBranchNumber to toolbelt.git (#239)
 
@@ -43,7 +43,7 @@ All notable changes to this project will be documented in this file.
 
   `findBranchTicketRef` extracts the ticket ID encoded in a branch name. `deriveBranchNumber` relies on it to give every branch a stable number: the ticket's if the branch name includes one, and otherwise a `hashString` digest of the name. The number is bounded by the caller-specified range.
 
-### Internal
+### 🏗️ Internal features
 
 - Scaffold toolbelt.git for git utilities (#235)
 

@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.5.5 — 2026-09-06
 
-### Documentation
+### 📚 Documentation
 
 - Repair reduced object relatives in passages recurring across files (#262)
 
@@ -44,7 +44,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.5.0 — 2026-08-16
 
-### Features
+### 🎉 Features
 
 - Add `pointCwdAt`, a scope-bound cwd pointer (#178)
 
@@ -54,7 +54,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.4.0 — 2026-08-15
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Promote createTempTree to the candidate tier with a caller-chosen prefix and binary entries (#148)
 
@@ -64,7 +64,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.3.1 — 2026-08-13
 
-### Tooling
+### ⚙️ Tooling
 
 - Remove redundant .gitignore files
 - Populate manifest metadata and adopt a pnpm catalog (#140)
@@ -73,13 +73,13 @@ All notable changes to this project will be documented in this file.
 
 ## 0.3.0 — 2026-08-12
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Rename get* functions by return kind and verb specificity (#119)
 
   Renames thirteen functions across various packages to align with a consistent naming pattern.
 
-### Refactoring
+### ♻️ Refactoring
 
 - Align stray modules with layout and TypeScript conventions (#118)
 
@@ -87,7 +87,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.2.0 — 2026-08-08
 
-### Features
+### 🎉 Features
 
 - Scaffold toolbelt.packaging for project-layout utilities (#99)
 
@@ -99,7 +99,7 @@ All notable changes to this project will be documented in this file.
 
   `findProjectRoot` moves from `@williamthorsen/toolbelt.filesystem` to `@williamthorsen/toolbelt.packaging`. Callers of `loadConfigCascade` must now state where its upward search stops, rather than relying on a project root the function found for them.
 
-### Tooling
+### ⚙️ Tooling
 
 - Use identical compiler settings for all packages (#105)
 

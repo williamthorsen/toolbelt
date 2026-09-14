@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.8.3 — 2026-09-06
 
-### Documentation
+### 📚 Documentation
 
 - Repair reduced object relatives in passages recurring across files (#262)
 
@@ -30,7 +30,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.8.1 — 2026-08-28
 
-### Refactoring
+### ♻️ Refactoring
 
 - Upgrade eslint-config-typescript to v12.0.1 and satisfy its new rules (#236)
 
@@ -38,7 +38,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.8.0 — 2026-08-24
 
-### Features
+### 🎉 Features
 
 - Add a recursive listFiles to createTempTree's entry API (#212)
 
@@ -46,7 +46,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.7.0 — 2026-08-21
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Fix createTempTree's symlink guard and disposal, and complete its entry API (#207)
 
@@ -60,13 +60,13 @@ All notable changes to this project will be documented in this file.
 
 ## 0.6.0 — 2026-08-16
 
-### Features
+### 🎉 Features
 
 - Add mkdir, symlink, write, and writeJson methods to `TempTree` (#176)
 
   Adds four write methods to `TempTree` in `@williamthorsen/toolbelt.filesystem`: `mkdir`, `symlink`, `write`, and `writeJson`. Each takes a tree-relative path, creates the parent directories it needs, resolves through the same containment check `resolve` applies, and returns the absolute path, so a suite writing into a built temporary tree reaches it through the handle rather than through `node:fs`. `symlink` accepts a link path and a target, and picks the link type from the target.
 
-### Tests
+### 🧪 Tests
 
 - Drop expect-type in favor of expectTypeOf (#175)
 
@@ -74,7 +74,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.5.0 — 2026-08-15
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Promote createTempTree to the candidate tier with a caller-chosen prefix and binary entries (#148)
 
@@ -88,7 +88,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.4.1 — 2026-08-13
 
-### Tooling
+### ⚙️ Tooling
 
 - Remove redundant .gitignore files
 - Populate manifest metadata and adopt a pnpm catalog (#140)
@@ -97,7 +97,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.4.0 — 2026-08-12
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Add reconcileFile to toolbelt.filesystem and promote describeError to release tier (#122)
 
@@ -115,7 +115,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.3.0 — 2026-08-08
 
-### Features
+### 🎉 Features
 
 - Migrate replaceFileExtension into filesystem package (#74)
 
@@ -141,7 +141,7 @@ All notable changes to this project will be documented in this file.
 
   `findProjectRoot` moves from `@williamthorsen/toolbelt.filesystem` to `@williamthorsen/toolbelt.packaging`. Callers of `loadConfigCascade` must now state where its upward search stops, rather than relying on a project root the function found for them.
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate Vitest configs to the nmr projects model (#73)
 
@@ -153,17 +153,17 @@ All notable changes to this project will be documented in this file.
 
 ## 0.2.1 — 2026-07-27
 
-### Tooling
+### ⚙️ Tooling
 
 - Normalize Vitest, and lint configs
 
-### Documentation
+### 📚 Documentation
 
 - Change license to ISC
 
 ## 0.2.0 — 2026-07-24
 
-### Features
+### 🎉 Features
 
 - Add the filesystem package with bounded cascading config discovery (#71)
 

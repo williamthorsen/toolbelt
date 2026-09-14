@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.12 — 2026-09-06
 
-### Documentation
+### 📚 Documentation
 
 - Repair the repository's prose and record every rejection's ground (#290)
 
@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.11 — 2026-08-13
 
-### Tooling
+### ⚙️ Tooling
 
 - Remove redundant .gitignore files
 - Populate manifest metadata and adopt a pnpm catalog (#140)
@@ -21,7 +21,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.10 — 2026-08-08
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate Vitest configs to the nmr projects model (#73)
 
@@ -33,29 +33,29 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.9 — 2026-07-27
 
-### Tooling
+### ⚙️ Tooling
 
 - Normalize Vitest, and lint configs
 
-### Documentation
+### 📚 Documentation
 
 - Change license to ISC
 
 ## 3.0.8 — 2026-07-24
 
-### Tooling
+### ⚙️ Tooling
 
 - Configure release-kit & repo labels
 
 ## 3.0.7 — 2026-07-20
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Add repository field to package manifests for npm provenance (#65)
 
   Fixes an issue that prevented every package from publishing to npm. Each package now links to its source repository from its npm page.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade ESLint packages and migrate to TypeScript 6 (#67)
 
@@ -63,7 +63,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.6 — 2026-07-20
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate to the nmr toolchain and resolve dependency vulnerabilities (#45)
 
@@ -71,33 +71,33 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.5 — 2026-03-19
 
-### Formatting
+### 🎨 Formatting
 
 - Format changelogs
 
 ## 3.0.2 — 2026-03-10
 
-### Features
+### 🎉 Features
 
 - ⛔ Migrate from toolbelt-deno
 - Add more set functions
 
-### Refactoring
+### ♻️ Refactoring
 
 - Rename functions
 
-### Tests
+### 🧪 Tests
 
 - Convert set tests to Vitest
 
-### Tooling
+### ⚙️ Tooling
 
 - Scaffold the sets workspace
 - Enable incremental type generation
 - Rename publish script to avoid recursion
 - Change package registry from github to npmjs
 
-### Dependencies
+### 📦 Dependencies
 
 - Adapt to dependency upgrades and bump Node engine to >=24 (#8)
 

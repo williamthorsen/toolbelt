@@ -4,13 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.6 — 2026-07-20
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Add repository field to package manifests for npm provenance (#65)
 
   Fixes an issue that prevented every package from publishing to npm. Each package now links to its source repository from its npm page.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade ESLint packages and migrate to TypeScript 6 (#67)
 
@@ -18,7 +18,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.5 — 2026-07-20
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate to the nmr toolchain and resolve dependency vulnerabilities (#45)
 
@@ -26,13 +26,13 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.4 — 2026-03-19
 
-### Formatting
+### 🎨 Formatting
 
 - Format changelogs
 
 ## 3.0.1 — 2026-03-10
 
-### Features
+### 🎉 Features
 
 - AssertIsError: Assert whether a value is an Error
 - AssertIsPlainObject & isPlainObject
@@ -42,12 +42,12 @@ All notable changes to this project will be documented in this file.
 - Modernize code & workspace structure
 - Add string functions
 
-### Refactoring
+### ♻️ Refactoring
 
 - Migrate to ESBuild
 - Rename functions
 
-### Tooling
+### ⚙️ Tooling
 
 - Remove & rename packages
 - Modernize TS configs
@@ -58,7 +58,7 @@ All notable changes to this project will be documented in this file.
 - Enable incremental type generation
 - Fix lint
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade all deps to latest versions
 
@@ -105,7 +105,7 @@ All notable changes to this project will be documented in this file.
 
   The build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.
 
-### Documentation
+### 📚 Documentation
 
 - Add standard details & docs to workspaces
 

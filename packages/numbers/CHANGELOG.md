@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## 7.1.0 — 2026-09-06
 
-### Features
+### 🎉 Features
 
 - Add a ReadyUp adoption kit (#253)
 
@@ -14,12 +14,12 @@ All notable changes to this project will be documented in this file.
 
   - Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.async` that recommends the use of `delay` to replace a hand-rolled sleep.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade all deps to latest version
 - Upgrade all deps to latest version
 
-### Documentation
+### 📚 Documentation
 
 - Document the generated-source exemption in the adoption kits (#251)
 
@@ -47,7 +47,7 @@ All notable changes to this project will be documented in this file.
 
 ## 7.0.3 — 2026-08-30
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Reject a check declaring a kind its detector never produces (#246)
 
@@ -55,13 +55,13 @@ All notable changes to this project will be documented in this file.
 
 ## 7.0.2 — 2026-08-28
 
-### Refactoring
+### ♻️ Refactoring
 
 - Upgrade eslint-config-typescript to v12.0.1 and satisfy its new rules (#236)
 
   Upgrades `@williamthorsen/eslint-config-typescript` to v12 and fixes violations surfaced by the new rules banning unpublished barrels and floating disposables.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade all deps to latest version
 - Upgrade deps to latest version
@@ -69,7 +69,7 @@ All notable changes to this project will be documented in this file.
 
 ## 7.0.1 — 2026-08-24
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Stop the adoption kits from blanking code after `++`, `!`, and keyword-named members (#208)
 
@@ -77,7 +77,7 @@ All notable changes to this project will be documented in this file.
 
   `@williamthorsen/toolbelt.adoption` now takes `blankNonCode` and `getLineAtOffset` from `readyup/check-utils` in place of the copies it held, which had fallen behind readyup's on those three cases.
 
-### Internal
+### 🏗️ Internal features
 
 - Migrate the adoption kits onto FindingOutcome and add check ids (#217)
 
@@ -93,7 +93,7 @@ All notable changes to this project will be documented in this file.
 
 ## 7.0.0 — 2026-08-21
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Promote clamp to the candidate tier with a stricter bounds contract (#185)
 
@@ -105,25 +105,25 @@ All notable changes to this project will be documented in this file.
 
   Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.numbers`. When run against a project, the kit identifies hand-rolled code that can be replaced by the package's `clamp`, `round`, or `pickInteger` functions.
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Blank comments and literals before a detector reads a source (#191)
 
   Fixes the issue that the `errors`, `numbers`, and `vitest` adoption kits' detectors did not distinguish code from comments and literals, and so flagged a pattern written in a comment or a string as a candidate replacement site. Each detector now blanks every comment, string, template literal, and regular expression before its anchor scan, leaving interpolated expressions intact.
 
-### Refactoring
+### ♻️ Refactoring
 
 - Break the workspace dependency cycle by making `adoption` a leaf (#195)
 
   Fixes a cyclic dependency among packages in the repo. `packages/adoption` is now a workspace leaf: It declares no workspace dependency, and its test scaffolding is held to node builtins. A new root test fails on any cycle in the workspace dependency graph.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade all deps to latest version
 
 ## 6.0.1 — 2026-08-13
 
-### Tooling
+### ⚙️ Tooling
 
 - Remove redundant .gitignore files
 - Populate manifest metadata and adopt a pnpm catalog (#140)
@@ -132,13 +132,13 @@ All notable changes to this project will be documented in this file.
 
 ## 6.0.0 — 2026-08-12
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Rename get* functions by return kind and verb specificity (#119)
 
   Renames thirteen functions across various packages to align with a consistent naming pattern.
 
-### Refactoring
+### ♻️ Refactoring
 
 - Stop shipping test-only and dead support modules (#117)
 
@@ -150,7 +150,7 @@ All notable changes to this project will be documented in this file.
 
 ## 5.0.0 — 2026-08-08
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Spawn seeded number generator of same subclass (#84)
 
@@ -160,7 +160,7 @@ All notable changes to this project will be documented in this file.
 
   Changes the `unicorn/numeric-separators-style` rule config so that separators are consistently used in base 10 numbers, instead of exempting numbers of 5 digits or less.
 
-### Refactoring
+### ♻️ Refactoring
 
 - Fixes violations surfaced by newly active lint rules (#84)
 - Fix slug punctuation and require safe integers (#86)
@@ -171,7 +171,7 @@ All notable changes to this project will be documented in this file.
 
 - Fix lint
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate Vitest configs to the nmr projects model (#73)
 
@@ -189,35 +189,35 @@ All notable changes to this project will be documented in this file.
 
   All packages now have identical compiler settings, using the settings from the `@williamthorsen/tsconfig` base config without modification.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade all deps to latest version
 
 ## 4.3.8 — 2026-07-27
 
-### Tooling
+### ⚙️ Tooling
 
 - Normalize Vitest, and lint configs
 
-### Documentation
+### 📚 Documentation
 
 - Change license to ISC
 
 ## 4.3.7 — 2026-07-24
 
-### Tooling
+### ⚙️ Tooling
 
 - Configure release-kit & repo labels
 
 ## 4.3.6 — 2026-07-20
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Add repository field to package manifests for npm provenance (#65)
 
   Fixes an issue that prevented every package from publishing to npm. Each package now links to its source repository from its npm page.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade ESLint packages and migrate to TypeScript 6 (#67)
 
@@ -225,7 +225,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.3.5 — 2026-07-20
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate to the nmr toolchain and resolve dependency vulnerabilities (#45)
 
@@ -233,13 +233,13 @@ All notable changes to this project will be documented in this file.
 
 ## 4.3.4 — 2026-03-19
 
-### Formatting
+### 🎨 Formatting
 
 - Format changelogs
 
 ## 4.3.1 — 2026-03-10
 
-### Features
+### 🎉 Features
 
 - Add string functions
 - Add number functions
@@ -248,22 +248,22 @@ All notable changes to this project will be documented in this file.
 - Allow error as safeParseInteger fallback
 - Add safeParseNumber
 
-### Refactoring
+### ♻️ Refactoring
 
 - Rename functions
 
-### Tests
+### 🧪 Tests
 
 - Adapt Deno tests to Vitest
 
-### Tooling
+### ⚙️ Tooling
 
 - Scaffold the numbers workspace
 - Enable incremental type generation
 - Rename publish script to avoid recursion
 - Change package registry from github to npmjs
 
-### Dependencies
+### 📦 Dependencies
 
 - Adapt to dependency upgrades and bump Node engine to >=24 (#8)
 
@@ -305,7 +305,7 @@ All notable changes to this project will be documented in this file.
 
   The build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.
 
-### Documentation
+### 📚 Documentation
 
 - Fix lint
 

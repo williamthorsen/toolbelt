@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## 6.2.0 — 2026-09-06
 
-### Features
+### 🎉 Features
 
 - Add a ReadyUp adoption kit to toolbelt.arrays (#254)
 
@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file.
 
   - Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.async` that recommends the use of `delay` to replace a hand-rolled sleep.
 
-### Documentation
+### 📚 Documentation
 
 - Repair reduced object relatives in passages recurring across files (#262)
 
@@ -40,7 +40,7 @@ All notable changes to this project will be documented in this file.
 
 ## 6.1.0 — 2026-08-30
 
-### Features
+### 🎉 Features
 
 - Publish identity and object-path functions and remove dead code (#242)
 
@@ -62,7 +62,7 @@ All notable changes to this project will be documented in this file.
 
 ## 6.0.0 — 2026-08-21
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Correct the nullish guards' narrowing and rename `isNullable` (#206)
 
@@ -74,7 +74,7 @@ All notable changes to this project will be documented in this file.
 
 ## 5.0.1 — 2026-08-16
 
-### Tests
+### 🧪 Tests
 
 - Drop expect-type in favor of expectTypeOf (#175)
 
@@ -82,7 +82,7 @@ All notable changes to this project will be documented in this file.
 
 ## 5.0.0 — 2026-08-15
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Fix unsound narrowing in `getAtIndexOrThrow` and rename it to `getItemAtIndexOrThrow` (#152)
 
@@ -100,7 +100,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.0.1 — 2026-08-13
 
-### Tooling
+### ⚙️ Tooling
 
 - Remove redundant .gitignore files
 - Populate manifest metadata and adopt a pnpm catalog (#140)
@@ -109,13 +109,13 @@ All notable changes to this project will be documented in this file.
 
 ## 4.0.0 — 2026-08-12
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Rename get* functions by return kind and verb specificity (#119)
 
   Renames thirteen functions across various packages to align with a consistent naming pattern.
 
-### Refactoring
+### ♻️ Refactoring
 
 - Align stray modules with layout and TypeScript conventions (#118)
 
@@ -123,13 +123,13 @@ All notable changes to this project will be documented in this file.
 
 ## 3.4.0 — 2026-08-08
 
-### Features
+### 🎉 Features
 
 - Use underscore separator at 4 digits or more
 
   Changes the `unicorn/numeric-separators-style` rule config so that separators are consistently used in base 10 numbers, instead of exempting numbers of 5 digits or less.
 
-### Refactoring
+### ♻️ Refactoring
 
 - Fix slug punctuation and require safe integers (#86)
 
@@ -137,7 +137,7 @@ All notable changes to this project will be documented in this file.
   - Time-unit conversions, scaling range bounds, normal-distribution interval counts, and array indices in object paths now reject values too large to represent exactly instead of silently losing precision.
   - Seeded number generators now produce distinct sequences for seeds at or beyond 2^53, where adjacent seeds previously collapsed onto nearly identical output. A seed of that size saved before this release no longer reproduces the same output.
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate Vitest configs to the nmr projects model (#73)
 
@@ -157,29 +157,29 @@ All notable changes to this project will be documented in this file.
 
 ## 3.3.9 — 2026-07-27
 
-### Tooling
+### ⚙️ Tooling
 
 - Normalize Vitest, and lint configs
 
-### Documentation
+### 📚 Documentation
 
 - Change license to ISC
 
 ## 3.3.8 — 2026-07-24
 
-### Tooling
+### ⚙️ Tooling
 
 - Configure release-kit & repo labels
 
 ## 3.3.7 — 2026-07-20
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Add repository field to package manifests for npm provenance (#65)
 
   Fixes an issue that prevented every package from publishing to npm. Each package now links to its source repository from its npm page.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade ESLint packages and migrate to TypeScript 6 (#67)
 
@@ -187,7 +187,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.3.6 — 2026-07-20
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate to the nmr toolchain and resolve dependency vulnerabilities (#45)
 
@@ -195,13 +195,13 @@ All notable changes to this project will be documented in this file.
 
 ## 3.3.5 — 2026-03-19
 
-### Formatting
+### 🎨 Formatting
 
 - Format changelogs
 
 ## 3.3.2 — 2026-03-10
 
-### Features
+### 🎉 Features
 
 - Add string functions
 - Migrate from toolbelt-deno
@@ -210,27 +210,27 @@ All notable changes to this project will be documented in this file.
 - Simplify Range API
 - Add getUniqueItems
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Replace Node.js assert with library assert
 
-### Refactoring
+### ♻️ Refactoring
 
 - Rename functions
 - Rename getDuplicates to getDuplicateItems
 
-### Tests
+### 🧪 Tests
 
 - Adapt Deno tests to Vitest
 
-### Tooling
+### ⚙️ Tooling
 
 - Scaffold the arrays workspace
 - Enable incremental type generation
 - Rename publish script to avoid recursion
 - Change package registry from github to npmjs
 
-### Dependencies
+### 📦 Dependencies
 
 - Add toolbelt.numbers to prod deps
 - Adapt to dependency upgrades and bump Node engine to >=24 (#8)

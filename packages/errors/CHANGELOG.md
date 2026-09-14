@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.7.0 — 2026-09-06
 
-### Features
+### 🎉 Features
 
 - Add a ReadyUp adoption kit (#253)
 
@@ -14,11 +14,11 @@ All notable changes to this project will be documented in this file.
 
   - Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.async` that recommends the use of `delay` to replace a hand-rolled sleep.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade all deps to latest version
 
-### Documentation
+### 📚 Documentation
 
 - Document the generated-source exemption in the adoption kits (#251)
 
@@ -46,7 +46,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.6.3 — 2026-08-30
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Reject a check declaring a kind its detector never produces (#246)
 
@@ -54,7 +54,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.6.2 — 2026-08-28
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade all deps to latest version
 - Upgrade deps to latest version
@@ -62,7 +62,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.6.1 — 2026-08-24
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Stop the adoption kits from blanking code after `++`, `!`, and keyword-named members (#208)
 
@@ -70,7 +70,7 @@ All notable changes to this project will be documented in this file.
 
   `@williamthorsen/toolbelt.adoption` now takes `blankNonCode` and `getLineAtOffset` from `readyup/check-utils` in place of the copies it held, which had fallen behind readyup's on those three cases.
 
-### Internal
+### 🏗️ Internal features
 
 - Migrate the adoption kits onto FindingOutcome and add check ids (#217)
 
@@ -86,23 +86,19 @@ All notable changes to this project will be documented in this file.
 
 ## 0.6.0 — 2026-08-21
 
-### Features
+### 🎉 Features
 
 - Add a ReadyUp adoption kit to `numbers` (#188)
 
   Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.numbers`. When run against a project, the kit identifies hand-rolled code that can be replaced by the package's `clamp`, `round`, or `pickInteger` functions.
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Blank comments and literals before a detector reads a source (#191)
 
   Fixes the issue that the `errors`, `numbers`, and `vitest` adoption kits' detectors did not distinguish code from comments and literals, and so flagged a pattern written in a comment or a string as a candidate replacement site. Each detector now blanks every comment, string, template literal, and regular expression before its anchor scan, leaving interpolated expressions intact.
 
-### Dependencies
-
-- Upgrade all deps to latest version
-
-### Internal
+### 🏗️ Internal features
 
 - Add `packages/adoption` and migrate the `errors` and `vitest` kits onto it (#183)
 
@@ -110,9 +106,13 @@ All notable changes to this project will be documented in this file.
 
   Adds `__tests__/kit-bundle-freshness.tool.test.ts`, which fails CI when a committed kit bundle falls behind a source it inlines.
 
+### 📦 Dependencies
+
+- Upgrade all deps to latest version
+
 ## 0.5.0 — 2026-08-15
 
-### Features
+### 🎉 Features
 
 - Add throwOnProcessExit and a ReadyUp kit reporting hand-rolled exit mocks (#150)
 
@@ -122,7 +122,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.4.0 — 2026-08-13
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Publish a ReadyUp adoption kit and promote isError to release (#139)
 
@@ -132,7 +132,7 @@ All notable changes to this project will be documented in this file.
 
   🚨 **Breaking:** `isError` moves to the release tier and is imported from the package root; the `/candidate` subpath no longer resolves it.
 
-### Tooling
+### ⚙️ Tooling
 
 - Remove redundant .gitignore files
 - Populate manifest metadata and adopt a pnpm catalog (#140)
@@ -141,7 +141,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.3.0 — 2026-08-12
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Add reconcileFile to toolbelt.filesystem and promote describeError to release tier (#122)
 
@@ -153,7 +153,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.2.0 — 2026-08-10
 
-### Features
+### 🎉 Features
 
 - Scaffold toolbelt.errors for error-handling utilities (#112)
 

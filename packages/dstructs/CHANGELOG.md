@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.2.5 — 2026-08-13
 
-### Tooling
+### ⚙️ Tooling
 
 - Remove redundant .gitignore files
 - Populate manifest metadata and adopt a pnpm catalog (#140)
@@ -13,13 +13,13 @@ All notable changes to this project will be documented in this file.
 
 ## 0.2.4 — 2026-08-08
 
-### Refactoring
+### ♻️ Refactoring
 
 - Fix deferred violations of unicorn lint rules (#88)
 
   Fixes issues surfaced by `unicorn` lint rules that were temporarily downgraded to warnings and restores the rules to "error" severity. Separately, the `Queue` class in `dstructs` has been modified to hide its internal array.
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate Vitest configs to the nmr projects model (#73)
 
@@ -31,29 +31,29 @@ All notable changes to this project will be documented in this file.
 
 ## 0.2.3 — 2026-07-27
 
-### Tooling
+### ⚙️ Tooling
 
 - Normalize Vitest, and lint configs
 
-### Documentation
+### 📚 Documentation
 
 - Change license to ISC
 
 ## 0.2.2 — 2026-07-24
 
-### Tooling
+### ⚙️ Tooling
 
 - Configure release-kit & repo labels
 
 ## 0.2.1 — 2026-07-20
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Add repository field to package manifests for npm provenance (#65)
 
   Fixes an issue that prevented every package from publishing to npm. Each package now links to its source repository from its npm page.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade ESLint packages and migrate to TypeScript 6 (#67)
 
@@ -61,7 +61,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.2.0 — 2026-07-20
 
-### Features
+### 🎉 Features
 
 - Add dstructs and statistics packages (#58)
 

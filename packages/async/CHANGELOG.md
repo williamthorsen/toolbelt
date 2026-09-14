@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.2.0 — 2026-09-06
 
-### Features
+### 🎉 Features
 
 - Add a ReadyUp adoption kit reporting hand-rolled sleeps (#303)
 
@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.1.1 — 2026-08-13
 
-### Tooling
+### ⚙️ Tooling
 
 - Remove redundant .gitignore files
 - Populate manifest metadata and adopt a pnpm catalog (#140)
@@ -21,13 +21,13 @@ All notable changes to this project will be documented in this file.
 
 ## 3.1.0 — 2026-08-08
 
-### Features
+### 🎉 Features
 
 - Use underscore separator at 4 digits or more
 
   Changes the `unicorn/numeric-separators-style` rule config so that separators are consistently used in base 10 numbers, instead of exempting numbers of 5 digits or less.
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate Vitest configs to the nmr projects model (#73)
 
@@ -39,29 +39,29 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.9 — 2026-07-27
 
-### Tooling
+### ⚙️ Tooling
 
 - Normalize Vitest, and lint configs
 
-### Documentation
+### 📚 Documentation
 
 - Change license to ISC
 
 ## 3.0.8 — 2026-07-24
 
-### Tooling
+### ⚙️ Tooling
 
 - Configure release-kit & repo labels
 
 ## 3.0.7 — 2026-07-20
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Add repository field to package manifests for npm provenance (#65)
 
   Fixes an issue that prevented every package from publishing to npm. Each package now links to its source repository from its npm page.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade ESLint packages and migrate to TypeScript 6 (#67)
 
@@ -69,7 +69,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.6 — 2026-07-20
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate to the nmr toolchain and resolve dependency vulnerabilities (#45)
 
@@ -77,24 +77,24 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.5 — 2026-03-19
 
-### Formatting
+### 🎨 Formatting
 
 - Format changelogs
 
 ## 3.0.2 — 2026-03-10
 
-### Features
+### 🎉 Features
 
 - Add debounce & delay functions
 
-### Tooling
+### ⚙️ Tooling
 
 - Scaffold the async workspace
 - Enable incremental type generation
 - Rename publish script to avoid recursion
 - Change package registry from github to npmjs
 
-### Dependencies
+### 📦 Dependencies
 
 - Adapt to dependency upgrades and bump Node engine to >=24 (#8)
 
