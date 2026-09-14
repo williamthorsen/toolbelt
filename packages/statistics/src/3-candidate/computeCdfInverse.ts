@@ -1,5 +1,9 @@
+import { computeCdf } from './computeCdf.ts';
+
 /**
- * Returns the inverse of the cumulative distribution function (CDF) for a normal distribution.
+ * Returns the inverse of the cumulative distribution function (CDF) for a normal distribution. A round
+ * trip through `computeCdf` recovers the value to near double precision up to about 3.5 standard
+ * deviations above the mean; farther above, probabilities round toward 1 and the round trip loses precision.
  *
  * @category Statistics
  * @stage candidate
@@ -11,17 +15,34 @@ export function computeCdfInverse(probability: number, options: Options): number
     throw new Error('Standard deviation must be greater than zero.');
   }
 
-  return mean + standardDeviation * standardNormalInverse(probability);
+  return mean + standardDeviation * computeStandardNormalInverse(probability);
 }
 
+// region | Helpers
+
 /**
- * Inverse of the standard-normal CDF, via Acklam's algorithm (relative error < 1.15e-9 on (0, 1)).
- * Returns -Infinity at 0 and Infinity at 1.
+ * Returns the inverse of the standard-normal CDF: Acklam's estimate, corrected by one Halley step against
+ * `computeCdf`. Returns -Infinity at 0 and Infinity at 1.
  */
-function standardNormalInverse(p: number): number {
+function computeStandardNormalInverse(p: number): number {
   if (p <= 0) return -Infinity;
   if (p >= 1) return Infinity;
 
+  const estimate = estimateStandardNormalInverse(p);
+  const error = computeCdf({ value: estimate }) - p;
+  const correction = error * Math.sqrt(2 * Math.PI) * Math.exp((estimate * estimate) / 2);
+
+  // For a probability below about 6e-311, exp(estimate^2 / 2) overflows.
+  if (!Number.isFinite(correction)) return estimate;
+
+  return estimate - correction / (1 + (estimate * correction) / 2);
+}
+
+/**
+ * Estimates the inverse of the standard-normal CDF on (0, 1) by Acklam's algorithm, to a relative error
+ * below 1.15e-9.
+ */
+function estimateStandardNormalInverse(p: number): number {
   const a = [
     -3.969_683_028_665_376e1, 2.209_460_984_245_205e2, -2.759_285_104_469_687e2, 1.383_577_518_672_69e2,
     -3.066_479_806_614_716e1, 2.506_628_277_459_239,
@@ -62,6 +83,8 @@ function standardNormalInverse(p: number): number {
     ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1)
   );
 }
+
+// endregion | Helpers
 
 interface Options {
   mean?: number | undefined;

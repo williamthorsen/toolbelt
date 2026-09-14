@@ -43,6 +43,23 @@ describe(computeCdfInverse, () => {
     expect(computeCdfInverse(computeCdf({ ...options, value: 7 }), options)).toBeCloseTo(7, 4);
   });
 
+  it.each([-37, -30, -20, -10, -5, -3, -1, 0, 1, 3])(
+    'recovers the value %d from its probability to within 1e-13',
+    (value) => {
+      const roundTrip = computeCdfInverse(computeCdf({ value }), {});
+
+      expect(Math.abs(roundTrip - value)).toBeLessThanOrEqual(1e-13 * Math.max(1, Math.abs(value)));
+    },
+  );
+
+  // At 5e-324 the Halley correction overflows and the estimate is returned; at 1e-310 the correction applies.
+  it.each([5e-324, 1e-310])('returns a finite quantile below -37 for the subnormal probability %d', (probability) => {
+    const quantile = computeCdfInverse(probability, {});
+
+    expect(Number.isFinite(quantile)).toBe(true);
+    expect(quantile).toBeLessThan(-37);
+  });
+
   it('throws an error if given an invalid standard deviation', () => {
     const throwingFn = () => computeCdfInverse(0.5, { mean: 0, standardDeviation: 0 });
 
