@@ -60,6 +60,13 @@ describe(computeCdfInverse, () => {
     expect(quantile).toBeLessThan(-37);
   });
 
+  // Reference quantile from mpmath at 60 significant digits, rounded to the nearest double.
+  it('returns the quantile of the probability 1 - 1e-12 to a relative error of 1e-15', () => {
+    const quantile = computeCdfInverse(1 - 1e-12, {});
+
+    expect(Math.abs(quantile / 7.034_486_910_047_835_6 - 1)).toBeLessThan(1e-15);
+  });
+
   it('throws an error if given an invalid standard deviation', () => {
     const throwingFn = () => computeCdfInverse(0.5, { mean: 0, standardDeviation: 0 });
 
