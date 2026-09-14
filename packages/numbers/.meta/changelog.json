@@ -4,7 +4,7 @@
     "date": "2026-09-06",
     "sections": [
       {
-        "title": "Features",
+        "title": "🎉 Features",
         "audience": "all",
         "items": [
           {
@@ -20,7 +20,7 @@
         ]
       },
       {
-        "title": "Dependencies",
+        "title": "📦 Dependencies",
         "audience": "dev",
         "items": [
           {
@@ -34,7 +34,7 @@
         ]
       },
       {
-        "title": "Documentation",
+        "title": "📚 Documentation",
         "audience": "dev",
         "items": [
           {
@@ -76,7 +76,7 @@
     "date": "2026-08-30",
     "sections": [
       {
-        "title": "Bug fixes",
+        "title": "🐛 Bug fixes",
         "audience": "all",
         "items": [
           {
@@ -93,7 +93,7 @@
     "date": "2026-08-28",
     "sections": [
       {
-        "title": "Refactoring",
+        "title": "♻️ Refactoring",
         "audience": "dev",
         "items": [
           {
@@ -104,7 +104,7 @@
         ]
       },
       {
-        "title": "Dependencies",
+        "title": "📦 Dependencies",
         "audience": "dev",
         "items": [
           {
@@ -128,7 +128,7 @@
     "date": "2026-08-24",
     "sections": [
       {
-        "title": "Bug fixes",
+        "title": "🐛 Bug fixes",
         "audience": "all",
         "items": [
           {
@@ -139,7 +139,7 @@
         ]
       },
       {
-        "title": "Internal",
+        "title": "🏗️ Internal features",
         "audience": "all",
         "items": [
           {
@@ -161,7 +161,7 @@
     "date": "2026-08-21",
     "sections": [
       {
-        "title": "Features",
+        "title": "🎉 Features",
         "audience": "all",
         "items": [
           {
@@ -178,7 +178,7 @@
         ]
       },
       {
-        "title": "Bug fixes",
+        "title": "🐛 Bug fixes",
         "audience": "all",
         "items": [
           {
@@ -189,7 +189,7 @@
         ]
       },
       {
-        "title": "Refactoring",
+        "title": "♻️ Refactoring",
         "audience": "dev",
         "items": [
           {
@@ -200,7 +200,7 @@
         ]
       },
       {
-        "title": "Dependencies",
+        "title": "📦 Dependencies",
         "audience": "dev",
         "items": [
           {
@@ -216,7 +216,7 @@
     "date": "2026-08-13",
     "sections": [
       {
-        "title": "Tooling",
+        "title": "⚙️ Tooling",
         "audience": "dev",
         "items": [
           {
@@ -237,7 +237,7 @@
     "date": "2026-08-12",
     "sections": [
       {
-        "title": "Features",
+        "title": "🎉 Features",
         "audience": "all",
         "items": [
           {
@@ -249,7 +249,7 @@
         ]
       },
       {
-        "title": "Refactoring",
+        "title": "♻️ Refactoring",
         "audience": "dev",
         "items": [
           {
@@ -271,7 +271,7 @@
     "date": "2026-08-08",
     "sections": [
       {
-        "title": "Features",
+        "title": "🎉 Features",
         "audience": "all",
         "items": [
           {
@@ -288,7 +288,7 @@
         ]
       },
       {
-        "title": "Refactoring",
+        "title": "♻️ Refactoring",
         "audience": "dev",
         "items": [
           {
@@ -304,7 +304,7 @@
         ]
       },
       {
-        "title": "Tooling",
+        "title": "⚙️ Tooling",
         "audience": "dev",
         "items": [
           {
@@ -330,7 +330,7 @@
         ]
       },
       {
-        "title": "Dependencies",
+        "title": "📦 Dependencies",
         "audience": "dev",
         "items": [
           {
@@ -346,7 +346,7 @@
     "date": "2026-07-27",
     "sections": [
       {
-        "title": "Tooling",
+        "title": "⚙️ Tooling",
         "audience": "dev",
         "items": [
           {
@@ -356,7 +356,7 @@
         ]
       },
       {
-        "title": "Documentation",
+        "title": "📚 Documentation",
         "audience": "dev",
         "items": [
           {
@@ -372,7 +372,7 @@
     "date": "2026-07-24",
     "sections": [
       {
-        "title": "Tooling",
+        "title": "⚙️ Tooling",
         "audience": "dev",
         "items": [
           {
@@ -388,7 +388,7 @@
     "date": "2026-07-20",
     "sections": [
       {
-        "title": "Bug fixes",
+        "title": "🐛 Bug fixes",
         "audience": "all",
         "items": [
           {
@@ -399,7 +399,7 @@
         ]
       },
       {
-        "title": "Dependencies",
+        "title": "📦 Dependencies",
         "audience": "dev",
         "items": [
           {
@@ -416,7 +416,7 @@
     "date": "2026-07-20",
     "sections": [
       {
-        "title": "Tooling",
+        "title": "⚙️ Tooling",
         "audience": "dev",
         "items": [
           {
@@ -433,7 +433,7 @@
     "date": "2026-03-19",
     "sections": [
       {
-        "title": "Formatting",
+        "title": "🎨 Formatting",
         "audience": "all",
         "items": [{ "description": "Format changelogs", "hash": "ad732cb42e9310dc122b18401651ef818cc9a4a1" }]
       }
@@ -444,7 +444,7 @@
     "date": "2026-03-10",
     "sections": [
       {
-        "title": "Features",
+        "title": "🎉 Features",
         "audience": "all",
         "items": [
           {
@@ -471,12 +471,12 @@
         ]
       },
       {
-        "title": "Refactoring",
+        "title": "♻️ Refactoring",
         "audience": "dev",
         "items": [{ "description": "Rename functions", "hash": "65d98a6e9f3ccca17a50c22e65da1a810de406e0" }]
       },
       {
-        "title": "Tests",
+        "title": "🧪 Tests",
         "audience": "dev",
         "items": [
           {
@@ -486,7 +486,7 @@
         ]
       },
       {
-        "title": "Tooling",
+        "title": "⚙️ Tooling",
         "audience": "dev",
         "items": [
           {
@@ -508,7 +508,7 @@
         ]
       },
       {
-        "title": "Dependencies",
+        "title": "📦 Dependencies",
         "audience": "dev",
         "items": [
           {
@@ -519,7 +519,7 @@
         ]
       },
       {
-        "title": "Documentation",
+        "title": "📚 Documentation",
         "audience": "dev",
         "items": [{ "description": "Fix lint", "hash": "30b519e04b566e0ae21a06ebc39e9b6390010320" }]
       }

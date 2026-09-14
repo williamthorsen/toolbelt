@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.5.1 — 2026-09-06
 
-### Documentation
+### 📚 Documentation
 
 - Repair reduced object relatives in passages recurring across files (#262)
 
@@ -20,7 +20,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.5.0 — 2026-08-28
 
-### Features
+### 🎉 Features
 
 - Report hand-rolled console reads in the adoption kit (#227)
 
@@ -28,7 +28,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.4.0 — 2026-08-24
 
-### Features
+### 🎉 Features
 
 - Add `pointArgvAt`, a scope-bound argv pointer (#219)
 
@@ -36,7 +36,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.3.0 — 2026-08-16
 
-### Features
+### 🎉 Features
 
 - Add `pointCwdAt`, a scope-bound cwd pointer (#178)
 
@@ -46,7 +46,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.2.0 — 2026-08-13
 
-### Features
+### 🎉 Features
 
 - Add toolbelt.testing for runner-agnostic test utilities (#136)
 
@@ -60,7 +60,7 @@ All notable changes to this project will be documented in this file.
 
   Adds `captureError` to `@williamthorsen/toolbelt.testing`'s candidate tier. It runs a call expected to fail and returns the error it threw or rejected with, narrowed to the expected class.
 
-### Tooling
+### ⚙️ Tooling
 
 - Populate manifest metadata and adopt a pnpm catalog (#140)
 

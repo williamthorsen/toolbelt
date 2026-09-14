@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.2.0 — 2026-09-06
 
-### Features
+### 🎉 Features
 
 - Add a ReadyUp adoption kit (#253)
 
@@ -14,11 +14,11 @@ All notable changes to this project will be documented in this file.
 
   - Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.async` that recommends the use of `delay` to replace a hand-rolled sleep.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade all deps to latest version
 
-### Documentation
+### 📚 Documentation
 
 - Repair reduced object relatives in passages recurring across files (#262)
 
@@ -42,7 +42,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.1.0 — 2026-08-30
 
-### Features
+### 🎉 Features
 
 - Publish identity and object-path functions and remove dead code (#242)
 
@@ -52,7 +52,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.0.0 — 2026-08-21
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Name each object guard for the type it narrows to (#203)
 
@@ -66,7 +66,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.2.14 — 2026-08-16
 
-### Tests
+### 🧪 Tests
 
 - Drop expect-type in favor of expectTypeOf (#175)
 
@@ -74,7 +74,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.2.13 — 2026-08-13
 
-### Tooling
+### ⚙️ Tooling
 
 - Remove redundant .gitignore files
 - Populate manifest metadata and adopt a pnpm catalog (#140)
@@ -83,7 +83,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.2.12 — 2026-08-12
 
-### Refactoring
+### ♻️ Refactoring
 
 - Stop shipping test-only and dead support modules (#117)
 
@@ -95,7 +95,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.2.11 — 2026-08-08
 
-### Refactoring
+### ♻️ Refactoring
 
 - Fixes violations surfaced by newly active lint rules (#84)
 - Fix slug punctuation and require safe integers (#86)
@@ -108,7 +108,7 @@ All notable changes to this project will be documented in this file.
 
   Fixes issues surfaced by `unicorn` lint rules that were temporarily downgraded to warnings and restores the rules to "error" severity. Separately, the `Queue` class in `dstructs` has been modified to hide its internal array.
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate Vitest configs to the nmr projects model (#73)
 
@@ -126,35 +126,35 @@ All notable changes to this project will be documented in this file.
 
   All packages now have identical compiler settings, using the settings from the `@williamthorsen/tsconfig` base config without modification.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade all deps to latest version
 
 ## 3.2.10 — 2026-07-27
 
-### Tooling
+### ⚙️ Tooling
 
 - Normalize Vitest, and lint configs
 
-### Documentation
+### 📚 Documentation
 
 - Change license to ISC
 
 ## 3.2.9 — 2026-07-24
 
-### Tooling
+### ⚙️ Tooling
 
 - Configure release-kit & repo labels
 
 ## 3.2.8 — 2026-07-20
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Add repository field to package manifests for npm provenance (#65)
 
   Fixes an issue that prevented every package from publishing to npm. Each package now links to its source repository from its npm page.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade ESLint packages and migrate to TypeScript 6 (#67)
 
@@ -162,7 +162,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.2.7 — 2026-07-20
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate to the nmr toolchain and resolve dependency vulnerabilities (#45)
 
@@ -170,13 +170,13 @@ All notable changes to this project will be documented in this file.
 
 ## 3.2.6 — 2026-03-19
 
-### Formatting
+### 🎨 Formatting
 
 - Format changelogs
 
 ## 3.2.3 — 2026-03-10
 
-### Features
+### 🎉 Features
 
 - Modernize code & workspace structure
 - Add legacy TypedObject and objectMap
@@ -211,17 +211,17 @@ All notable changes to this project will be documented in this file.
   - Root package version bumped to 4.3.1
   - Objects package version bumped to 3.2.0
 
-### Refactoring
+### ♻️ Refactoring
 
 - Migrate to ESBuild
 - Rename functions
 - Replace barrel imports with direct imports
 
-### Tests
+### 🧪 Tests
 
 - Convert object tests to Vitest
 
-### Tooling
+### ⚙️ Tooling
 
 - Configure Prettier
 - Enable incremental type generation
@@ -236,7 +236,7 @@ All notable changes to this project will be documented in this file.
 
 - Change package registry from github to npmjs
 
-### Dependencies
+### 📦 Dependencies
 
 - Adapt to dependency upgrades and bump Node engine to >=24 (#8)
 
@@ -278,7 +278,7 @@ All notable changes to this project will be documented in this file.
 
   The build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.
 
-### Documentation
+### 📚 Documentation
 
 - Fix lint
 - Fix lint

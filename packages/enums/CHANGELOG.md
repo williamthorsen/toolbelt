@@ -34,7 +34,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.1.13 — 2026-08-16
 
-### Tests
+### 🧪 Tests
 
 - Drop expect-type in favor of expectTypeOf (#175)
 
@@ -48,7 +48,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.1.11 — 2026-08-13
 
-### Tooling
+### ⚙️ Tooling
 
 - Remove redundant .gitignore files
 - Populate manifest metadata and adopt a pnpm catalog (#140)
@@ -63,7 +63,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.1.9 — 2026-08-08
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate Vitest configs to the nmr projects model (#73)
 
@@ -75,29 +75,29 @@ All notable changes to this project will be documented in this file.
 
 ## 3.1.8 — 2026-07-27
 
-### Tooling
+### ⚙️ Tooling
 
 - Normalize Vitest, and lint configs
 
-### Documentation
+### 📚 Documentation
 
 - Change license to ISC
 
 ## 3.1.7 — 2026-07-24
 
-### Tooling
+### ⚙️ Tooling
 
 - Configure release-kit & repo labels
 
 ## 3.1.6 — 2026-07-20
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Add repository field to package manifests for npm provenance (#65)
 
   Fixes an issue that prevented every package from publishing to npm. Each package now links to its source repository from its npm page.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade ESLint packages and migrate to TypeScript 6 (#67)
 
@@ -105,7 +105,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.1.5 — 2026-07-20
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate to the nmr toolchain and resolve dependency vulnerabilities (#45)
 
@@ -113,25 +113,25 @@ All notable changes to this project will be documented in this file.
 
 ## 3.1.4 — 2026-03-19
 
-### Formatting
+### 🎨 Formatting
 
 - Format changelogs
 
 ## 3.1.1 — 2026-03-10
 
-### Features
+### 🎉 Features
 
 - Added enum functions
 - Add enumEntries, enumKeys & enumValues
 
-### Tooling
+### ⚙️ Tooling
 
 - Scaffold the enums workspace
 - Enable incremental type generation
 - Rename publish script to avoid recursion
 - Change package registry from github to npmjs
 
-### Dependencies
+### 📦 Dependencies
 
 - Adapt to dependency upgrades and bump Node engine to >=24 (#8)
 

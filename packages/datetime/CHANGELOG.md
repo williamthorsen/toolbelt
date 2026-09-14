@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.0.7 — 2026-09-06
 
-### Documentation
+### 📚 Documentation
 
 - Repair the repository's prose and record every rejection's ground (#290)
 
@@ -18,7 +18,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.0.5 — 2026-08-28
 
-### Refactoring
+### ♻️ Refactoring
 
 - Upgrade eslint-config-typescript to v12.0.1 and satisfy its new rules (#236)
 
@@ -26,7 +26,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.0.4 — 2026-08-24
 
-### Refactoring
+### ♻️ Refactoring
 
 - Clear the last lint warning and suppression (#223)
 
@@ -40,7 +40,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.0.2 — 2026-08-21
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Adopt `round` in `TimeUnit.convert` and repair its same-unit path (#192)
 
@@ -50,7 +50,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.0.1 — 2026-08-13
 
-### Tooling
+### ⚙️ Tooling
 
 - Remove redundant .gitignore files
 - Populate manifest metadata and adopt a pnpm catalog (#140)
@@ -59,13 +59,13 @@ All notable changes to this project will be documented in this file.
 
 ## 4.0.0 — 2026-08-12
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Rename get* functions by return kind and verb specificity (#119)
 
   Renames thirteen functions across various packages to align with a consistent naming pattern.
 
-### Refactoring
+### ♻️ Refactoring
 
 - Align stray modules with layout and TypeScript conventions (#118)
 
@@ -73,7 +73,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.3.0 — 2026-08-08
 
-### Features
+### 🎉 Features
 
 - Add elapsed-time measurement and multi-unit duration formatting (#95)
 
@@ -85,7 +85,7 @@ All notable changes to this project will be documented in this file.
 
   Changes the `unicorn/numeric-separators-style` rule config so that separators are consistently used in base 10 numbers, instead of exempting numbers of 5 digits or less.
 
-### Refactoring
+### ♻️ Refactoring
 
 - Fixes violations surfaced by newly active lint rules (#84)
 - Fix slug punctuation and require safe integers (#86)
@@ -98,7 +98,7 @@ All notable changes to this project will be documented in this file.
 
   Fixes issues surfaced by `unicorn` lint rules that were temporarily downgraded to warnings and restores the rules to "error" severity. Separately, the `Queue` class in `dstructs` has been modified to hide its internal array.
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate Vitest configs to the nmr projects model (#73)
 
@@ -112,35 +112,35 @@ All notable changes to this project will be documented in this file.
 
   All packages now have identical compiler settings, using the settings from the `@williamthorsen/tsconfig` base config without modification.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade all deps to latest version
 
 ## 3.2.8 — 2026-07-27
 
-### Tooling
+### ⚙️ Tooling
 
 - Normalize Vitest, and lint configs
 
-### Documentation
+### 📚 Documentation
 
 - Change license to ISC
 
 ## 3.2.7 — 2026-07-24
 
-### Tooling
+### ⚙️ Tooling
 
 - Configure release-kit & repo labels
 
 ## 3.2.6 — 2026-07-20
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Add repository field to package manifests for npm provenance (#65)
 
   Fixes an issue that prevented every package from publishing to npm. Each package now links to its source repository from its npm page.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade ESLint packages and migrate to TypeScript 6 (#67)
 
@@ -148,7 +148,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.2.5 — 2026-07-20
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate to the nmr toolchain and resolve dependency vulnerabilities (#45)
 
@@ -156,31 +156,31 @@ All notable changes to this project will be documented in this file.
 
 ## 3.2.4 — 2026-03-19
 
-### Formatting
+### 🎨 Formatting
 
 - Format changelogs
 
 ## 3.2.1 — 2026-03-10
 
-### Features
+### 🎉 Features
 
 - ⛔ Migrate from toolbelt-deno
 - Can get decades for a range of years
 
   Added `getDecadesContainingRange` and `getDecadesContainingYears`.
 
-### Tests
+### 🧪 Tests
 
 - Convert timestamp tests to Vitest
 
-### Tooling
+### ⚙️ Tooling
 
 - Scaffold the datetime workspace
 - Enable incremental type generation
 - Rename publish script to avoid recursion
 - Change package registry from github to npmjs
 
-### Dependencies
+### 📦 Dependencies
 
 - Adapt to dependency upgrades and bump Node engine to >=24 (#8)
 

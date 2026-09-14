@@ -4,7 +4,7 @@
     "date": "2026-09-06",
     "sections": [
       {
-        "title": "Features",
+        "title": "🎉 Features",
         "audience": "all",
         "items": [
           {
@@ -20,7 +20,7 @@
         ]
       },
       {
-        "title": "Dependencies",
+        "title": "📦 Dependencies",
         "audience": "dev",
         "items": [
           {
@@ -30,7 +30,7 @@
         ]
       },
       {
-        "title": "Documentation",
+        "title": "📚 Documentation",
         "audience": "dev",
         "items": [
           {
@@ -72,7 +72,7 @@
     "date": "2026-08-30",
     "sections": [
       {
-        "title": "Bug fixes",
+        "title": "🐛 Bug fixes",
         "audience": "all",
         "items": [
           {
@@ -89,7 +89,7 @@
     "date": "2026-08-28",
     "sections": [
       {
-        "title": "Dependencies",
+        "title": "📦 Dependencies",
         "audience": "dev",
         "items": [
           {
@@ -113,7 +113,7 @@
     "date": "2026-08-24",
     "sections": [
       {
-        "title": "Bug fixes",
+        "title": "🐛 Bug fixes",
         "audience": "all",
         "items": [
           {
@@ -124,7 +124,7 @@
         ]
       },
       {
-        "title": "Internal",
+        "title": "🏗️ Internal features",
         "audience": "all",
         "items": [
           {
@@ -146,7 +146,7 @@
     "date": "2026-08-21",
     "sections": [
       {
-        "title": "Features",
+        "title": "🎉 Features",
         "audience": "all",
         "items": [
           {
@@ -157,7 +157,7 @@
         ]
       },
       {
-        "title": "Bug fixes",
+        "title": "🐛 Bug fixes",
         "audience": "all",
         "items": [
           {
@@ -168,7 +168,7 @@
         ]
       },
       {
-        "title": "Dependencies",
+        "title": "📦 Dependencies",
         "audience": "dev",
         "items": [
           {
@@ -178,7 +178,7 @@
         ]
       },
       {
-        "title": "Internal",
+        "title": "🏗️ Internal features",
         "audience": "all",
         "items": [
           {
@@ -195,7 +195,7 @@
     "date": "2026-08-15",
     "sections": [
       {
-        "title": "Features",
+        "title": "🎉 Features",
         "audience": "all",
         "items": [
           {
@@ -212,7 +212,7 @@
     "date": "2026-08-13",
     "sections": [
       {
-        "title": "Features",
+        "title": "🎉 Features",
         "audience": "all",
         "items": [
           {
@@ -224,7 +224,7 @@
         ]
       },
       {
-        "title": "Tooling",
+        "title": "⚙️ Tooling",
         "audience": "dev",
         "items": [
           {
@@ -245,7 +245,7 @@
     "date": "2026-08-12",
     "sections": [
       {
-        "title": "Features",
+        "title": "🎉 Features",
         "audience": "all",
         "items": [
           {
@@ -263,7 +263,7 @@
     "date": "2026-08-10",
     "sections": [
       {
-        "title": "Features",
+        "title": "🎉 Features",
         "audience": "all",
         "items": [
           {

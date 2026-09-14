@@ -4,7 +4,7 @@
     "date": "2026-09-06",
     "sections": [
       {
-        "title": "Documentation",
+        "title": "📚 Documentation",
         "audience": "dev",
         "items": [
           {
@@ -21,7 +21,7 @@
     "date": "2026-08-21",
     "sections": [
       {
-        "title": "Features",
+        "title": "🎉 Features",
         "audience": "all",
         "items": [
           {
@@ -39,7 +39,7 @@
     "date": "2026-08-16",
     "sections": [
       {
-        "title": "Tests",
+        "title": "🧪 Tests",
         "audience": "dev",
         "items": [
           {
@@ -56,7 +56,7 @@
     "date": "2026-08-13",
     "sections": [
       {
-        "title": "Tooling",
+        "title": "⚙️ Tooling",
         "audience": "dev",
         "items": [
           {
@@ -77,7 +77,7 @@
     "date": "2026-08-08",
     "sections": [
       {
-        "title": "Tooling",
+        "title": "⚙️ Tooling",
         "audience": "dev",
         "items": [
           {
@@ -104,7 +104,7 @@
     "date": "2026-07-27",
     "sections": [
       {
-        "title": "Tooling",
+        "title": "⚙️ Tooling",
         "audience": "dev",
         "items": [
           {
@@ -114,7 +114,7 @@
         ]
       },
       {
-        "title": "Documentation",
+        "title": "📚 Documentation",
         "audience": "dev",
         "items": [
           {
@@ -130,7 +130,7 @@
     "date": "2026-07-24",
     "sections": [
       {
-        "title": "Tooling",
+        "title": "⚙️ Tooling",
         "audience": "dev",
         "items": [
           {
@@ -146,7 +146,7 @@
     "date": "2026-07-20",
     "sections": [
       {
-        "title": "Bug fixes",
+        "title": "🐛 Bug fixes",
         "audience": "all",
         "items": [
           {
@@ -157,7 +157,7 @@
         ]
       },
       {
-        "title": "Dependencies",
+        "title": "📦 Dependencies",
         "audience": "dev",
         "items": [
           {
@@ -174,7 +174,7 @@
     "date": "2026-07-20",
     "sections": [
       {
-        "title": "Tooling",
+        "title": "⚙️ Tooling",
         "audience": "dev",
         "items": [
           {
@@ -191,7 +191,7 @@
     "date": "2026-03-19",
     "sections": [
       {
-        "title": "Formatting",
+        "title": "🎨 Formatting",
         "audience": "all",
         "items": [{ "description": "Format changelogs", "hash": "ad732cb42e9310dc122b18401651ef818cc9a4a1" }]
       }
@@ -202,7 +202,7 @@
     "date": "2026-03-10",
     "sections": [
       {
-        "title": "Features",
+        "title": "🎉 Features",
         "audience": "all",
         "items": [
           {
@@ -226,7 +226,7 @@
         ]
       },
       {
-        "title": "Tooling",
+        "title": "⚙️ Tooling",
         "audience": "dev",
         "items": [
           {
@@ -248,7 +248,7 @@
         ]
       },
       {
-        "title": "Dependencies",
+        "title": "📦 Dependencies",
         "audience": "dev",
         "items": [
           {
@@ -259,7 +259,7 @@
         ]
       },
       {
-        "title": "Documentation",
+        "title": "📚 Documentation",
         "audience": "dev",
         "items": [{ "description": "Fix lint", "hash": "a47390236b6858f189a39fe9eb541cf14a9f0c56" }]
       }

@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.0.1 — 2026-09-06
 
-### Documentation
+### 📚 Documentation
 
 - Repair the repository's prose and record every rejection's ground (#290)
 
@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.0.0 — 2026-08-21
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Correct the nullish guards' narrowing and rename `isNullable` (#206)
 
@@ -24,7 +24,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.1.11 — 2026-08-16
 
-### Tests
+### 🧪 Tests
 
 - Drop expect-type in favor of expectTypeOf (#175)
 
@@ -32,7 +32,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.1.10 — 2026-08-13
 
-### Tooling
+### ⚙️ Tooling
 
 - Remove redundant .gitignore files
 - Populate manifest metadata and adopt a pnpm catalog (#140)
@@ -41,7 +41,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.1.9 — 2026-08-08
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate Vitest configs to the nmr projects model (#73)
 
@@ -57,29 +57,29 @@ All notable changes to this project will be documented in this file.
 
 ## 3.1.8 — 2026-07-27
 
-### Tooling
+### ⚙️ Tooling
 
 - Normalize Vitest, and lint configs
 
-### Documentation
+### 📚 Documentation
 
 - Change license to ISC
 
 ## 3.1.7 — 2026-07-24
 
-### Tooling
+### ⚙️ Tooling
 
 - Configure release-kit & repo labels
 
 ## 3.1.6 — 2026-07-20
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Add repository field to package manifests for npm provenance (#65)
 
   Fixes an issue that prevented every package from publishing to npm. Each package now links to its source repository from its npm page.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade ESLint packages and migrate to TypeScript 6 (#67)
 
@@ -87,7 +87,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.1.5 — 2026-07-20
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate to the nmr toolchain and resolve dependency vulnerabilities (#45)
 
@@ -95,13 +95,13 @@ All notable changes to this project will be documented in this file.
 
 ## 3.1.4 — 2026-03-19
 
-### Formatting
+### 🎨 Formatting
 
 - Format changelogs
 
 ## 3.1.1 — 2026-03-10
 
-### Features
+### 🎉 Features
 
 - Add assert function
 - Add nullable guard functions
@@ -113,14 +113,14 @@ All notable changes to this project will be documented in this file.
 
   Added guards: `isBoolean`, `isNumber`, `isString`.
 
-### Tooling
+### ⚙️ Tooling
 
 - Scaffold the guards workspace
 - Enable incremental type generation
 - Rename publish script to avoid recursion
 - Change package registry from github to npmjs
 
-### Dependencies
+### 📦 Dependencies
 
 - Adapt to dependency upgrades and bump Node engine to >=24 (#8)
 
@@ -162,7 +162,7 @@ All notable changes to this project will be documented in this file.
 
   The build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.
 
-### Documentation
+### 📚 Documentation
 
 - Fix lint
 

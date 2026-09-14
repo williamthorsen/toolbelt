@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## 7.2.0 — 2026-09-06
 
-### Features
+### 🎉 Features
 
 - Add a ReadyUp adoption kit (#253)
 
@@ -14,11 +14,11 @@ All notable changes to this project will be documented in this file.
 
   - Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.async` that recommends the use of `delay` to replace a hand-rolled sleep.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade all deps to latest version
 
-### Documentation
+### 📚 Documentation
 
 - Document the generated-source exemption in the adoption kits (#251)
 
@@ -46,7 +46,7 @@ All notable changes to this project will be documented in this file.
 
 ## 7.1.0 — 2026-08-30
 
-### Features
+### 🎉 Features
 
 - Add a ReadyUp adoption kit to `strings` (#248)
 
@@ -54,7 +54,7 @@ All notable changes to this project will be documented in this file.
 
 ## 7.0.0 — 2026-08-28
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Promote pluralize and pluralizeWithCount to the release tier (#229)
 
@@ -72,7 +72,7 @@ All notable changes to this project will be documented in this file.
 
   Migration: Replace `joinStrings` with `joinTruthy` if `lastSeparator` is not used; otherwise, use `Intl.ListFormat` and filter falsy values out of the array first.
 
-### Refactoring
+### ♻️ Refactoring
 
 - Remove concatenate in favour of Intl.ListFormat (#238)
 
@@ -82,7 +82,7 @@ All notable changes to this project will be documented in this file.
 
 ## 6.0.3 — 2026-08-24
 
-### Refactoring
+### ♻️ Refactoring
 
 - Correct `obfuscate`'s and `slugify`'s error classes (#225)
 
@@ -99,7 +99,7 @@ All notable changes to this project will be documented in this file.
 
 ## 6.0.1 — 2026-08-21
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Adopt `clamp` in `obfuscate` and reject a NaN size option (#196)
 
@@ -109,7 +109,7 @@ All notable changes to this project will be documented in this file.
 
 ## 6.0.0 — 2026-08-16
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Rename `unindent` to `dedent` and correct its indentation semantics (#171)
 
@@ -117,7 +117,7 @@ All notable changes to this project will be documented in this file.
 
   Migration: `unindent` no longer exists, and nullish and object values are now compile errors. Both exports stay at candidate tier.
 
-### Tests
+### 🧪 Tests
 
 - Drop expect-type in favor of expectTypeOf (#175)
 
@@ -125,7 +125,7 @@ All notable changes to this project will be documented in this file.
 
 ## 5.0.0 — 2026-08-15
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Fix unsound narrowing in `getAtIndexOrThrow` and rename it to `getItemAtIndexOrThrow` (#152)
 
@@ -137,7 +137,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.0.1 — 2026-08-13
 
-### Tooling
+### ⚙️ Tooling
 
 - Remove redundant .gitignore files
 - Populate manifest metadata and adopt a pnpm catalog (#140)
@@ -146,13 +146,13 @@ All notable changes to this project will be documented in this file.
 
 ## 4.0.0 — 2026-08-12
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Rename get* functions by return kind and verb specificity (#119)
 
   Renames thirteen functions across various packages to align with a consistent naming pattern.
 
-### Refactoring
+### ♻️ Refactoring
 
 - Stop shipping test-only and dead support modules (#117)
 
@@ -164,13 +164,13 @@ All notable changes to this project will be documented in this file.
 
 ## 3.2.0 — 2026-08-08
 
-### Features
+### 🎉 Features
 
 - Use underscore separator at 4 digits or more
 
   Changes the `unicorn/numeric-separators-style` rule config so that separators are consistently used in base 10 numbers, instead of exempting numbers of 5 digits or less.
 
-### Refactoring
+### ♻️ Refactoring
 
 - Fixes violations surfaced by newly active lint rules (#84)
 - Fix slug punctuation and require safe integers (#86)
@@ -183,7 +183,7 @@ All notable changes to this project will be documented in this file.
 
   Fixes issues surfaced by `unicorn` lint rules that were temporarily downgraded to warnings and restores the rules to "error" severity. Separately, the `Queue` class in `dstructs` has been modified to hide its internal array.
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate Vitest configs to the nmr projects model (#73)
 
@@ -201,35 +201,35 @@ All notable changes to this project will be documented in this file.
 
   All packages now have identical compiler settings, using the settings from the `@williamthorsen/tsconfig` base config without modification.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade all deps to latest version
 
 ## 3.1.8 — 2026-07-27
 
-### Tooling
+### ⚙️ Tooling
 
 - Normalize Vitest, and lint configs
 
-### Documentation
+### 📚 Documentation
 
 - Change license to ISC
 
 ## 3.1.7 — 2026-07-24
 
-### Tooling
+### ⚙️ Tooling
 
 - Configure release-kit & repo labels
 
 ## 3.1.6 — 2026-07-20
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Add repository field to package manifests for npm provenance (#65)
 
   Fixes an issue that prevented every package from publishing to npm. Each package now links to its source repository from its npm page.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade ESLint packages and migrate to TypeScript 6 (#67)
 
@@ -237,7 +237,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.1.5 — 2026-07-20
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate to the nmr toolchain and resolve dependency vulnerabilities (#45)
 
@@ -245,13 +245,13 @@ All notable changes to this project will be documented in this file.
 
 ## 3.1.4 — 2026-03-19
 
-### Formatting
+### 🎨 Formatting
 
 - Format changelogs
 
 ## 3.1.1 — 2026-03-10
 
-### Features
+### 🎉 Features
 
 - Add string functions
 - Add pluralize functions
@@ -263,23 +263,23 @@ All notable changes to this project will be documented in this file.
 
   Added `safeTrim` to toolbelt.strings/proposed.
 
-### Refactoring
+### ♻️ Refactoring
 
 - Rename functions
 
-### Tests
+### 🧪 Tests
 
 - ⛔ Add Deno tests for strings library
 - Adapt Deno tests to Vitest
 
-### Tooling
+### ⚙️ Tooling
 
 - Scaffold the strings workspace
 - Enable incremental type generation
 - Rename publish script to avoid recursion
 - Change package registry from github to npmjs
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade all deps to latest version
 - Adapt to dependency upgrades and bump Node engine to >=24 (#8)

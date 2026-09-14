@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.9.0 — 2026-09-06
 
-### Features
+### 🎉 Features
 
 - Add a ReadyUp adoption kit (#253)
 
@@ -14,11 +14,11 @@ All notable changes to this project will be documented in this file.
 
   - Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.async` that recommends the use of `delay` to replace a hand-rolled sleep.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade all deps to latest version
 
-### Documentation
+### 📚 Documentation
 
 - Repair reduced object relatives in passages recurring across files (#262)
 
@@ -42,7 +42,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.8.0 — 2026-08-30
 
-### Features
+### 🎉 Features
 
 - Report hand-rolled test-scoped disposal in the adoption kit (#244)
 
@@ -50,7 +50,7 @@ All notable changes to this project will be documented in this file.
 
   Only a callback that visibly calls `[Symbol.dispose]()` is flagged.
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Reject a check declaring a kind its detector never produces (#246)
 
@@ -58,13 +58,13 @@ All notable changes to this project will be documented in this file.
 
 ## 0.7.0 — 2026-08-28
 
-### Features
+### 🎉 Features
 
 - Report hand-rolled console reads in the adoption kit (#227)
 
   Adds four console checks to `@williamthorsen/toolbelt.vitest`'s ReadyUp kit, checking for hand-rolled code to capture, silence, or read console output. The kit warns where a capture silently drops arguments, and recommends `silenceConsole` and `listConsoleLines` in place of hand-rolled code.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade all deps to latest version
 - Upgrade deps to latest version
@@ -72,7 +72,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.6.0 — 2026-08-24
 
-### Features
+### 🎉 Features
 
 - Add listConsoleLines to toolbelt.vitest (#226)
 
@@ -80,7 +80,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.5.1 — 2026-08-24
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Stop the adoption kits from blanking code after `++`, `!`, and keyword-named members (#208)
 
@@ -88,13 +88,7 @@ All notable changes to this project will be documented in this file.
 
   `@williamthorsen/toolbelt.adoption` now takes `blankNonCode` and `getLineAtOffset` from `readyup/check-utils` in place of the copies it held, which had fallen behind readyup's on those three cases.
 
-### Documentation
-
-- Document the `aroundEach`/`aroundAll` pairing in `makeFixture`'s guidance (#209)
-
-  Adds a section to `@williamthorsen/toolbelt.vitest`'s `README.md`, documenting the Vitest hooks that pair with `makeFixture` for a resource installed around a test.
-
-### Internal
+### 🏗️ Internal features
 
 - Migrate the adoption kits onto FindingOutcome and add check ids (#217)
 
@@ -108,25 +102,27 @@ All notable changes to this project will be documented in this file.
 
   Each package's own implementation stays exempt, but that exemption now covers the function alone rather than the whole repository.
 
+### 📚 Documentation
+
+- Document the `aroundEach`/`aroundAll` pairing in `makeFixture`'s guidance (#209)
+
+  Adds a section to `@williamthorsen/toolbelt.vitest`'s `README.md`, documenting the Vitest hooks that pair with `makeFixture` for a resource installed around a test.
+
 ## 0.5.0 — 2026-08-21
 
-### Features
+### 🎉 Features
 
 - Add a ReadyUp adoption kit to `numbers` (#188)
 
   Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.numbers`. When run against a project, the kit identifies hand-rolled code that can be replaced by the package's `clamp`, `round`, or `pickInteger` functions.
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Blank comments and literals before a detector reads a source (#191)
 
   Fixes the issue that the `errors`, `numbers`, and `vitest` adoption kits' detectors did not distinguish code from comments and literals, and so flagged a pattern written in a comment or a string as a candidate replacement site. Each detector now blanks every comment, string, template literal, and regular expression before its anchor scan, leaving interpolated expressions intact.
 
-### Dependencies
-
-- Upgrade all deps to latest version
-
-### Internal
+### 🏗️ Internal features
 
 - Add `packages/adoption` and migrate the `errors` and `vitest` kits onto it (#183)
 
@@ -134,9 +130,13 @@ All notable changes to this project will be documented in this file.
 
   Adds `__tests__/kit-bundle-freshness.tool.test.ts`, which fails CI when a committed kit bundle falls behind a source it inlines.
 
+### 📦 Dependencies
+
+- Upgrade all deps to latest version
+
 ## 0.4.0 — 2026-08-16
 
-### Features
+### 🎉 Features
 
 - Add `disposeOnTestFinished` for a `Disposable` built inside a test (#180)
 
@@ -144,7 +144,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.3.0 — 2026-08-15
 
-### Features
+### 🎉 Features
 
 - Add makeFixture for Disposable-valued Vitest fixtures (#149)
 
@@ -158,7 +158,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.2.0 — 2026-08-13
 
-### Features
+### 🎉 Features
 
 - Scaffold toolbelt.vitest for Vitest testing utilities (#125)
 
@@ -170,7 +170,7 @@ All notable changes to this project will be documented in this file.
 
   Adds `silenceConsole`, the first export of `@williamthorsen/toolbelt.vitest`, reachable at the `/candidate` subpath. It silences the named console methods for the enclosing scope and hands back the Vitest spy behind each one, restoring them all when the scope exits; called with no argument it silences all five (`debug`, `error`, `info`, `log`, and `warn`).
 
-### Tooling
+### ⚙️ Tooling
 
 - Remove redundant .gitignore files
 - Populate manifest metadata and adopt a pnpm catalog (#140)

@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.1.1 — 2026-09-06
 
-### Documentation
+### 📚 Documentation
 
 - Repair the repository's prose and record every rejection's ground (#290)
 
@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.1.0 — 2026-08-30
 
-### Features
+### 🎉 Features
 
 - Publish identity and object-path functions and remove dead code (#242)
 
@@ -46,7 +46,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.0.0 — 2026-08-15
 
-### Features
+### 🎉 Features
 
 - 🚨 **Breaking:** Fix unsound narrowing in `getAtIndexOrThrow` and rename it to `getItemAtIndexOrThrow` (#152)
 
@@ -58,7 +58,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.19 — 2026-08-13
 
-### Tooling
+### ⚙️ Tooling
 
 - Remove redundant .gitignore files
 - Populate manifest metadata and adopt a pnpm catalog (#140)
@@ -67,7 +67,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.18 — 2026-08-12
 
-### Refactoring
+### ♻️ Refactoring
 
 - Align stray modules with layout and TypeScript conventions (#118)
 
@@ -75,7 +75,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.17 — 2026-08-08
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate Vitest configs to the nmr projects model (#73)
 
@@ -91,29 +91,29 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.16 — 2026-07-27
 
-### Tooling
+### ⚙️ Tooling
 
 - Normalize Vitest, and lint configs
 
-### Documentation
+### 📚 Documentation
 
 - Change license to ISC
 
 ## 3.0.15 — 2026-07-24
 
-### Tooling
+### ⚙️ Tooling
 
 - Configure release-kit & repo labels
 
 ## 3.0.14 — 2026-07-20
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Add repository field to package manifests for npm provenance (#65)
 
   Fixes an issue that prevented every package from publishing to npm. Each package now links to its source repository from its npm page.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade ESLint packages and migrate to TypeScript 6 (#67)
 
@@ -121,7 +121,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.13 — 2026-07-20
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate to the nmr toolchain and resolve dependency vulnerabilities (#45)
 
@@ -129,32 +129,32 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.12 — 2026-03-19
 
-### Formatting
+### 🎨 Formatting
 
 - Format changelogs
 
 ## 3.0.9 — 2026-03-10
 
-### Features
+### 🎉 Features
 
 - ⛔ Migrate from toolbelt-deno
 
-### Refactoring
+### ♻️ Refactoring
 
 - Rename functions
 
-### Tests
+### 🧪 Tests
 
 - Convert hof tests to Vitest
 
-### Tooling
+### ⚙️ Tooling
 
 - Scaffold the hof workspace
 - Enable incremental type generation
 - Rename publish script to avoid recursion
 - Change package registry from github to npmjs
 
-### Dependencies
+### 📦 Dependencies
 
 - Adapt to dependency upgrades and bump Node engine to >=24 (#8)
 
@@ -196,7 +196,7 @@ All notable changes to this project will be documented in this file.
 
   The build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.
 
-### Documentation
+### 📚 Documentation
 
 - Fix lint
 
