@@ -1,3 +1,5 @@
+<!-- readme-type: library -->
+
 # @williamthorsen/toolbelt.strings
 
 String-handling utilities.
@@ -12,7 +14,7 @@ pnpm add @williamthorsen/toolbelt.strings
 
 Requires Node.js 24 or later.
 
-`pluralize` and `pluralizeWithCount` are release tier, imported from the package root. `dedent`, `hashString`, and `stripCommonIndent` are candidate tier: imported from `@williamthorsen/toolbelt.strings/candidate` rather than the package root, and subject to change.
+`dedent`, `pluralize`, `pluralizeWithCount`, and `stripCommonIndent` are release tier, imported from the package root. `hashString` is candidate tier: imported from `@williamthorsen/toolbelt.strings/candidate` rather than the package root, and subject to change.
 
 ## `pluralize` and `pluralizeWithCount`
 
@@ -58,7 +60,7 @@ dedent.withOptions(options: { valueIndentationStyle?: 'none' | 'line' }): Dedent
 Removes the indentation inherited by a multi-line template literal from the source in which it is written, so the string that a reader sees is the string that the program gets.
 
 ```ts
-import { dedent } from '@williamthorsen/toolbelt.strings/candidate';
+import { dedent } from '@williamthorsen/toolbelt.strings';
 
 function describeNpc() {
   return dedent`
@@ -69,9 +71,9 @@ function describeNpc() {
 // 'You are assisting the Game Master of a roleplaying game.\nCreate an ordinary, everyday person in a high-fantasy setting.'
 ```
 
-The opening line is discarded, and so is the closing line when it holds nothing but whitespace. A closing line that contains text is kept and dedented along with the rest, where `String.dedent` throws.
+The opening line is discarded, and so is the closing line when it holds nothing but whitespace. A closing line that contains text is kept and dedented along with the rest, whereas `String.dedent` throws.
 
-Dropping the closing line removes the terminator that preceded it, so text on the last line comes back without a trailing newline. Where one is wanted, leave a blank line above the closing backtick: A blank line is emptied rather than discarded, and the terminator above it survives.
+Dropping the closing line removes the terminator that preceded it, so text on the last line comes back without a trailing newline. When one is wanted, leave a blank line above the closing backtick: A blank line is emptied rather than discarded, and the terminator above it survives.
 
 ```ts
 dedent`
@@ -96,7 +98,7 @@ dedent`
 
 Only tabs and spaces, and they are compared as characters rather than as widths. A tab is never interchangeable with any number of spaces, because no width is knowable from the text alone.
 
-A consequence worth knowing before it surprises you: Where every line is indented but the indentation disagrees in kind, the tag throws rather than removing nothing.
+When every line is indented but the indentation disagrees in kind, the tag throws rather than removing nothing.
 
 ```ts
 dedent`
@@ -146,9 +148,9 @@ dedent.withOptions({ valueIndentationStyle: 'line' })`
 
 `withOptions` returns a new tag and leaves the receiver untouched, so configuring one call site cannot change behavior at another. Successive calls merge over the receiver, and an explicit `undefined` inherits rather than resets.
 
-Interpolated values are limited to strings, numbers, bigints, and booleans. Objects are rejected at compile time because they would coerce to `[object Object]`, and `null` and `undefined` because they would render as the text `"null"` and `"undefined"`. Convert deliberately -- `${String(error)}`, `${value ?? ''}` -- so the reader can see what was intended.
+Interpolated values are limited to strings, numbers, bigints, and booleans. Objects are rejected at compile time because they would coerce to `[object Object]`, and `null` and `undefined` because they would render as the text `"null"` and `"undefined"`. Convert deliberately -- `${String(error)}`, `${value ?? ''}` -- so that the reader can see the intent.
 
-Migrating from `unindent`: A nullish value used to render as the empty string, so `${maybeMissing}` worked as an idiom for optional content. It is now a compile error, which is where to look first if a template stops typechecking. `Date`, `Error`, and `URL` are rejected on the same grounds, even though each has a meaningful `toString`; interpolate `String(value)` or the field that you actually meant.
+`Date`, `Error`, and `URL` are rejected on the same grounds, even though each has a meaningful `toString`. Interpolate `String(value)`, or a field such as `error.message` or `url.href`.
 
 ### Escaped line terminators
 
@@ -172,7 +174,7 @@ stripCommonIndent(text: string): string;
 Removes the indentation shared by every non-blank line of a string that already exists. This is the plain-function counterpart to `dedent`, for text that arrives at runtime rather than being written in source.
 
 ```ts
-import { stripCommonIndent } from '@williamthorsen/toolbelt.strings/candidate';
+import { stripCommonIndent } from '@williamthorsen/toolbelt.strings';
 
 stripCommonIndent(await readFile('prompt.txt', 'utf8'));
 ```
@@ -194,16 +196,16 @@ Unlike the tag, this function never throws. It has no author's intent to check a
 
 ## Relationship to `String.dedent`
 
-[`String.dedent`](https://github.com/tc39/proposal-string-dedent) has been a TC39 stage 2 proposal since June 2022, with its stage 3 checklist still open and no champion since PayPal left the committee. No engine ships it. This implementation adopts the parts of it that are settled and diverges where it has reason to:
+[`String.dedent`](https://github.com/tc39/proposal-string-dedent) has been a TC39 stage 2 proposal since June 2022, and as of September 2026 no engine ships it. At the January 2026 plenary, a planned request for stage 2.7 had not been made, and the committee listed the proposal as possibly in need of champions. This implementation adopts the settled core of the proposal and diverges from it on the points below:
 
-|                          | Here                                      | `String.dedent`                           |
-| ------------------------ | ----------------------------------------- | ----------------------------------------- |
-| Common indentation       | longest exactly-matching prefix           | same                                      |
-| Blank lines              | ignored when measuring, emptied in output | proposal issue #23, open                  |
-| Opening line             | whitespace-only accepted                  | must be a bare newline, else throws       |
-| Closing line             | dropped only when whitespace-only         | throws when it contains text              |
-| Escaped line terminators | throws                                    | dedents the raw strings and re-cooks them |
-| Value indentation        | opt-in via `valueIndentationStyle`        | none; declined in proposal issue #88      |
+|                          | Here                                               | `String.dedent`                                              |
+| ------------------------ | -------------------------------------------------- | ------------------------------------------------------------ |
+| Common indentation       | longest exactly-matching prefix of tabs and spaces | longest exactly-matching prefix of any ECMAScript whitespace |
+| Blank lines              | ignored when measuring, emptied in output          | same                                                         |
+| Opening line             | whitespace-only accepted                           | must be a bare newline, else throws                          |
+| Closing line             | dropped only when whitespace-only                  | throws when it contains text                                 |
+| Escaped line terminators | throws                                             | dedents the raw strings and re-cooks them                    |
+| Value indentation        | opt-in via `valueIndentationStyle`                 | none; not pursued in this proposal (issue #25)               |
 
 The two lenient edge rules are deliberate. Requiring a bare opening line would reject invisible trailing whitespace after the backtick, which no formatter shows and every editor tolerates; throwing on a closing line that contains text would reject `` dedent`\n  a\n  b` ``, which is a reasonable thing to write.
 
