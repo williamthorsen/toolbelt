@@ -48,7 +48,7 @@ describe(computeCdfInverse, () => {
     (value) => {
       const roundTrip = computeCdfInverse(computeCdf({ value }), {});
 
-      expect(Math.abs(roundTrip - value)).toBeLessThanOrEqual(1e-13 * Math.max(1, Math.abs(value)));
+      expect(Math.abs(roundTrip - value)).toBeLessThanOrEqual(1e-13);
     },
   );
 
