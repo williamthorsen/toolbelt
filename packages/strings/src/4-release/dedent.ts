@@ -9,8 +9,7 @@ import { joinLines, splitLines } from '../internal/text-lines.ts';
  * indentation is removed.
  *
  * @category String
- * @experimental
- * @stage candidate
+ * @stage release
  */
 export const dedent: Dedent = createDedent({ valueIndentationStyle: 'none' });
 
