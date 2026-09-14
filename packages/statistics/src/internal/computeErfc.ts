@@ -65,7 +65,7 @@ const lowWordView = new DataView(new ArrayBuffer(8));
  *
  * @internal
  */
-export function erfc(x: number): number {
+export function computeErfc(x: number): number {
   if (Number.isNaN(x)) return x;
 
   const magnitude = Math.abs(x);

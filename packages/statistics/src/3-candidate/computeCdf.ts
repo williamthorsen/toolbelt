@@ -1,4 +1,4 @@
-import { erfc } from '../internal/erfc.ts';
+import { computeErfc } from '../internal/computeErfc.ts';
 
 /**
  * Returns the cumulative distribution function (CDF) for a normal distribution. The relative error stays
@@ -14,7 +14,7 @@ export function computeCdf(params: Params): number {
     throw new Error('Standard deviation must be greater than zero.');
   }
 
-  return 0.5 * erfc(-(value - mean) / (standardDeviation * Math.SQRT2));
+  return 0.5 * computeErfc(-(value - mean) / (standardDeviation * Math.SQRT2));
 }
 
 interface Params {
