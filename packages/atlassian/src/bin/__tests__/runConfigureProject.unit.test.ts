@@ -67,7 +67,7 @@ describe('tb-jira configure-project', () => {
       const harness = createHarness({ files: { [SPEC_PATH]: RENAMING_SPEC }, readOnly: true });
 
       await expect(run(harness, [KEY, '--dry-run'])).resolves.toBe(0);
-      expect(harness.readOutput()).toContain("update   status id-1: 'To Do' → 'Todo'");
+      expect(harness.readOutput()).toContain("update    status id-1: 'To Do' → 'Todo'");
       expect(harness.readOutput()).toContain('dry run: Nothing was written');
     });
 
@@ -76,7 +76,7 @@ describe('tb-jira configure-project', () => {
 
       await run(harness, [KEY, '--dry-run', '--seed-backlog', 'To Do']);
 
-      expect(harness.readOutput()).toContain("seed     move every 'To Do' work item off the board");
+      expect(harness.readOutput()).toContain("seed      move every 'To Do' work item off the board");
       expect(harness.readOutput()).not.toContain('no changes');
     });
   });
@@ -87,7 +87,7 @@ describe('tb-jira configure-project', () => {
 
       await run(harness, [KEY]);
 
-      expect(harness.readOutput()).toContain('workflow updated: 1 amended, 0 created');
+      expect(harness.readOutput()).toContain('workflow  updated: 1 amended, 0 created');
       expect(harness.calls.some((call) => call.method === 'POST' && call.path === '/rest/api/3/workflows/update')).toBe(
         true,
       );
@@ -98,7 +98,7 @@ describe('tb-jira configure-project', () => {
 
       await run(harness, [KEY]);
 
-      expect(harness.readOutput()).toContain('workflow unchanged');
+      expect(harness.readOutput()).toContain('workflow  unchanged');
     });
 
     it('moves the named status off the board and names the call that puts it back', async () => {
@@ -106,8 +106,10 @@ describe('tb-jira configure-project', () => {
 
       await run(harness, [KEY, '--seed-backlog', 'To Do']);
 
-      expect(harness.readOutput()).toContain("backlog  moved 2 'To Do' work items off the board");
-      expect(harness.readOutput()).toContain(`undo: POST /rest/agile/1.0/board/${BOARD_ID}/issue, 50 keys per call`);
+      expect(harness.readOutput()).toContain("backlog   moved 2 'To Do' work items off the board");
+      expect(harness.readOutput()).toContain(
+        `\n          undo: POST /rest/agile/1.0/board/${BOARD_ID}/issue, 50 keys per call`,
+      );
     });
 
     it('names the query that recovers the keys, which the seed itself never prints', async () => {
@@ -115,7 +117,7 @@ describe('tb-jira configure-project', () => {
 
       await run(harness, [KEY, '--seed-backlog', 'To Do']);
 
-      expect(harness.readOutput()).toContain(`keys: project = "${KEY}" AND status = "To Do"`);
+      expect(harness.readOutput()).toContain(`\n          keys: project = "${KEY}" AND status = "To Do"`);
     });
 
     it('reports an empty seed rather than issuing a move', async () => {
@@ -123,7 +125,7 @@ describe('tb-jira configure-project', () => {
 
       await run(harness, [KEY, '--seed-backlog', 'To Do']);
 
-      expect(harness.readOutput()).toContain("backlog  no 'To Do' work items to move");
+      expect(harness.readOutput()).toContain("backlog   no 'To Do' work items to move");
       expect(harness.calls.some((call) => call.path.includes('/backlog/'))).toBe(false);
     });
 

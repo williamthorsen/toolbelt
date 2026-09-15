@@ -14,6 +14,7 @@ import { resolveJiraEmail } from '../3-candidate/resolveJiraEmail.ts';
 import { resolveJiraSite } from '../3-candidate/resolveJiraSite.ts';
 import { resolveJiraToken } from '../3-candidate/resolveJiraToken.ts';
 import { DEFAULT_TOKEN_SERVICE } from '../internal/jiraTokenChain.ts';
+import { formatContinuationLine, formatLabelledLine } from './labelled-lines.ts';
 import { renderPlan } from './renderPlan.ts';
 import { renderVerification } from './renderVerification.ts';
 import {
@@ -125,11 +126,10 @@ export async function runConfigureProject(args: string[], effects: TbJiraEffects
   }
 
   const { correctedStatuses, written } = await applyWorkflowUpdate(request, configuration, plan);
-  effects.write(
-    written
-      ? `workflow updated: ${plan.statusUpdates.length} amended, ${plan.creations.length} created\n`
-      : 'workflow unchanged\n',
-  );
+  const workflowOutcome = written
+    ? `updated: ${plan.statusUpdates.length} amended, ${plan.creations.length} created`
+    : 'unchanged';
+  effects.write(`${formatLabelledLine('workflow', workflowOutcome)}\n`);
   if (correctedStatuses.length > 0) {
     const corrections = correctedStatuses.map((status) => `${status.from} → ${status.to}`).join(', ');
     effects.write(`amended via the status API: ${corrections}\n`);
@@ -137,7 +137,7 @@ export async function runConfigureProject(args: string[], effects: TbJiraEffects
 
   const toggles = await applyBoardFeatures(request, configuration, plan);
   for (const toggle of toggles) {
-    effects.write(`feature  ${toggle.feature} → ${toggle.to}\n`);
+    effects.write(`${formatLabelledLine('feature', `${toggle.feature} → ${toggle.to}`)}\n`);
   }
 
   if (seedBacklog !== undefined) await seedTheBacklog(request, configuration, effects, projectKey, seedBacklog);
@@ -172,18 +172,18 @@ async function seedTheBacklog(
   const jql = `project = "${projectKey}" AND status = "${status}"`;
   const keys = await listIssueKeys(request, jql);
   if (keys.length === 0) {
-    effects.write(`backlog  no '${status}' work items to move\n`);
+    effects.write(`${formatLabelledLine('backlog', `no '${status}' work items to move`)}\n`);
 
     return;
   }
 
   const { moved } = await moveIssuesToBacklog(request, configuration.board.id, keys);
-  effects.write(`backlog  moved ${moved} '${status}' work items off the board\n`);
+  effects.write(`${formatLabelledLine('backlog', `moved ${moved} '${status}' work items off the board`)}\n`);
   // The run prints no keys, and a move leaves an item's status alone, so the query still selects the same set.
   effects.write(
-    `         undo: POST /rest/agile/1.0/board/${configuration.board.id}/issue, ${BOARD_MOVE_LIMIT} keys per call\n`,
+    `${formatContinuationLine(`undo: POST /rest/agile/1.0/board/${configuration.board.id}/issue, ${BOARD_MOVE_LIMIT} keys per call`)}\n`,
   );
-  effects.write(`         keys: ${jql}\n`);
+  effects.write(`${formatContinuationLine(`keys: ${jql}`)}\n`);
 }
 
 // endregion | Helpers
