@@ -235,11 +235,26 @@ function findPrecedingCodeEnd(code, offset) {
   while (end > 0 && /\s/.test(code[end - 1] ?? "")) end -= 1;
   return end;
 }
+function findTypeArgumentsStart(code, close) {
+  let depth = 0;
+  for (let index = close; index >= 0; index -= 1) {
+    if (code[index] === ">") depth += 1;
+    if (code[index] === "<") {
+      depth -= 1;
+      if (depth === 0) return index;
+    }
+  }
+  return void 0;
+}
 function isTagPosition(code, offset) {
   const end = findPrecedingCodeEnd(code, offset);
   const character = code[end - 1];
   if (character === void 0) return false;
   if (character === ")" || character === "]") return true;
+  if (character === ">" && code[end - 2] !== "=") {
+    const typeArgumentsStart = findTypeArgumentsStart(code, end - 1);
+    return typeArgumentsStart !== void 0 && isTagPosition(code, typeArgumentsStart);
+  }
   if (!WORD_CHARACTER.test(character)) return false;
   let wordStart = end;
   while (wordStart > 0 && WORD_CHARACTER.test(code[wordStart - 1] ?? "")) wordStart -= 1;

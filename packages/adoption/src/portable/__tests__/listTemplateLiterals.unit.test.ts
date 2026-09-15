@@ -50,6 +50,8 @@ describe(listTemplateLiterals, () => {
     ['a call', 'build()`x`'],
     ['a subscript', 'tags[0]`x`'],
     ['a member named like a keyword', 'tags.return`x`'],
+    ['an identifier with type arguments', 'sql<Row[]>`x`'],
+    ['a member with type arguments', 'styled.div<Props>`x`'],
   ])('reports a template following %s as tagged', (_label, source) => {
     expect(summarize(source).map((template) => template.isTagged)).toStrictEqual([true]);
   });

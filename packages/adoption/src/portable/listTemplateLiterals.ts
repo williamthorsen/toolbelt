@@ -43,7 +43,8 @@ const WORD_CHARACTER = /[\w$]/;
  * walk no longer knows which text is code.
  *
  * A template is tagged where the code before its backtick ends an expression: an identifier other than an
- * expression keyword, a member name, or a closing parenthesis or bracket.
+ * expression keyword, a member name, or a closing parenthesis or bracket, any of them optionally followed by type
+ * arguments.
  *
  * @internal
  */
@@ -115,12 +116,29 @@ function findPrecedingCodeEnd(code: string, offset: number): number {
   return end;
 }
 
+/** Returns the offset of the `<` that a closing `>` balances, or nothing where none does. */
+function findTypeArgumentsStart(code: string, close: number): number | undefined {
+  let depth = 0;
+  for (let index = close; index >= 0; index -= 1) {
+    if (code[index] === '>') depth += 1;
+    if (code[index] === '<') {
+      depth -= 1;
+      if (depth === 0) return index;
+    }
+  }
+  return undefined;
+}
+
 /** Reports whether the code before an offset ends an expression, which makes a backtick there a tag's template. */
 function isTagPosition(code: string, offset: number): boolean {
   const end = findPrecedingCodeEnd(code, offset);
   const character = code[end - 1];
   if (character === undefined) return false;
   if (character === ')' || character === ']') return true;
+  if (character === '>' && code[end - 2] !== '=') {
+    const typeArgumentsStart = findTypeArgumentsStart(code, end - 1);
+    return typeArgumentsStart !== undefined && isTagPosition(code, typeArgumentsStart);
+  }
   if (!WORD_CHARACTER.test(character)) return false;
 
   let wordStart = end;
