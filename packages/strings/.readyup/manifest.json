@@ -19,12 +19,12 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "d24e0182",
+          "hash": "8fb83c2d",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "6dc12ee9",
+          "hash": "10596562",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -44,6 +44,11 @@
           "path": "../../adoption/src/portable/listFunctionBodies.ts"
         },
         {
+          "hash": "0a6fd2ca",
+          "kind": "module",
+          "path": "../../adoption/src/portable/listTemplateLiterals.ts"
+        },
+        {
           "hash": "b0751395",
           "kind": "module",
           "path": "../../adoption/src/portable/readAnchoredWindow.ts"
@@ -59,7 +64,7 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "df123e10",
+          "hash": "098712b4",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -74,12 +79,22 @@
           "path": "../src/readiness/listCapitalizeLines.ts"
         },
         {
+          "hash": "33fe948c",
+          "kind": "module",
+          "path": "../src/readiness/listJoinedLineArrays.ts"
+        },
+        {
+          "hash": "d5e9da12",
+          "kind": "module",
+          "path": "../src/readiness/listLayoutBreakingTemplates.ts"
+        },
+        {
           "hash": "9f095551",
           "kind": "module",
           "path": "../src/readiness/listPluralizeLines.ts"
         },
         {
-          "hash": "7181ab25",
+          "hash": "f54a0430",
           "kind": "module",
           "path": "../src/readiness/listStringIdioms.ts"
         }
@@ -88,8 +103,8 @@
       "path": "kits/default.js",
       "readyupVersion": "0.36.0",
       "source": "kits/default.ts",
-      "sourceHash": "df123e10",
-      "targetHash": "94415293"
+      "sourceHash": "098712b4",
+      "targetHash": "5535f7fe"
     }
   ]
 }

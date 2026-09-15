@@ -1,19 +1,22 @@
 import { type AdoptionSite, blankNonCode } from '@williamthorsen/toolbelt.adoption';
 
 import { listCapitalizeLines } from './listCapitalizeLines.ts';
+import { listJoinedLineArrays } from './listJoinedLineArrays.ts';
+import { listLayoutBreakingTemplates } from './listLayoutBreakingTemplates.ts';
 import { listPluralizeLines } from './listPluralizeLines.ts';
 
-export type StringIdiomKind = 'capitalize-inline' | 'pluralize-inline';
+export type StringIdiomKind =
+  'capitalize-inline' | 'joined-line-array' | 'layout-breaking-template' | 'pluralize-inline';
 
 /**
  * Lists every hand-rolled string idiom in a source file that this package publishes a utility for.
  *
- * The two idioms share no anchor, so each is matched by its own detector and the results are merged in line
- * order. A file holding both reports both.
+ * The idioms share no anchor, so each is matched by its own detector and the results are merged in line order. A
+ * file holding several reports each of them.
  *
- * The source is blanked once here and both detectors read what it produces, so an idiom written in a comment
- * or a literal is invisible to them. Blanking preserves every offset, so a reported line still names the line
- * held by the source, and the pluralize detector can still read its literals from the source beneath.
+ * The source is blanked once here and every detector reads what it produces, so an idiom written in a comment or a
+ * literal is invisible to them. Blanking preserves every offset, so a reported line still names the line held by
+ * the source, and a detector that needs what a literal holds can still read it from the source beneath.
  *
  * @internal
  */
@@ -21,6 +24,8 @@ export function listStringIdioms(source: string): Array<AdoptionSite<StringIdiom
   const code = blankNonCode(source);
   const sites = [
     ...toSites('capitalize-inline', listCapitalizeLines(code)),
+    ...toSites('joined-line-array', listJoinedLineArrays(code, source)),
+    ...toSites('layout-breaking-template', listLayoutBreakingTemplates(code, source)),
     ...toSites('pluralize-inline', listPluralizeLines(code, source)),
   ];
 
