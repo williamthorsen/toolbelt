@@ -1,3 +1,5 @@
+<!-- readme-type: library -->
+
 # @williamthorsen/toolbelt.numbers
 
 Utility functions for working with numbers.
@@ -49,7 +51,7 @@ round(3.14159, 2); // 3.14
 pickInteger(params?: { min?: number; max?: number; seed?: Seed }): number;
 ```
 
-Returns a random integer between the bounds, **inclusive** of both, and truncates a non-integer bound. Passing a seed makes the draw deterministic, which a test wants.
+Returns a random integer between the bounds, **inclusive** of both, and truncates a non-integer bound. Passing a seed makes the draw deterministic, which a test wants. Each call draws exactly once, even when the bounds admit a single value.
 
 Mind the bound when replacing `Math.floor(Math.random() * n)`: That idiom stops at `n - 1`, so the equivalent is `pickInteger({ max: n - 1 })`.
 

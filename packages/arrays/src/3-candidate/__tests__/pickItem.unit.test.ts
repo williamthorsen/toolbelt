@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { pickItem } from '../pickItem.ts';
 
@@ -13,6 +13,21 @@ describe(pickItem, () => {
 
   it('if the array has a single item, returns the item', () => {
     expect(pickItem([1])).toBe(1);
+  });
+
+  it('if the array has a single item, draws once from the seed', () => {
+    const seed = vi.fn<() => number>(() => 1_234);
+
+    pickItem([1], { seed });
+
+    expect(seed).toHaveBeenCalledTimes(1);
+  });
+
+  it('if the seed draws at the top of the range, returns the last item', () => {
+    // This seed produces the highest draw that any seed can produce.
+    const seed = 1_000_000_856_026_238;
+
+    expect(pickItem(sourceArray, { seed })).toBe(4);
   });
 
   it('accepts a read-only array', () => {

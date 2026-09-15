@@ -25,6 +25,6 @@ export function computeFakeMathRandom(seed: number): number {
   hash ^= hash >> 11;
   hash += hash << 15;
 
-  // Convert to a number in the range [0, 1)
-  return (hash & 0x7fff_ffff) / 0x7fff_ffff;
+  // Convert to a number in the range [0, 1), capping the top hash value, which would otherwise map to 1
+  return Math.min(hash & 0x7fff_ffff, 0x7fff_fffe) / 0x7fff_ffff;
 }

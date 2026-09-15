@@ -73,6 +73,15 @@ describe(pickInteger, () => {
     expect(pickInteger({ min, max })).toBe(expected);
   });
 
+  it('if min and max truncate to the same integer, draws once from the seed', async () => {
+    const actual = await vi.importActual<{ generateRandom: typeof generateRandom }>('../generateRandom.ts');
+    generateRandomMock.mockImplementation(actual.generateRandom);
+    const seed = vi.fn<() => number>(() => 1_234);
+
+    expect(pickInteger({ min: 3, max: 3, seed })).toBe(3);
+    expect(seed).toHaveBeenCalledTimes(1);
+  });
+
   it('if only max argument is given, sets min=0', () => {
     const max = 10;
 

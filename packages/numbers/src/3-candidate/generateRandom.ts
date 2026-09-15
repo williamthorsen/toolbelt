@@ -4,6 +4,10 @@ import { scale } from './scale.ts';
 
 /**
  * Returns a scaled random number in the range [min, max).
+ *
+ * @category Number
+ * @experimental
+ * @stage candidate
  */
 export function generateRandom(options: Options = {}): number {
   const { min = 0, max = 1 } = options;
