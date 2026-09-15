@@ -102,11 +102,11 @@ Tags must be pushed from a developer machine, not by the dispatch `release.yaml`
 First, claim the name with a placeholder version. npm accepts `npm trust` only for a package that the registry already holds, so a package's first publish cannot come from CI. Publish a bare manifest from a scratch directory. Never publish from `packages/{domain}`: that manifest carries the version from which release-kit bumps, and its build would ship an empty `dist/`.
 
 ```shell
-placeholder_dir=$(mktemp -d) && printf '{ "name": "%s", "version": "0.0.0", "description": "Placeholder awaiting first release" }\n' @williamthorsen/toolbelt.arrays > "$placeholder_dir/package.json" && npm publish "$placeholder_dir" --access public
+placeholder_dir=$(mktemp -d) && printf '{ "name": "%s", "version": "0.0.0", "description": "Placeholder awaiting first release" }\n' @williamthorsen/toolbelt.{domain} > "$placeholder_dir/package.json" && npm publish "$placeholder_dir" --access public
 ```
 
 Then register the package as a trusted publisher, bound to `publish.yaml`:
 
 ```shell
-npm trust github @williamthorsen/toolbelt.arrays --file publish.yaml --repo williamthorsen/toolbelt --allow-publish
+npm trust github @williamthorsen/toolbelt.{domain} --file publish.yaml --repo williamthorsen/toolbelt --allow-publish
 ```
