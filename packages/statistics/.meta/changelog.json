@@ -1,5 +1,33 @@
 [
   {
+    "version": "0.8.7",
+    "date": "2026-09-15",
+    "sections": [
+      {
+        "title": "🐛 Bug fixes",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Fix computeCdf and computeCdfInverse accuracy in the normal tails (#326)",
+            "body": "- Fixes the lower-tail results of `computeCdf`, which had a relative error of 5e-5 at −3σ and 1.8e-2 at −8σ and were 0 below about −9σ, and makes them match reference values to a relative error of 1e-12 down to −30σ.\n- Fixes `computeCdfInverse`, which was accurate only to about 1e-9, so that a round trip through `computeCdf` recovers the value within 1e-13 from −37σ to +3σ.",
+            "hash": "358c076768fb05f2a675bc72d7e83579206a0803"
+          }
+        ]
+      },
+      {
+        "title": "⚙️ Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Remove the stale repo-local cliff.toml and normalize changelog titles (#327)",
+            "body": "- Stops `release-kit prepare` from printing a \"skipped due to grouping error(s)\" warning for each releasable workspace by letting it resolve the git-cliff template bundled with release-kit, previously overridden by the root `cliff.toml`.\n- Excludes commits without a ticket prefix from future changelog entries.\n- Renames the section titles in every `packages/*/.meta/changelog.json`, except `Dependency updates`, to the headings of release-kit's work-type taxonomy, such as \"🎉 Features\" and \"🏗️ Internal features\", and regenerates each `CHANGELOG.md` so that release-kit orders existing and new sections by the same rule.\n- Causes the next `release-kit prepare` to plan patch releases of `dstructs`, `hof`, and `sets`, which had no other commits since their last release, because the changelog commit touches every workspace.",
+            "hash": "2b3c4fe7a08f210adb66f4a4f5bfedc011908d36"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.8.6",
     "date": "2026-09-06",
     "sections": [
@@ -95,6 +123,7 @@
             "description": "Fix unsound narrowing in `getAtIndexOrThrow` and rename it to `getItemAtIndexOrThrow` (#152)",
             "body": "Fixes an issue where `getAtIndexOrThrow` could falsely treat an `undefined` return value as satisfying a return type that excluded `undefined`. The function now throws a `RangeError` if the array holds no item at the index and a `TypeError` if the index is not a safe integer. `undefined` is a valid return value if the input array's type allows `undefined` elements. The function is renamed `getItemAtIndexOrThrow`.\n\nSeparately, `findOrThrow` now decides a match by its predicate rather than by the value it found, so an element is not treated as not found merely because it is falsy. Its return type is now `T` rather than `NonNullable<T>`.\n\nMigration: Consumers of `@williamthorsen/toolbelt.arrays/candidate` import `getItemAtIndexOrThrow` in place of `getAtIndexOrThrow`.",
             "breaking": true,
+            "migration": "Consumers of `@williamthorsen/toolbelt.arrays/candidate` import `getItemAtIndexOrThrow` in place of `getAtIndexOrThrow`.",
             "hash": "3973100b016a4cb3a4ac890be529d8a7a3256b6c"
           }
         ]
@@ -163,11 +192,6 @@
             "description": "Correct standard-deviation semantics in statistics normal-distribution functions (#93)",
             "body": "The `standardDeviation` parameter now means the standard deviation throughout the package's normal-distribution functions, where it previously behaved as the variance. Callers who pass the default of 1 see unchanged output; any other value now yields different numbers. A standard deviation of 0 now places all mass at the mean, where it previously spread mass evenly across every interval; an even spread is now what a very large standard deviation approaches.\n\n`getNormalIntervalProbabilities` accepts a new optional `halfWidth` that sizes the window it slices into intervals, defaulting to 3. `findDistributionByIntervalProbability` now takes its search controls as a second argument and reports whether the search converged, measures `tolerance` as a fraction of the target rather than as an absolute difference, and rejects an unreachable target with an error naming the bound it fell outside and the probability reachable there. Both functions now reject any numeric input that is not a finite number, instead of silently returning NaN results.",
             "hash": "680ed480401524886834006cd0fe56cff552e127"
-          },
-          {
-            "description": "Use underscore separator at 4 digits or more",
-            "body": "Changes the `unicorn/numeric-separators-style` rule config so that separators are consistently used in base 10 numbers, instead of exempting numbers of 5 digits or less.",
-            "hash": "f592ab40deb0c8a5b1c4879b48bce3bde36b6782"
           }
         ]
       },

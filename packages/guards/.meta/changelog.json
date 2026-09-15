@@ -1,5 +1,87 @@
 [
   {
+    "version": "4.1.0",
+    "date": "2026-09-15",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add a ReadyUp adoption kit reporting hand-rolled guards (#311)",
+            "body": "- Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.guards` that reports every function whose entire body re-implements a guard published by the package.",
+            "hash": "53c6b1a3db5d140f30a02e37a06ff22be4b77e6c"
+          },
+          {
+            "description": "Add a ReadyUp adoption kit reporting hand-rolled enum membership tests (#315)",
+            "body": "- Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.enums` that recommends `isEnumValue` and `toEnumValue` where they should replace hand-rolled code.",
+            "hash": "b2cd279294ba923e6ddd7560c6492d0c9d6307cd"
+          },
+          {
+            "description": "Add a ReadyUp adoption kit to toolbelt.filesystem (#316)",
+            "body": "- Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.filesystem` that recommends `writeAtomic` where a project writes a file to a temporary path and renames it into place, and `listDirectoryChain`, `findDirectoryChainMatch`, or `listDirectoryChainMatches` where a loop ascends to the filesystem root by `path.dirname`.\n- Promotes `writeAtomic` to the candidate tier.\n\nMigration: Change any import of `writeAtomic` from `@williamthorsen/toolbelt.filesystem/proposed` to `@williamthorsen/toolbelt.filesystem/candidate`.",
+            "migration": "Change any import of `writeAtomic` from `@williamthorsen/toolbelt.filesystem/proposed` to `@williamthorsen/toolbelt.filesystem/candidate`.",
+            "hash": "6fef192fde152b04b159890998c157ad2ad1734d"
+          },
+          {
+            "description": "Read a directory walk's probed name through a binding or constant (#324)",
+            "body": "- Extends the ReadyUp adoption kit in `@williamthorsen/toolbelt.packaging` to recommend `findPackageRoot` or `resolveSelfVersion` for a hand-rolled `package.json` search that checks for the file through a variable declared once inside its loop and never reassigned there, or through a string constant declared once in the same file.\n- Stops the kit in `@williamthorsen/toolbelt.filesystem` from reporting such a search, which it previously treated as a generic directory walk.",
+            "hash": "59abc905f869bf251d2fb422ffb09b85f1e0e263"
+          },
+          {
+            "description": "Report hand-rolled dedents in the strings adoption kit (#330)",
+            "body": "- Adds `no-joined-line-array`, which reports an array of string or template literals that spans several lines and is joined with a newline.\n- Adds `no-layout-breaking-template`, which reports an untagged template literal whose later lines drop below the indentation of the line on which it opens.",
+            "hash": "5aa43ad1bb403642a6236e557bbe73af24891a66"
+          }
+        ]
+      },
+      {
+        "title": "🐛 Bug fixes",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Stop reading each segment of a probe's path as a separately probed name (#320)",
+            "body": "- Fixes an issue in which `toolbelt.filesystem`'s ReadyUp adoption kit treated a loop over parent directories as a search for each directory's own `package.json` when the path checked at each level contained a `'package.json'` literal, as in `path.join(dir, 'node_modules', name, 'package.json')`, and so did not report the loop under `no-hand-rolled-directory-walk`.",
+            "hash": "289f9f96576bfdea5bcfbd8c69c4dd0472aa8dc3"
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Move directory-walk recognition from filesystem into packages/adoption (#318)",
+            "body": "- Adds `listDirectoryAscents` to `packages/adoption`, which reports each directory ascent once with the names probed by its innermost loop, and reduces `filesystem`'s `listChainWalkSites` to a partition of that output, so a `toolbelt.packaging` kit can partition the same ascents without its own copy of the recognition.\n- Renames the hand-off rule `isProjectRootSearch` to `isManifestSearch` and rewrites the text in `packages/adoption` and `filesystem` that credited `findProjectRoot` alone with a `package.json` walk.\n- Stops `filesystem`'s kit from reporting a loop that ascends one binding around an inner loop ascending another binding and probing for `package.json`, which is the only finding changed by the move.",
+            "hash": "40186126123828413bbe1e7a9b4624c5e9cf06c9"
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Move the rdy run report reader into the adoption test utilities (#323)",
+            "body": "- Replaces the `rdy run --json` report reader copied into each of the twelve `pragma-suppression.tool.test.ts` suites with `listKitCheckReports`, a helper added to `@williamthorsen/toolbelt.adoption/test-utils` that runs a package's compiled kit over a fixture repo and returns its check reports, so a change to the shape of readyup's report needs one edit rather than twelve.\n- Fixes the error thrown for a kit that does not load: Each copy discarded the load error recorded by `rdy` on the kit's entry and threw \"the run reported no adoption checks\", and the helper throws with `rdy`'s own message instead.",
+            "hash": "16a542b74f2bf5a06ef7f6390144e55cdc1930f2"
+          }
+        ]
+      },
+      {
+        "title": "⚙️ Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Remove the stale repo-local cliff.toml and normalize changelog titles (#327)",
+            "body": "- Stops `release-kit prepare` from printing a \"skipped due to grouping error(s)\" warning for each releasable workspace by letting it resolve the git-cliff template bundled with release-kit, previously overridden by the root `cliff.toml`.\n- Excludes commits without a ticket prefix from future changelog entries.\n- Renames the section titles in every `packages/*/.meta/changelog.json`, except `Dependency updates`, to the headings of release-kit's work-type taxonomy, such as \"🎉 Features\" and \"🏗️ Internal features\", and regenerates each `CHANGELOG.md` so that release-kit orders existing and new sections by the same rule.\n- Causes the next `release-kit prepare` to plan patch releases of `dstructs`, `hof`, and `sets`, which had no other commits since their last release, because the changelog commit touches every workspace.",
+            "hash": "2b3c4fe7a08f210adb66f4a4f5bfedc011908d36"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "4.0.1",
     "date": "2026-09-06",
     "sections": [
@@ -28,6 +110,7 @@
             "description": "Correct the nullish guards' narrowing and rename `isNullable` (#206)",
             "body": "Fixes an issue where `isNullable` in `@williamthorsen/toolbelt.guards` narrowed both of its branches backwards: A value it confirmed to be null or undefined was typed as non-nullish, so dereferencing it inside the check compiled and then threw. It is now named `isNullish`, after the type it narrows to.\n\nSeparately, `isNonNullable` and `assertIsNonNullable` let an explicit type argument exclude `null` from the false branch while `null` still reached it at runtime. Both now take the value at its own type.\n\nMigration: `isNullable` no longer exists, and `isNullish` narrows in the opposite direction, so a call site written against the old behavior now fails to compile. On `isNonNullable` and `assertIsNonNullable`, an explicit type argument narrower than the value's own type is now a compile error; inference-driven narrowing is unchanged, as is `filter(isNonNullable)`.",
             "breaking": true,
+            "migration": "`isNullable` no longer exists, and `isNullish` narrows in the opposite direction, so a call site written against the old behavior now fails to compile. On `isNonNullable` and `assertIsNonNullable`, an explicit type argument narrower than the value's own type is now a compile error; inference-driven narrowing is unchanged, as is `filter(isNonNullable)`.",
             "hash": "76aca69ab877ce6d12b537f044d23584c3a4424b"
           }
         ]
@@ -202,52 +285,6 @@
     "date": "2026-03-10",
     "sections": [
       {
-        "title": "🎉 Features",
-        "audience": "all",
-        "items": [
-          {
-            "description": "Add assert function",
-            "hash": "0e29deffbfbcd015a3d092793bda78bba6134e34"
-          },
-          {
-            "description": "Add nullable guard functions",
-            "hash": "8dca843083e9da1fa826bc7c77828e1f11b1f7f2"
-          },
-          {
-            "description": "Add primitive guards",
-            "body": "Added `isBoolean`, `isNumber`,  and `isString`.",
-            "hash": "9df7c84804e73574b0202397cb754aa2ac7ecb3c"
-          },
-          {
-            "description": "Add primitive type guards (#1)",
-            "body": "Added guards: `isBoolean`, `isNumber`, `isString`.",
-            "hash": "74400745b0e3ea2e1cc54b56eac174b8a6444ac1"
-          }
-        ]
-      },
-      {
-        "title": "⚙️ Tooling",
-        "audience": "dev",
-        "items": [
-          {
-            "description": "Scaffold the guards workspace",
-            "hash": "e6eea2c3a72044a1e946ef5651eb045bc24ef9b6"
-          },
-          {
-            "description": "Enable incremental type generation",
-            "hash": "de828b21a3c74cb91e7e4ef6dbf452469882abc3"
-          },
-          {
-            "description": "Rename publish script to avoid recursion",
-            "hash": "b03c4612d577e8018d79c2753bdd3dddc16b976e"
-          },
-          {
-            "description": "Change package registry from github to npmjs",
-            "hash": "b82608a360b91906ee8cc0ab040835f9ad76e58a"
-          }
-        ]
-      },
-      {
         "title": "📦 Dependencies",
         "audience": "dev",
         "items": [
@@ -257,11 +294,6 @@
             "hash": "ec37d5de397a51ce589d3fb73e6b0a66773e6b22"
           }
         ]
-      },
-      {
-        "title": "📚 Documentation",
-        "audience": "dev",
-        "items": [{ "description": "Fix lint", "hash": "a47390236b6858f189a39fe9eb541cf14a9f0c56" }]
       }
     ]
   }

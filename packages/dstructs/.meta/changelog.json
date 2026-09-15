@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.2.6",
+    "date": "2026-09-15",
+    "sections": [
+      {
+        "title": "⚙️ Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Remove the stale repo-local cliff.toml and normalize changelog titles (#327)",
+            "body": "- Stops `release-kit prepare` from printing a \"skipped due to grouping error(s)\" warning for each releasable workspace by letting it resolve the git-cliff template bundled with release-kit, previously overridden by the root `cliff.toml`.\n- Excludes commits without a ticket prefix from future changelog entries.\n- Renames the section titles in every `packages/*/.meta/changelog.json`, except `Dependency updates`, to the headings of release-kit's work-type taxonomy, such as \"🎉 Features\" and \"🏗️ Internal features\", and regenerates each `CHANGELOG.md` so that release-kit orders existing and new sections by the same rule.\n- Causes the next `release-kit prepare` to plan patch releases of `dstructs`, `hof`, and `sets`, which had no other commits since their last release, because the changelog commit touches every workspace.",
+            "hash": "2b3c4fe7a08f210adb66f4a4f5bfedc011908d36"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.2.5",
     "date": "2026-08-13",
     "sections": [

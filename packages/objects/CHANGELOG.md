@@ -2,6 +2,68 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.3.0 — 2026-09-15
+
+### 🎉 Features
+
+- Add a ReadyUp adoption kit reporting hand-rolled guards (#311)
+
+  - Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.guards` that reports every function whose entire body re-implements a guard published by the package.
+
+- Add a ReadyUp adoption kit to toolbelt.filesystem (#316)
+
+  - Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.filesystem` that recommends `writeAtomic` where a project writes a file to a temporary path and renames it into place, and `listDirectoryChain`, `findDirectoryChainMatch`, or `listDirectoryChainMatches` where a loop ascends to the filesystem root by `path.dirname`.
+  - Promotes `writeAtomic` to the candidate tier.
+
+  Migration: Change any import of `writeAtomic` from `@williamthorsen/toolbelt.filesystem/proposed` to `@williamthorsen/toolbelt.filesystem/candidate`.
+
+- Read a directory walk's probed name through a binding or constant (#324)
+
+  - Extends the ReadyUp adoption kit in `@williamthorsen/toolbelt.packaging` to recommend `findPackageRoot` or `resolveSelfVersion` for a hand-rolled `package.json` search that checks for the file through a variable declared once inside its loop and never reassigned there, or through a string constant declared once in the same file.
+  - Stops the kit in `@williamthorsen/toolbelt.filesystem` from reporting such a search, which it previously treated as a generic directory walk.
+
+- Report hand-rolled dedents in the strings adoption kit (#330)
+
+  - Adds `no-joined-line-array`, which reports an array of string or template literals that spans several lines and is joined with a newline.
+  - Adds `no-layout-breaking-template`, which reports an untagged template literal whose later lines drop below the indentation of the line on which it opens.
+
+### 🐛 Bug fixes
+
+- Stop reading each segment of a probe's path as a separately probed name (#320)
+
+  - Fixes an issue in which `toolbelt.filesystem`'s ReadyUp adoption kit treated a loop over parent directories as a search for each directory's own `package.json` when the path checked at each level contained a `'package.json'` literal, as in `path.join(dir, 'node_modules', name, 'package.json')`, and so did not report the loop under `no-hand-rolled-directory-walk`.
+
+### ♻️ Refactoring
+
+- Move directory-walk recognition from filesystem into packages/adoption (#318)
+
+  - Adds `listDirectoryAscents` to `packages/adoption`, which reports each directory ascent once with the names probed by its innermost loop, and reduces `filesystem`'s `listChainWalkSites` to a partition of that output, so a `toolbelt.packaging` kit can partition the same ascents without its own copy of the recognition.
+  - Renames the hand-off rule `isProjectRootSearch` to `isManifestSearch` and rewrites the text in `packages/adoption` and `filesystem` that credited `findProjectRoot` alone with a `package.json` walk.
+  - Stops `filesystem`'s kit from reporting a loop that ascends one binding around an inner loop ascending another binding and probing for `package.json`, which is the only finding changed by the move.
+
+### 🧪 Tests
+
+- Move the rdy run report reader into the adoption test utilities (#323)
+
+  - Replaces the `rdy run --json` report reader copied into each of the twelve `pragma-suppression.tool.test.ts` suites with `listKitCheckReports`, a helper added to `@williamthorsen/toolbelt.adoption/test-utils` that runs a package's compiled kit over a fixture repo and returns its check reports, so a change to the shape of readyup's report needs one edit rather than twelve.
+  - Fixes the error thrown for a kit that does not load: Each copy discarded the load error recorded by `rdy` on the kit's entry and threw "the run reported no adoption checks", and the helper throws with `rdy`'s own message instead.
+
+### ⚙️ Tooling
+
+- Remove the stale repo-local cliff.toml and normalize changelog titles (#327)
+
+  - Stops `release-kit prepare` from printing a "skipped due to grouping error(s)" warning for each releasable workspace by letting it resolve the git-cliff template bundled with release-kit, previously overridden by the root `cliff.toml`.
+  - Excludes commits without a ticket prefix from future changelog entries.
+  - Renames the section titles in every `packages/*/.meta/changelog.json`, except `Dependency updates`, to the headings of release-kit's work-type taxonomy, such as "🎉 Features" and "🏗️ Internal features", and regenerates each `CHANGELOG.md` so that release-kit orders existing and new sections by the same rule.
+  - Causes the next `release-kit prepare` to plan patch releases of `dstructs`, `hof`, and `sets`, which had no other commits since their last release, because the changelog commit touches every workspace.
+
+### 📚 Documentation
+
+- Align prose with plain-speech doctrine and writing conventions (#306)
+
+  - Copy-edits prose across the repo: comments, test names, package READMEs, and `AGENTS.md`.
+  - Rewrites a few user-facing strings as well, among them `configure-project`'s help text and the errors from `parseProjectSpec`, `securityCommands`, and `hashString`.
+
 ## 4.2.0 — 2026-09-06
 
 ### 🎉 Features
@@ -13,10 +75,6 @@ All notable changes to this project will be documented in this file.
 - Add a ReadyUp adoption kit reporting hand-rolled sleeps (#303)
 
   - Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.async` that recommends the use of `delay` to replace a hand-rolled sleep.
-
-### 📦 Dependencies
-
-- Upgrade all deps to latest version
 
 ### 📚 Documentation
 
@@ -126,10 +184,6 @@ All notable changes to this project will be documented in this file.
 
   All packages now have identical compiler settings, using the settings from the `@williamthorsen/tsconfig` base config without modification.
 
-### 📦 Dependencies
-
-- Upgrade all deps to latest version
-
 ## 3.2.10 — 2026-07-27
 
 ### ⚙️ Tooling
@@ -178,12 +232,6 @@ All notable changes to this project will be documented in this file.
 
 ### 🎉 Features
 
-- Modernize code & workspace structure
-- Add legacy TypedObject and objectMap
-- ⛔ Migrate from toolbelt-deno
-- Add isEqual & objectFromKeys functions
-- Add getValueAtPathOrThrow
-- Add isKeyOf function
 - Add isKeyOf function to objects library (#3)
 
   ## What
@@ -211,30 +259,11 @@ All notable changes to this project will be documented in this file.
   - Root package version bumped to 4.3.1
   - Objects package version bumped to 3.2.0
 
-### ♻️ Refactoring
-
-- Migrate to ESBuild
-- Rename functions
-- Replace barrel imports with direct imports
-
-### 🧪 Tests
-
-- Convert object tests to Vitest
-
 ### ⚙️ Tooling
 
-- Configure Prettier
-- Enable incremental type generation
-- Rename publish script to avoid recursion
-- Make package public
-- Use tsgo for type-checking
-- Upgrade AI rules, configs & deps
-- Fix export of isKeyOf
 - Fix export of isKeyOf (#4)
 
   Fixes the export of `isKeyOf`, which had not been added to the candidate release index.
-
-- Change package registry from github to npmjs
 
 ### 📦 Dependencies
 
@@ -277,11 +306,5 @@ All notable changes to this project will be documented in this file.
   - root|tooling: Use ws runner to fix recursive build command
 
   The build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.
-
-### 📚 Documentation
-
-- Fix lint
-- Fix lint
-- Refine function description
 
 <!-- Generated by release-kit. Do not edit this file. Use .meta/changelog-overrides.json to override entries. -->

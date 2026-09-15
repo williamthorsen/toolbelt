@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.6 — 2026-09-15
+
+### ⚙️ Tooling
+
+- Remove the stale repo-local cliff.toml and normalize changelog titles (#327)
+
+  - Stops `release-kit prepare` from printing a "skipped due to grouping error(s)" warning for each releasable workspace by letting it resolve the git-cliff template bundled with release-kit, previously overridden by the root `cliff.toml`.
+  - Excludes commits without a ticket prefix from future changelog entries.
+  - Renames the section titles in every `packages/*/.meta/changelog.json`, except `Dependency updates`, to the headings of release-kit's work-type taxonomy, such as "🎉 Features" and "🏗️ Internal features", and regenerates each `CHANGELOG.md` so that release-kit orders existing and new sections by the same rule.
+  - Causes the next `release-kit prepare` to plan patch releases of `dstructs`, `hof`, and `sets`, which had no other commits since their last release, because the changelog commit touches every workspace.
+
 ## 0.2.5 — 2026-08-13
 
 ### ⚙️ Tooling

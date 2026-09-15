@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.8.7 — 2026-09-15
+
+### 🐛 Bug fixes
+
+- Fix computeCdf and computeCdfInverse accuracy in the normal tails (#326)
+
+  - Fixes the lower-tail results of `computeCdf`, which had a relative error of 5e-5 at −3σ and 1.8e-2 at −8σ and were 0 below about −9σ, and makes them match reference values to a relative error of 1e-12 down to −30σ.
+  - Fixes `computeCdfInverse`, which was accurate only to about 1e-9, so that a round trip through `computeCdf` recovers the value within 1e-13 from −37σ to +3σ.
+
+### ⚙️ Tooling
+
+- Remove the stale repo-local cliff.toml and normalize changelog titles (#327)
+
+  - Stops `release-kit prepare` from printing a "skipped due to grouping error(s)" warning for each releasable workspace by letting it resolve the git-cliff template bundled with release-kit, previously overridden by the root `cliff.toml`.
+  - Excludes commits without a ticket prefix from future changelog entries.
+  - Renames the section titles in every `packages/*/.meta/changelog.json`, except `Dependency updates`, to the headings of release-kit's work-type taxonomy, such as "🎉 Features" and "🏗️ Internal features", and regenerates each `CHANGELOG.md` so that release-kit orders existing and new sections by the same rule.
+  - Causes the next `release-kit prepare` to plan patch releases of `dstructs`, `hof`, and `sets`, which had no other commits since their last release, because the changelog commit touches every workspace.
+
 ## 0.8.6 — 2026-09-06
 
 ### 📚 Documentation
@@ -88,10 +106,6 @@ All notable changes to this project will be documented in this file.
   The `standardDeviation` parameter now means the standard deviation throughout the package's normal-distribution functions, where it previously behaved as the variance. Callers who pass the default of 1 see unchanged output; any other value now yields different numbers. A standard deviation of 0 now places all mass at the mean, where it previously spread mass evenly across every interval; an even spread is now what a very large standard deviation approaches.
 
   `getNormalIntervalProbabilities` accepts a new optional `halfWidth` that sizes the window it slices into intervals, defaulting to 3. `findDistributionByIntervalProbability` now takes its search controls as a second argument and reports whether the search converged, measures `tolerance` as a fraction of the target rather than as an absolute difference, and rejects an unreachable target with an error naming the bound it fell outside and the probability reachable there. Both functions now reject any numeric input that is not a finite number, instead of silently returning NaN results.
-
-- Use underscore separator at 4 digits or more
-
-  Changes the `unicorn/numeric-separators-style` rule config so that separators are consistently used in base 10 numbers, instead of exempting numbers of 5 digits or less.
 
 ### ♻️ Refactoring
 

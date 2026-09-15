@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.0 — 2026-09-15
+
+### 🎉 Features
+
+- 🚨 **Breaking:** Move createTempTree from toolbelt.filesystem to toolbelt.testing (#313)
+
+  - Moves `CreateTempTreeOptions` and the `TempTree` handle to `@williamthorsen/toolbelt.testing/candidate` along with `createTempTree`.
+
+  Migration: Import `createTempTree`, `CreateTempTreeOptions`, and `TempTree` from `@williamthorsen/toolbelt.testing/candidate`, and declare `@williamthorsen/toolbelt.testing` in the manifest that declared `@williamthorsen/toolbelt.filesystem` for them.
+
+### ⚙️ Tooling
+
+- Remove the stale repo-local cliff.toml and normalize changelog titles (#327)
+
+  - Stops `release-kit prepare` from printing a "skipped due to grouping error(s)" warning for each releasable workspace by letting it resolve the git-cliff template bundled with release-kit, previously overridden by the root `cliff.toml`.
+  - Excludes commits without a ticket prefix from future changelog entries.
+  - Renames the section titles in every `packages/*/.meta/changelog.json`, except `Dependency updates`, to the headings of release-kit's work-type taxonomy, such as "🎉 Features" and "🏗️ Internal features", and regenerates each `CHANGELOG.md` so that release-kit orders existing and new sections by the same rule.
+  - Causes the next `release-kit prepare` to plan patch releases of `dstructs`, `hof`, and `sets`, which had no other commits since their last release, because the changelog commit touches every workspace.
+
+### 📚 Documentation
+
+- Align prose with plain-speech doctrine and writing conventions (#306)
+
+  - Copy-edits prose across the repo: comments, test names, package READMEs, and `AGENTS.md`.
+  - Rewrites a few user-facing strings as well, among them `configure-project`'s help text and the errors from `parseProjectSpec`, `securityCommands`, and `hashString`.
+
 ## 0.2.0 — 2026-09-06
 
 ### 🎉 Features

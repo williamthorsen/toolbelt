@@ -1,5 +1,46 @@
 [
   {
+    "version": "0.4.0",
+    "date": "2026-09-15",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Move createTempTree from toolbelt.filesystem to toolbelt.testing (#313)",
+            "body": "- Moves `CreateTempTreeOptions` and the `TempTree` handle to `@williamthorsen/toolbelt.testing/candidate` along with `createTempTree`.\n\nMigration: Import `createTempTree`, `CreateTempTreeOptions`, and `TempTree` from `@williamthorsen/toolbelt.testing/candidate`, and declare `@williamthorsen/toolbelt.testing` in the manifest that declared `@williamthorsen/toolbelt.filesystem` for them.",
+            "breaking": true,
+            "migration": "Import `createTempTree`, `CreateTempTreeOptions`, and `TempTree` from `@williamthorsen/toolbelt.testing/candidate`, and declare `@williamthorsen/toolbelt.testing` in the manifest that declared `@williamthorsen/toolbelt.filesystem` for them.",
+            "hash": "857dc50b69084af6de51cb557c0e54e0083e375d"
+          }
+        ]
+      },
+      {
+        "title": "⚙️ Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Remove the stale repo-local cliff.toml and normalize changelog titles (#327)",
+            "body": "- Stops `release-kit prepare` from printing a \"skipped due to grouping error(s)\" warning for each releasable workspace by letting it resolve the git-cliff template bundled with release-kit, previously overridden by the root `cliff.toml`.\n- Excludes commits without a ticket prefix from future changelog entries.\n- Renames the section titles in every `packages/*/.meta/changelog.json`, except `Dependency updates`, to the headings of release-kit's work-type taxonomy, such as \"🎉 Features\" and \"🏗️ Internal features\", and regenerates each `CHANGELOG.md` so that release-kit orders existing and new sections by the same rule.\n- Causes the next `release-kit prepare` to plan patch releases of `dstructs`, `hof`, and `sets`, which had no other commits since their last release, because the changelog commit touches every workspace.",
+            "hash": "2b3c4fe7a08f210adb66f4a4f5bfedc011908d36"
+          }
+        ]
+      },
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Align prose with plain-speech doctrine and writing conventions (#306)",
+            "body": "- Copy-edits prose across the repo: comments, test names, package READMEs, and `AGENTS.md`.\n- Rewrites a few user-facing strings as well, among them `configure-project`'s help text and the errors from `parseProjectSpec`, `securityCommands`, and `hashString`.",
+            "hash": "ab9c5a84a25e5084986733ecc79b88be9b9c7ef1"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.3.1",
     "date": "2026-09-06",
     "sections": [
@@ -71,7 +112,7 @@
       },
       {
         "title": "🏗️ Internal features",
-        "audience": "all",
+        "audience": "dev",
         "items": [
           {
             "description": "Scaffold toolbelt.git for git utilities (#235)",

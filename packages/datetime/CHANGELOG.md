@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.0.8 — 2026-09-15
+
+### ⚙️ Tooling
+
+- Remove the stale repo-local cliff.toml and normalize changelog titles (#327)
+
+  - Stops `release-kit prepare` from printing a "skipped due to grouping error(s)" warning for each releasable workspace by letting it resolve the git-cliff template bundled with release-kit, previously overridden by the root `cliff.toml`.
+  - Excludes commits without a ticket prefix from future changelog entries.
+  - Renames the section titles in every `packages/*/.meta/changelog.json`, except `Dependency updates`, to the headings of release-kit's work-type taxonomy, such as "🎉 Features" and "🏗️ Internal features", and regenerates each `CHANGELOG.md` so that release-kit orders existing and new sections by the same rule.
+  - Causes the next `release-kit prepare` to plan patch releases of `dstructs`, `hof`, and `sets`, which had no other commits since their last release, because the changelog commit touches every workspace.
+
+### 📚 Documentation
+
+- Align prose with plain-speech doctrine and writing conventions (#306)
+
+  - Copy-edits prose across the repo: comments, test names, package READMEs, and `AGENTS.md`.
+  - Rewrites a few user-facing strings as well, among them `configure-project`'s help text and the errors from `parseProjectSpec`, `securityCommands`, and `hashString`.
+
 ## 4.0.7 — 2026-09-06
 
 ### 📚 Documentation
@@ -81,10 +99,6 @@ All notable changes to this project will be documented in this file.
 
   `TimeUnit`, in `@williamthorsen/toolbelt.datetime/draft`, now converts to a coarser unit exactly: an hour expressed in milliseconds converts to one hour, where it previously came back a fraction short and could truncate to zero. `TimeUnit` also now exposes its units as a list ordered from coarsest to finest.
 
-- Use underscore separator at 4 digits or more
-
-  Changes the `unicorn/numeric-separators-style` rule config so that separators are consistently used in base 10 numbers, instead of exempting numbers of 5 digits or less.
-
 ### ♻️ Refactoring
 
 - Fixes violations surfaced by newly active lint rules (#84)
@@ -111,10 +125,6 @@ All notable changes to this project will be documented in this file.
 - Use identical compiler settings for all packages (#105)
 
   All packages now have identical compiler settings, using the settings from the `@williamthorsen/tsconfig` base config without modification.
-
-### 📦 Dependencies
-
-- Upgrade all deps to latest version
 
 ## 3.2.8 — 2026-07-27
 
@@ -161,24 +171,6 @@ All notable changes to this project will be documented in this file.
 - Format changelogs
 
 ## 3.2.1 — 2026-03-10
-
-### 🎉 Features
-
-- ⛔ Migrate from toolbelt-deno
-- Can get decades for a range of years
-
-  Added `getDecadesContainingRange` and `getDecadesContainingYears`.
-
-### 🧪 Tests
-
-- Convert timestamp tests to Vitest
-
-### ⚙️ Tooling
-
-- Scaffold the datetime workspace
-- Enable incremental type generation
-- Rename publish script to avoid recursion
-- Change package registry from github to npmjs
 
 ### 📦 Dependencies
 

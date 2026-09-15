@@ -2,6 +2,53 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.6.0 — 2026-09-15
+
+### 🎉 Features
+
+- 🚨 **Breaking:** Move createTempTree from toolbelt.filesystem to toolbelt.testing (#313)
+
+  - Moves `CreateTempTreeOptions` and the `TempTree` handle to `@williamthorsen/toolbelt.testing/candidate` along with `createTempTree`.
+
+  Migration: Import `createTempTree`, `CreateTempTreeOptions`, and `TempTree` from `@williamthorsen/toolbelt.testing/candidate`, and declare `@williamthorsen/toolbelt.testing` in the manifest that declared `@williamthorsen/toolbelt.filesystem` for them.
+
+- Add a ReadyUp adoption kit reporting hand-rolled package.json searches (#322)
+
+  - Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.packaging` that recommends `findPackageRoot`, `resolveSelfVersion`, or `findProjectRoot` in place of a hand-rolled loop checking each ancestor directory for `package.json`.
+
+- Read a directory walk's probed name through a binding or constant (#324)
+
+  - Extends the ReadyUp adoption kit in `@williamthorsen/toolbelt.packaging` to recommend `findPackageRoot` or `resolveSelfVersion` for a hand-rolled `package.json` search that checks for the file through a variable declared once inside its loop and never reassigned there, or through a string constant declared once in the same file.
+  - Stops the kit in `@williamthorsen/toolbelt.filesystem` from reporting such a search, which it previously treated as a generic directory walk.
+
+- Report hand-rolled dedents in the strings adoption kit (#330)
+
+  - Adds `no-joined-line-array`, which reports an array of string or template literals that spans several lines and is joined with a newline.
+  - Adds `no-layout-breaking-template`, which reports an untagged template literal whose later lines drop below the indentation of the line on which it opens.
+
+### 🧪 Tests
+
+- Move the rdy run report reader into the adoption test utilities (#323)
+
+  - Replaces the `rdy run --json` report reader copied into each of the twelve `pragma-suppression.tool.test.ts` suites with `listKitCheckReports`, a helper added to `@williamthorsen/toolbelt.adoption/test-utils` that runs a package's compiled kit over a fixture repo and returns its check reports, so a change to the shape of readyup's report needs one edit rather than twelve.
+  - Fixes the error thrown for a kit that does not load: Each copy discarded the load error recorded by `rdy` on the kit's entry and threw "the run reported no adoption checks", and the helper throws with `rdy`'s own message instead.
+
+### ⚙️ Tooling
+
+- Remove the stale repo-local cliff.toml and normalize changelog titles (#327)
+
+  - Stops `release-kit prepare` from printing a "skipped due to grouping error(s)" warning for each releasable workspace by letting it resolve the git-cliff template bundled with release-kit, previously overridden by the root `cliff.toml`.
+  - Excludes commits without a ticket prefix from future changelog entries.
+  - Renames the section titles in every `packages/*/.meta/changelog.json`, except `Dependency updates`, to the headings of release-kit's work-type taxonomy, such as "🎉 Features" and "🏗️ Internal features", and regenerates each `CHANGELOG.md` so that release-kit orders existing and new sections by the same rule.
+  - Causes the next `release-kit prepare` to plan patch releases of `dstructs`, `hof`, and `sets`, which had no other commits since their last release, because the changelog commit touches every workspace.
+
+### 📚 Documentation
+
+- Align prose with plain-speech doctrine and writing conventions (#306)
+
+  - Copy-edits prose across the repo: comments, test names, package READMEs, and `AGENTS.md`.
+  - Rewrites a few user-facing strings as well, among them `configure-project`'s help text and the errors from `parseProjectSpec`, `securityCommands`, and `hashString`.
+
 ## 0.5.5 — 2026-09-06
 
 ### 📚 Documentation
