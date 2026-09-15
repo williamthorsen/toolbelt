@@ -4,6 +4,8 @@ import { generateRandom } from './generateRandom.ts';
 /**
  * Returns a random integer between the bounds inclusive.
  * If the bounds are not integers, they are truncated to integers.
+ * Draws exactly once per call, even when the bounds admit a single value, so that a shared seed advances the same way
+ * whatever the bounds.
  */
 export function pickInteger(params: Params = {}): number {
   const { min = 0, max = Number.MAX_SAFE_INTEGER, seed } = params;
@@ -18,10 +20,6 @@ export function pickInteger(params: Params = {}): number {
 
   const start = Math.trunc(Math.min(min, max));
   const end = Math.trunc(Math.max(min, max));
-
-  if (start === end) {
-    return start;
-  }
   const range = end - start + 1;
 
   return start + Math.floor(generateRandom({ seed }) * range);
