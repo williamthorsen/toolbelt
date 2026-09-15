@@ -126,11 +126,10 @@ export async function runConfigureProject(args: string[], effects: TbJiraEffects
   }
 
   const { correctedStatuses, written } = await applyWorkflowUpdate(request, configuration, plan);
-  effects.write(
-    written
-      ? `workflow updated: ${plan.statusUpdates.length} amended, ${plan.creations.length} created\n`
-      : 'workflow unchanged\n',
-  );
+  const workflowOutcome = written
+    ? `updated: ${plan.statusUpdates.length} amended, ${plan.creations.length} created`
+    : 'unchanged';
+  effects.write(`${formatLabelledLine('workflow', workflowOutcome)}\n`);
   if (correctedStatuses.length > 0) {
     const corrections = correctedStatuses.map((status) => `${status.from} → ${status.to}`).join(', ');
     effects.write(`amended via the status API: ${corrections}\n`);

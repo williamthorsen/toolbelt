@@ -87,7 +87,7 @@ describe('tb-jira configure-project', () => {
 
       await run(harness, [KEY]);
 
-      expect(harness.readOutput()).toContain('workflow updated: 1 amended, 0 created');
+      expect(harness.readOutput()).toContain('workflow  updated: 1 amended, 0 created');
       expect(harness.calls.some((call) => call.method === 'POST' && call.path === '/rest/api/3/workflows/update')).toBe(
         true,
       );
@@ -98,7 +98,7 @@ describe('tb-jira configure-project', () => {
 
       await run(harness, [KEY]);
 
-      expect(harness.readOutput()).toContain('workflow unchanged');
+      expect(harness.readOutput()).toContain('workflow  unchanged');
     });
 
     it('moves the named status off the board and names the call that puts it back', async () => {
