@@ -1,5 +1,9 @@
 /**
  * Scales a number from one range to another.
+ *
+ * @category Number
+ * @experimental
+ * @stage candidate
  */
 export function scale(value: number, toRange: Range, fromRange: Partial<Range> = {}): number {
   const { min: toMin, max: toMax } = toRange;
@@ -13,6 +17,14 @@ export function scale(value: number, toRange: Range, fromRange: Partial<Range> =
   return toMin + (offset * toMagnitude) / fromMagnitude;
 }
 
+/**
+ * Scales a number from one range to another and rounds it to the nearest integer.
+ * Throws a RangeError unless the target bounds are safe integers.
+ *
+ * @category Number
+ * @experimental
+ * @stage candidate
+ */
 export function scaleInt(value: number, toRange: Range, fromRange: Partial<IntegerRange> = {}): number {
   if (isNotSafeInteger(toRange.min) || isNotSafeInteger(toRange.max)) {
     throw new RangeError('Invalid range: min and max must be safe integers.');

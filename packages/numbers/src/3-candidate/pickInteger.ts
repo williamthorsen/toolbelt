@@ -6,6 +6,10 @@ import { generateRandom } from './generateRandom.ts';
  * If the bounds are not integers, they are truncated to integers.
  * Draws exactly once per call, even when the bounds admit a single value, so that a shared seed advances the same way
  * whatever the bounds.
+ *
+ * @category Number
+ * @experimental
+ * @stage candidate
  */
 export function pickInteger(params: Params = {}): number {
   const { min = 0, max = Number.MAX_SAFE_INTEGER, seed } = params;
