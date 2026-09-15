@@ -57,6 +57,25 @@ describe(defineAdoptionKit, () => {
     expect(() => defineAdoptionKit(collided)).toThrow("@scope/pkg's kit gives one id to more than one check");
   });
 
+  it('refuses a kit reading one kind through two path filters, which would split the shared denominator', () => {
+    const split: AdoptionKitSpec<Kind> = {
+      ...SPEC,
+      checks: [
+        ...SPEC.checks,
+        {
+          fix: 'delete the test clone',
+          id: 'no-test-clone',
+          kinds: ['clone'],
+          name: 'No test defines its own helper',
+          noSourcesReason: 'the project holds no tests',
+          pathFilter: (path) => path.includes('.test.'),
+        },
+      ],
+    };
+
+    expect(() => defineAdoptionKit(split)).toThrow("@scope/pkg's kit reads one kind through more than one path filter");
+  });
+
   it('defaults severity to warn and honors a declared override', () => {
     const kit = defineAdoptionKit(SPEC);
 

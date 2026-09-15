@@ -14,19 +14,7 @@ export interface AdoptionSite<Kind extends string> {
   symbol?: string;
 }
 
-export interface AdoptionCheck<Kind extends string> {
-  fix: string;
-  /**
-   * What an `rdy-ignore` pragma names to suppress this check's findings alone, the runner namespacing it under
-   * the publishing package. Required, though readyup's own field is optional: A check that declares none can
-   * be silenced only along with every other check on the line, and nothing reports the loss.
-   */
-  id: string;
-  /** The kinds reported by this check. A site of any other kind counts toward the denominator alone. */
-  kinds: readonly Kind[];
-  name: string;
-  severity?: Severity;
-}
+export type AdoptionCheck<Kind extends string> = AdoptionCheckFields<Kind> & CheckScope;
 
 export interface AdoptionKitSpec<Kind extends string> {
   /** `NoInfer` fixes `Kind` to what `detect` produces, so each check's `kinds` is checked against it. */
@@ -40,16 +28,45 @@ export interface AdoptionKitSpec<Kind extends string> {
   detect: (text: string) => ReadonlyArray<AdoptionSite<Kind>>;
   /** The package's own callable exports. A call to one of them counts toward adoption. */
   exportNames: readonly string[];
-  /** Why the checks do not apply to a project in which the path filter matched nothing. */
+  /**
+   * Why a check declaring no scope of its own does not apply to a project in which the path filter matched
+   * nothing.
+   */
   noSourcesReason: string;
   packageName: string;
+  /** The paths from which a check declaring no scope of its own reports its kinds. */
   pathFilter: PathFilter;
 }
+
+interface AdoptionCheckFields<Kind extends string> {
+  fix: string;
+  /**
+   * What an `rdy-ignore` pragma names to suppress this check's findings alone, the runner namespacing it under
+   * the publishing package. Required, though readyup's own field is optional: A check that declares none can
+   * be silenced only along with every other check on the line, and nothing reports the loss.
+   */
+  id: string;
+  /** The kinds reported by this check. A site of any other kind counts toward the denominator alone. */
+  kinds: readonly Kind[];
+  name: string;
+  severity?: Severity;
+}
+
+/**
+ * The paths from which a check reports its kinds, and why the check does not apply where the project holds none
+ * of them. A check declares both or neither, and one declaring neither takes the kit's.
+ */
+type CheckScope = Scope | { noSourcesReason?: undefined; pathFilter?: undefined };
 
 interface ProjectSummary<Kind extends string> {
   adoptedCount: number;
   findings: Array<AdoptionSite<Kind> & { path: string }>;
   sources: readonly ProjectSource[];
+}
+
+interface Scope {
+  noSourcesReason: string;
+  pathFilter: PathFilter;
 }
 
 const NOT_A_REPO = 'the project is not a git working tree, and these checks read the files that git tracks';
@@ -74,6 +91,11 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
 
   const cache: { summary?: Promise<ProjectSummary<Kind> | undefined> } = {};
   const adoptedPackage = { exportNames: spec.exportNames, packageName: spec.packageName };
+  const kitScope: Scope = { noSourcesReason: spec.noSourcesReason, pathFilter: spec.pathFilter };
+  const pathFiltersByKind = mapPathFiltersByKind();
+  const sweptPathFilters = [
+    ...new Set([spec.pathFilter, ...spec.checks.map((check) => resolveScope(check).pathFilter)]),
+  ];
 
   return defineRdyKit({
     description: spec.description,
@@ -85,7 +107,7 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
           name: check.name,
           id: check.id,
           ...(check.severity !== undefined && { severity: check.severity }),
-          skip: skipUnlessProjectHoldsSources,
+          skip: () => skipUnlessProjectHoldsSources(resolveScope(check)),
           check: () => reportKinds(check.kinds),
           fix: check.fix,
         })),
@@ -116,20 +138,58 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
     }
   }
 
+  /** Reports whether any check reads a path, which puts it in the kit's one sweep. */
+  function isSweptPath(path: string): boolean {
+    return sweptPathFilters.some((pathFilter) => pathFilter(path));
+  }
+
   /** Reads the project once, so every check and its skip share one sweep. */
   function loadSummary(): Promise<ProjectSummary<Kind> | undefined> {
     cache.summary ??= readProject();
     return cache.summary;
   }
 
-  /** Summarizes the project's matching sources, or nothing where it is not a git working tree. */
+  /**
+   * Maps each kind named by a check to the path filter of that check's scope.
+   *
+   * Throws where checks naming one kind read it through different filters: A site of that kind would be kept for
+   * one check and dropped for the other, and the checks would no longer share a denominator.
+   */
+  function mapPathFiltersByKind(): Map<Kind, PathFilter> {
+    const pathFilters = new Map<Kind, PathFilter>();
+    const conflicted = new Set<Kind>();
+    for (const check of spec.checks) {
+      const { pathFilter } = resolveScope(check);
+      for (const kind of check.kinds) {
+        const assigned = pathFilters.get(kind);
+        if (assigned !== undefined && assigned !== pathFilter) conflicted.add(kind);
+        pathFilters.set(kind, pathFilter);
+      }
+    }
+
+    if (conflicted.size > 0) {
+      const kinds = [...conflicted].toSorted().join(', ');
+      throw new Error(`${spec.packageName}'s kit reads one kind through more than one path filter: ${kinds}`);
+    }
+    return pathFilters;
+  }
+
+  /**
+   * Summarizes the project's swept sources, or nothing where it is not a git working tree. A site is kept only in a
+   * source accepted by the path filter for its kind, so every check's report holds the same sites.
+   */
   async function readProject(): Promise<ProjectSummary<Kind> | undefined> {
-    const sources = await readTrackedSources(spec.pathFilter);
+    const sources = await readTrackedSources(isSweptPath);
     if (sources === undefined) return undefined;
 
     return {
       adoptedCount: countPackageUsage(sources, adoptedPackage),
-      findings: sources.flatMap((source) => spec.detect(source.text).map((site) => ({ ...site, path: source.path }))),
+      findings: sources.flatMap((source) =>
+        spec
+          .detect(source.text)
+          .filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path))
+          .map((site) => ({ ...site, path: source.path })),
+      ),
       sources,
     };
   }
@@ -154,11 +214,18 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
     });
   }
 
-  /** Skips every check where the project cannot be read, or holds no source matched by the filter. */
-  async function skipUnlessProjectHoldsSources(): Promise<SkipResult> {
+  /** Returns the scope declared by a check, or the kit's where it declares none. */
+  function resolveScope(check: AdoptionCheck<Kind>): Scope {
+    return check.pathFilter === undefined
+      ? kitScope
+      : { noSourcesReason: check.noSourcesReason, pathFilter: check.pathFilter };
+  }
+
+  /** Skips a check where the project cannot be read, or holds no swept source matched by the check's scope. */
+  async function skipUnlessProjectHoldsSources(scope: Scope): Promise<SkipResult> {
     const summary = await loadSummary();
     if (summary === undefined) return NOT_A_REPO;
-    return summary.sources.length === 0 ? spec.noSourcesReason : false;
+    return summary.sources.some((source) => scope.pathFilter(source.path)) ? false : scope.noSourcesReason;
   }
 
   // endregion | Helpers

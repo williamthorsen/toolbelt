@@ -16,6 +16,11 @@ export {
 export { condenseWhitespace } from './portable/condenseWhitespace.ts';
 export { type DirectoryAscent, listDirectoryAscents } from './portable/listDirectoryAscents.ts';
 export { type FunctionBody, listFunctionBodies } from './portable/listFunctionBodies.ts';
+export {
+  listTemplateLiterals,
+  type TemplateInterpolation,
+  type TemplateLiteral,
+} from './portable/listTemplateLiterals.ts';
 export { type AnchoredWindow, readAnchoredWindow, type WindowLengths } from './portable/readAnchoredWindow.ts';
 export {
   BRACES,
