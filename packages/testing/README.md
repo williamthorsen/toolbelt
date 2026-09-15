@@ -417,15 +417,26 @@ The package ships a ReadyUp kit, so a project that installs it can ask how far i
 rdy run --packages
 ```
 
-The kit reads the project's tracked test files and reports every place a thrown value is captured by hand, naming the variable the capture fills and counting it against the calls that the project already makes into this package. It reports at `recommend`, never at `warn` or `error`: a capture written by hand works, and `captureError` expresses it better rather than correcting it.
+The kit reads the project's tracked test files and reports the two idioms for which this package publishes a replacement: a thrown value captured by hand, and the output of `process.stdout` or `process.stderr` captured through a spy. An error capture is named by the variable that it fills, and a stdio spy by its location. Both report at `recommend`, never at `warn` or `error`: A capture written by hand works, and `captureError` or `captureStdio` expresses it better rather than correcting it.
 
-A capture is claimed only where one import replaces the whole of it. The try block has to be a single call, and the catch block has to assign the caught value to a variable declared outside the try and do nothing else. A catch that logs, rethrows, or branches outlives the substitution, and a try block that keeps a result is doing something `captureError` does not preserve, so neither is reported. A `finally` clause disqualifies a site for the same reason: `captureError` throws where the call completes normally, so the clause would stop running on that path. A site whose test asserts the caught value `toBe` a literal, such as `{ code: 'ENOENT' }` or a `const` holding one, is not reported either: The call threw something other than an `Error`, on which `captureError` fails the test.
+Each check prints one fraction, and it measures the kit rather than the check: calls that the project already makes into this package, over those calls plus every site of either idiom that the kit found, less the sites silenced by a pragma for that check. A project holding three stdio spies and no error captures therefore reads `[0 of 3]` against the error-capture check too.
 
-| Check id                       | Reports                                                        | Severity    |
-| ------------------------------ | -------------------------------------------------------------- | ----------- |
-| `no-hand-rolled-error-capture` | a thrown value captured into a variable declared outside a try | `recommend` |
+| Check id                       | Reports                                                                    | Severity    |
+| ------------------------------ | -------------------------------------------------------------------------- | ----------- |
+| `no-hand-rolled-error-capture` | a thrown value captured into a variable declared outside a try             | `recommend` |
+| `no-hand-rolled-stdio-capture` | a `vi.spyOn` on the `write` method of `process.stdout` or `process.stderr` | `recommend` |
 
-Sources that are not test files are exempt, this being a testing utility: outside a test, the same shape is error handling rather than an unadopted capture. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well, so committed bundler output yields no advice that anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
+### What the kit reads
+
+An error capture is claimed only where one import replaces the whole of it. The try block has to be a single call, and the catch block has to assign the caught value to a variable declared outside the try and do nothing else. A catch that logs, rethrows, or branches outlives the substitution, and a try block that keeps a result is doing something `captureError` does not preserve, so neither is reported. A `finally` clause disqualifies a site for the same reason: `captureError` throws where the call completes normally, so the clause would stop running on that path. A site whose test asserts the caught value `toBe` a literal, such as `{ code: 'ENOENT' }` or a `const` holding one, is not reported either: The call threw something other than an `Error`, on which `captureError` fails the test.
+
+A stdio spy is reported whatever follows it: a mock that silences the stream, one that collects what the stream receives, a return value, or nothing at all. Each spy is its own site, so a file spying on both streams reports two, though one `captureStdio` replaces both. A read of a spy's recorded calls, such as `spy.mock.calls` or `expect(process.stderr.write).toHaveBeenCalledWith(…)`, is not a site: `captureStdio` retires it along with the spy.
+
+Not every spy near a stream is read. An assignment to `process.stdout.write` is not, because one that mocks the stream reads the same as one that restores it. A spy on another member, such as `isTTY`, is not, because `captureStdio` would capture that stream's output as well. A spy is read only where its receiver is written `process.stdout` or `process.stderr`, so a spy on a destructured `stdout` is not reported, and neither is `jest.spyOn`.
+
+Sources that are not test files are exempt. Outside a test, a try/catch of an error capture's shape is error handling rather than an unadopted capture. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well, so committed bundler output yields no advice that anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
+
+### Silencing a reviewed site
 
 A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
 
