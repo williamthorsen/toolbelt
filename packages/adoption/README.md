@@ -33,3 +33,8 @@ suppress that check alone. `AdoptionCheck` requires it, though readyup's own fie
 declaring none can be silenced only along with every other check on the line, and nothing reports the loss.
 Two checks sharing one id lose the same guarantee from the other direction, so `defineAdoptionKit` refuses a
 kit that gives one id twice.
+
+A check reports from the paths accepted by the kit's `pathFilter` unless it declares a `pathFilter` and a
+`noSourcesReason` of its own, as `toolbelt.strings`' `dedent` checks do to read tests that its other checks skip.
+The kit sweeps every path that any check reads and keeps a site only where the filter for its kind accepts it,
+so every check's fraction still holds the same sites. It refuses a kit that reads one kind through two filters.
