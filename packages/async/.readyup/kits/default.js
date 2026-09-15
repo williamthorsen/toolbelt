@@ -37,6 +37,11 @@ function defineAdoptionKit(spec) {
   assertCheckIdsAreUnique();
   const cache = {};
   const adoptedPackage = { exportNames: spec.exportNames, packageName: spec.packageName };
+  const kitScope = { noSourcesReason: spec.noSourcesReason, pathFilter: spec.pathFilter };
+  const pathFiltersByKind = mapPathFiltersByKind();
+  const sweptPathFilters = [
+    .../* @__PURE__ */ new Set([spec.pathFilter, ...spec.checks.map((check) => resolveScope(check).pathFilter)])
+  ];
   return defineRdyKit({
     description: spec.description,
     defaultSeverity: "warn",
@@ -47,7 +52,7 @@ function defineAdoptionKit(spec) {
           name: check.name,
           id: check.id,
           ...check.severity !== void 0 && { severity: check.severity },
-          skip: skipUnlessProjectHoldsSources,
+          skip: () => skipUnlessProjectHoldsSources(resolveScope(check)),
           check: () => reportKinds(check.kinds),
           fix: check.fix
         }))
@@ -66,16 +71,38 @@ function defineAdoptionKit(spec) {
       throw new Error(`${spec.packageName}'s kit gives one id to more than one check: ${ids}`);
     }
   }
+  function isSweptPath(path) {
+    return sweptPathFilters.some((pathFilter) => pathFilter(path));
+  }
   function loadSummary() {
     cache.summary ??= readProject();
     return cache.summary;
   }
+  function mapPathFiltersByKind() {
+    const pathFilters = /* @__PURE__ */ new Map();
+    const conflicted = /* @__PURE__ */ new Set();
+    for (const check of spec.checks) {
+      const { pathFilter } = resolveScope(check);
+      for (const kind of check.kinds) {
+        const assigned = pathFilters.get(kind);
+        if (assigned !== void 0 && assigned !== pathFilter) conflicted.add(kind);
+        pathFilters.set(kind, pathFilter);
+      }
+    }
+    if (conflicted.size > 0) {
+      const kinds = [...conflicted].toSorted().join(", ");
+      throw new Error(`${spec.packageName}'s kit reads one kind through more than one path filter: ${kinds}`);
+    }
+    return pathFilters;
+  }
   async function readProject() {
-    const sources = await readTrackedSources(spec.pathFilter);
+    const sources = await readTrackedSources(isSweptPath);
     if (sources === void 0) return void 0;
     return {
       adoptedCount: countPackageUsage(sources, adoptedPackage),
-      findings: sources.flatMap((source) => spec.detect(source.text).map((site) => ({ ...site, path: source.path }))),
+      findings: sources.flatMap(
+        (source) => spec.detect(source.text).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
+      ),
       sources
     };
   }
@@ -89,10 +116,13 @@ function defineAdoptionKit(spec) {
       shouldReport: (finding) => kinds.includes(finding.kind)
     });
   }
-  async function skipUnlessProjectHoldsSources() {
+  function resolveScope(check) {
+    return check.pathFilter === void 0 ? kitScope : { noSourcesReason: check.noSourcesReason, pathFilter: check.pathFilter };
+  }
+  async function skipUnlessProjectHoldsSources(scope) {
     const summary = await loadSummary();
     if (summary === void 0) return NOT_A_REPO;
-    return summary.sources.length === 0 ? spec.noSourcesReason : false;
+    return summary.sources.some((source) => scope.pathFilter(source.path)) ? false : scope.noSourcesReason;
   }
 }
 
