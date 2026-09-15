@@ -58,7 +58,7 @@ export default defineAdoptionKit({
       id: 'no-layout-breaking-template',
       kinds: ['layout-breaking-template'],
       severity: 'recommend',
-      fix: `Tag each template named above with dedent from ${PACKAGE_NAME}, start its text on the line after the opening backtick, and indent the text with the surrounding code, keeping each line's depth relative to the others. dedent throws where text follows the opening backtick on its own line or where the text holds an escaped line terminator, and accepts an interpolated value only where it is a string, number, bigint, or boolean. Reference: ${README_URL}`,
+      fix: `Tag each template named above with dedent from ${PACKAGE_NAME}, start its text on the line after the opening backtick, and indent the text with the surrounding code, keeping each line's depth relative to the others. Text that starts or ends with a line break takes a blank line after the opening backtick or before the closing one, since dedent drops the line break at each end. dedent throws where text follows the opening backtick on its own line or where the text holds an escaped line terminator, and accepts an interpolated value only where it is a string, number, bigint, or boolean. Reference: ${README_URL}`,
       noSourcesReason: 'the project holds no JavaScript or TypeScript sources outside its bootstrap wrappers',
       pathFilter: isAdoptableSourceOrTest,
     },
