@@ -38,6 +38,7 @@
     "sets": "scope:sets",
     "statistics": "scope:statistics",
     "strings": "scope:strings",
+    "terminal": "scope:terminal",
     "testing": "scope:testing",
     "tools": "scope:tools",
     "vitest": "scope:vitest",
