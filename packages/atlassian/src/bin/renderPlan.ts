@@ -1,5 +1,6 @@
 import type { ProjectConfiguration } from '../3-candidate/ProjectConfiguration.ts';
 import type { ReconciliationPlan } from '../3-candidate/ReconciliationPlan.ts';
+import { formatLabelledLine } from './labelled-lines.ts';
 
 /**
  * Renders the reconciliation plan as the run's unit of review, listing every write that it would make and reporting
@@ -13,35 +14,41 @@ export function renderPlan(
   options: PlanRenderOptions,
 ): string {
   const lines = [
-    `project  ${options.projectKey} (id ${configuration.project.id}), board ${configuration.board.id}`,
-    `workflow ${configuration.workflow.name ?? configuration.workflow.id}`,
+    formatLabelledLine(
+      'project',
+      `${options.projectKey} (id ${configuration.project.id}), board ${configuration.board.id}`,
+    ),
+    formatLabelledLine('workflow', configuration.workflow.name ?? configuration.workflow.id),
   ];
 
   for (const update of plan.statusUpdates) {
-    lines.push(`update   status ${update.id}: ${describeStatusUpdate(update)}`);
+    lines.push(formatLabelledLine('update', `status ${update.id}: ${describeStatusUpdate(update)}`));
   }
   for (const creation of plan.creations) {
     lines.push(
-      `create   status '${creation.name}' (${creation.category})`,
-      `create   transition GLOBAL → '${creation.name}'`,
+      formatLabelledLine('create', `status '${creation.name}' (${creation.category})`),
+      formatLabelledLine('create', `transition GLOBAL → '${creation.name}'`),
     );
   }
   for (const rename of plan.transitionRenames) {
-    lines.push(`rename   transition ${rename.id}: '${rename.from}' → '${rename.to}'`);
+    lines.push(formatLabelledLine('rename', `transition ${rename.id}: '${rename.from}' → '${rename.to}'`));
   }
   for (const toggle of plan.featureToggles) {
-    lines.push(`toggle   ${toggle.feature}: ${toggle.from ?? 'absent'} → ${toggle.to}`);
+    lines.push(formatLabelledLine('toggle', `${toggle.feature}: ${toggle.from ?? 'absent'} → ${toggle.to}`));
   }
   for (const toggle of plan.lockedFeatures) {
     lines.push(
-      `locked   ${toggle.feature} is ${toggle.from ?? 'absent'} and Jira has locked it; ${toggle.to} cannot be set here`,
+      formatLabelledLine(
+        'locked',
+        `${toggle.feature} is ${toggle.from ?? 'absent'} and Jira has locked it; ${toggle.to} cannot be set here`,
+      ),
     );
   }
   for (const status of plan.unmanaged) {
-    lines.push(`unmanaged status '${status.name}' is not in the spec and will not be touched`);
+    lines.push(formatLabelledLine('unmanaged', `status '${status.name}' is not in the spec and will not be touched`));
   }
   if (options.seedBacklog !== undefined) {
-    lines.push(`seed     move every '${options.seedBacklog}' work item off the board`);
+    lines.push(formatLabelledLine('seed', `move every '${options.seedBacklog}' work item off the board`));
   }
 
   // The seed is a write that the run will make, so a plan with one is never reported as holding nothing to do.

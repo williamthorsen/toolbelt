@@ -1,5 +1,6 @@
 import type { BoardColumnReport } from '../3-candidate/BoardColumnReport.ts';
 import type { VerificationReport } from '../3-candidate/VerificationReport.ts';
+import { formatContinuationLine, formatLabelledLine } from './labelled-lines.ts';
 
 /**
  * Renders what the server holds after a run: each spec entry against the live configuration, then the board's
@@ -23,20 +24,20 @@ export function renderVerification(report: VerificationReport, columns: BoardCol
     lines.push(`  ${marker} ${feature.feature} = ${feature.state ?? 'absent'}${suffix}`);
   }
 
-  lines.push(`columns  ${columns.columns.join(' | ')}`);
+  lines.push(formatLabelledLine('columns', columns.columns.join(' | ')));
 
   if (columns.uncovered.length > 0) {
     const names = columns.uncovered.map((name) => `'${name}'`).join(', ');
     lines.push(
-      `columns  ${names} map to no column, so their work items appear only in search;`,
-      '         add a column for each in the board settings, which the public API cannot do',
+      formatLabelledLine('columns', `${names} map to no column, so their work items appear only in search;`),
+      formatContinuationLine('add a column for each in the board settings, which the public API cannot do'),
     );
   }
 
   if (columns.order !== undefined) {
     lines.push(
-      `columns  order differs from the spec (${columns.order.expected.join(' | ')});`,
-      '         reorder by dragging in the board settings',
+      formatLabelledLine('columns', `order differs from the spec (${columns.order.expected.join(' | ')});`),
+      formatContinuationLine('reorder by dragging in the board settings'),
     );
   }
 

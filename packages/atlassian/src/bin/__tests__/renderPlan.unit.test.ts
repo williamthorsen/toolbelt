@@ -11,8 +11,38 @@ describe(renderPlan, () => {
   it('leads with the project, board, and workflow against which the plan was built', () => {
     const rendered = renderPlan(buildPlan(), CONFIGURATION, { projectKey: PROJECT_KEY });
 
-    expect(rendered).toContain('project  THOR (id 10000), board 1');
-    expect(rendered).toContain('workflow THOR: Software Simplified Workflow');
+    expect(rendered).toContain('project   THOR (id 10000), board 1');
+    expect(rendered).toContain('workflow  THOR: Software Simplified Workflow');
+  });
+
+  it('starts the text of every line in one column, the unmanaged line included', () => {
+    const rendered = renderPlan(
+      buildPlan({
+        creations: [{ category: 'IN_PROGRESS', name: 'Waiting', statusReference: 'ref-waiting' }],
+        featureToggles: [{ feature: 'jsw.agility.backlog', from: 'DISABLED', to: 'ENABLED' }],
+        lockedFeatures: [{ feature: 'jsw.agility.goals', from: 'DISABLED', to: 'ENABLED' }],
+        statusUpdates: [
+          {
+            category: 'TODO',
+            description: '',
+            from: 'To Do',
+            fromCategory: 'TODO',
+            id: 'id-1',
+            statusReference: 'ref-1',
+            to: 'Todo',
+          },
+        ],
+        transitionRenames: [{ from: 'To Do', id: '10', to: 'Todo' }],
+        unmanaged: [buildStatus({ name: 'Legacy' })],
+      }),
+      CONFIGURATION,
+      { projectKey: PROJECT_KEY, seedBacklog: 'To Do' },
+    );
+    const lines = rendered.split('\n');
+    const columns = new Set(lines.map((line) => /^\S+ +/.exec(line)?.[0].length));
+
+    expect(lines).toHaveLength(10);
+    expect([...columns]).toStrictEqual([expect.any(Number)]);
   });
 
   it('reports a project that already matches the spec', () => {
@@ -40,7 +70,7 @@ describe(renderPlan, () => {
       { projectKey: PROJECT_KEY },
     );
 
-    expect(renamed).toContain("update   status id-1: 'To Do' → 'Todo'");
+    expect(renamed).toContain("update    status id-1: 'To Do' → 'Todo'");
     expect(renamed).not.toContain('TODO → TODO');
   });
 
@@ -63,7 +93,7 @@ describe(renderPlan, () => {
       { projectKey: PROJECT_KEY },
     );
 
-    expect(rendered).toContain('update   status id-3: TODO → DONE');
+    expect(rendered).toContain('update    status id-3: TODO → DONE');
   });
 
   it('reports the transition that a created status is reached through', () => {
@@ -73,8 +103,8 @@ describe(renderPlan, () => {
       { projectKey: PROJECT_KEY },
     );
 
-    expect(rendered).toContain("create   status 'Waiting' (IN_PROGRESS)");
-    expect(rendered).toContain("create   transition GLOBAL → 'Waiting'");
+    expect(rendered).toContain("create    status 'Waiting' (IN_PROGRESS)");
+    expect(rendered).toContain("create    transition GLOBAL → 'Waiting'");
   });
 
   it('reports a renamed transition and a board-feature toggle', () => {
@@ -87,8 +117,8 @@ describe(renderPlan, () => {
       { projectKey: PROJECT_KEY },
     );
 
-    expect(rendered).toContain("rename   transition 10: 'To Do' → 'Todo'");
-    expect(rendered).toContain('toggle   jsw.agility.backlog: DISABLED → ENABLED');
+    expect(rendered).toContain("rename    transition 10: 'To Do' → 'Todo'");
+    expect(rendered).toContain('toggle    jsw.agility.backlog: DISABLED → ENABLED');
   });
 
   it('reports a feature not held by the board as absent', () => {
@@ -98,7 +128,7 @@ describe(renderPlan, () => {
       { projectKey: PROJECT_KEY },
     );
 
-    expect(rendered).toContain('toggle   jsw.agility.backlog: absent → ENABLED');
+    expect(rendered).toContain('toggle    jsw.agility.backlog: absent → ENABLED');
   });
 
   it('reports an unmanaged status without counting it as a change', () => {
@@ -118,7 +148,7 @@ describe(renderPlan, () => {
     );
 
     expect(rendered).toContain(
-      'locked   jsw.agility.goals is DISABLED and Jira has locked it; ENABLED cannot be set here',
+      'locked    jsw.agility.goals is DISABLED and Jira has locked it; ENABLED cannot be set here',
     );
   });
 
@@ -136,7 +166,7 @@ describe(renderPlan, () => {
   it('reports the backlog seed for which the run was asked', () => {
     const rendered = renderPlan(buildPlan(), CONFIGURATION, { projectKey: PROJECT_KEY, seedBacklog: 'To Do' });
 
-    expect(rendered).toContain("seed     move every 'To Do' work item off the board");
+    expect(rendered).toContain("seed      move every 'To Do' work item off the board");
   });
 
   it('does not report a matching project as having nothing to do where a seed was asked for', () => {

@@ -54,14 +54,14 @@ describe(renderVerification, () => {
   });
 
   it('lists the board columns', () => {
-    expect(renderVerification(buildReport(), buildColumns())).toContain('columns  To Do | In Progress | Done');
+    expect(renderVerification(buildReport(), buildColumns())).toContain('columns   To Do | In Progress | Done');
   });
 
   it('names a status mapped to no column and what that costs', () => {
     const rendered = renderVerification(buildReport(), buildColumns({ uncovered: ['Waiting'] }));
 
-    expect(rendered).toContain("columns  'Waiting' map to no column, so their work items appear only in search;");
-    expect(rendered).toContain('add a column for each in the board settings');
+    expect(rendered).toContain("columns   'Waiting' map to no column, so their work items appear only in search;");
+    expect(rendered).toContain('\n          add a column for each in the board settings');
   });
 
   it('reports a column order differing from the spec', () => {
@@ -70,7 +70,8 @@ describe(renderVerification, () => {
       buildColumns({ order: { actual: ['Done', 'To Do'], expected: ['To Do', 'Done'] } }),
     );
 
-    expect(rendered).toContain('columns  order differs from the spec (To Do | Done);');
+    expect(rendered).toContain('columns   order differs from the spec (To Do | Done);');
+    expect(rendered).toContain('\n          reorder by dragging in the board settings');
   });
 
   it('says nothing about column order where the board already holds the spec order', () => {
