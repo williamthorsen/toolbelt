@@ -18,4 +18,11 @@ describe(computeFakeMathRandom, () => {
   it.each(testCases)('given the same seed, always returns the same value (seed $seed)', ({ seed, expected }) => {
     expect(computeFakeMathRandom(seed)).toBe(expected);
   });
+
+  it('if the hash reaches its maximum, returns a value below 1', () => {
+    // This seed's masked hash is 0x7fff_ffff.
+    const seed = 1_000_000_856_026_238;
+
+    expect(computeFakeMathRandom(seed)).toBe(0x7fff_fffe / 0x7fff_ffff);
+  });
 });
