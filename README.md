@@ -1,3 +1,5 @@
+<!-- readme-type: monorepo-root -->
+
 # PNPM Node monorepo
 
 ## Getting started
@@ -73,7 +75,7 @@ nmr check
 
 ### Publishing
 
-Publishing is automated via npm [trusted publishing](https://docs.npmjs.com/trusted-publishers/) (OIDC); there is no local publish command, and the repo holds no `NPM_TOKEN`.
+Releases publish through npm [trusted publishing](https://docs.npmjs.com/trusted-publishers/) (OIDC), and the repo holds no `NPM_TOKEN`. The one publish run by hand is a new package's placeholder, described under the one-time setup below.
 
 Cut a release by running `release-kit` locally and pushing the tags that it creates:
 
@@ -95,7 +97,15 @@ Each pushed release tag (`{package}-v{version}`) triggers:
 
 Tags must be pushed from a developer machine, not by the dispatch `release.yaml` workflow: GitHub does not trigger workflows for tags pushed with the built-in `GITHUB_TOKEN`, so a bot-pushed tag would publish nothing.
 
-**One-time setup (per published package):** Register the package as a trusted publisher on npm, bound to `publish.yaml`. Requires npm ≥ 11.15.0 and account-level 2FA:
+**One-time setup (per published package):** Two steps, in order. Both require account-level 2FA, and the second requires npm ≥ 11.15.0.
+
+First, claim the name with a placeholder version. npm accepts `npm trust` only for a package that the registry already holds, so a package's first publish cannot come from CI. Publish a bare manifest from a scratch directory. Never publish from `packages/{domain}`: that manifest carries the version from which release-kit bumps, and its build would ship an empty `dist/`.
+
+```shell
+placeholder_dir=$(mktemp -d) && printf '{ "name": "%s", "version": "0.0.0", "description": "Placeholder awaiting first release" }\n' @williamthorsen/toolbelt.arrays > "$placeholder_dir/package.json" && npm publish "$placeholder_dir" --access public
+```
+
+Then register the package as a trusted publisher, bound to `publish.yaml`:
 
 ```shell
 npm trust github @williamthorsen/toolbelt.arrays --file publish.yaml --repo williamthorsen/toolbelt --allow-publish
