@@ -12,7 +12,7 @@ const IMPLEMENTATIONS = [
   { label: 'no implementation', tail: ';' },
 ];
 
-// Each source a use of a standard stream, or of a spy, that `captureStdio` does not replace.
+// Each source a use of a standard stream, or of a spy near one, that the detector reports as no site.
 const UNCLAIMED = [
   {
     label: 'a bare stream reference, asserting what stdio a spawned child inherits',
