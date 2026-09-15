@@ -10,7 +10,7 @@ import {
   readBalancedGroup,
 } from '@williamthorsen/toolbelt.adoption';
 
-export type TestingIdiomKind = 'hand-rolled-error-capture';
+export type ErrorCaptureKind = 'hand-rolled-error-capture';
 
 /** A catch block's assignment of its caught value, located in the text past the try block. */
 interface CatchCapture {
@@ -58,9 +58,9 @@ const TRY_ANCHOR = /\btry\s*\{/g;
  *
  * @internal
  */
-export function listCaptureSites(source: string): Array<AdoptionSite<TestingIdiomKind>> {
+export function listCaptureSites(source: string): Array<AdoptionSite<ErrorCaptureKind>> {
   const code = blankNonCode(source);
-  const sites: Array<AdoptionSite<TestingIdiomKind>> = [];
+  const sites: Array<AdoptionSite<ErrorCaptureKind>> = [];
 
   for (const match of code.matchAll(TRY_ANCHOR)) {
     const block = readBalancedGroup(code, match.index, BRACES);
