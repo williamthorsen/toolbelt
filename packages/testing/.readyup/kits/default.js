@@ -268,19 +268,37 @@ function readCatchCapture(tail) {
   return { end: block.end, target };
 }
 
+// src/readiness/listStdioSpies.ts
+var SPY = /\bvi\s*\.\s*spyOn\(\s*process\s*\.\s*std(?:err|out)\s*,\s*(['"])write\1\s*,?\s*\)/g;
+function listStdioSpies(source) {
+  const code = blankNonCode(source);
+  const sites = [];
+  for (const match of source.matchAll(SPY)) {
+    if (code[match.index] !== source[match.index]) continue;
+    sites.push({ kind: "hand-rolled-stdio-capture", line: getLineAtOffset(code, match.index) });
+  }
+  return sites;
+}
+
+// src/readiness/listSites.ts
+function listSites(source) {
+  return [...listCaptureSites(source), ...listStdioSpies(source)].toSorted((a, b) => a.line - b.line);
+}
+
 // .readyup/kits/default.ts
 var PACKAGE_NAME = "@williamthorsen/toolbelt.testing";
 var README_URL = "https://github.com/williamthorsen/toolbelt/tree/main/packages/testing#readme";
 var default_default = defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
-  detect: listCaptureSites,
+  detect: listSites,
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: "the project holds no test files",
   packageName: PACKAGE_NAME,
-  // The selection follows `toolbelt.vitest` rather than the five source-oriented kits: this idiom lives only
-  // in a test, so a sweep exempting tests would report nothing and say so as a pass. No hand-off rule is
-  // needed against the two kits whose sweeps could meet this one, since neither claims a try block:
-  // `toolbelt.errors` exempts tests altogether, and `toolbelt.vitest` reads mocks and disposal hooks.
+  // The selection follows `toolbelt.vitest` rather than the source-oriented kits: these idioms live only in a
+  // test, so a sweep exempting tests would report nothing and say so as a pass. No hand-off rule is needed
+  // against the two kits whose sweeps could meet this one: `toolbelt.errors` exempts tests altogether, and
+  // `toolbelt.vitest` claims no try block and anchors `vi.spyOn` on `console` and `process.exit`, never on a
+  // stream.
   pathFilter: isTestFile,
   checks: [
     {
@@ -289,6 +307,13 @@ var default_default = defineAdoptionKit({
       kinds: ["hand-rolled-error-capture"],
       severity: "recommend",
       fix: `Replace each capture named above with captureError from ${PACKAGE_NAME}/candidate, which runs the call, hands back what it threw or rejected with, and narrows that to a class the caller names. It fails the test where the call completes normally, so a regression that stops the failure reports itself instead of leaving a later assertion to report an absent value in its place, and the narrowing reaches the error's own fields without a second assertion to get there. Reference: ${README_URL}`
+    },
+    {
+      name: "No test captures stdout or stderr by hand",
+      id: "no-hand-rolled-stdio-capture",
+      kinds: ["hand-rolled-stdio-capture"],
+      severity: "recommend",
+      fix: `Replace each spy named above with captureStdio from ${PACKAGE_NAME}/candidate, binding it with using so that both streams are restored when the scope exits. Read the output from its stdout and stderr in place of each spy's mock.calls, or from stdoutChunks and stderrChunks where an assertion is about how the output was split into writes. Reference: ${README_URL}`
     }
   ]
 });

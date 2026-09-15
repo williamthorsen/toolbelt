@@ -10,6 +10,8 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { pointCwdAt } from '../../3-candidate/pointCwdAt.ts';
 
+const ERROR_CAPTURE_CHECK = 'no-hand-rolled-error-capture';
+const STDIO_CAPTURE_CHECK = 'no-hand-rolled-stdio-capture';
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const CAPTURE = [
   'let caught: unknown;',
@@ -21,6 +23,7 @@ const CAPTURE = [
   '}',
   '',
 ].join('\n');
+const STDIO_SPY = "vi.spyOn(process.stdout, 'write').mockImplementation(() => true);\n";
 // A catch that reports rather than assigns, one that rethrows, and a try block running more than one call.
 const UNCLAIMED = [
   'try {',
@@ -48,15 +51,30 @@ const ADOPTER = [
   'const caught = await captureError(() => parseConfig(text));',
   '',
 ].join('\n');
+const STDIO_ADOPTER = [
+  "import { captureStdio } from '@williamthorsen/toolbelt.testing/candidate';",
+  'using stdio = captureStdio();',
+  '',
+].join('\n');
 
 describe('The testing adoption kit', () => {
-  it('reports the idiom, naming where it is', async () => {
+  it('reports an error capture, naming where it is', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/config.unit.test.ts': CAPTURE });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({
+    await expect(runCheck((await loadChecks()).get(ERROR_CAPTURE_CHECK))).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 3, path: 'src/config.unit.test.ts', reported: true, symbol: 'caught' }],
+    });
+  });
+
+  it('reports a stdio spy, naming where it is', async () => {
+    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/output.unit.test.ts': STDIO_SPY });
+    using _cwd = pointCwdAt(tree.dir);
+
+    await expect(runCheck((await loadChecks()).get(STDIO_CAPTURE_CHECK))).resolves.toStrictEqual({
+      adoptedCount: 0,
+      findings: [{ line: 1, path: 'src/output.unit.test.ts', reported: true }],
     });
   });
 
@@ -71,42 +89,67 @@ describe('The testing adoption kit', () => {
     });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
+    await expect(runCheck((await loadChecks()).get(ERROR_CAPTURE_CHECK))).resolves.toStrictEqual({
+      adoptedCount: 1,
+      findings: [],
+    });
   });
 
-  it('spans every site in the denominator', async () => {
+  it('spans every site of both idioms in one denominator, naming each under its own check', async () => {
     using tree = createTrackedRepo({
       'package.json': MANIFEST,
       'src/first.unit.test.ts': CAPTURE,
+      'src/output.unit.test.ts': STDIO_SPY,
       'src/second.unit.test.ts': CAPTURE,
     });
     using _cwd = pointCwdAt(tree.dir);
 
-    expect(summarizeFraction(await runCheck((await loadChecks())[0]))).toStrictEqual({
-      adoptedCount: 0,
-      findingCount: 2,
-    });
+    const checks = await loadChecks();
+    const errorCaptureOutcome = await runCheck(checks.get(ERROR_CAPTURE_CHECK));
+    const stdioCaptureOutcome = await runCheck(checks.get(STDIO_CAPTURE_CHECK));
+
+    expect(summarizeFraction(errorCaptureOutcome)).toStrictEqual({ adoptedCount: 0, findingCount: 3 });
+    expect(summarizeFraction(stdioCaptureOutcome)).toStrictEqual({ adoptedCount: 0, findingCount: 3 });
+    expect(listReportedFindings(stdioCaptureOutcome)).toStrictEqual([
+      { line: 1, path: 'src/output.unit.test.ts', reported: true },
+    ]);
   });
 
   it('counts a call into the package as adoption', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/config.unit.test.ts': ADOPTER });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
+    await expect(runCheck((await loadChecks()).get(ERROR_CAPTURE_CHECK))).resolves.toStrictEqual({
+      adoptedCount: 1,
+      findings: [],
+    });
+  });
+
+  it('counts a call to captureStdio as adoption', async () => {
+    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/output.unit.test.ts': STDIO_ADOPTER });
+    using _cwd = pointCwdAt(tree.dir);
+
+    await expect(runCheck((await loadChecks()).get(STDIO_CAPTURE_CHECK))).resolves.toStrictEqual({
+      adoptedCount: 1,
+      findings: [],
+    });
   });
 
   it('neither reports nor counts a try/catch that captures nothing', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/probe.unit.test.ts': UNCLAIMED });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 0, findings: [] });
+    await expect(runCheck((await loadChecks()).get(ERROR_CAPTURE_CHECK))).resolves.toStrictEqual({
+      adoptedCount: 0,
+      findings: [],
+    });
   });
 
   it('reports each capture a single test file holds', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/config.unit.test.ts': CAPTURE + CAPTURE });
     using _cwd = pointCwdAt(tree.dir);
 
-    expect(listReportedFindings(await runCheck((await loadChecks())[0]))).toStrictEqual([
+    expect(listReportedFindings(await runCheck((await loadChecks()).get(ERROR_CAPTURE_CHECK)))).toStrictEqual([
       { line: 3, path: 'src/config.unit.test.ts', reported: true, symbol: 'caught' },
       { line: 10, path: 'src/config.unit.test.ts', reported: true, symbol: 'caught' },
     ]);
@@ -119,7 +162,7 @@ describe('The testing adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': PUBLISHER_MANIFEST, 'src/config.unit.test.ts': CAPTURE });
     using _cwd = pointCwdAt(tree.dir);
 
-    expect(listReportedFindings(await runCheck((await loadChecks())[0]))).toStrictEqual([
+    expect(listReportedFindings(await runCheck((await loadChecks()).get(ERROR_CAPTURE_CHECK)))).toStrictEqual([
       { line: 3, path: 'src/config.unit.test.ts', reported: true, symbol: 'caught' },
     ]);
   });
@@ -128,25 +171,27 @@ describe('The testing adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/config.ts': CAPTURE });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runSkip((await loadChecks())[0])).resolves.toBe('the project holds no test files');
+    await expect(runSkip((await loadChecks()).get(ERROR_CAPTURE_CHECK))).resolves.toBe(
+      'the project holds no test files',
+    );
   });
 });
 
 // region | Helpers
 
 /**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist holds in declaration order.
+ * Loads a fresh kit and maps each of its adoption checks by id.
  *
  * A kit holds its project sweep on its own closure, so one import would give every test here the first
  * fixture repo's findings. Resetting the registry leaves each test with a kit that has swept nothing yet.
  */
-async function loadChecks(): Promise<RdyCheck[]> {
+async function loadChecks(): Promise<Map<string, RdyCheck>> {
   vi.resetModules();
   const kit = (await import('../../../.readyup/kits/default.ts')).default;
 
   const [checklist] = kit.checklists;
-  if (checklist === undefined || !isFlatChecklist(checklist)) return [];
-  return checklist.checks;
+  if (checklist === undefined || !isFlatChecklist(checklist)) return new Map();
+  return new Map(checklist.checks.map((check) => [check.id ?? check.name, check]));
 }
 
 // endregion | Helpers

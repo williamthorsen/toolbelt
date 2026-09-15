@@ -64,7 +64,7 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "120d1980",
+          "hash": "91c0d8c7",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -74,17 +74,27 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "6e10c3a7",
+          "hash": "8c349401",
           "kind": "module",
           "path": "../src/readiness/listCaptureSites.ts"
+        },
+        {
+          "hash": "667fd731",
+          "kind": "module",
+          "path": "../src/readiness/listSites.ts"
+        },
+        {
+          "hash": "ef7f4495",
+          "kind": "module",
+          "path": "../src/readiness/listStdioSpies.ts"
         }
       ],
       "name": "default",
       "path": "kits/default.js",
       "readyupVersion": "0.36.0",
       "source": "kits/default.ts",
-      "sourceHash": "120d1980",
-      "targetHash": "37f27d0a"
+      "sourceHash": "91c0d8c7",
+      "targetHash": "ad89e486"
     }
   ]
 }
