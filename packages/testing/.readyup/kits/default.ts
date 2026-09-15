@@ -44,7 +44,7 @@ export default defineAdoptionKit({
       id: 'no-hand-rolled-stdio-capture',
       kinds: ['hand-rolled-stdio-capture'],
       severity: 'recommend',
-      fix: `Replace each spy named above with captureStdio from ${PACKAGE_NAME}/candidate, binding it with using so that both streams are restored when the scope exits. Read the output from its stdout and stderr in place of each spy's mock.calls, or from stdoutChunks and stderrChunks where an assertion is about how the output was split into writes. Reference: ${README_URL}`,
+      fix: `Replace each spy named above with captureStdio from ${PACKAGE_NAME}/candidate, binding it with using so that both streams are restored when the scope exits. Read the output from its stdout and stderr in place of each spy's mock.calls, or from stdoutChunks and stderrChunks when an assertion is about how the output was split into writes. Reference: ${README_URL}`,
     },
   ],
 });
