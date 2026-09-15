@@ -48,7 +48,7 @@ Four files record a package, and none is generated from another except where not
 - `.meta/label-map.json`: Add `"{domain}": "scope:{domain}"` under `scopes`, by hand.
 - `AGENTS.md`: Add the domain to the list on the `packages/{domain}/` bullet.
 
-Then run `pnpm install`. pnpm 12 records an importer in `pnpm-lock.yaml` only for a workspace declaring dependencies, so a scaffold that declares none leaves the lockfile unchanged and reaches it with its first dependency.
+Then run `pnpm install`. pnpm adds no importer to an existing `pnpm-lock.yaml` for a workspace declaring no dependencies, so a scaffold leaves the lockfile unchanged and reaches it with its first dependency. Expect no lockfile change in the scaffolding diff.
 
 `__tests__/package-registration.app.unit.test.ts` fails on a missing entry in any of the four, and `__tests__/published-package-shape.app.unit.test.ts` fails on a manifest, README, or changelog that still has the template's shape.
 
