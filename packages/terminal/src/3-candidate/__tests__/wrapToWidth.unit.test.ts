@@ -55,6 +55,16 @@ describe(wrapToWidth, () => {
     it('wraps nothing at an infinite width, while still applying the indent', () => {
       expect(wrapToWidth('one two three', { indent: 2, width: Infinity })).toBe('  one two three');
     });
+
+    // The indent is left whole rather than clamped, and the line overflows by the columns that it reserves.
+    it.each([10, 20])('leaves one column for content beside an indent of %i at a width of 10', (indent) => {
+      const wrapped = wrapToWidth('one two', { indent, width: 10 });
+
+      expect(wrapped).toBe(`${' '.repeat(indent)}one\n${' '.repeat(indent)}two`);
+      for (const line of wrapped.split('\n')) {
+        expect(measureWidth(line)).toBe(indent + 3);
+      }
+    });
   });
 
   describe('text that measures wider than its length', () => {

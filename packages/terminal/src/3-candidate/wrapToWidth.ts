@@ -11,8 +11,11 @@ const WHITESPACE_RUN = /\s+/gu;
  * spaces while narrowing it just the same, which is the shape a table needs: the row prefix fills those cells,
  * and the continuations line up beneath it.
  *
- * Wrapping is soft. A word wider than the content width stays whole on its own line and overflows, which is the
- * one case in which a line measures more than `width`.
+ * Wrapping is soft. A word wider than the content width stays whole on its own line and overflows, which is one
+ * of the two cases in which a line measures more than `width`. The other is an indent at or above `width`, which
+ * reserves every column that the line has: content floors at one column, the indent still renders in full, and
+ * the line measures `indent` plus whatever it holds. The indent is left whole rather than clamped, because a
+ * caller printing its own prefix into the reserved cells needs the count that it asked for.
  *
  * Whitespace collapses unconditionally, line breaks included, so text whose line structure carries meaning is
  * wrapped one paragraph at a time.

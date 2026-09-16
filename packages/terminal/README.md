@@ -184,13 +184,14 @@ Node measures no width of its own. `util.stripVTControlCharacters` removes the e
 
 Such a width is answered rather than thrown, and the two functions answer differently.
 
-| Width                    | `wrapToWidth`                      | `truncateToWidth`  |
-| ------------------------ | ---------------------------------- | ------------------ |
-| zero, negative, or `NaN` | one column for content             | `''`               |
-| `Infinity`               | one line, the indent still applied | the text unchanged |
-| fractional               | the whole columns below it         | the same           |
+| Width                    | `wrapToWidth`                            | `truncateToWidth`  |
+| ------------------------ | ---------------------------------------- | ------------------ |
+| zero, negative, or `NaN` | one column for content                   | `''`               |
+| `Infinity`               | one line, the indent still applied       | the text unchanged |
+| fractional               | the whole columns below it               | the same           |
+| an indent at or above it | one column for content, the indent whole | takes no indent    |
 
-Truncation exists to fit, and nothing fits in no columns. Wrapping reflows text instead of dropping it, and it already overflows for a word too wide to break, so a floor of one column costs it nothing.
+Truncation exists to fit, and nothing fits in no columns. Wrapping reflows text instead of dropping it, and it already overflows for a word too wide to break, so a floor of one column costs it nothing. An indent that reserves every column that the line has overflows by the columns that it reserves: the indent is left whole rather than clamped, because a caller printing its own prefix into those cells needs the count that it asked for.
 
 ## `measureWidth`
 
@@ -233,7 +234,7 @@ console.log(prefix + first);
 for (const line of rest) console.log(line);
 ```
 
-Wrapping is soft. A word wider than the content width stays whole on its own line and overflows, which is the one case in which a line measures more than `width`. Whitespace collapses unconditionally, line breaks included, so text whose line structure carries meaning is wrapped one paragraph at a time.
+Wrapping is soft. A word wider than the content width stays whole on its own line and overflows, which is one of the two cases in which a line measures more than `width`; the other is the indent in the table above. Whitespace collapses unconditionally, line breaks included, so text whose line structure carries meaning is wrapped one paragraph at a time.
 
 ## `truncateToWidth`
 
