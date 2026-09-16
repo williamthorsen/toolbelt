@@ -15,8 +15,8 @@ describe('STATUS_GLYPHS', () => {
     expect(STATUS_GLYPHS.plain[name].text).toMatch(/^[A-Z]+$/);
   });
 
-  // The widths that a caller derives a gutter from, locked so that a longer plain word cannot widen the column
-  // without the change being seen.
+  // The widths from which a caller derives a gutter, locked so that adding a longer plain word widens the
+  // column visibly rather than silently.
   it('measures 5 cells for the plain column and 2 for the rich one', () => {
     expect(measureGlyphColumn(STATUS_GLYPHS.plain)).toBe(5);
     expect(measureGlyphColumn(STATUS_GLYPHS.rich)).toBe(2);
