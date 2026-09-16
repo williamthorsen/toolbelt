@@ -5,6 +5,7 @@ export {
   OUTPUT_STYLES,
   type OutputStyle,
 } from './detectOutputStyle.ts';
+export { measureWidth } from './measureWidth.ts';
 export {
   describeInvalidOutputStyle,
   type InvalidOutputStyle,
@@ -15,3 +16,5 @@ export {
   type ResolveOutputStyleOptions,
 } from './resolveOutputStyle.ts';
 export { STATUS_GLYPHS, type StatusGlyphName } from './statusGlyphs.ts';
+export { truncateToWidth, type TruncateToWidthOptions } from './truncateToWidth.ts';
+export { wrapToWidth, type WrapToWidthOptions } from './wrapToWidth.ts';

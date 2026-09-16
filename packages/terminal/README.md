@@ -12,7 +12,7 @@ Utilities for rendering command-line output to terminals, pipes, and CI logs.
 pnpm add @williamthorsen/toolbelt.terminal
 ```
 
-Requires Node.js 24 or later.
+Requires Node.js 24 or later. The width functions wrap `wrap-ansi`, `cli-truncate`, `slice-ansi`, and `string-width`, which come to nine packages in all; npm scopes dependencies to the package rather than to the subpath, so a consumer installs them whichever subpath it imports.
 
 ## Output style
 
@@ -125,7 +125,7 @@ Each rule is drawn where the width stops being a guess. Every code point that th
 
 ⚠️, ℹ️, and ⏭️ are each a code point plus U+FE0F, so each is refused; `STATUS_GLYPHS` carries 🟠 for `warning` in place of ⚠️. On the plain side `'→'` is refused as `East_Asian_Width=Ambiguous`, which measures one cell or two by locale, and `'✓'` is refused although it measures one everywhere, because a plain variant exists to survive a CI log, a `grep`, a screen reader, and a terminal with no emoji font, and `'✓'` survives none of the last. An empty plain variant is legal at width 0, which lets a name hold its column with no plain word.
 
-The alternatives cover less. `figures` has had no release since 2024-03 and falls back to legacy Windows console glyphs rather than ASCII, and `log-symbols` offers four symbols fixed at import. Neither pairs a rich glyph with a plain one, and neither reports a width, so a caller measures with `string-width` or guesses.
+The alternatives cover less. `figures` has had no release since 2024-03 and falls back to legacy Windows console glyphs rather than ASCII, and `log-symbols` offers four symbols fixed at import. Neither pairs a rich glyph with a plain one, and neither reports a width, so a caller measures with `measureWidth` or guesses.
 
 ## `defineGlyphSet`
 
@@ -166,3 +166,92 @@ Reports the widest glyph in one style's record, which is the column width that a
 | `warning` | 🟠   | `WARN`  |
 
 The plain column measures 5 cells and the rich column measures 2. The outcomes that a reader acts on are told apart by shape rather than by hue, so ✅, ❌, ⏩, and 🚫 stay distinct for a reader with red-green colour blindness; the two remaining circles carry `info` and `warning`, whose blue and orange separate on the axis that such a reader keeps.
+
+## Width
+
+A CLI laying out a line has to know how wide its text renders, which is not how long the string is: `✅` is one UTF-16 unit and two cells, `👨‍👩‍👧‍👦` is eleven units and two cells, and an ANSI escape is several units and none. Wrapping or cutting by length overflows the terminal on one input and splits a character in half on the next.
+
+```ts
+import { measureWidth, truncateToWidth, wrapToWidth } from '@williamthorsen/toolbelt.terminal/candidate';
+
+const width = process.stdout.columns ?? 80;
+
+console.log(truncateToWidth(commitSubject, { width: 72 }));
+console.log(wrapToWidth(description, { indent: 4, width }));
+```
+
+Node measures no width of its own. `util.stripVTControlCharacters` removes the escapes, which leaves a length rather than a count of cells, and `String.prototype.length` counts UTF-16 units throughout. `wrap-ansi` and `cli-truncate` do measure, and what the two wrappers here add is what those libraries leave to a caller: collapsing whitespace and indenting for one, a single ellipsis convention for the other, and for both a guard against a width that no terminal reports but that arithmetic produces.
+
+Such a width is answered rather than thrown, and the two functions answer differently.
+
+| Width                    | `wrapToWidth`                      | `truncateToWidth`  |
+| ------------------------ | ---------------------------------- | ------------------ |
+| zero, negative, or `NaN` | one column for content             | `''`               |
+| `Infinity`               | one line, the indent still applied | the text unchanged |
+| fractional               | the whole columns below it         | the same           |
+
+Truncation exists to fit, and nothing fits in no columns. Wrapping reflows text instead of dropping it, and it already overflows for a word too wide to break, so a floor of one column costs it nothing.
+
+## `measureWidth`
+
+```ts
+measureWidth(text: string): number;
+```
+
+Reports the terminal cells that text occupies.
+
+```ts
+measureWidth('漢字'); // 4
+measureWidth('👨‍👩‍👧‍👦'); // 2
+measureWidth('\u{1B}[31mred\u{1B}[39m'); // 3
+```
+
+An ambiguous-width character such as `→` counts as one cell. That is a reading rather than a fact, since a CJK-locale terminal draws it as two, and it is the same disagreement for which `defineGlyphSet` refuses `→` in a plain glyph.
+
+## `wrapToWidth`
+
+```ts
+wrapToWidth(text: string, options: { hanging?: boolean; indent?: number; width: number }): string;
+```
+
+Collapses whitespace and wraps greedily to a width, returning the lines joined by `\n`.
+
+`indent` reserves its columns inside `width` rather than adding to them, so `width` is a line's full rendered width and a caller passes the terminal's own.
+
+```ts
+wrapToWidth('one two three four five', { indent: 4, width: 14 });
+// '    one two\n    three four\n    five'
+```
+
+`hanging` leaves the first line's reserved columns bare while narrowing it just the same, which is the shape a table needs: the row prefix fills those cells, and the continuations line up beneath it.
+
+```ts
+const indent = measureWidth(prefix);
+const [first = '', ...rest] = wrapToWidth(description, { hanging: true, indent, width }).split('\n');
+
+console.log(prefix + first);
+for (const line of rest) console.log(line);
+```
+
+Wrapping is soft. A word wider than the content width stays whole on its own line and overflows, which is the one case in which a line measures more than `width`. Whitespace collapses unconditionally, line breaks included, so text whose line structure carries meaning is wrapped one paragraph at a time.
+
+## `truncateToWidth`
+
+```ts
+truncateToWidth(text: string, options: { ellipsis?: string; width: number }): string;
+```
+
+Truncates text at the end to a width, counting the ellipsis inside that width rather than beyond it.
+
+```ts
+truncateToWidth('abcdefgh', { width: 5 }); // 'abcd…'
+truncateToWidth('abcdefgh', { ellipsis: '...', width: 5 }); // 'ab...'
+```
+
+The ellipsis defaults to `…`, one cell wide. An ellipsis too wide for the width is dropped and the width is filled with text instead, which is the one input on which `cli-truncate` renders wider than it was asked.
+
+```ts
+truncateToWidth('abcdefgh', { ellipsis: '...', width: 2 }); // 'ab'
+```
+
+The text is expected to hold no line break, which occupies no columns and would leave the result laid out across lines that the width says nothing about.

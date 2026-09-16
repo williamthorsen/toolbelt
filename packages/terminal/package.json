@@ -45,6 +45,12 @@
   "scripts": {
     "prepublishOnly": "nmr build"
   },
+  "dependencies": {
+    "cli-truncate": "6.1.1",
+    "slice-ansi": "9.0.0",
+    "string-width": "8.2.2",
+    "wrap-ansi": "10.0.1"
+  },
   "engines": {
     "node": ">=24.0.0"
   },
