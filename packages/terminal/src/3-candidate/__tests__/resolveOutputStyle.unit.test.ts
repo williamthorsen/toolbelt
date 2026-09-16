@@ -42,7 +42,7 @@ describe(resolveOutputStyle, () => {
     });
 
     it('takes the next argument even where that argument is itself a flag', () => {
-      expect(resolve([FLAG, '--verbose'], BARE_ENV, TTY).invalid).toEqual({ source: FLAG, value: '--verbose' });
+      expect(resolve([FLAG, '--verbose'], BARE_ENV, TTY).invalid).toStrictEqual({ source: FLAG, value: '--verbose' });
     });
 
     it('reads an empty assigned value as absent', () => {
@@ -80,21 +80,21 @@ describe(resolveOutputStyle, () => {
 
   describe('a value that names no setting', () => {
     it('is reported rather than thrown, and the next source decides', () => {
-      expect(resolve([FLAG, 'fancy'], { [ENV_VAR]: 'plain' }, TTY)).toEqual({
+      expect(resolve([FLAG, 'fancy'], { [ENV_VAR]: 'plain' }, TTY)).toStrictEqual({
         invalid: { source: FLAG, value: 'fancy' },
         style: 'plain',
       });
     });
 
     it('is reported from the environment variable, leaving detection to decide', () => {
-      expect(resolve([], { [ENV_VAR]: 'fancy' }, TTY)).toEqual({
+      expect(resolve([], { [ENV_VAR]: 'fancy' }, TTY)).toStrictEqual({
         invalid: { source: ENV_VAR, value: 'fancy' },
         style: 'rich',
       });
     });
 
     it('keeps the first of two, the flag being read ahead of the environment variable', () => {
-      expect(resolve([FLAG, 'fancy'], { [ENV_VAR]: 'gaudy' }, PIPE).invalid).toEqual({
+      expect(resolve([FLAG, 'fancy'], { [ENV_VAR]: 'gaudy' }, PIPE).invalid).toStrictEqual({
         source: FLAG,
         value: 'fancy',
       });
