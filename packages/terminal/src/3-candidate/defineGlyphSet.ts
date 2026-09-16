@@ -1,26 +1,34 @@
 import type { OutputStyle } from './detectOutputStyle.ts';
 
-// Printable ASCII, the range that survives a CI log, a `grep`, a screen reader, and a terminal with no emoji font.
+// Printable ASCII, every code point of which carries `East_Asian_Width=Narrow`, so its length is its cell count.
+// A narrow-looking character outside the range need not be: `→` and `▶` carry `East_Asian_Width=Ambiguous` and
+// so measure one cell or two by locale. The range is also the one that survives a CI log, a `grep`, a screen
+// reader, and a terminal with no emoji font.
 const PLAIN_PATTERN = /^[\u{20}-\u{7E}]*$/u;
 
-// One code point carrying `Emoji_Presentation=Yes`. The anchors carry the single-code-point rule on their own,
-// because `u` matches the class against a code point rather than against a UTF-16 unit.
-const RICH_PATTERN = /^\p{Emoji_Presentation}$/u;
+// One code point carrying `Emoji_Presentation=Yes`, excluding the regional indicators. The anchors carry the
+// single-code-point rule on their own, because the class matches a code point rather than a UTF-16 unit.
+//
+// Every code point that this class admits carries `East_Asian_Width=Wide`, which is what fixes `RICH_WIDTH`.
+// The 26 regional indicators are the only `Emoji_Presentation=Yes` code points that do not: each is
+// `East_Asian_Width=Neutral` alone and reaches two cells only in the pair that forms a flag.
+const RICH_PATTERN = /^[\p{Emoji_Presentation}--\p{Regional_Indicator}]$/v;
 
-// Cells occupied by every `Emoji_Presentation=Yes` code point.
+// Cells occupied by every code point that `RICH_PATTERN` admits.
 const RICH_WIDTH = 2;
 
 /**
  * Assembles a glyph set from each name's two renderings, deriving every width from the rules that it enforces.
  *
- * A rich variant is one code point with `Emoji_Presentation=Yes`, which occupies two cells without a U+FE0F
- * variation selector. A code point lacking that property renders one cell wide in some terminals and two in
- * others, so no declared width would be right everywhere; ⚠️, ℹ️, and ⏭️ are refused on that rule.
+ * A rich variant is one code point with `Emoji_Presentation=Yes` and outside the regional indicators, which
+ * makes it two cells wide without a U+FE0F variation selector. A code point lacking that property renders one
+ * cell wide in some terminals and two in others, so no declared width would be right everywhere; ⚠️, ℹ️, and
+ * ⏭️ are refused on that rule.
  *
- * A plain variant is printable ASCII, whose width is its length. `'✓'` and `'→'` satisfy a width-equals-length
- * test and are refused anyway, because a plain variant exists to survive a terminal with no emoji font and
- * neither one survives it. An empty plain variant is legal at width 0, which lets a name carry a rich
- * decoration and no plain counterpart while still holding its column.
+ * A plain variant is printable ASCII, whose width is its length. `'✓'` and `'→'` are refused although each
+ * looks one cell wide: `'→'` measures one cell or two by locale, and `'✓'` survives no terminal that lacks an
+ * emoji font, which is what a plain variant exists for. An empty plain variant is legal at width 0, which lets
+ * a name carry a rich decoration and no plain counterpart while still holding its column.
  *
  * Throws where `resolveOutputStyle` reports, because a set is built from the author's own literals at module
  * load: A violation is a programming error rather than input whose complaint has to be rendered somehow. One
@@ -92,7 +100,9 @@ function listViolations(name: string, variants: GlyphVariants): string[] {
 
   if (!RICH_PATTERN.test(variants.rich)) {
     const glyph = JSON.stringify(variants.rich);
-    violations.push(`${subject}: rich glyph ${glyph} is not a single Emoji_Presentation code point.`);
+    violations.push(
+      `${subject}: rich glyph ${glyph} is not a single Emoji_Presentation code point outside the regional indicators.`,
+    );
   }
   if (!PLAIN_PATTERN.test(variants.plain)) {
     const glyph = JSON.stringify(variants.plain);

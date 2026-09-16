@@ -40,6 +40,8 @@ describe(defineGlyphSet, () => {
     ['•', 'a code point without Emoji_Presentation'],
     ['P', 'an ASCII letter'],
     ['', 'nothing at all'],
+    // The one Emoji_Presentation range that is East_Asian_Width=Neutral alone, so width 2 would be wrong for it.
+    ['\u{1F1E6}', 'a lone regional indicator'],
   ])('rejects the rich glyph %s, which is %s', (rich) => {
     expect(() => defineGlyphSet({ passed: { plain: 'PASS', rich } })).toThrow(TypeError);
   });

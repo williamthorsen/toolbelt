@@ -110,22 +110,24 @@ const gutter = measureGlyphColumn(glyphs) + 1;
 
 const { text, width } = glyphs.passed;
 console.log(text + ' '.repeat(gutter - width) + 'every check passed');
-// rich:  🟢 every check passed
+// rich:  ✅ every check passed
 // plain: PASS  every check passed
 ```
 
 A set is indexed by the style that `resolveOutputStyle` returns, so selecting a variant needs no function.
 
-| Variant | Accepts                                      | Width      |
-| ------- | -------------------------------------------- | ---------- |
-| rich    | one code point with `Emoji_Presentation=Yes` | 2          |
-| plain   | printable ASCII, U+0020 through U+007E       | its length |
+| Variant | Accepts                                                                       | Width      |
+| ------- | ----------------------------------------------------------------------------- | ---------- |
+| rich    | one code point with `Emoji_Presentation=Yes`, outside the regional indicators | 2          |
+| plain   | printable ASCII, U+0020 through U+007E                                        | its length |
 
-⚠️, ℹ️, and ⏭️ are each a code point plus U+FE0F, so each is refused; `STATUS_GLYPHS` carries 🟠 for `warning` in place of ⚠️. The plain rule is stricter than one cell per character: `'✓'` and `'→'` are refused as well, because a plain variant exists to survive a CI log, a `grep`, a screen reader, and a terminal with no emoji font, and neither one survives the last of those. An empty plain variant is legal at width 0, which lets a name hold its column with no plain word.
+Each rule is drawn where the width stops being a guess. Every code point that the rich rule admits carries `East_Asian_Width=Wide`, and every printable ASCII code point carries `East_Asian_Width=Narrow`, so 2 and `.length` are the measured widths rather than assumed ones. The regional indicators are the one `Emoji_Presentation=Yes` range left out, each being narrow alone and reaching two cells only in the pair that forms a flag.
+
+⚠️, ℹ️, and ⏭️ are each a code point plus U+FE0F, so each is refused; `STATUS_GLYPHS` carries 🟠 for `warning` in place of ⚠️. On the plain side `'→'` is refused as `East_Asian_Width=Ambiguous`, which measures one cell or two by locale, and `'✓'` is refused although it measures one everywhere, because a plain variant exists to survive a CI log, a `grep`, a screen reader, and a terminal with no emoji font, and `'✓'` survives none of the last. An empty plain variant is legal at width 0, which lets a name hold its column with no plain word.
 
 The alternatives cover less. `figures` has had no release since 2024-03 and falls back to legacy Windows console glyphs rather than ASCII, and `log-symbols` offers four symbols fixed at import. Neither pairs a rich glyph with a plain one, and neither reports a width, so a caller measures with `string-width` or guesses.
 
-### `defineGlyphSet`
+## `defineGlyphSet`
 
 ```ts
 defineGlyphSet<Name extends string>(variants: Readonly<Record<Name, GlyphVariants>>): GlyphSet<Name>;
@@ -144,7 +146,7 @@ SOURCE_GLYPHS.rich.package; // { text: '📦', width: 2 }
 SOURCE_GLYPHS.plain.package; // { text: 'PKG', width: 3 }
 ```
 
-### `measureGlyphColumn`
+## `measureGlyphColumn`
 
 ```ts
 measureGlyphColumn(glyphs: Readonly<Record<string, Glyph>>): number;
@@ -152,15 +154,15 @@ measureGlyphColumn(glyphs: Readonly<Record<string, Glyph>>): number;
 
 Reports the widest glyph in one style's record, which is the column width that aligns every one of them. It takes the record rather than a set and a style, so a caller passes what indexing already gave it. Deriving the width removes the hardcoded per-style constant that a CLI otherwise carries: adding a status with a longer plain word then widens the column on its own.
 
-### `STATUS_GLYPHS`
+## `STATUS_GLYPHS`
 
 | Name      | Rich | Plain   |
 | --------- | ---- | ------- |
 | `blocked` | 🚫   | `BLOCK` |
-| `failed`  | 🔴   | `FAIL`  |
+| `failed`  | ❌   | `FAIL`  |
 | `info`    | 🔵   | `INFO`  |
-| `passed`  | 🟢   | `PASS`  |
-| `skipped` | ⚪   | `SKIP`  |
+| `passed`  | ✅   | `PASS`  |
+| `skipped` | ⏩   | `SKIP`  |
 | `warning` | 🟠   | `WARN`  |
 
-The plain column measures 5 cells and the rich column measures 2.
+The plain column measures 5 cells and the rich column measures 2. The outcomes that a reader acts on are told apart by shape rather than by hue, so ✅, ❌, ⏩, and 🚫 stay distinct for a reader with red-green colour blindness; the two remaining circles carry `info` and `warning`, whose blue and orange separate on the axis that such a reader keeps.
