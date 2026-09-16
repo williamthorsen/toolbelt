@@ -105,7 +105,7 @@ describe('The arrays adoption kit', () => {
  * A kit holds its project sweep on its own closure, so one import would give every test here the first
  * fixture repo's findings. Resetting the registry leaves each test with a kit that has swept nothing yet.
  */
-async function loadChecks(): Promise<RdyCheck[]> {
+async function loadChecks(): Promise<readonly RdyCheck[]> {
   vi.resetModules();
   const kit = (await import('../../../.readyup/kits/default.ts')).default;
 

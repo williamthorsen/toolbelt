@@ -101,7 +101,7 @@ describe('The objects adoption kit', () => {
  * A kit holds its project sweep on its own closure, so with one import every test here would see the first
  * fixture repo's findings. Resetting the registry gives each test a kit that has swept nothing yet.
  */
-async function loadChecks(): Promise<RdyCheck[]> {
+async function loadChecks(): Promise<readonly RdyCheck[]> {
   vi.resetModules();
   const kit = (await import('../../../.readyup/kits/default.ts')).default;
 

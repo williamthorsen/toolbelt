@@ -261,7 +261,7 @@ function buildTestScopedSpec(): AdoptionKitSpec<Kind> {
 }
 
 /** Lists the assembled kit's adoption checks, which the flat checklist holds in declaration order. */
-function listChecks(spec: AdoptionKitSpec<Kind>): RdyCheck[] {
+function listChecks(spec: AdoptionKitSpec<Kind>): readonly RdyCheck[] {
   const [checklist] = defineAdoptionKit(spec).checklists;
   if (checklist === undefined || !isFlatChecklist(checklist)) return [];
   return checklist.checks;
