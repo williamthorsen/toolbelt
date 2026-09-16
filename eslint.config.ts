@@ -1,21 +1,11 @@
-import baseConfig, { createConfig } from '@williamthorsen/eslint-config-typescript';
-import { defineConfig } from 'eslint/config';
+import baseConfig, { commonIgnores, createConfig, toolIgnores } from '@williamthorsen/eslint-config-typescript';
+import { defineConfig, globalIgnores } from 'eslint/config';
 
 const config = defineConfig([
   ...baseConfig,
+  globalIgnores([...commonIgnores, ...toolIgnores]),
   {
-    // Completely ignore these files
-    ignores: [
-      '**/*.sh', //
-      // Compiled kit bundles are generated; an autofix here would break the hash that rdy records for them.
-      '**/.readyup/**/*.js',
-      '**/coverage/**',
-      '**/dist/**',
-      '**/local/**',
-    ],
-  },
-  {
-    files: ['**/*.ts', '**/*.mts', '**/*.md/*.ts'],
+    files: ['**/*.ts', '**/*.mts'],
     languageOptions: {
       parserOptions: {
         // Anchor the project service (enabled by the base config) at the repo root.
