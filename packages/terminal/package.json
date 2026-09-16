@@ -1,0 +1,55 @@
+{
+  "name": "@williamthorsen/toolbelt.terminal",
+  "version": "0.1.0",
+  "description": "Utilities for rendering command-line output to terminals, pipes, and CI logs",
+  "keywords": [
+    "ansi",
+    "cli",
+    "esm",
+    "terminal",
+    "toolbelt",
+    "typescript",
+    "utilities"
+  ],
+  "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/terminal#readme",
+  "bugs": {
+    "url": "https://github.com/williamthorsen/toolbelt/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/williamthorsen/toolbelt.git",
+    "directory": "packages/terminal"
+  },
+  "license": "ISC",
+  "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/4-release/index.js"
+    },
+    "./candidate": {
+      "import": "./dist/esm/3-candidate/index.js"
+    },
+    "./draft": {
+      "import": "./dist/esm/2-draft/index.js"
+    },
+    "./proposed": {
+      "import": "./dist/esm/1-proposed/index.js"
+    }
+  },
+  "files": [
+    "dist/*",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "prepublishOnly": "nmr build"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
+}

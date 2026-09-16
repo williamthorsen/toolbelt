@@ -1,3 +1,5 @@
+<!-- readme-type: internal -->
+
 # Workspace template
 
 Private scaffold for a new toolbelt package. Copy this directory to `packages/{domain}` and work through the procedure below.
@@ -25,7 +27,7 @@ The four fields that the template cannot declare, being private:
 
 ## 2. Write a fresh README and changelog
 
-The README's first line is `# @williamthorsen/toolbelt.{domain}`, which the shape audit matches exactly. A one-line description follows, and then the release-notes markers on their own line:
+The README opens with the type marker `<!-- readme-type: library -->`, and its title line is `# @williamthorsen/toolbelt.{domain}`, which the shape audit matches exactly, reading past the comment above it. A one-line description follows, and then the release-notes markers on their own line:
 
 ```html
 <!-- section:release-notes --><!-- /section:release-notes -->
@@ -46,11 +48,11 @@ Four files record a package, and none is generated from another except where not
 - `.meta/label-map.json`: Add `"{domain}": "scope:{domain}"` under `scopes`, by hand.
 - `AGENTS.md`: Add the domain to the list on the `packages/{domain}/` bullet.
 
-Then run `pnpm install`, which adds the workspace's importer to `pnpm-lock.yaml`.
+Then add the workspace's importer to `pnpm-lock.yaml` by hand: insert `packages/{domain}: {}` at its alphabetical position in the `importers` block. CI installs with `--frozen-lockfile`, which fails on a workspace that the block omits, and pnpm writes no importer for a workspace declaring no dependencies, so `pnpm install` does not add one whatever the failure advises. `pnpm install --frozen-lockfile` reproduces the failure while the entry is missing.
 
 `__tests__/package-registration.app.unit.test.ts` fails on a missing entry in any of the four, and `__tests__/published-package-shape.app.unit.test.ts` fails on a manifest, README, or changelog that still has the template's shape.
 
-One registration happens off the repo and no test can reach it: npm must know the package as a trusted publisher before its first release, or the tag push publishes nothing. It needs an npm account with 2FA, so it falls to the maintainer rather than to the scaffolding pull request. The command is in the root README, under the release instructions.
+Two steps happen off the repo, and no test reaches either: npm must already hold the package name, published as a placeholder, and it must know the package as a trusted publisher. Until both are done, the tag push publishes nothing. Both need an npm account with 2FA, so they fall to the maintainer rather than to the scaffolding pull request. The commands are in the root README, under the release instructions.
 
 ## 4. Keep the placeholder test
 

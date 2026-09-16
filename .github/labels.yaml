@@ -124,6 +124,9 @@
 - name: scope:strings
   color: 00ff96
   description: ''
+- name: scope:terminal
+  color: 00ff96
+  description: ''
 - name: scope:testing
   color: 00ff96
   description: ''
