@@ -48,7 +48,7 @@ Four files record a package, and none is generated from another except where not
 - `.meta/label-map.json`: Add `"{domain}": "scope:{domain}"` under `scopes`, by hand.
 - `AGENTS.md`: Add the domain to the list on the `packages/{domain}/` bullet.
 
-Then run `pnpm install`. pnpm adds no importer to an existing `pnpm-lock.yaml` for a workspace declaring no dependencies, so a scaffold leaves the lockfile unchanged and reaches it with its first dependency. Expect no lockfile change in the scaffolding diff.
+Then add the workspace's importer to `pnpm-lock.yaml` by hand: insert `packages/{domain}: {}` at its alphabetical position in the `importers` block. CI installs with `--frozen-lockfile`, which fails on a workspace that the block omits, and pnpm writes no importer for a workspace declaring no dependencies, so `pnpm install` does not add one whatever the failure advises. `pnpm install --frozen-lockfile` reproduces the failure while the entry is missing.
 
 `__tests__/package-registration.app.unit.test.ts` fails on a missing entry in any of the four, and `__tests__/published-package-shape.app.unit.test.ts` fails on a manifest, README, or changelog that still has the template's shape.
 
