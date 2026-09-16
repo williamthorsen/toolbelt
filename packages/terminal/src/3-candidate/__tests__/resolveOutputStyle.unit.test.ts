@@ -41,12 +41,31 @@ describe(resolveOutputStyle, () => {
       expect(resolve(['--', FLAG, 'plain'], BARE_ENV, TTY).style).toBe('rich');
     });
 
-    it('takes the next argument even where that argument is itself a flag', () => {
-      expect(resolve([FLAG, '--verbose'], BARE_ENV, TTY).invalid).toStrictEqual({ source: FLAG, value: '--verbose' });
+    it('takes no value from a dash-led argument, leaving the next source to decide', () => {
+      expect(resolve([FLAG, '--verbose'], { [ENV_VAR]: 'plain' }, TTY)).toStrictEqual({ style: 'plain' });
+    });
+
+    it('takes a lone dash as a value, which the argument parser accepts too', () => {
+      expect(resolve([FLAG, '-'], BARE_ENV, TTY).invalid).toStrictEqual({ source: FLAG, value: '-' });
+    });
+
+    it('takes a dash-led value from the assigned form, which carries it unambiguously', () => {
+      expect(resolve([`${FLAG}=--verbose`], BARE_ENV, TTY).invalid).toStrictEqual({
+        source: FLAG,
+        value: '--verbose',
+      });
+    });
+
+    it('takes no value from a trailing flag, leaving the next source to decide', () => {
+      expect(resolve([FLAG], { [ENV_VAR]: 'plain' }, TTY)).toStrictEqual({ style: 'plain' });
     });
 
     it('reads an empty assigned value as absent', () => {
       expect(resolve([`${FLAG}=`], { [ENV_VAR]: 'plain' }, TTY).style).toBe('plain');
+    });
+
+    it('reports no complaint alongside a value that names a setting', () => {
+      expect(resolve([FLAG, 'plain'], BARE_ENV, TTY)).toStrictEqual({ style: 'plain' });
     });
   });
 

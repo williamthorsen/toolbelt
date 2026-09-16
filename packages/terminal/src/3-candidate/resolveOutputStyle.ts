@@ -16,6 +16,9 @@ const ACCEPTED_SETTINGS: ReadonlySet<string> = new Set<string>(OUTPUT_STYLE_SETT
 // The argument after which every remaining argument is positional.
 const POSITIONAL_TERMINATOR = '--';
 
+// The one dash-led argument that `parseArgs` takes as a spaced flag's value; by convention it names standard input.
+const STDIN_ARGUMENT = '-';
+
 /** Composes the usage message for a source that named a style that does not exist. */
 export function describeInvalidOutputStyle(invalid: InvalidOutputStyle): string {
   const { source, value } = invalid;
@@ -92,9 +95,12 @@ export interface ResolveOutputStyleOptions extends DetectOutputStyleOptions {
  * Finds the value that an invocation gives the flag, scanning raw argv ahead of any parse.
  *
  * Reading it without `parseArgs` lets a caller render its own parse failure in the style that the invocation asked
- * for. The scan accepts `--style plain` and `--style=plain`, stops at the `--` terminator, keeps the last
- * occurrence, and takes the argument after a spaced flag whatever it holds, all four matching what `parseArgs`
- * would resolve.
+ * for, so the same argv reaches `parseArgs` afterwards and the scan reads it the way `parseArgs` does: both
+ * `--style plain` and `--style=plain` give a value, the `--` terminator ends the scan, and the last occurrence wins.
+ *
+ * A dash-led argument after a spaced flag is no value, `-` alone excepted, because only the `=` form carries one.
+ * `--style --verbose` therefore leaves the flag contributing nothing and the next source deciding, and `parseArgs`
+ * raises the ambiguity itself instead of the caller complaining about the style vocabulary.
  */
 function findFlagValue(argv: readonly string[], flag: string): string | undefined {
   const assignment = `${flag}=`;
@@ -105,7 +111,8 @@ function findFlagValue(argv: readonly string[], flag: string): string | undefine
       break;
     }
     if (arg === flag) {
-      value = argv[index + 1];
+      const next = argv[index + 1];
+      value = next !== undefined && isValueArgument(next) ? next : undefined;
     } else if (arg.startsWith(assignment)) {
       value = arg.slice(assignment.length);
     }
@@ -117,6 +124,11 @@ function findFlagValue(argv: readonly string[], flag: string): string | undefine
 /** Reports whether a string names a setting that the flag and the environment variable accept. */
 function isOutputStyleSetting(value: string): value is OutputStyleSetting {
   return ACCEPTED_SETTINGS.has(value);
+}
+
+/** Reports whether an argument can stand as a spaced flag's value, which a dash-led one cannot unless it is `-`. */
+function isValueArgument(arg: string): boolean {
+  return !arg.startsWith('-') || arg === STDIN_ARGUMENT;
 }
 
 // endregion | Helpers

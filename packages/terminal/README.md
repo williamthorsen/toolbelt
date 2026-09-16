@@ -32,7 +32,7 @@ const { style } = resolveOutputStyle({
 
 Nothing here reads `process`: argv, the environment, and the stream's TTY state are all arguments. A CLI writing its status to stderr passes `process.stderr.isTTY` instead.
 
-The known alternatives decide from the ambient environment and disagree on the rule. `std-env` counts `CI=false` as CI, `is-in-ci` counts `CI=''` as CI, and neither accepts an injected environment. `is-unicode-supported` reads neither `CI` nor TTY state, though it agrees with this package that `TERM=linux` rules out Unicode.
+The known alternatives decide from the ambient environment, none accepts an injected one, and each disagrees with the rule above on some input. `is-in-ci` counts `CI=''` as CI. `std-env` honours `CI=false` on its own, but overrides it wherever a provider variable such as `GITHUB_ACTIONS` is set, so a run that denies CI is reported as one anyway. `is-unicode-supported` reads neither `CI` nor TTY state, though it agrees with this package that `TERM=linux` rules out Unicode.
 
 ## `resolveOutputStyle`
 
@@ -55,7 +55,7 @@ resolveOutputStyle({ argv: ['--style', 'plain'], env: {}, flag: '--style', isTty
 // { style: 'plain' }
 ```
 
-The flag is read from raw argv ahead of any parse, which lets a CLI render its own parse failure in the style that the invocation asked for. The scan accepts `--style plain` and `--style=plain`, stops at the `--` terminator, keeps the last occurrence, and takes the argument after a spaced flag whatever it holds; all four match what `parseArgs` resolves. A value of `''` from either source reads as absent, so an unset-looking export does not shadow detection.
+The flag is read from raw argv ahead of any parse, which lets a CLI render its own parse failure in the style that the invocation asked for. Because the same argv then reaches `parseArgs`, the scan reads it the way `parseArgs` does: `--style plain` and `--style=plain` both give a value, the `--` terminator ends the scan, and the last occurrence wins. A dash-led argument after a spaced flag is no value, `-` alone excepted, so `--style --verbose` leaves the flag contributing nothing and lets `parseArgs` raise the ambiguity itself. A value of `''` from either source reads as absent, so an unset-looking export does not shadow detection.
 
 A value naming no setting is reported rather than thrown, because the caller has to render its complaint in some style and a resolver that threw would leave it none. Resolution continues to the next source, and the first rejected value is the one kept.
 
