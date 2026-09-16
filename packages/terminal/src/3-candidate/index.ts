@@ -1,3 +1,4 @@
+export { defineGlyphSet, type Glyph, type GlyphSet, type GlyphVariants, measureGlyphColumn } from './defineGlyphSet.ts';
 export {
   detectOutputStyle,
   type DetectOutputStyleOptions,
