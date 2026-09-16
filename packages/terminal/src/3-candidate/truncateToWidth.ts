@@ -11,7 +11,8 @@ const DEFAULT_ELLIPSIS = '…';
  *
  * The ellipsis is dropped where it does not fit, and the width is filled with text instead. `cli-truncate`
  * otherwise renders a three-cell `...` into a width of one or two, which is the one input on which it exceeds
- * the width that it was given.
+ * the width that it was given. An ellipsis of `''` marks the cut with nothing and is dropped the same way,
+ * leaving the width filled with text rather than empty.
  *
  * Never throws, where `cli-truncate` rejects a width that is infinite or not a number. An infinite width returns
  * the text unchanged, and a width at or below zero returns nothing, since truncation exists to fit and nothing
@@ -37,8 +38,9 @@ export function truncateToWidth(text: string, options: TruncateToWidthOptions): 
   }
 
   // `cli-truncate` renders a mark wider than the width that it was given, and at a width of one it renders the
-  // mark in place of the text, so an ellipsis that does not fit never reaches it.
-  if (measureWidth(ellipsis) > columns) {
+  // mark in place of the text, which empties that column for a mark of no width at all. Neither mark reaches it.
+  const ellipsisWidth = measureWidth(ellipsis);
+  if (ellipsisWidth === 0 || ellipsisWidth > columns) {
     return sliceAnsi(text, 0, columns);
   }
 

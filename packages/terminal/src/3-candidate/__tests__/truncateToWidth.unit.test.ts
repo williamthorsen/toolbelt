@@ -44,6 +44,21 @@ describe(truncateToWidth, () => {
       expect(truncateToWidth('漢字', { ellipsis: '...', width: 1 })).toBe('');
       expect(truncateToWidth('漢字', { ellipsis: '...', width: 2 })).toBe('漢');
     });
+
+    // Left to `cli-truncate`, which renders the mark in place of the text at a width of one, this empties it.
+    it.each([1, 2])('fills a width of %i that an ellipsis of no width marks nothing of', (width) => {
+      const truncated = truncateToWidth('abcdefgh', { ellipsis: '', width });
+
+      expect(truncated).toBe('abcdefgh'.slice(0, width));
+      expect(measureWidth(truncated)).toBe(width);
+    });
+
+    it('closes on the dropped-ellipsis path the style that it opens', () => {
+      const truncated = truncateToWidth(`${RED}red text here${RESET}`, { ellipsis: '...', width: 2 });
+
+      expect(truncated).toBe(`${RED}re${RESET}`);
+      expect(measureWidth(truncated)).toBe(2);
+    });
   });
 
   describe('widths that name no room', () => {
