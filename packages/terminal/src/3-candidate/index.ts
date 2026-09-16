@@ -14,3 +14,4 @@ export {
   resolveOutputStyle,
   type ResolveOutputStyleOptions,
 } from './resolveOutputStyle.ts';
+export { STATUS_GLYPHS, type StatusGlyphName } from './statusGlyphs.ts';
