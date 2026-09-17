@@ -32,7 +32,7 @@ describe('Package registration', () => {
  * domain list in AGENTS.md. A scaffolding pull request that misses one of them currently ships in silence.
  *
  * The check runs in one direction alone, so an entry naming no published workspace stays legal: Both
- * `.meta/label-map.json` and the label configuration hold lookups for the private workspaces and for `root`.
+ * `.meta/label-map.json` and the label configuration hold lookups for private workspaces and for `root`.
  */
 function auditPackageRegistration(monorepoRoot: string): { unregistered: string[]; workspaceCount: number } {
   const configuredLabels = new Set(Object.keys(releaseKitConfig.repoLabels?.labels ?? {}));
