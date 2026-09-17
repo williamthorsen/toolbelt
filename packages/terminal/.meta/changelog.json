@@ -1,0 +1,40 @@
+[
+  {
+    "version": "0.2.0",
+    "date": "2026-09-17",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add resolveOutputStyle and detectOutputStyle to toolbelt.terminal (#340)",
+            "body": "- Adds `resolveOutputStyle` to the `/candidate` subpath of `@williamthorsen/toolbelt.terminal`, which chooses `rich` or `plain` output by reading a CLI flag first, then an environment variable, then detection, with `auto` from either source deferring to detection.\n- Adds `detectOutputStyle`, which returns `rich` only when `CI` is unset, empty, or `'false'`, the stream is a terminal, and `TERM` is not `linux`, and `plain` otherwise.\n- Adds `describeInvalidOutputStyle`, which composes the usage message naming the accepted settings, since `resolveOutputStyle` returns a value that names no style in an `invalid` field rather than throwing.",
+            "hash": "5d6ed115df48b551c4936164e938a92565a1e9ce"
+          },
+          {
+            "description": "Add a glyph set with rich and plain variants to toolbelt.terminal (#341)",
+            "body": "- Adds `defineGlyphSet` to `@williamthorsen/toolbelt.terminal/candidate`, which pairs a rich and a plain rendering under each name and derives every glyph's terminal width from the rules that it enforces: a rich glyph is one `Emoji_Presentation` code point outside the regional indicators and two cells wide, and a plain glyph is printable ASCII and as wide as its length.\n- Adds `measureGlyphColumn`, which reports the widest glyph of one style in a set, so a caller pads a column to a derived width instead of a hardcoded gutter that a longer word silently invalidates.\n- Adds `STATUS_GLYPHS`, a set giving each of `blocked`, `failed`, `info`, `passed`, `skipped`, and `warning` a rich glyph and a plain uppercase word, with `passed`, `failed`, and `skipped` told apart by shape rather than by hue alone.",
+            "hash": "4bbc9741e06daef26f4c617301641529aeadda26"
+          },
+          {
+            "description": "Add width measurement, wrapping, and truncation to toolbelt.terminal (#342)",
+            "body": "- Adds `measureWidth`, `wrapToWidth`, and `truncateToWidth` to the `/candidate` subpath of `@williamthorsen/toolbelt.terminal`, each measuring text in terminal columns rather than UTF-16 length, so `wrapToWidth` and `truncateToWidth` keep a wide character or emoji whole, close every ANSI style that they open, and exceed the requested width only for a word wider than it or an indent that reserves every column of it.\n- Declares the package's first third-party runtime dependencies: `cli-truncate`, `slice-ansi`, `string-width`, and `wrap-ansi`, which install nine packages in all for every consumer of `@williamthorsen/toolbelt.terminal`, including one importing only `resolveOutputStyle`.",
+            "hash": "d61c2ea7b34a85efa78a0e85704d11bd426d5dfe"
+          }
+        ]
+      },
+      {
+        "title": "🏗️ Internal features",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Scaffold toolbelt.terminal and document the placeholder publish (#339)",
+            "body": "- Adds `packages/terminal` at `0.1.0` and registers it in `.config/release-kit.config.ts`, `.github/labels.yaml`, `.meta/label-map.json`, `pnpm-lock.yaml`, and the domain list in `AGENTS.md`.\n- Documents the placeholder publish that precedes `npm trust` in the root README's one-time setup.\n- Corrects the lockfile statement in `AGENTS.md` and `packages/_template/README.md`: a scaffold's `packages/{domain}: {}` importer is added by hand, because pnpm writes none for a dependency-less workspace and CI's frozen install fails without it.",
+            "hash": "9ca6ecae0b1c9a9d7bf1c564ab1e6f0dd58454e2"
+          }
+        ]
+      }
+    ]
+  }
+]

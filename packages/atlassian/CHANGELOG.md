@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.1 — 2026-09-17
+
+### 🐛 Bug fixes
+
+- Align every labelled line of tb-jira output in one column (#338)
+
+  - Widens the label field from nine columns to ten on every labelled line, which moves the text of lines that were already aligned one column to the right.
+
 ## 0.3.0 — 2026-09-15
 
 ### 🎉 Features

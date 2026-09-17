@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.3.1",
+    "date": "2026-09-17",
+    "sections": [
+      {
+        "title": "🐛 Bug fixes",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Align every labelled line of tb-jira output in one column (#338)",
+            "body": "- Widens the label field from nine columns to ten on every labelled line, which moves the text of lines that were already aligned one column to the right.",
+            "hash": "fc45d9b9dba84bfccead0744fc233ae6a2217c1a"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.3.0",
     "date": "2026-09-15",
     "sections": [

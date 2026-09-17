@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.1 — 2026-09-17
+
+### Dependency updates
+
+- Bumped `@williamthorsen/toolbelt.strings` to 8.0.1
+
 ## 0.4.0 — 2026-09-15
 
 ### 🎉 Features
