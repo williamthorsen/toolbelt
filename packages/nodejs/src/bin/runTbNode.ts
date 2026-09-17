@@ -9,6 +9,7 @@ const EXIT_FINDINGS = 1;
 const EXIT_USAGE = 2;
 const EXIT_NOT_APPLICABLE = 3;
 
+const COREPACK = 'corepack';
 const PLUGIN = 'nodejs';
 const RESHIM = 'asdf reshim nodejs';
 
@@ -37,7 +38,8 @@ const ASDF_SHIMS_HELP = `Usage: tb-node asdf-shims [options]
 
 Report every asdf shim that names the nodejs plugin but not the active version. Such a shim stays on PATH and
 fails when invoked. Each is classified as an orphan, which shadows another executable of that name on PATH, or
-as having no other provider, and the commands that provide or remove it are printed.
+as having no other provider, and the commands that provide or remove it are printed. A shim that an installed
+version of another asdf plugin also provides is not reported, since asdf may resolve the command there.
 
 The active version is the one running this command, read from its install path, so the check spawns nothing
 and needs no repository. It exits 1 where a shim is stranded, 0 where none is, and 3 where node is not an asdf
@@ -107,12 +109,17 @@ function fail(message: string, command: string | undefined): TbNodeResult {
   return { exitCode: EXIT_USAGE, stderr: `${message}\nTry \`${scope} --help\`.\n`, stdout: '' };
 }
 
-/** Renders the commands that put the command under the active version, or nothing where the package is unknown. */
-function listProvideCommands(shim: StrandedAsdfShim): string[] {
+/**
+ * Renders the commands that put the command under the active version, or nothing where the package is unknown.
+ * Where the active version has no corepack to run, installing it leads the commands of a shim that it backs.
+ */
+function listProvideCommands(shim: StrandedAsdfShim, lacksCorepack: boolean): string[] {
   if (shim.backingPackage === undefined) return [];
-  if (shim.backingPackage === 'corepack') return ['corepack enable', RESHIM];
+  if (shim.backingPackage !== COREPACK) return [`npm install --global ${shim.backingPackage}`, RESHIM];
 
-  return [`npm install --global ${shim.backingPackage}`, RESHIM];
+  const installCorepack = lacksCorepack ? [`npm install --global ${COREPACK}`, RESHIM] : [];
+
+  return shim.name === COREPACK && lacksCorepack ? installCorepack : [...installCorepack, 'corepack enable', RESHIM];
 }
 
 /** Renders the commands that remove the command from every providing version, so the shim goes on reshim. */
@@ -121,7 +128,7 @@ function listRemoveCommands(shim: StrandedAsdfShim, install: AsdfInstall): strin
     if (shim.backingPackage === undefined) {
       return `rm ${path.join(install.dataDir, 'installs', PLUGIN, version, 'bin', shim.name)}`;
     }
-    if (shim.backingPackage === 'corepack') return `ASDF_NODEJS_VERSION=${version} corepack disable`;
+    if (shim.backingPackage === COREPACK) return `ASDF_NODEJS_VERSION=${version} corepack disable`;
 
     return `ASDF_NODEJS_VERSION=${version} npm uninstall --global ${shim.backingPackage}`;
   });
@@ -135,17 +142,20 @@ function renderReport(install: AsdfInstall, shims: readonly StrandedAsdfShim[]):
   const count = shims.length === 1 ? '1 stranded shim' : `${shims.length} stranded shims`;
   const headline = `${PLUGIN} ${install.version} (asdf): ${shims.length === 0 ? 'no stranded shims' : `${count} in ${shimsDir}`}`;
 
-  return [headline, ...shims.map((shim) => renderShim(shim, install))].join('\n\n');
+  // A stranded `corepack` shim means that the active version ships no corepack, as node 25 and later do not.
+  const lacksCorepack = shims.some((shim) => shim.name === COREPACK);
+
+  return [headline, ...shims.map((shim) => renderShim(shim, install, lacksCorepack))].join('\n\n');
 }
 
 /** Renders one stranded shim: its class, its providers, and the commands that provide or remove it. */
-function renderShim(shim: StrandedAsdfShim, install: AsdfInstall): string {
+function renderShim(shim: StrandedAsdfShim, install: AsdfInstall, lacksCorepack: boolean): string {
   const status =
     shim.otherProvider === undefined ? 'stranded, no other provider on PATH' : `orphan, shadows ${shim.otherProvider}`;
   const backing = shim.backingPackage === undefined ? '' : ` (npm package ${shim.backingPackage})`;
   const lines = [`${shim.name}: ${status}`, `  provided by ${PLUGIN} ${shim.providingVersions.join(', ')}${backing}`];
 
-  const provideCommands = shim.otherProvider === undefined ? listProvideCommands(shim) : [];
+  const provideCommands = shim.otherProvider === undefined ? listProvideCommands(shim, lacksCorepack) : [];
   if (provideCommands.length > 0) {
     lines.push(`  to provide it under ${install.version}:`, ...provideCommands.map((command) => `    ${command}`));
   }

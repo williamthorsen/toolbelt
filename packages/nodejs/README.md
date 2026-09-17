@@ -47,7 +47,7 @@ tb-node asdf-shims
 
 The active version is the one running the command, read from its install path, so the check spawns no process and needs no repository. A node outside asdf, such as one from Homebrew, is reported as not applicable rather than as clean.
 
-The remedies end with `asdf reshim nodejs` in its versionless form on purpose: It removes every shim and regenerates them from the installed versions, whereas `asdf reshim nodejs <version>` merges into an existing shim and keeps its stale lines. A shim that corepack provides gets `corepack enable` and `corepack disable` in place of the npm commands, and one whose package cannot be read from the install gets the removal of the executable itself.
+The remedies end with `asdf reshim nodejs` in its versionless form on purpose: It removes every shim and regenerates them from the installed versions, whereas `asdf reshim nodejs <version>` merges into an existing shim and keeps its stale lines. A shim that corepack provides gets `corepack enable` and `corepack disable` in place of the npm commands, led by `npm install --global corepack` where the active version ships no corepack, as Node 25 and later do not. A shim that an installed version of another asdf plugin also provides is not reported, since asdf may resolve the command there. One whose package cannot be read from the install gets the removal of the executable itself.
 
 ### Exit codes
 

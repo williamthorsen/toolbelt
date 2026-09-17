@@ -54,6 +54,21 @@ describe(listStrandedAsdfShims, () => {
     expect(listStrandedAsdfShims(buildOptions(tree))).toStrictEqual([]);
   });
 
+  it('passes over a shim that an installed version of another plugin also provides', () => {
+    using tree = createTempTree({
+      'shims/yarn': renderShim('yarn', ['yarn 1.22.22', 'nodejs 24.18.1']),
+      'installs/yarn/1.22.22/bin/yarn': '',
+    });
+
+    expect(listStrandedAsdfShims(buildOptions(tree))).toStrictEqual([]);
+  });
+
+  it('reports a shim whose other plugin is named by a stale line, with no install behind it', () => {
+    using tree = createTempTree({ 'shims/yarn': renderShim('yarn', ['yarn 1.22.22', 'nodejs 24.18.1']) });
+
+    expect(listStrandedAsdfShims(buildOptions(tree)).map((shim) => shim.name)).toStrictEqual(['yarn']);
+  });
+
   it('names a scoped backing package, and leaves one that does not resolve undefined', () => {
     using tree = createTempTree({
       'shims/plain': renderShim('plain', ['nodejs 24.18.1']),

@@ -86,6 +86,38 @@ describe(runTbNode, () => {
       );
     });
 
+    it('installs corepack first where the active version lacks it, which a stranded corepack shim shows', () => {
+      const corepack = { ...NO_PROVIDER, backingPackage: 'corepack', name: 'corepack' };
+      const yarn = { ...NO_PROVIDER, backingPackage: 'corepack', name: 'yarn' };
+
+      expect(run([corepack, yarn], []).stdout).toBe(
+        [
+          'nodejs 24.20.0 (asdf): 2 stranded shims in /Users/me/.asdf/shims',
+          '',
+          'corepack: stranded, no other provider on PATH',
+          '  provided by nodejs 24.18.1 (npm package corepack)',
+          '  to provide it under 24.20.0:',
+          '    npm install --global corepack',
+          '    asdf reshim nodejs',
+          '  to remove it:',
+          '    ASDF_NODEJS_VERSION=24.18.1 corepack disable',
+          '    asdf reshim nodejs',
+          '',
+          'yarn: stranded, no other provider on PATH',
+          '  provided by nodejs 24.18.1 (npm package corepack)',
+          '  to provide it under 24.20.0:',
+          '    npm install --global corepack',
+          '    asdf reshim nodejs',
+          '    corepack enable',
+          '    asdf reshim nodejs',
+          '  to remove it:',
+          '    ASDF_NODEJS_VERSION=24.18.1 corepack disable',
+          '    asdf reshim nodejs',
+          '',
+        ].join('\n'),
+      );
+    });
+
     it('removes the executable itself where no package backs the shim, and offers no provide step', () => {
       const shim = { ...NO_PROVIDER, backingPackage: undefined, name: 'tool' };
 

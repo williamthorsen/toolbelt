@@ -2,13 +2,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { findExecutableOnPath } from './findExecutableOnPath.ts';
-import { parseAsdfShim } from './parseAsdfShim.ts';
+import { type AsdfShimProvider, parseAsdfShim } from './parseAsdfShim.ts';
 import { resolveNpmPackageOfBin } from './resolveNpmPackageOfBin.ts';
 
 /**
  * Lists the asdf shims of a plugin that a version of it does not provide: each shim under `<dataDir>/shims`
  * whose header names the plugin at least once and the version never. Such a shim stays on PATH and fails when
- * invoked under that version. Each entry names the versions that do provide the command, the first other
+ * invoked under that version. A shim that an installed version of another plugin also provides is passed over:
+ * asdf may resolve the command through that plugin, which depends on version selection that the filesystem
+ * does not record. Each entry names the versions that do provide the command, the first other
  * provider on `pathDirs` outside the shims directory where there is one, and the npm package that installed
  * the command under the first providing version whose bin symlink resolves to one. A missing shims directory
  * yields an empty array, and the result is sorted by name.
@@ -24,11 +26,13 @@ export function listStrandedAsdfShims(options: ListStrandedAsdfShimsOptions): St
 
   for (const name of listShimNames(shimsDir)) {
     const shimPath = path.join(shimsDir, name);
-    const providingVersions = parseAsdfShim(fs.readFileSync(shimPath, 'utf8'))
+    const providers = parseAsdfShim(fs.readFileSync(shimPath, 'utf8'));
+    const providingVersions = providers
       .filter((provider) => provider.plugin === plugin)
       .map((provider) => provider.version);
 
     if (providingVersions.length === 0 || providingVersions.includes(version)) continue;
+    if (providers.some((provider) => provider.plugin !== plugin && isInstalled(dataDir, provider))) continue;
 
     stranded.push({
       backingPackage: findBackingPackage(dataDir, plugin, providingVersions, name),
@@ -78,6 +82,11 @@ function findBackingPackage(
   }
 
   return undefined;
+}
+
+/** Reports whether the install directory of a provider exists, which a stale header line's does not. */
+function isInstalled(dataDir: string, provider: AsdfShimProvider): boolean {
+  return fs.existsSync(path.join(dataDir, 'installs', provider.plugin, provider.version));
 }
 
 /** Lists the regular files directly under the shims directory, or nothing where the directory is absent. */
