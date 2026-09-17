@@ -39,12 +39,19 @@
       "import": "./dist/esm/1-proposed/index.js"
     }
   },
+  "bin": {
+    "tb-node": "./bin/tb-node.js"
+  },
   "files": [
-    "dist/*",
-    "CHANGELOG.md"
+    "bin/*",
+    "CHANGELOG.md",
+    "dist/*"
   ],
   "scripts": {
     "prepublishOnly": "nmr build"
+  },
+  "devDependencies": {
+    "@williamthorsen/toolbelt.testing": "workspace:*"
   },
   "engines": {
     "node": ">=24.0.0"

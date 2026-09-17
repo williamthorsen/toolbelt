@@ -380,7 +380,11 @@ importers:
         specifier: workspace:*
         version: link:../arrays
 
-  packages/nodejs: {}
+  packages/nodejs:
+    devDependencies:
+      '@williamthorsen/toolbelt.testing':
+        specifier: workspace:*
+        version: link:../testing
 
   packages/numbers:
     devDependencies:
