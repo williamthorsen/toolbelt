@@ -20,6 +20,7 @@ const config = defineConfig({
       'scope:git': { color: '00ff96' },
       'scope:guards': { color: '00ff96' },
       'scope:hof': { color: '00ff96' },
+      'scope:nodejs': { color: '00ff96' },
       'scope:numbers': { color: '00ff96' },
       'scope:objects': { color: '00ff96' },
       'scope:packaging': { color: '00ff96' },
@@ -48,6 +49,7 @@ const config = defineConfig({
     { dir: 'enums', legacyIdentities: [{ name: '@williamthorsen/toolbelt.enums', tagPrefix: 'enums-v' }] },
     { dir: 'guards', legacyIdentities: [{ name: '@williamthorsen/toolbelt.guards', tagPrefix: 'guards-v' }] },
     { dir: 'hof', legacyIdentities: [{ name: '@williamthorsen/toolbelt.hof', tagPrefix: 'hof-v' }] },
+    { dir: 'nodejs', legacyIdentities: [{ name: '@williamthorsen/toolbelt.nodejs', tagPrefix: 'nodejs-v' }] },
     { dir: 'numbers', legacyIdentities: [{ name: '@williamthorsen/toolbelt.numbers', tagPrefix: 'numbers-v' }] },
     { dir: 'objects', legacyIdentities: [{ name: '@williamthorsen/toolbelt.objects', tagPrefix: 'objects-v' }] },
     { dir: 'sets', legacyIdentities: [{ name: '@williamthorsen/toolbelt.sets', tagPrefix: 'sets-v' }] },
@@ -61,16 +63,6 @@ const config = defineConfig({
   retiredPackages: [
     // release-kit was born in this repo (release-kit-v0.1–0.2) before extraction to its own repo.
     { name: '@williamthorsen/release-kit', tagPrefix: 'release-kit-v' },
-    {
-      name: '@williamthorsen/toolbelt.nodejs',
-      successor: '@williamthorsen/toolbelt.filesystem',
-      tagPrefix: 'nodejs-v',
-    },
-    {
-      name: '@williamthorsen/toolbelt.nodejs',
-      successor: '@williamthorsen/toolbelt.filesystem',
-      tagPrefix: 'toolbelt.nodejs-v',
-    },
   ],
 });
 
