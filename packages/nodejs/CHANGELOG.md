@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.1.0 — 2026-09-17
+
+### 🎉 Features
+
+- Add the tb-node CLI that reports stranded asdf node shims (#347)
+
+  - Adds to `@williamthorsen/toolbelt.nodejs` the `tb-node` CLI, whose `asdf-shims` subcommand reports every command stranded by an asdf nodejs version switch: one installed with `npm install --global` under an earlier version, whose shim stays on PATH and fails when it is invoked.
+  - Exports the functions behind the report from `@williamthorsen/toolbelt.nodejs/candidate`, among them `listStrandedAsdfShims`, `findExecutableOnPath`, and `resolveNpmPackageOfBin`.
+
+### 🏗️ Internal features
+
+- Un-retire toolbelt.nodejs and scaffold the package (#345)
+
+  - Scaffolds `packages/nodejs` from `packages/_template` as the home that #287 needs for `tb-node`, with four tier indexes that export nothing until then.
+  - Sets the manifest version to `3.0.7` and restores `CHANGELOG.md` and `.meta/changelog.json` from the `toolbelt.nodejs-v3.0.7` tag, so the package's next release bumps from the baseline that release-kit resolves by tag prefix instead of tagging below its own history.
+  - Moves the package out of `retiredPackages`, where #70 put it, into a `workspaces` entry in `.config/release-kit.config.ts` that declares `nodejs-v` as its one legacy prefix, because a live workspace and a retired package cannot own the same prefix.
+  - Registers the package with a `scope:nodejs` entry in `.config/release-kit.config.ts` and `.github/labels.yaml`, the domain list in `AGENTS.md`, and a `packages/nodejs` importer in `pnpm-lock.yaml`.
+
 ## 3.0.7 — 2026-07-27
 
 ### Tooling
@@ -20,13 +38,13 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.5 — 2026-07-20
 
-### Bug fixes
+### 🐛 Bug fixes
 
 - Add repository field to package manifests for npm provenance (#65)
 
   Fixes an issue that prevented every package from publishing to npm. Each package now links to its source repository from its npm page.
 
-### Dependencies
+### 📦 Dependencies
 
 - Upgrade ESLint packages and migrate to TypeScript 6 (#67)
 
@@ -34,7 +52,7 @@ All notable changes to this project will be documented in this file.
 
 ## 3.0.4 — 2026-07-20
 
-### Tooling
+### ⚙️ Tooling
 
 - Migrate to the nmr toolchain and resolve dependency vulnerabilities (#45)
 
@@ -58,6 +76,50 @@ All notable changes to this project will be documented in this file.
 - Enable incremental type generation
 
 ### Dependencies
+
+- Adapt to dependency upgrades and bump Node engine to >=24 (#8)
+
+  Upgrades all dependencies to their latest versions, bumps the Node.js engine requirement from >=18.17.0 to >=24.0.0 across all 13 workspace packages, and adapts source code to satisfy new lint rules introduced by the upgraded ESLint plugins. Also upgrades `@williamthorsen/eslint-config-typescript` from 5.12.1 to 5.12.2 to fix ESM import issues in the compiled output.
+
+  Commit details:
+
+  - root|deps: Upgrade all deps to latest version
+
+  - root|refactor: Fix lint
+
+  - root|deps: Upgrade all deps to latest minor version
+
+  - root|deps: Allow unpatchable vulns in dev deps
+
+  - root|refactor: Adapt to dependency upgrades and bump Node engine to >=24
+  * Upgrade eslint-config-typescript to 5.12.2 (fixes ESM import issues, removes need for pnpm patch)
+  * Bump engines.node from >=18.17.0 to >=24.0.0 across all packages
+  * Update CI to Node 24.14.0 and pnpm 10.30.3
+  * Replace .sort() with .toSorted() to satisfy unicorn/no-array-sort
+  * Fix lint errors: remove useless default assignments, redundant type constituents, deprecated re-exports, and empty array args to Set constructor
+  - datetime|tests: Fix locale mismatch in Timestamp test
+
+  Pass the same 'en-US' locale to both the expected-value computation and
+  the method under test. Previously the test used the system default locale
+  for the expected value but explicit 'en-US' for the actual call, which
+  diverged under Node 24's updated Intl formatting.
+
+  - root|refactor: Replace toThrow with toThrowError across all tests
+
+  The vitest/no-alias-methods rule in strict-lint requires the canonical
+  toThrowError() name instead of the toThrow() alias.
+
+  - root|refactor: Fix remaining strict-lint errors
+  * Use import() in vi.mock for vitest/prefer-import-in-mock
+  * Replace expect(typeof x).toBe() with expectTypeOf for vitest/prefer-expect-type-of
+  * Use String.raw for regex escapes for unicorn/prefer-string-raw
+  - root|tooling: Use ws runner to fix recursive build command
+
+  The build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.
+
+## 3.0.1 — 2026-03-17
+
+### 📦 Dependencies
 
 - Adapt to dependency upgrades and bump Node engine to >=24 (#8)
 

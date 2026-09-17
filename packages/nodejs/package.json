@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.nodejs",
-  "version": "3.0.7",
+  "version": "3.1.0",
   "description": "Utilities for inspecting Node.js runtimes, toolchains, and the commands that they install",
   "keywords": [
     "cli",

@@ -1,5 +1,33 @@
 [
   {
+    "version": "3.1.0",
+    "date": "2026-09-17",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add the tb-node CLI that reports stranded asdf node shims (#347)",
+            "body": "- Adds to `@williamthorsen/toolbelt.nodejs` the `tb-node` CLI, whose `asdf-shims` subcommand reports every command stranded by an asdf nodejs version switch: one installed with `npm install --global` under an earlier version, whose shim stays on PATH and fails when it is invoked.\n- Exports the functions behind the report from `@williamthorsen/toolbelt.nodejs/candidate`, among them `listStrandedAsdfShims`, `findExecutableOnPath`, and `resolveNpmPackageOfBin`.",
+            "hash": "91a5489302d226617e02c8d760317171c9ce3cf1"
+          }
+        ]
+      },
+      {
+        "title": "🏗️ Internal features",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Un-retire toolbelt.nodejs and scaffold the package (#345)",
+            "body": "- Scaffolds `packages/nodejs` from `packages/_template` as the home that #287 needs for `tb-node`, with four tier indexes that export nothing until then.\n- Sets the manifest version to `3.0.7` and restores `CHANGELOG.md` and `.meta/changelog.json` from the `toolbelt.nodejs-v3.0.7` tag, so the package's next release bumps from the baseline that release-kit resolves by tag prefix instead of tagging below its own history.\n- Moves the package out of `retiredPackages`, where #70 put it, into a `workspaces` entry in `.config/release-kit.config.ts` that declares `nodejs-v` as its one legacy prefix, because a live workspace and a retired package cannot own the same prefix.\n- Registers the package with a `scope:nodejs` entry in `.config/release-kit.config.ts` and `.github/labels.yaml`, the domain list in `AGENTS.md`, and a `packages/nodejs` importer in `pnpm-lock.yaml`.",
+            "hash": "7f69bc6761dd283bdf6cd9f91a004a4f4762efcf"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "3.0.7",
     "date": "2026-07-27",
     "sections": [
@@ -46,7 +74,7 @@
     "date": "2026-07-20",
     "sections": [
       {
-        "title": "Bug fixes",
+        "title": "🐛 Bug fixes",
         "audience": "all",
         "items": [
           {
@@ -57,7 +85,7 @@
         ]
       },
       {
-        "title": "Dependencies",
+        "title": "📦 Dependencies",
         "audience": "dev",
         "items": [
           {
@@ -74,7 +102,7 @@
     "date": "2026-07-20",
     "sections": [
       {
-        "title": "Tooling",
+        "title": "⚙️ Tooling",
         "audience": "dev",
         "items": [
           {
@@ -122,6 +150,23 @@
       },
       {
         "title": "Dependencies",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Adapt to dependency upgrades and bump Node engine to >=24 (#8)",
+            "body": "Upgrades all dependencies to their latest versions, bumps the Node.js engine requirement from >=18.17.0 to >=24.0.0 across all 13 workspace packages, and adapts source code to satisfy new lint rules introduced by the upgraded ESLint plugins. Also upgrades `@williamthorsen/eslint-config-typescript` from 5.12.1 to 5.12.2 to fix ESM import issues in the compiled output.\n\nCommit details:\n\n* root|deps: Upgrade all deps to latest version\n\n* root|refactor: Fix lint\n\n* root|deps: Upgrade all deps to latest minor version\n\n* root|deps: Allow unpatchable vulns in dev deps\n\n* root|refactor: Adapt to dependency upgrades and bump Node engine to >=24\n\n- Upgrade eslint-config-typescript to 5.12.2 (fixes ESM import issues, removes need for pnpm patch)\n- Bump engines.node from >=18.17.0 to >=24.0.0 across all packages\n- Update CI to Node 24.14.0 and pnpm 10.30.3\n- Replace .sort() with .toSorted() to satisfy unicorn/no-array-sort\n- Fix lint errors: remove useless default assignments, redundant type constituents, deprecated re-exports, and empty array args to Set constructor\n\n* datetime|tests: Fix locale mismatch in Timestamp test\n\nPass the same 'en-US' locale to both the expected-value computation and\nthe method under test. Previously the test used the system default locale\nfor the expected value but explicit 'en-US' for the actual call, which\ndiverged under Node 24's updated Intl formatting.\n\n* root|refactor: Replace toThrow with toThrowError across all tests\n\nThe vitest/no-alias-methods rule in strict-lint requires the canonical\ntoThrowError() name instead of the toThrow() alias.\n\n* root|refactor: Fix remaining strict-lint errors\n\n- Use import() in vi.mock for vitest/prefer-import-in-mock\n- Replace expect(typeof x).toBe() with expectTypeOf for vitest/prefer-expect-type-of\n- Use String.raw for regex escapes for unicorn/prefer-string-raw\n\n* root|tooling: Use ws runner to fix recursive build command\n\nThe build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.",
+            "hash": "ec37d5de397a51ce589d3fb73e6b0a66773e6b22"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "version": "3.0.1",
+    "date": "2026-03-17",
+    "sections": [
+      {
+        "title": "📦 Dependencies",
         "audience": "dev",
         "items": [
           {
