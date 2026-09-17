@@ -380,6 +380,8 @@ importers:
         specifier: workspace:*
         version: link:../arrays
 
+  packages/nodejs: {}
+
   packages/numbers:
     devDependencies:
       '@williamthorsen/toolbelt.adoption':
