@@ -19,7 +19,8 @@ const PNPM_PLUGIN = 'pnpm';
  * and one naming `nodejs` at the running node's version resolves through that install's bin symlink to corepack
  * or to an npm-global pnpm. A shim naming `nodejs` but not the running version, or found under a node that asdf
  * does not manage, is stranded. Outside a shim the bin symlink is read from the path itself, so a corepack or
- * npm-global pnpm under a node outside asdf is recognized too; anything else is named by path alone.
+ * npm-global pnpm under a node outside asdf is recognized too, and one found in an asdf nodejs install's own
+ * `bin/` carries that install's version; anything else is named by path alone.
  *
  * @internal
  */
@@ -30,7 +31,9 @@ export function resolvePnpmProvider(options: ResolvePnpmProviderOptions): PnpmPr
   if (pnpmPath === undefined) return { kind: 'absent' };
 
   const providers = parseAsdfShim(readHeader(pnpmPath));
-  if (providers.length === 0) return classifyBin(pnpmPath, resolveNpmPackageOfBin(pnpmPath), undefined);
+  if (providers.length === 0) {
+    return classifyBin(pnpmPath, resolveNpmPackageOfBin(pnpmPath), findNodeVersionOfInstall(pnpmPath));
+  }
 
   const pluginVersions = listVersions(providers, PNPM_PLUGIN);
   if (pluginVersions.length > 0) {
@@ -99,6 +102,13 @@ function classifyBin(
   if (backingPackage === COMMAND) return { kind: 'npm-global', nodeVersion, path: pnpmPath };
 
   return { kind: 'path', path: pnpmPath };
+}
+
+/** Reads the nodejs version of the asdf install that holds a path, or `undefined` where no nodejs install does. */
+function findNodeVersionOfInstall(filePath: string): string | undefined {
+  const install = findAsdfInstall(filePath);
+
+  return install?.plugin === NODE_PLUGIN ? install.version : undefined;
 }
 
 /** Lists the versions that a shim's providers name for one plugin, in header order. */

@@ -104,6 +104,21 @@ describe(resolvePnpmProvider, () => {
     });
   });
 
+  it("reads the bin symlink in an asdf nodejs install's own bin directory, with that version", () => {
+    using tree = createTempTree({});
+    linkBin(tree, ACTIVE, COREPACK_TARGET);
+    tree.write(`installs/nodejs/${ACTIVE}/lib/node_modules/corepack/dist/pnpm.js`, '#!/usr/bin/env node\n');
+    markExecutable(tree, `installs/nodejs/${ACTIVE}/lib/node_modules/corepack/dist/pnpm.js`);
+
+    const pathDirs = [tree.resolve(`installs/nodejs/${ACTIVE}/bin`)];
+
+    expect(resolvePnpmProvider({ ...buildOptions(tree), pathDirs })).toStrictEqual({
+      kind: 'corepack',
+      nodeVersion: ACTIVE,
+      path: tree.resolve(`installs/nodejs/${ACTIVE}/bin/pnpm`),
+    });
+  });
+
   it('names a plain executable by path', () => {
     using tree = createTempTree({ 'path/pnpm': '#!/bin/sh\necho 9.0.0\n' });
     markExecutable(tree, 'path/pnpm');
