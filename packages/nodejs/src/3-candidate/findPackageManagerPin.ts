@@ -4,22 +4,22 @@ import path from 'node:path';
 /**
  * Finds the `packageManager` pin that governs a directory: the nearest `package.json` at or above it whose
  * `packageManager` is a string. A manifest without the field is passed over, so a workspace package under a
- * pinned root resolves to the root's pin. Returns the raw value with the manifest's location, leaving the parse
- * to the caller, or `undefined` where no ancestor declares one. A manifest that is not valid JSON throws.
+ * pinned root resolves to the root's pin. Returns the raw value with the manifest's location, both absolute,
+ * leaving the parse to the caller, or `undefined` where no ancestor declares one. A manifest that is not valid
+ * JSON throws an error naming it.
  *
  * @category Package managers
  * @experimental
  * @stage candidate
  */
 export function findPackageManagerPin(startDir: string): PackageManagerPin | undefined {
-  let dir = startDir;
+  let dir = path.resolve(startDir);
 
   for (;;) {
     const manifestPath = path.join(dir, 'package.json');
 
     if (fs.existsSync(manifestPath)) {
-      const manifest: unknown = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-      const spec = readPackageManager(manifest);
+      const spec = readPackageManager(parseManifest(manifestPath));
       if (spec !== undefined) return { dir, manifestPath, spec };
     }
 
@@ -40,6 +40,18 @@ export interface PackageManagerPin {
 }
 
 // region | Helpers
+
+/** Parses a manifest file as JSON, throwing an error that names the file where its contents are not JSON. */
+function parseManifest(manifestPath: string): unknown {
+  const contents = fs.readFileSync(manifestPath, 'utf8');
+  try {
+    return JSON.parse(contents);
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+
+    throw new Error(`${manifestPath} is not valid JSON: ${detail}`, { cause: error });
+  }
+}
 
 /** Reads the `packageManager` string out of parsed manifest JSON, or `undefined` where it declares none. */
 function readPackageManager(manifest: unknown): string | undefined {

@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, it } from 'vitest';
 
@@ -33,10 +35,16 @@ describe(findPackageManagerPin, () => {
     expect(findPackageManagerPin(tree.dir)).toBeUndefined();
   });
 
-  it('throws on a manifest that is not valid JSON', () => {
+  it('throws an error naming a manifest that is not valid JSON', () => {
     using tree = createTempTree({ 'package.json': '{' });
 
-    expect(() => findPackageManagerPin(tree.dir)).toThrow(SyntaxError);
+    expect(() => findPackageManagerPin(tree.dir)).toThrow(`${tree.resolve('package.json')} is not valid JSON`);
+  });
+
+  it('resolves a relative start directory before ascending', () => {
+    using tree = createTempTree({ 'package.json': renderManifest({ packageManager: 'pnpm@12.4.0' }) });
+
+    expect(findPackageManagerPin(path.relative(process.cwd(), tree.dir))?.dir).toBe(tree.dir);
   });
 });
 
