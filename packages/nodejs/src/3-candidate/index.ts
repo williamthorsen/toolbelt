@@ -2,6 +2,11 @@ export { type AsdfInstall, findAsdfInstall } from './findAsdfInstall.ts';
 export { findExecutableOnPath, type FindExecutableOnPathOptions } from './findExecutableOnPath.ts';
 export { findPackageManagerPin, type PackageManagerPin } from './findPackageManagerPin.ts';
 export {
+  findToolVersionsEntry,
+  type FindToolVersionsEntryOptions,
+  type ToolVersionsEntry,
+} from './findToolVersionsEntry.ts';
+export {
   listStrandedAsdfShims,
   type ListStrandedAsdfShimsOptions,
   type StrandedAsdfShim,
