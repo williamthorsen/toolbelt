@@ -6,4 +6,5 @@ export {
   type StrandedAsdfShim,
 } from './listStrandedAsdfShims.ts';
 export { type AsdfShimProvider, parseAsdfShim } from './parseAsdfShim.ts';
+export { type PackageManagerSpec, parsePackageManagerSpec } from './parsePackageManagerSpec.ts';
 export { resolveNpmPackageOfBin } from './resolveNpmPackageOfBin.ts';
