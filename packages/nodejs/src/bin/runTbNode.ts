@@ -236,11 +236,6 @@ function listRemoveCommands(shim: StrandedAsdfShim, install: AsdfInstall): strin
   return [...commands, RESHIM];
 }
 
-/** Reports a check that does not apply: the reason on stderr, and whatever was learned on stdout. */
-function reportNotApplicable(reason: string, stdout: string): TbNodeResult {
-  return { exitCode: EXIT_NOT_APPLICABLE, stderr: `${reason}\n`, stdout: `${stdout}\n` };
-}
-
 /** Renders the report of the stranded shims found under an install. */
 function renderReport(install: AsdfInstall, shims: readonly StrandedAsdfShim[]): string {
   const shimsDir = path.join(install.dataDir, 'shims');
@@ -267,6 +262,16 @@ function renderShim(shim: StrandedAsdfShim, install: AsdfInstall, lacksCorepack:
   lines.push('  to remove it:', ...listRemoveCommands(shim, install).map((command) => `    ${command}`));
 
   return lines.join('\n');
+}
+
+/** Reports a check's outcome on stdout, one line per entry, with the exit code that the outcome earns. */
+function report(exitCode: number, lines: readonly string[]): TbNodeResult {
+  return { exitCode, stderr: '', stdout: `${lines.join('\n')}\n` };
+}
+
+/** Reports a check that does not apply: the reason on stderr, and whatever was learned on stdout. */
+function reportNotApplicable(reason: string, stdout: string): TbNodeResult {
+  return { exitCode: EXIT_NOT_APPLICABLE, stderr: `${reason}\n`, stdout: `${stdout}\n` };
 }
 
 /** Parses the `asdf-shims` subcommand and reports the shims that the active version does not provide. */
@@ -353,11 +358,6 @@ function runPnpm(args: string[], effects: TbNodeEffects): TbNodeResult {
   }
 
   return report(EXIT_FINDINGS, [`pnpm ${result.version} does not match ${pinLabel}`, `  ${providerLine}`, ...repairs]);
-}
-
-/** Reports a check's outcome on stdout, one line per entry, with the exit code that the outcome earns. */
-function report(exitCode: number, lines: readonly string[]): TbNodeResult {
-  return { exitCode, stderr: '', stdout: `${lines.join('\n')}\n` };
 }
 
 /** Reports a printed result, terminating the line written by the caller. */
