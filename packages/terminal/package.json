@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "cli-truncate": "6.1.1",
-    "slice-ansi": "9.0.0",
+    "slice-ansi": "9.0.1",
     "string-width": "8.2.2",
     "wrap-ansi": "10.0.1"
   },
