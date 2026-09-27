@@ -1,5 +1,5 @@
 /**
- * No-operation function.
+ * Does nothing, whatever arguments it receives.
  *
  * @category Function
  * @experimental

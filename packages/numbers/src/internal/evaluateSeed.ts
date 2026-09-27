@@ -26,7 +26,7 @@ export function checkIsRngLike(seed: Seed | undefined): seed is SeededGenerator 
 }
 
 /**
- * Interface describing an object that returns a sequence of numbers.
+ * An object that returns a sequence of numbers and exposes its current seed.
  */
 export interface SeededGenerator {
   seed: number;

@@ -15,9 +15,9 @@ const SPY = /\bvi\s*\.\s*spyOn\(\s*process\s*,\s*(['"])exit\1\s*\)/g;
  * keyed on a helper's name there is no variant that lands outside it; every difference between hand-rolled
  * mocks is downstream of this call and reachable from it.
  *
- * The anchor reads the spied method's name out of a string literal, so it is the one detector that cannot scan
- * blanked code: `'exit'` blanks like any other string. It matches the source and reads the verdict off the
- * blanked text instead, which the equal offsets of the two make exact.
+ * The anchor reads the spied method's name out of a string literal, so it cannot scan blanked code: `'exit'`
+ * blanks like any other string. It matches the source and reads the verdict off the blanked text instead, which
+ * the equal offsets of the two make exact.
  *
  * @internal
  */

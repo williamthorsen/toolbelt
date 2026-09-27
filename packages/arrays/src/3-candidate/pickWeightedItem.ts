@@ -5,8 +5,8 @@ import { assertValidCumulativeWeights, pickWeightedIndex } from './pickWeightedI
 import { toCumulativeValues } from './toCumulativeValues.ts';
 
 /**
- * Returns a random item from the array using weighted odds.
- * If the array is empty, throws an error.
+ * Returns a function that picks a random item from the array using weighted odds.
+ * If the array is empty or the weights are invalid, throws an error.
  *
  * @category Array
  * @experimental
@@ -18,7 +18,7 @@ export function pickWeightedItem<T>(
 ): (options?: PickWeightedItemOptions) => T {
   const cumulativeWeights = toCumulativeValues(weights);
 
-  // By performing this check now, we can guarantee that the returned function always returns a defined value.
+  // Validate here so that every call of the returned function finds an item.
   assertValidCumulativeWeights(cumulativeWeights, items.length);
 
   return function pickItem(options: PickWeightedItemOptions = {}): T {

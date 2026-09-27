@@ -121,8 +121,10 @@ describe(captureError, () => {
 
 // region | Helpers
 
+/** An abstract error base, which no caller can construct directly. */
 abstract class TestError extends Error {}
 
+/** A concrete error carrying a field of its own, which only a narrowed type can reach. */
 class KitError extends TestError {
   readonly specifiers: string[];
 
@@ -132,6 +134,7 @@ class KitError extends TestError {
   }
 }
 
+/** A subclass of `KitError`, which an expectation of `KitError` accepts. */
 class NestedKitError extends KitError {}
 
 // endregion | Helpers

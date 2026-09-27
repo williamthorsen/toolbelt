@@ -1,7 +1,7 @@
 import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 
 /**
- * Given an array of addends, returns the running total at each index.
+ * Returns the running total of the addends at each index.
  *
  * @category Statistics
  * @stage candidate

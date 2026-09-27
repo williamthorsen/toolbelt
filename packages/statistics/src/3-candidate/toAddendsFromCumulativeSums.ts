@@ -1,7 +1,7 @@
 import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 
 /**
- * Given an array of cumulative weights, returns the weights for each interval.
+ * Returns the addends whose running totals are the given cumulative sums.
  *
  * @category Statistics
  * @stage candidate

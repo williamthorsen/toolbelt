@@ -16,7 +16,7 @@ const RETURN_STATEMENT = /^return\s*[;}]/;
 const THROW_STATEMENT = /^throw\b/;
 
 /**
- * Returns the assertion a function's body re-implements, or nothing where the body does more than assert.
+ * Returns the assertion that a function's body re-implements, or nothing when the body does more than assert.
  *
  * Takes the blanked body. A body qualifies only where every statement in it is a `throw` or a bare `return`
  * under a guard, so a function that also computes, logs, or returns a value is left alone. Which assertion it

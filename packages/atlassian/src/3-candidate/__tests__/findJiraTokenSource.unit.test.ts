@@ -84,6 +84,7 @@ describe(findJiraTokenSource, () => {
 
 // region | Helpers
 
+/** Builds a spied secret store that holds a token or holds none. */
 function createStore(stored: boolean): SecretStore & {
   findSecret: ReturnType<typeof vi.fn>;
   hasSecret: ReturnType<typeof vi.fn>;

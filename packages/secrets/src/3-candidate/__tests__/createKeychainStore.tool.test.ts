@@ -19,7 +19,7 @@ const WRITTEN_SERVICE = `${SERVICE_PREFIX}-written`;
 
 const TAB_SECRET = 'a\tb';
 
-// 128 is where `security` cut a secret read from stdin, and 129 is the shortest one that exposed the cut. The
+// `security` cuts a secret read from stdin at 128 bytes, and 129 is the shortest length that exposes the cut. The
 // longest is a little under the 4,095-byte command line that contains the secret as hexadecimal.
 const BOUNDARY_LENGTHS = [127, 128, 129, 190, 1_900];
 
@@ -139,12 +139,12 @@ describe.skipIf(!canCreateKeychain)(createKeychainStore, () => {
 
 // region | Helpers
 
-/** Builds a secret of a given length, varied so a cut one cannot match a shorter one by accident. */
+/** Builds a secret of a given length, varied so that a cut one cannot match a shorter one by accident. */
 function buildSecret(length: number): string {
   return Array.from({ length }, (_, index) => String.fromCodePoint(97 + (index % 26))).join('');
 }
 
-/** Runs `security`, raising what it wrote where it failed, so a broken fixture is not read as a result. */
+/** Runs `security`, raising what it wrote where it failed, so that a broken fixture is not read as a result. */
 function runSecurity(args: string[]): void {
   execFileSync(SECURITY_PATH, args, { encoding: 'utf8', stdio: 'pipe' });
 }

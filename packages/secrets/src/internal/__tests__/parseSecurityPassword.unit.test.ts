@@ -51,7 +51,7 @@ describe(parseSecurityPassword, () => {
 
 // region | Helpers
 
-/** Wraps a password line in the trailing attribute lines that `security` writes after it. */
+/** Parses a password line followed by the trailing attribute lines that `security` writes after it. */
 function parse(passwordLine: string): string {
   return parseSecurityPassword(`${passwordLine}\n${TRAILER}`);
 }

@@ -13,9 +13,7 @@ const DISPOSAL = /\[\s*Symbol\s*\.\s*dispose\s*\]\s*\(/;
 /**
  * Lists every `onTestFinished` call whose callback disposes a value.
  *
- * Nothing in the anchor is a string literal, so this scans the blanked code directly, where `listExitMocks`
- * and `listConsoleSites` have to match the source and read their verdict off the blanked text at equal
- * offsets.
+ * Nothing in the anchor is a string literal, so this scans the blanked code directly.
  *
  * The anchor is case-sensitive, which holds `disposeOnTestFinished` outside it, so an adopting
  * project's own calls are not reported. `\b` matches after a `.` as readily as at a line start, so the

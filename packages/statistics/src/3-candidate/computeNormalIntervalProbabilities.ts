@@ -39,6 +39,7 @@ export function computeNormalIntervalProbabilities(params: Params): IntervalProb
   return { additive, cumulative: toCumulativeSumsFromAddends(additive) };
 }
 
+/** Returns the total of the values. */
 function sum(array: number[]): number {
   return array.reduce((a, b) => a + b, 0);
 }
@@ -80,6 +81,7 @@ function toPointMassProbabilities(nIntervals: number): number[] {
   return Array.from({ length: nIntervals }, (_, i) => (i === lowerMiddleIndex || i === lowerMiddleIndex + 1 ? 0.5 : 0));
 }
 
+/** Scales the weights so that they sum to 1. */
 function toProbabilitiesFromWeights(weights: number[]): number[] {
   const total = sum(weights);
   return weights.map((weight) => weight / total);

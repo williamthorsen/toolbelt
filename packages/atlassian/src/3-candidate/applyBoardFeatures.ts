@@ -21,7 +21,6 @@ export async function applyBoardFeatures(
   for (const toggle of plan.featureToggles) {
     // The board-scoped endpoint expects the feature in the body; its project-scoped counterpart expects it in
     // the path, so the two take different shapes.
-
     await requestOk(request, {
       body: { boardId: id, enabling: toggle.to === 'ENABLED', feature: toggle.feature },
       label: `set board feature ${toggle.feature} to ${toggle.to}`,

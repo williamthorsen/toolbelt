@@ -28,7 +28,7 @@ export function pointCwdAt(dir: string, options: PointCwdAtOptions = {}): Pointe
   const previousCwd = process.cwd;
   const previousDir = chdir ? nativeCwd() : undefined;
 
-  // Moved before the property is replaced, so a `chdir` that throws leaves both untouched.
+  // Move the process before replacing the property, so that a `chdir` that throws leaves both untouched.
   if (chdir) {
     process.chdir(resolvedDir);
   }
@@ -40,7 +40,7 @@ export function pointCwdAt(dir: string, options: PointCwdAtOptions = {}): Pointe
     dir: resolvedDir,
 
     [Symbol.dispose]() {
-      // Restored first, so a `chdir` that fails cannot strand the replacement.
+      // Restore the property first, so that a `chdir` that fails cannot strand the replacement.
       process.cwd = previousCwd;
 
       if (previousDir !== undefined) {

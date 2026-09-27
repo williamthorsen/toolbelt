@@ -1,8 +1,8 @@
 import { getLineAtOffset } from '@williamthorsen/toolbelt.adoption';
 
 // The idiom, matched in one pass: a subject's first character upper-cased, joined to that same subject's tail.
-// `\s*` sits at every joint rather than a condensed window being read, because the expression has no
-// fixed-width span to bound and a formatter may wrap it at any of them.
+// `\s*` sits at every joint, because the expression has no fixed-width span to bound and a formatter may wrap
+// it at any of them.
 //
 // The backreference makes the match a capitalize rather than two unrelated halves, and the leading
 // lookbehind keeps the subject from starting mid-identifier, which would let `sX...+ X.slice(1)` match on `X`.

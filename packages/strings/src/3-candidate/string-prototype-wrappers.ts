@@ -1,5 +1,5 @@
 /**
- * Wrapper for String.prototype.toLowerCase()
+ * Calls `String.prototype.toLowerCase` on a string, for use as a callback.
  * @category String
  * @experimental
  * @stage candidate
@@ -9,7 +9,7 @@ export function toLowerCase(str: string): string {
 }
 
 /**
- * Wrapper for String.prototype.toUpperCase()
+ * Calls `String.prototype.toUpperCase` on a string, for use as a callback.
  * @category String
  * @experimental
  * @stage candidate
@@ -19,7 +19,7 @@ export function toUpperCase(str: string): string {
 }
 
 /**
- * Wrapper for String.prototype.trim()
+ * Calls `String.prototype.trim` on a string, for use as a callback.
  * @category String
  * @experimental
  * @stage candidate
@@ -29,7 +29,7 @@ export function trim(str: string): string {
 }
 
 /**
- * Wrapper for String.prototype.trimEnd()
+ * Calls `String.prototype.trimEnd` on a string, for use as a callback.
  * @category String
  * @experimental
  * @stage candidate
@@ -39,7 +39,7 @@ export function trimEnd(str: string): string {
 }
 
 /**
- * Wrapper for String.prototype.trimStart()
+ * Calls `String.prototype.trimStart` on a string, for use as a callback.
  * @category String
  * @experimental
  * @stage candidate

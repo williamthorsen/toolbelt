@@ -3,9 +3,9 @@ import fs from 'node:fs';
 const NODE_MODULES_SEGMENT = 'node_modules/';
 
 /**
- * Resolves the npm package that installed a bin, from the symlink that npm leaves in a `bin` directory: the
+ * Resolves the npm package that installed a bin, from the symlink that npm leaves in a `bin` directory: The
  * package is the name after the first `node_modules/` in the link's target, two segments for a scoped name.
- * The first occurrence rather than the last, so a bin nested under a global package's own `node_modules`
+ * The first occurrence counts, not the last, so a bin nested under a global package's own `node_modules`
  * still names the global package. Returns `undefined` where the path is not a symlink, does not exist, or
  * links to a target outside a `node_modules` directory.
  *

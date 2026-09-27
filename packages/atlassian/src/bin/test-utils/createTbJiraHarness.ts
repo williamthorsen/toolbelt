@@ -12,7 +12,10 @@ import type { TbJiraEffects } from '../subcommand-support.ts';
 
 const CLOUD_ID = 'cloud-1';
 
-/** The gateway origin that the harness's fake transport reports, matching the cloudId that its tenant-info read returns. */
+/**
+ * The gateway origin that the harness's fake transport reports, matching the cloudId that its tenant-info read
+ * returns.
+ */
 export const HARNESS_BASE_URL = `https://api.atlassian.com/ex/jira/${CLOUD_ID}`;
 
 /** Jira reads the workflow graph through a POST, since the request contains the issue types in a body. */
@@ -47,6 +50,7 @@ export function createTbJiraHarness(options: HarnessOptions = {}): TbJiraHarness
   const { calls, request } = createFakeRequest(routes, { baseUrl: HARNESS_BASE_URL });
   let transportOptions: TokenTransportOptions | undefined;
 
+  /** Throws the configured keychain fault. */
   function refuse(): never {
     throw new Error(keystoreFault);
   }

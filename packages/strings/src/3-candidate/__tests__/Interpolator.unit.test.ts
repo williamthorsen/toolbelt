@@ -398,6 +398,7 @@ describe(Interpolator, () => {
   });
 });
 
+/** Converts nested objects to plain object literals, leaving arrays and maps as they are. */
 function toObjectLiteral(value: unknown): unknown {
   if (is.array(value) || is.map(value)) {
     return value;

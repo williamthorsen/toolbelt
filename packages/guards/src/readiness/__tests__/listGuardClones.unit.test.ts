@@ -146,7 +146,7 @@ describe(listGuardClones, () => {
     ]);
   });
 
-  // The rules that hold the kit to functions an import retires. Each of these is working code that no export
+  // The rules that hold the kit to functions that an import retires. Each of these is working code that no export
   // of this package could replace.
   it('declines a guard that tests the result of a call', () => {
     const source = [

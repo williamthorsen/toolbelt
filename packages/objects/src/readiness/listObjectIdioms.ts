@@ -31,6 +31,7 @@ export function listObjectIdioms(source: string): Array<AdoptionSite<ObjectIdiom
 
 // region | Helpers
 
+/** Pairs each line with the idiom kind that it reports. */
 function toSites(kind: ObjectIdiomKind, lines: readonly number[]): Array<AdoptionSite<ObjectIdiomKind>> {
   return lines.map((line) => ({ kind, line }));
 }

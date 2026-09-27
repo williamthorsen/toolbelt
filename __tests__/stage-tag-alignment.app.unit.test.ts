@@ -50,9 +50,7 @@ function auditStageTags(monorepoRoot: string): { misalignments: string[]; tagCou
   return { misalignments: misalignments.toSorted((a, b) => a.localeCompare(b)), tagCount };
 }
 
-/**
- * Returns the maturity tier name when the file sits directly under a `src/{n}-{tier}/` directory.
- */
+/** Returns the maturity tier of the `src/{n}-{tier}/` directory that contains a file at any depth. */
 function extractTier(filePath: string): string | undefined {
   const segments = filePath.split(path.sep);
   const srcIndex = segments.lastIndexOf('src');

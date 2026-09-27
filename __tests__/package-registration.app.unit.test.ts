@@ -29,7 +29,7 @@ describe('Package registration', () => {
 /**
  * Audits every published workspace against the four files that record a package: the release-kit label
  * configuration, the labels file generated from it, the label lookup that maps a commit scope to a label, and the
- * domain list in AGENTS.md. A scaffolding pull request that misses one of them currently ships in silence.
+ * domain list in AGENTS.md. A scaffolding pull request that misses one of them ships in silence.
  *
  * The check runs in one direction alone, so an entry naming no published workspace stays legal: Both
  * `.meta/label-map.json` and the label configuration hold lookups for private workspaces and for `root`.

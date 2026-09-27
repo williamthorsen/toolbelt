@@ -6,8 +6,8 @@ import * as candidateExports from '../../3-candidate/index.ts';
 import * as releaseExports from '../../4-release/index.ts';
 import { ADOPTED_EXPORTS } from '../adoptedExports.ts';
 
-// Every tier published by the package's `exports` map. `errors` and `vitest` scan the last two alone; this
-// package puts `makeRng` in `1-proposed`, which a two-tier sweep would miss while still passing.
+// Every tier published by the package's `exports` map. `makeRng` lives in `1-proposed`, so a sweep of the last
+// two tiers alone would miss it and still pass.
 const PUBLISHED_TIERS = [proposedExports, draftExports, candidateExports, releaseExports];
 
 describe('ADOPTED_EXPORTS', () => {

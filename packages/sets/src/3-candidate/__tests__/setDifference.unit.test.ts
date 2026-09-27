@@ -34,8 +34,8 @@ describe(setDifference, () => {
   });
 
   it('works with arrays', () => {
-    const array1 = new Set([1, 2]);
-    const array2 = new Set([2, 3]);
+    const array1 = [1, 2];
+    const array2 = [2, 3];
     const expected = new Set([1]);
 
     const actual = setDifference(array1, array2);

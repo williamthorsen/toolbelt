@@ -121,7 +121,7 @@ function auditWorkspaceExports(monorepoRoot: string): {
 }
 
 /**
- * Lists the maturity-tier directory names under a package's `src`, taking a tier as present only where it holds a
+ * Lists the maturity-tier directory names under a package's `src`, taking a tier as present only when it holds a
  * TypeScript file.
  */
 function listTierDirectories(packageDirectory: string): string[] {

@@ -6,9 +6,9 @@ import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
 const SECURITY_PATH = '/usr/bin/security';
 
 /**
- * Whether this process can create a keychain, so a test needing one skips rather than fails where it cannot.
- * A platform holding no `security` and a sandbox denying the `securityd` lookup both land here. Probing once
- * at load keeps the cost to one keychain per file, and the guards that read it run at collection.
+ * Whether this process can create a keychain, so that a test needing one skips rather than fails when it
+ * cannot. A platform holding no `security` and a sandbox denying the `securityd` lookup both make it false.
+ * Probing once at load keeps the cost to one keychain per file, and the guards that read it run at collection.
  *
  * @internal
  */
@@ -65,7 +65,7 @@ function describeFailure(error: unknown): string {
 /**
  * Creates a keychain and deletes it, reporting what refused it, so a run that skips states its cause instead
  * of passing quietly. The notice goes to `process.stderr` because the runner's `silent: 'passed-only'`
- * withholds console output that no failing test claims, which is every line this probe writes.
+ * withholds console output that no failing test claims, which is every line that this probe writes.
  */
 function probeKeychain(): boolean {
   try {
@@ -79,7 +79,7 @@ function probeKeychain(): boolean {
   }
 }
 
-/** Runs `security`, raising what it wrote where it failed, so a broken fixture is not read as a result. */
+/** Runs `security`, raising what it wrote where it failed, so that a broken fixture is not read as a result. */
 function runSecurity(args: string[]): void {
   execFileSync(SECURITY_PATH, args, { encoding: 'utf8', stdio: 'pipe' });
 }

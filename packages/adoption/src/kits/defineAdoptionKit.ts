@@ -121,8 +121,7 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
    * Throws where one id names more than one check, which readyup validates nowhere.
    *
    * A pragma is matched against each check's own accepted ids, so a shared id silences every check holding
-   * it and takes the site out of every one of their fractions -- the loss that `id` is required to prevent,
-   * arriving from the other direction.
+   * it and takes the site out of every one of their fractions, which is the loss that requiring `id` prevents.
    */
   function assertCheckIdsAreUnique(): void {
     const seen = new Set<string>();

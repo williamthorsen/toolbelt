@@ -19,7 +19,13 @@ const POSITIONAL_TERMINATOR = '--';
 // The one dash-led argument that `parseArgs` takes as a spaced flag's value; by convention it names standard input.
 const STDIN_ARGUMENT = '-';
 
-/** Composes the usage message for a source that named a style that does not exist. */
+/**
+ * Composes the usage message for a source that named a style that does not exist.
+ *
+ * @category Terminal
+ * @experimental
+ * @stage candidate
+ */
 export function describeInvalidOutputStyle(invalid: InvalidOutputStyle): string {
   const { source, value } = invalid;
 

@@ -1,5 +1,5 @@
 /**
- * Returns the number rounded to the given number of decimal places, or 0 if no nDecimalPlaces is specified.
+ * Returns the number rounded to the given number of decimal places.
  * @param value
  * @param nDecimalPlaces
  *

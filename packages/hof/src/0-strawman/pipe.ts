@@ -36,8 +36,8 @@ export function pipe<T extends [Fn, ...Fn[]]>(...fns: PipeReturn<T> extends neve
 }
 
 /**
- * Like `pipe` but takes an argument as its first parameter and invokes the pipe with it.
- * Note: Unlike in `pipe`, the first function of the pipe must take exactly one argument.
+ * Invokes the pipe of `fns` with the given argument.
+ * Unlike in `pipe`, the first function of the pipe must take exactly one argument.
  *
  * @example
  * ```
@@ -57,6 +57,8 @@ export function applyPipe<Fns extends [Fn<[any]>, ...Fn[]]>(
 
 // region | Helpers
 /**
+ * Awaits `result` and passes it through the remaining functions, awaiting each result in turn.
+ *
  * @internal
  */
 async function resolveAsync(result: unknown, fns: Fn[]) {

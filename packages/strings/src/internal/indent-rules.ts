@@ -46,6 +46,7 @@ export function isBlankText(text: string): boolean {
 
 // region | Helpers
 
+/** Returns the longest prefix shared by two strings. */
 function findCommonPrefix(a: string, b: string): string {
   const limit = Math.min(a.length, b.length);
   let length = 0;

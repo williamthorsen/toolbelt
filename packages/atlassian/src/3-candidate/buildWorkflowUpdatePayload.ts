@@ -7,8 +7,9 @@ import type { WorkflowStatusUpdate, WorkflowUpdatePayload } from './WorkflowUpda
 const TRANSITION_ID_SPACING = 10;
 
 /**
- * Composes the bulk workflow-update body from the live graph, so nothing the plan leaves unstated is discarded,
- * and refuses a payload rejected by the graph guards. Every payload that this returns has passed those guards.
+ * Composes the bulk workflow-update body from the live graph, so that nothing the plan leaves unstated is
+ * discarded, and refuses a payload rejected by the graph guards. Every payload that this returns has passed those
+ * guards.
  *
  * @category Jira
  * @experimental

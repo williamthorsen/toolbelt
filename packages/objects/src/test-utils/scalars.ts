@@ -12,6 +12,7 @@ const unserializableScalars = [1n, Symbol('a')].map(labelScalar);
 
 export const scalars = [...serializableScalars, ...unserializableScalars];
 
+/** Pairs a scalar with a label naming its type. */
 function labelScalar<T extends Scalar>(value: T): { label: string; value: T } {
   return {
     label: `a value of type ${typeof value}`,

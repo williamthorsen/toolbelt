@@ -9,17 +9,17 @@
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
-          "hash": "1dc83619",
+          "hash": "86735fbf",
           "kind": "module",
           "path": "../../adoption/src/conventions/path-predicates.ts"
         },
         {
-          "hash": "0237a871",
+          "hash": "a32695b8",
           "kind": "module",
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "8fb83c2d",
+          "hash": "56a9ea12",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -34,12 +34,12 @@
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
         {
-          "hash": "0661f0dd",
+          "hash": "6be867bd",
           "kind": "module",
           "path": "../../adoption/src/portable/listDirectoryAscents.ts"
         },
         {
-          "hash": "07c8358f",
+          "hash": "b84bbe9d",
           "kind": "module",
           "path": "../../adoption/src/portable/listFunctionBodies.ts"
         },
@@ -79,7 +79,7 @@
           "path": "../src/readiness/listClampNestLines.ts"
         },
         {
-          "hash": "eabb769f",
+          "hash": "2b481f28",
           "kind": "module",
           "path": "../src/readiness/listMathIdioms.ts"
         },

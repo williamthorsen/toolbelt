@@ -1,7 +1,5 @@
-//
 /**
- * Type-safe version of `Array.prototype.includes`.
- * Returns `true` if `element` is in `array`.
+ * Reports whether `element` is in `array`, narrowing it to the array's item type.
  *
  * @category Array
  * @experimental

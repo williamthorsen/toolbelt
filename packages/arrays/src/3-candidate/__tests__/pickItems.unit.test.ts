@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 
 import { pickItems } from '../pickItems.ts';
 
-// Seed for use in deterministic tests.
 const SEED = 1;
 
 describe(pickItems, () => {

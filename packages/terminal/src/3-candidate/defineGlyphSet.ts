@@ -30,9 +30,9 @@ const RICH_WIDTH = 2;
  * emoji font, which is what a plain variant exists for. An empty plain variant is legal at width 0, which lets
  * a name carry a rich decoration and no plain counterpart while still holding its column.
  *
- * Throws where `resolveOutputStyle` reports, because a set is built from the author's own literals at module
- * load: A violation is a programming error rather than input whose complaint has to be rendered somehow. One
- * error names every violation, so the set is repaired in a single pass.
+ * Throws on a violation, because a set is built from the author's own literals at module load: A violation is
+ * a programming error rather than input whose complaint has to be rendered somehow. One error names every
+ * violation, so the set is repaired in a single pass.
  *
  * @category Terminal
  * @experimental
@@ -112,7 +112,7 @@ function listViolations(name: string, variants: GlyphVariants): string[] {
   return violations;
 }
 
-/** Type-preserving wrapper around `Object.fromEntries`. */
+/** Builds a record from entries, restoring the key type that `Object.fromEntries` widens to `string`. */
 function toGlyphRecord<Name extends string>(entries: Array<[Name, Glyph]>): Record<Name, Glyph> {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Object.fromEntries widens keys to string; the assertion restores them.
   return Object.fromEntries(entries) as Record<Name, Glyph>;

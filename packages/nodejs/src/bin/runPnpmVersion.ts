@@ -4,7 +4,7 @@ import type { PnpmVersionResult } from './runTbNode.ts';
 
 /**
  * Runs `pnpm --version` in a directory and returns the last non-empty line that it wrote to stdout, or why it
- * wrote none: the command could not be spawned, or it exited non-zero, with the last line of its stderr. The pnpm
+ * wrote none: The command could not be spawned, or it exited non-zero, with the last line of its stderr. The pnpm
  * that runs is the first on PATH, and corepack's download prompt is suppressed so that an unattended run does not
  * block on it. Never throws.
  *

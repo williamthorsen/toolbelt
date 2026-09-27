@@ -40,7 +40,7 @@ export async function loadConfigCascade<TConfig = unknown>(
   let stopReason: CascadeStopReason = 'stop-dir';
 
   for (const { dir, entryPath } of matches) {
-    // Sequential by design: The predicate decides whether the next file is imported at all.
+    // Import sequentially: The predicate decides whether the next file is imported at all.
     const config = await importDefaultExport<TConfig>(entryPath);
     entries.push({ config, dir, filePath: entryPath });
 

@@ -11,7 +11,7 @@ import { clamp } from '@williamthorsen/toolbelt.numbers/candidate';
 export function obfuscate(str: string, options: Options = {}): string {
   const { bookendSize = 0, fillChar = '*', fillSize } = options;
 
-  // Validations
+  // Validate the options
   if (Number.isNaN(bookendSize)) {
     throw new TypeError('bookendSize cannot be NaN.');
   }

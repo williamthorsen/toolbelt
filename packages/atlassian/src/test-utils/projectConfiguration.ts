@@ -36,6 +36,7 @@ export function buildStatus(overrides: Partial<WorkflowStatus> & Pick<WorkflowSt
   };
 }
 
+/** Builds the `To Do`, `In Progress`, and `Done` statuses with which a team-managed project starts. */
 export function buildStatuses(): WorkflowStatus[] {
   return [
     buildStatus({ name: 'To Do', statusCategory: 'TODO' }),

@@ -16,8 +16,7 @@ export function shuffle<T>(items: ReadonlyArray<T>, options: Options = {}): T[] 
 }
 
 /**
- * Uses the Fisher-Yates algorithm to shuffle an array in place.
- * Time complexity: O(n)
+ * Shuffles the array in place with the Fisher-Yates algorithm, in O(n) time.
  *
  * @category Array
  * @experimental

@@ -16,7 +16,7 @@ const SAVED_PARENT_WALK = [
   '',
 ].join('\n');
 
-// The saved-previous ascent, which assigns the parent in place and compares against the level it left.
+// The saved-previous ascent, which assigns the parent in place and compares against the level that it left.
 const SAVED_PREVIOUS_WALK = [
   'export function ascend(startDir) {',
   '  let dir = startDir;',
@@ -329,7 +329,7 @@ describe(listDirectoryAscents, () => {
     expect(listAscents(source)).toStrictEqual([]);
   });
 
-  // A loop around an ascent holds every line the ascent holds, and only the innermost names the site.
+  // A loop around an ascent holds every line that the ascent holds, and only the innermost names the site.
   it('reports an ascent once, on the innermost loop around it', () => {
     const source = [
       'for (const name of names) {',

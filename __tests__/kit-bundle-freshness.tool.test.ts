@@ -49,7 +49,7 @@ function auditKitBundles(monorepoRoot: string): { failures: string[]; workspaceC
 }
 
 /**
- * Reports why a workspace's bundles fail verification, or nothing where they pass.
+ * Reports why a workspace's bundles fail verification, or nothing when they pass.
  *
  * `--rebuild` recompiles and compares bytes, which catches a toolchain change that the recorded hashes
  * cannot: The same sources emit a different bundle under a different esbuild.

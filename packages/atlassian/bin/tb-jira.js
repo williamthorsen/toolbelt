@@ -4,8 +4,8 @@
 // dependency would replace this file's build-first message with ERR_MODULE_NOT_FOUND.
 import { existsSync } from 'node:fs';
 
-// Thin wrapper so pnpm can link the bin at install time, before `dist/` exists. The real entry point loads
-// at runtime from the build output.
+// Thin wrapper so that pnpm can link the bin at install time, before `dist/` exists. The real entry point
+// loads at runtime from the build output.
 const entryPoint = new URL('../dist/esm/bin/tb-jira.js', import.meta.url);
 
 // Gate on the entry file itself: Node raises ERR_MODULE_NOT_FOUND for any unresolved module in the graph,

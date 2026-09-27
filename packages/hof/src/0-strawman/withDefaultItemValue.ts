@@ -1,5 +1,5 @@
 /**
- * Returns a new function that replaces undefined values in the input array to the original function with a default value.
+ * Returns a function that calls `fn` with each undefined item of its input array replaced by `defaultValue`.
  *
  * @category Function
  * @experimental

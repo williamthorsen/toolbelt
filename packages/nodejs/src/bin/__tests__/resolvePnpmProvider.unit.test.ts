@@ -161,7 +161,7 @@ function linkBin(tree: TempTree, version: string, target: string): void {
   fs.symlinkSync(target, tree.resolve(`installs/nodejs/${version}/bin/pnpm`));
 }
 
-/** Sets the execute bit, which `createTempTree` does not, so the file counts as an executable on PATH. */
+/** Sets the execute bit, which `createTempTree` does not, so that the file counts as an executable on PATH. */
 function markExecutable(tree: TempTree, entryPath: string): void {
   fs.chmodSync(tree.resolve(entryPath), 0o755);
 }

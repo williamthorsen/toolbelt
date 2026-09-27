@@ -93,7 +93,7 @@ describe(runTbSecret, () => {
       expect(harness.secrets.get('default|me@example.com|token')).toBe('s3cret');
     });
 
-    it('stores a secret that contains a line break, which the keychain now holds faithfully', async () => {
+    it('stores a secret that contains a line break, which the keychain holds faithfully', async () => {
       const harness = createHarness({ stdin: 'first\nsecond' });
 
       expect((await runTbSecret(['set', 'token'], harness.effects)).exitCode).toBe(0);
@@ -199,7 +199,7 @@ describe(runTbSecret, () => {
 // region | Helpers
 
 /**
- * Builds effects over a map of secrets keyed by keychain, account, and service, so a command's reach is read
+ * Builds effects over a map of secrets keyed by keychain, account, and service, so that a command's reach is read
  * back from which key it touched.
  */
 function createHarness(options: HarnessOptions = {}): Harness {

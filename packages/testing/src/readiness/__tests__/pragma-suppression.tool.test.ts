@@ -39,7 +39,7 @@ describe('The testing adoption kit, run through rdy', () => {
 
 // region | Helpers
 
-/** Builds a captured-error test source whose `try` carries the given trailing pragma. */
+/** Builds a captured-error test source whose `try` line ends with the given pragma. */
 function buildCapture(pragma: string): string {
   return [
     'let caught: unknown;',

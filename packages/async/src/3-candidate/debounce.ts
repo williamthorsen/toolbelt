@@ -12,6 +12,9 @@ interface DebounceOptions {
  * Returns a function whose execution is delayed until after the wait time has elapsed since its last invocation.
  * Optionally, the function can be invoked immediately on the leading edge instead of the trailing edge.
  *
+ * @category Async
+ * @experimental
+ * @stage candidate
  * @param callback - The function to debounce.
  * @param delayMs - The number of milliseconds to delay.
  * @param noInitialDelay - If `true`, trigger the callback on the leading edge instead of the trailing edge.
@@ -26,6 +29,7 @@ export function debounce<T extends Callback>(
   let lastCalledAt: number | undefined;
   let timeoutId: TimeoutId;
 
+  /** Schedules the callback with the latest arguments, replacing any pending invocation. */
   function debouncedFunction(...args: Parameters<T>): void {
     const now = Date.now();
 

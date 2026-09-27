@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { listCaptureSites } from '../listCaptureSites.ts';
 
 // Each source a legitimate use of try/catch that the substitution does not reach. The first four are the
-// shapes this repository actually holds; the rest are the ways a capture can look without being one.
+// shapes that this repository actually holds; the rest are the ways a capture can look without being one.
 const UNCLAIMED = [
   {
     label: 'a try/finally, which captures nothing',

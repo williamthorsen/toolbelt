@@ -133,7 +133,7 @@ The alternatives cover less. `figures` has had no release since 2024-03 and fall
 defineGlyphSet<Name extends string>(variants: Readonly<Record<Name, GlyphVariants>>): GlyphSet<Name>;
 ```
 
-Assembles a set, throwing a `TypeError` that names every violation at once rather than stopping at the first. It throws where `resolveOutputStyle` reports, because a set is built from the author's own literals at module load and a violation there is a programming error.
+Assembles a set, throwing a `TypeError` that names every violation at once rather than stopping at the first. It throws on a violation, because a set is built from the author's own literals at module load and a violation there is a programming error.
 
 ```ts
 const SOURCE_GLYPHS = defineGlyphSet({

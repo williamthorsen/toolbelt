@@ -45,7 +45,7 @@ export interface FakeCall {
 }
 
 export interface FakeRequestOptions {
-  /** The origin that a route's path is resolved against, which reaches `JiraResponse.url`. */
+  /** The origin against which a route's path is resolved, which reaches `JiraResponse.url`. */
   readonly baseUrl?: string | undefined;
 }
 

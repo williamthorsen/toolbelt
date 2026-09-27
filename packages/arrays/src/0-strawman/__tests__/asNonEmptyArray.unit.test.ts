@@ -71,10 +71,10 @@ describe(assertFrozenArray, () => {
   });
 
   it('guarantees immunity from side effects', () => {
+    /** Asserts that an array typed as read-only is also frozen. */
     function expectFrozenArray(items: ReadonlyArray<string>): void {
       // `items` is declared to be read-only in this function, but is not frozen
       assertFrozenArray(items);
-      // This code is unreachable because the assertion throws an error
     }
 
     const throwingFn = () => expectFrozenArray(['item']);
@@ -111,7 +111,7 @@ describe(assertNonEmptyArray, () => {
   });
 
   // eslint-disable-next-line vitest/expect-expect
-  it('if array is immutable, fails to compile', () => {
+  it('if array is mutable, fails to compile', () => {
     const mutableItems = ['item'];
 
     // The following assertion fails at compile-time but succeeds at runtime.
@@ -138,7 +138,7 @@ describe(assertNonEmptyArray, () => {
   });
 });
 
-// Function to test TypeScript's ability to narrow a value's type to a non-empty array
+/** Returns its arguments as a non-empty tuple, for testing TypeScript's narrowing to a non-empty array. */
 function expectNonEmpty<T>(firstItem: T, ...otherItems: T[]): Readonly<[T, ...T[]]> {
   return [firstItem, ...otherItems];
 }

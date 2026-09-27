@@ -11,7 +11,7 @@ describe(dedent, () => {
   });
 
   it('unindents a closing line that is not blank, rather than discarding it', () => {
-    // eslint-disable-next-line unicorn/template-indent -- the closing backtick sits on the content line deliberately; moving it to its own line is the case that this test exists to distinguish from.
+    // eslint-disable-next-line unicorn/template-indent -- the closing backtick on the content line is the case under test.
     expect(dedent`
       first line
       last line`).toBe('first line\nlast line');

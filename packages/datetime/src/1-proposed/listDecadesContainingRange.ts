@@ -1,10 +1,13 @@
 import type { Decade } from './listDecadesContainingYears.ts';
 
 /**
- * Given a range of years, identify the decades containing those years and return a list of objects
- * containing the start, end, and label for each decade.
+ * Lists the decades that contain the years of an inclusive range, each with its start, end, and label.
  * A decade starts in a year that is a multiple of 10 (e.g., 1990, 2000, etc.).
  * A decade ends 9 years after its start (e.g., 1990-1999, 2000-2009, etc.).
+ *
+ * @category DateTime
+ * @experimental
+ * @stage proposed
  */
 export function listDecadesContainingRange(range: { start: number; end: number }): Decade[] {
   const { start, end } = range;

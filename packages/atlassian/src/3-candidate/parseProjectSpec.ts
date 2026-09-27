@@ -5,9 +5,9 @@ const BOARD_FEATURE_REQUESTS: readonly string[] = ['DISABLED', 'ENABLED'];
 const STATUS_CATEGORIES: readonly string[] = ['DONE', 'IN_PROGRESS', 'TODO'];
 
 /**
- * Validates a project spec written as JSON, throwing on the first fault that it finds. Text rather than a parsed
- * value, so a malformed file and a malformed schema are one function's business and the file read stays with the
- * caller. Faults name what is wrong and not where it was read from, which the caller knows and this does not.
+ * Validates a project spec written as JSON, throwing on the first fault that it finds. It takes text rather than a
+ * parsed value, so that a malformed file and a malformed schema are one function's business and the file read stays
+ * with the caller. Faults name what is wrong and not where it was read from, which the caller knows and this does not.
  *
  * @category Jira
  * @experimental

@@ -113,7 +113,7 @@ describe(buildKeychainStore, () => {
       expect(spy.calls[0]).toStrictEqual({ args: ['-i'], input: `${SET_LINE}\n` });
     });
 
-    it('names the keychain that it was built over, which the old write could not', () => {
+    it('names the keychain that it was built over', () => {
       const spy = createWriteSpy('s3cret');
 
       buildKeychainStore(spy.run, KEYCHAIN).setSecret(QUERY, 's3cret');

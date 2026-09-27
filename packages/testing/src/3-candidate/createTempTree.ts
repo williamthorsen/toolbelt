@@ -8,11 +8,9 @@ import path from 'node:path';
  * mapped contents, given as text or as the bytes themselves. A key resolving outside the root is rejected, and a
  * call that throws leaves nothing on disk.
  *
- * The handle writes into the tree after it is built, through `mkdir`, `symlink`, `write`, `writeAll`, and
- * `writeJson`. Each creates the parent directories that it needs and takes its entry path through the containment
- * check applied by `resolve`; `symlink`'s target is the exception, stored verbatim. Every one but `writeAll`,
- * which takes a map, returns the absolute path that it wrote. It reads the tree back through `exists`, `list`,
- * `listFiles`, `read`, and `readJson`, and removes an entry through `rm`.
+ * Each of the handle's writers creates the parent directories that it needs and takes its entry path through the
+ * containment check applied by `resolve`; `symlink`'s target is the exception, stored verbatim. Every writer but
+ * `writeAll`, which takes a map, returns the absolute path that it wrote.
  *
  * `prefix` names the directory, so a tree outliving a crashed run still shows what made it.
  *
@@ -41,14 +39,17 @@ export function createTempTree(
     throw error;
   }
 
+  /** Checks the resolved path for an entry. */
   function exists(entryPath: string): boolean {
     return fs.existsSync(resolveWithinTree(dir, [entryPath]));
   }
 
+  /** Reads the sorted names in a directory within the tree. */
   function list(entryPath = ''): string[] {
     return fs.readdirSync(resolveWithinTree(dir, [entryPath])).toSorted();
   }
 
+  /** Walks a directory within the tree for its files, or returns none for a missing directory. */
   function listFiles(entryPath = ''): string[] {
     const rootPath = resolveWithinTree(dir, [entryPath]);
 
@@ -57,6 +58,7 @@ export function createTempTree(
     return listFilesBelow(rootPath, '').toSorted();
   }
 
+  /** Creates a directory within the tree and returns its absolute path. */
   function mkdir(entryPath: string): string {
     const absolutePath = resolveWithinTree(dir, [entryPath]);
 
@@ -65,10 +67,12 @@ export function createTempTree(
     return absolutePath;
   }
 
+  /** Reads a file within the tree as UTF-8 text. */
   function read(entryPath: string): string {
     return fs.readFileSync(resolveWithinTree(dir, [entryPath]), 'utf8');
   }
 
+  /** Parses a file within the tree as JSON, naming the entry on a parse failure. */
   function readJson(entryPath: string): unknown {
     const contents = read(entryPath);
 
@@ -79,14 +83,17 @@ export function createTempTree(
     }
   }
 
+  /** Resolves segments against the tree root, rejecting a result outside it. */
   function resolve(...segments: string[]): string {
     return resolveWithinTree(dir, segments);
   }
 
+  /** Removes an entry within the tree, recursively and without failing on a missing one. */
   function rm(entryPath: string): void {
     fs.rmSync(resolveWithinTree(dir, [entryPath]), { force: true, recursive: true });
   }
 
+  /** Creates a link within the tree, with its parent directories, and returns its absolute path. */
   function symlink(linkPath: string, targetPath: string): string {
     const absoluteLink = resolveWithinTree(dir, [linkPath]);
 
@@ -96,6 +103,7 @@ export function createTempTree(
     return absoluteLink;
   }
 
+  /** Writes a file within the tree, with its parent directories, and returns its absolute path. */
   function write(entryPath: string, contents: string | Uint8Array): string {
     const absolutePath = resolveWithinTree(dir, [entryPath]);
 
@@ -105,6 +113,7 @@ export function createTempTree(
     return absolutePath;
   }
 
+  /** Writes each entry of a map, creating a directory for a key that ends in `/`. */
   function writeAll(newEntries: Record<string, string | Uint8Array>): void {
     for (const [entry, contents] of Object.entries(newEntries)) {
       if (entry.endsWith('/')) {
@@ -115,6 +124,7 @@ export function createTempTree(
     }
   }
 
+  /** Writes a value as indented JSON, refusing one that has no JSON representation. */
   function writeJson(entryPath: string, value: unknown): string {
     const json = JSON.stringify(value, null, 2);
 
@@ -237,7 +247,7 @@ export interface TempTree extends Disposable {
  * to a name inside it.
  */
 function assertNamesDirectChild(prefix: string): void {
-  // Both separators are tested, because Windows resolves each and `path.sep` names only one of them.
+  // Test both separators, because Windows resolves each and `path.sep` names only one of them.
   if (prefix.includes('/') || prefix.includes('\\')) {
     throw new Error(`Temporary-directory prefix "${prefix}" contains a path separator`);
   }

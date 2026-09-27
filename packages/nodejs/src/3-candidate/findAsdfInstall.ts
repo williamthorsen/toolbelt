@@ -1,10 +1,10 @@
 import path from 'node:path';
 
 /**
- * Finds the asdf install that an executable belongs to, from its path alone: `<dataDir>/installs/<plugin>/<version>/bin/…`
- * yields the data directory, the plugin, and the version. Returns `undefined` for a path of any other shape, which
- * is an executable that asdf does not manage. The last `installs` segment is the one matched, so a data directory
- * whose own path contains that name still resolves.
+ * Finds the asdf install to which an executable belongs, from its path alone:
+ * `<dataDir>/installs/<plugin>/<version>/bin/…` yields the data directory, the plugin, and the version. Returns
+ * `undefined` for a path of any other shape, which is an executable that asdf does not manage. The last `installs`
+ * segment is the one matched, so a data directory whose own path contains that name still resolves.
  *
  * @category asdf
  * @experimental

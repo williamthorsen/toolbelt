@@ -1,5 +1,13 @@
 import { round } from '@williamthorsen/toolbelt.numbers/candidate';
 
+/**
+ * A unit of time, measured in milliseconds. Because durations are held in milliseconds, the largest
+ * exact duration is `Number.MAX_SAFE_INTEGER` milliseconds, a little over 100 million days.
+ *
+ * @category DateTime
+ * @experimental
+ * @stage draft
+ */
 export class TimeUnit {
   static readonly Millis = new TimeUnit(1, { singular: 'millisecond', abbrev: 'ms' });
   static readonly Seconds = new TimeUnit(1_000, { singular: 'second', abbrev: 's' });
@@ -8,8 +16,8 @@ export class TimeUnit {
   static readonly Days = new TimeUnit(86_400_000, { singular: 'day', abbrev: 'd' });
 
   /**
-   * Every unit, ordered from the coarsest to the finest. A consumer that walks the units reads the
-   * order from here rather than assembling its own, so a unit added above participates in it.
+   * Every unit, ordered from the coarsest to the finest. Consumers that walk the units read this list,
+   * so a unit declared above takes part in the walk only once it is listed here.
    */
   static readonly coarsestFirst: ReadonlyArray<TimeUnit> = [
     TimeUnit.Days,
@@ -27,14 +35,14 @@ export class TimeUnit {
     public readonly inMillis: number,
     options: TimeUnitOptions,
   ) {
-    // MAX_SAFE_INTEGER is 2^53, so by representing our duration in milliseconds (the lowest
-    // common unit) the highest duration that we can represent is
-    // 2^53 / 86*10^6 ~= 104 * 10^6 days (about 100 million days).
     this.abbrev = options.abbrev;
     this.singular = options.singular;
     this.plural = `${options.singular}s`;
   }
 
+  /**
+   * Converts an amount from one unit to another, optionally rounding the result or rejecting a fractional one.
+   */
   static convert(
     amount: number,
     fromUnit: TimeUnit,
@@ -64,6 +72,9 @@ export class TimeUnit {
     return value;
   }
 
+  /**
+   * Formats an amount with this unit's label: abbreviated in the short format, inflected in the long one.
+   */
   formatLabeledCount(amount: number, options: TimeUnitLabelOptions = {}): string {
     if (options.format === 'short') {
       return `${amount}${this.abbrev}`;
@@ -71,10 +82,16 @@ export class TimeUnit {
     return `${amount} ${this.inflectLabel(amount)}`;
   }
 
+  /**
+   * Returns the singular label for an amount of exactly 1, else the plural label.
+   */
   inflectLabel(amount: number): string {
     return amount === 1 ? this.singular : this.plural;
   }
 
+  /**
+   * Returns the plural label.
+   */
   toString(): string {
     return this.plural;
   }

@@ -11,8 +11,8 @@ const KITS_DIR = fileURLToPath(new URL('../../../.readyup/kits', import.meta.url
 const READINESS_DIR = fileURLToPath(new URL('..', import.meta.url));
 
 describe(listErrorSites, () => {
-  // Most files swept here write `instanceof Error` in a comment, a pattern, or a fix string, and each of those
-  // reported a site of its own before blanking. readyup drops the compiled bundle from its own sweep, and
+  // Most files swept here write `instanceof Error` in a comment, a pattern, or a fix string, each of which would
+  // report a site of its own if blanking missed it. readyup drops the compiled bundle from its own sweep, and
   // nothing in CI runs `rdy run --packages`, so nothing else would notice.
   it('finds nothing in the sources describing what it looks for', () => {
     const findings = listSweptFiles().flatMap((file) =>

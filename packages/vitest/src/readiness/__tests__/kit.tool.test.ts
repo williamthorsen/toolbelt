@@ -119,8 +119,8 @@ describe('The vitest adoption kit', () => {
     await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 0, findings: [] });
   });
 
-  // The departure that the source-oriented kits invert. The test file beside it keeps the check running, so a
-  // narrowed filter reports the silence here rather than leaving the check skipped.
+  // The test file beside it keeps the check running, so a narrowed filter reports the silence here rather than
+  // leaving the check skipped.
   it('leaves a source that is no test alone', async () => {
     using tree = createTrackedRepo({
       'package.json': MANIFEST,

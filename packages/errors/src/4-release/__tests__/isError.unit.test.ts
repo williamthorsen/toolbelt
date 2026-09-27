@@ -6,6 +6,7 @@ import { isError } from '../isError.ts';
 
 describe(isError, () => {
   it('returns true for an Error and for a subclass of one', () => {
+    /** A bare `Error` subclass. */
     class ParseFailure extends Error {}
 
     expect([

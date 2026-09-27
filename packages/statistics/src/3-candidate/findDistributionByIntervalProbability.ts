@@ -11,9 +11,9 @@ const SD_MIN = 0.01;
 const TOLERANCE = 0.000_1; // probability is accepted when it diverges from the target by no more than this fraction
 
 /**
- * Given a probability and a number of intervals, finds the normal distribution placing the requested
- * probability in its first and last intervals. Bisects the standard-deviation range, across which
- * the first interval's probability increases monotonically.
+ * Finds the normal distribution that places the requested probability in each of the first and last of
+ * `nIntervals` intervals. Bisects the standard-deviation range, across which the first interval's probability
+ * increases monotonically.
  *
  * @category Statistics
  * @stage candidate
@@ -39,6 +39,7 @@ export function findDistributionByIntervalProbability(params: Params, options: O
     throw new Error('Maximum standard deviation (sdMax) must be greater than minimum (sdMin).');
   }
 
+  /** Returns the interval probabilities at a standard deviation, with the window and interval count held fixed. */
   function computeIntervalProbabilities(standardDeviation: number): IntervalProbabilities {
     return computeNormalIntervalProbabilities({ halfWidth, nIntervals, standardDeviation });
   }
@@ -94,6 +95,7 @@ export function findDistributionByIntervalProbability(params: Params, options: O
   };
 }
 
+/** Returns the probability of the first interval. */
 function toFirstProbability(intervalProbabilities: IntervalProbabilities): number {
   return getItemAtIndexOrThrow(intervalProbabilities.additive, 0);
 }

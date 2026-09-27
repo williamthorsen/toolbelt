@@ -21,7 +21,7 @@ export class KeystoreError extends Error {}
 
 /** The effects deferred to the entry point, which keeps every subcommand free of I/O. */
 export interface TbJiraEffects {
-  /** Builds the transport that every Jira call is issued through. */
+  /** Builds the transport through which every Jira call is issued. */
   readonly createRequest: (options: TokenTransportOptions) => JiraRequest;
   readonly createStore: () => WritableSecretStore;
   readonly cwd: () => string;
@@ -65,6 +65,7 @@ export function callKeystore<T>(operation: () => T): T {
 export function createDeferredStore(effects: TbJiraEffects): SecretStore {
   let opened: WritableSecretStore | undefined;
 
+  /** Opens the keychain on the first call and returns that store on every later one. */
   function open(): WritableSecretStore {
     return (opened ??= effects.createStore());
   }

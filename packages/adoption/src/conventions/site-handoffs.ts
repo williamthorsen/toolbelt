@@ -47,7 +47,7 @@ export function isArraySubscript(before: string): boolean {
  * `toolbelt.filesystem` declines it. Both read the answer from here, so a consumer installing both packages
  * cannot see one loop reported twice under conflicting advice.
  *
- * One manifest among the names carries the verdict, however many names sit beside it, so a walk probing
+ * One manifest among the names decides the verdict, however many names sit beside it, so a walk probing
  * `package.json` and `.git` together is `toolbelt.packaging`'s as well. A walk probing root markers alone, such as
  * `.git`, looks for a named entry on the chain, which `findDirectoryChainMatch` returns, so it stays with
  * `toolbelt.filesystem`.

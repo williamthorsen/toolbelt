@@ -1,8 +1,11 @@
 import { isNullish } from '@williamthorsen/toolbelt.guards';
 
 /**
- * Accepts a comparison function and returns a new function that adds handling of nullish values and optional
- * comparison reversal.
+ * Returns a comparator that applies `nullishCompare` with the given comparison function and options.
+ *
+ * @category Array
+ * @experimental
+ * @stage candidate
  */
 export function makeNullishCompare<T>(compare: (a: T, b: T) => number, options: Options = {}): NullishComparer<T> {
   return function compareWithNullishHandling(a: T | null | undefined, b: T | null | undefined): number {
@@ -12,12 +15,11 @@ export function makeNullishCompare<T>(compare: (a: T, b: T) => number, options: 
 
 /**
  * Compares two values, using the following rules until the comparison is decided:
- * - If both values are nullish, they are considered to be equal.
- * - If only one value is nullish, it is considered to rank above the other value, unless `options.nullishGreater`
- *   is true, in which case it is considered to rank higher.
- * - If neither value is nullish, the `compare` function is used to compare them.
- * Returns a negative number if `a` ranks higher than `b`, a positive number if `a` ranks below `b`, or 0 if they
- *  have the same rank.
+ * - If both values are nullish, they have the same rank.
+ * - If only one value is nullish, it ranks above the other value, or below it if `options.nullishGreater` is true.
+ * - If neither value is nullish, the `compare` function decides.
+ * Returns a negative number if `a` ranks above `b`, a positive number if `a` ranks below `b`, or 0 if they have
+ * the same rank.
  *
  * @category Array
  * @experimental
@@ -38,7 +40,7 @@ export function nullishCompare<T>(
   if (isNullish(b)) {
     return options.nullishGreater ? -1 : 1;
   }
-  return compare(a, b) || 0; // avoids returning negative 0
+  return compare(a, b) || 0; // Normalize negative 0 to 0
 }
 
 // region | Types

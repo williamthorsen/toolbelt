@@ -64,12 +64,10 @@ describe(pickWeightedIndex, () => {
 
     mathRandomSpy.mockReturnValue(0);
     const weightedIndex = pickWeightedIndex(cumulativeWeights);
-    // expect the first index when random value is 0
     expect(weightedIndex).toBe(0);
 
     mathRandomSpy.mockReturnValue(0.999_999);
     expect(Math.random()).toBeCloseTo(0.999_999, 6);
-    // expect the last index when random value is close to 1
     expect(pickWeightedIndex(cumulativeWeights)).toBe(cumulativeWeights.length - 1);
   });
 });

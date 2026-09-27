@@ -22,7 +22,7 @@ function buildCommand(args: string[]): string {
   return [process.execPath, ENTRY_POINT, ...args].map(quoteForShell).join(' ');
 }
 
-/** Wraps a value for `bash -c`, so a path holding a space or a quote survives. */
+/** Wraps a value for `bash -c`, so that a path holding a space or a quote survives. */
 function quoteForShell(value: string): string {
   return `'${value.replaceAll("'", String.raw`'\''`)}'`;
 }

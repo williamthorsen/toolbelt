@@ -12,12 +12,9 @@ import { getItemAtIndexOrThrow } from './getItemAtIndexOrThrow.ts';
  * @stage candidate
  */
 export function findWeightedIndex(cumulativeWeights: ReadonlyArray<number>, targetWeight: number): Integer | undefined {
-  // Quick exits:
-  // - if the array is empty
   if (cumulativeWeights.length === 0) {
     return undefined;
   }
-  // - if the target weight is negative
   if (targetWeight < 0) {
     return undefined;
   }

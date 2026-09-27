@@ -6,35 +6,38 @@ import { pickInteger } from './pickInteger.ts';
 import { scaleInt } from './scale.ts';
 
 /**
- * Class that manages a pseudo-random number generator that behaves deterministically when given a seed.
+ * A pseudo-random number generator that behaves deterministically when given a seed.
+ *
+ * @category Number
+ * @experimental
+ * @stage candidate
  */
 export class SeededRng implements SeededGenerator {
   private _seed = 0; // internally incremented value to provide deterministic behaviour
   private baseSeed = 0; // original value used to create the seed
   private nIncrements = 0;
 
-  /**
-   * Constructor
-   */
+  /** Creates a generator from the seed, or from a random seed when none is given. */
   constructor(seed?: Seed) {
     this.initializeSeeds(SeededRng.evaluateSeed(seed));
   }
 
-  // Must be a method because JavaScript does not support static property overrides
+  /** Returns the upper bound of the seed range, as an accessor because a static property cannot be overridden. */
   get maxBase(): number {
     return IntegerSeed.max;
   }
 
-  // Returns a function that successively returns a deterministic sequence of numbers based on this instance's seed
+  /** Returns a function that yields the next value on each call, sharing this instance's state. */
   get rng(): () => number {
     return () => this.next();
   }
 
+  /** Returns the current seed. */
   get seed(): number {
     return this._seed;
   }
 
-  // Resolves a seed-like value to a number
+  /** Resolves a seed-like value to a number. */
   static evaluateSeed(seed?: Seed): number | undefined {
     return evaluateSeed(seed);
   }
@@ -61,7 +64,7 @@ export class SeededRng implements SeededGenerator {
   }
 
   /**
-   * Clones the given seed or creates a new one if none is given.
+   * Clones the given seed, or creates a randomly seeded generator when none is given.
    */
   static cloneOrCreate<T extends ThisConstructor<typeof SeededRng>>(
     this: T,
@@ -71,7 +74,7 @@ export class SeededRng implements SeededGenerator {
     return seed === undefined ? new this() : this.clone(seed, nIncrements);
   }
 
-  // Creates a child; mutates the input seed, if it is a Seed instance or generator
+  /** Creates a child from a seed, advancing the seed when it is a generator. */
   static spawn<T extends ThisConstructor<typeof SeededRng>>(this: T, seed: undefined): undefined;
   static spawn<T extends ThisConstructor<typeof SeededRng>>(this: T, seed: Seed): This<T>;
   static spawn<T extends ThisConstructor<typeof SeededRng>>(this: T, seed: Seed | undefined): This<T> | undefined;
@@ -80,7 +83,7 @@ export class SeededRng implements SeededGenerator {
   }
 
   /**
-   * Given a seed-accepting function and an optional seed, returns a new function that passes the seed to the function.
+   * Wraps a seed-accepting function so that every call passes it one generator spawned from the seed.
    * The spawned generator is an instance of the class on which the method is called, so subclasses supply their
    * own sequence.
    */
@@ -88,14 +91,15 @@ export class SeededRng implements SeededGenerator {
     fn: (options?: OptionsWithSeed<TOptions> | OptionsWithSeed<EmptyObject>) => R,
     seed: Seed | undefined,
   ) {
-    const spawnedRng = this.spawn(seed); // stored outside the function to create a closure
+    const spawnedRng = this.spawn(seed);
     return function (options?: TOptions): R {
       return fn({ ...options, seed: spawnedRng });
     };
   }
 
+  /** Returns a copy of this generator, advanced by the given number of increments. */
   clone<T extends SeededRng>(this: T, nIncrements = 0): T {
-    // The type assertion may be unavoidable if inheritance is used.
+    // `this.constructor` is typed as `Function`, so constructing the subclass requires an assertion.
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return new (this.constructor as Constructor<T>)(this._seed).increment(nIncrements);
   }
@@ -112,13 +116,7 @@ export class SeededRng implements SeededGenerator {
     return this;
   }
 
-  /*
-  inspect(): { baseSeed: number; seed: number; nIncrements: number } {
-    return { baseSeed: this.baseSeed, seed: this._seed, nIncrements: this.nIncrements };
-  }
-   */
-
-  // Returns the next value in the pseudo-random sequence
+  /** Returns the next value in the pseudo-random sequence, then advances the seed `n` times. */
   next(n = 1): number {
     const value = this.generateValue();
     for (let i = 0; i < n; i++) this.increment();
@@ -133,40 +131,56 @@ export class SeededRng implements SeededGenerator {
     return this.generateValue();
   }
 
+  /** Maps a seed from the full integer-seed range onto this generator's range. */
   scaleDownSeed(seed: number): number {
     return scaleInt(seed, { min: 1, max: this.maxBase }, { min: 1, max: IntegerSeed.max });
   }
 
+  /** Maps a seed from this generator's range onto the full integer-seed range. */
   scaleUpSeed(value: number): number {
     return scaleInt(value, { min: 1, max: IntegerSeed.max }, { min: 1, max: this.maxBase });
   }
 
+  /** Returns the value derived from the current seed. */
   protected generateValue(): number {
     return computeFakeMathRandom(this._seed);
   }
 
-  // Safely sets records the base seed and sets the current seed to the same value
+  /** Records the base seed, wrapped into range, and starts the current seed at it. */
   protected initializeSeeds(baseSeed?: number): void {
     this.baseSeed = wrapSum(this.maxBase, IntegerSeed.toInt(baseSeed));
     this._seed = this.baseSeed;
   }
 }
 
-// Behaves exactly the same as `SeededRng`, but returns integers in the range [1, Number.MAX_SAFE_INTEGER]
+/**
+ * A `SeededRng` that returns integers in the range [1, Number.MAX_SAFE_INTEGER].
+ *
+ * @category Number
+ * @experimental
+ * @stage candidate
+ */
 export class IntSeededRng extends SeededRng {
+  /** Returns an integer derived from the current seed. */
   protected override generateValue(): number {
     return pickInteger({ min: 1, max: Number.MAX_SAFE_INTEGER, seed: computeFakeMathRandom(this.seed) });
   }
 }
 
-// Same as `IntSeededRng`, but returns integers in the range [1, 2 ** 32 - 1]
+/**
+ * A `SeededRng` that returns integers in the range [1, 2 ** 32 - 1].
+ *
+ * @category Number
+ * @experimental
+ * @stage candidate
+ */
 export class Int32SeededRng extends SeededRng {
+  /** Returns an integer derived from the current seed. */
   protected override generateValue(): number {
     return pickInteger({ min: 1, max: 2 ** 32 - 1, seed: computeFakeMathRandom(this.seed) });
   }
 }
 // region | Types
-// deno-lint-ignore no-explicit-any
 type Constructor<T, Arguments extends unknown[] = unknown[]> = new (...arguments_: Arguments) => T;
 
 type EmptyObject = Record<string, never> | Record<number, never>;

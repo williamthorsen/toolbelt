@@ -22,7 +22,7 @@ export function getValueAtPathOrThrow(obj: unknown, path: string): unknown {
   const keys = path
     .replaceAll(/\[(\w+)]/g, '.$1')
     .split('.')
-    .filter(Boolean); // handles cases like leading dots
+    .filter(Boolean); // Drop empty segments, such as the one before a leading dot
 
   let current: unknown = obj;
 

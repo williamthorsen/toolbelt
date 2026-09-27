@@ -3,10 +3,12 @@ import { describe, expect, it } from 'vitest';
 import { reverseComparator } from '../reverseComparator.ts';
 
 describe(reverseComparator, () => {
+  /** Orders numbers ascending. */
   function compareNumbers(a: number, b: number): number {
     return a - b;
   }
 
+  /** Orders strings by locale. */
   function compareStrings(a: string, b: string): number {
     return a.localeCompare(b);
   }

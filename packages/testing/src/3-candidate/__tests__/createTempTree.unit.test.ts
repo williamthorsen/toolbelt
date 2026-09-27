@@ -651,7 +651,7 @@ describe('TempTree.writeJson', () => {
     expect(writeJson).toThrow(/falls outside the temporary tree/);
   });
 
-  // An optional binding that arrived empty is the route in, and `unknown` accepts it without complaint.
+  // An optional binding left empty reaches `writeJson` as `undefined`, which `unknown` accepts without complaint.
   it('throws on an undefined value, writing no file', () => {
     using tree = createTempTree({});
 

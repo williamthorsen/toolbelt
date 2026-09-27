@@ -2,6 +2,9 @@ import { includes } from '@williamthorsen/toolbelt.arrays/candidate';
 
 /**
  * Returns true if the value is a member of the provided enum. Narrows the type.
+ *
+ * @category Enum
+ * @stage release
  */
 export function isEnumValue<TEnum extends Record<string, TValue>, TValue extends EnumValue>(
   enumObject: TEnum,

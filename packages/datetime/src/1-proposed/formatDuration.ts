@@ -95,6 +95,9 @@ function decompose(milliseconds: number, shownUnits: ReadonlyArray<TimeUnit>): D
   return components;
 }
 
+/**
+ * Rejects a duration or a `maxUnits` value that `formatDuration` cannot render.
+ */
 function assertValidArguments(milliseconds: number, maxUnits: number): void | never {
   if (!Number.isFinite(milliseconds) || milliseconds < 0) {
     throw new RangeError(`Duration must be a non-negative finite number of milliseconds, but was ${milliseconds}.`);

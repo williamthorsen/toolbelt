@@ -24,7 +24,7 @@ const DECLARATION = /\b(?:const|let|var)\s+(?<name>[A-Za-z_$][\w$]*)\s*(?::[^=;\
 // A declaration of a name, whether or not it assigns a value.
 const DECLARED_NAME = /\b(?:const|let|var)\s+(?<name>[A-Za-z_$][\w$]*)/g;
 // `dirname` called on a bare binding, through any receiver or none, so `path.dirname`, an aliased import, and a
-// destructured import all match. The assignment-back rule carries the precision, so the anchor need not.
+// destructured import all match. The assignment-back rule supplies the precision, so the anchor need not.
 const DIRNAME_ASCENT = /(?:[A-Za-z_$][\w$]*\s*\.\s*)?\bdirname\s*\(\s*(?<subject>[A-Za-z_$][\w$]*)\s*\)/g;
 const LEADING_SEPARATOR = /^[/\\]+/;
 // The reads by which a walk asks what a level holds, in their synchronous and their promise spelling alike. Each
@@ -194,7 +194,7 @@ function findAscendedBinding(region: string): string | undefined {
 /**
  * Returns the offset of the brace opening a loop's body, or nothing where the head never closes or the body is a
  * single unbraced statement. Such a body goes unreported rather than being read as the next brace group in the
- * source, which opens something else and would put the finding on a line the loop does not hold.
+ * source, which opens something else and would put the finding on a line that the loop does not hold.
  */
 function findBodyStart(code: string, afterKeyword: number, isDoLoop: boolean): number | undefined {
   let index = afterKeyword;

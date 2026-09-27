@@ -8,11 +8,12 @@ import { pickInteger } from '../pickInteger.ts';
 import { Int32SeededRng, IntSeededRng, SeededRng } from '../seeded-rng.ts';
 
 describe(SeededRng, () => {
-  // Argument for clone is that it always leaves the seed of the parent unchanged.
+  // `static clone` never advances the seed from which it clones.
   describe('static clone()', () => {
     const SEED_NUMBER = 1_234;
     const SEED_NUMBER_RNG = 0.067_474_613_463_261_45;
 
+    /** Returns a minimal generator whose value is twice its seed. */
     function getRngLike(): SeededGenerator & { peek(): number } {
       let base = SEED_NUMBER;
       return {
@@ -55,7 +56,6 @@ describe(SeededRng, () => {
       });
 
       it(`given an RNG seed of type ${label}, SeededRng.clone(seed) behaves differently from new SeededRng.clone(input)`, () => {
-        // Create identical inputs
         const seedInput1 = seedInputFn();
         const seedInput2 = seedInputFn();
         expect(seedInput1.seed).toBe(SEED_NUMBER);
@@ -73,8 +73,8 @@ describe(SeededRng, () => {
         // - `clone`: The intermediate RNG is cloned without yielding a value; its seed is inherited by the clone RNG.
         //   Result: The clone RNG's seed is the same as the 1st pseudorandom value.
         const instanceRng = new SeededRng(seedInput2).clone(); // advances the input seed
-        expect(seedInput2.seed).not.toBe(SEED_NUMBER); // the input seed is no longer the same as the input seed
-        expect(instanceRng.seed).not.toBe(seedInput2.seed); // and the parent's seed has advanced
+        expect(seedInput2.seed).not.toBe(SEED_NUMBER); // the input seed has advanced
+        expect(instanceRng.seed).not.toBe(seedInput2.seed); // and the clone's seed differs from it
       });
     }
 
@@ -289,13 +289,13 @@ describe(SeededRng, () => {
   });
 
   describe('withSeed(): Configured base function', () => {
+    /** Returns a lowercase letter picked with the given seed. */
     function pickLetter(options?: { seed?: Seed | undefined }): string {
       const letterIndex = pickInteger({ min: 0, max: 25, seed: options?.seed });
 
       return String.fromCodePoint(97 + letterIndex);
     }
 
-    // Returns a random letter of the alphabet.
     it('returns a function that uses the SeededRng to produce deterministic pseudorandom outputs', () => {
       const getNextLetter = SeededRng.withSeed(pickLetter, 1_234);
 
@@ -317,6 +317,7 @@ describe(SeededRng, () => {
     });
 
     it('supplies a generator of the class on which the method is called', () => {
+      /** Returns the seed that `withSeed` passes. */
       function captureSeed(options?: { seed?: Seed | undefined }): Seed | undefined {
         return options?.seed;
       }

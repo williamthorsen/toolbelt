@@ -46,6 +46,7 @@ function listCycles(graph: Map<string, string[]>): string[] {
   const states = new Map<string, 'visited' | 'visiting'>();
   const walked: string[] = [];
 
+  /** Walks a workspace's dependencies depth-first, recording a cycle on reaching a workspace still on the walk. */
   function visit(name: string): void {
     const state = states.get(name);
     if (state === 'visited') return;

@@ -17,6 +17,7 @@ interface JoinTruthyOptions {
 
 // region | Helpers
 
+/** Reports whether a value is a non-empty string. */
 function isTruthyString(value: string | null | undefined): value is string {
   return !!value;
 }

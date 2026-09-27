@@ -34,6 +34,7 @@ describe(assert, () => {
   });
 
   it('narrows the type if the condition is a type guard', () => {
+    /** Asserts that `value` is a string, then checks the narrowed type. */
     function checkType(value: unknown) {
       assert(typeof value === 'string', 'Condition is true');
       expectTypeOf(value).toEqualTypeOf<string>();

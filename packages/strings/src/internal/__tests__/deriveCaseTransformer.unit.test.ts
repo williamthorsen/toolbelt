@@ -62,7 +62,7 @@ describe(deriveCaseTransformer, () => {
   });
 });
 
-/** Type guard to assure TypeScript that null won't be invoked. */
+/** Throws unless a value is truthy, narrowing it for the type checker. */
 function assertIsTruthy(value: unknown): asserts value {
   if (!value) {
     throw new Error(`Expected ${JSON.stringify(value)} to be truthy`);

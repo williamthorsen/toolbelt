@@ -14,13 +14,9 @@ const NODE_PLUGIN = 'nodejs';
 const PNPM_PLUGIN = 'pnpm';
 
 /**
- * Classifies the `pnpm` on PATH by what provides it, reading files and spawning nothing. A file whose header
- * declares asdf providers is a shim: one naming the `pnpm` plugin is the asdf plugin's, whatever else it names,
- * and one naming `nodejs` at the running node's version resolves through that install's bin symlink to corepack
- * or to an npm-global pnpm. A shim naming `nodejs` but not the running version, or found under a node that asdf
- * does not manage, is stranded. Outside a shim the bin symlink is read from the path itself, so a corepack or
- * npm-global pnpm under a node outside asdf is recognized too, and one found in an asdf nodejs install's own
- * `bin/` carries that install's version; anything else is named by path alone.
+ * Classifies the `pnpm` on PATH by what provides it, reading files and spawning nothing. An asdf shim is classified
+ * by the providers that its header names, and the `pnpm` plugin takes precedence over `nodejs`. A file that is not
+ * a shim, or a `nodejs` shim at the running node's version, is classified by the npm package behind its bin symlink.
  *
  * @internal
  */
@@ -72,7 +68,11 @@ export type PnpmProvider =
       readonly nodeVersion: string | undefined;
       readonly path: string;
     }
-  | { readonly kind: 'path'; readonly path: string }
+  | {
+      /** A pnpm that no other kind recognizes, named by its path alone. */
+      readonly kind: 'path';
+      readonly path: string;
+    }
   | {
       readonly kind: 'stranded-shim';
       readonly path: string;
