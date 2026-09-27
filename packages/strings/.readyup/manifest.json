@@ -9,17 +9,17 @@
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
-          "hash": "86735fbf",
+          "hash": "98e2d140",
           "kind": "module",
           "path": "../../adoption/src/conventions/path-predicates.ts"
         },
         {
-          "hash": "a32695b8",
+          "hash": "921ba938",
           "kind": "module",
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "56a9ea12",
+          "hash": "ac9734b6",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -34,67 +34,67 @@
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
         {
-          "hash": "6be867bd",
+          "hash": "3867c304",
           "kind": "module",
           "path": "../../adoption/src/portable/listDirectoryAscents.ts"
         },
         {
-          "hash": "b84bbe9d",
+          "hash": "982f3e6d",
           "kind": "module",
           "path": "../../adoption/src/portable/listFunctionBodies.ts"
         },
         {
-          "hash": "2d9f1edb",
+          "hash": "ce2e063d",
           "kind": "module",
           "path": "../../adoption/src/portable/listTemplateLiterals.ts"
         },
         {
-          "hash": "b0751395",
+          "hash": "a5dc0993",
           "kind": "module",
           "path": "../../adoption/src/portable/readAnchoredWindow.ts"
         },
         {
-          "hash": "0eb1daf1",
+          "hash": "9ff7cd2c",
           "kind": "module",
           "path": "../../adoption/src/portable/readBalancedGroup.ts"
         },
         {
-          "hash": "e9427d50",
+          "hash": "81846f1a",
           "kind": "module",
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "33ad3557",
+          "hash": "86b64892",
           "kind": "module",
           "path": "kits/default.ts"
         },
         {
-          "hash": "5597e5e2",
+          "hash": "a281922d",
           "kind": "module",
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "0341ff54",
+          "hash": "f7e83e75",
           "kind": "module",
           "path": "../src/readiness/listCapitalizeLines.ts"
         },
         {
-          "hash": "33fe948c",
+          "hash": "46548a31",
           "kind": "module",
           "path": "../src/readiness/listJoinedLineArrays.ts"
         },
         {
-          "hash": "d5e9da12",
+          "hash": "3cb1a340",
           "kind": "module",
           "path": "../src/readiness/listLayoutBreakingTemplates.ts"
         },
         {
-          "hash": "9f095551",
+          "hash": "34ba7637",
           "kind": "module",
           "path": "../src/readiness/listPluralizeLines.ts"
         },
         {
-          "hash": "f81f2c34",
+          "hash": "56b4b5c2",
           "kind": "module",
           "path": "../src/readiness/listStringIdioms.ts"
         }
@@ -103,8 +103,8 @@
       "path": "kits/default.js",
       "readyupVersion": "0.38.0",
       "source": "kits/default.ts",
-      "sourceHash": "33ad3557",
-      "targetHash": "fce8d74f"
+      "sourceHash": "86b64892",
+      "targetHash": "2e8c4540"
     }
   ]
 }

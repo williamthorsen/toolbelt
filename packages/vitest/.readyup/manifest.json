@@ -9,17 +9,17 @@
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
-          "hash": "86735fbf",
+          "hash": "98e2d140",
           "kind": "module",
           "path": "../../adoption/src/conventions/path-predicates.ts"
         },
         {
-          "hash": "a32695b8",
+          "hash": "921ba938",
           "kind": "module",
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "56a9ea12",
+          "hash": "ac9734b6",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -34,37 +34,37 @@
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
         {
-          "hash": "6be867bd",
+          "hash": "3867c304",
           "kind": "module",
           "path": "../../adoption/src/portable/listDirectoryAscents.ts"
         },
         {
-          "hash": "b84bbe9d",
+          "hash": "982f3e6d",
           "kind": "module",
           "path": "../../adoption/src/portable/listFunctionBodies.ts"
         },
         {
-          "hash": "2d9f1edb",
+          "hash": "ce2e063d",
           "kind": "module",
           "path": "../../adoption/src/portable/listTemplateLiterals.ts"
         },
         {
-          "hash": "b0751395",
+          "hash": "a5dc0993",
           "kind": "module",
           "path": "../../adoption/src/portable/readAnchoredWindow.ts"
         },
         {
-          "hash": "0eb1daf1",
+          "hash": "9ff7cd2c",
           "kind": "module",
           "path": "../../adoption/src/portable/readBalancedGroup.ts"
         },
         {
-          "hash": "e9427d50",
+          "hash": "81846f1a",
           "kind": "module",
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "ea897b9c",
+          "hash": "fb8be65b",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -74,32 +74,32 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "a7a190a7",
+          "hash": "01ce2639",
           "kind": "module",
           "path": "../src/readiness/classifyConsoleMock.ts"
         },
         {
-          "hash": "1ca79b04",
+          "hash": "ca3b596e",
           "kind": "module",
           "path": "../src/readiness/classifyExitMock.ts"
         },
         {
-          "hash": "2d3da930",
+          "hash": "6a4e8f80",
           "kind": "module",
           "path": "../src/readiness/listConsoleSites.ts"
         },
         {
-          "hash": "1947ed8d",
+          "hash": "5c8a3503",
           "kind": "module",
           "path": "../src/readiness/listDisposalHooks.ts"
         },
         {
-          "hash": "854eb7b6",
+          "hash": "5fff4be4",
           "kind": "module",
           "path": "../src/readiness/listExitMocks.ts"
         },
         {
-          "hash": "9962db29",
+          "hash": "8a1ac135",
           "kind": "module",
           "path": "../src/readiness/listSites.ts"
         }
@@ -108,8 +108,8 @@
       "path": "kits/default.js",
       "readyupVersion": "0.38.0",
       "source": "kits/default.ts",
-      "sourceHash": "ea897b9c",
-      "targetHash": "cd7c3a1f"
+      "sourceHash": "fb8be65b",
+      "targetHash": "94aa0746"
     }
   ]
 }

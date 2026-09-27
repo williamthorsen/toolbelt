@@ -9,17 +9,17 @@
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
-          "hash": "86735fbf",
+          "hash": "98e2d140",
           "kind": "module",
           "path": "../../adoption/src/conventions/path-predicates.ts"
         },
         {
-          "hash": "a32695b8",
+          "hash": "921ba938",
           "kind": "module",
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "56a9ea12",
+          "hash": "ac9734b6",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -34,37 +34,37 @@
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
         {
-          "hash": "6be867bd",
+          "hash": "3867c304",
           "kind": "module",
           "path": "../../adoption/src/portable/listDirectoryAscents.ts"
         },
         {
-          "hash": "b84bbe9d",
+          "hash": "982f3e6d",
           "kind": "module",
           "path": "../../adoption/src/portable/listFunctionBodies.ts"
         },
         {
-          "hash": "2d9f1edb",
+          "hash": "ce2e063d",
           "kind": "module",
           "path": "../../adoption/src/portable/listTemplateLiterals.ts"
         },
         {
-          "hash": "b0751395",
+          "hash": "a5dc0993",
           "kind": "module",
           "path": "../../adoption/src/portable/readAnchoredWindow.ts"
         },
         {
-          "hash": "0eb1daf1",
+          "hash": "9ff7cd2c",
           "kind": "module",
           "path": "../../adoption/src/portable/readBalancedGroup.ts"
         },
         {
-          "hash": "e9427d50",
+          "hash": "81846f1a",
           "kind": "module",
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "3c3de241",
+          "hash": "aa8835d6",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -74,17 +74,17 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "fb620beb",
+          "hash": "7dbe7aed",
           "kind": "module",
           "path": "../src/readiness/listAtomicWriteSites.ts"
         },
         {
-          "hash": "8c76b74e",
+          "hash": "d8cb7bcf",
           "kind": "module",
           "path": "../src/readiness/listChainWalkSites.ts"
         },
         {
-          "hash": "612ff5f3",
+          "hash": "35f27bfe",
           "kind": "module",
           "path": "../src/readiness/listFilesystemIdioms.ts"
         }
@@ -93,8 +93,8 @@
       "path": "kits/default.js",
       "readyupVersion": "0.38.0",
       "source": "kits/default.ts",
-      "sourceHash": "3c3de241",
-      "targetHash": "37d23a32"
+      "sourceHash": "aa8835d6",
+      "targetHash": "cd48339f"
     }
   ]
 }

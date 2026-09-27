@@ -292,10 +292,10 @@ var default_default = defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
   detect: listSites,
   exportNames: ADOPTED_EXPORTS,
-  noSourcesReason: "the project holds no test files",
+  noSourcesReason: "the project contains no test files",
   packageName: PACKAGE_NAME,
-  // Only tests are swept: These idioms live only in a test, so a sweep exempting tests would report nothing and
-  // say so as a pass. No hand-off rule is needed against the two kits whose sweeps could meet this one:
+  // Only tests are swept: These idioms appear only in a test, so a sweep exempting tests would report nothing and
+  // say so as a pass. No hand-off rule is needed against the two kits whose sweeps could overlap this one:
   // `toolbelt.errors` exempts tests altogether, and `toolbelt.vitest` claims no try block and anchors `vi.spyOn`
   // on `console` and `process.exit`, never on a stream.
   pathFilter: isTestFile,
@@ -305,7 +305,7 @@ var default_default = defineAdoptionKit({
       id: "no-hand-rolled-error-capture",
       kinds: ["hand-rolled-error-capture"],
       severity: "recommend",
-      fix: `Replace each capture named above with captureError from ${PACKAGE_NAME}/candidate, which runs the call, hands back what it threw or rejected with, and narrows that to a class the caller names. It fails the test where the call completes normally, so a regression that stops the failure reports itself instead of leaving a later assertion to report an absent value in its place, and the narrowing reaches the error's own fields without a second assertion to get there. Reference: ${README_URL}`
+      fix: `Replace each capture named above with captureError from ${PACKAGE_NAME}/candidate, which runs the call, hands back what it threw or rejected with, and narrows that to a class named by the caller. It fails the test when the call completes normally, so a regression that stops the failure reports itself instead of leaving a later assertion to report an absent value in its place, and the narrowing gives access to the error's own fields without a second assertion to get there. Reference: ${README_URL}`
     },
     {
       name: "No test captures stdout or stderr by hand",

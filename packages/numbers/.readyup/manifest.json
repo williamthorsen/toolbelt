@@ -9,17 +9,17 @@
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
-          "hash": "86735fbf",
+          "hash": "98e2d140",
           "kind": "module",
           "path": "../../adoption/src/conventions/path-predicates.ts"
         },
         {
-          "hash": "a32695b8",
+          "hash": "921ba938",
           "kind": "module",
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "56a9ea12",
+          "hash": "ac9734b6",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -34,37 +34,37 @@
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
         {
-          "hash": "6be867bd",
+          "hash": "3867c304",
           "kind": "module",
           "path": "../../adoption/src/portable/listDirectoryAscents.ts"
         },
         {
-          "hash": "b84bbe9d",
+          "hash": "982f3e6d",
           "kind": "module",
           "path": "../../adoption/src/portable/listFunctionBodies.ts"
         },
         {
-          "hash": "2d9f1edb",
+          "hash": "ce2e063d",
           "kind": "module",
           "path": "../../adoption/src/portable/listTemplateLiterals.ts"
         },
         {
-          "hash": "b0751395",
+          "hash": "a5dc0993",
           "kind": "module",
           "path": "../../adoption/src/portable/readAnchoredWindow.ts"
         },
         {
-          "hash": "0eb1daf1",
+          "hash": "9ff7cd2c",
           "kind": "module",
           "path": "../../adoption/src/portable/readBalancedGroup.ts"
         },
         {
-          "hash": "e9427d50",
+          "hash": "81846f1a",
           "kind": "module",
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "24f6e6db",
+          "hash": "eecd2c1e",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -74,12 +74,12 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "f14085f3",
+          "hash": "67b9483f",
           "kind": "module",
           "path": "../src/readiness/listClampNestLines.ts"
         },
         {
-          "hash": "2b481f28",
+          "hash": "a80a25c8",
           "kind": "module",
           "path": "../src/readiness/listMathIdioms.ts"
         },
@@ -89,7 +89,7 @@
           "path": "../src/readiness/listRandomIntegerLines.ts"
         },
         {
-          "hash": "bdcac255",
+          "hash": "3a93c656",
           "kind": "module",
           "path": "../src/readiness/listRoundScaleLines.ts"
         }
@@ -98,8 +98,8 @@
       "path": "kits/default.js",
       "readyupVersion": "0.38.0",
       "source": "kits/default.ts",
-      "sourceHash": "24f6e6db",
-      "targetHash": "85eb0524"
+      "sourceHash": "eecd2c1e",
+      "targetHash": "b9c3f86a"
     }
   ]
 }

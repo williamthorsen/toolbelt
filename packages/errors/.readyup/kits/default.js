@@ -254,7 +254,7 @@ var default_default = defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
   detect: listErrorSites,
   exportNames: ADOPTED_EXPORTS,
-  noSourcesReason: "the project holds no JavaScript or TypeScript sources outside the exempt paths",
+  noSourcesReason: "the project contains no JavaScript or TypeScript sources outside the exempt paths",
   packageName: PACKAGE_NAME,
   // A test constructs error shapes deliberately, and a bootstrap wrapper's hand-rolled handling keeps its
   // build-first message alive through an incomplete install.
@@ -264,7 +264,7 @@ var default_default = defineAdoptionKit({
       name: "No source defines its own description helper",
       id: "no-describe-clone",
       kinds: ["describe-clone"],
-      fix: `Delete the function named above and import describeError from ${PACKAGE_NAME}. One import retires the whole helper. Reference: ${README_URL}`
+      fix: `Delete the function named above and import describeError from ${PACKAGE_NAME}. One import replaces the whole helper. Reference: ${README_URL}`
     },
     {
       name: "No source describes a thrown value inline",
@@ -277,7 +277,7 @@ var default_default = defineAdoptionKit({
       id: "no-instanceof-error",
       kinds: ["assert", "narrow"],
       severity: "recommend",
-      fix: `Use isError from ${PACKAGE_NAME}, or assertIsError from ${PACKAGE_NAME}/candidate where the narrowing throws. Both recognize an Error crossing a realm boundary, which a bare instanceof test reports as false.`
+      fix: `Use isError from ${PACKAGE_NAME}, or assertIsError from ${PACKAGE_NAME}/candidate when the narrowing throws. Both recognize an Error crossing a realm boundary, which a bare instanceof test reports as false.`
     },
     {
       name: "No source coerces a thrown value to an Error by hand",
