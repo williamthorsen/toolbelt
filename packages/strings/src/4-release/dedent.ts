@@ -124,7 +124,7 @@ function indentContinuationLines(text: string, indent: string): string {
 }
 
 /**
- * Reports whether a line holds no interpolation and nothing but whitespace.
+ * Reports whether a line contains no interpolation and nothing but whitespace.
  */
 function isBlankLine(line: TemplateLine): boolean {
   return line.segments.every((segment) => segment.kind === 'literal' && isBlankText(segment.text));
@@ -209,7 +209,7 @@ function trimTemplateEdges(lines: TemplateLine[]): TemplateLine[] {
 function validateEscapes(templateStrings: TemplateStringsArray): void {
   for (const [index, cooked] of templateStrings.entries()) {
     const raw = templateStrings.raw[index];
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- `TemplateStringsArray` is typed as holding strings, but a literal with an invalid escape cooks to `undefined` at runtime.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- `TemplateStringsArray` is typed as containing strings, but a literal with an invalid escape cooks to `undefined` at runtime.
     if (cooked === undefined || raw === undefined) {
       throw new Error('The template contains an invalid escape sequence.');
     }

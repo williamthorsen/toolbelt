@@ -51,7 +51,7 @@ describe(listStringIdioms, () => {
     expect(listStringIdioms(source)).toStrictEqual([]);
   });
 
-  it('finds nothing in a source holding neither idiom', () => {
+  it('finds nothing in a source containing neither idiom', () => {
     expect(listStringIdioms('export const total = values.length;\n')).toStrictEqual([]);
   });
 });

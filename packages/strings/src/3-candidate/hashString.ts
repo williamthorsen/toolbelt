@@ -35,7 +35,7 @@ export function hashString(str: string, options: HashStringOptions = {}): number
     throw new RangeError(`Invalid range: The range cannot span more than ${UINT32_SIZE} values. ${received}`);
   }
 
-  // Reduce the offset before adding it, so the sum stays within the exactly-representable integers.
+  // Reduce the offset before adding it, so that the sum stays within the exactly-representable integers.
   const shift = ((offset % size) + size) % size;
 
   return min + ((computeDigest(str) + shift) % size);
@@ -64,7 +64,7 @@ function computeDigest(str: string): number {
     hash = Math.imul(hash ^ (unit >>> 8), FNV_PRIME);
   }
 
-  // Avalanche the accumulated bits, so the low ones carry as much entropy as the high ones.
+  // Avalanche the accumulated bits, so that the low ones have as much entropy as the high ones.
   hash ^= hash >>> 16;
   hash = Math.imul(hash, 0x85eb_ca6b);
   hash ^= hash >>> 13;

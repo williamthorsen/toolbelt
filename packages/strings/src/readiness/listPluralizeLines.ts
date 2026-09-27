@@ -12,11 +12,11 @@ const PLURALIZE_TERNARY = new RegExp(
  * Lists the line of every hand-rolled pluralization in a source file.
  *
  * Takes both texts. The ternary is matched on the blanked code, so a pluralization written in a comment is not
- * one, and the two literals are then read from the unblanked source at the offsets that match reports:
- * Blanking replaces a literal's characters with spaces in place, so the two texts stay aligned while only the
- * unblanked one still says what the literals hold.
+ * one, and the two literals are then read from the unblanked source at the offsets that match reports.
+ * Blanking replaces a literal's characters with spaces in place, which keeps the two texts aligned while only the
+ * unblanked one still contains the literals' text.
  *
- * A site is a pluralization where the plural is the singular plus `s`, which covers `'x' : 'xs'`, `'' : 's'`,
+ * A site is a pluralization if the plural is the singular plus `s`, which covers `'x' : 'xs'`, `'' : 's'`,
  * and the `!==` mirror `'s' : ''`. A pair of identifiers is not matched and a pair of unrelated literals is
  * declined: That relation is the only evidence available that the compared value is a count rather than any
  * other value that a source compares against 1.

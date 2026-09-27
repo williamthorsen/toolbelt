@@ -11,7 +11,7 @@ const ADOPTER = "import { capitalize } from '@williamthorsen/toolbelt.strings/ca
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 describe('The strings adoption kit, run through rdy', () => {
-  it('names every site and spans them all in one denominator', () => {
+  it('names every site and counts them all in one denominator', () => {
     expect(runKit(`${CAPITALIZE}\n`)).toStrictEqual([
       { count: 3, detail: 'src/label.ts:1', id: 'no-hand-rolled-capitalize', passedCount: 1 },
       { count: 3, detail: 'src/noun.ts:1', id: 'no-hand-rolled-pluralize', passedCount: 1 },
@@ -29,7 +29,7 @@ describe('The strings adoption kit, run through rdy', () => {
     ]);
   });
 
-  // A `dir:` kit source has no namespace, so the bare id stands. A consumer running the kit from the
+  // A `dir:` kit source has no namespace, so the id has no prefix. A consumer running the kit from the
   // installed package writes `toolbelt.strings/no-hand-rolled-capitalize`.
   it('drops a site covered by a qualified pragma from the named check alone', () => {
     expect(runKit(`${CAPITALIZE} // rdy-ignore no-hand-rolled-capitalize -- reviewed\n`)).toStrictEqual([
@@ -55,11 +55,11 @@ describe('The strings adoption kit, run through rdy', () => {
 // region | Helpers
 
 /**
- * Runs the package's compiled kit over a fixture repo holding the given capitalize source and any further entries,
- * and reports what each check named and counted.
+ * Runs the package's compiled kit over a fixture repo containing the given capitalize source and any further
+ * entries, and reports what each check named and counted.
  *
- * A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report reaches the
- * layer that acts on one.
+ * A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report is passed to
+ * the layer that acts on one.
  */
 function runKit(capitalizeSource: string, entries: Record<string, string> = {}): KitCheckReport[] {
   return listKitCheckReports(PACKAGE_DIR, {

@@ -13,8 +13,8 @@ const PUBLISHED_TIERS = [proposedExports, draftExports, candidateExports, releas
 const EXCLUDED_EXPORTS = ['toLowerCase', 'toUpperCase', 'trim', 'trimEnd', 'trimStart'];
 
 describe('ADOPTED_EXPORTS', () => {
-  // Fails when a published tier gains a callable export that nothing added to the list against which
-  // adoption is counted.
+  // Fails when a published tier gains a callable export missing from the list against which adoption
+  // is counted.
   it('names every export that a consumer calls, but for the prototype wrappers', () => {
     const callable = PUBLISHED_TIERS.flatMap((tier) =>
       Object.entries(tier)

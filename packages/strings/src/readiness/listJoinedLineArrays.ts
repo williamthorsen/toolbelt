@@ -13,13 +13,13 @@ interface ElementSpan {
 }
 
 interface LeadingText {
-  /** Whether the element holds anything but indentation. One holding an interpolation always does. */
+  /** Whether the element contains anything but indentation. One containing an interpolation always does. */
   hasContent: boolean;
   text: string;
 }
 
-// The array's closing bracket joined by one quoted separator. The separator is blanked in the code, so what it holds
-// is read from the source.
+// The array's closing bracket joined by one quoted separator. The separator is blanked in the code, so its text is
+// read from the source.
 const JOIN_TAIL = /\]\s*\.join\(\s*(?<separator>'[^'\n]*'|"[^"\n]*")\s*\)/dg;
 const BLANK_TEXT = /^[\t ]*$/;
 const CLOSING_DELIMITERS = new Set([')', ']', '}']);
@@ -27,19 +27,19 @@ const INDENT = /^[\t ]*/;
 const QUOTED_ELEMENT = /^(?:'[^'\n]*'|"[^"\n]*")$/;
 const NEWLINE_ESCAPE = String.raw`\n`;
 const OPENING_DELIMITERS = new Set(['(', '[', '{']);
-// Long enough to hold the token before a bracket that a formatter has separated from it.
+// Long enough to include the token before a bracket that a formatter has separated from it.
 const SUBSCRIPT_LOOKBEHIND = 32;
 
 /**
  * Lists the line of every array of line literals joined with a newline in a source file.
  *
- * Takes both texts: The array is matched on the blanked code, and what its separator and elements hold is read
+ * Takes both texts: The array is matched on the blanked code, and the text of its separator and elements is read
  * from the source beneath at the same offsets.
  *
- * An array is claimed where it spans more than one line and holds at least two elements, each a string literal or
- * an untagged template literal. Laying out one element per line is the evidence that the array holds a block of
+ * An array is claimed when it spans more than one line and contains at least two elements, each a string literal or
+ * an untagged template literal. Laying out one element per line is the evidence that the array contains a block of
  * text. An array whose non-blank elements share an indent is declined, since `dedent` would strip it, as is one
- * holding any other element, which a template cannot hold as written.
+ * containing any other element, which a template cannot contain as written.
  *
  * @internal
  */
@@ -78,7 +78,7 @@ export function listJoinedLineArrays(code: string, source: string): number[] {
 
 // region | Helpers
 
-/** Returns the offset of the bracket that a closing bracket balances, or nothing where none does. */
+/** Returns the offset of the bracket that a closing bracket balances, or nothing when none does. */
 function findOpeningBracket(code: string, close: number): number | undefined {
   let depth = 0;
   for (let index = close; index >= 0; index -= 1) {
@@ -91,7 +91,7 @@ function findOpeningBracket(code: string, close: number): number | undefined {
   return undefined;
 }
 
-/** Returns the indent shared by every element holding content, or an empty string where they share none. */
+/** Returns the indent shared by every element with content, or an empty string when they share none. */
 function findSharedIndent(leadingTexts: readonly LeadingText[]): string {
   const indents = leadingTexts
     .filter((leadingText) => leadingText.hasContent)
@@ -107,7 +107,7 @@ function findSharedIndent(leadingTexts: readonly LeadingText[]): string {
 
 /**
  * Lists the trimmed span of each element between an array's brackets, ignoring the empty span after a trailing
- * comma. Returns nothing where an element is empty, as in a sparse array.
+ * comma. Returns nothing if an element is empty, as in a sparse array.
  */
 function listElementSpans(code: string, open: number, close: number): ElementSpan[] | undefined {
   const spans: ElementSpan[] = [];
@@ -131,7 +131,7 @@ function listElementSpans(code: string, open: number, close: number): ElementSpa
 
 /**
  * Returns the text with which an element opens -- a string literal's content, or a template's text ahead of its
- * first interpolation -- or nothing where the element is neither.
+ * first interpolation -- or nothing when the element is neither.
  */
 function readLeadingText(
   code: string,

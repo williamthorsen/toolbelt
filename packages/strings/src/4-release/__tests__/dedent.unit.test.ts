@@ -27,7 +27,7 @@ describe(dedent, () => {
 
   it('strips nothing when a content line starts at column zero, rather than throwing', () => {
     expect(
-      // eslint-disable-next-line unicorn/template-indent -- the flush-left line is the case under test; indenting it would remove the column-zero line on which the escape hatch turns.
+      // eslint-disable-next-line unicorn/template-indent -- the flush-left line is the case under test; indenting it would remove the column-zero line that makes the tag strip nothing rather than throw.
       dedent`
 alpha
   beta
@@ -77,7 +77,7 @@ alpha
       `).toBe('alpha\n\nbeta');
     });
 
-    it('B: measures the indent before splicing, so a multi-line value cannot flatten it', () => {
+    it('B: measures the indent before splicing, keeping a multi-line value from flattening it', () => {
       const block = 'x\ny';
       expect(dedent`
         before
