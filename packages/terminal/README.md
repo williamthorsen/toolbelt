@@ -121,7 +121,7 @@ Because a set is indexed by the style that `resolveOutputStyle` returns, selecti
 | rich    | one code point with `Emoji_Presentation=Yes`, outside the regional indicators | 2          |
 | plain   | printable ASCII, U+0020 through U+007E                                        | its length |
 
-Each rule is drawn where the width stops being a guess. Every code point that the rich rule admits has `East_Asian_Width=Wide`, and every printable ASCII code point has `East_Asian_Width=Narrow`, so 2 and `.length` are the measured widths rather than assumed ones. The regional indicators are the one `Emoji_Presentation=Yes` range left out, each being narrow alone and occupying two cells only in the pair that forms a flag.
+Each rule admits only code points whose width is fixed. Every code point that the rich rule admits has `East_Asian_Width=Wide`, and every printable ASCII code point has `East_Asian_Width=Narrow`, so 2 and `.length` are the measured widths rather than assumed ones. The regional indicators are the one `Emoji_Presentation=Yes` range left out, each being narrow alone and occupying two cells only in the pair that forms a flag.
 
 Each of ⚠️, ℹ️, and ⏭️ is refused as a code point plus U+FE0F; `STATUS_GLYPHS` uses 🟠 for `warning` in place of ⚠️. On the plain side `'→'` is refused as `East_Asian_Width=Ambiguous`, which measures one cell or two by locale, and `'✓'` is refused although it measures one everywhere, because a plain variant exists to survive a CI log, a `grep`, a screen reader, and a terminal with no emoji font, and `'✓'` survives none of the last. An empty plain variant is legal at width 0, which lets a name keep its column with no plain word.
 

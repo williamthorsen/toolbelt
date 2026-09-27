@@ -99,8 +99,7 @@ describe(throwOnProcessExit, () => {
 /**
  * Exits, declaring a `void` return so that a caller may place statements after the call.
  *
- * Calling `process.exit` directly would make those statements unreachable to the compiler, which reports
- * TS7027 and takes with it the only way to observe whether they ran.
+ * A direct `process.exit` call makes the statements after it unreachable, which the compiler rejects (TS7027).
  */
 function exitWith(code: number): void {
   process.exit(code);
