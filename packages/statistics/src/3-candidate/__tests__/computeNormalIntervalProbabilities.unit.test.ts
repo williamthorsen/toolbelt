@@ -165,6 +165,7 @@ function buildCloseMatchers(values: number[]): unknown[] {
   return values.map((value): unknown => expect.closeTo(value, PRECISION));
 }
 
+/** Returns the total of the values. */
 function sum(array: number[]): number {
   return array.reduce((a, b) => a + b, 0);
 }

@@ -8,11 +8,9 @@ import path from 'node:path';
  * mapped contents, given as text or as the bytes themselves. A key resolving outside the root is rejected, and a
  * call that throws leaves nothing on disk.
  *
- * The handle writes into the tree after it is built, through `mkdir`, `symlink`, `write`, `writeAll`, and
- * `writeJson`. Each creates the parent directories that it needs and takes its entry path through the containment
- * check applied by `resolve`; `symlink`'s target is the exception, stored verbatim. Every one but `writeAll`,
- * which takes a map, returns the absolute path that it wrote. It reads the tree back through `exists`, `list`,
- * `listFiles`, `read`, and `readJson`, and removes an entry through `rm`.
+ * Each of the handle's writers creates the parent directories that it needs and takes its entry path through the
+ * containment check applied by `resolve`; `symlink`'s target is the exception, stored verbatim. Every writer but
+ * `writeAll`, which takes a map, returns the absolute path that it wrote.
  *
  * `prefix` names the directory, so a tree outliving a crashed run still shows what made it.
  *
@@ -237,7 +235,7 @@ export interface TempTree extends Disposable {
  * to a name inside it.
  */
 function assertNamesDirectChild(prefix: string): void {
-  // Both separators are tested, because Windows resolves each and `path.sep` names only one of them.
+  // Test both separators, because Windows resolves each and `path.sep` names only one of them.
   if (prefix.includes('/') || prefix.includes('\\')) {
     throw new Error(`Temporary-directory prefix "${prefix}" contains a path separator`);
   }

@@ -1,7 +1,7 @@
 import type { SecretQuery } from '../3-candidate/SecretStore.ts';
 import { UnstorableSecretError } from '../3-candidate/UnstorableSecretError.ts';
 
-// `security -i` reads a command into a 4,096-byte buffer that the terminating newline occupies one byte of.
+// `security -i` reads a command into a 4,096-byte buffer, one byte of which the terminating newline occupies.
 const MAX_LINE_BYTES = 4_095;
 
 const HEX_CHARACTERS_PER_BYTE = 2;

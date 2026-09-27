@@ -93,6 +93,7 @@ describe(resolveJiraToken, () => {
 
 // region | Helpers
 
+/** Builds a spied secret store that returns the given secret. */
 function createStore(secret: string | undefined): SecretStore & { findSecret: ReturnType<typeof vi.fn> } {
   return {
     deleteSecret: vi.fn(() => false),

@@ -80,6 +80,9 @@ function countLineTerminators(text: string): number {
   return splitLines(text).length - 1;
 }
 
+/**
+ * Creates a `dedent` tag bound to the given options.
+ */
 function createDedent(options: ResolvedDedentOptions): Dedent {
   // Declared rather than assigned from an arrow so that `fn.name` is `dedent`, which
   // `describe(dedent, ...)` reports as the suite name.
@@ -127,6 +130,9 @@ function isBlankLine(line: TemplateLine): boolean {
   return line.segments.every((segment) => segment.kind === 'literal' && isBlankText(segment.text));
 }
 
+/**
+ * Renders a template with its common indent removed and its values spliced in.
+ */
 function renderTemplate(
   templateStrings: TemplateStringsArray,
   values: ReadonlyArray<DedentValue>,

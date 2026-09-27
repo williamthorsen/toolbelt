@@ -2,7 +2,7 @@
 /* eslint @typescript-eslint/consistent-type-assertions: off */
 
 /**
- * Given an object, returns an object with the same keys, omitting any keys whose values are null or undefined.
+ * Returns a copy of the object without the keys whose values are null or undefined.
  */
 export function omitNullish<T extends object>(obj: NotArray<T>): NonNullishProperties<T> {
   return Object.keys(obj).reduce((acc, key) => {
@@ -14,7 +14,7 @@ export function omitNullish<T extends object>(obj: NotArray<T>): NonNullishPrope
 }
 
 /**
- * Given an object, returns an object with the same keys, omitting any keys whose values are undefined.
+ * Returns a copy of the object without the keys whose values are undefined.
  */
 export function omitUndefined<T extends object>(obj: NotArray<T>): DefinedProperties<T> {
   return Object.keys(obj).reduce((acc, key) => {

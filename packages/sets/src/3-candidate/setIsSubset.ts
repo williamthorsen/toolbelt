@@ -15,6 +15,9 @@ export function setIsSubset<T>(childElements: Iterable<T>, parentElements: Itera
   return true;
 }
 
+/**
+ * Returns true if all elements in childElements are in parentElements, else false.
+ */
 export function setIsSuperset<T>(parentElements: Iterable<T>, childElements: Iterable<T>): boolean {
   return setIsSubset(childElements, parentElements);
 }

@@ -8,25 +8,25 @@ const MAX_INTEGER = 2 ** 31 - 1; // 2147483647
  * @internal
  */
 export const IntegerSeed = {
-  max: MAX_INTEGER, // 2_147_483_647
+  max: MAX_INTEGER,
   multiplier: 16_807,
+  /** Converts a value to an integer seed, drawing a random value when none is given. */
   toInt(value = Math.random()): number {
     return toIntegerSeed(value);
   },
+  /** Returns the seed that follows the given one in the Lehmer sequence. */
   next(seed: number): number {
     return (seed * IntegerSeed.multiplier) % IntegerSeed.max;
   },
 };
 
 /**
- * Accepts any number as input and deterministically returns an integer in the range [1, 2147483647].
+ * Deterministically maps any number to an integer in the range [1, 2147483647].
  */
 function toIntegerSeed(value: number): number {
   let integer = (() => {
-    // If the value is already a safe integer, we can use it directly
     if (Number.isSafeInteger(value)) return value;
 
-    // Otherwise, get a deterministic integer from the value
     return Math.floor(computeFakeMathRandom(value) * MAX_INTEGER);
   })();
 

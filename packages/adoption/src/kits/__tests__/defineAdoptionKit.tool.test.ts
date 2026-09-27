@@ -29,6 +29,7 @@ function detect(text: string): Array<AdoptionSite<Kind>> {
   });
 }
 
+/** Builds a spec with a clone check and an inline check over TypeScript sources, applying any overrides. */
 function buildSpec(overrides: Partial<AdoptionKitSpec<Kind>> = {}): AdoptionKitSpec<Kind> {
   return {
     checks: [

@@ -11,11 +11,9 @@ export function preciseTypeOf(value: unknown): PreciseType {
 }
 
 /**
- * Returns
- * - "array" for an array
- * - "null" for null
- * - "plainobject" for plain objects
- * - "instance" for all other objects // consider subtyping instances: Date, Promise, etc.
+ * Classifies a value whose `typeof` is "object" as "null", "array", "plainobject", or "instance".
+ *
+ * @todo Consider subtyping instances, such as Date and Promise.
  */
 export function preciseObjectTypeOf(value: object | null): ObjectSubtype {
   if (value === null) return 'null';
@@ -26,7 +24,7 @@ export function preciseObjectTypeOf(value: object | null): ObjectSubtype {
 
 type NonObjectJsPrimitive = 'bigint' | 'boolean' | 'number' | 'string' | 'symbol' | 'undefined';
 
-// These types are all technically of type "object"
+// The subtypes of what `typeof` reports as "object", plus "function"
 type ObjectSubtype = 'array' | 'function' | 'instance' | 'null' | 'plainobject';
 
 export type PreciseType = NonObjectJsPrimitive | ObjectSubtype;

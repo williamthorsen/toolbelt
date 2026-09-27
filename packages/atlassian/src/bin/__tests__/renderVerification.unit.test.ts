@@ -81,10 +81,12 @@ describe(renderVerification, () => {
 
 // region | Helpers
 
+/** Builds a report of three columns that cover the spec in order, with the overrides that a test needs. */
 function buildColumns(overrides: Partial<BoardColumnReport> = {}): BoardColumnReport {
   return { columns: ['To Do', 'In Progress', 'Done'], order: undefined, uncovered: [], ...overrides };
 }
 
+/** Builds a matching verification report with no entries, with the overrides that a test needs. */
 function buildReport(overrides: Partial<VerificationReport> = {}): VerificationReport {
   return { features: [], matches: true, statuses: [], ...overrides };
 }

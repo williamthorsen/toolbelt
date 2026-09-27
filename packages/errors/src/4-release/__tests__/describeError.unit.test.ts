@@ -22,6 +22,7 @@ describe(describeError, () => {
   });
 
   it('describes a message-less subclass by the name that it assigns', () => {
+    /** An `Error` subclass that names itself. */
     class ConfigError extends Error {
       override name = 'ConfigError';
     }
@@ -52,6 +53,7 @@ describe(describeError, () => {
   });
 
   it('describes an Error whose message accessor throws', () => {
+    /** An `Error` whose `message` accessor throws. */
     class LazyError extends Error {
       override get message(): string {
         throw new Error('accessor failed');

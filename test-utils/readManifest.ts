@@ -4,7 +4,7 @@ import path from 'node:path';
 import { isRecord } from './isRecord.ts';
 
 /**
- * Reads a workspace's `package.json`, returning its fields for reading by name. Throws where the file is
+ * Reads a workspace's `package.json`, returning its fields for reading by name. Throws when the file is
  * unreadable as JSON or holds anything but a JSON object, so a malformed manifest fails the audit that reads it.
  */
 export function readManifest(packageDirectory: string): Record<string, unknown> {

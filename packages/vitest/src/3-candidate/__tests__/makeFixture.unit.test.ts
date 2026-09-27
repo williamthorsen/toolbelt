@@ -164,7 +164,10 @@ function countOf(log: readonly string[], label: string): number {
   return log.filter((entry) => entry === label).length;
 }
 
-/** Records every build and disposal, so a test can assert on a scope's lifecycle without holding the instance. */
+/**
+ * Builds a probe that logs its label on build and on disposal, so a test can assert on a scope's lifecycle without
+ * holding the instance.
+ */
 function makeProbe(label: string): Probe {
   buildLog.push(label);
 

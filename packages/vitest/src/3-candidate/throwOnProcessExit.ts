@@ -45,6 +45,7 @@ export function throwOnProcessExit(): MockedProcessExit {
 export class ProcessExitError extends Error {
   readonly code: number | undefined;
 
+  /** Normalizes the code passed to `process.exit` into a number. */
   constructor(code?: number | string | null) {
     // Node accepts an integer string and exits with its numeric value, so the string form is coerced rather
     // than discarded. A code of `null` and an absent one both mean the caller named none.

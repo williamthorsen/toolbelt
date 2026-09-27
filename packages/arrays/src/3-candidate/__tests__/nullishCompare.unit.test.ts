@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { makeNullishCompare, nullishCompare } from '../nullishCompare.ts';
 
 describe(makeNullishCompare, () => {
-  // Original comparison function
+  /** Orders numbers ascending. */
   function compare(a: number, b: number): number {
     return a - b;
   }
@@ -47,6 +47,7 @@ describe(makeNullishCompare, () => {
 });
 
 describe(nullishCompare, () => {
+  /** Orders numbers ascending. */
   function compare(a: number, b: number): number {
     return a - b;
   }
@@ -110,6 +111,7 @@ describe(nullishCompare, () => {
   });
 
   describe('nullishGreater=true', () => {
+    /** Orders objects by `value`, ascending. */
     function compare(a: { value: number }, b: { value: number }): number {
       return a.value - b.value;
     }

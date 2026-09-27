@@ -21,17 +21,11 @@ export function sortKeys<T extends PlainObject>(
 }
 
 /**
- * Recursively sorts the keys in all objects in the given data structure.
- * If the input is an object, returns a new object whose keys are the sorted keys of the input object and whose
- * values are the results of calling this function on the input object's values.
- * If the input is an array, returns a new array whose elements are the results of calling this function on the
- * input array's elements.
- * Otherwise, returns the input.
+ * Returns a copy of the data structure in which the keys of every plain object are sorted, descending into arrays
+ * and plain objects; any other value is returned as is. Makes serialized data structures comparable where their
+ * keys may differ in order.
  *
  * @FIXME Disallow objects with non-string keys.
- *
- * The use case for this function is to allow comparison of serialized data structures that are expected to be
- * equivalent but whose keys may be in a different order.
  */
 export function sortObjectKeys<T>(value: T, compare: CompareKeys = (keyA, keyB) => (keyA < keyB ? -1 : 1)): T {
   if (Array.isArray(value)) {

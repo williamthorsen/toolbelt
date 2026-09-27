@@ -2,8 +2,7 @@ import type { Seed } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { TextNode } from './TextNode.ts';
 /**
- * Given a string that contains delimited variants [variant1|variant2|variant3], replaces the variants with a
- * randomly selected one and returns the new string.
+ * Replaces each set of delimited variants, as in `[variant1|variant2|variant3]`, with one of them chosen at random.
  * TODO: Allow the delimiter to be customized.
  * @category String
  * @experimental

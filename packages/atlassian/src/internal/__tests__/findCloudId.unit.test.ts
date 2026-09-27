@@ -76,6 +76,7 @@ describe(findCloudId, () => {
 
 // region | Helpers
 
+/** Builds a JSON response over a payload. */
 function jsonResponse(payload: unknown): Response {
   return Response.json(payload, { headers: { 'Content-Type': 'application/json' } });
 }

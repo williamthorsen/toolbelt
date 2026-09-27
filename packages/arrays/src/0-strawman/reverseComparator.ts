@@ -1,5 +1,5 @@
 /**
- * Given a compare function, returns a new function that performs the same comparison but returns the opposite result.
+ * Returns a comparator that performs the same comparison as `compare` but returns the opposite result.
  *
  * @category Array
  * @experimental

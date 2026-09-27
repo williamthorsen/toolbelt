@@ -41,7 +41,7 @@ export async function readProjectConfiguration(
 // region | Helpers
 
 /**
- * Reads the project's own board, which the feature, column, and backlog calls are scoped to. The query returns
+ * Reads the project's own board, to which the feature, column, and backlog calls are scoped. The query returns
  * every board whose filter references the project, so a board owned by another project can come back alongside
  * it; the project's own board is the one whose location names the project.
  */
@@ -151,7 +151,7 @@ interface BoardFeatures {
   readonly lockedFeatures: ReadonlySet<string>;
 }
 
-/** Reads every issue-type id held by the project, which the workflow read resolves its workflows from. */
+/** Reads every issue-type id held by the project, from which the workflow read resolves its workflows. */
 async function readIssueTypeIds(request: JiraRequest, projectKey: string, key: string): Promise<string[]> {
   const response = await requestOk(request, {
     label: `read issue types for ${projectKey}`,
@@ -194,7 +194,7 @@ async function readProject(request: JiraRequest, projectKey: string, key: string
   const project = isRecord(response.json) ? response.json : undefined;
   const id = project?.['id'];
   if (typeof id !== 'string') {
-    // eslint-disable-next-line unicorn/prefer-type-error -- one of nine refusals of a malformed Jira response in this module, which report `Error` uniformly.
+    // eslint-disable-next-line unicorn/prefer-type-error -- this module refuses every malformed Jira response with a plain `Error`.
     throw new Error(`Project ${projectKey} returned no 'id'.`);
   }
 

@@ -38,8 +38,8 @@ describe(listPluralizeLines, () => {
     expect(listLines("const noun = count === 1 ? /* one */ 'item' : 'items';\n")).toStrictEqual([1]);
   });
 
-  // `TimeUnit` holds this shape. Nothing here can tell a string identifier from any other, so the pair that
-  // proves the comparison counts something is the only pair claimed.
+  // Nothing here can tell a string identifier from any other, so the pair that proves the comparison counts
+  // something is the only pair claimed.
   it('declines a pair of identifiers', () => {
     expect(listLines('const noun = amount === 1 ? this.singular : this.plural;\n')).toStrictEqual([]);
   });

@@ -77,8 +77,8 @@ Options:
   -h, --help  Print this help`;
 
 /**
- * Runs the `tb-node` command line, returning what to write and exit with rather than doing either, so the
- * whole surface is exercisable without a process. Every failure is reported through the result: Nothing throws.
+ * Runs the `tb-node` command line, returning what to write and exit with rather than doing either, so that
+ * the whole surface is exercisable without a process. Every failure is reported through the result: Nothing throws.
  *
  * @internal
  */
@@ -183,7 +183,7 @@ function fail(message: string, command: string | undefined): TbNodeResult {
 
 /**
  * Renders the commands that install the pinned pnpm through what provides pnpm now. A provider under asdf
- * gets a reshim after a global install, so the shim picks the command up.
+ * gets a reshim after a global install, so that the shim picks the command up.
  */
 function listPnpmRepairs(provider: PnpmProvider, version: string, pinDir: string, execPath: string): string[] {
   const globalInstall = `npm install --global ${PNPM}@${version}`;
@@ -222,7 +222,7 @@ function listProvideCommands(shim: StrandedAsdfShim, lacksCorepack: boolean): st
   return shim.name === COREPACK && lacksCorepack ? installCorepack : [...installCorepack, 'corepack enable', RESHIM];
 }
 
-/** Renders the commands that remove the command from every providing version, so the shim goes on reshim. */
+/** Renders the commands that remove the command from every providing version, so that reshimming removes the shim. */
 function listRemoveCommands(shim: StrandedAsdfShim, install: AsdfInstall): string[] {
   const commands = shim.providingVersions.map((version) => {
     if (shim.backingPackage === undefined) {

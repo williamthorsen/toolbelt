@@ -20,7 +20,7 @@ describe(readStreamText, () => {
 
 // region | Helpers
 
-/** Builds a byte stream, rather than the object-mode stream that `Readable.from` defaults to, as a pipe is. */
+/** Builds a byte stream, rather than the object-mode stream to which `Readable.from` defaults, as a pipe is. */
 function buildStream(chunks: string[]): Readable {
   return Readable.from(chunks, { objectMode: false });
 }

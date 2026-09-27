@@ -73,7 +73,7 @@ describe(listFunctionBodies, () => {
     expect(summarize('declare function f(a: string): void;')).toStrictEqual([]);
   });
 
-  // The next three fix the documented limit: A return-type annotation's brace group wins over the body, because
+  // The next three pin down the documented limit: A return-type annotation's brace group wins over the body, because
   // telling a type's braces from a block's takes a parser rather than delimiter counting.
   it('reports the annotation of a function whose return type is an object literal', () => {
     expect(summarize('function r(): { a: number } { return { a: 1 }; }')).toStrictEqual([

@@ -8,8 +8,8 @@ import process from 'node:process';
  *
  * Scaffolding for a kit test, held to node builtins because the adoption layer declares no workspace
  * dependency. Two conditions send a kit test here rather than to `toolbelt.testing`'s `pointCwdAt`: a devDep
- * on that package would close a dependency cycle, as it would for `errors`; or the test must run on an unbuilt
- * tree, which rules out `toolbelt.testing/candidate`, whose export maps to `dist/`.
+ * on that package would close a dependency cycle; or the test must run on an unbuilt tree, which rules out
+ * `toolbelt.testing/candidate`, whose export maps to `dist/`.
  */
 export function pointCwdAt(dir: string): Disposable {
   const resolvedDir = fs.realpathSync(path.resolve(dir));

@@ -265,6 +265,7 @@ describe('tb-jira configure-project', () => {
 
 // region | Helpers
 
+/** Builds a harness with a credential in the environment, a conformant spec, and every route of a whole run. */
 function createHarness(options: HarnessOptions = {}): ReturnType<typeof createTbJiraHarness> {
   return createTbJiraHarness({
     env: { JIRA_API_TOKEN: 'a-token', JIRA_EMAIL: 'someone@example.com' },
@@ -274,7 +275,7 @@ function createHarness(options: HarnessOptions = {}): ReturnType<typeof createTb
   });
 }
 
-/** Runs `configure-project` through the whole command line, so dispatch is exercised alongside it. */
+/** Runs `configure-project` through the whole command line, so that dispatch is exercised alongside it. */
 async function run(harness: ReturnType<typeof createTbJiraHarness>, args: string[]): Promise<number> {
   return await runTbJira(['configure-project', ...args], harness.effects);
 }

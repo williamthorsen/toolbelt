@@ -70,7 +70,7 @@ describe('The strawman tier', () => {
  * Audits every package holding a strawman tier, reporting those whose own `nmr` config does not drop it from the
  * build. A package that gains an incubation area without the exclusion publishes code reached by no export subpath.
  *
- * A strawman counts as present only where its directory holds a TypeScript file.
+ * A strawman counts as present only when its directory holds a TypeScript file.
  *
  * The config is read as text, so a pattern no longer spelled out by the file fails the audit whether it was
  * removed or replaced by the `readiness/` exclusion that a package gains later.

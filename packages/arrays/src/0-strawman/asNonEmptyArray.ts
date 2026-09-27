@@ -1,5 +1,3 @@
-// These functions were found in old code. I do not remember what purpose they served.
-
 /**
  * Returns an immutable version of the array if the array is non-empty; otherwise, throws an error.
  * The output is guaranteed to be both immutable and non-empty.
@@ -9,10 +7,8 @@
  * @stage strawman
  */
 export function asNonEmptyArray<TItem>(items: AnyArray<TItem>): NonEmptyArray<TItem> {
-  // Make a new copy only if the array is mutable.
   const frozenItems: readonly TItem[] = Object.isFrozen(items) ? items : Object.freeze([...items]);
 
-  // Narrow the type and return
   assertNonEmptyArray(frozenItems);
   return frozenItems;
 }

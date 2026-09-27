@@ -12,7 +12,7 @@ const DELIMIT = {
 };
 
 /**
- * Class for building an abstract syntax tree (AST) of static text nodes (tokens) and variants.
+ * A node in an abstract syntax tree (AST) of static text nodes (tokens) and variants.
  * @category String
  * @experimental
  * @stage draft
@@ -25,6 +25,7 @@ export abstract class TextNode {
     this.content = content;
   }
 
+  /** Parses content into a node tree, validating its delimiters. */
   static create(content: string): TextNode {
     if (TokenNode.hasDelimited(content)) {
       validateDelimiters(content, { ...DELIMIT, throwOnError: true });
@@ -32,6 +33,7 @@ export abstract class TextNode {
     return TokenNode.isDelimited(content) ? new VariantNode(content) : new TokenNode(content);
   }
 
+  /** Decodes encoded or nested indices into a flat list, dropping any trailing seed. */
   static decodeIndices(encodedIndices: string | VariantIndices): Integer[] {
     if (typeof encodedIndices !== 'string') {
       if (isNumberArray(encodedIndices)) return encodedIndices;
@@ -39,7 +41,7 @@ export abstract class TextNode {
     }
 
     // Remove the trailing seed, if any
-    // TODO: `deseededIndices` shouldn't need a default value, but TS later treats it as possibly undefined. Why?
+    // `split` always returns a first element, but `noUncheckedIndexedAccess` types it as possibly undefined.
     const [deseededIndices = '', _seed] = encodedIndices.split(':', 2);
 
     const regex = /\d+/g;
@@ -52,6 +54,7 @@ export abstract class TextNode {
     return indices;
   }
 
+  /** Encloses content in the variant delimiters. */
   static delimit(content: string): string {
     return enclose(content, DELIMIT);
   }
@@ -78,30 +81,39 @@ export abstract class TextNode {
     return encodedIndices;
   }
 
+  /** Combines encoded indices and a seed into a whitespace-free fingerprint. */
   static fingerprint(seed: number, encodedIndices: string): string {
     return `${encodedIndices}:${seed}`.replaceAll(/\s/g, '');
   }
 
+  /**
+   * Returns a variant node for wholly delimited content, a token node for content that contains delimiters, or the
+   * content itself.
+   */
   static fromContent(content: string): TextNode | string {
     if (TokenNode.isDelimited(content)) return new VariantNode(content);
     if (TokenNode.hasDelimited(content)) return new TokenNode(content);
     return content;
   }
 
+  /** Reports whether text contains an opening or a closing delimiter. */
   static hasDelimited(text: string): boolean {
     return text.includes(DELIMIT.opening) || text.includes(DELIMIT.closing);
   }
 
+  /** Reports whether text opens and closes with the variant delimiters. */
   static isDelimited(text: string): boolean {
     return text.startsWith(DELIMIT.opening) && text.endsWith(DELIMIT.closing);
   }
 
+  /** Throws where indices remain once the top-level node has resolved its variants. */
   assertAllIndicesConsumed(indices: number[], depth: number): void | never {
     if (depth === 0 && indices.length > 0) {
       throw new Error(`Unused variant indices. Received ${this.variantIndexCount}, leaving ${indices.length} unused.`);
     }
   }
 
+  /** Decodes indices as the static `decodeIndices` does, recording their count at the top level. */
   decodeIndices(encodedIndices: string | VariantIndices, depth: Integer = 0): Integer[] {
     const decodedIndices = TextNode.decodeIndices(encodedIndices);
 
@@ -111,6 +123,7 @@ export abstract class TextNode {
     return decodedIndices;
   }
 
+  /** Picks a variant at every choice and returns the text with the indices, seed, and fingerprint that reproduce it. */
   pickWithFingerprint(options: { seed?: Seed | undefined } = {}): PickSummary {
     const seededRng = IntSeededRng.cloneOrCreate(options.seed);
     const seed = options.seed ?? seededRng;
@@ -128,18 +141,24 @@ export abstract class TextNode {
     };
   }
 
+  /** Returns the text with a variant chosen at random at every choice. */
   abstract pick(options?: { seed?: Seed | undefined }): string;
 
+  /** Chooses a variant at random at every choice and returns the indices of the choices. */
   abstract pickIndices(options?: { indices?: VariantIndices | undefined; seed?: Seed | undefined }): VariantIndices;
 
+  /** Returns the text that the given indices select. */
   abstract selectVariants(indices: string | VariantIndices, options?: { depth?: Integer }): string;
 
+  /** Returns the delimited text that the node represents. */
   abstract toString(): string;
 }
 
+/** A run of text whose segments are static strings and nested variant nodes. */
 class TokenNode extends TextNode {
   children?: (TextNode | string)[];
 
+  /** Segments the content into static strings and child nodes. */
   constructor(content: string) {
     super(content);
     if (TextNode.hasDelimited(content)) {
@@ -147,6 +166,7 @@ class TokenNode extends TextNode {
     }
   }
 
+  /** Joins the text picked by each child. */
   pick(options: { seed?: Seed | undefined } = {}): string {
     const seed = IntSeededRng.spawn(options.seed);
     if (this.children) {
@@ -155,6 +175,7 @@ class TokenNode extends TextNode {
     return this.content;
   }
 
+  /** Collects the indices picked by each variant child. */
   pickIndices(options: { seed?: Seed | undefined } = {}): VariantIndices {
     const seed = IntSeededRng.spawn(options.seed);
 
@@ -172,6 +193,7 @@ class TokenNode extends TextNode {
     return indices.length === 1 && Array.isArray(indices[0]) ? indices[0] : indices;
   }
 
+  /** Joins the text that the indices select from each child. */
   selectVariants(indices: string | VariantIndices, options: { depth?: Integer } = {}): string {
     const { depth = 0 } = options;
 
@@ -192,6 +214,7 @@ class TokenNode extends TextNode {
     return resolvedContent;
   }
 
+  /** Joins the delimited text of each child. */
   toString(): string {
     if (this.children) {
       return this.children.map((child) => child.toString()).join('');
@@ -200,15 +223,17 @@ class TokenNode extends TextNode {
   }
 }
 
+/** A delimited set of alternatives, one of which is chosen when the text is picked. */
 export class VariantNode extends TextNode {
   variants: (TextNode | string)[] = [];
 
+  /** Splits the delimited content into its alternatives. */
   constructor(content: string) {
     super(content);
     this.variants = splitDelimited(content, DELIMIT).map((variant) => TextNode.fromContent(variant));
   }
 
-  // Choose a variant at random
+  /** Chooses a variant at random and returns its picked text. */
   pick(options: { seed?: Seed | undefined } = {}): string {
     const seed = IntSeededRng.spawn(options.seed);
 
@@ -219,13 +244,14 @@ export class VariantNode extends TextNode {
     return variant.pick({ seed });
   }
 
+  /** Chooses a variant at random and returns its index, followed by the indices picked within it. */
   pickIndices(options: { seed?: Seed | undefined } = {}): VariantIndices {
     const seed = IntSeededRng.spawn(options.seed);
 
     const index = pickInteger({ max: this.variants.length - 1, seed });
     const nodeOrString = this.variants[index];
 
-    const indices: VariantIndices = [index]; // index of the picked variant
+    const indices: VariantIndices = [index];
 
     if (nodeOrString instanceof TextNode) {
       const childIndices = nodeOrString.pickIndices({ seed });
@@ -235,6 +261,7 @@ export class VariantNode extends TextNode {
     return indices;
   }
 
+  /** Resolves the variant named by the first index, passing the remaining indices to it. */
   selectVariants(indices: VariantIndices, options: { depth?: Integer } = {}): string {
     const { depth = 0 } = options;
     const decodedIndices = this.decodeIndices(indices, depth);
@@ -258,16 +285,19 @@ export class VariantNode extends TextNode {
     return resolvedContent;
   }
 
+  /** Joins the variants with the separator and encloses them in the delimiters. */
   toString(): string {
     return TextNode.delimit(this.variants.map((variant) => variant.toString()).join(DELIMIT.separator));
   }
 }
 
+/** Encloses content in the opening and closing delimiters. */
 function enclose(content: string, options: { opening: string; closing: string }): string {
   const { opening, closing } = options;
   return opening + content + closing;
 }
 
+/** Flattens nested indices into a single list. */
 function flatten(indices: VariantIndices): number[] {
   let flatIndices: number[] = [];
   for (const index of indices) {
@@ -280,6 +310,7 @@ function flatten(indices: VariantIndices): number[] {
   return flatIndices;
 }
 
+/** Reports whether every item is a number. */
 function isNumberArray(items: unknown[]): items is number[] {
   return Array.isArray(items) && items.every((item) => typeof item === 'number');
 }

@@ -22,7 +22,7 @@ interface CatchCapture {
 const BRACKETS: Delimiters = { close: ']', open: '[' };
 // A member chain reached directly or through optional chaining, optionally called optionally, and optionally
 // given type arguments. A type argument holding a parenthesis, as a function type would, goes unspanned. A
-// subscript, a parenthesized callee, and an immediately-invoked literal are each declined: the substitution
+// subscript, a parenthesized callee, and an immediately-invoked literal are each declined: The substitution
 // wraps one named call.
 const CALLEE = /^[\w$]+(?:\??\.[\w$]+)*(?:\?\.)?(?:<[^<>()]*>)?$/;
 const CALL_PREFIX = /^(?:await )?(?:new )?/;
@@ -50,7 +50,7 @@ const TRY_ANCHOR = /\btry\s*\{/g;
  * call and whose catch block assigns the caught value to a variable declared outside the try.
  *
  * A capture whose enclosing block asserts the captured value `toBe` a literal, before anything reassigns the
- * variable, is not reported: the call threw something other than an `Error`, on which `captureError` fails the
+ * variable, is not reported: The call threw something other than an `Error`, on which `captureError` fails the
  * test.
  *
  * The source is blanked before the anchor scan reads it, so a try written in a comment or a literal is
@@ -167,7 +167,7 @@ function hasNonErrorLiteralAssertion(blockRest: string, target: string, before: 
 /**
  * Reports whether a lookbehind declares a name outside the try block that follows it.
  *
- * `const` is not a spelling of this idiom: a catch block cannot reassign one, so a capture has to declare its
+ * `const` is not a spelling of this idiom: A catch block cannot reassign one, so a capture has to declare its
  * variable `let` or `var`. A declaration list naming several variables goes unrecognized, which keeps the
  * window from binding a name that some other statement in it happens to mention.
  */
@@ -206,7 +206,7 @@ function isNonErrorLiteral(expression: string): boolean {
  * Reports whether a try block holds one call and nothing else.
  *
  * `captureError` takes a thunk and hands back what it threw, discarding what it returned, so a block that
- * keeps a result or runs a second statement is doing something the substitution does not preserve. `await`
+ * keeps a result or runs a second statement is doing something that the substitution does not preserve. `await`
  * and `new` are spanned, each being one token ahead of the call rather than work beside it.
  */
 function isSingleCall(body: string): boolean {
@@ -219,11 +219,11 @@ function isSingleCall(body: string): boolean {
 }
 
 /**
- * Returns the variable a catch block assigns its caught value to, with the offset past the block, or nothing
- * where it assigns none.
+ * Returns the variable to which a catch block assigns its caught value, with the offset past the block, or
+ * nothing where it assigns none.
  *
  * A catch that logs, rethrows, or branches outlives the substitution, so only a lone assignment of the
- * parameter counts, with a cast admitted because it is how the hand-roll recovers the type it lost. A catch
+ * parameter counts, with a cast admitted because it is how the hand-roll recovers the type that it lost. A catch
  * binding no parameter, or destructuring one, has nothing to capture.
  *
  * A `finally` clause disqualifies the site. `captureError` throws where the call completes normally, so the

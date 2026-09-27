@@ -42,18 +42,3 @@ type Curry<TFn> = TFn extends (...args: infer Args) => infer Return
     : (arg: Args[0]) => Curry<(...args: Tail<Args>) => Return>
   : never;
 // endregion | Types
-
-/*
-export function curry<T extends (...args: any[]) => any>(fn: T, argCount = fn.length): Curry<T> {
-  return ((...args: unknown[]) => {
-    if (args.length >= argCount) {
-      return fn(...args);
-    }
-    return curry(fn.bind(null, ...args), argCount - args.length);
-  }) as Curry<T>;
-}
-
-export type Curry<T extends (...args: any[]) => any> = Parameters<T> extends
-  [first: infer F, second: infer S, ...rest: infer R] ? ((arg: F) => Curry<(input: S, ...rest: R) => ReturnType<T>>)
-  : T;
- */

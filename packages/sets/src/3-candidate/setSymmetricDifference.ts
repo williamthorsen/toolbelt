@@ -1,6 +1,5 @@
 /**
- * Returns the symmetric difference of the two sets.
- * Source: `skypilot-dev/sugarbowl`
+ * Returns a set containing the elements that are in exactly one of the two collections.
  */
 export function setSymmetricDifference<T>(aElements: Iterable<T>, bElements: Iterable<T>): Set<T> {
   const aSet = new Set(aElements);

@@ -195,8 +195,8 @@ describe(TextNode, () => {
       const outputSeed = textNode.pickWithFingerprint({ seed: inputSeed }).seed;
       const outputSeed2 = textNode.pickWithFingerprint({ seed: inputSeed }).seed;
 
-      expect(outputSeed).not.toBe(inputSeed); // not the same as the input seed
-      expect(outputSeed).toBe(outputSeed2); // but deterministically determined
+      expect(outputSeed).not.toBe(inputSeed);
+      expect(outputSeed).toBe(outputSeed2);
       expect(Number.isSafeInteger(outputSeed)).toBe(true);
     });
   });

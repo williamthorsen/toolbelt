@@ -35,8 +35,7 @@ interface RenameClaim {
  * Lists every hand-rolled atomic write in a source, which is a function body that writes a path held in a binding
  * and renames that same binding.
  *
- * Takes the blanked code produced by `listFilesystemIdioms`, so a write written in a comment or a literal is not
- * one. Blanking preserves every offset, so a reported line still names the line held by the source.
+ * Takes the blanked code produced by `listFilesystemIdioms`, so a write written in a comment or a literal is not one.
  *
  * The pairing is what holds the finding: A write alone, a rename alone, and a rename of a path that the body
  * copied rather than wrote each leave the body unreported. A body pairing twice reports twice, since each rename
@@ -84,7 +83,7 @@ export function listAtomicWriteSites(code: string): Array<AdoptionSite<AtomicWri
 
 // region | Helpers
 
-/** Lists every call of a pattern in a body whose first argument is a bare binding, with the binding it names. */
+/** Lists every call of a pattern in a body whose first argument is a bare binding, with the binding that it names. */
 function listPathArguments(body: string, pattern: RegExp): PathArgument[] {
   const calls: PathArgument[] = [];
 

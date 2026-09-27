@@ -22,7 +22,7 @@ export async function promptSecret(input: NodeJS.ReadableStream, output: NodeJS.
   // reporting success over a secret that it never received. Closing is the one event shared by every
   // abandonment, so cancelling on it covers the stream ending and the `Ctrl-C` and `Ctrl-D` that `readline`
   // handles itself. Those two keystrokes therefore report the message below rather than `readline`'s own wording,
-  // which names the key pressed where a caller of `tb-secret` needs to know what became of the secret.
+  // which names the key pressed where a caller needs to know what became of the secret.
   const abandoned = new AbortController();
   reader.once('close', () => abandoned.abort());
 

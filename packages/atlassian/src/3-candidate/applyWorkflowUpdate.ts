@@ -28,7 +28,6 @@ export async function applyWorkflowUpdate(
     return { correctedStatuses: [], written: false };
   }
 
-  // The builder runs the graph guards itself, so no unguarded payload reaches the write.
   await requestOk(request, {
     body: buildWorkflowUpdatePayload(configuration, plan),
     label: 'update workflow',

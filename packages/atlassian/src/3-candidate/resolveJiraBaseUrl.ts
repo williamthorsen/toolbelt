@@ -30,7 +30,7 @@ export interface JiraBaseUrlOptions {
 
 // region | Helpers
 
-/** Reduces a site to the host that tenant-info is read from. */
+/** Reduces a site to the host from which tenant-info is read. */
 function readHost(site: string): string {
   const trimmed = site.trim();
   if (trimmed === '') throw new Error('A site is required to resolve the base URL.');

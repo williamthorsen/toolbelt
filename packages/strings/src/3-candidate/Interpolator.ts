@@ -5,6 +5,8 @@ import { validateDelimiters } from '../internal/validateDelimiters.ts';
 import type { ValidationResult } from '../types/common.types.ts';
 
 /**
+ * A template whose brace-delimited placeholders are replaced with mapped values, each adapted to the case of its
+ * placeholder.
  * @category String
  * @experimental
  * @stage candidate
@@ -12,19 +14,22 @@ import type { ValidationResult } from '../types/common.types.ts';
 export class Interpolator {
   ifMissing: InterpolatorOptions['ifMissing'] = 'IGNORE';
   mapping: Map<RegExp | string, string> = new Map<string, string>();
-  noAdaptCase = false; // if true, don't adapt mapping values to the case of the placeholders
+  noAdaptCase = false;
   template: string;
 
+  /** Validates the template and applies the options. */
   constructor(template: string, options: InterpolatorOptions = {}) {
     this.template = template;
     this.assertIsValidTemplate();
     this.setOptions(options);
   }
 
+  /** Interpolates a mapping into a template in a single call. */
   static interpolate<T>(template: string, mapping: StringMapping<T>, options: InterpolatorOptions = {}): string {
     return new Interpolator(template, options).interpolate({ mapping });
   }
 
+  /** Validates that the template's braces match and do not nest. */
   static validateTemplate(template: string): ValidationResult {
     const validationResult = validateDelimiters(template, { opening: '{', closing: '}', disallowNested: true });
     if (validationResult.isValid) {
@@ -74,13 +79,14 @@ export class Interpolator {
     const matcher = createDelimitedMatcher(/([^}]+)/, { caseInsensitive: true });
     const placeholderMatches = this.template.matchAll(matcher);
     const placeholderSet = new Set<string>();
-    // TODO: `placeholder` needs a default or will be treated as possibly `undefined`. Is this actually possible?
+    // The capture group always participates, but `noUncheckedIndexedAccess` types it as possibly undefined.
     for (const [_, placeholder = ''] of placeholderMatches) {
       placeholderSet.add(placeholder.toLowerCase());
     }
     return placeholderSet;
   }
 
+  /** Partitions the string keys and the placeholders into those that match and those that do not. */
   partitionKeysAndPlaceholders<T>(options: { mapping?: StringMapping<T> } = {}): KeyPlaceholderPartition {
     const { mapping = this.mapping } = options;
 
@@ -94,6 +100,7 @@ export class Interpolator {
     return { matches, unmatchedKeys, unmatchedPlaceholders };
   }
 
+  /** Replaces each placeholder with its mapped value, handling an unmatched one as `ifMissing` directs. */
   interpolate<T>(options: InterpolateOptions<T> = {}): string {
     const mergedOptions = {
       noAdaptCase: this.noAdaptCase,
@@ -109,24 +116,21 @@ export class Interpolator {
       const matcher = createDelimitedMatcher(key);
       const insensitiveMatcher = createDelimitedMatcher(key, { caseInsensitive: true });
 
-      // 1. Perform replacements
       newText = newText.replace(insensitiveMatcher, (delimitedPlaceholder): string => {
         const placeholder = delimitedPlaceholder.slice(1, -1);
 
         const isMatch = typeof key === 'string' ? placeholder === key : delimitedPlaceholder.match(matcher);
 
-        // The simplest case is that the placeholder is a case-sensitive match. No transformation is needed.
+        // A case-sensitive match needs no transformation.
         if (isMatch) {
           return value;
         }
 
         const isInsensitiveMatch = typeof key === 'string' && placeholder.toLowerCase() === key;
 
-        // If the placeholder is not the same as the key, check whether its lowercase version is.
-        // We don't try to automate any other conversions.
+        // Adapt the case only where the placeholder differs from the key in case alone.
         if (!noAdaptCase && typeof key === 'string' && isInsensitiveMatch) {
-          // Identify the transformation that transforms the mapping key to have the same case as the placeholder.
-          // We can then apply the same function to the mapping value.
+          // Apply to the value the transformation that recases the key to match the placeholder.
           const transform = deriveCaseTransformer(key, placeholder);
           if (transform !== undefined) {
             return transform(value);
@@ -136,7 +140,7 @@ export class Interpolator {
       });
     }
 
-    // If ifMissing is defined, handle any remaining occurrences of the placeholder.
+    // Handle any placeholder that the mapping left unreplaced.
     if (ifMissing !== 'IGNORE') {
       const matcher = createDelimitedMatcher(/([^}]+)/);
       if (ifMissing === 'USE_KEY') {
@@ -156,11 +160,13 @@ export class Interpolator {
     return newText;
   }
 
+  /** Validates the mapping and replaces the current one with it. */
   setMapping<T>(mapping: StringMapping<T>): this {
     this.mapping = this.stringMappingToMap(mapping);
     return this;
   }
 
+  /** Applies each defined option, leaving the others as they are. */
   setOptions<T>(options: InterpolateOptions<T> = {}): this {
     const { noAdaptCase, mapping, ifMissing } = options;
     if (ifMissing !== undefined) this.ifMissing = ifMissing;
@@ -169,6 +175,7 @@ export class Interpolator {
     return this;
   }
 
+  /** Validates that the mapping's keys are unique regardless of case. */
   validateMapping<T>(options: { mapping?: StringMapping<T> | undefined } = {}): ValidationResult {
     const { mapping = this.mapping } = options;
 
@@ -187,17 +194,20 @@ export class Interpolator {
     };
   }
 
+  /** Throws the mapping's first validation error, if it has one. */
   private assertIsValidMapping<T>(options: { mapping?: StringMapping<T> | undefined }): void | never {
     const { mapping = this.mapping } = options;
     const [validationError] = this.validateMapping({ mapping }).errors;
     if (validationError) throw new Error(validationError.message);
   }
 
+  /** Throws the template's first validation error, if it has one. */
   private assertIsValidTemplate(): void | never {
     const [validationError] = Interpolator.validateTemplate(this.template).errors;
     if (validationError) throw new Error(validationError.message);
   }
 
+  /** Converts a mapping to a `Map`, validating it unless `noValidation` is set. */
   private stringMappingToMap<T>(
     mapping: StringMapping<T>,
     options: { noValidation?: boolean | undefined } = {},
@@ -209,6 +219,7 @@ export class Interpolator {
   }
 }
 
+/** Replaces the brace-delimited placeholders in a template with mapped values. */
 export function interpolate<T>(
   template: string,
   substitutionMap: StringMapping<T>,
@@ -242,9 +253,9 @@ interface DelimitedMatcherOptions {
 }
 
 export interface InterpolatorOptions {
-  // what to do if a placeholder is not found in the mapping
+  /** Determines how a placeholder that the mapping lacks is handled. */
   ifMissing?: 'IGNORE' | 'THROW' | 'USE_KEY' | ((placeholder: string) => string) | undefined;
-  // if false, will try to adapt the case of the mapping value to match the placeholder
+  /** Keeps each mapping value's case as given, where otherwise it is adapted to match its placeholder. */
   noAdaptCase?: boolean | undefined;
 }
 
@@ -253,7 +264,8 @@ export interface InterpolateOptions<T> extends InterpolatorOptions {
 }
 
 /**
- * Ignores regular expressions.
+ * The string mapping keys and the placeholders, split into matches and the unmatched of each. Regular-expression
+ * keys take no part.
  */
 export interface KeyPlaceholderPartition {
   matches: Set<string>;

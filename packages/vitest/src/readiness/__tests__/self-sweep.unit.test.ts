@@ -13,7 +13,7 @@ const TESTS_DIR = fileURLToPath(new URL('.', import.meta.url));
 
 describe(listSites, () => {
   // This kit sweeps tests, so the sweep here reads them too. Every fixture beside this file writes its idiom
-  // inside a literal, and each one reported a site of its own before blanking.
+  // inside a literal, which blanking keeps from reporting a site.
   it('finds nothing in the sources describing what it looks for', () => {
     const findings = listSweptFiles().flatMap((file) =>
       listSites(fs.readFileSync(file, 'utf8')).map((site) => `${path.basename(file)}:${site.line}`),

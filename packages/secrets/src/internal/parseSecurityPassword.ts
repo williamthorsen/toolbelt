@@ -46,7 +46,7 @@ function readQuotedForm(value: string): string {
   return value.slice(QUOTE.length, end);
 }
 
-/** Shortens output for an error message, so a failure names what it read without reproducing all of it. */
+/** Shortens output for an error message, so that a failure names what it read without reproducing all of it. */
 function summarize(output: string): string {
   const collapsed = output.trim().replaceAll(/\s+/g, ' ');
 

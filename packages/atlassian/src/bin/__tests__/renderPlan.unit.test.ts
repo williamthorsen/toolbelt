@@ -188,6 +188,7 @@ describe(renderPlan, () => {
 
 // region | Helpers
 
+/** Builds an empty plan, with the entries that a test needs. */
 function buildPlan(overrides: Partial<ReconciliationPlan> = {}): ReconciliationPlan {
   return {
     creations: [],

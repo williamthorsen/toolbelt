@@ -5,7 +5,7 @@ import { findWeightedIndex } from './findWeightedIndex.ts';
 import { getItemAtIndexOrThrow } from './getItemAtIndexOrThrow.ts';
 
 /**
- * Returns a pseudo-random item from the cumulative weights, with odds reflecting the cumulative weights.
+ * Returns a pseudo-random index into the cumulative weights, with odds in proportion to each index's own weight.
  * If the array is empty, throws an error.
  *
  * @category Array
@@ -27,7 +27,8 @@ export function pickWeightedIndex(cumulativeWeights: ReadonlyArray<number>, opti
 }
 
 /**
- * Verifies that the cumulative weights are valid.
+ * Throws unless the cumulative weights are ascending, non-negative, and non-empty, match `nItems` in number, and
+ * end above 0.
  */
 export function assertValidCumulativeWeights(weights: ReadonlyArray<number>, nItems = weights.length): void | never {
   if (weights.length !== nItems) {
@@ -54,12 +55,14 @@ function assertAscendingWeights(values: ReadonlyArray<number>): void | never {
   }
 }
 
+/** Throws if the array is empty. */
 function assertNonEmptyArray(array: ReadonlyArray<unknown>): void | never {
   if (array.length === 0) {
     throw new Error('Cannot pick an item from an empty array.');
   }
 }
 
+/** Throws if any weight is negative. */
 function assertPositiveWeights(weights: ReadonlyArray<number>): void | never {
   if (weights.some((weight) => weight < 0)) {
     throw new Error('Weights cannot be negative.');

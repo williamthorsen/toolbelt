@@ -22,7 +22,7 @@ describe('generateRandom() with seed', () => {
     expect(random2).toBe(random1);
   });
 
-  // These values are copied from trial runs of the original Deno code to ensure that the behavior is preserved.
+  // Pin the output for fixed seeds, so that any change to the generated sequence fails.
   it.each([
     { seed: 0.387_782_332_202_318_3, max: 9_007_199_254_740_991, expected: 2_928_838_066_884_486 },
     { seed: 1_234, expected: 0.067_474_613_463_261_45 },
@@ -34,7 +34,6 @@ describe('generateRandom() with seed', () => {
 });
 
 describe(generateRandom, () => {
-  // Backup of the original Math.random
   const originalRandom = Math.random;
 
   beforeEach(() => {

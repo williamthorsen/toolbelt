@@ -108,9 +108,8 @@ describe('The errors adoption kit', () => {
     expect(outcomes.flatMap(listReportedFindings)).toStrictEqual([{ line: 1, path: 'src/other.ts', reported: true }]);
   });
 
-  // The departure that `toolbelt.async` and `toolbelt.testing` invert. The source beside them keeps the check
-  // running, so a widened filter reports these rather than leaving the check skipped: A test constructs error
-  // shapes deliberately, and a bootstrap wrapper's hand-rolled handling survives an incomplete install.
+  // `src/report.ts` keeps the check running, so a widened filter reports these files rather than leaving the
+  // check skipped.
   it('leaves a test file and a bootstrap wrapper alone', async () => {
     using tree = createTrackedRepo({
       'bin/run.js': DESCRIBE_INLINE,

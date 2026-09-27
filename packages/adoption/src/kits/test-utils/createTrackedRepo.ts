@@ -23,6 +23,7 @@ export function createTrackedRepo(entries: Record<string, string>): TempDir {
 
 // region | Helpers
 
+/** Runs a git command against a directory, discarding its output. */
 function runGit(dir: string, ...args: string[]): void {
   execFileSync('git', ['-C', dir, ...args], { stdio: 'ignore' });
 }

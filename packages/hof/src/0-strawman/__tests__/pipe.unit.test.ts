@@ -68,26 +68,32 @@ describe(applyPipe, () => {
 });
 
 // region | Helpers
+/** Upper-cases a string asynchronously. */
 async function asyncUpper(s: string): Promise<string> {
   return await Promise.try(() => s.toUpperCase());
 }
 
+/** Doubles a number. */
 function double(n: number): number {
   return n * 2;
 }
 
+/** Encloses a string in pipe characters. */
 function enclose(s: string): string {
   return `|${s}|`;
 }
 
+/** Adds two numbers. */
 function sum(addend1: number, addend2: number): number {
   return addend1 + addend2;
 }
 
+/** Converts a number to a string. */
 function toString(s: number): string {
   return s.toString();
 }
 
+/** Upper-cases a string. */
 function upper(str: string): string {
   return str.toUpperCase();
 }

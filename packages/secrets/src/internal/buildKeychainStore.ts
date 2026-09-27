@@ -13,6 +13,7 @@ const INTERACTIVE_ARGS = ['-i'];
  * @internal
  */
 export function buildKeychainStore(run: SecurityRunner, keychain?: string): WritableSecretStore {
+  /** Reads a secret, returning `undefined` where the keychain holds no such item. */
   function findSecret(query: SecretQuery): string | undefined {
     const result = run(buildFindArgs(query, keychain));
     if (result.exitCode === EXIT_NOT_FOUND) return undefined;
@@ -72,7 +73,7 @@ export function buildKeychainStore(run: SecurityRunner, keychain?: string): Writ
 // region | Helpers
 
 /**
- * Raises a stored secret that differs from the one written. `security` reads a command line into a fixed
+ * Throws where the stored secret differs from the one written. `security` reads a command line into a fixed
  * buffer, so a version whose buffer is smaller than this one accounts for would cut the secret; comparing
  * what came back turns that into a failure at the write rather than a wrong answer at the caller.
  */
@@ -84,7 +85,7 @@ function assertStoredIntact(stored: string | undefined, secret: string): void {
   throw new Error(`The secret was written but not stored intact: ${secret.length} characters went in and ${found}.`);
 }
 
-/** Raises what a failed run wrote, so a keystore that could not be reached is distinct from an absent item. */
+/** Raises what a failed run wrote, so that a keystore that could not be reached is distinct from an absent item. */
 function assertSucceeded(result: SecurityResult, action: string): void {
   if (result.exitCode === 0) return;
 

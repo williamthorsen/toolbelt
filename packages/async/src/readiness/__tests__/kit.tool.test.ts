@@ -34,8 +34,7 @@ describe('The async adoption kit', () => {
     });
   });
 
-  // The departure from the five source-oriented kits, which exempt tests. This case exists to fail on
-  // reverting the kit's path filter.
+  // Fails if the kit's path filter exempts tests, as the source-oriented kits' filters do.
   it('reports a sleep in a test, where the idiom mostly lives', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/wait.unit.test.ts': SLEEP });
     using _cwd = pointCwdAt(tree.dir);

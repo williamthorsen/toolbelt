@@ -31,6 +31,7 @@ export function listMathIdioms(source: string): Array<AdoptionSite<MathIdiomKind
 
 // region | Helpers
 
+/** Tags each line with the idiom kind whose detector found it. */
 function toSites(kind: MathIdiomKind, lines: readonly number[]): Array<AdoptionSite<MathIdiomKind>> {
   return lines.map((line) => ({ kind, line }));
 }

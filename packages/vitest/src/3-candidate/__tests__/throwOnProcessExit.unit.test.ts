@@ -23,6 +23,7 @@ describe(throwOnProcessExit, () => {
       using _exit = throwOnProcessExit();
       const reached: string[] = [];
 
+      /** Records the statements that it reaches on either side of an exit. */
       function runCommand(): void {
         reached.push('before');
         exitWith(1);

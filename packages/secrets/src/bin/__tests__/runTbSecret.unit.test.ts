@@ -199,7 +199,7 @@ describe(runTbSecret, () => {
 // region | Helpers
 
 /**
- * Builds effects over a map of secrets keyed by keychain, account, and service, so a command's reach is read
+ * Builds effects over a map of secrets keyed by keychain, account, and service, so that a command's reach is read
  * back from which key it touched.
  */
 function createHarness(options: HarnessOptions = {}): Harness {

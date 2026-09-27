@@ -19,7 +19,7 @@ import process from 'node:process';
 export function pointArgvAt(args: readonly string[], options: PointArgvAtOptions = {}): PointedArgv {
   const { execPath = process.execPath, scriptPath = 'script' } = options;
 
-  // Copied, so a caller that later mutates its own array cannot change what the scope installed.
+  // Copy the arguments, so that a caller that later mutates its own array cannot change what the scope installed.
   const pointedArgs = [...args];
   const previousArgv = process.argv;
 

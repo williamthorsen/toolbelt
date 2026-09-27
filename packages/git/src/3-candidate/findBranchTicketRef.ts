@@ -69,8 +69,8 @@ function composeRef(key: string | undefined, number: string, revisit: string | u
 }
 
 /**
- * Whether a matched key may stand as the ref's key: a missing one always may, a declared key only when
- * the match spells it, and any key at all only when it is uppercase.
+ * Reports whether a matched key may stand as the ref's key: a missing one always may, a declared key only
+ * when the match spells it, and any key at all only when it is uppercase.
  */
 function isAcceptableKey(key: string | undefined, declaredKey: string | undefined): boolean {
   if (key === undefined) {

@@ -1,8 +1,8 @@
 import { validateDelimiters } from './validateDelimiters.ts';
 
 /**
- * Given a delimited string containing separators, removes the delimiters and splits on the separators, ignoring
- * any internal delimited strings.
+ * Removes a delimited string's outer delimiters and splits it on the separators that lie outside any nested
+ * delimited string.
  * @example
  * ```ts
  * splitDelimited('[[firstName|lastName]|world]', { opening: '[', closing: ']', separator: '|' });
@@ -19,7 +19,6 @@ export function splitDelimited(text: string, params: Params): string[] {
 
   validateDelimiters(text, { opening, closing, throwOnError: true });
 
-  // Remove the opening and closing delimiters
   const undelimitedText = text.slice(opening.length, -closing.length);
 
   const result: string[] = [];
@@ -42,7 +41,6 @@ export function splitDelimited(text: string, params: Params): string[] {
     }
   }
 
-  // Add the last segment if any
   if (lastSplit < undelimitedText.length) {
     result.push(undelimitedText.slice(lastSplit));
   }

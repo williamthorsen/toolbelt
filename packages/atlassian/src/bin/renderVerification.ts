@@ -46,7 +46,7 @@ export function renderVerification(report: VerificationReport, columns: BoardCol
 
 // region | Helpers
 
-/** Marks one line of the report, padded so the names below it line up. */
+/** Marks one line of the report, padded so that the names below it line up. */
 function mark(matches: boolean): string {
   return matches ? 'ok  ' : 'MISS';
 }

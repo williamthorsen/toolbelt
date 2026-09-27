@@ -26,6 +26,7 @@ export function debounce<T extends Callback>(
   let lastCalledAt: number | undefined;
   let timeoutId: TimeoutId;
 
+  /** Schedules the callback with the latest arguments, replacing any pending invocation. */
   function debouncedFunction(...args: Parameters<T>): void {
     const now = Date.now();
 

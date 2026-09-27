@@ -25,9 +25,8 @@ export default defineAdoptionKit({
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: 'the project holds no JavaScript or TypeScript sources outside its bootstrap wrappers',
   packageName: PACKAGE_NAME,
-  // The selection departs from the five source-oriented kits, which exempt tests on the ground that a test
-  // writes their idioms deliberately. A test that sleeps is sleeping rather than exhibiting a form, and it is
-  // where this idiom mostly lives, so a sweep exempting tests would report nothing in most projects.
+  // Tests are swept: A test that sleeps is sleeping rather than exhibiting a form, and tests are where this idiom
+  // mostly lives, so a sweep exempting them would report nothing in most projects.
   pathFilter: isAdoptableSourceOrTest,
   checks: [
     {

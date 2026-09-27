@@ -2,8 +2,6 @@ import { describe, expect, it } from 'vitest';
 
 import { computeFakeMathRandom } from '../computeFakeMathRandom.ts';
 
-// Added to demonstrate that these tests also pass in the distribution bundle after transpilation
-
 describe(computeFakeMathRandom, () => {
   const testCases = [
     { seed: 0.1, expected: 0.631_793_978_918_247_8 },

@@ -52,7 +52,7 @@ function auditBinTargets(monorepoRoot: string): { binCount: number; danglingTarg
   return { binCount, danglingTargets: danglingTargets.toSorted((a, b) => a.localeCompare(b)) };
 }
 
-/** Reports what disqualifies a bin target, or `undefined` where the wrapper that it names is fit to run. */
+/** Reports what disqualifies a bin target, or `undefined` when the wrapper that it names is fit to run. */
 function findTargetFault(packageDirectory: string, target: string): string | undefined {
   const wrapperName = BIN_TARGET_PATTERN.exec(target)?.groups?.['wrapperName'];
   if (wrapperName === undefined) return 'names no committed wrapper under bin/';
