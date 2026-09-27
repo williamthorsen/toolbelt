@@ -7,7 +7,7 @@ on:
       - main
       - next
 
-  # Daily schedule: adjust cron expression per repo if a different cadence is desired.
+  # Daily schedule: Adjust cron expression per repo if a different cadence is desired.
   schedule:
     - cron: '0 8 * * *'
 

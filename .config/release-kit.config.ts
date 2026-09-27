@@ -35,13 +35,13 @@ const config = defineConfig({
     },
   },
   // Historical tags predate the `toolbelt.`-scoped package names, so their prefixes (`arrays-v`, …) no longer match
-  // the prefixes that release-kit derives from the names (`toolbelt.arrays-v`). Declare each prior prefix so
+  // the prefixes that release-kit derives from the names (`toolbelt.arrays-v`). Declare each prior prefix so that
   // release-kit resolves a baseline tag and scans only post-release commits instead of rescanning full history.
   workspaces: [
     // Private scaffolding template: Exclude from release processing entirely.
     { dir: '_template', shouldExclude: true },
     // Private shared layer for the adoption kits: `private: true` keeps it out of publish and announce, but
-    // tagging and changelog generation still reach a private workspace.
+    // release-kit still tags a private workspace and generates its changelog.
     { dir: 'adoption', shouldExclude: true },
     { dir: 'arrays', legacyIdentities: [{ name: '@williamthorsen/toolbelt.arrays', tagPrefix: 'arrays-v' }] },
     { dir: 'async', legacyIdentities: [{ name: '@williamthorsen/toolbelt.async', tagPrefix: 'async-v' }] },
@@ -61,7 +61,7 @@ const config = defineConfig({
     },
   ],
   retiredPackages: [
-    // release-kit was born in this repo (release-kit-v0.1–0.2) before extraction to its own repo.
+    // release-kit began in this repo (release-kit-v0.1–0.2) and was later extracted to its own repo.
     { name: '@williamthorsen/release-kit', tagPrefix: 'release-kit-v' },
   ],
 });

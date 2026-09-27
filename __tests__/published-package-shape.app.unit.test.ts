@@ -15,11 +15,11 @@ const PUBLISHED_NAME_PREFIX = '@williamthorsen/toolbelt.';
 const RELEASE_NOTES_MARKER = '<!-- section:release-notes -->';
 // The template's changelog holds its own release history, which belongs to the template rather than to a clone.
 const TEMPLATE_CHANGELOG_ENTRY = '_template-v';
-// npm shows a package's description on its registry page, so a clone that kept the template's would publish it.
+// npm shows a package's description on its registry page. A clone that kept the template's would publish it there.
 const TEMPLATE_DESCRIPTION = 'Template for new workspace';
 
 describe('Published package shape', () => {
-  it('every published workspace has the manifest that a scaffolded clone must reach', () => {
+  it('every published workspace has the manifest that a scaffolded clone must have', () => {
     const { defects, workspaceCount } = auditPublishedManifests(findMonorepoRoot());
 
     expect(defects).toStrictEqual([]);
@@ -45,7 +45,7 @@ describe('Published package shape', () => {
 // region | Helpers
 
 /**
- * Audits every published workspace's manifest against the shape that a clone of `packages/_template` reaches.
+ * Audits every published workspace's manifest against the shape that a clone of `packages/_template` must have.
  * The template is private, so the fields read here are the ones that it cannot declare: the scoped name and
  * homepage, the npm publish configuration, and a `prepublishOnly` build in place of the template's `build` no-op.
  */
@@ -105,7 +105,7 @@ function auditPublishedManifests(monorepoRoot: string): { defects: string[]; wor
  * pair copied out of the template: the package's own name as the README title, the release-notes markers that
  * release-kit writes between, and the absence of the template's own release history.
  *
- * The title check is what the marker check alone cannot do. The template's README quotes the markers in a code
+ * The title check does what the marker check alone cannot. The template's README quotes the markers in a code
  * fence, so a clone that copied it whole would contain the string without containing a place to inject into.
  */
 function auditPublishedDocuments(monorepoRoot: string): { defects: string[]; workspaceCount: number } {
@@ -177,10 +177,11 @@ function readDocument(packageDirectory: string, fileName: string): string | unde
 }
 
 /**
- * Returns the first line of a README that is neither blank nor an HTML comment, which is where its title sits.
+ * Returns the first line of a README that is neither blank nor an HTML comment, which is the line that contains
+ * its title.
  *
- * A README records its type on its first line, as an HTML comment that no reader sees rendered, so the title
- * check reads past whatever comments precede it rather than counting one as a missing title.
+ * A README records its type on its first line, as an HTML comment that the rendered page does not show, so the
+ * title check reads past whatever comments precede it rather than counting one as a missing title.
  */
 function readTitleLine(readme: string): string {
   const lines = readme.split('\n').map((line) => line.trim());

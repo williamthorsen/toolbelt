@@ -4,8 +4,8 @@ Shared scaffolding for the toolbelt packages' ReadyUp adoption kits. Private to 
 source directly, and esbuild inlines it when `rdy compile` bundles a kit, so it never publishes and never
 resolves for a consumer.
 
-The layer declares no workspace dependency. Every package with a kit devDeps it, foundation packages
-included, and `filesystem` deps `errors`, so a dependency of its own closes a cycle that pnpm cannot order.
+The layer declares no workspace dependency. Because every package with a kit devDeps it, foundation packages
+included, and `filesystem` deps `errors`, a dependency of its own closes a cycle that pnpm cannot order.
 Its test scaffolding -- `createTempDir` and `pointCwdAt` in `src/kits/test-utils/` -- is held to node builtins
 for that reason, and the root's `__tests__/workspace-dependency-graph.app.unit.test.ts` fails on a cycle.
 
@@ -16,11 +16,11 @@ for that reason, and the root's `__tests__/workspace-dependency-graph.app.unit.t
   published signature. Two have moved upstream: `src/mod.ts` re-exports `blankNonCode` and
   `getLineAtOffset` from `readyup/check-utils` rather than holding copies that drift from it.
 - `src/conventions/`: Toolbelt's own judgments about which files an adoption sweep reads, and which sites a
-  package claims where two kits recognize the same idiom.
+  package claims when two kits recognize the same idiom.
 - `src/kits/`: The kit-assembly helper, and the only module binding to readyup's kit machinery: the sweep,
-  the adoption count, and the finding report. Its `test-utils/` reaches a package's own kit test through the
-  `./test-utils` export, held out of `src/mod.ts` so it stays clear of the module graph inlined by every
-  kit bundle.
+  the adoption count, and the finding report. Its `test-utils/` is available to a package's own kit test through
+  the `./test-utils` export, held out of `src/mod.ts` so that it stays out of the module graph inlined by
+  every kit bundle.
 
 ## What a kit looks like
 
@@ -36,5 +36,5 @@ kit that gives one id twice.
 
 A check reports from the paths accepted by the kit's `pathFilter` unless it declares a `pathFilter` and a
 `noSourcesReason` of its own, as `toolbelt.strings`' `dedent` checks do to read tests that its other checks skip.
-The kit sweeps every path that any check reads and keeps a site only where the filter for its kind accepts it,
-so every check's fraction still holds the same sites. It refuses a kit that reads one kind through two filters.
+The kit sweeps every path that any check reads and keeps a site only when the filter for its kind accepts it:
+Every check's fraction still contains the same sites. It refuses a kit that reads one kind through two filters.

@@ -22,10 +22,10 @@ describe('The workspace dependency graph', () => {
  * Reports every dependency cycle among the workspaces, each as the path that closes it.
  *
  * pnpm cannot order a cycle's members topologically, so a recursive build takes them in an arbitrary order
- * while each still needs the others' output. It says so once at install, where the warning is easy to miss.
+ * while each still needs the others' output. It says so once at install, and the warning is easy to miss.
  *
- * Workspaces are discovered rather than listed, so a package added later is covered on arrival. The root
- * manifest stays out: Nothing depends on it, so it cannot sit in a cycle.
+ * Because the audit discovers workspaces rather than listing them, it covers a package as soon as the package is
+ * added. The root manifest stays out: It cannot be part of a cycle, because nothing depends on it.
  */
 function auditWorkspaceGraph(monorepoRoot: string): { cycles: string[]; workspaceCount: number } {
   const manifests = getWorkspacePackageDirs(monorepoRoot).map((directory) => readGraphNode(directory));
