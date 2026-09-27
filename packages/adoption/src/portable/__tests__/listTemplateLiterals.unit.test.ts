@@ -26,7 +26,7 @@ describe(listTemplateLiterals, () => {
     ]);
   });
 
-  it('lists a template nested in an interpolation after the template holding it', () => {
+  it('lists a template nested in an interpolation after the template containing it', () => {
     expect(summarize('const a = `outer ${`inner`} end`;').map((template) => template.text)).toStrictEqual([
       '`outer ${`inner`} end`',
       '`inner`',
@@ -39,7 +39,7 @@ describe(listTemplateLiterals, () => {
     expect(summarize(source).map((template) => template.text)).toStrictEqual(["`{ \\` ${'}'} }`"]);
   });
 
-  it('lists each template where a source holds several', () => {
+  it('lists each template when a source contains several', () => {
     expect(summarize('f(`a`, `b`);\ng(`c`);').map((template) => template.text)).toStrictEqual(['`a`', '`b`', '`c`']);
   });
 
@@ -75,7 +75,7 @@ describe(listTemplateLiterals, () => {
     ]);
   });
 
-  it('lists neither template where a nested one never closes', () => {
+  it('lists neither template when a nested one never closes', () => {
     expect(summarize('const a = `outer ${`inner ${value}')).toStrictEqual([]);
   });
 });

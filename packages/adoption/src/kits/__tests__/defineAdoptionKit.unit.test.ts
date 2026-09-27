@@ -94,7 +94,7 @@ describe(defineAdoptionKit, () => {
 
 // region | Helpers
 
-/** Lists the assembled kit's adoption checks, which the flat checklist holds in declaration order. */
+/** Lists the assembled kit's adoption checks, which the flat checklist contains in declaration order. */
 function listChecks(kit: ReturnType<typeof defineAdoptionKit>): readonly RdyCheck[] {
   const [checklist] = kit.checklists;
   if (checklist === undefined || !isFlatChecklist(checklist)) return [];

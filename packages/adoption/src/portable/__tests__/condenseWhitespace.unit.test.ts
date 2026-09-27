@@ -13,7 +13,7 @@ describe(condenseWhitespace, () => {
     expect(condenseWhitespace(wrapped)).toBe('error instanceof Error ? error.message : String(error)');
   });
 
-  it('leaves text holding no whitespace run unchanged', () => {
+  it('leaves text containing no whitespace run unchanged', () => {
     expect(condenseWhitespace('a b')).toBe('a b');
   });
 });

@@ -27,7 +27,7 @@ const EXPRESSION_KEYWORDS = new Set([
  *
  * Takes the condensed lookbehind produced by `readAnchoredWindow`. Condensing collapses each whitespace run to
  * a single space without removing it, which keeps `arr[` distinguishable from `return [`. A single
- * space is tolerated on either side of the bracket, so a subscript wrapped by a formatter reads the same as one
+ * space is tolerated on either side of the bracket so that a subscript wrapped by a formatter reads the same as one
  * that it left on a line: The detectors reading this answer are formatter-tolerant at their own anchors, and a
  * rule deciding which of them owns a site has to be tolerant at the same points or the two disagree.
  *
@@ -47,10 +47,10 @@ export function isArraySubscript(before: string): boolean {
  * `toolbelt.filesystem` declines it. Both read the answer from here, so a consumer installing both packages
  * cannot see one loop reported twice under conflicting advice.
  *
- * One manifest among the names decides the verdict, however many names sit beside it, so a walk probing
+ * One manifest among the names decides the verdict, however many other names the list contains: A walk probing
  * `package.json` and `.git` together is `toolbelt.packaging`'s as well. A walk probing root markers alone, such as
- * `.git`, looks for a named entry on the chain, which `findDirectoryChainMatch` returns, so it stays with
- * `toolbelt.filesystem`.
+ * `.git`, stays with `toolbelt.filesystem`, because it looks for a named entry on the chain, which
+ * `findDirectoryChainMatch` returns.
  *
  * @internal
  */

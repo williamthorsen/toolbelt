@@ -14,8 +14,8 @@ const PUBLISHER_MANIFEST = JSON.stringify({ name: '@scope/pkg', version: '1.0.0'
 const CLONE = 'function describeThing(x) {\n  return x.message;\n}\n';
 const INLINE = "const label = thing.name;\nconst other = 'x';\n";
 const ADOPTER = "import { doThing } from '@scope/pkg';\ndoThing();\ndoThing();\n";
-// The package's own `doThing`, holding the idiom that it exists to replace, beside a neighbour holding the
-// same one.
+// The package's own `doThing`, containing the idiom that it exists to replace, beside a neighbour containing
+// the same one.
 const IMPLEMENTATION =
   'export function doThing(x) {\n  return x.name;\n}\n\nexport function other(x) {\n  return x.name;\n}\n';
 
@@ -73,7 +73,7 @@ describe(defineAdoptionKit, () => {
     ]);
   });
 
-  it('counts calls into the package as adopted, and only where the source imports it', async () => {
+  it('counts calls into the package as adopted, and only in a source that imports it', async () => {
     using tree = createTrackedRepo({
       'package.json': MANIFEST,
       'src/adopter.ts': ADOPTER,
@@ -86,7 +86,7 @@ describe(defineAdoptionKit, () => {
     expect(summarizeFraction(await runCheck(cloneCheck))).toStrictEqual({ adoptedCount: 2, findingCount: 1 });
   });
 
-  it('names no site where the project holds none of a check’s kinds, and counts the rest anyway', async () => {
+  it('names no site when the project contains none of a check’s kinds, and counts the rest anyway', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/b.ts': INLINE });
     using _cwd = pointCwdAt(tree.dir);
 
@@ -109,7 +109,7 @@ describe(defineAdoptionKit, () => {
     ]);
   });
 
-  it('keeps a site only where the filter of the check naming its kind accepts its path', async () => {
+  it('keeps a site only when the filter of the check naming its kind accepts its path', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/a.test.ts': `${CLONE}${INLINE}` });
     using _cwd = pointCwdAt(tree.dir);
 
@@ -135,7 +135,7 @@ describe(defineAdoptionKit, () => {
     expect(summarizeFraction(await runCheck(cloneCheck))).toStrictEqual({ adoptedCount: 2, findingCount: 1 });
   });
 
-  it('skips a check declaring its own scope only where that scope matches nothing', async () => {
+  it('skips a check declaring its own scope only when that scope matches nothing', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/a.test.ts': CLONE });
     using _cwd = pointCwdAt(tree.dir);
 
@@ -203,21 +203,21 @@ describe(defineAdoptionKit, () => {
   });
 
   // `skip` turns the check off before it runs, but `rdy run --diagnose` runs it anyway.
-  it('names no site where the project is not a git working tree', async () => {
+  it('names no site when the project is not a git working tree', async () => {
     using tree = createTempDir({ 'package.json': MANIFEST, 'src/a.ts': CLONE });
     using _cwd = pointCwdAt(tree.dir);
 
     await expect(runCheck(listChecks(buildSpec())[0])).resolves.toStrictEqual({ findings: [] });
   });
 
-  it('runs every check where the project publishes the package that they are for', async () => {
+  it('runs every check when the project publishes the package that they are for', async () => {
     using tree = createTrackedRepo({ 'package.json': PUBLISHER_MANIFEST, 'src/a.ts': CLONE });
     using _cwd = pointCwdAt(tree.dir);
 
     await expect(runSkip(listChecks(buildSpec())[0])).resolves.toBe(false);
   });
 
-  it('skips every check where the project is not a git working tree', async () => {
+  it('skips every check when the project is not a git working tree', async () => {
     using tree = createTempDir({ 'package.json': MANIFEST, 'src/a.ts': CLONE });
     using _cwd = pointCwdAt(tree.dir);
 
@@ -226,14 +226,14 @@ describe(defineAdoptionKit, () => {
     );
   });
 
-  it('skips with the spec’s own reason where the filter matches nothing', async () => {
+  it('skips with the spec’s own reason when the filter matches nothing', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'README.md': '# fixture\n' });
     using _cwd = pointCwdAt(tree.dir);
 
     await expect(runSkip(listChecks(buildSpec())[0])).resolves.toBe('the project holds no sources');
   });
 
-  it('runs every check where the project holds matching sources', async () => {
+  it('runs every check when the project contains matching sources', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/a.ts': CLONE });
     using _cwd = pointCwdAt(tree.dir);
 
@@ -261,7 +261,7 @@ function buildTestScopedSpec(): AdoptionKitSpec<Kind> {
   });
 }
 
-/** Lists the assembled kit's adoption checks, which the flat checklist holds in declaration order. */
+/** Lists the assembled kit's adoption checks, which the flat checklist contains in declaration order. */
 function listChecks(spec: AdoptionKitSpec<Kind>): readonly RdyCheck[] {
   const [checklist] = defineAdoptionKit(spec).checklists;
   if (checklist === undefined || !isFlatChecklist(checklist)) return [];

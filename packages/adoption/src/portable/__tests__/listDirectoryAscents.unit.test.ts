@@ -30,7 +30,7 @@ const SAVED_PREVIOUS_WALK = [
 ].join('\n');
 
 describe(listDirectoryAscents, () => {
-  it('reports an ascent that carries the parent back through an intermediate binding', () => {
+  it('reports an ascent that assigns the parent back through an intermediate binding', () => {
     expect(listAscents(SAVED_PARENT_WALK)).toStrictEqual([{ line: 3, probedNames: undefined }]);
   });
 
@@ -93,7 +93,7 @@ describe(listDirectoryAscents, () => {
   });
 
   // Reading the literals alone would name `package.json`, which is a different probe.
-  it('reads no name from a path holding another binding past the level', () => {
+  it('reads no name from a path containing another binding past the level', () => {
     const probes = [
       "fs.existsSync(path.join(dir, 'node_modules', name, 'package.json'))",
       "fs.existsSync(path.join(dir, name, 'package.json'))",
@@ -329,7 +329,7 @@ describe(listDirectoryAscents, () => {
     expect(listAscents(source)).toStrictEqual([]);
   });
 
-  // A loop around an ascent holds every line that the ascent holds, and only the innermost names the site.
+  // A loop around an ascent contains every line that the ascent contains, and only the innermost names the site.
   it('reports an ascent once, on the innermost loop around it', () => {
     const source = [
       'for (const name of names) {',
@@ -344,7 +344,7 @@ describe(listDirectoryAscents, () => {
     expect(listAscents(source)).toStrictEqual([{ line: 3, probedNames: undefined }]);
   });
 
-  it('reports each of two ascents that sit side by side', () => {
+  it('reports each of two ascents placed side by side', () => {
     const source = `${SAVED_PREVIOUS_WALK}${SAVED_PREVIOUS_WALK}`;
 
     expect(listAscents(source)).toStrictEqual([

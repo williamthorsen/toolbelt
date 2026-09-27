@@ -6,7 +6,7 @@ import { createTempDir } from '../createTempDir.ts';
 import { listKitCheckReports } from '../listKitCheckReports.ts';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
-// Both checks name `src/site.ts` only where the working directory holds it, so a run outside the fixture repo
+// Both checks name `src/site.ts` only when the working directory contains it, so a run outside the fixture repo
 // reports no site.
 const SITE_CHECKS = [
   "{ id: 'names-site', name: 'names a site', check: () => ({ adoptedCount: 1, findings: listSite(true) }) }",
@@ -25,7 +25,7 @@ describe(listKitCheckReports, () => {
     ]);
   });
 
-  it('throws where a check reports no fraction', () => {
+  it('throws when a check reports no fraction', () => {
     using kitPackage = createTempDir({
       '.readyup/kits/default.js': buildKit(["{ id: 'verdict', name: 'returns a verdict', check: () => true }"]),
     });
@@ -35,7 +35,7 @@ describe(listKitCheckReports, () => {
     );
   });
 
-  it('throws with rdy’s own message where the package holds no kit', () => {
+  it('throws with rdy’s own message when the package contains no kit', () => {
     using kitPackage = createTempDir({});
 
     // Only rdy's load error names the directory that it searched.
@@ -47,7 +47,7 @@ describe(listKitCheckReports, () => {
 
 // region | Helpers
 
-/** Builds a kit module whose one checklist holds the given check literals. */
+/** Builds a kit module whose one checklist contains the given check literals. */
 function buildKit(checks: string[]): string {
   return [
     "import fs from 'node:fs';",

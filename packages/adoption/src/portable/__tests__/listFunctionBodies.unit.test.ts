@@ -24,7 +24,7 @@ describe(listFunctionBodies, () => {
     ]);
   });
 
-  it('reports each function where a source holds several', () => {
+  it('reports each function when a source contains several', () => {
     const source = 'function a() { return 1; }\nfunction b() { return 2; }';
 
     expect(summarize(source).map((fn) => fn.name)).toStrictEqual(['a', 'b']);
@@ -37,7 +37,7 @@ describe(listFunctionBodies, () => {
     expect(source.slice(fn?.headStart)).toMatch(/^function later\(\)/);
   });
 
-  it('spans a body holding nested braces', () => {
+  it('spans a body containing nested braces', () => {
     expect(summarize('function f() { if (a) { return 1; } return 2; }')).toStrictEqual([
       { body: '{ if (a) { return 1; } return 2; }', name: 'f' },
     ]);
@@ -73,8 +73,8 @@ describe(listFunctionBodies, () => {
     expect(summarize('declare function f(a: string): void;')).toStrictEqual([]);
   });
 
-  // The next three pin down the documented limit: A return-type annotation's brace group wins over the body, because
-  // telling a type's braces from a block's takes a parser rather than delimiter counting.
+  // The next three pin down the documented limit: A return-type annotation's brace group is reported in the
+  // body's place, because telling a type's braces from a block's takes a parser rather than delimiter counting.
   it('reports the annotation of a function whose return type is an object literal', () => {
     expect(summarize('function r(): { a: number } { return { a: 1 }; }')).toStrictEqual([
       { body: '{ a: number }', name: 'r' },
@@ -133,19 +133,19 @@ describe(listFunctionBodies, () => {
     expect(listFunctionBodies('function f(a = { x: 1 }) { return a; }')[0]?.firstParameter).toBe('a');
   });
 
-  it('reports the first parameter where it is optional', () => {
+  it('reports the first parameter when it is optional', () => {
     expect(listFunctionBodies('function f(a?: string) { return a; }')[0]?.firstParameter).toBe('a');
   });
 
-  it('reports no first parameter where the list destructures', () => {
+  it('reports no first parameter when the list destructures', () => {
     expect(listFunctionBodies('function g({ a, b }) { return a + b; }')[0]?.firstParameter).toBeUndefined();
   });
 
-  it('reports no first parameter where the list opens with a rest element', () => {
+  it('reports no first parameter when the list opens with a rest element', () => {
     expect(listFunctionBodies('function g(...values) { return values; }')[0]?.firstParameter).toBeUndefined();
   });
 
-  it('reports no first parameter where the list is empty', () => {
+  it('reports no first parameter when the list is empty', () => {
     expect(listFunctionBodies('function f() { return 1; }')[0]?.firstParameter).toBeUndefined();
   });
 });

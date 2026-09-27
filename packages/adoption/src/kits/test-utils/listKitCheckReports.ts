@@ -17,8 +17,8 @@ export interface KitCheckReport {
 }
 
 /**
- * Runs a package's compiled kits over a tracked fixture repo holding the given entries, and lists what each check
- * of the first checklist named and counted.
+ * Runs a package's compiled kits over a tracked fixture repo containing the given entries, and lists what each
+ * check of the first checklist named and counted.
  *
  * A consumer gets the compiled bundle, so this runs it; `kit-bundle-freshness` keeps it current with the sources
  * beneath it.
@@ -41,7 +41,7 @@ export function listKitCheckReports(packageDir: string, entries: Record<string, 
 
 // region | Helpers
 
-/** Narrows to `unknown[]`, where `Array.isArray` narrows to `any[]`. */
+/** Narrows to `unknown[]`, whereas `Array.isArray` narrows to `any[]`. */
 function isUnknownArray(value: unknown): value is unknown[] {
   return Array.isArray(value);
 }
@@ -60,7 +60,7 @@ function readCheckReport(check: unknown): KitCheckReport {
   return { count, detail: typeof detail === 'string' ? detail : undefined, id, passedCount };
 }
 
-/** Reaches the checks of the run's first checklist, throwing with rdy's own message where the kit did not load. */
+/** Reads the checks of the run's first checklist, throwing with rdy's own message when the kit did not load. */
 function readFirstChecklistChecks(report: unknown): unknown[] {
   const kits = isRecord(report) ? report['kits'] : undefined;
   const kit = isUnknownArray(kits) ? kits[0] : undefined;

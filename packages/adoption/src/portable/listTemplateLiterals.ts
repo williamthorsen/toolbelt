@@ -42,7 +42,7 @@ const WORD_CHARACTER = /[\w$]/;
  * template's own text cannot mislead the walk. A template that never closes is not listed: Past that point the
  * walk no longer knows which text is code.
  *
- * A template is tagged where the code before its backtick ends an expression: an identifier other than an
+ * A template is tagged when the code before its backtick ends an expression: an identifier other than an
  * expression keyword, a member name, or a closing parenthesis or bracket, any of them optionally followed by type
  * arguments.
  *
@@ -58,7 +58,7 @@ export function listTemplateLiterals(code: string): TemplateLiteral[] {
 
   /**
    * Walks code from an offset, listing each template that it opens. Returns the offset of the brace closing an
-   * interpolation, or the code's length where the code runs out first.
+   * interpolation, or the code's length when the code runs out first.
    */
   function scanCode(from: number, isInterpolation: boolean): number {
     let braceDepth = 0;
@@ -82,7 +82,7 @@ export function listTemplateLiterals(code: string): TemplateLiteral[] {
   }
 
   /**
-   * Lists the template opening at an offset. Returns one past its closing backtick, or nothing where none closes it.
+   * Lists the template opening at an offset. Returns one past its closing backtick, or nothing when it never closes.
    */
   function scanTemplate(start: number): number | undefined {
     const interpolations: TemplateInterpolation[] = [];
@@ -109,14 +109,14 @@ export function listTemplateLiterals(code: string): TemplateLiteral[] {
 
 // region | Helpers
 
-/** Returns one past the last non-whitespace character before an offset, or 0 where there is none. */
+/** Returns one past the last non-whitespace character before an offset, or 0 when there is none. */
 function findPrecedingCodeEnd(code: string, offset: number): number {
   let end = offset;
   while (end > 0 && /\s/.test(code[end - 1] ?? '')) end -= 1;
   return end;
 }
 
-/** Returns the offset of the `<` that a closing `>` balances, or nothing where none does. */
+/** Returns the offset of the `<` that a closing `>` balances, or nothing when none does. */
 function findTypeArgumentsStart(code: string, close: number): number | undefined {
   let depth = 0;
   for (let index = close; index >= 0; index -= 1) {
