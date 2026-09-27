@@ -6,7 +6,7 @@ import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
 const SECURITY_PATH = '/usr/bin/security';
 
 /**
- * Whether this process can create a keychain, so that a test needing one skips rather than fails where it
+ * Whether this process can create a keychain, so that a test needing one skips rather than fails when it
  * cannot. A platform holding no `security` and a sandbox denying the `securityd` lookup both make it false.
  * Probing once at load keeps the cost to one keychain per file, and the guards that read it run at collection.
  *

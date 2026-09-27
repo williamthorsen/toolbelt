@@ -220,7 +220,7 @@ function isSingleCall(body: string): boolean {
 
 /**
  * Returns the variable to which a catch block assigns its caught value, with the offset past the block, or
- * nothing where it assigns none.
+ * nothing when it assigns none.
  *
  * A catch that logs, rethrows, or branches outlives the substitution, so only a lone assignment of the
  * parameter counts, with a cast admitted because it is how the hand-roll recovers the type that it lost. A catch

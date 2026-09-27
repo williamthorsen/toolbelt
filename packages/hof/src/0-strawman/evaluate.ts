@@ -1,5 +1,5 @@
 /**
- * Returns the result of calling `value` with `args` where `value` is a function, and `value` itself otherwise.
+ * Returns the result of calling `value` with `args` when `value` is a function, and `value` itself otherwise.
  *
  * @category Function
  * @experimental

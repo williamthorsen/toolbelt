@@ -39,7 +39,7 @@
           "path": "../../adoption/src/portable/listDirectoryAscents.ts"
         },
         {
-          "hash": "6b5375f1",
+          "hash": "b84bbe9d",
           "kind": "module",
           "path": "../../adoption/src/portable/listFunctionBodies.ts"
         },
@@ -79,7 +79,7 @@
           "path": "../src/readiness/classifySite.ts"
         },
         {
-          "hash": "c71115a3",
+          "hash": "7b4da286",
           "kind": "module",
           "path": "../src/readiness/listDescribeClones.ts"
         },

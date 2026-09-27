@@ -24,7 +24,7 @@ const TAG_KINDS = new Map<string, PredicateCloneKind>([
 ]);
 
 /**
- * Returns the guard that a function's body returns outright, or nothing where the body returns anything else.
+ * Returns the guard that a function's body returns outright, or nothing when the body returns anything else.
  *
  * Takes the blanked body, the unblanked source, and the body's offset within it: A `typeof` comparison names
  * its tag in a literal, whose characters blanking replaces with spaces, so the tag is read from the source

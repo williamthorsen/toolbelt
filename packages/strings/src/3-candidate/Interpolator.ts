@@ -128,7 +128,7 @@ export class Interpolator {
 
         const isInsensitiveMatch = typeof key === 'string' && placeholder.toLowerCase() === key;
 
-        // Adapt the case only where the placeholder differs from the key in case alone.
+        // Adapt the case only when the placeholder differs from the key in case alone.
         if (!noAdaptCase && typeof key === 'string' && isInsensitiveMatch) {
           // Apply to the value the transformation that recases the key to match the placeholder.
           const transform = deriveCaseTransformer(key, placeholder);
@@ -265,7 +265,7 @@ interface DelimitedMatcherOptions {
 export interface InterpolatorOptions {
   /** Determines how a placeholder that the mapping lacks is handled. */
   ifMissing?: 'IGNORE' | 'THROW' | 'USE_KEY' | ((placeholder: string) => string) | undefined;
-  /** Keeps each mapping value's case as given, where otherwise it is adapted to match its placeholder. */
+  /** Keeps each mapping value's case as given, rather than adapting it to match its placeholder. */
   noAdaptCase?: boolean | undefined;
 }
 

@@ -1,6 +1,6 @@
 /**
  * Returns a function that returns the value mapped to a key.
- * Given a default value, the returned function returns it where the value at the key is undefined.
+ * Given a default value, the returned function returns it when the value at the key is undefined.
  *
  * @category Object
  * @experimental

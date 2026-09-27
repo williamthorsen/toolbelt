@@ -1,6 +1,6 @@
 /**
  * Returns the function that applies to other text the case change turning `source` into `target`, or `undefined`
- * where none applies. Only a lowercase source supports a case change, which is either upper-casing or capitalizing;
+ * when none applies. Only a lowercase source supports a case change, which is either upper-casing or capitalizing;
  * an identical target takes the identity function whatever its case.
  *
  * @internal

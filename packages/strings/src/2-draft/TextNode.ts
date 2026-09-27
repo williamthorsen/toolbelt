@@ -106,7 +106,7 @@ export abstract class TextNode {
     return text.startsWith(DELIMIT.opening) && text.endsWith(DELIMIT.closing);
   }
 
-  /** Throws where indices remain once the top-level node has resolved its variants. */
+  /** Throws if indices remain once the top-level node has resolved its variants. */
   assertAllIndicesConsumed(indices: number[], depth: number): void | never {
     if (depth === 0 && indices.length > 0) {
       throw new Error(`Unused variant indices. Received ${this.variantIndexCount}, leaving ${indices.length} unused.`);

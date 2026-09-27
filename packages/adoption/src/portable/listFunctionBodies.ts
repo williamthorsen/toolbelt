@@ -88,7 +88,7 @@ function findBodySearchStart(source: string, head: RegExpExecArray): number | un
 }
 
 /**
- * Returns the name with which the parameter list opens, or nothing where it opens with anything but a plain
+ * Returns the name with which the parameter list opens, or nothing when it opens with anything but a plain
  * identifier.
  *
  * A destructuring pattern and a rest element bind no single name at the first position, so a detector

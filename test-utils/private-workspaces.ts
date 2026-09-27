@@ -7,8 +7,8 @@ import { getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
  * Deriving the set would let a scaffolded package that kept the template's `private: true` filter itself out of
  * the audits reading this set, which is one of the misses that they exist to catch.
  *
- * A package that legitimately becomes private is added here, and
- * `__tests__/published-package-shape.app.unit.test.ts` fails until it is.
+ * A package that legitimately becomes private is added here, and `__tests__/published-package-shape.app.unit.test.ts`
+ * fails until it is.
  */
 export const PRIVATE_WORKSPACES: ReadonlySet<string> = new Set(['_template', 'adoption', 'tools']);
 

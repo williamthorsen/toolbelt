@@ -162,7 +162,7 @@ function countOf(log: readonly string[], label: string): number {
   return log.filter((entry) => entry === label).length;
 }
 
-/** Builds a disposable that logs its label on disposal, so a test can assert on a lifecycle without holding it. */
+/** Builds a disposable that logs its label on disposal, so that a test can assert on a lifecycle without holding it. */
 function makeProbe(label: string): Disposable {
   return {
     [Symbol.dispose]() {
