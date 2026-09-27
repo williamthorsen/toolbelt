@@ -4,7 +4,7 @@ const FINEST_INDEX = TimeUnit.coarsestFirst.length - 1;
 
 /**
  * Renders a duration as up to `maxUnits` short-labeled components, running from the coarsest unit
- * that the duration contains at least once down toward milliseconds. The duration is rounded once, at
+ * that the duration contains at least once, down toward milliseconds. The duration is rounded once, at
  * the finest unit shown, and the leading unit is chosen from the rounded value, so a rounding carry
  * promotes to the coarser unit rather than reporting `60s`. A component whose count is zero is
  * omitted unless it leads: `maxUnits` caps the precision instead of padding with zeros.

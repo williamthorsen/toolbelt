@@ -71,7 +71,7 @@ describe('The packaging adoption kit', () => {
     });
   });
 
-  it('leaves a walk probing for a repository marker out of the report and out of the denominator', async () => {
+  it('leaves a walk that probes only for a repository marker out of the report and out of the denominator', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/root.ts': MARKER_SEARCH });
     using _cwd = pointCwdAt(tree.dir);
 

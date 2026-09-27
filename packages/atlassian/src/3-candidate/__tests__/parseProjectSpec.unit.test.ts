@@ -31,39 +31,39 @@ describe(parseProjectSpec, () => {
     expect(spec.site).toBeUndefined();
   });
 
-  it('throws whenthe text is not JSON', () => {
+  it('throws when the text is not JSON', () => {
     expect(() => parseProjectSpec('{ "statuses": [')).toThrow('A spec is JSON');
   });
 
-  it('throws whenthe document is not an object', () => {
+  it('throws when the document is not an object', () => {
     expect(() => parseProjectSpec('["To Do"]')).toThrow('A spec is a JSON object');
   });
 
-  it('throws whenstatuses are absent', () => {
+  it('throws when statuses are absent', () => {
     expect(() => parseProjectSpec('{}')).toThrow('non-empty `statuses`');
   });
 
-  it('throws whenstatuses are empty', () => {
+  it('throws when statuses are empty', () => {
     expect(() => parseProjectSpec('{ "statuses": [] }')).toThrow('non-empty `statuses`');
   });
 
-  it('throws whena status has no name', () => {
+  it('throws when a status has no name', () => {
     expect(() => parseProjectSpec('{ "statuses": [{ "category": "TODO" }] }')).toThrow('Each status needs a name');
   });
 
-  it('throws whena status declares an unknown category', () => {
+  it('throws when a status declares an unknown category', () => {
     const text = '{ "statuses": [{ "name": "To Do", "category": "BACKLOG" }] }';
 
     expect(() => parseProjectSpec(text)).toThrow("Status 'To Do' needs a category of DONE, IN_PROGRESS, TODO");
   });
 
-  it('throws whenaliases are not a list of names', () => {
+  it('throws when aliases are not a list of names', () => {
     const text = '{ "statuses": [{ "name": "Done", "category": "DONE", "aliases": [7] }] }';
 
     expect(() => parseProjectSpec(text)).toThrow("The aliases of status 'Done' are a list of names");
   });
 
-  it('throws whentwo entries claim one name', () => {
+  it('throws when two entries claim one name', () => {
     const text = JSON.stringify({
       statuses: [
         { category: 'DONE', name: 'Done' },
@@ -74,7 +74,7 @@ describe(parseProjectSpec, () => {
     expect(() => parseProjectSpec(text)).toThrow("'done' is claimed by both 'Done' and 'done'");
   });
 
-  it('throws whenone entry claims a name that another claims as an alias', () => {
+  it('throws when one entry claims a name that another claims as an alias', () => {
     const text = JSON.stringify({
       statuses: [
         { category: 'DONE', name: 'Done', aliases: ['Resolved'] },

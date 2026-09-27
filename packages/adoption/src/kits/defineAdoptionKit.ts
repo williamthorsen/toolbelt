@@ -81,8 +81,8 @@ const NOTHING_TO_REPORT: FindingOutcome = { findings: [] };
  * adopting these checks declares what it looks for rather than how the looking is done.
  *
  * The summary is stored per kit rather than per module, because two compiled kits can run in one process and one
- * kit's findings are not the other's. Because readyup, which a compiled kit leaves unbundled, caches the sweep
- * beneath it, several kits in one run still read each file once.
+ * kit's findings are not the other's. Because readyup caches the sweep beneath the summary, and a compiled kit
+ * leaves readyup unbundled, several kits in one run still read each file once.
  *
  * @internal
  */

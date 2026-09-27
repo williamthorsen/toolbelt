@@ -63,13 +63,13 @@ declaring one, from the working directory upward, and name what provides the pnp
 corepack or an npm-global pnpm under a nodejs version, an asdf shim stranded under the running node, or otherwise
 its path.
 
-The version that runs is read by running \`pnpm --version\` in the pinned directory, the one process that this command
-spawns: pnpm 10 and later switch themselves to the pinned version whatever provides them, and corepack selects
-it, so a version read from the filesystem would report the installed pnpm and false-alarm. That run may download
-the pinned version on first use.
+The version that runs is read by running \`pnpm --version\` in the pinned directory, the one process that this
+command spawns: pnpm 10 and later switch themselves to the pinned version whatever provides them, and corepack
+selects it, so a version read from the filesystem would report the installed pnpm and a mismatch that does not
+exist. That run may download the pinned version on first use.
 
-It prints repair commands only when the versions differ, and they install the pin through whatever provides pnpm
-now.
+It prints repair commands only when the versions differ, and they install the pin through whatever provides
+pnpm now.
 
 It exits 1 when the versions differ, when pnpm reported no version, or when pnpm is not on PATH; 0 when they
 match; and 3, with the reason on stderr, when no pin is in reach or the pin names another package manager.
