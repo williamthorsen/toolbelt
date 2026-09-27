@@ -27,7 +27,7 @@ describe(chainError, () => {
     expect(chainError('Failed to load config', cause).cause).toBe(cause);
   });
 
-  it('composes the error where the runtime implements no captureStackTrace', () => {
+  it('composes the error when the runtime does not implement captureStackTrace', () => {
     const descriptor = Object.getOwnPropertyDescriptor(Error, 'captureStackTrace');
     Reflect.deleteProperty(Error, 'captureStackTrace');
 

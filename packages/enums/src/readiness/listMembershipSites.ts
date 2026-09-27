@@ -25,7 +25,7 @@ const WHITESPACE = /\s/;
  * candidate value.
  *
  * The source is blanked before the anchor scan reads it, so a test written in a comment or a literal is
- * invisible here. Blanking preserves every offset, so a reported line matches the source.
+ * invisible here. Because blanking preserves every offset, a reported line matches the source.
  *
  * @internal
  */
@@ -48,8 +48,8 @@ export function listMembershipSites(source: string): Array<AdoptionSite<EnumIdio
 // region | Helpers
 
 /**
- * Finds the parenthesis opening a group around the anchor, with only whitespace between them, or nothing where the
- * anchor stands outside a group.
+ * Finds the parenthesis opening a group around the anchor, with only whitespace between them, or nothing when the
+ * anchor is outside a group.
  */
 function findGroupOpener(code: string, anchor: number): number | undefined {
   let index = anchor - 1;

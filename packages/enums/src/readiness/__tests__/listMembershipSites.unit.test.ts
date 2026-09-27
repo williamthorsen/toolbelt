@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { listMembershipSites } from '../listMembershipSites.ts';
 
-// Every spelling of one membership test, including those that TypeScript forces where the candidate's type is
+// Every spelling of one membership test, including those that TypeScript forces when the candidate's type is
 // wider than the enum.
 const CLAIMED = [
   'const known = Object.values(Color).includes(value);',

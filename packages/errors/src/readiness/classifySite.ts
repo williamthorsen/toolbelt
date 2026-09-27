@@ -1,7 +1,7 @@
 export type SiteKind = 'assert' | 'coerce' | 'describe-inline' | 'narrow';
 
-// Each pattern reads a whitespace-collapsed window anchored at `instanceof Error`, because a real site wraps
-// mid-expression under a formatter and a line-oriented pattern would walk past it.
+// Each pattern matches a whitespace-collapsed window anchored at `instanceof Error`, because a real site wraps
+// mid-expression under a formatter and a line-oriented pattern would miss it.
 const DESCRIBE_TERNARY = /^instanceof Error \? [\w.]+\.message :/;
 const DESCRIBE_STATEMENT = /^instanceof Error\)+ ?(?:\{ )?return [\w.]+\.message/;
 const COERCE_TERNARY = /^instanceof Error \? [\w.]+ : new \w*Error\b/;
@@ -10,8 +10,8 @@ const NEGATED_OPERAND = /!\(\s*[\w.]+\s*$/;
 /**
  * Names what an `instanceof Error` site is doing, from the collapsed text either side of it.
  *
- * Both windows are read from the blanked code produced by `listErrorSites`, so a comment sitting mid-expression
- * collapses to a single space rather than hiding the operand behind it.
+ * Both windows are read from the blanked code produced by `listErrorSites`, so a comment in the middle of an
+ * expression collapses to a single space rather than hiding the operand behind it.
  *
  * Every unrecognized site is a `narrow` rather than being dropped: The substitution there is often a
  * correction rather than a tidy-up, as with a guard that reads `.message` off a value that the runtime may

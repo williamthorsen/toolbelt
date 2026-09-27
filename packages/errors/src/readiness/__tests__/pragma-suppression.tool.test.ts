@@ -40,7 +40,7 @@ describe('The errors adoption kit, run through rdy', () => {
     ]);
   });
 
-  // A `dir:` kit source has no namespace, so the bare id stands. A consumer running the kit from the
+  // A `dir:` kit source has no namespace, so the pragma uses the bare id. A consumer running the kit from the
   // installed package writes `toolbelt.errors/no-inline-description`.
   it('drops a site covered by a qualified pragma from the named check alone', () => {
     expect(runKit(`${DESCRIBE_INLINE} // rdy-ignore no-inline-description -- reviewed\n`)).toStrictEqual([
@@ -55,11 +55,11 @@ describe('The errors adoption kit, run through rdy', () => {
 // region | Helpers
 
 /**
- * Runs the package's compiled kit over a fixture repo whose inline description carries the given source, and
+ * Runs the package's compiled kit over a fixture repo whose inline-description file contains the given source, and
  * reports what each check named and counted.
  *
- * A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report reaches the
- * layer that acts on one.
+ * A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report is delivered
+ * to the layer that acts on one.
  */
 function runKit(describeSource: string): KitCheckReport[] {
   return listKitCheckReports(PACKAGE_DIR, {

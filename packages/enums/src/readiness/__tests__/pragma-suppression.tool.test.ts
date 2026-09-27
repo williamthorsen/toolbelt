@@ -22,7 +22,7 @@ describe('The enums adoption kit, run through rdy', () => {
     ]);
   });
 
-  // A `dir:` kit source has no namespace, so the bare id stands. A consumer running the kit from the
+  // A `dir:` kit source has no namespace, so the pragma uses the bare id. A consumer running the kit from the
   // installed package writes `toolbelt.enums/no-hand-rolled-enum-membership`.
   it('drops a site covered by a qualified pragma', () => {
     expect(runKit(`${MEMBERSHIP_TEST} // rdy-ignore no-hand-rolled-enum-membership -- reviewed\n`)).toStrictEqual([
@@ -37,8 +37,8 @@ describe('The enums adoption kit, run through rdy', () => {
  * Runs the package's compiled kit over a fixture repo containing the given source, and reports what the check
  * named and counted.
  *
- * A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report reaches the
- * layer that acts on one.
+ * A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report is delivered
+ * to the layer that acts on one.
  */
 function runKit(source: string): KitCheckReport[] {
   return listKitCheckReports(PACKAGE_DIR, {

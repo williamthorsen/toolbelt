@@ -4,10 +4,10 @@ import path from 'node:path';
  * Returns `filePath` with its extension replaced by `newExtension`.
  *
  * The extension is the substring beginning at the final period in the file name, which must come at the very end
- * of the path. A multi-part extension is indivisible to `path.extname` (`.d.ts` reports as `.ts`), so declare one
- * through `oldExtension` to replace it whole.
+ * of the path. A multi-part extension is indivisible to `path.extname` (it reports `.d.ts` as `.ts`), so declare
+ * one through `oldExtension` to replace it whole.
  *
- * Either extension may be written with or without its leading period, so `'js'` and `'.js'` are equivalent. An
+ * Either extension may be written with or without its leading period: `'js'` and `'.js'` are equivalent. An
  * empty `newExtension` removes the extension. Throws when `filePath` ends with a separator, and when `filePath`
  * does not end with a declared `oldExtension`.
  *

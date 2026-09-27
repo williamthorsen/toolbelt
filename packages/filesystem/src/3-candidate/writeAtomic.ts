@@ -4,7 +4,7 @@ import path from 'node:path';
 
 /**
  * Writes `content` to `filePath` through a sibling temp file and a rename, so a concurrent reader sees either the
- * previous file or the complete new one, never a partial write. Siting the temp file beside the target
+ * previous file or the complete new one, never a partial write. Creating the temp file beside the target
  * keeps the rename within one filesystem, where it is atomic.
  *
  * Missing parent directories are created. An existing target's permission bits are copied onto the replacement,
@@ -12,11 +12,11 @@ import path from 'node:path';
  * platform default.
  *
  * Two guarantees that it does not make. Nothing is fsynced, so a power loss can lose a write from which this
- * function has already returned; "atomic" here means no torn reads. And the rename replaces the target's directory
- * entry, so a symlink at `filePath` becomes a regular file rather than being written through.
+ * function has already returned; "atomic" here means no torn reads. And because the rename replaces the target's
+ * directory entry, a symlink at `filePath` becomes a regular file rather than being written through.
  *
- * A failure removes the temp file best-effort and rethrows the error that caused it. Where the cleanup itself
- * fails, the temp file survives beside the target under a dot-prefixed name ending in `.tmp`.
+ * A failure removes the temp file best-effort and rethrows the error that caused it. If the cleanup itself
+ * fails, the temp file remains beside the target under a dot-prefixed name ending in `.tmp`.
  *
  * @example
  * await writeAtomic('.agents/manifest.json', `${JSON.stringify(manifest, null, 2)}\n`);
@@ -44,7 +44,7 @@ export async function writeAtomic(filePath: string, content: string | Uint8Array
     try {
       await fs.rm(tempPath, { force: true });
     } catch {
-      // The caller needs the write or rename failure, so a failed cleanup must not replace it.
+      // A failed cleanup must not replace the write or rename failure, which the caller needs.
     }
 
     throw error;
@@ -53,7 +53,7 @@ export async function writeAtomic(filePath: string, content: string | Uint8Array
 
 // region | Helpers
 /**
- * Returns the permission bits of the file at `filePath`, or `undefined` where they cannot be read, the ordinary
+ * Returns the permission bits of the file at `filePath`, or `undefined` if they cannot be read, the ordinary
  * case being a target that does not exist yet.
  */
 async function findFileMode(filePath: string): Promise<number | undefined> {
