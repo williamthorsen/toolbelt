@@ -3,7 +3,7 @@ import path from 'node:path';
 /**
  * Returns `startDir` resolved to an absolute path, followed by each of its ancestors, nearest first.
  *
- * The chain runs to the filesystem root unless `stopAtDir` bounds it, and always holds at least the start
+ * The chain runs to the filesystem root unless `stopAtDir` bounds it, and always contains at least the start
  * directory, which the return type records. Paths are manipulated as strings; nothing is read from disk.
  *
  * @example
@@ -18,8 +18,9 @@ export function listDirectoryChain(startDir: string, options: ListDirectoryChain
   const { stopAtDir } = options;
 
   const resolvedStartDir = path.resolve(startDir);
-  // Resolve the ceiling as well, so a relative `stopAtDir` behaves like a relative `startDir`. Comparison stays
-  // exact after resolution: Case-folding would be right on a case-insensitive volume and wrong on every other.
+  // Resolve the ceiling as well, so that a relative `stopAtDir` behaves like a relative `startDir`. Comparison
+  // stays exact after resolution: Case-folding would be right on a case-insensitive volume and wrong on every
+  // other.
   const resolvedStopAtDir = stopAtDir === undefined ? undefined : path.resolve(stopAtDir);
 
   const chain: [string, ...string[]] = [resolvedStartDir];
@@ -38,8 +39,9 @@ export function listDirectoryChain(startDir: string, options: ListDirectoryChain
     hasReachedStopAtDir = dir === resolvedStopAtDir;
   }
 
-  // Reading the escape off the finished ascent beats testing `startsWith(stopAtDir + path.sep)` up front, which
-  // misjudges a ceiling at the filesystem root, where that concatenation doubles the separator.
+  // Checking for the escape after the ascent finishes is more reliable than testing
+  // `startsWith(stopAtDir + path.sep)` up front, which misjudges a ceiling at the filesystem root, where that
+  // concatenation doubles the separator.
   if (resolvedStopAtDir !== undefined && !hasReachedStopAtDir) {
     throw new Error(
       'Stop directory must be the start directory or one of its ancestors: ' +

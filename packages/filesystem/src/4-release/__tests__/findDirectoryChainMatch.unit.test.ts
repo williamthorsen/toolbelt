@@ -12,7 +12,7 @@ describe(findDirectoryChainMatch, () => {
     existsSyncSpy.mockClear();
   });
 
-  it('returns the nearest level holding one of the names', () => {
+  it('returns the nearest level containing one of the names', () => {
     using tree = createTempTree({ 'app/src/': '', 'app/stack.config.mjs': '', 'stack.config.mjs': '' });
 
     const result = findDirectoryChainMatch(tree.resolve('app/src'), ['stack.config.mjs'], {
@@ -37,7 +37,7 @@ describe(findDirectoryChainMatch, () => {
     ]);
   });
 
-  it('if no level holds a name, returns undefined', () => {
+  it('if no level contains a name, returns undefined', () => {
     using tree = createTempTree({ 'app/': '' });
 
     const result = findDirectoryChainMatch(tree.resolve('app'), ['stack.config.mjs'], { stopAtDir: tree.dir });

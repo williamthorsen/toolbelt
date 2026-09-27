@@ -4,18 +4,19 @@ import path from 'node:path';
 import { describeError } from '@williamthorsen/toolbelt.errors';
 
 /**
- * Writes `content` to `filePath`, reporting what the write took rather than throwing.
+ * Writes `content` to `filePath`, reporting the outcome rather than throwing.
  *
  * Missing parent directories are created. An existing file is compared against `content` first, and what counts
- * as a difference follows `conflictPolicy`: `'replace'` promises the file holds exactly `content` afterwards, so
- * only byte-identical content reports `up-to-date`; `'skip'` modifies nothing either way, so its comparison
- * ignores trailing whitespace per line and at end of file, which keeps formatter churn from reading as a
- * conflict. `up-to-date` therefore means the same thing under both policies: This one has no work to do.
+ * as a difference follows `conflictPolicy`: `'replace'` promises that the file contains exactly `content`
+ * afterwards, so the function reports `up-to-date` only for byte-identical content. Because `'skip'` modifies
+ * nothing either way, its comparison ignores trailing whitespace per line and at end of file, which prevents
+ * formatter churn from counting as a conflict. `up-to-date` therefore means the same thing under both policies:
+ * This one has no work to do.
  *
  * An I/O error is reported as `failed` rather than thrown, which lets a caller writing several files
  * collect a result for each instead of losing the rest to the first failure. A dry run writes nothing and
  * creates no directory, returning the outcome that the real call would have produced, short of a write failure,
- * which nothing detects without attempting the write.
+ * which only an attempted write can detect.
  *
  * @example
  * reconcileFile('.config/tool.config.ts', template, { conflictPolicy: 'replace' });
@@ -74,8 +75,8 @@ export type ReconciliationOutcome = FileReconciliation['outcome'];
 
 // region | Helpers
 /**
- * Reports whether the existing file already satisfies `conflictPolicy`, and why it could not be read where
- * reading fails. An unreadable file is not up to date under either policy: `'replace'` overwrites it, and
+ * Reports whether the existing file already satisfies `conflictPolicy` and, when the file cannot be read, why.
+ * An unreadable file is not up to date under either policy: `'replace'` overwrites it, and
  * `'skip'` reports the reason alongside the file that it left alone.
  */
 function compareWithExisting(

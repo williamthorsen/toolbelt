@@ -55,8 +55,8 @@ Options:
 With no <branch>, the checked-out branch is used.`;
 
 /**
- * Runs the `tb-git` command line, returning what to write and exit with rather than doing either, so the
- * whole surface is exercisable without a process. Every failure is reported through the result: Nothing throws.
+ * Runs the `tb-git` command line, returning what to write and exit with rather than doing either, so that
+ * the whole surface is exercisable without a process. Every failure is reported through the result: Nothing throws.
  *
  * @internal
  */
@@ -88,7 +88,7 @@ function describeError(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-/** Routes the arguments to a subcommand, or handles the root command's own options. */
+/** Passes the arguments to a subcommand, or handles the root command's own options. */
 function dispatch(args: string[], effects: TbGitEffects): TbGitResult {
   const [command, ...rest] = args;
 
@@ -108,7 +108,7 @@ function fail(message: string, command: string | undefined): TbGitResult {
   return { exitCode: EXIT_USAGE, stderr: `${message}\nTry \`${scope} --help\`.\n`, stdout: '' };
 }
 
-/** Parses the `branch-number` subcommand and prints the number that its options derive. */
+/** Parses the `branch-number` subcommand and prints the number derived with its options. */
 function runBranchNumber(args: string[], effects: TbGitEffects): TbGitResult {
   const { positionals, values } = parseArgs({
     allowPositionals: true,
@@ -155,7 +155,7 @@ function runTicketRef(args: string[], effects: TbGitEffects): TbGitResult {
 /**
  * Chooses the branch to derive from: the sole positional, or the checked-out branch when none is given.
  * An empty positional is rejected rather than treated as absent, so a caller's own failed resolution of
- * the branch name surfaces here instead of being silently replaced.
+ * the branch name is reported here instead of being silently replaced.
  */
 function selectBranch(positionals: string[], effects: TbGitEffects): string {
   if (positionals.length > 1) {

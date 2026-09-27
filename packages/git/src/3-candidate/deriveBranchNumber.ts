@@ -15,7 +15,7 @@ const MAX_UINT32 = 0xffff_ffff;
  * @stage candidate
  */
 export function deriveBranchNumber(branch: string, options: DeriveBranchNumberOptions = {}): number {
-  // Hashing before the branch decision makes hashString validate the bounds on both paths.
+  // Hash before the branch decision so that hashString validates the bounds on both paths.
   const digest = hashString(branch, options);
   const ref = findBranchTicketRef(branch, options);
 

@@ -14,7 +14,7 @@ Requires Node.js 24 or later.
 
 ## CLI
 
-The package ships a `tb-git` command exposing the same functions to a shell caller.
+The package provides a `tb-git` command exposing the same functions to a shell caller.
 
 ```sh
 pnpm add --global @williamthorsen/toolbelt.git   # puts tb-git on PATH
@@ -41,7 +41,7 @@ tb-git branch-number 232_add-widget --min 3000 --max 3999
 # 3232
 ```
 
-A negative offset takes the `=` form, `--offset=-3`: A bare `-3` reads as an option rather than as the value.
+A negative offset takes the `=` form, `--offset=-3`: A bare `-3` is parsed as an option rather than as the value.
 
 ### `tb-git ticket-ref [<branch>] [options]`
 
@@ -72,7 +72,7 @@ With no `<branch>`, both subcommands resolve the checked-out branch with `git br
 | `1`  | `ticket-ref` found no ticket in the branch name; both streams are empty |
 | `2`  | Usage or validation error, with the message on stderr                   |
 
-A bound, offset, or key rejected by the library exits `2`, reporting the message that it raises. So does an empty option value, so `--min "$PORT_MIN"` with `PORT_MIN` unset fails instead of bounding at `0`.
+`tb-git` exits `2` when the library rejects a bound, offset, or key, and reports the message that the library raises. It also exits `2` on an empty option value: `--min "$PORT_MIN"` with `PORT_MIN` unset fails instead of bounding at `0`.
 
 ```sh
 if ref=$(tb-git ticket-ref); then
@@ -105,11 +105,11 @@ findBranchTicketRef('232_add-widget');
 // { id: '232', number: 232 }
 ```
 
-A ref must begin a segment. `/` and `_` both delimit one, so an author prefix and a worktree-safe spelling parse alike, and the leftmost segment with a ref wins. Anchoring to a segment keeps a kebab-case description from reading as a ticket: `feat/add-widget-2` encodes none, because `widget` follows a hyphen rather than a separator.
+A ref must begin a segment. `/` and `_` both delimit one, so an author prefix and a worktree-safe spelling parse alike, and the leftmost segment with a ref wins. Anchoring to a segment keeps a kebab-case description from being parsed as a ticket: `feat/add-widget-2` encodes none, because `widget` follows a hyphen rather than a separator.
 
 Two forms are recognized, each taking an optional `.N` revisit suffix. A **keyed** ref is a Jira-style key and number, the key matching Jira's own rule of a letter followed by letters and digits. A **bare-numeric** ref is the number alone. `id` and `key` are emitted uppercased, since a branch name may be lowercase but the ticket that it names is `MAC-22`.
 
-By default a key must be uppercase, which Jira permits and which is the only property separating a real key from an ordinary word: Without it, `feat-2` would read as ticket `FEAT-2`. Declaring the project's own key through `key` is both more permissive and more precise, since it then matches in any casing and is the only key that matches at all.
+By default a key must be uppercase, which Jira permits and which is the only property separating a real key from an ordinary word: Without it, `feat-2` would be parsed as ticket `FEAT-2`. Declaring the project's own key through `key` is both more permissive and more precise, since it then matches in any casing and is the only key that matches at all.
 
 ```ts
 findBranchTicketRef('mac-22/add-widget');
@@ -144,7 +144,7 @@ deriveBranchNumber('main');
 // 663286764
 ```
 
-The number is the ticket's when the branch names one, and a [`hashString`](https://github.com/williamthorsen/toolbelt/tree/main/packages/strings#hashstring) digest of the whole name when it does not, so every branch yields something. `min`, `max`, and `offset` are `hashString`'s, and apply to both paths alike: The two land in one range, and `offset` stays a pure rotation.
+The number is the ticket's when the branch names one, and a [`hashString`](https://github.com/williamthorsen/toolbelt/tree/main/packages/strings#hashstring) digest of the whole name when it does not, so every branch yields something. `min`, `max`, and `offset` are `hashString`'s, and apply to both paths alike: The two produce a number in one range, and `offset` stays a pure rotation.
 
 ```ts
 deriveBranchNumber('232_add-widget', { min: 3000, max: 3999 });
@@ -154,4 +154,4 @@ deriveBranchNumber('refactor/tidy-imports', { min: 3000, max: 3999 });
 // 3508
 ```
 
-A number that overruns the range wraps into it, so `deriveBranchNumber('1232', { max: 999 })` is `232`. `key` is passed through to `findBranchTicketRef`, and a bad `key`, bound, or offset raises the same `RangeError` whether or not the branch names a ticket.
+A number that overruns the range wraps into it: `deriveBranchNumber('1232', { max: 999 })` is `232`. `key` is passed through to `findBranchTicketRef`, and a bad `key`, bound, or offset raises the same `RangeError` whether or not the branch names a ticket.

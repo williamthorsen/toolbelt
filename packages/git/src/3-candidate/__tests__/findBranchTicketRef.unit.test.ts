@@ -22,7 +22,7 @@ describe(findBranchTicketRef, () => {
     },
     { scenario: 'a dotted sub-ID', branch: '123.4', expected: { id: '123', number: 123, revisit: 4 } },
     {
-      scenario: 'a hyphenated sub-ID, which reads as a description',
+      scenario: 'a hyphenated sub-ID, which is parsed as a description',
       branch: '123-4',
       expected: { id: '123', number: 123 },
     },

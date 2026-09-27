@@ -84,7 +84,8 @@ describe(reconcileFileFromFile, () => {
       expect(fs.existsSync(tree.resolve('.config'))).toBe(false);
     });
 
-    // The source is read to determine the outcome, so a dry run can fail where `reconcileFile`'s cannot.
+    // Because the source is read to determine the outcome, a dry run can fail, which a dry run of `reconcileFile`
+    // cannot.
     it('reports failure when the source does not exist', () => {
       using tree = createTempTree({});
       const filePath = tree.resolve('config.toml');
