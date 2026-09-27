@@ -63,11 +63,11 @@ describe(findJiraTokenSource, () => {
     expect(store.findSecret).not.toHaveBeenCalled();
   });
 
-  it('returns undefined where every source misses', () => {
+  it('returns undefined when every source misses', () => {
     expect(findJiraTokenSource({ account: ACCOUNT, env: {}, store: createStore(false) })).toBeUndefined();
   });
 
-  it('walks the same order as the resolver, treating a silent command as a miss', () => {
+  it('follows the same order as the resolver, treating a silent command as a miss', () => {
     const store = createStore(true);
 
     const source = findJiraTokenSource({
@@ -84,7 +84,7 @@ describe(findJiraTokenSource, () => {
 
 // region | Helpers
 
-/** Builds a spied secret store that holds a token or holds none. */
+/** Builds a spied secret store that contains a token or contains none. */
 function createStore(stored: boolean): SecretStore & {
   findSecret: ReturnType<typeof vi.fn>;
   hasSecret: ReturnType<typeof vi.fn>;

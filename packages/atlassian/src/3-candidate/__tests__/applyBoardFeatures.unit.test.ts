@@ -23,14 +23,14 @@ describe(applyBoardFeatures, () => {
     ]);
   });
 
-  it('writes nothing where the plan holds no toggle', async () => {
+  it('writes nothing when the plan contains no toggle', async () => {
     const { calls, request } = createFakeRequest({});
 
     await expect(applyBoardFeatures(request, { board: BOARD }, { featureToggles: [] })).resolves.toStrictEqual([]);
     expect(calls).toStrictEqual([]);
   });
 
-  it('throws naming the toggle where the board rejects the write', async () => {
+  it('throws naming the toggle when the board rejects the write', async () => {
     const { request } = createFakeRequest({ [`PUT ${FEATURES_PATH}`]: { json: {}, status: 403 } });
     const featureToggles = [{ feature: 'jsw.agility.backlog', from: 'DISABLED', to: 'ENABLED' }] as const;
 

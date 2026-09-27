@@ -8,7 +8,7 @@ import type { WorkflowUpdatePayload } from '../WorkflowUpdatePayload.ts';
 const { workflow } = buildProjectConfiguration();
 
 describe(assertGraphPreserved, () => {
-  it('passes a payload with every status and transition that the workflow holds', () => {
+  it('passes a payload with every status and transition that the workflow contains', () => {
     expect(() => assertGraphPreserved(workflow, buildPayload(workflow))).not.toThrow();
   });
 
@@ -38,7 +38,7 @@ describe(assertGraphPreserved, () => {
     expect(() => assertGraphPreserved(workflow, payload)).toThrow('Status ref-done would be left with no transition');
   });
 
-  it('passes over a status that already had no transition into it', () => {
+  it('ignores a status that already had no transition into it', () => {
     const stranded: Workflow = {
       ...workflow,
       transitions: workflow.transitions.filter((transition) => transition.toStatusReference !== 'ref-done'),
@@ -47,7 +47,7 @@ describe(assertGraphPreserved, () => {
     expect(() => assertGraphPreserved(stranded, buildPayload(stranded))).not.toThrow();
   });
 
-  it('refuses a newly stranded status while still passing over one that already was', () => {
+  it('refuses a newly stranded status while still ignoring one that already was', () => {
     const stranded: Workflow = {
       ...workflow,
       transitions: workflow.transitions.filter((transition) => transition.toStatusReference !== 'ref-done'),

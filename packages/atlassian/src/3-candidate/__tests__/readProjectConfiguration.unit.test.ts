@@ -97,7 +97,7 @@ describe(readProjectConfiguration, () => {
     expect(configuration.board).toStrictEqual({ id: BOARD_ID });
   });
 
-  it("takes the project's own board where another board also filters on the project", async () => {
+  it("takes the project's own board when another board also filters on the project", async () => {
     const routes = {
       ...buildRoutes(),
       'GET /rest/agile/1.0/board': {
@@ -180,7 +180,7 @@ describe(readProjectConfiguration, () => {
     expect([...configuration.features]).toStrictEqual([['jsw.agility.backlog', 'ENABLED']]);
   });
 
-  it('refuses a board entry that it cannot read rather than passing over it', async () => {
+  it('refuses a board entry that it cannot read rather than skipping it', async () => {
     const routes = {
       ...buildRoutes(),
       'GET /rest/agile/1.0/board': { json: { values: [{ id: BOARD_ID }, { name: 'no id' }] } },
@@ -191,7 +191,7 @@ describe(readProjectConfiguration, () => {
     );
   });
 
-  it('refuses an issue type that it cannot read, which would otherwise slip past the workflow count', async () => {
+  it('refuses an issue type that it cannot read, which the workflow count would otherwise miss', async () => {
     const routes = {
       ...buildRoutes(),
       'GET /rest/api/3/project/THOR/statuses': { json: [{ id: '10001' }, { name: 'no id' }] },
@@ -255,7 +255,7 @@ describe(readProjectConfiguration, () => {
     );
   });
 
-  it('throws through requestOk where a read is rejected', async () => {
+  it('throws through requestOk when a read is rejected', async () => {
     const routes = { ...buildRoutes(), 'GET /rest/api/3/project/THOR': { json: { errorMessages: [] }, status: 403 } };
 
     await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toMatchObject({
@@ -267,7 +267,7 @@ describe(readProjectConfiguration, () => {
 
 // region | Helpers
 
-/** Builds the five routes that a whole read walks, against a team-managed project on one workflow. */
+/** Builds the five routes that a whole read calls, against a team-managed project on one workflow. */
 function buildRoutes(): FakeRoutes {
   return {
     'GET /rest/agile/1.0/board': { json: { values: [{ id: BOARD_ID, name: 'THOR board' }] } },

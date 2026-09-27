@@ -24,46 +24,46 @@ describe(parseProjectSpec, () => {
     expect(spec.site).toBe('acme.atlassian.net');
   });
 
-  it('reports no site and no email where the spec has neither', () => {
+  it('reports no site and no email when the spec has neither', () => {
     const spec = parseProjectSpec(JSON.stringify(prototypeSpec));
 
     expect(spec.email).toBeUndefined();
     expect(spec.site).toBeUndefined();
   });
 
-  it('throws where the text is not JSON', () => {
+  it('throws whenthe text is not JSON', () => {
     expect(() => parseProjectSpec('{ "statuses": [')).toThrow('A spec is JSON');
   });
 
-  it('throws where the document is not an object', () => {
+  it('throws whenthe document is not an object', () => {
     expect(() => parseProjectSpec('["To Do"]')).toThrow('A spec is a JSON object');
   });
 
-  it('throws where statuses are absent', () => {
+  it('throws whenstatuses are absent', () => {
     expect(() => parseProjectSpec('{}')).toThrow('non-empty `statuses`');
   });
 
-  it('throws where statuses are empty', () => {
+  it('throws whenstatuses are empty', () => {
     expect(() => parseProjectSpec('{ "statuses": [] }')).toThrow('non-empty `statuses`');
   });
 
-  it('throws where a status has no name', () => {
+  it('throws whena status has no name', () => {
     expect(() => parseProjectSpec('{ "statuses": [{ "category": "TODO" }] }')).toThrow('Each status needs a name');
   });
 
-  it('throws where a status declares an unknown category', () => {
+  it('throws whena status declares an unknown category', () => {
     const text = '{ "statuses": [{ "name": "To Do", "category": "BACKLOG" }] }';
 
     expect(() => parseProjectSpec(text)).toThrow("Status 'To Do' needs a category of DONE, IN_PROGRESS, TODO");
   });
 
-  it('throws where aliases are not a list of names', () => {
+  it('throws whenaliases are not a list of names', () => {
     const text = '{ "statuses": [{ "name": "Done", "category": "DONE", "aliases": [7] }] }';
 
     expect(() => parseProjectSpec(text)).toThrow("The aliases of status 'Done' are a list of names");
   });
 
-  it('throws where two entries claim one name', () => {
+  it('throws whentwo entries claim one name', () => {
     const text = JSON.stringify({
       statuses: [
         { category: 'DONE', name: 'Done' },
@@ -74,7 +74,7 @@ describe(parseProjectSpec, () => {
     expect(() => parseProjectSpec(text)).toThrow("'done' is claimed by both 'Done' and 'done'");
   });
 
-  it('throws where one entry claims a name that another claims as an alias', () => {
+  it('throws whenone entry claims a name that another claims as an alias', () => {
     const text = JSON.stringify({
       statuses: [
         { category: 'DONE', name: 'Done', aliases: ['Resolved'] },
@@ -85,7 +85,7 @@ describe(parseProjectSpec, () => {
     expect(() => parseProjectSpec(text)).toThrow("'resolved' is claimed by both 'Done' and 'resolved'");
   });
 
-  it('throws where a board feature is requested in a state that no spec may request', () => {
+  it('throws when a board feature is requested in an unsupported state', () => {
     const text = JSON.stringify({
       boardFeatures: { 'jsw.agility.backlog': 'COMING_SOON' },
       statuses: [{ category: 'TODO', name: 'To Do' }],

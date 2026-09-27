@@ -144,7 +144,7 @@ describe(buildWorkflowUpdatePayload, () => {
     expect(workflow.transitions.slice(-2).map((transition) => transition.id)).toStrictEqual(['40', '50']);
   });
 
-  it('allocates from the floor on a workflow holding no transitions', () => {
+  it('allocates from the floor on a workflow with no transitions', () => {
     const empty = buildProjectConfiguration({
       statuses: [],
       workflow: { ...configuration.workflow, statuses: [], transitions: [] },

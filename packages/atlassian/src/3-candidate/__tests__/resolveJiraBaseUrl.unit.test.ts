@@ -28,7 +28,7 @@ describe(resolveJiraBaseUrl, () => {
     expect(fetchImpl).toHaveBeenCalledWith('https://acme.atlassian.net/_edge/tenant_info', expect.anything());
   });
 
-  it('throws where the site is blank', async () => {
+  it('throws when the site is blank', async () => {
     await expect(resolveJiraBaseUrl({ cloudId: 'abc-123', site: ' '.repeat(3) })).rejects.toThrow('A site is required');
   });
 
