@@ -36,7 +36,7 @@ describe(listSites, () => {
 
 // region | Helpers
 
-/** Lists the sources in which this package's own prose about the idioms lives. */
+/** Lists the sources that contain this package's own prose about the idioms. */
 function listSweptFiles(): string[] {
   return [KITS_DIR, READINESS_DIR, TESTS_DIR].flatMap((directory) =>
     fs

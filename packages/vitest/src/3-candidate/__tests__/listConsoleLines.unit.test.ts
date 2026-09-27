@@ -61,7 +61,7 @@ describe(listConsoleLines, () => {
   });
 
   describe('types', () => {
-    it('accepts the spy handed back by a silence', () => {
+    it('accepts the spy returned by a silence', () => {
       using silent = silenceConsole(['log']);
 
       expectTypeOf(listConsoleLines).toBeCallableWith(silent.log);

@@ -51,7 +51,7 @@ describe(throwOnProcessExit, () => {
       expect(error.code).toBe(2);
     });
 
-    it('reports no code where the call named none', async () => {
+    it('reports no code when the call named none', async () => {
       using _exit = throwOnProcessExit();
 
       const error = await captureError(ProcessExitError, () => process.exit());
@@ -75,7 +75,7 @@ describe(throwOnProcessExit, () => {
       expect(exit.spy).toHaveBeenCalledWith(1);
     });
 
-    it('leaves the spy uncalled where nothing exits', () => {
+    it('leaves the spy uncalled when nothing exits', () => {
       using exit = throwOnProcessExit();
 
       expect(exit.spy).not.toHaveBeenCalled();
@@ -97,7 +97,7 @@ describe(throwOnProcessExit, () => {
 // region | Helpers
 
 /**
- * Exits, declaring a `void` return so a caller may hold statements after the call.
+ * Exits, declaring a `void` return so that a caller may place statements after the call.
  *
  * Calling `process.exit` directly would make those statements unreachable to the compiler, which reports
  * TS7027 and takes with it the only way to observe whether they ran.

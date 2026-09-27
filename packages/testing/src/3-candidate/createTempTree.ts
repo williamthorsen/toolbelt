@@ -4,7 +4,7 @@ import path from 'node:path';
 
 /**
  * Creates a throwaway directory tree and returns a handle that removes it on disposal. Each key of `entries` is a
- * path relative to the tree root: One ending in `/` becomes a directory, and any other becomes a file holding the
+ * path relative to the tree root: One ending in `/` becomes a directory, and any other becomes a file containing the
  * mapped contents, given as text or as the bytes themselves. A key resolving outside the root is rejected, and a
  * call that throws leaves nothing on disk.
  *
@@ -179,11 +179,11 @@ export interface TempTree extends Disposable {
 
   /**
    * Lists every file below a tree-relative directory, at any depth, as `/`-separated paths relative to it, sorted,
-   * defaulting to the tree root. A symlink below that directory is neither listed nor descended, so every path in
-   * the result names a file held inside the tree. The directory given as the argument is the exception, followed as
-   * `list`, `read`, and `exists` follow theirs: One naming a link out of the tree lists the target's files. A path
-   * that does not exist yields an empty array, where `list` throws; one that exists as a file raises `ENOTDIR`, as
-   * `list` does.
+   * defaulting to the tree root. A symlink below that directory is neither listed nor descended. Every path in the
+   * result names a file inside the tree. The directory given as the argument is the exception, followed as `list`,
+   * `read`, and `exists` follow theirs: One naming a link out of the tree lists the target's files. A path that does
+   * not exist yields an empty array, whereas `list` throws; one that exists as a file raises `ENOTDIR`, as `list`
+   * does.
    */
   listFiles(entryPath?: string): string[];
 
@@ -201,19 +201,20 @@ export interface TempTree extends Disposable {
 
   /**
    * Resolves `segments` against the tree root, throwing when the result falls outside it. An absolute segment
-   * landing inside the root is returned. The containment test is lexical, so it does not follow a symlink within
-   * the tree that points out of it.
+   * that resolves inside the root is returned. The containment test is lexical, so it does not follow a symlink
+   * within the tree that points out of it.
    */
   resolve(...segments: string[]): string;
 
-  /** Removes a tree-relative entry, along with its contents where it is a directory, and a missing one silently. */
+  /** Removes a tree-relative entry, along with its contents if it is a directory, and a missing one silently. */
   rm(entryPath: string): void;
 
   /**
-   * Links a tree-relative path to `targetPath`, taking the link first and so inverting `fs.symlinkSync`. The target
-   * is stored verbatim and is not containment-checked, being a string held by the link rather than a location to
-   * which the tree writes: It may be absolute or relative, name something outside the tree, or dangle. A relative one
-   * resolves against the link's own directory, as POSIX resolves it. An occupied link path raises `EEXIST`.
+   * Links a tree-relative path to `targetPath`, taking the link first, which inverts the order of `fs.symlinkSync`.
+   * The target is stored verbatim and is not containment-checked, being a string stored in the link rather than a
+   * location to which the tree writes: It may be absolute or relative, name something outside the tree, or dangle. A
+   * relative one resolves against the link's own directory, as POSIX resolves it. An occupied link path raises
+   * `EEXIST`.
    *
    * The link type is the one portability difference. An absolute directory target is linked as a junction, which
    * Windows creates without the elevation needed by a directory symlink; a relative directory target is linked as a
@@ -241,9 +242,9 @@ export interface TempTree extends Disposable {
 // region | Helpers
 /**
  * Rejects a prefix that would place the tree anywhere but directly inside the system temporary directory. `mkdtemp`
- * appends its random suffix to the joined path as given, so a prefix holding a separator targets a nested directory
- * that has to already exist, or, where it ascends, a directory outside the temporary one; and a prefix that
- * normalizes away lands the suffix beside the temporary directory rather than within it. Every other prefix joins
+ * appends its random suffix to the joined path as given, so a prefix containing a separator targets a nested
+ * directory that has to already exist, or, if it ascends, a directory outside the temporary one; and a prefix that
+ * normalizes away puts the suffix beside the temporary directory rather than within it. Every other prefix joins
  * to a name inside it.
  */
 function assertNamesDirectChild(prefix: string): void {
@@ -278,10 +279,10 @@ function chooseLinkType(absoluteLinkPath: string, targetPath: string): 'dir' | '
  * caller's accumulated relative path. `Dirent` predicates read the entry itself, so a symlink is neither listed nor
  * descended.
  *
- * `readdirSync`'s `recursive` option cannot serve here: It descends a symlinked directory, so a link pointing out of
- * the tree lists foreign files, and a link to an ancestor revisits the same entries until `ELOOP` stops it. Joining
- * segments with `/` leaves no platform separator to normalize away, a normalization that would corrupt a POSIX name
- * holding a backslash.
+ * `readdirSync`'s `recursive` option cannot serve here: It descends a symlinked directory, listing foreign files
+ * through a link pointing out of the tree and revisiting the same entries through a link to an ancestor until `ELOOP`
+ * stops it. Joining segments with `/` leaves no platform separator to normalize away, a normalization that would
+ * corrupt a POSIX name containing a backslash.
  */
 function listFilesBelow(dir: string, prefix: string): string[] {
   const paths: string[] = [];
@@ -301,10 +302,10 @@ function listFilesBelow(dir: string, prefix: string): string[] {
 }
 
 /**
- * Grants `dir` and every directory beneath it write and execute permission, so a tree made unwritable by a test
- * can still be removed. Only directories are touched, because unlinking an entry needs permission on its container
- * rather than on the entry. Each directory is chmodded before it is read, so one denying its own listing is
- * readable by the time it is listed.
+ * Grants `dir` and every directory beneath it write and execute permission, so that a tree made unwritable by a
+ * test can still be removed. Only directories are touched, because unlinking an entry needs permission on its
+ * container rather than on the entry. Each directory is chmodded before it is read, which makes one denying its own
+ * listing readable by the time it is listed.
  */
 function restoreDirectoryPermissions(dir: string): void {
   fs.chmodSync(dir, 0o700);

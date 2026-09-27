@@ -54,11 +54,11 @@ function buildCapture(pragma: string): string {
 }
 
 /**
- * Runs the package's compiled kit over a fixture repo holding the given capture source and a stdio spy, and
+ * Runs the package's compiled kit over a fixture repo containing the given capture source and a stdio spy, and
  * reports what each check named and counted.
  *
- * A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report reaches the
- * layer that acts on one.
+ * A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report is passed to
+ * the layer that acts on one.
  */
 function runKit(captureSource: string): KitCheckReport[] {
   return listKitCheckReports(PACKAGE_DIR, {

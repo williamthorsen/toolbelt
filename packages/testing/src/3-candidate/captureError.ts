@@ -45,7 +45,7 @@ export async function captureError(
   throw new Error(`Expected the call to throw, but it returned: ${inspect(returned)}`);
 }
 
-/** Constructor of an error class, admitting an abstract base and one taking required arguments. */
+/** Constructor of an error class, accepting an abstract base and one taking required arguments. */
 type ErrorClass<E extends Error> = abstract new (...args: never[]) => E;
 
 // region | Helpers

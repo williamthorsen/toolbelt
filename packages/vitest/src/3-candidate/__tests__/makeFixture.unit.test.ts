@@ -48,7 +48,7 @@ const it = baseIt
   );
 
 // A second extended API, with none of the fixtures above.
-// eslint-disable-next-line vitest/consistent-test-it -- the lone `.extend` is a declaration; the test that it declares sits in a `describe`.
+// eslint-disable-next-line vitest/consistent-test-it -- the lone `.extend` is a declaration; the test that it declares is in a `describe`.
 const otherIt = baseIt.extend(
   'unshared',
   makeFixture(() => makeProbe('unshared')),
@@ -70,7 +70,7 @@ describe(makeFixture, () => {
       expect(buildLog).not.toContain('per-file');
     });
 
-    // The disposal belongs to the previous test, so a later test is the only place it can be observed.
+    // The disposal belongs to the previous test. Only a later test can observe it.
     it('disposes the previous value before the next test runs', ({ perTest }) => {
       expect(disposalLog).toStrictEqual(['per-test']);
       expect(countOf(buildLog, 'per-test')).toBe(2);

@@ -127,7 +127,7 @@ describe(disposeOnTestFinished, () => {
       expect(disposalLog).not.toContain('after-hook');
     });
 
-    // Registration from `afterEach` disposes only because the runner unwinds the finish hooks after it.
+    // A value registered from `afterEach` is disposed only because the runner unwinds the finish hooks after it.
     it('disposes what the hook registered for the previous test', () => {
       expect(countOf(disposalLog, 'after-hook')).toBe(1);
     });

@@ -2,8 +2,8 @@ import process from 'node:process';
 
 /**
  * Points `process.argv` at a set of CLI arguments for the enclosing scope and restores the previous value when
- * the scope exits. The caller passes the arguments alone, which `process.argv.slice(2)` reports; the
- * executable and script entries are supplied.
+ * the scope exits. The caller passes the arguments alone, which `process.argv.slice(2)` reports;
+ * `pointArgvAt` supplies the executable and script entries.
  *
  * @category Testing
  * @experimental
