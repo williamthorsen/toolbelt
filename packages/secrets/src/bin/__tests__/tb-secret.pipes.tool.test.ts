@@ -15,7 +15,7 @@ const isMacos = process.platform === 'darwin';
 
 describe('tb-secret over a pipe', () => {
   it.skipIf(!isMacos)('reads a secret whose producer writes after a delay', () => {
-    // A blank secret is refused before `security` runs, so this reaches no keychain.
+    // A blank secret is refused before `security` runs, so the test touches no keychain.
     const { stderr } = runPipeline(
       String.raw`{ sleep 0.3; printf '\n'; echo "producer-exit:$?" >&2; } | ${buildCommand(['set', SERVICE])}`,
     );
@@ -47,8 +47,8 @@ describe('tb-secret over a pipe', () => {
     expect(read.stdout).toBe(`${SECRET}\n`);
   });
 
-  it('ends quietly where the reader exits before the output is written', () => {
-    // The `sleep` lets the reader exit first, so the CLI's write reaches a pipe that is already closed.
+  it('ends quietly when the reader exits before the output is written', () => {
+    // The `sleep` lets the reader exit first, so the CLI writes to a pipe that is already closed.
     const { status, stderr } = runPipeline(`{ sleep 0.1; ${buildCommand(['--help'])}; echo "exit:$?" >&2; } | true`);
 
     expect(stderr).toBe('exit:0\n');

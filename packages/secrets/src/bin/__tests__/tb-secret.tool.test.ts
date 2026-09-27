@@ -22,7 +22,7 @@ describe('tb-secret wrapper', () => {
     expect(stderr).toMatch(/nmr build/);
   });
 
-  it('reports a load failure where the build is present and one of its imports is not', () => {
+  it('reports a load failure when the build is present and one of its imports is not', () => {
     using tree = createTempTree({
       [WRAPPER_ENTRY]: WRAPPER_SOURCE,
       [BUILD_ENTRY]: "import './absent.js';\n",
@@ -32,7 +32,7 @@ describe('tb-secret wrapper', () => {
 
     expect(status).toBe(1);
     expect(stderr).toMatch(/failed to load/);
-    // The absence is the assertion: The gate reads the entry file, where the error code that it would otherwise
+    // The absence is the assertion: The gate reads the entry file, whereas the error code that it would otherwise
     // key on fires for any unresolved module in the graph.
     expect(stderr).not.toMatch(/build output not found/);
   });

@@ -8,7 +8,7 @@ import { createKeychainStore } from '../createKeychainStore.ts';
 
 const SECURITY_PATH = '/usr/bin/security';
 
-// Unique per run, so an assertion about the default keychain cannot collide with an item already held there.
+// Unique per run, so an assertion about the default keychain cannot collide with an item already stored there.
 const SERVICE_PREFIX = `tb-secret-test-${randomUUID().slice(0, 8)}`;
 
 const ABSENT_SERVICE = `${SERVICE_PREFIX}-absent`;
@@ -38,7 +38,7 @@ describe.skipIf(!canCreateKeychain)(createKeychainStore, () => {
     });
   });
 
-  it('matches the account exactly, rather than any item holding the service', () => {
+  it('matches the account exactly, rather than any item with the service', () => {
     withKeychain((keychain) => {
       const store = createKeychainStore({ keychain });
 
@@ -46,7 +46,7 @@ describe.skipIf(!canCreateKeychain)(createKeychainStore, () => {
     });
   });
 
-  it('returns undefined where the keychain holds no such item', () => {
+  it('returns undefined when the keychain contains no such item', () => {
     withKeychain((keychain) => {
       expect(createKeychainStore({ keychain }).findSecret({ service: ABSENT_SERVICE })).toBeUndefined();
     });
@@ -116,7 +116,7 @@ describe.skipIf(!canCreateKeychain)(createKeychainStore, () => {
       });
     });
 
-    it('replaces a secret already held under the same service and account', () => {
+    it('replaces a secret already stored under the same service and account', () => {
       withKeychain((keychain) => {
         const store = createKeychainStore({ keychain });
 
@@ -126,7 +126,7 @@ describe.skipIf(!canCreateKeychain)(createKeychainStore, () => {
       });
     });
 
-    it('refuses a secret past the command line, storing nothing', () => {
+    it('refuses a secret too long for the command line, storing nothing', () => {
       withKeychain((keychain) => {
         const store = createKeychainStore({ keychain });
 
@@ -144,7 +144,7 @@ function buildSecret(length: number): string {
   return Array.from({ length }, (_, index) => String.fromCodePoint(97 + (index % 26))).join('');
 }
 
-/** Runs `security`, raising what it wrote where it failed, so that a broken fixture is not read as a result. */
+/** Runs `security`, raising what it wrote when it fails, so that a broken fixture is not read as a result. */
 function runSecurity(args: string[]): void {
   execFileSync(SECURITY_PATH, args, { encoding: 'utf8', stdio: 'pipe' });
 }
