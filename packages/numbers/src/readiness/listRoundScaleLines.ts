@@ -11,7 +11,7 @@ const LEADING_DIVISOR = new RegExp(String.raw`^\s*/\s*(?<divisor>${POWER_OF_TEN}
 /**
  * Lists the line of every hand-rolled decimal rounding in a source file.
  *
- * Takes the blanked code produced by `listMathIdioms`, so a rounding written in a comment or a literal is not one.
+ * Takes the blanked code produced by `listMathIdioms`; a rounding written in a comment or a literal is not one.
  *
  * The idiom scales a value by a power of ten, rounds, and scales back by the same power. Both sides must name
  * the same factor and it must be a power of ten: `Math.round(x * 3) / 3` rounds to thirds, which `round`
