@@ -1,9 +1,9 @@
 import { getLineAtOffset } from '@williamthorsen/toolbelt.adoption';
 
 // The subject is captured once and matched again in both branches, which makes the ternary a wrap
-// rather than a choice between two unrelated values. `\s*` sits at every joint because the expression has no
+// rather than a choice between two unrelated values. `\s*` is at every joint because the expression has no
 // fixed-width span to bound and a formatter may wrap it at any of them. Each bare backreference has a
-// trailing lookahead, so a branch reading `xs` or `x.tail` is not mistaken for the subject `x`.
+// trailing lookahead, so that a branch reading `xs` or `x.tail` is not mistaken for the subject `x`.
 const SUBJECT = String.raw`(?<subject>[\w$]+(?:\.[\w$]+)*)`;
 const SUBJECT_AGAIN = String.raw`\k<subject>(?![\w$.])`;
 const WRAPPED = String.raw`\[\s*\k<subject>\s*\]`;
@@ -26,10 +26,11 @@ const NEGATED_ARRAIFY_TERNARY = new RegExp(
  * one.
  *
  * Both polarities are claimed, and in each the array branch may pass the value through or spread it into a new
- * array. The spread is the one form from which the substitution is exact; the other two hand back the value
+ * array. The spread is the one form from which the substitution is exact; the other two return the value
  * itself, which is the limit named by the kit's advice.
  *
- * A polarity is matched in a pass of its own, so the lines are sorted before they are returned.
+ * Each polarity is matched in a pass of its own, which leaves the lines out of order; they are sorted before
+ * they are returned.
  *
  * @internal
  */

@@ -72,7 +72,7 @@ describe(listBiasedShuffleLines, () => {
     expect(listBiasedShuffleLines(source)).toStrictEqual([1]);
   });
 
-  // A parenthesis wrapping the whole comparator holds the arrow rather than opening it, and a cast puts its
+  // A parenthesis wrapping the whole comparator contains the arrow rather than opening it, and a cast puts its
   // type where the body would otherwise be read from.
   it('claims an arrow wrapped by a redundant parenthesis or a cast', () => {
     const sources = [
