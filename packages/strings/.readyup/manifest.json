@@ -19,7 +19,7 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "ac9734b6",
+          "hash": "e6e87602",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -74,7 +74,7 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "f7e83e75",
+          "hash": "a4467bfc",
           "kind": "module",
           "path": "../src/readiness/listCapitalizeLines.ts"
         },
