@@ -49,7 +49,7 @@ describe(renderVerification, () => {
       buildColumns(),
     );
 
-    expect(rendered).toContain('  LOCK jsw.agility.goals = DISABLED, which Jira has locked and no call can set');
+    expect(rendered).toContain('  LOCK jsw.agility.goals = DISABLED, which Jira has locked and the API cannot set');
     expect(rendered).not.toContain('MISS jsw.agility.goals');
   });
 

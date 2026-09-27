@@ -30,8 +30,8 @@ describe('Runtime dependencies', () => {
  * imported by no exported module. Such a dependency installs for every consumer while nothing they can import
  * needs it.
  *
- * `devDependencies` stay out: They do not publish, and `packages/adoption` is installed for its consumers
- * through that field. A type-only import counts, since a consumer typechecking against the shipped declarations needs it.
+ * `devDependencies` stay out: They do not publish, and `packages/adoption` is installed for its consumers through
+ * that field. A type-only import counts, since a consumer typechecking against the shipped declarations needs it.
  */
 function auditDependencyReachability(monorepoRoot: string): {
   dependencyCount: number;

@@ -33,7 +33,7 @@ describe(listMembershipSites, () => {
 
 // region | Helpers
 
-/** Lists the sources in which this package's own prose about the idiom lives. */
+/** Lists the sources in which this package's own prose about the idiom appears. */
 function listSweptFiles(): string[] {
   return [KITS_DIR, READINESS_DIR].flatMap((directory) =>
     fs

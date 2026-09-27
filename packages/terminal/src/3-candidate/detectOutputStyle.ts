@@ -10,10 +10,10 @@ const CONSOLE_TERM = 'linux';
  * Detects the style that an environment calls for: rich only when output is written to a person's terminal.
  *
  * Each signal catches what the others miss. `CI` catches a runner that allocates a pseudo-terminal, for which the
- * terminal check alone would emit emoji into a log that nobody can grep, and `''` or `'false'` reads as a denial,
- * which is how the wider ecosystem reads it. The terminal check catches an interactive pipe into `grep`, whose
- * environment does not set `CI`, and `CI` is not universal either, since Jenkins does not set it. `TERM=linux` catches the Linux
- * virtual console, a terminal outside CI that draws no emoji at all.
+ * terminal check alone would emit emoji into a log that a reader cannot search with `grep`, and `''` or `'false'`
+ * reads as a denial, which is how the wider ecosystem reads it. The terminal check catches an interactive pipe into
+ * `grep`, whose environment does not set `CI`, and `CI` is not universal either, since Jenkins does not set it.
+ * `TERM=linux` catches the Linux virtual console, a terminal outside CI that draws no emoji at all.
  *
  * `TERM=dumb` and `NO_COLOR` are not read: Each reports absent colour rather than absent Unicode.
  *

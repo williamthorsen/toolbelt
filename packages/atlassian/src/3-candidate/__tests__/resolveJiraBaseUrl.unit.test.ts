@@ -55,6 +55,6 @@ describe(resolveJiraBaseUrl, () => {
   it('throws on a failed tenant-info read', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response('', { status: 404 }));
 
-    await expect(resolveJiraBaseUrl({ fetch: fetchImpl, site: 'acme.atlassian.net' })).rejects.toThrow('answered 404');
+    await expect(resolveJiraBaseUrl({ fetch: fetchImpl, site: 'acme.atlassian.net' })).rejects.toThrow('returned 404');
   });
 });

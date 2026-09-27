@@ -23,7 +23,7 @@ export default defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
   detect: listSleepSites,
   exportNames: ADOPTED_EXPORTS,
-  noSourcesReason: 'the project holds no JavaScript or TypeScript sources outside its bootstrap wrappers',
+  noSourcesReason: 'the project contains no JavaScript or TypeScript sources outside its bootstrap wrappers',
   packageName: PACKAGE_NAME,
   // Tests are swept: A test that sleeps is sleeping rather than exhibiting a form, and tests are where this idiom
   // mostly lives, so a sweep exempting them would report nothing in most projects.

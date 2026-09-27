@@ -19,7 +19,7 @@ const SPEC: AdoptionKitSpec<Kind> = {
   description: 'Adoption checks for a project consuming @scope/pkg',
   detect: () => [],
   exportNames: ['doThing'],
-  noSourcesReason: 'the project holds no sources',
+  noSourcesReason: 'the project contains no sources',
   packageName: '@scope/pkg',
   pathFilter: () => true,
 };
@@ -67,7 +67,7 @@ describe(defineAdoptionKit, () => {
           id: 'no-test-clone',
           kinds: ['clone'],
           name: 'No test defines its own helper',
-          noSourcesReason: 'the project holds no tests',
+          noSourcesReason: 'the project contains no tests',
           pathFilter: (path) => path.includes('.test.'),
         },
       ],

@@ -100,7 +100,8 @@ function assertLevelRelativeNames(names: ReadonlyArray<string>): void {
       throw new Error(`Entry name must be relative to its directory level: ${name}`);
     }
 
-    // Normalize first to collapse interior `..` segments, leaving only a name that truly escapes still leading with one.
+    // Normalize first to collapse interior `..` segments, leaving only a name that truly escapes still leading with
+    // one.
     const normalized = path.normalize(name);
 
     if (normalized === '..' || normalized.startsWith(`..${path.sep}`)) {

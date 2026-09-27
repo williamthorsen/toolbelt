@@ -10,7 +10,7 @@
  */
 
 // Ported from FreeBSD msun's `s_erf.c`. Each table lists a polynomial's coefficients in ascending order, and
-// its comment names the fdlibm constants that it holds.
+// its comment names the fdlibm constants that it contains.
 
 // erx: the constant term of the approximation near 1, which fdlibm takes as 0.84506291151 rounded to single
 // precision.
@@ -109,7 +109,7 @@ function computeTail(magnitude: number): number {
       : evaluateRatio(FAR_TAIL_NUMERATOR, FAR_TAIL_DENOMINATOR, inverseSquare);
 
   // The truncated magnitude has at most 21 significant bits, which makes its square exact; the product
-  // (truncated - magnitude) * (truncated + magnitude) holds the rest of magnitude^2.
+  // (truncated - magnitude) * (truncated + magnitude) accounts for the rest of magnitude^2.
   const truncated = clearLowWord(magnitude);
   return (
     (Math.exp(-truncated * truncated - 0.562_5) *

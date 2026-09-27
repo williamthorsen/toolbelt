@@ -63,7 +63,10 @@ export interface ConfigCascade<TConfig> {
 
 export interface ConfigEntry<TConfig> {
   config: TConfig;
-  /** The cascade level at which the file was found, which differs from the file's own directory when `fileNames` contains a nested path. */
+  /**
+   * The cascade level at which the file was found, which differs from the file's own directory when `fileNames`
+   * contains a nested path.
+   */
   dir: string;
   filePath: string;
 }

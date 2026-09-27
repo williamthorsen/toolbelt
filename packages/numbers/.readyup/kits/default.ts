@@ -23,7 +23,7 @@ export default defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
   detect: listMathIdioms,
   exportNames: ADOPTED_EXPORTS,
-  noSourcesReason: 'the project holds no JavaScript or TypeScript sources outside the exempt paths',
+  noSourcesReason: 'the project contains no JavaScript or TypeScript sources outside the exempt paths',
   packageName: PACKAGE_NAME,
   // A test computes these values deliberately, and a bootstrap wrapper's hand-rolled arithmetic keeps its
   // build-first message alive through an incomplete install.

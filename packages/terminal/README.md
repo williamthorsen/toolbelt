@@ -93,7 +93,7 @@ Rich requires all three signals to allow it, and anything else gives plain.
 | TTY state | the stream is a terminal                                    |
 | `TERM`    | anything but `linux`                                        |
 
-Each signal catches what the others miss. `CI` catches a runner that allocates a pseudo-terminal, for which the TTY check alone would emit emoji into a log that nobody can grep, and `CI` is not universal either, since Jenkins does not set it. The TTY check catches an interactive pipe into `grep`. `TERM=linux` catches the Linux virtual console, a terminal outside CI whose kernel font draws no emoji at all.
+Each signal catches what the others miss. `CI` catches a runner that allocates a pseudo-terminal, for which the TTY check alone would emit emoji into a log that a reader cannot search with `grep`, and `CI` is not universal either, since Jenkins does not set it. The TTY check catches an interactive pipe into `grep`. `TERM=linux` catches the Linux virtual console, a terminal outside CI whose kernel font draws no emoji at all.
 
 `TERM=dumb` and `NO_COLOR` are not read. Each reports absent colour rather than absent Unicode, and a caller wanting plain output under either sets the flag or the environment variable.
 

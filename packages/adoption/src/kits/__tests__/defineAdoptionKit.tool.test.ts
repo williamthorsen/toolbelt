@@ -39,7 +39,7 @@ function buildSpec(overrides: Partial<AdoptionKitSpec<Kind>> = {}): AdoptionKitS
     description: 'Adoption checks for a project consuming @scope/pkg',
     detect,
     exportNames: ['doThing'],
-    noSourcesReason: 'the project holds no sources',
+    noSourcesReason: 'the project contains no sources',
     packageName: '@scope/pkg',
     pathFilter: (path) => path.endsWith('.ts'),
     ...overrides,
@@ -142,7 +142,7 @@ describe(defineAdoptionKit, () => {
     const checks = listChecks(buildTestScopedSpec());
 
     await expect(Promise.all(checks.map((check) => runSkip(check)))).resolves.toStrictEqual([
-      'the project holds no sources',
+      'the project contains no sources',
       false,
     ]);
   });
@@ -154,8 +154,8 @@ describe(defineAdoptionKit, () => {
     const checks = listChecks(buildTestScopedSpec());
 
     await expect(Promise.all(checks.map((check) => runSkip(check)))).resolves.toStrictEqual([
-      'the project holds no sources',
-      'the project holds no TypeScript',
+      'the project contains no sources',
+      'the project contains no TypeScript',
     ]);
   });
 
@@ -230,7 +230,7 @@ describe(defineAdoptionKit, () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'README.md': '# fixture\n' });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runSkip(listChecks(buildSpec())[0])).resolves.toBe('the project holds no sources');
+    await expect(runSkip(listChecks(buildSpec())[0])).resolves.toBe('the project contains no sources');
   });
 
   it('runs every check when the project contains matching sources', async () => {
@@ -253,7 +253,7 @@ function buildTestScopedSpec(): AdoptionKitSpec<Kind> {
         id: 'no-inline',
         kinds: ['inline'],
         name: 'inline check',
-        noSourcesReason: 'the project holds no TypeScript',
+        noSourcesReason: 'the project contains no TypeScript',
         pathFilter: (path) => path.endsWith('.ts'),
       },
     ],

@@ -280,8 +280,8 @@ describe(captureStdio, () => {
 // region | Helpers
 
 /**
- * Pins `isTTY` on a stream for the enclosing scope, putting back the state that the stream had when it exits. A
- * failing assertion disposes the binding on its way out, so the value cannot outlive the test that set it.
+ * Pins `isTTY` on a stream for the enclosing scope, putting back the state that the stream had when it exits. When an
+ * assertion fails, leaving the scope disposes the binding, so the value cannot outlive the test that set it.
  */
 function pinIsTty(stream: NodeJS.WriteStream, value: boolean | undefined): Disposable {
   const hadOwnProperty = Object.hasOwn(stream, 'isTTY');

@@ -71,7 +71,7 @@ describe('The packaging adoption kit', () => {
     });
   });
 
-  it('leaves a walk probing for a repository marker alone out of the report and out of the denominator', async () => {
+  it('leaves a walk probing for a repository marker out of the report and out of the denominator', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/root.ts': MARKER_SEARCH });
     using _cwd = pointCwdAt(tree.dir);
 
@@ -120,7 +120,7 @@ describe('The packaging adoption kit', () => {
     using _cwd = pointCwdAt(tree.dir);
 
     await expect(runSkip((await loadChecks())[0])).resolves.toBe(
-      'the project holds no JavaScript or TypeScript sources outside the exempt paths',
+      'the project contains no JavaScript or TypeScript sources outside the exempt paths',
     );
   });
 });

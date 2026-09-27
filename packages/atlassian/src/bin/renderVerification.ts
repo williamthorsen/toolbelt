@@ -20,7 +20,7 @@ export function renderVerification(report: VerificationReport, columns: BoardCol
   for (const feature of report.features) {
     // A locked feature that does not match is neither ok nor a fault: No call could have changed it.
     const marker = feature.locked && !feature.matches ? 'LOCK' : mark(feature.matches);
-    const suffix = feature.locked && !feature.matches ? ', which Jira has locked and no call can set' : '';
+    const suffix = feature.locked && !feature.matches ? ', which Jira has locked and the API cannot set' : '';
     lines.push(`  ${marker} ${feature.feature} = ${feature.state ?? 'absent'}${suffix}`);
   }
 

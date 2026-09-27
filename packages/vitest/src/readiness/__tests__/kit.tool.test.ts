@@ -152,7 +152,7 @@ describe('The vitest adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/config.ts': SILENCE });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runSkip((await loadChecks())[0])).resolves.toBe('the project holds no test files');
+    await expect(runSkip((await loadChecks())[0])).resolves.toBe('the project contains no test files');
   });
 });
 

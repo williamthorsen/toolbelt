@@ -24,7 +24,7 @@ export default defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
   detect: listSites,
   exportNames: ADOPTED_EXPORTS,
-  noSourcesReason: 'the project holds no test files',
+  noSourcesReason: 'the project contains no test files',
   packageName: PACKAGE_NAME,
   // Only tests are swept: Each of these idioms exists only in a test, so a sweep that skipped tests would report
   // nothing and say so as a pass.

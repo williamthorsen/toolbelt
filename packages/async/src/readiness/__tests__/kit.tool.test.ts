@@ -87,7 +87,7 @@ describe('The async adoption kit', () => {
     using _cwd = pointCwdAt(tree.dir);
 
     await expect(runSkip((await loadChecks())[0])).resolves.toBe(
-      'the project holds no JavaScript or TypeScript sources outside its bootstrap wrappers',
+      'the project contains no JavaScript or TypeScript sources outside its bootstrap wrappers',
     );
   });
 });

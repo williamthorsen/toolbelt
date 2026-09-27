@@ -172,7 +172,7 @@ describe('The testing adoption kit', () => {
     using _cwd = pointCwdAt(tree.dir);
 
     await expect(runSkip((await loadChecks()).get(ERROR_CAPTURE_CHECK))).resolves.toBe(
-      'the project holds no test files',
+      'the project contains no test files',
     );
   });
 });

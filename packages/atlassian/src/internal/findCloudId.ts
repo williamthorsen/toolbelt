@@ -29,7 +29,7 @@ export async function findCloudId(host: string, fetchImpl: typeof globalThis.fet
     });
   }
   if (!response.ok) {
-    throw new Error(`Could not read the cloudId of '${host}'. ${url} answered ${response.status}.`);
+    throw new Error(`Could not read the cloudId of '${host}'. ${url} returned ${response.status}.`);
   }
 
   const payload: unknown = await response.json();

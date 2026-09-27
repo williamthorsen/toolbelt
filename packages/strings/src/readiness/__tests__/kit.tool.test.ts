@@ -29,8 +29,8 @@ const EVERY_IDIOM = {
   'src/label.ts': CAPITALIZE,
   'src/noun.ts': PLURALIZE,
 };
-const SOURCES_REASON = 'the project holds no JavaScript or TypeScript sources outside the exempt paths';
-const WRAPPERS_REASON = 'the project holds no JavaScript or TypeScript sources outside its bootstrap wrappers';
+const SOURCES_REASON = 'the project contains no JavaScript or TypeScript sources outside the exempt paths';
+const WRAPPERS_REASON = 'the project contains no JavaScript or TypeScript sources outside its bootstrap wrappers';
 
 describe('The strings adoption kit', () => {
   it('reports each idiom under its own check, naming where it is', async () => {

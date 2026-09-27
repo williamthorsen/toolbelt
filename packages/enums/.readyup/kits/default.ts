@@ -26,7 +26,7 @@ export default defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
   detect: listMembershipSites,
   exportNames: ADOPTED_EXPORTS,
-  noSourcesReason: 'the project holds no JavaScript or TypeScript sources outside the exempt paths',
+  noSourcesReason: 'the project contains no JavaScript or TypeScript sources outside the exempt paths',
   packageName: PACKAGE_NAME,
   // A test writes these forms deliberately, and a bootstrap wrapper hand-rolls what it checks so that its
   // build-first message survives an incomplete install.

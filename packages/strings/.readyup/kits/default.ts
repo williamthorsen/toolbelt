@@ -23,7 +23,7 @@ export default defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
   detect: listStringIdioms,
   exportNames: ADOPTED_EXPORTS,
-  noSourcesReason: 'the project holds no JavaScript or TypeScript sources outside the exempt paths',
+  noSourcesReason: 'the project contains no JavaScript or TypeScript sources outside the exempt paths',
   packageName: PACKAGE_NAME,
   // A test writes a capitalization or a pluralization deliberately, and a bootstrap wrapper's hand-rolled string
   // handling keeps its build-first message alive through an incomplete install.
@@ -50,7 +50,7 @@ export default defineAdoptionKit({
       severity: 'recommend',
       fix: `Replace each array named above with a dedent template from ${PACKAGE_NAME}, writing one line of the template for each element, starting on the line after the opening backtick and indented with the surrounding code. A trailing empty element becomes a blank line before the closing backtick. An element holding an escaped line break takes a real one, since dedent rejects an escaped line terminator, and an interpolated value must be a string, number, bigint, or boolean. Reference: ${README_URL}`,
       // A test's fixtures are where most multi-line text is written.
-      noSourcesReason: 'the project holds no JavaScript or TypeScript sources outside its bootstrap wrappers',
+      noSourcesReason: 'the project contains no JavaScript or TypeScript sources outside its bootstrap wrappers',
       pathFilter: isAdoptableSourceOrTest,
     },
     {
@@ -59,7 +59,7 @@ export default defineAdoptionKit({
       kinds: ['layout-breaking-template'],
       severity: 'recommend',
       fix: `Tag each template named above with dedent from ${PACKAGE_NAME}, start its text on the line after the opening backtick, and indent the text with the surrounding code, keeping each line's depth relative to the others. Text that starts or ends with a line break takes a blank line after the opening backtick or before the closing one, since dedent drops the line break at each end. dedent throws when text follows the opening backtick on its own line or when the text contains an escaped line terminator, and accepts an interpolated value only when it is a string, number, bigint, or boolean. Reference: ${README_URL}`,
-      noSourcesReason: 'the project holds no JavaScript or TypeScript sources outside its bootstrap wrappers',
+      noSourcesReason: 'the project contains no JavaScript or TypeScript sources outside its bootstrap wrappers',
       pathFilter: isAdoptableSourceOrTest,
     },
   ],

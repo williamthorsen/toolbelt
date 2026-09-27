@@ -105,7 +105,7 @@ findBranchTicketRef('232_add-widget');
 // { id: '232', number: 232 }
 ```
 
-A ref must begin a segment. `/` and `_` both delimit one, so an author prefix and a worktree-safe spelling parse alike, and the leftmost segment with a ref wins. Anchoring to a segment keeps a kebab-case description from being parsed as a ticket: `feat/add-widget-2` encodes none, because `widget` follows a hyphen rather than a separator.
+A ref must begin a segment. `/` and `_` both delimit one, so an author prefix and a worktree-safe spelling parse alike, and the leftmost segment with a ref is taken. Anchoring to a segment keeps a kebab-case description from being parsed as a ticket: `feat/add-widget-2` encodes none, because `widget` follows a hyphen rather than a separator.
 
 Two forms are recognized, each taking an optional `.N` revisit suffix. A **keyed** ref is a Jira-style key and number, the key matching Jira's own rule of a letter followed by letters and digits. A **bare-numeric** ref is the number alone. `id` and `key` are emitted uppercased, since a branch name may be lowercase but the ticket that it names is `MAC-22`.
 

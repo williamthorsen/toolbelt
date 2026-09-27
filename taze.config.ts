@@ -8,7 +8,8 @@ export default defineConfig({
    */
   // maturityPeriod: 7; // in days
 
-  // Hold packages that must track a particular version line, so that an upgrade pass never moves them to a new major version.
+  // Hold packages that must track a particular version line, so that an upgrade pass never moves them to a new
+  // major version.
   packageMode: {
     // Disallow major upgrades until the pinned Node.js version is changed; engines is set to >=24.
     '@types/node': 'minor',

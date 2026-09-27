@@ -23,7 +23,7 @@ export default defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
   detect: listSites,
   exportNames: ADOPTED_EXPORTS,
-  noSourcesReason: 'the project holds no test files',
+  noSourcesReason: 'the project contains no test files',
   packageName: PACKAGE_NAME,
   // Only tests are swept: These idioms appear only in a test, so a sweep exempting tests would report nothing and
   // say so as a pass. No hand-off rule is needed against the two kits whose sweeps could overlap this one:
