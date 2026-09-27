@@ -39,7 +39,7 @@ describe(listObjectIdioms, () => {
     expect(listObjectIdioms(source)).toStrictEqual([]);
   });
 
-  it('reports every idiom held by a single line', () => {
+  it('reports every idiom on a single line', () => {
     const source =
       "const ok = Object.prototype.hasOwnProperty.call(v, k) && typeof v.x === 'object' && v.x !== null;\n";
 
@@ -49,7 +49,7 @@ describe(listObjectIdioms, () => {
     ]);
   });
 
-  it('finds nothing in a source holding none of the idioms', () => {
+  it('finds nothing in a source containing none of the idioms', () => {
     expect(listObjectIdioms('export function identity(value) {\n  return value;\n}\n')).toStrictEqual([]);
   });
 });

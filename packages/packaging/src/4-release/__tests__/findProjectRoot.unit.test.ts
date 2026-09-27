@@ -62,7 +62,7 @@ describe(findProjectRoot, () => {
     expect(result).toStrictEqual({ marker: 'deno.json', rootDir: tree.dir, source: 'marker' });
   });
 
-  it('if no marker is found, falls back to the nearest directory holding a package.json', () => {
+  it('if no marker is found, falls back to the nearest directory containing a package.json', () => {
     using tree = createTempTree({ 'app/package.json': '', 'app/src/': '', 'package.json': '' });
 
     const result = findProjectRoot(tree.resolve('app/src'));

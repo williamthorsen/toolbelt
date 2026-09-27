@@ -4,7 +4,7 @@ import { runSecurity } from '../internal/runSecurity.ts';
 import type { WritableSecretStore } from './SecretStore.ts';
 
 /**
- * Opens a macOS keychain as a secret store, or the default search list where no keychain is named. Throws off
+ * Opens a macOS keychain as a secret store, or the default search list when no keychain is named. Throws off
  * macOS.
  *
  * @category Secrets

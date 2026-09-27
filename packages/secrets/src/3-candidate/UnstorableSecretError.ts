@@ -1,6 +1,7 @@
 /**
- * The error for a value that cannot reach `security` intact. It is distinct from a failure to reach the keychain,
- * since nothing was attempted: The caller gave a secret, service, or account that no command line can contain.
+ * The error for a value that cannot be passed to `security` intact. It is distinct from a failure to reach the
+ * keychain, since nothing was attempted: The caller gave a secret, service, or account that the command line cannot
+ * contain.
  *
  * @category Secrets
  * @experimental

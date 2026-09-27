@@ -36,7 +36,7 @@ const PROBE_BY_RESOLVE = [
   '',
 ].join('\n');
 
-// A project-root walk that accepts a manifest where no repository marker is found first.
+// A project-root walk that accepts a manifest when no repository marker is found first.
 const PROBE_BESIDE_MARKER = [
   'export function findRoot(startDir) {',
   '  let dir = startDir;',

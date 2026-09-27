@@ -83,7 +83,7 @@ describe(isPlainObject, () => {
     });
 
     // The prototype-whose-prototype-is-null clause admits an arbitrary object, so the symbol lookups must
-    // reach the whole chain rather than own properties alone.
+    // walk the whole chain rather than own properties alone.
     it('returns false when either symbol is inherited from a null-prototype prototype', () => {
       const taggedProto: object = Object.assign(Object.create(null), { [Symbol.toStringTag]: 'Tagged' });
       const iterableProto: object = Object.assign(Object.create(null), { [Symbol.iterator]: () => [].values() });

@@ -3,7 +3,7 @@ import { describe, expect, expectTypeOf, it } from 'vitest';
 import { createKeychainStore } from '../createKeychainStore.ts';
 import type { WritableSecretStore } from '../SecretStore.ts';
 
-// Construction reaches `process.platform` alone, but it throws off macOS, where the type assertions below are
+// Construction reads `process.platform` alone, but it throws off macOS, where the type assertions below are
 // still checked.
 describe.skipIf(process.platform !== 'darwin')(createKeychainStore, () => {
   it('opens the default search list as a store that writes', () => {

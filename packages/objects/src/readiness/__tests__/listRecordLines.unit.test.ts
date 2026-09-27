@@ -43,7 +43,7 @@ describe(listRecordLines, () => {
     expect(listLines(source)).toStrictEqual([2]);
   });
 
-  // The idiom is still an exact substitution where an earlier operand precedes it.
+  // The idiom is still an exact substitution when an earlier operand precedes it.
   it('claims the idiom as the tail of a longer conjunction', () => {
     expect(listLines("const ok = ready && typeof value === 'object' && value !== null;\n")).toStrictEqual([1]);
   });

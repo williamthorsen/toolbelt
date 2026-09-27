@@ -3,7 +3,7 @@
  *
  * `hasOwnProperty` names a method that every object has, and adoption is counted by matching a call name in
  * a file that imports the package, so a call on the value itself would count as adoption. It is listed anyway:
- * eslint's recommended `no-prototype-builtins` reports that form, and holding the name out would leave the
+ * eslint's recommended `no-prototype-builtins` reports that form, and omitting the name would leave the
  * check that recommends this function unable to register any progress at all.
  *
  * @internal

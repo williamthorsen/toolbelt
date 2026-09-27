@@ -7,9 +7,9 @@ import { resolveOwningManifest } from '../internal/resolveOwningManifest.ts';
  * The owning package is the nearest ancestor whose `package.json` declares a `name`, so a marker manifest --
  * the `{"type": "commonjs"}` file left in `dist/` by a dual-format build -- is passed over rather than
  * returned. Pass `import.meta.url`: A module's own URL is the only input that resolves correctly from both a
- * source tree and a compiled one, where the two sit at different depths.
+ * source tree and a compiled one, even though the two are at different depths.
  *
- * A module belonging to no package is an error rather than a fallback, so the return is a bare directory.
+ * Because a module belonging to no package is an error rather than a fallback, the return is a bare directory.
  *
  * @example
  * findPackageRoot(import.meta.url); // '/home/dev/my-app/node_modules/some-package'

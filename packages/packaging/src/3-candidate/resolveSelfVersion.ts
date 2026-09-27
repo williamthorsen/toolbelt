@@ -4,7 +4,7 @@ import { resolveOwningManifest } from '../internal/resolveOwningManifest.ts';
  * Returns the version declared by the package that owns the module at `fromUrl`.
  *
  * Pass `import.meta.url`, which reports the same version from a source tree and a compiled one even though
- * the two sit at different depths. A manifest declaring a `name` but no string `version` raises rather than
+ * the two are at different depths. A manifest declaring a `name` but no string `version` raises rather than
  * letting the ascent continue, so a versionless package never reports an ancestor's version as its own.
  *
  * @example
