@@ -39,7 +39,7 @@ Exit codes:
 
 const DELETE_HELP = `Usage: tb-secret delete <service> [options]
 
-Remove a secret, exiting 1 where none is stored.
+Remove a secret, exiting 1 when none is stored.
 
 Options:
   -h, --help             Print this help
@@ -48,7 +48,7 @@ Options:
 
 const GET_HELP = `Usage: tb-secret get <service> [options]
 
-Print a secret, exiting 1 where none is stored.
+Print a secret, exiting 1 when none is stored.
 
 Options:
   -h, --help             Print this help
@@ -57,7 +57,7 @@ Options:
 
 const HAS_HELP = `Usage: tb-secret has <service> [options]
 
-Exit 0 where a secret is stored and 1 where none is, printing nothing either way. The secret itself is never
+Exit 0 when a secret is stored and 1 when none is, printing nothing either way. The secret itself is never
 read, so this raises no keychain access prompt.
 
 Options:
@@ -67,11 +67,11 @@ Options:
 
 const SET_HELP = `Usage: tb-secret set <service> [options]
 
-Store a secret, replacing one already held under the same service and account.
+Store a secret, replacing one already stored under the same service and account.
 
 At a terminal the secret is prompted for twice and echoed nowhere; piped, it is read from stdin and one
-trailing newline is dropped, since \`echo\` adds one. Either way it reaches \`security\` inside a command that
-travels on stdin, so it never enters an argument vector that any local process could read.
+trailing newline is dropped, since \`echo\` adds one. Either way it is passed to \`security\` inside a command
+sent on stdin, so it never enters an argument vector that any local process could read.
 
 The stored secret is read back and compared before this command reports success. Replacing an item that
 another program created can therefore raise a keychain access prompt, since verifying the write reads the
@@ -129,8 +129,9 @@ function buildQuery(positionals: string[], account: string | undefined): SecretQ
 }
 
 /**
- * Runs a keychain operation, reporting what it threw as a failure to reach the keychain. A value that the
- * keychain cannot store passes through unwrapped, since nothing was reached: It is a usage error like any other.
+ * Runs a keychain operation, reporting what it threw as a failure to reach the keychain. The error for a value
+ * that the keychain cannot store passes through unwrapped, since nothing was reached: It is a usage error like any
+ * other.
  */
 function callKeystore<T>(operation: () => T): T {
   try {
@@ -147,7 +148,7 @@ function describeError(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-/** Routes the arguments to a subcommand, or handles the root command's own options. */
+/** Passes the arguments to a subcommand, or handles the root command's own options. */
 async function dispatch(args: string[], effects: TbSecretEffects): Promise<TbSecretResult> {
   const [command, ...rest] = args;
 

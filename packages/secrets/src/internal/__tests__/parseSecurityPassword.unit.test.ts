@@ -30,7 +30,7 @@ describe(parseSecurityPassword, () => {
     expect(parse('password: "610962"')).toBe('610962');
   });
 
-  it('throws where the output contains no password line', () => {
+  it('throws when the output contains no password line', () => {
     expect(() =>
       parseSecurityPassword('security: SecKeychainSearchCopyNext: The specified item could not be found'),
     ).toThrow(/No password line/);
@@ -40,7 +40,7 @@ describe(parseSecurityPassword, () => {
     expect(() => parse('password: 0x61096  "a"')).toThrow(/Malformed hexadecimal password/);
   });
 
-  it('throws where the hex run is not valid UTF-8', () => {
+  it('throws when the hex run is not valid UTF-8', () => {
     expect(() => parse(String.raw`password: 0xFF  "\377"`)).toThrow(/not valid for encoding utf-8/);
   });
 

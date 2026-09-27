@@ -6,7 +6,7 @@ const QUOTE = '"';
 
 /**
  * Extracts the secret from what `security find-generic-password -g` writes to stderr. That command prints the
- * secret in whichever of two forms fits: raw between quotes where every byte is printable ASCII, and
+ * secret in whichever of two forms fits: raw between quotes when every byte is printable ASCII, and
  * `0x<hex>  "<escaped>"` otherwise. Only the hex form is unambiguous, so the quoted form is read verbatim and
  * a value that fits neither throws, since a wrong secret is worse than a failure.
  *
@@ -35,7 +35,7 @@ function decodeHexForm(value: string): string {
 /**
  * Reads the quoted form, taking everything between the outer quotes. `security` prints the hex form for any
  * byte outside printable ASCII, a backslash included, so the text between those quotes is the secret itself
- * even where it holds a quote of its own.
+ * even when it contains a quote of its own.
  */
 function readQuotedForm(value: string): string {
   const end = value.lastIndexOf(QUOTE);

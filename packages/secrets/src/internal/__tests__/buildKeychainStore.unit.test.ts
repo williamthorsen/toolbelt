@@ -23,7 +23,7 @@ describe(buildKeychainStore, () => {
       ]);
     });
 
-    it('passes the empty account where the query names none', () => {
+    it('passes the empty account when the query names none', () => {
       const spy = createRunnerSpy({ stderr: 'password: "s3cret"\n' });
 
       buildKeychainStore(spy.run).findSecret({ service: 'token' });
@@ -45,13 +45,13 @@ describe(buildKeychainStore, () => {
       expect(buildKeychainStore(spy.run).findSecret(QUERY)).toBe('a\tb');
     });
 
-    it('returns undefined where no item is stored', () => {
+    it('returns undefined when no item is stored', () => {
       const spy = createRunnerSpy({ exitCode: 44, stderr: 'security: SecKeychainSearchCopyNext: not found\n' });
 
       expect(buildKeychainStore(spy.run).findSecret(QUERY)).toBeUndefined();
     });
 
-    it('throws where the keystore could not be reached, which is not absence', () => {
+    it('throws when the keystore could not be reached, which is not absence', () => {
       const spy = createRunnerSpy({
         exitCode: 36,
         stderr: 'security: SecKeychainUnlock: User interaction is not allowed.\n',
@@ -75,7 +75,7 @@ describe(buildKeychainStore, () => {
       ]);
     });
 
-    it('returns false where no item is stored', () => {
+    it('returns false when no item is stored', () => {
       const spy = createRunnerSpy({ exitCode: 44 });
 
       expect(buildKeychainStore(spy.run).hasSecret(QUERY)).toBe(false);
@@ -97,7 +97,7 @@ describe(buildKeychainStore, () => {
       ]);
     });
 
-    it('returns false where no item was there to remove', () => {
+    it('returns false when no item was there to remove', () => {
       const spy = createRunnerSpy({ exitCode: 44 });
 
       expect(buildKeychainStore(spy.run).deleteSecret(QUERY)).toBe(false);
@@ -121,7 +121,7 @@ describe(buildKeychainStore, () => {
       expect(spy.calls[0]?.input).toBe(`${SET_LINE} "${KEYCHAIN}"\n`);
     });
 
-    it('reads the secret back, so a cut one fails at the write', () => {
+    it('reads the secret back, so that a truncated one fails at the write', () => {
       const spy = createWriteSpy('s3cret');
 
       buildKeychainStore(spy.run).setSecret(QUERY, 's3cret');
@@ -136,7 +136,7 @@ describe(buildKeychainStore, () => {
       ]);
     });
 
-    it('throws where the stored secret differs from the one written', () => {
+    it('throws when the stored secret differs from the one written', () => {
       const spy = createWriteSpy('s3cr');
 
       expect(() => buildKeychainStore(spy.run).setSecret(QUERY, 's3cret')).toThrow(
@@ -144,13 +144,13 @@ describe(buildKeychainStore, () => {
       );
     });
 
-    it('throws where nothing was stored at all', () => {
+    it('throws when nothing was stored at all', () => {
       const spy = createWriteSpy('s3cret', {}, { exitCode: 44 });
 
       expect(() => buildKeychainStore(spy.run).setSecret(QUERY, 's3cret')).toThrow(/nothing was stored/);
     });
 
-    it('reports a verification that could not run, so a landed write is not read as a failed one', () => {
+    it('reports a verification that could not run, so that a caller does not read a completed write as a failed one', () => {
       const spy = createWriteSpy(
         's3cret',
         {},
@@ -196,7 +196,7 @@ describe(buildKeychainStore, () => {
       expect(spy.calls[0]?.input).toBe('add-generic-password -U -a "" -s "token" -X 610a62\n');
     });
 
-    it('throws what `security` reported where the write failed', () => {
+    it('throws what `security` reported when the write failed', () => {
       const spy = createWriteSpy('s3cret', {
         exitCode: 45,
         stderr: 'security: SecKeychainItemCreateFromContent: duplicate\n',

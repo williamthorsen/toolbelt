@@ -35,7 +35,7 @@ describe(runTbSecret, () => {
       expect(result.stdout).toBe('elsewhere\n');
     });
 
-    it('exits 1 printing nothing where no secret is stored', async () => {
+    it('exits 1 printing nothing when no secret is stored', async () => {
       await expect(runTbSecret(['get', 'token'], createHarness().effects)).resolves.toStrictEqual({
         exitCode: 1,
         stderr: '',
@@ -45,7 +45,7 @@ describe(runTbSecret, () => {
   });
 
   describe('has', () => {
-    it('exits 0 printing nothing where a secret is stored', async () => {
+    it('exits 0 printing nothing when a secret is stored', async () => {
       const harness = createHarness({ stored: { 'default||token': 's3cret' } });
 
       await expect(runTbSecret(['has', 'token'], harness.effects)).resolves.toStrictEqual({
@@ -55,7 +55,7 @@ describe(runTbSecret, () => {
       });
     });
 
-    it('exits 1 where none is', async () => {
+    it('exits 1 when none is', async () => {
       expect((await runTbSecret(['has', 'token'], createHarness().effects)).exitCode).toBe(1);
     });
   });
@@ -68,7 +68,7 @@ describe(runTbSecret, () => {
       expect(harness.secrets.has('default||token')).toBe(false);
     });
 
-    it('exits 1 where none was there to remove', async () => {
+    it('exits 1 when none was there to remove', async () => {
       expect((await runTbSecret(['delete', 'token'], createHarness().effects)).exitCode).toBe(1);
     });
   });
@@ -93,7 +93,7 @@ describe(runTbSecret, () => {
       expect(harness.secrets.get('default|me@example.com|token')).toBe('s3cret');
     });
 
-    it('stores a secret that contains a line break, which the keychain holds faithfully', async () => {
+    it('stores a secret that contains a line break, which the keychain stores faithfully', async () => {
       const harness = createHarness({ stdin: 'first\nsecond' });
 
       expect((await runTbSecret(['set', 'token'], harness.effects)).exitCode).toBe(0);
@@ -159,7 +159,7 @@ describe(runTbSecret, () => {
       expect(result.stderr).toMatch(message);
     });
 
-    it('points at the subcommand’s own help where one was named', async () => {
+    it('points at the subcommand’s own help when one was named', async () => {
       const result = await runTbSecret(['get'], createHarness().effects);
 
       expect(result.stderr).toMatch(/Try `tb-secret get --help`\./);
@@ -186,7 +186,7 @@ describe(runTbSecret, () => {
     });
   });
 
-  it('exits 3 where the keychain could not be reached, which is not an absent secret', async () => {
+  it('exits 3 when the keychain could not be reached, which is not an absent secret', async () => {
     const harness = createHarness({ failure: 'A keychain store needs macOS. This platform is linux.' });
 
     const result = await runTbSecret(['get', 'token'], harness.effects);
@@ -199,8 +199,8 @@ describe(runTbSecret, () => {
 // region | Helpers
 
 /**
- * Builds effects over a map of secrets keyed by keychain, account, and service, so that a command's reach is read
- * back from which key it touched.
+ * Builds effects over a map of secrets keyed by keychain, account, and service, so that a test reads back which key a
+ * command touched.
  */
 function createHarness(options: HarnessOptions = {}): Harness {
   const { failure, promptAnswer = '', promptFailure, stdin = '', stored = {}, tty = false } = options;
@@ -237,7 +237,7 @@ function createHarness(options: HarnessOptions = {}): Harness {
   };
 }
 
-/** Renders the key under which one item is held, which a wrong keychain or account fails to match. */
+/** Renders the key under which one item is stored, which a wrong keychain or account fails to match. */
 function buildKey({ account = '', service }: SecretQuery, keychain: string | undefined): string {
   return `${keychain ?? 'default'}|${account}|${service}`;
 }
@@ -245,7 +245,7 @@ function buildKey({ account = '', service }: SecretQuery, keychain: string | und
 interface Harness {
   effects: TbSecretEffects;
   secrets: Map<string, string>;
-  /** What the effects recorded, which is how a test sees that a prompt was never reached. */
+  /** What the effects recorded, which is how a test sees that the command never prompted. */
   state: { prompted: boolean };
 }
 
