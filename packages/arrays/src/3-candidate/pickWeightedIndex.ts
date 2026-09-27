@@ -29,6 +29,10 @@ export function pickWeightedIndex(cumulativeWeights: ReadonlyArray<number>, opti
 /**
  * Throws unless the cumulative weights are ascending, non-negative, and non-empty, match `nItems` in number, and
  * end above 0.
+ *
+ * @category Array
+ * @experimental
+ * @stage candidate
  */
 export function assertValidCumulativeWeights(weights: ReadonlyArray<number>, nItems = weights.length): void | never {
   if (weights.length !== nItems) {

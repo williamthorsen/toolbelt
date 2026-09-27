@@ -3,6 +3,10 @@
 
 /**
  * Returns a copy of the object without the keys whose values are null or undefined.
+ *
+ * @category Object
+ * @experimental
+ * @stage candidate
  */
 export function omitNullish<T extends object>(obj: NotArray<T>): NonNullishProperties<T> {
   return Object.keys(obj).reduce((acc, key) => {
@@ -15,6 +19,10 @@ export function omitNullish<T extends object>(obj: NotArray<T>): NonNullishPrope
 
 /**
  * Returns a copy of the object without the keys whose values are undefined.
+ *
+ * @category Object
+ * @experimental
+ * @stage candidate
  */
 export function omitUndefined<T extends object>(obj: NotArray<T>): DefinedProperties<T> {
   return Object.keys(obj).reduce((acc, key) => {

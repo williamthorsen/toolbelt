@@ -1,6 +1,7 @@
 /**
  * Returns true if the value is a scalar type (string, number, bigint, boolean, symbol, undefined, or null).
  *
+ * @category Type Guards
  * @experimental
  * @stage candidate
  *

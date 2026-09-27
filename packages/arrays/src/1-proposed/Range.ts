@@ -1,4 +1,10 @@
-/** An inclusive range of numbers that steps by one from `start` to `end`, ascending or descending. */
+/**
+ * An inclusive range of numbers that steps by one from `start` to `end`, ascending or descending.
+ *
+ * @category Array
+ * @experimental
+ * @stage proposed
+ */
 export class Range {
   readonly ascending: boolean;
 

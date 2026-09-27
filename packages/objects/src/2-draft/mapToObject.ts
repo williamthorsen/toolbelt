@@ -1,5 +1,8 @@
 /**
  * Converts a Map to a plain object.
+ * @category Object
+ * @experimental
+ * @stage draft
  * @param map - The Map to be converted.
  * @returns A plain object with the same key-value pairs as the provided Map.
  */

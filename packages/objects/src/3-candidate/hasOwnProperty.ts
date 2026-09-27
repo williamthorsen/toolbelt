@@ -1,5 +1,9 @@
 /**
  * Returns true if the target has an own property with the key, narrowing the target to a type that has it.
+ *
+ * @category Type Guards
+ * @experimental
+ * @stage candidate
  */
 export function hasOwnProperty<T, K extends PropertyKey>(
   target: T,

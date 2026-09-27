@@ -3,6 +3,10 @@ import { isPlainObject } from '../4-release/is-object.ts';
 /**
  * Returns `typeof value`, except that the "object" type is replaced by the more precise types defined in
  * `preciseObjectTypeOf`.
+ *
+ * @category Object
+ * @experimental
+ * @stage candidate
  */
 export function preciseTypeOf(value: unknown): PreciseType {
   // TODO: Remove the type assertion when TypeScript becomes capable of correctly narrowing the type
@@ -13,6 +17,9 @@ export function preciseTypeOf(value: unknown): PreciseType {
 /**
  * Classifies a value whose `typeof` is "object" as "null", "array", "plainobject", or "instance".
  *
+ * @category Object
+ * @experimental
+ * @stage candidate
  * @todo Consider subtyping instances, such as Date and Promise.
  */
 export function preciseObjectTypeOf(value: object | null): ObjectSubtype {

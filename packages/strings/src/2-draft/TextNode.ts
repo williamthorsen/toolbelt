@@ -223,7 +223,13 @@ class TokenNode extends TextNode {
   }
 }
 
-/** A delimited set of alternatives, one of which is chosen when the text is picked. */
+/**
+ * A delimited set of alternatives, one of which is chosen when the text is picked.
+ *
+ * @category String
+ * @experimental
+ * @stage draft
+ */
 export class VariantNode extends TextNode {
   variants: (TextNode | string)[] = [];
 

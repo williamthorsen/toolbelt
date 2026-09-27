@@ -2,6 +2,10 @@ import { isNullish } from '@williamthorsen/toolbelt.guards';
 
 /**
  * Returns a comparator that applies `nullishCompare` with the given comparison function and options.
+ *
+ * @category Array
+ * @experimental
+ * @stage candidate
  */
 export function makeNullishCompare<T>(compare: (a: T, b: T) => number, options: Options = {}): NullishComparer<T> {
   return function compareWithNullishHandling(a: T | null | undefined, b: T | null | undefined): number {

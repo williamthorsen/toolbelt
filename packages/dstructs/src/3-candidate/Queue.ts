@@ -2,6 +2,10 @@ type Integer = number;
 
 /**
  * A first-in-first-out queue: Items are added to the tail and removed from the head.
+ *
+ * @category Data Structures
+ * @experimental
+ * @stage candidate
  */
 export class Queue<T> {
   #items: T[] = []; // top of the array = head

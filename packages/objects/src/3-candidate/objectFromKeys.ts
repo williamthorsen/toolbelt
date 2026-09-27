@@ -1,6 +1,10 @@
 /**
  * Returns an object keyed by the given keys, whose values are the given value or the results of calling the given
  * function for each key.
+ *
+ * @category Object
+ * @experimental
+ * @stage candidate
  */
 export function objectFromKeys<K extends string, V>(
   keys: ReadonlyArray<K>,

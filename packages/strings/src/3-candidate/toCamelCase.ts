@@ -3,6 +3,9 @@ import { capitalize } from './capitalize.ts';
 /**
  * Returns the camelCase version of the input string.
  * Spaces, hyphens, and underscores are treated as word boundaries.
+ * @category String
+ * @experimental
+ * @stage candidate
  * @param inputStr - The string to be converted.
  * @returns The input string converted to camelCase.
  */

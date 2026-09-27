@@ -2,6 +2,10 @@ import { TimeUnit } from './TimeUnit.ts';
 
 /**
  * A point in time, together with the format and time unit that control its string representation.
+ *
+ * @category DateTime
+ * @experimental
+ * @stage draft
  */
 export class Timestamp {
   private _format: TimestampFormatEnum;

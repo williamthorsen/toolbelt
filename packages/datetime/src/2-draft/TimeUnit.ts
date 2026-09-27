@@ -3,6 +3,10 @@ import { round } from '@williamthorsen/toolbelt.numbers/candidate';
 /**
  * A unit of time, measured in milliseconds. Because durations are held in milliseconds, the largest
  * exact duration is `Number.MAX_SAFE_INTEGER` milliseconds, a little over 100 million days.
+ *
+ * @category DateTime
+ * @experimental
+ * @stage draft
  */
 export class TimeUnit {
   static readonly Millis = new TimeUnit(1, { singular: 'millisecond', abbrev: 'ms' });

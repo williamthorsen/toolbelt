@@ -4,6 +4,10 @@ import { isPlainObject, type PlainObject } from '../4-release/is-object.ts';
 
 /**
  * Returns a new object whose keys are sorted alphabetically or by a custom comparator function.
+ *
+ * @category Object
+ * @experimental
+ * @stage draft
  */
 export function sortKeys<T extends PlainObject>(
   value: T,
@@ -25,6 +29,9 @@ export function sortKeys<T extends PlainObject>(
  * and plain objects; any other value is returned as is. Makes serialized data structures comparable where their
  * keys may differ in order.
  *
+ * @category Object
+ * @experimental
+ * @stage draft
  * @FIXME Disallow objects with non-string keys.
  */
 export function sortObjectKeys<T>(value: T, compare: CompareKeys = (keyA, keyB) => (keyA < keyB ? -1 : 1)): T {

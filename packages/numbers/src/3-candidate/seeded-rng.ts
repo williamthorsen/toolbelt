@@ -7,6 +7,10 @@ import { scaleInt } from './scale.ts';
 
 /**
  * A pseudo-random number generator that behaves deterministically when given a seed.
+ *
+ * @category Number
+ * @experimental
+ * @stage candidate
  */
 export class SeededRng implements SeededGenerator {
   private _seed = 0; // internally incremented value to provide deterministic behaviour
@@ -149,7 +153,13 @@ export class SeededRng implements SeededGenerator {
   }
 }
 
-/** A `SeededRng` that returns integers in the range [1, Number.MAX_SAFE_INTEGER]. */
+/**
+ * A `SeededRng` that returns integers in the range [1, Number.MAX_SAFE_INTEGER].
+ *
+ * @category Number
+ * @experimental
+ * @stage candidate
+ */
 export class IntSeededRng extends SeededRng {
   /** Returns an integer derived from the current seed. */
   protected override generateValue(): number {
@@ -157,7 +167,13 @@ export class IntSeededRng extends SeededRng {
   }
 }
 
-/** A `SeededRng` that returns integers in the range [1, 2 ** 32 - 1]. */
+/**
+ * A `SeededRng` that returns integers in the range [1, 2 ** 32 - 1].
+ *
+ * @category Number
+ * @experimental
+ * @stage candidate
+ */
 export class Int32SeededRng extends SeededRng {
   /** Returns an integer derived from the current seed. */
   protected override generateValue(): number {

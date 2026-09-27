@@ -3,6 +3,9 @@
  * A decade starts in a year that is a multiple of 10 (e.g., 1990, 2000, etc.).
  * A decade ends 9 years after its start (e.g., 1990-1999, 2000-2009, etc.).
  *
+ * @category DateTime
+ * @experimental
+ * @stage proposed
  * @example
  * Input: [1960, 1992, 1993, 2001]
  * Output: [

@@ -219,7 +219,13 @@ export class Interpolator {
   }
 }
 
-/** Replaces the brace-delimited placeholders in a template with mapped values. */
+/**
+ * Replaces the brace-delimited placeholders in a template with mapped values.
+ *
+ * @category String
+ * @experimental
+ * @stage candidate
+ */
 export function interpolate<T>(
   template: string,
   substitutionMap: StringMapping<T>,
@@ -230,6 +236,10 @@ export function interpolate<T>(
 
 /**
  * Encloses a matcher in braces, so that only delimited placeholders are matched.
+ *
+ * @category String
+ * @experimental
+ * @stage candidate
  */
 export function createDelimitedMatcher(matcher: RegExp | string, options: DelimitedMatcherOptions = {}): RegExp {
   const { caseInsensitive } = options;
