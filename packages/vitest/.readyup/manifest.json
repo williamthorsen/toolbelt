@@ -9,17 +9,17 @@
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
-          "hash": "1dc83619",
+          "hash": "86735fbf",
           "kind": "module",
           "path": "../../adoption/src/conventions/path-predicates.ts"
         },
         {
-          "hash": "0237a871",
+          "hash": "a32695b8",
           "kind": "module",
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "8fb83c2d",
+          "hash": "56a9ea12",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -34,12 +34,12 @@
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
         {
-          "hash": "0661f0dd",
+          "hash": "6be867bd",
           "kind": "module",
           "path": "../../adoption/src/portable/listDirectoryAscents.ts"
         },
         {
-          "hash": "07c8358f",
+          "hash": "6b5375f1",
           "kind": "module",
           "path": "../../adoption/src/portable/listFunctionBodies.ts"
         },
@@ -64,7 +64,7 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "74ba9db4",
+          "hash": "ea897b9c",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -89,12 +89,12 @@
           "path": "../src/readiness/listConsoleSites.ts"
         },
         {
-          "hash": "77e24d74",
+          "hash": "1947ed8d",
           "kind": "module",
           "path": "../src/readiness/listDisposalHooks.ts"
         },
         {
-          "hash": "313d73b3",
+          "hash": "854eb7b6",
           "kind": "module",
           "path": "../src/readiness/listExitMocks.ts"
         },
@@ -108,8 +108,8 @@
       "path": "kits/default.js",
       "readyupVersion": "0.38.0",
       "source": "kits/default.ts",
-      "sourceHash": "74ba9db4",
-      "targetHash": "1c4d569b"
+      "sourceHash": "ea897b9c",
+      "targetHash": "cd7c3a1f"
     }
   ]
 }

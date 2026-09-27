@@ -9,17 +9,17 @@
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
-          "hash": "1dc83619",
+          "hash": "86735fbf",
           "kind": "module",
           "path": "../../adoption/src/conventions/path-predicates.ts"
         },
         {
-          "hash": "0237a871",
+          "hash": "a32695b8",
           "kind": "module",
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "8fb83c2d",
+          "hash": "56a9ea12",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -34,12 +34,12 @@
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
         {
-          "hash": "0661f0dd",
+          "hash": "6be867bd",
           "kind": "module",
           "path": "../../adoption/src/portable/listDirectoryAscents.ts"
         },
         {
-          "hash": "07c8358f",
+          "hash": "6b5375f1",
           "kind": "module",
           "path": "../../adoption/src/portable/listFunctionBodies.ts"
         },
@@ -74,7 +74,7 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "8d1c6bc2",
+          "hash": "0341ff54",
           "kind": "module",
           "path": "../src/readiness/listCapitalizeLines.ts"
         },
@@ -94,7 +94,7 @@
           "path": "../src/readiness/listPluralizeLines.ts"
         },
         {
-          "hash": "f54a0430",
+          "hash": "f81f2c34",
           "kind": "module",
           "path": "../src/readiness/listStringIdioms.ts"
         }
