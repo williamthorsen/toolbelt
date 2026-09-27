@@ -8,7 +8,7 @@ import { resolveSelfVersion } from './resolveSelfVersion.ts';
 import { runPnpmVersion } from './runPnpmVersion.ts';
 import { runTbNode } from './runTbNode.ts';
 
-// A reader that exits first closes the pipe, which node surfaces as an error event rather than the quiet
+// A reader that exits first closes the pipe, which node emits as an error event rather than the quiet
 // termination that SIGPIPE would give.
 for (const stream of [process.stdout, process.stderr]) {
   stream.on('error', (error: NodeJS.ErrnoException) => {

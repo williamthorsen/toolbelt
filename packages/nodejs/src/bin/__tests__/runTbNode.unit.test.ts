@@ -100,7 +100,7 @@ describe(runTbNode, () => {
       );
     });
 
-    it('installs corepack first where the active version lacks it, which a stranded corepack shim shows', () => {
+    it('installs corepack first when the active version lacks it, which a stranded corepack shim shows', () => {
       const corepack = { ...NO_PROVIDER, backingPackage: 'corepack', name: 'corepack' };
       const yarn = { ...NO_PROVIDER, backingPackage: 'corepack', name: 'yarn' };
 
@@ -132,7 +132,7 @@ describe(runTbNode, () => {
       );
     });
 
-    it('removes the executable itself where no package backs the shim, and offers no provide step', () => {
+    it('removes the executable itself when no package backs the shim, and offers no provide step', () => {
       const shim = { ...NO_PROVIDER, backingPackage: undefined, name: 'tool' };
 
       expect(run([shim], []).stdout).toBe(
@@ -178,7 +178,7 @@ describe(runTbNode, () => {
     });
 
     it.each(['/opt/homebrew/bin/node', `${DATA_DIR}/installs/python/3.13.1/bin/node`])(
-      'exits 3 with the reason on stderr where node is not an asdf nodejs install: %s',
+      'exits 3 with the reason on stderr when node is not an asdf nodejs install: %s',
       (execPath) => {
         expect(runTbNode(['asdf-shims'], { ...buildEffects([], []), execPath })).toStrictEqual({
           exitCode: 3,
@@ -237,7 +237,7 @@ describe(runTbNode, () => {
       );
     });
 
-    it('adds the entry to the pinned directory where none selects the plugin', () => {
+    it('adds the entry to the pinned directory when none selects the plugin', () => {
       const provider = { ...PLUGIN_PROVIDER, toolVersions: undefined };
 
       expect(runPnpm({ provider, result: { version: '9.0.0' } }).stdout).toContain(
@@ -319,7 +319,7 @@ describe(runTbNode, () => {
       );
     });
 
-    it('does not run pnpm where it is absent, and exits 1', () => {
+    it('does not run pnpm when it is absent, and exits 1', () => {
       let ran = false;
       const effects: TbNodeEffects = {
         ...buildPnpmEffects({ provider: { kind: 'absent' } }),
@@ -333,7 +333,7 @@ describe(runTbNode, () => {
       expect(ran).toBe(false);
     });
 
-    it('exits 3 with the provider alone where no pin is in reach', () => {
+    it('exits 3 with the provider alone when no pin is in reach', () => {
       expect(runPnpm({ pin: undefined })).toStrictEqual({
         exitCode: 3,
         stderr: 'No package.json declaring packageManager at or above /repo/packages/lib; nothing to check.\n',
@@ -344,7 +344,7 @@ describe(runTbNode, () => {
     it.each([
       ['yarn@4.0.0', 'packageManager in /repo/package.json is yarn, not pnpm; nothing to check.'],
       ['pnpm', 'packageManager pnpm in /repo/package.json is not <name>@<version>; nothing to check.'],
-    ])('exits 3 where the pin does not name a pnpm version: %s', (spec, reason) => {
+    ])('exits 3 when the pin does not name a pnpm version: %s', (spec, reason) => {
       expect(runPnpm({ pin: { ...PIN, spec } })).toMatchObject({ exitCode: 3, stderr: `${reason}\n` });
     });
 

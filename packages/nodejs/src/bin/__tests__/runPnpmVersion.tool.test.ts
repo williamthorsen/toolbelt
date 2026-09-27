@@ -12,7 +12,7 @@ describe(runPnpmVersion, () => {
 
   it('takes the last non-empty line of stdout, run in the given directory', () => {
     using tree = createTempTree({ 'repo/.keep': '' });
-    // The script prints its working directory last, so the version reports where it ran.
+    // The script prints its working directory last, so the returned version names the directory in which it ran.
     installFakePnpm(tree, 'echo "switching to the pinned version"\necho\npwd\n');
 
     expect(runPnpmVersion(tree.resolve('repo'))).toStrictEqual({ version: tree.resolve('repo') });
@@ -32,7 +32,7 @@ describe(runPnpmVersion, () => {
     expect(runPnpmVersion(tree.dir)).toStrictEqual({ failure: 'no output' });
   });
 
-  it('reports the spawn error where no pnpm is on PATH', () => {
+  it('reports the spawn error when no pnpm is on PATH', () => {
     using tree = createTempTree({ 'empty/.keep': '' });
     vi.stubEnv('PATH', tree.resolve('empty'));
 

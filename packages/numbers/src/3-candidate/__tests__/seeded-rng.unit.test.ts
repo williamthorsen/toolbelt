@@ -246,7 +246,7 @@ describe(SeededRng, () => {
       const rng1 = new SeededRng(1_234);
       const rng2 = new SeededRng(1_234);
 
-      // Gets a value from rng1, changing its next value relative to rng2.
+      // Get a value from rng1, changing its next value relative to rng2.
       const generate1 = rng1.rng;
       generate1();
 

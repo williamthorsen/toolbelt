@@ -31,7 +31,7 @@ export function runPnpmVersion(dir: string): PnpmVersionResult {
 
 // region | Helpers
 
-/** Finds the last non-empty line of a stream's output, trimmed, or `undefined` where it wrote none. */
+/** Finds the last non-empty line of a stream's output, trimmed, or `undefined` when it wrote none. */
 function findLastLine(output: string): string | undefined {
   return output
     .split('\n')
