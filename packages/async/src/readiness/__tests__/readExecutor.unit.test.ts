@@ -17,7 +17,7 @@ describe(readExecutor, () => {
     });
   });
 
-  it('strips the braces of a block body, so a concise arrow and a braced one read alike', () => {
+  it('strips the braces of a block body, so that a concise arrow and a braced one read alike', () => {
     expect(readExecutor('(resolve) => { settle(resolve); }')?.body).toBe(' settle(resolve); ');
   });
 
@@ -36,11 +36,11 @@ describe(readExecutor, () => {
     expect(readExecutor('(resolve: () => void) => settle(resolve)')?.parameter).toBe('resolve');
   });
 
-  it('reads the first parameter alone, a second being none of its business', () => {
+  it('reads the first parameter alone, ignoring a second', () => {
     expect(readExecutor('(resolve, reject) => settle(resolve)')?.parameter).toBe('resolve');
   });
 
-  it('reports an empty parameter where the function takes none', () => {
+  it('reports an empty parameter when the function takes none', () => {
     expect(readExecutor('() => settle()')).toStrictEqual({ body: 'settle()', parameter: '' });
   });
 

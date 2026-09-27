@@ -20,8 +20,8 @@ const CLAIMED = [
   'await new Promise((resolve) => setTimeout(resolve, Math.min(50, cap)));',
 ];
 
-// Code that legitimately holds the anchor and is no sleep. Each line is declined for a reason of its own, and
-// reporting any of them would send a consumer to a substitution that does not hold.
+// Code that legitimately contains the anchor and is no sleep. Each line is declined for a reason of its own, and
+// reporting any of them would recommend to a consumer a substitution that does not hold.
 const DECLINED = [
   'await new Promise((resolve) => { timeoutId = setTimeout(resolve, 50); handle = timeoutId; });',
   'await new Promise((resolve) => { report(); setTimeout(resolve, 50); });',
@@ -50,7 +50,7 @@ describe(listSleepSites, () => {
     expect(claimed).toStrictEqual([]);
   });
 
-  it('names the line that holds the construction', () => {
+  it('names the line that contains the construction', () => {
     const source = ['const before = 1;', '', 'await new Promise((resolve) => setTimeout(resolve, 50));'].join('\n');
 
     expect(listSleepSites(source)).toStrictEqual([{ kind: 'hand-rolled-sleep', line: 3 }]);
