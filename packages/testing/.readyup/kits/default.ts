@@ -25,11 +25,10 @@ export default defineAdoptionKit({
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: 'the project holds no test files',
   packageName: PACKAGE_NAME,
-  // The selection follows `toolbelt.vitest` rather than the source-oriented kits: these idioms live only in a
-  // test, so a sweep exempting tests would report nothing and say so as a pass. No hand-off rule is needed
-  // against the two kits whose sweeps could meet this one: `toolbelt.errors` exempts tests altogether, and
-  // `toolbelt.vitest` claims no try block and anchors `vi.spyOn` on `console` and `process.exit`, never on a
-  // stream.
+  // Only tests are swept: These idioms live only in a test, so a sweep exempting tests would report nothing and
+  // say so as a pass. No hand-off rule is needed against the two kits whose sweeps could meet this one:
+  // `toolbelt.errors` exempts tests altogether, and `toolbelt.vitest` claims no try block and anchors `vi.spyOn`
+  // on `console` and `process.exit`, never on a stream.
   pathFilter: isTestFile,
   checks: [
     {

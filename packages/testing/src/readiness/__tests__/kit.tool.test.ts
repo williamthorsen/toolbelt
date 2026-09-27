@@ -78,9 +78,9 @@ describe('The testing adoption kit', () => {
     });
   });
 
-  // The inverse of the departure that `toolbelt.async` makes. The test file beside it keeps the check running,
-  // so a widened filter reports the capture here rather than leaving the check skipped: Outside a test, a
-  // try/catch of this shape is error handling rather than an unadopted capture.
+  // The test file beside it keeps the check running, so a widened filter reports the capture here rather than
+  // leaving the check skipped: Outside a test, a try/catch of this shape is error handling rather than an
+  // unadopted capture.
   it('leaves a source that is no test alone', async () => {
     using tree = createTrackedRepo({
       'package.json': MANIFEST,

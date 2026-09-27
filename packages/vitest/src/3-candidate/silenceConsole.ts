@@ -51,7 +51,7 @@ function silenceMethod(method: ConsoleMethod): MockInstance {
   return vi.spyOn(console, method).mockImplementation(() => {});
 }
 
-/** Type-preserving wrapper around `Object.fromEntries`. */
+/** Builds a record from entries, restoring the key type that `Object.fromEntries` widens to `string`. */
 function toTypedRecord<K extends string, V>(entries: Array<[K, V]>): Record<K, V> {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Object.fromEntries widens keys to string; the assertion restores them.
   return Object.fromEntries(entries) as Record<K, V>;
