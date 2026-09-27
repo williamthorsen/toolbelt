@@ -14,7 +14,7 @@ const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.obje
 const OWN_PROPERTY = 'export const has = Object.prototype.hasOwnProperty.call(target, key);\n';
 const RECORD = "export const ok = typeof value === 'object' && value !== null && !Array.isArray(value);\n";
 const STRINGIFY = 'export const same = JSON.stringify(a) === JSON.stringify(b);\n';
-// The package's own `isRecord`, holding the idiom that its check recommends replacing.
+// The package's own `isRecord`, containing the idiom that its check recommends replacing.
 const OWN_RECORD =
   "export function isRecord(value) {\n  return typeof value === 'object' && value !== null && !Array.isArray(value);\n}\n";
 // A narrowing guard declined by the record check, and a serialization declined by the stringify check.
@@ -83,7 +83,7 @@ describe('The objects adoption kit', () => {
     });
   });
 
-  it('skips every check where the sweep matches no source', async () => {
+  it('skips every check when the sweep matches no source', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/guard.unit.test.ts': RECORD });
     using _cwd = pointCwdAt(tree.dir);
 
@@ -96,9 +96,9 @@ describe('The objects adoption kit', () => {
 // region | Helpers
 
 /**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist holds in declaration order.
+ * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
  *
- * A kit holds its project sweep on its own closure, so with one import every test here would see the first
+ * A kit keeps its project sweep in its own closure, so with one import every test here would see the first
  * fixture repo's findings. Resetting the registry gives each test a kit that has swept nothing yet.
  */
 async function loadChecks(): Promise<readonly RdyCheck[]> {

@@ -4,7 +4,7 @@ const SITE_VARIABLE = 'JIRA_SITE';
 
 /**
  * Resolves the Jira site from which the gateway base URL is derived, from a supplied value, then the environment,
- * then the fallback. Throws where every source misses.
+ * then the fallback. Throws when every source misses.
  *
  * @category Jira
  * @experimental
@@ -23,7 +23,7 @@ export function resolveJiraSite(options: JiraSiteOptions = {}): string {
 
 export interface JiraSiteOptions {
   readonly env?: Record<string, string | undefined> | undefined;
-  /** The last source, read only where the two above miss. A project spec's `site` reaches the chain here. */
+  /** The last source, read only when the two above miss. A caller passes a project spec's `site` here. */
   readonly fallback?: string | undefined;
   /** Takes precedence over every other source, so a caller that read one from its own surface passes it here. */
   readonly site?: string | undefined;

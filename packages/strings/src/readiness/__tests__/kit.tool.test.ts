@@ -12,7 +12,7 @@ import { describe, expect, it, vi } from 'vitest';
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.strings', version: '1.0.0' });
 const CAPITALIZE = 'export const label = word.charAt(0).toUpperCase() + word.slice(1);\n';
-// The package's own `capitalize`, holding the idiom that its check recommends replacing.
+// The package's own `capitalize`, containing the idiom that its check recommends replacing.
 const OWN_CAPITALIZE =
   'export function capitalize(input) {\n  return input.charAt(0).toUpperCase() + input.slice(1);\n}\n';
 const PLURALIZE = "export const noun = count === 1 ? 'item' : 'items';\n";
@@ -58,7 +58,7 @@ describe('The strings adoption kit', () => {
     );
   });
 
-  it('reads tests for the dedent checks alone, so a capitalization in a test enters no fraction', async () => {
+  it('reads tests for the dedent checks alone, leaving a capitalization in a test out of every fraction', async () => {
     using tree = createTrackedRepo({
       'package.json': MANIFEST,
       'src/__tests__/label.unit.test.ts': CAPITALIZE,
@@ -105,7 +105,7 @@ describe('The strings adoption kit', () => {
     });
   });
 
-  it('skips the capitalize and pluralize checks where the project holds only tests', async () => {
+  it('skips the capitalize and pluralize checks when the project contains only tests', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/label.unit.test.ts': CAPITALIZE });
     using _cwd = pointCwdAt(tree.dir);
 
@@ -119,7 +119,7 @@ describe('The strings adoption kit', () => {
     ]);
   });
 
-  it('skips every check where the project holds only bootstrap wrappers', async () => {
+  it('skips every check when the project contains only bootstrap wrappers', async () => {
     using tree = createTrackedRepo({ 'bin/tool.js': JOINED_ARRAY, 'package.json': MANIFEST });
     using _cwd = pointCwdAt(tree.dir);
 
@@ -137,10 +137,10 @@ describe('The strings adoption kit', () => {
 // region | Helpers
 
 /**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist holds in declaration order.
+ * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
  *
- * A kit holds its project sweep on its own closure, so one import would give every test here the first
- * fixture repo's findings. Resetting the registry buys each test a kit that has swept nothing yet.
+ * A kit keeps its project sweep in its own closure, so one import would give every test here the first
+ * fixture repo's findings. Resetting the registry gives each test a kit that has swept nothing yet.
  */
 async function loadChecks(): Promise<readonly RdyCheck[]> {
   vi.resetModules();

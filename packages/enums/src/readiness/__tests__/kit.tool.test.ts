@@ -106,7 +106,7 @@ describe('The enums adoption kit', () => {
     await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
   });
 
-  it('skips the check where the sweep matches no source', async () => {
+  it('skips the check when the sweep matches no source', async () => {
     using tree = createTrackedRepo({
       'bin/run.js': DIRECT,
       'package.json': MANIFEST,
@@ -123,9 +123,9 @@ describe('The enums adoption kit', () => {
 // region | Helpers
 
 /**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist holds in declaration order.
+ * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
  *
- * A kit holds its project sweep on its own closure, so one import would give every test here the first
+ * A kit keeps its project sweep in its own closure, so one import would give every test here the first
  * fixture repo's findings. Resetting the registry leaves each test with a kit that has swept nothing yet.
  */
 async function loadChecks(): Promise<readonly RdyCheck[]> {

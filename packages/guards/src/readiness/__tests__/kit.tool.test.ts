@@ -26,7 +26,7 @@ const NULLISH_ASSERTION = [
 ].join('\n');
 const PREDICATE = ['export function isText(value) {', "  return typeof value === 'string';", '}', ''].join('\n');
 const NUMBER_GUARD = ['export function isNum(value) {', "  return typeof value === 'number';", '}', ''].join('\n');
-// The package's own assert, holding the idiom that the first check reports.
+// The package's own assert, containing the idiom that the first check reports.
 const OWN_ASSERT = [
   'export function assert(condition, message) {',
   '  if (condition) return;',
@@ -56,7 +56,7 @@ describe('The guards adoption kit', () => {
 
     const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
 
-    // `no-assertion-clone` takes both assertion kinds, so its row holds two sites.
+    // `no-assertion-clone` takes both assertion kinds, so its row contains two sites.
     expect(outcomes.map(listReportedFindings)).toStrictEqual([
       [
         { line: 1, path: 'src/assertion.ts', reported: true, symbol: 'check' },
@@ -67,7 +67,7 @@ describe('The guards adoption kit', () => {
     ]);
   });
 
-  it('spans all four sites in the denominator, so the checks share one fraction', async () => {
+  it('spans all four sites in the one denominator that the checks share', async () => {
     using tree = createTrackedRepo(EVERY_IDIOM);
     using _cwd = pointCwdAt(tree.dir);
 
@@ -119,7 +119,7 @@ describe('The guards adoption kit', () => {
     await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
   });
 
-  it('skips every check where the sweep matches no source', async () => {
+  it('skips every check when the sweep matches no source', async () => {
     using tree = createTrackedRepo({
       'bin/run.js': ASSERTION,
       'package.json': MANIFEST,
@@ -136,9 +136,9 @@ describe('The guards adoption kit', () => {
 // region | Helpers
 
 /**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist holds in declaration order.
+ * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
  *
- * A kit holds its project sweep on its own closure, so one import would give every test here the first
+ * A kit keeps its project sweep in its own closure, so one import would give every test here the first
  * fixture repo's findings. Resetting the registry leaves each test with a kit that has swept nothing yet.
  */
 async function loadChecks(): Promise<readonly RdyCheck[]> {

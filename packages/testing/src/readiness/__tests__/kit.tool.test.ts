@@ -145,7 +145,7 @@ describe('The testing adoption kit', () => {
     });
   });
 
-  it('reports each capture a single test file holds', async () => {
+  it('reports each capture in a single test file', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/config.unit.test.ts': CAPTURE + CAPTURE });
     using _cwd = pointCwdAt(tree.dir);
 
@@ -155,8 +155,8 @@ describe('The testing adoption kit', () => {
     ]);
   });
 
-  // The own-implementation exemption reaches a declaration exported under an adopted name, and this kit sweeps
-  // no file that could hold one, the package declaring `captureError` outside its tests. So the repository
+  // The own-implementation exemption applies to a declaration exported under an adopted name, and this kit
+  // sweeps no file that could contain one, the package declaring `captureError` outside its tests. So the repository
   // publishing the utility is reported like any other consumer, which is why its own suite shows findings.
   it('reports a capture in the publishing repository, which declares the utility elsewhere', async () => {
     using tree = createTrackedRepo({ 'package.json': PUBLISHER_MANIFEST, 'src/config.unit.test.ts': CAPTURE });
@@ -167,7 +167,7 @@ describe('The testing adoption kit', () => {
     ]);
   });
 
-  it('skips the check where the sweep matches no source', async () => {
+  it('skips the check when the sweep matches no source', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/config.ts': CAPTURE });
     using _cwd = pointCwdAt(tree.dir);
 
@@ -182,7 +182,7 @@ describe('The testing adoption kit', () => {
 /**
  * Loads a fresh kit and maps each of its adoption checks by id.
  *
- * A kit holds its project sweep on its own closure, so one import would give every test here the first
+ * A kit keeps its project sweep in its own closure, so one import would give every test here the first
  * fixture repo's findings. Resetting the registry leaves each test with a kit that has swept nothing yet.
  */
 async function loadChecks(): Promise<Map<string, RdyCheck>> {

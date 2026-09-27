@@ -46,8 +46,8 @@ const CHAIN_PROBE = [
   '}',
   '',
 ].join('\n');
-// A walk that `toolbelt.packaging` claims, which this kit declines rather than reporting under a kind that no
-// check here could close.
+// A walk that `toolbelt.packaging` claims, which this kit declines rather than reporting under a kind that the
+// checks here could not close.
 const MANIFEST_PROBE = [
   'export function findRoot(startDir) {',
   '  let dir = startDir;',
@@ -115,7 +115,7 @@ describe('The filesystem adoption kit', () => {
     ]);
   });
 
-  it('spans all three sites in the denominator, so the checks share one fraction', async () => {
+  it('spans all three sites in the one denominator that the checks share', async () => {
     using tree = createTrackedRepo(EVERY_IDIOM);
     using _cwd = pointCwdAt(tree.dir);
 
@@ -179,7 +179,7 @@ describe('The filesystem adoption kit', () => {
     expect(outcomes).toStrictEqual(Array.from({ length: 2 }, () => ({ adoptedCount: 1, findings: [] })));
   });
 
-  it('skips every check where the sweep matches no source', async () => {
+  it('skips every check when the sweep matches no source', async () => {
     using tree = createTrackedRepo({
       'bin/run.js': CHAIN_PROBE,
       'package.json': MANIFEST,
@@ -196,9 +196,9 @@ describe('The filesystem adoption kit', () => {
 // region | Helpers
 
 /**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist holds in declaration order.
+ * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
  *
- * A kit holds its project sweep on its own closure, so one import would give every test here the first
+ * A kit keeps its project sweep in its own closure, so one import would give every test here the first
  * fixture repo's findings. Resetting the registry leaves each test with a kit that has swept nothing yet.
  */
 async function loadChecks(): Promise<readonly RdyCheck[]> {

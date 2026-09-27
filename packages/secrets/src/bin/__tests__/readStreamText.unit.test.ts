@@ -9,7 +9,7 @@ describe(readStreamText, () => {
     await expect(readStreamText(buildStream(['first ', 'second']))).resolves.toBe('first second');
   });
 
-  it('returns an empty string where the stream contains nothing', async () => {
+  it('returns an empty string when the stream contains nothing', async () => {
     await expect(readStreamText(buildStream([]))).resolves.toBe('');
   });
 
@@ -20,7 +20,7 @@ describe(readStreamText, () => {
 
 // region | Helpers
 
-/** Builds a byte stream, rather than the object-mode stream that `Readable.from` defaults to, as a pipe is. */
+/** Builds a byte stream, rather than the object-mode stream to which `Readable.from` defaults, as a pipe is. */
 function buildStream(chunks: string[]): Readable {
   return Readable.from(chunks, { objectMode: false });
 }

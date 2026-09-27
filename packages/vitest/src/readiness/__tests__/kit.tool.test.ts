@@ -119,7 +119,7 @@ describe('The vitest adoption kit', () => {
     await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 0, findings: [] });
   });
 
-  // The test file beside it keeps the check running, so a narrowed filter reports the silence here rather than
+  // Because the test file beside it keeps the check running, a narrowed filter reports the silence here rather than
   // leaving the check skipped.
   it('leaves a source that is no test alone', async () => {
     using tree = createTrackedRepo({
@@ -135,8 +135,8 @@ describe('The vitest adoption kit', () => {
     });
   });
 
-  // The own-implementation exemption reaches a declaration exported under an adopted name, and this kit sweeps
-  // no file that could hold one: The package declares `silenceConsole` in `src/3-candidate/`, which `isTestFile`
+  // The own-implementation exemption applies to a declaration exported under an adopted name, and this kit sweeps
+  // no file that could contain one: The package declares `silenceConsole` in `src/3-candidate/`, which `isTestFile`
   // never matches. So the repository publishing the utility is reported like any other consumer, which is why
   // its own suite shows findings.
   it('reports a silence in the publishing repository, which declares the utility elsewhere', async () => {
@@ -148,7 +148,7 @@ describe('The vitest adoption kit', () => {
     ]);
   });
 
-  it('skips every check where the sweep matches no source', async () => {
+  it('skips every check when the sweep matches no source', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/config.ts': SILENCE });
     using _cwd = pointCwdAt(tree.dir);
 
@@ -158,15 +158,15 @@ describe('The vitest adoption kit', () => {
 
 // region | Helpers
 
-/** Finds a check by its id, for the assertions that turn on which of the eight checks reported. */
+/** Finds a check by its id, for the assertions that depend on which of the eight checks reported. */
 async function findCheck(id: string): Promise<RdyCheck | undefined> {
   return (await loadChecks()).find((check) => check.id === id);
 }
 
 /**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist holds in declaration order.
+ * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
  *
- * A kit holds its project sweep on its own closure, so one import would give every test here the first
+ * A kit keeps its project sweep in its own closure, so one import would give every test here the first
  * fixture repo's findings. Resetting the registry leaves each test with a kit that has swept nothing yet.
  */
 async function loadChecks(): Promise<readonly RdyCheck[]> {

@@ -4,7 +4,7 @@ import type { BoardFeatureRequest, StatusCategory } from './ProjectSpec.ts';
 /** One board feature whose live state differs from the state requested by the spec. */
 export interface FeatureToggle {
   readonly feature: string;
-  /** The live state, or `undefined` where the board reports no such feature. */
+  /** The live state, or `undefined` when the board reports no such feature. */
   readonly from: string | undefined;
   readonly to: BoardFeatureRequest;
 }
@@ -24,7 +24,7 @@ export interface ReconciliationPlan {
   readonly unmanaged: readonly WorkflowStatus[];
 }
 
-/** A spec status not held by the workflow, and the reference minted for it. */
+/** A spec status absent from the workflow, and the reference generated for it. */
 export interface StatusCreation {
   readonly category: StatusCategory;
   readonly name: string;
