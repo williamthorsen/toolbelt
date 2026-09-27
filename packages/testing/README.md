@@ -35,7 +35,7 @@ it('names every unresolvable import', async () => {
 });
 ```
 
-Naming the class makes the narrowing a type-level fact. `expect(error).toBeInstanceOf(X)` asserts without narrowing, so a test reaching `error.cause` or a custom field on the error needs a separate `assert.ok(error instanceof X)` to get there.
+Naming the class makes the narrowing a type-level fact. `expect(error).toBeInstanceOf(X)` asserts without narrowing, so a test reading `error.cause` or a custom field on the error needs a separate `assert.ok(error instanceof X)` to get there.
 
 The class may be an abstract base, and an error of any subclass satisfies it.
 
@@ -47,11 +47,11 @@ const error = await captureError(() => parseConfig('{'));
 expect(error.message).toContain('Unexpected end of JSON input');
 ```
 
-One form serves synchronous and asynchronous calls: The thunk's return value is awaited, so a thrown error and a rejected promise arrive by the same path. The `await` is required either way.
+One form serves synchronous and asynchronous calls: Because the thunk's return value is awaited, `captureError` receives a thrown error and a rejected promise by the same path. The `await` is required either way.
 
 ### When the call does not fail as expected
 
-Three cases throw instead of returning, each failing the test with a message naming what happened:
+`captureError` throws in three cases instead of returning, each failing the test with a message naming what happened:
 
 | Case                          | Message                                                                               |
 | ----------------------------- | ------------------------------------------------------------------------------------- |
@@ -59,7 +59,7 @@ Three cases throw instead of returning, each failing the test with a message nam
 | It threw a non-`Error`        | `Expected the call to throw Error, but it threw: 'boom'`                              |
 | It threw another class        | `Expected the call to throw KitError, but it threw: TypeError: url is not a function` |
 
-The first names no class: With nothing thrown, nothing was compared against one. The last two set the thrown value as the failure's `cause`, so the real error's stack survives into the report.
+The first names no class: With nothing thrown, nothing was compared against one. In the last two, `captureError` sets the thrown value as the failure's `cause`, so the real error's stack survives into the report.
 
 ## `captureStdio`
 
@@ -95,7 +95,7 @@ await routeCommand(['verify', '--json']);
 expect(stdio.stdoutChunks).toStrictEqual(['{"worstSeverity":null}\n']);
 ```
 
-Each chunk list is a copy, so one read before a `reset()` is not emptied underneath the caller.
+Because each chunk list is a copy, one read before a `reset()` is not emptied underneath the caller.
 
 `reset()` empties both buffers, which lets a single test compare two invocations of one command:
 
@@ -113,7 +113,7 @@ expect(stdio.stdout).not.toBe(first);
 
 ### Capturing console output
 
-A test runner replaces the global console so it can attribute output to the test that produced it. Vitest and Jest both do, which means `console.log` never reaches `process.stdout.write` and a stream capture does not see it. `includeConsole` folds it in:
+A test runner replaces the global console so that it can attribute output to the test that produced it. Vitest and Jest both do, which means `console.log` never calls `process.stdout.write` and a stream capture does not see it. `includeConsole` adds it to the capture:
 
 ```ts
 using stdio = captureStdio({ includeConsole: true });
@@ -125,7 +125,7 @@ expect(stdio.stdout).toContain('[dry-run mode]');
 
 Output is routed as Node routes it: `console.debug`, `console.info`, and `console.log` join stdout, while `console.warn` and `console.error` join stderr. Arguments pass through `node:util`'s `format`, so `console.info('found %d', 3)` buffers as `found 3\n`.
 
-The option is off by default. With it off, console output still reaches the test reporter, which is where it is wanted while diagnosing a failure.
+The option is off by default. With it off, console output still goes to the test reporter, which is where it is wanted while diagnosing a failure.
 
 ### Controlling `isTTY`
 
@@ -139,9 +139,9 @@ await routeCommand(['verify']);
 expect(stdio.stdout).toContain('[PASS] passing');
 ```
 
-Both streams are saved and restored whether or not the option is passed, so the value cannot leak into later tests either way. Restoration puts back the state that it found: A stream that owned no `isTTY` owns none again afterwards, rather than being left holding `undefined`.
+Both streams are saved and restored whether or not the option is passed, so the value cannot leak into later tests either way. Restoration puts back the state that it found: A stream that owned no `isTTY` owns none again afterwards, rather than being left with `undefined`.
 
-Style detection reads the stream to which it writes, so the value is set on both. A test needing them to differ has to assign directly.
+Because style detection reads the stream to which it writes, the value is set on both. A test needing them to differ has to assign directly.
 
 ### Composing with `silenceConsole`
 
@@ -185,22 +185,22 @@ import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
 // The tree is gone here.
 ```
 
-Each key of `entries` is a path relative to the tree root. One ending in `/` becomes a directory; any other becomes a file holding the mapped contents, with its intermediate directories created for it. A key resolving outside the root is rejected, and a call that throws leaves nothing on disk.
+Each key of `entries` is a path relative to the tree root. One ending in `/` becomes a directory; any other becomes a file containing the mapped contents, with its intermediate directories created for it. A key resolving outside the root is rejected, and a call that throws leaves nothing on disk.
 
-A value is text or the bytes themselves, so a body that no UTF-8 round trip survives is as writable as a string:
+A value is text or the bytes themselves, so a body that does not survive a UTF-8 round trip is as writable as a string:
 
 ```ts
 using tree = createTempTree({ 'logo.png': pngBytes });
 ```
 
-`prefix` names the directory built under the system temporary directory, defaulting to `toolbelt-`. Set it to whatever is doing the building, so a tree outliving a crashed run says what made it:
+`prefix` names the directory built under the system temporary directory, defaulting to `toolbelt-`. Set it to whatever is doing the building, so that the name of a tree outliving a crashed run shows what made it:
 
 ```ts
 using tree = createTempTree({}, { prefix: 'rdy-tsconfig-' });
 tree.dir; // '/private/var/folders/.../rdy-tsconfig-a1b2c3'
 ```
 
-A prefix that would place the tree anywhere but directly inside the system temporary directory is rejected before anything is created. `mkdtemp` appends its random suffix to the joined path as given, so a prefix holding `/` or `\` targets a nested directory that has to already exist, or, where it ascends, a directory outside the temporary one; and a prefix that normalizes away (`''`, `'.'`, or `'..'`) lands the suffix beside the temporary directory rather than within it.
+A prefix that would place the tree anywhere but directly inside the system temporary directory is rejected before anything is created. `mkdtemp` appends its random suffix to the joined path as given, so a prefix containing `/` or `\` targets a nested directory that has to already exist, or, when it ascends, a directory outside the temporary one; and a prefix that normalizes away (`''`, `'.'`, or `'..'`) places the suffix beside the temporary directory rather than within it.
 
 ```ts
 interface TempTree extends Disposable {
@@ -222,7 +222,7 @@ interface TempTree extends Disposable {
 
 `dir` is realpath-resolved, because `os.tmpdir()` is a symlink on macOS and a caller comparing paths against it would otherwise see a mismatch that it did not cause.
 
-`resolve` joins `segments` against the root and throws when the result would fall outside it, so a stray `..` fails loudly rather than reaching into the enclosing directory. An absolute segment landing inside the root is returned unchanged. The containment test is lexical, so it does not follow a symlink inside the tree that points out of it.
+`resolve` joins `segments` against the root and throws when the result would fall outside it: A stray `..` fails loudly rather than resolving into the enclosing directory. An absolute segment that falls inside the root is returned unchanged. The containment test is lexical, so it does not follow a symlink inside the tree that points out of it.
 
 `mkdir`, `symlink`, `write`, `writeAll`, and `writeJson` write into the tree after it is built, for a fixture that varies per test or a file created to trigger a re-read:
 
@@ -234,7 +234,7 @@ tree.writeJson('tsconfig.json', { include: ['src'] });
 tree.mkdir('packages/empty');
 ```
 
-Each creates the parent directories that it needs, resolves through the same containment check as `resolve`, and returns the absolute path of what it wrote. `symlink`'s link path is checked; its target is not, being a string held by the link rather than a location to which the tree writes.
+Each creates the parent directories that it needs, resolves through the same containment check as `resolve`, and returns the absolute path of what it wrote. `symlink`'s link path is checked; its target is not, being a string stored in the link rather than a location to which the tree writes.
 
 `writeAll` takes the same map as the constructor, `/`-suffix convention included, so a fixture built in one call can be added to in one call:
 
@@ -244,7 +244,7 @@ tree.writeAll({ 'packages/empty/': '', 'packages/app/src/main.ts': 'export {};\n
 
 It returns nothing, there being no single path to return, and unlike the constructor it is not atomic: A failure part-way leaves the entries already written in place, there being no whole tree to discard.
 
-They part company on an entry that already exists: `write` replaces it, `mkdir` leaves it and its contents alone, and `symlink` raises `EEXIST`.
+They differ on an entry that already exists: `write` replaces it, `mkdir` leaves it and its contents alone, and `symlink` raises `EEXIST`.
 
 `symlink` takes the link first and the target second, inverting `fs.symlinkSync`, so that it reads like the other methods: The path being created leads. The target is stored verbatim, so it may be absolute or relative, name something outside the tree, or dangle until the target appears; a relative one resolves against the link's own directory, as POSIX resolves it. Code under test that reads a link rather than following it therefore sees the string that was passed, on which a consumer hashing a link's target depends.
 
@@ -255,7 +255,7 @@ tree.symlink('node_modules/kit', '../store/kit'); // reads back as '../store/kit
 tree.symlink('node_modules/.bin', tree.resolve('store/kit/bin')); // reads back absolute
 ```
 
-The link type is chosen from the target, which is where the one portability difference lives. An absolute directory target is linked as a junction, which Windows creates without the elevation needed by a directory symlink; a relative directory target is linked as a directory, which needs that elevation, because Node normalizes a junction's target to an absolute path and would discard the relative string. Every other target, one that does not exist included, is linked as a file, matching what Node falls back to when no type is given.
+The link type is chosen from the target, and the one portability difference is in that choice. An absolute directory target is linked as a junction, which Windows creates without the elevation needed by a directory symlink; a relative directory target is linked as a directory, which needs that elevation, because Node normalizes a junction's target to an absolute path and would discard the relative string. Every other target, one that does not exist included, is linked as a file, matching what Node falls back to when no type is given.
 
 `exists`, `list`, `listFiles`, `read`, `readJson`, and `rm` read the tree back and remove from it, each through the same containment check:
 
@@ -271,15 +271,15 @@ tree.exists('packages/app/tsconfig.json'); // false
 tree.rm('packages/app');
 ```
 
-`listFiles` reaches every depth and reports paths relative to the directory given to it, sorted, with `/` as the separator on every platform: A path in a test's assertion is a value rather than a location, so `'app/src/main.ts'` should not vary by platform. It parts from `list` twice. A directory that is not there returns `[]` where `list` raises `ENOENT`, which lets a suite assert that a build emitted nothing without guarding the call; a path that exists as a file still raises `ENOTDIR`, as `list` does. And a symlink below the directory given to it is neither named nor descended, so every path in the result names a file held inside the tree, where `list` reports a link by name at its own level. The directory given as the argument is the exception, followed as `list`, `read`, and `exists` follow theirs: One naming a link out of the tree lists the target's files.
+`listFiles` descends to every depth and reports paths relative to the directory given to it, sorted, with `/` as the separator on every platform: A path in a test's assertion is a value rather than a location, so `'app/src/main.ts'` should not vary by platform. It differs from `list` in two ways. For a directory that is not there, it returns `[]` whereas `list` raises `ENOENT`, which lets a suite assert that a build emitted nothing without guarding the call; a path that exists as a file still raises `ENOTDIR`, as `list` does. And it neither names nor descends a symlink below the directory given to it: Every path in the result names a file inside the tree, whereas `list` reports a link by name at its own level. The directory given as the argument is the exception, followed as `list`, `read`, and `exists` follow theirs: One naming a link out of the tree lists the target's files.
 
-`read` returns UTF-8 text, and a missing entry raises `ENOENT` rather than returning an empty string -- `exists` is the check. `readJson` returns `unknown`, so a caller narrows it rather than trusting an asserted type; contents that do not parse raise an error naming the entry, which the parse error alone does not. `exists` follows a symlink, so it returns `false` for a dangling one. `rm` is recursive and silent on an entry that is not there.
+`read` returns UTF-8 text, and it raises `ENOENT` for a missing entry rather than returning an empty string -- `exists` is the check. `readJson` returns `unknown`, so a caller narrows it rather than trusting an asserted type; for contents that do not parse, it raises an error naming the entry, which the parse error alone does not. Because `exists` follows a symlink, it returns `false` for a dangling one. `rm` is recursive and silent on an entry that is not there.
 
-`writeJson` writes two-space-indented JSON ending in a newline, so a tree outliving a crashed run reads as a real config file would. A fixture needing exact bytes goes through `write` instead. A value that `JSON.stringify` cannot represent -- `undefined`, a function, a symbol -- is refused rather than written, so an optional binding that arrived empty fails at the call that passed it instead of surfacing later as a parse error.
+`writeJson` writes two-space-indented JSON ending in a newline, so that the file in a tree outliving a crashed run looks like a real config file. A fixture needing exact bytes goes through `write` instead. A value that `JSON.stringify` cannot represent -- `undefined`, a function, a symbol -- is refused rather than written, so an optional binding that arrived empty fails at the call that passed it instead of appearing later as a parse error.
 
-Disposal is idempotent, and it removes a tree that has been made unwritable: Unlinking an entry needs write permission on the directory containing it, so disposal restores permission across the tree and retries once before giving up. A suite that chmods a directory to exercise a write-failure path therefore needs no wrapper to chmod it back.
+Disposal is idempotent, and it removes a tree that has been made unwritable: Because unlinking an entry needs write permission on the directory containing it, disposal restores permission across the tree and retries once before giving up. A suite that chmods a directory to exercise a write-failure path therefore needs no wrapper to chmod it back.
 
-`Disposable` is declared in `lib.esnext.disposable.d.ts` alone, so consuming this export requires `ESNext.Disposable` in your `lib`.
+Because `Disposable` is declared in `lib.esnext.disposable.d.ts` alone, a consumer of this export needs `ESNext.Disposable` in its `lib`.
 
 ## `pointArgvAt`
 
@@ -301,7 +301,7 @@ it('pins ESLint to the config named by --config', async () => {
 });
 ```
 
-The caller passes the arguments alone, which `process.argv.slice(2)` reports, and the handle reports them back as `args`, copied so a later mutation of the caller's array does not change the scope. Binding with `using` restores the previous value. Nothing else does, so a scope bound with `const` leaves the arguments installed for the rest of the file.
+The caller passes the arguments alone, which `process.argv.slice(2)` reports, and the handle reports them back as `args`, copied so that a later mutation of the caller's array does not change the scope. Binding with `using` restores the previous value. Nothing else does, so a scope bound with `const` leaves the arguments installed for the rest of the file.
 
 ### The executable and script entries
 
@@ -320,11 +320,11 @@ expect(process.argv[1]).toBe('script');
 using _argv = pointArgvAt(['--help'], { scriptPath: 'strict-lint' });
 ```
 
-The default names no existing file, so code deriving its own directory from `process.argv[1]` needs a real path passed to `scriptPath`.
+Because the default names no existing file, code deriving its own directory from `process.argv[1]` needs a real path passed to `scriptPath`.
 
 ### One mode, not two
 
-`pointCwdAt` offers `chdir` because the OS holds a working directory of its own, which a spawned child inherits and which `process.cwd()` can be made to disagree with. Node offers no counterpart to `chdir` for `process.argv`, so there is one mode here: A spawned child receives whatever arguments its own `spawn` call passes, not the ones installed by the scope.
+`pointCwdAt` offers `chdir` because the OS keeps a working directory of its own, which a spawned child inherits and which `process.cwd()` can be made to disagree with. Because Node offers no counterpart to `chdir` for `process.argv`, there is one mode here: A spawned child receives whatever arguments its own `spawn` call passes, not the ones installed by the scope.
 
 ### What the swap does not reach
 
@@ -379,9 +379,9 @@ using cwd = pointCwdAt(tree.dir, { chdir: true });
 
 A child spawned with no `cwd` option starts in the moved directory under `chdir` and in the test process's own directory under the default.
 
-The split holds inside the process too, on POSIX. A bare relative path handed to `fs` reaches the syscall unchanged, so `fs.readFileSync('config.json')` reads from the real directory under the replacement and from the pointed one under `chdir`. On Windows, Node resolves such a path through `process.cwd()` before the call, so both modes read from the pointed directory. Code resolving through `process.cwd()` first -- `path.resolve`, or `path.join(process.cwd(), …)` -- sees the pointed directory on either platform and in either mode.
+The split holds inside the process too, on POSIX. A bare relative path handed to `fs` is passed to the syscall unchanged, so `fs.readFileSync('config.json')` reads from the real directory under the replacement and from the pointed one under `chdir`. On Windows, both modes read from the pointed directory, because Node resolves such a path through `process.cwd()` before the call. Code resolving through `process.cwd()` first -- `path.resolve`, or `path.join(process.cwd(), …)` -- sees the pointed directory on either platform and in either mode.
 
-`process.chdir` throws `ERR_WORKER_UNSUPPORTED_OPERATION` in a worker thread, so the move needs Vitest's default `pool: 'forks'` and fails under `pool: 'threads'`. The replacement works under either.
+Because `process.chdir` throws `ERR_WORKER_UNSUPPORTED_OPERATION` in a worker thread, the move needs Vitest's default `pool: 'forks'` and fails under `pool: 'threads'`. The replacement works under either.
 
 Neither mode touches `process.env.PWD`, because `process.chdir` does not touch it either. Code reading that variable rather than calling `process.cwd()` sees the shell's directory in both modes.
 
@@ -411,15 +411,15 @@ A spy-based helper cannot offer this: `vi.spyOn` hands back the existing spy for
 
 ## Adoption checks
 
-The package ships a ReadyUp kit, so a project that installs it can ask how far its adoption got:
+The package includes a ReadyUp kit, so a project that installs it can ask how far its adoption got:
 
 ```sh
 rdy run --packages
 ```
 
-The kit reads the project's tracked test files and reports the two idioms for which this package publishes a replacement: a thrown value captured by hand, and the output of `process.stdout` or `process.stderr` captured through a spy. An error capture is named by the variable that it fills, and a stdio spy by its location. Both report at `recommend`, never at `warn` or `error`: A capture written by hand works, and `captureError` or `captureStdio` expresses it better rather than correcting it.
+The kit reads the project's tracked test files and reports the two idioms for which this package publishes a replacement: a thrown value captured by hand, and the output of `process.stdout` or `process.stderr` captured through a spy. An error capture is named by the variable that it fills, and a stdio spy by its location. The kit reports both at `recommend`, never at `warn` or `error`: A capture written by hand works, and `captureError` or `captureStdio` expresses it better rather than correcting it.
 
-Each check prints one fraction, and it measures the kit rather than the check: calls that the project already makes into this package, over those calls plus every site of either idiom that the kit found, less the sites silenced by a pragma for that check. A project holding three stdio spies and no error captures therefore reads `[0 of 3]` against the error-capture check too.
+Each check prints one fraction, and it measures the kit rather than the check: calls that the project already makes into this package, over those calls plus every site of either idiom that the kit found, less the sites silenced by a pragma for that check. A project containing three stdio spies and no error captures therefore reads `[0 of 3]` against the error-capture check too.
 
 | Check id                       | Reports                                                                    | Severity    |
 | ------------------------------ | -------------------------------------------------------------------------- | ----------- |
@@ -428,13 +428,13 @@ Each check prints one fraction, and it measures the kit rather than the check: c
 
 ### What the kit reads
 
-An error capture is claimed only where one import replaces the whole of it. The try block has to be a single call, and the catch block has to assign the caught value to a variable declared outside the try and do nothing else. A catch that logs, rethrows, or branches outlives the substitution, and a try block that keeps a result is doing something `captureError` does not preserve, so neither is reported. A `finally` clause disqualifies a site for the same reason: `captureError` throws where the call completes normally, so the clause would stop running on that path. A site whose test asserts the caught value `toBe` a literal, such as `{ code: 'ENOENT' }` or a `const` holding one, is not reported either: The call threw something other than an `Error`, on which `captureError` fails the test.
+An error capture is claimed only when one import replaces the whole of it. The try block has to be a single call, and the catch block has to assign the caught value to a variable declared outside the try and do nothing else. A catch that logs, rethrows, or branches does work that the substitution would drop, and a try block that keeps a result is doing something `captureError` does not preserve, so neither is reported. A `finally` clause disqualifies a site for the same reason: Because `captureError` throws when the call completes normally, the clause would stop running on that path. A site whose test asserts the caught value `toBe` a literal, such as `{ code: 'ENOENT' }` or a `const` containing one, is not reported either: The call threw something other than an `Error`, on which `captureError` fails the test.
 
-A stdio spy is reported whatever follows it: a mock that silences the stream, one that collects what the stream receives, a return value, or nothing at all. Each spy is its own site, so a file spying on both streams reports two, though one `captureStdio` replaces both. A read of a spy's recorded calls, such as `spy.mock.calls` or `expect(process.stderr.write).toHaveBeenCalledWith(…)`, is not a site: `captureStdio` retires it along with the spy.
+A stdio spy is reported whatever follows it: a mock that silences the stream, one that collects what the stream receives, a return value, or nothing at all. Each spy is its own site, so the kit reports two for a file spying on both streams, though one `captureStdio` replaces both. A read of a spy's recorded calls, such as `spy.mock.calls` or `expect(process.stderr.write).toHaveBeenCalledWith(…)`, is not a site: `captureStdio` replaces it along with the spy.
 
-Not every spy near a stream is read. An assignment to `process.stdout.write` is not, because one that mocks the stream reads the same as one that restores it. A spy on another member, such as `isTTY`, is not, because `captureStdio` would capture that stream's output as well. A spy is read only when its receiver is written `process.stdout` or `process.stderr`, so a spy on a destructured `stdout` is not reported, and neither is `jest.spyOn`.
+Not every spy near a stream is read. An assignment to `process.stdout.write` is not, because one that mocks the stream looks the same as one that restores it. A spy on another member, such as `isTTY`, is not, because `captureStdio` would capture that stream's output as well. A spy is read only when its receiver is written `process.stdout` or `process.stderr`, so a spy on a destructured `stdout` is not reported, and neither is `jest.spyOn`.
 
-Sources that are not test files are exempt. Outside a test, a try/catch of an error capture's shape is error handling rather than an unadopted capture. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well, so committed bundler output yields no advice that anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
+Sources that are not test files are exempt. Outside a test, a try/catch of an error capture's shape is error handling rather than an unadopted capture. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: Committed bundler output yields no advice that anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
 
 ### Silencing a reviewed site
 

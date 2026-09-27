@@ -14,7 +14,7 @@ pnpm add @williamthorsen/toolbelt.packaging
 
 ## Runtime requirements
 
-Every export reaches the filesystem through `node:` builtins, so they run under Node.js 24 or later, Bun, and Deno. They do not run in browsers, nor in edge runtimes that expose no filesystem.
+Every export accesses the filesystem through `node:` builtins, so they run under Node.js 24 or later, Bun, and Deno. They do not run in browsers, nor in edge runtimes that expose no filesystem.
 
 ## `findProjectRoot`
 
@@ -53,12 +53,12 @@ Each marker is a path relative to the level against which it is probed, on the t
 
 When no directory up to and including the filesystem root contains a marker, the result falls back in this order, reporting a `null` marker either way:
 
-1. the nearest ancestor holding a `package.json`, reported as `source: 'package-json'`;
+1. the nearest ancestor containing a `package.json`, reported as `source: 'package-json'`;
 2. `startDir` itself, reported as `source: 'start-dir'`.
 
 The ascent terminates at the filesystem root on every platform, so a Windows drive root or UNC share is as safe a starting point as a POSIX path.
 
-A project root is not a package root: This answers "which checkout am I in", where [`findPackageRoot`](#findpackageroot) answers "which package declares me". A monorepo has one project root and many package roots.
+A project root is not a package root: This answers "which checkout am I in", whereas [`findPackageRoot`](#findpackageroot) answers "which package declares me". A monorepo has one project root and many package roots.
 
 ## `findPackageRoot`
 
@@ -68,7 +68,7 @@ Candidate tier: Imported from `@williamthorsen/toolbelt.packaging/candidate` rat
 findPackageRoot(fromUrl: string): string;
 ```
 
-Returns the directory of the package that owns a module, which is where assets shipped alongside that package resolve from.
+Returns the directory of the package that owns a module, which is where assets published with that package resolve from.
 
 ```ts
 import path from 'node:path';
@@ -78,7 +78,7 @@ import { findPackageRoot } from '@williamthorsen/toolbelt.packaging/candidate';
 const templatesDir = path.join(findPackageRoot(import.meta.url), 'templates');
 ```
 
-Pass `import.meta.url`. A module's own URL is the only input that resolves correctly from both a source tree and a compiled one, because the two sit at different depths and no fixed number of `..` hops suits both.
+Pass `import.meta.url`. A module's own URL is the only input that resolves correctly from both a source tree and a compiled one, because the two are at different depths and no fixed number of `..` hops suits both.
 
 The owning package is the nearest ancestor whose `package.json` declares a `name`. That rule distinguishes this from `findPackageJSON` in `node:module`, which answers the different question of which manifest _governs_ a file:
 
@@ -87,9 +87,9 @@ The owning package is the nearest ancestor whose `package.json` declares a `name
 { "type": "commonjs" }
 ```
 
-A dual-format build leaves that file so the runtime parses `dist/cjs/` as CommonJS. `findPackageJSON` stops there and reports it; `findPackageRoot` passes over it and keeps ascending to the manifest that declares the package's identity.
+A dual-format build leaves that file so that the runtime parses `dist/cjs/` as CommonJS. `findPackageJSON` stops there and reports it; `findPackageRoot` passes over it and keeps ascending to the manifest that declares the package's identity.
 
-A module belonging to no named package throws, rather than falling back to a directory that merely looks plausible, which is why the return is a bare string with no evidence to interpret. A manifest that is unreadable as JSON, or that parses to something other than an object, throws by name rather than being skipped: Corruption is a defect, not an absence.
+The function throws for a module belonging to no named package, rather than falling back to a directory that merely looks plausible, which is why the return is a bare string with no evidence to interpret. It throws on a manifest that is unreadable as JSON, or that parses to something other than an object, naming the manifest rather than skipping it: Corruption is a defect, not an absence.
 
 ## `resolveSelfVersion`
 
@@ -107,13 +107,13 @@ import { resolveSelfVersion } from '@williamthorsen/toolbelt.packaging/candidate
 console.log(`my-cli ${resolveSelfVersion(import.meta.url)}`);
 ```
 
-Ownership is resolved exactly as [`findPackageRoot`](#findpackageroot) resolves it, so a marker manifest is passed over here too. Without that, a dual-format build would read its version as `undefined` rather than raising, since the marker manifest declares none.
+Ownership is resolved exactly as [`findPackageRoot`](#findpackageroot) resolves it, so a marker manifest is passed over here too. Without that, the function would read a dual-format build's version as `undefined` rather than raising, since the marker manifest declares none.
 
-A manifest that declares a `name` but no string `version` throws, naming the manifest. The ascent does not continue past it, so a versionless package never reports an ancestor's version as its own.
+The function throws on a manifest that declares a `name` but no string `version`, naming the manifest. Because the ascent does not continue past it, the function never reports an ancestor's version as a versionless package's own.
 
 ## Adoption checks
 
-The package ships a ReadyUp kit, so a project that installs it can ask how far its adoption got:
+The package includes a ReadyUp kit, so a project that installs it can ask how far its adoption got:
 
 ```sh
 rdy run --packages
@@ -121,13 +121,13 @@ rdy run --packages
 
 The kit reads the project's tracked sources and reports one idiom, counted against the calls that the project already makes into this package. It reports at `recommend`: A hand-rolled search is correct code that a published function expresses better, not a defect.
 
-`no-hand-rolled-manifest-search` reports a loop that ascends by `dirname` and probes each level for `package.json`, naming the line on which the loop opens. The scan reads which names a loop probes, but not where the loop starts or what it does with the manifest, so the fix text sets out the choice by purpose. The package that owns the running module takes [`findPackageRoot`](#findpackageroot), or [`resolveSelfVersion`](#resolveselfversion) where the loop goes on to read the manifest's version; both pass over a manifest that declares no name. The project that holds a directory takes [`findProjectRoot`](#findprojectroot), which prefers `.git` and lockfiles to a manifest and so returns the repository root in a monorepo. The nearest manifest, whatever it declares, takes `findDirectoryChainMatch` from `@williamthorsen/toolbelt.filesystem`.
+`no-hand-rolled-manifest-search` reports a loop that ascends by `dirname` and probes each level for `package.json`, naming the line on which the loop opens. The scan reads which names a loop probes, but not where the loop starts or what it does with the manifest, so the fix text sets out the choice by purpose. The package that owns the running module takes [`findPackageRoot`](#findpackageroot), or [`resolveSelfVersion`](#resolveselfversion) when the loop goes on to read the manifest's version; both pass over a manifest that declares no name. The project that contains a directory takes [`findProjectRoot`](#findprojectroot), which prefers `.git` and lockfiles to a manifest, returning the repository root in a monorepo. The nearest manifest, whatever it declares, takes `findDirectoryChainMatch` from `@williamthorsen/toolbelt.filesystem`.
 
 Every other walk up the directory chain belongs to [`@williamthorsen/toolbelt.filesystem`](https://github.com/williamthorsen/toolbelt/tree/main/packages/filesystem#adoption-checks), whose own kit reports it: a loop probing for root markers alone, such as `.git`; a loop probing for a manifest below the level, such as `node_modules/x/package.json`; and a loop that probes nothing. Reporting one here as well would show one loop twice under conflicting advice. A read of `package.json` outside any loop, and a loop over the directories listed by `listDirectoryChain`, ascend nothing by hand, and neither kit reports them.
 
-The detector under-matches by design. A recursive walk-up function is no loop, an ascent written as `path.resolve(dir, '..')` carries a different anchor, and a loop whose body is a single unbraced statement goes unread, and neither kit reports any of the three. A probe for `package.json` made through a helper, through a constant imported from another module, or through a binding declared outside the loop names no manifest that the scan can read, and neither does a path holding another binding past the level, as `${dir}/${name}/package.json` does. `toolbelt.filesystem` reports each loop probing in one of these ways as a walk instead.
+The detector under-matches by design. A recursive walk-up function is no loop, an ascent written as `path.resolve(dir, '..')` has a different anchor, and a loop whose body is a single unbraced statement goes unread, and neither kit reports any of the three. A probe for `package.json` made through a helper, through a constant imported from another module, or through a binding declared outside the loop names no manifest that the scan can read, and neither does a path containing another binding past the level, as `${dir}/${name}/package.json` does. `toolbelt.filesystem` reports each loop probing in one of these ways as a walk instead.
 
-Bootstrap wrappers under `bin/` are exempt: Such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they write this walk deliberately. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: The sweep drops it before the kit sees it, so committed bundler output yields no advice that anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
+Bootstrap wrappers under `bin/` are exempt: Such a wrapper imports only builtins so that its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they write this walk deliberately. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: The sweep drops it before the kit sees it, so committed bundler output yields no advice that anyone could act on. Because the sweep is readyup's, this holds on readyup 0.35.0 or later.
 
 A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
 
