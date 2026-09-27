@@ -7,7 +7,7 @@ const FILE_NAME = '.tool-versions';
  * Finds the `.tool-versions` entry that selects a plugin's version, in asdf's order: the nearest file at or above
  * `startDir` with a line naming the plugin, then the one in `homeDir`, which is read once even when the ascent
  * passes through it. A line is `<plugin> <version>…` after a `#` comment is dropped; the first version is taken and
- * any fallback after it ignored. Returns `undefined` where no file in reach names the plugin. Neither an
+ * any fallback after it ignored. Returns `undefined` when no file in reach names the plugin. Neither an
  * `ASDF_<PLUGIN>_VERSION` variable nor a legacy version file is consulted.
  *
  * @category asdf
@@ -39,7 +39,7 @@ export interface FindToolVersionsEntryOptions {
   readonly startDir: string;
 }
 
-/** A `.tool-versions` line that selects a plugin's version, and the file holding it. */
+/** A `.tool-versions` line that selects a plugin's version, and the file containing it. */
 export interface ToolVersionsEntry {
   readonly filePath: string;
   readonly version: string;
@@ -60,7 +60,7 @@ function listAncestors(startDir: string): string[] {
   }
 }
 
-/** Reads the plugin's entry out of one file, or `undefined` where the file is absent or names no version for it. */
+/** Reads the plugin's entry out of one file, or `undefined` when the file is absent or names no version for it. */
 function readEntry(filePath: string, plugin: string): ToolVersionsEntry | undefined {
   let contents: string;
   try {

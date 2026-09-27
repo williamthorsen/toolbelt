@@ -9,7 +9,7 @@ const ACTIVE = '24.20.0';
 const OLD = '24.18.1';
 
 describe(listStrandedAsdfShims, () => {
-  it('reports a shim that no other PATH directory provides, naming its backing package', () => {
+  it('reports a shim without another provider on PATH, naming its backing package', () => {
     using tree = createTempTree({ 'shims/pn': renderShim('pn', ['nodejs 24.18.1']) });
     linkBin(tree, OLD, 'pn', '../lib/node_modules/pnpm/bin/pnpm.mjs');
 
@@ -104,7 +104,7 @@ describe(listStrandedAsdfShims, () => {
     ]);
   });
 
-  it('yields nothing where the shims directory is absent', () => {
+  it('yields nothing when the shims directory is absent', () => {
     using tree = createTempTree({});
 
     expect(listStrandedAsdfShims(buildOptions(tree))).toStrictEqual([]);

@@ -29,7 +29,7 @@ describe(findPackageManagerPin, () => {
     expect(findPackageManagerPin(tree.resolve('packages/lib/src'))?.manifestPath).toBe(tree.resolve('package.json'));
   });
 
-  it('returns undefined where no manifest in reach declares a pin', () => {
+  it('returns undefined when no manifest in reach declares a pin', () => {
     using tree = createTempTree({ 'package.json': renderManifest({ name: 'unpinned' }) });
 
     expect(findPackageManagerPin(tree.dir)).toBeUndefined();

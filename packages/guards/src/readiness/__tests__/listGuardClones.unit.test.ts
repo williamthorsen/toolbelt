@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { listGuardClones } from '../listGuardClones.ts';
 
 // Every fixture is a joined literal, which blanking erases before the detector reads this file. A fixture
-// written as live code would put the package's own suite on its own report.
+// written as live code would appear in the package's own report.
 const ASSERT_CLONE = [
   'function assert(condition, message) {',
   '  if (!condition) {',
@@ -98,7 +98,7 @@ describe(listGuardClones, () => {
     expect(summarize(NULLISH_CLONE)).toStrictEqual([{ kind: 'nullish-clone', line: 1, symbol: 'isMissing' }]);
   });
 
-  // The package's own `assert`, verbatim but for its type annotations: the likeliest clone in the wild is a
+  // The package's own `assert`, verbatim but for its type annotations: The likeliest clone in other code is a
   // copy of it, and its extra guard on the error argument must not take it out of the class.
   it('reports a copy of this package’s own assert', () => {
     const source = [
@@ -118,7 +118,7 @@ describe(listGuardClones, () => {
     expect(summarize(source)).toStrictEqual([{ kind: 'assert-clone', line: 1, symbol: 'assert' }]);
   });
 
-  // The two kinds that narrow to a caller-named type: neither can be written without a type parameter, so a
+  // The two kinds that narrow to a caller-named type: Neither can be written without a type parameter, so a
   // head that admits none leaves both unreachable in the only spelling that they have.
   it('reports a generic presence guard and a generic presence assertion', () => {
     const guard = [
@@ -140,14 +140,14 @@ describe(listGuardClones, () => {
     ]);
   });
 
-  it('names the line that the function head holds', () => {
+  it('names the line that contains the function head', () => {
     expect(summarize(['const x = 1;', '', STRING_CLONE].join('\n'))).toStrictEqual([
       { kind: 'string-clone', line: 3, symbol: 'isText' },
     ]);
   });
 
-  // The rules that hold the kit to functions that an import retires. Each of these is working code that no export
-  // of this package could replace.
+  // The rules that limit the kit to functions that an import replaces. Each of these is working code that the
+  // exports of this package could not replace.
   it('declines a guard that tests the result of a call', () => {
     const source = [
       'function assertIsUser(value) {',
@@ -188,7 +188,7 @@ describe(listGuardClones, () => {
     expect(summarize(source)).toStrictEqual([]);
   });
 
-  it('declines a predicate whose body holds more than the comparison', () => {
+  it('declines a predicate whose body contains more than the comparison', () => {
     const source = [
       'function isText(value) {',
       '  const tag = typeof value;',
@@ -224,8 +224,8 @@ describe(listGuardClones, () => {
     expect(summarize(source)).toStrictEqual([]);
   });
 
-  // Blanking replaces a template literal's characters with spaces, so a body holding a large one becomes a long
-  // whitespace run. The test fails by timing out where the body pattern backtracks over it.
+  // Blanking replaces a template literal's characters with spaces, so a body containing a large one becomes a long
+  // whitespace run. The test fails by timing out when the body pattern backtracks over it.
   it('returns promptly on a body that blanking turns into a long whitespace run', () => {
     const source = ['function render(value) {', '  return `' + 'x'.repeat(40_000) + '`;', '}', ''].join('\n');
 

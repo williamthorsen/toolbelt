@@ -1,7 +1,7 @@
 /**
  * Parses a `packageManager` manifest value, `<name>@<version>[+<hash>]`, into its parts. The name ends at the first
  * `@` past the first character, so a scoped name parses, and the version ends at the first `+`, which introduces
- * the integrity hash and may itself recur inside one. Returns `undefined` where the name or the version is empty.
+ * the integrity hash and may itself recur inside one. Returns `undefined` when the name or the version is empty.
  *
  * @category Package managers
  * @experimental
@@ -22,7 +22,7 @@ export function parsePackageManagerSpec(spec: string): PackageManagerSpec | unde
 
 /** The parts of a `packageManager` value. */
 export interface PackageManagerSpec {
-  /** The integrity hash after the `+`, or `undefined` where the value declares none. */
+  /** The integrity hash after the `+`, or `undefined` when the value declares none. */
   readonly hash: string | undefined;
   readonly name: string;
   readonly version: string;

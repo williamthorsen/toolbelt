@@ -6,15 +6,15 @@ export type PredicateCloneKind =
   'boolean-clone' | 'non-nullable-clone' | 'nullish-clone' | 'number-clone' | 'string-clone';
 
 // One `return` of one expression and nothing else: A second statement or a nested block fails the class, which
-// is what holds the finding to a function that the import retires outright. The expression is matched greedily
-// and trimmed by the caller rather than by a lazy quantifier against a trailing `\s*`: Blanking replaces a
-// template literal's characters with spaces, so a body holding one becomes a long whitespace run, and the two
-// ways of dividing it between the quantifiers make that pairing backtrack quadratically. Both patterns close on
-// `[\s;]*` for the same reason, a single class admitting one division where `\s*;?\s*` admits two.
+// limits the finding to a function that the import replaces outright. The expression is matched greedily and
+// trimmed by the caller rather than by a lazy quantifier against a trailing `\s*`: Blanking replaces a template
+// literal's characters with spaces, so a body containing one becomes a long whitespace run, and the two ways of
+// dividing it between the quantifiers make that pairing backtrack quadratically. Both patterns close on `[\s;]*`
+// for the same reason, a single class admitting one division whereas `\s*;?\s*` admits two.
 const RETURNED_EXPRESSION = /^\{\s*return\b(?<expression>[^;{}]*)[\s;]*\}$/;
 // The NaN exclusion is optional because `isNumber` performs it and a hand-roll often does not; the tail is
-// tolerated so both forms report, and the fix text carries the difference. A yoda comparison is not matched:
-// The tag reads on the right in every form that this repository and its lint configuration admit.
+// tolerated so that both forms report, and the fix text states the difference. A yoda comparison is not matched:
+// The tag appears on the right in every form that this repository and its lint configuration admit.
 const TYPEOF_BODY =
   /^\{\s*return\s+typeof\s+(?<subject>[\w$]+)\s*===\s*(?<literal>(?<quote>['"])[^'"\n]*\k<quote>)(?:\s*&&\s*!\s*Number\s*\.\s*isNaN\s*\(\s*\k<subject>\s*\))?[\s;]*\}$/d;
 const TAG_KINDS = new Map<string, PredicateCloneKind>([
@@ -27,8 +27,8 @@ const TAG_KINDS = new Map<string, PredicateCloneKind>([
  * Returns the guard that a function's body returns outright, or nothing when the body returns anything else.
  *
  * Takes the blanked body, the unblanked source, and the body's offset within it: A `typeof` comparison names
- * its tag in a literal, whose characters blanking replaces with spaces, so the tag is read from the source
- * beneath at the span that the match reports.
+ * its tag in a literal, whose characters blanking replaces with spaces, so the tag is read from the unblanked
+ * source at the span that the match reports.
  *
  * @internal
  */
@@ -54,7 +54,7 @@ export function findPredicateClone(
 
 // region | Helpers
 
-/** Moves a span reported within the body to the offset that it holds in the whole source. */
+/** Moves a span reported within the body to the offset that it has in the whole source. */
 function shiftSpan(span: readonly number[] | undefined, offset: number): number[] | undefined {
   const start = span?.[0];
   const end = span?.[1];
