@@ -2,7 +2,7 @@ import type { Workflow } from './ProjectConfiguration.ts';
 import type { WorkflowUpdatePayload } from './WorkflowUpdatePayload.ts';
 
 /**
- * Refuses a payload that would drop a status or a transition held by the workflow, or leave a status with no
+ * Refuses a payload that would drop a status or a transition in the workflow, or leave a status with no
  * transition into it. `POST /rest/api/3/workflows/update` replaces the graph wholesale, and none of the three
  * fails loudly: Each leaves work items in a state out of which nothing can move them.
  *
@@ -27,9 +27,9 @@ export function assertGraphPreserved(workflow: Workflow, payload: WorkflowUpdate
     }
   }
 
-  // A status left untargeted is reachable by no route and offers the board no way into it. A status that already
-  // had no transition is passed over: It is not this write's doing, and refusing over it would block every
-  // reconciliation of the project in which it sits.
+  // A status left untargeted cannot be reached: The board offers no way to move a work item into it. A status that
+  // already had no transition is passed over: It is not this write's doing, and refusing over it would block every
+  // reconciliation of the project that contains it.
   const targeted = new Set(updated.transitions.map((transition) => transition.toStatusReference));
   const targetedBefore = new Set(workflow.transitions.map((transition) => transition.toStatusReference));
   const heldBefore = new Set(workflow.statuses.map((status) => status.statusReference));

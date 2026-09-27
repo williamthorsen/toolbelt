@@ -13,7 +13,7 @@ describe(findOwningManifest, () => {
     expect(owning.manifestPath).toBe(tree.resolve('package.json'));
   });
 
-  it('ascends out of a subdirectory holding no manifest', () => {
+  it('ascends out of a subdirectory with no manifest', () => {
     using tree = createTempTree({
       'dist/esm/bin/tb-jira.js': '',
       'package.json': renderManifest({ name: 'owner', version: '1.2.3' }),

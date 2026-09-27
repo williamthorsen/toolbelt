@@ -4,7 +4,7 @@ const GATEWAY_ORIGIN = 'https://api.atlassian.com';
 
 /**
  * Resolves the gateway base URL against which a scoped API token authenticates, reading the cloudId from the
- * site where the caller does not supply one. A site is accepted bare (`acme.atlassian.net`), with a scheme, or
+ * site when the caller does not supply one. A site is accepted bare (`acme.atlassian.net`), with a scheme, or
  * as a URL copied from a browser, of which only the host is used. Requests against the site itself are not a
  * fallback that this offers: A scoped token sent there is ignored rather than rejected.
  *
@@ -22,7 +22,7 @@ export async function resolveJiraBaseUrl(options: JiraBaseUrlOptions): Promise<s
 }
 
 export interface JiraBaseUrlOptions {
-  /** Skips the tenant-info read when given, so a caller that already holds the cloudId makes no request. */
+  /** Skips the tenant-info read when given, so a caller that already has the cloudId makes no request. */
   readonly cloudId?: string | undefined;
   readonly fetch?: typeof globalThis.fetch | undefined;
   readonly site: string;

@@ -111,7 +111,7 @@ interface BoardEntry {
 /**
  * Reads the board's live feature states, against which the plan's toggles are resolved, alongside the features
  * locked by Jira. A locked feature is reported rather than refused: The write against one returns 200 and
- * changes nothing, so the lock has to reach the planner for the toggle to be left unplanned.
+ * changes nothing. The planner has to know of the lock to leave the toggle unplanned.
  */
 async function readFeatures(request: JiraRequest, boardId: number): Promise<BoardFeatures> {
   const response = await requestOk(request, {
@@ -135,7 +135,8 @@ async function readFeatures(request: JiraRequest, boardId: number): Promise<Boar
     if (typeof feature !== 'string' || typeof state !== 'string') continue;
 
     entries.push([feature, state]);
-    // Jira omits the flag on features that it has never locked, so only an explicit `true` locks one.
+    // Jira omits the flag on features that it has never locked, so this counts a feature as locked only on an
+    // explicit `true`.
     if (toggleLocked === true) locked.add(feature);
   }
 
@@ -151,7 +152,7 @@ interface BoardFeatures {
   readonly lockedFeatures: ReadonlySet<string>;
 }
 
-/** Reads every issue-type id held by the project, from which the workflow read resolves its workflows. */
+/** Reads every issue-type id of the project, from which the workflow read resolves its workflows. */
 async function readIssueTypeIds(request: JiraRequest, projectKey: string, key: string): Promise<string[]> {
   const response = await requestOk(request, {
     label: `read issue types for ${projectKey}`,
@@ -164,8 +165,8 @@ async function readIssueTypeIds(request: JiraRequest, projectKey: string, key: s
     throw new Error(`Project ${projectKey} returned no issue types.`);
   }
 
-  // An issue type dropped here never reaches the workflow read, so a project on several workflows could pass the
-  // exactly-one refusal. The count keeps that refusal load-bearing.
+  // An issue type dropped here is never passed to the workflow read, so a project on several workflows could pass
+  // the exactly-one refusal. The count check keeps that refusal effective.
   const ids = values.flatMap((value) => (isRecord(value) && typeof value['id'] === 'string' ? [value['id']] : []));
   if (ids.length !== values.length) {
     throw new Error(`Project ${projectKey} returned issue types that this cannot read.`);
@@ -174,7 +175,7 @@ async function readIssueTypeIds(request: JiraRequest, projectKey: string, key: s
   return ids;
 }
 
-/** Narrows a diagram coordinate, which Jira omits where it has not placed one. */
+/** Narrows a diagram coordinate, which Jira omits when it has not placed one. */
 function readLayout(value: unknown): WorkflowLayout | undefined {
   if (!isRecord(value)) return undefined;
 
@@ -245,7 +246,7 @@ async function readWorkflow(
   const workflows = readArrayField(response.json, 'workflows') ?? [];
   if (workflows.length !== 1) {
     throw new Error(
-      `Project ${projectKey} resolves its ${issueTypeIds.length} issue types to ${workflows.length} workflows. This reconciler writes one workflow, so a project holding several is refused rather than half-reconciled.`,
+      `Project ${projectKey} resolves its ${issueTypeIds.length} issue types to ${workflows.length} workflows. This reconciler writes one workflow, so a project that uses several is refused rather than half-reconciled.`,
     );
   }
 

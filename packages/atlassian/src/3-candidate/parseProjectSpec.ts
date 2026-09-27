@@ -6,7 +6,7 @@ const STATUS_CATEGORIES: readonly string[] = ['DONE', 'IN_PROGRESS', 'TODO'];
 
 /**
  * Validates a project spec written as JSON, throwing on the first fault that it finds. It takes text rather than a
- * parsed value, so that a malformed file and a malformed schema are one function's business and the file read stays
+ * parsed value, so that one function handles both a malformed file and a malformed schema and the file read stays
  * with the caller. Faults name what is wrong and not where it was read from, which the caller knows and this does not.
  *
  * @category Jira
@@ -68,7 +68,7 @@ function readAliases(value: unknown, name: string): readonly string[] | undefine
   return aliases;
 }
 
-/** Reads the requested board-feature states, refusing one that no spec may request. */
+/** Reads the requested board-feature states, refusing one that a spec may not request. */
 function readBoardFeatures(value: unknown): Readonly<Record<string, BoardFeatureRequest>> | undefined {
   if (value === undefined) return undefined;
   if (!isRecord(value)) throw new Error('`boardFeatures` maps a feature key to the state in which it is requested.');
@@ -94,7 +94,7 @@ function readOptionalString(value: unknown, key: string): string | undefined {
 
 /**
  * Reads the status list, refusing a name or alias that two entries claim. Both would resolve to the one live
- * status, and the write would set the first and drop the second without a word.
+ * status, and the write would set the first and drop the second silently.
  */
 function readStatuses(value: unknown): readonly SpecStatus[] {
   if (!Array.isArray(value) || value.length === 0) throw new Error('A spec needs a non-empty `statuses` array.');

@@ -19,7 +19,7 @@ export function buildVerificationReport(
 
   const verifiedStatuses: StatusVerification[] = spec.statuses.map((wanted) => {
     const live = findByName(statuses, wanted.name);
-    // A transition with no target would otherwise match a status not held by the workflow, both being absent.
+    // A transition with no target would otherwise match a status not in the workflow, both being absent.
     const transition =
       live === undefined
         ? undefined
@@ -44,8 +44,9 @@ export function buildVerificationReport(
 
   return {
     features: verifiedFeatures,
-    // A locked feature is held out: No call can change it, so counting it would fail every run of a spec that
-    // names one, and the exit code would stop distinguishing a run that fell short from one that cannot proceed.
+    // The verdict excludes a locked feature because no call can change it. Counting it would fail every run of a
+    // spec that names one, and the exit code would stop distinguishing a run that fell short from one that cannot
+    // proceed.
     matches: [...verifiedStatuses, ...verifiedFeatures.filter((entry) => !entry.locked)].every(
       (entry) => entry.matches,
     ),

@@ -18,7 +18,7 @@ describe(findSpecPath, () => {
     expect(findSpecPath(path.join(tree.dir, 'packages/app/src'))).toBe(path.join(tree.dir, 'jira-project-spec.json'));
   });
 
-  it('returns the nearest spec where an ancestor holds one too', () => {
+  it('returns the nearest spec when an ancestor also has one', () => {
     using tree = createTempTree({
       'jira-project-spec.json': '{}',
       'packages/app/jira-project-spec.json': '{}',

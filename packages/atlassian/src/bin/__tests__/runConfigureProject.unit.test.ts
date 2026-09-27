@@ -93,7 +93,7 @@ describe('tb-jira configure-project', () => {
       );
     });
 
-    it('issues no workflow write where the plan holds no change', async () => {
+    it('issues no workflow write when the plan contains no change', async () => {
       const harness = createHarness();
 
       await run(harness, [KEY]);
@@ -129,7 +129,7 @@ describe('tb-jira configure-project', () => {
       expect(harness.calls.some((call) => call.path.includes('/backlog/'))).toBe(false);
     });
 
-    it('exits 5 where the server does not hold what the spec declares', async () => {
+    it('exits 5 when the server does not have what the spec declares', async () => {
       const harness = createHarness({ files: { [SPEC_PATH]: RENAMING_SPEC } });
 
       await expect(run(harness, [KEY])).resolves.toBe(5);
@@ -202,7 +202,7 @@ describe('tb-jira configure-project', () => {
       expect(harness.fetchedUrls()).toStrictEqual(['https://env.atlassian.net/_edge/tenant_info']);
     });
 
-    it('exits 3 where the keychain could not be reached', async () => {
+    it('exits 3 when the keychain could not be reached', async () => {
       const harness = createHarness({
         env: { JIRA_EMAIL: 'someone@example.com' },
         keystoreFault: 'the keychain is locked',
@@ -212,14 +212,14 @@ describe('tb-jira configure-project', () => {
       expect(harness.readErrors()).toContain('the keychain is locked');
     });
 
-    it('reports a token held by no source, naming the command that stores one', async () => {
+    it('reports a token absent from every source, naming the command that stores one', async () => {
       const harness = createHarness({ env: {} });
 
       await expect(run(harness, [KEY])).resolves.toBe(2);
       expect(harness.readErrors()).toContain('tb-secret set toolbelt.atlassian.jira');
     });
 
-    it('takes the email from the spec where neither the flag nor the environment holds one', async () => {
+    it('takes the email from the spec when neither the flag nor the environment supplies one', async () => {
       const harness = createHarness({ env: { JIRA_API_TOKEN: 'a-token' } });
 
       await expect(run(harness, [KEY])).resolves.toBe(0);
@@ -234,7 +234,7 @@ describe('tb-jira configure-project', () => {
       expect(harness.transportOptions()?.email).toBe('flag@example.com');
     });
 
-    it('reports a site held by no source', async () => {
+    it('reports a site absent from every source', async () => {
       const harness = createHarness({
         files: { [SPEC_PATH]: JSON.stringify({ statuses: [{ category: 'TODO', name: 'To Do' }] }) },
       });
@@ -243,7 +243,7 @@ describe('tb-jira configure-project', () => {
       expect(harness.readErrors()).toContain('JIRA_SITE');
     });
 
-    it('exits 6 where Jira could not be reached, naming the URL and the fault', async () => {
+    it('exits 6 when Jira could not be reached, naming the URL and the fault', async () => {
       const cause = new Error('getaddrinfo ENOTFOUND spec.atlassian.net');
       const harness = createHarness({ fetchFault: new TypeError('fetch failed', { cause }) });
 

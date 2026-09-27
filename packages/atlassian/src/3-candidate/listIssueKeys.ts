@@ -30,7 +30,7 @@ export async function listIssueKeys(request: JiraRequest, jql: string): Promise<
       path: '/rest/api/3/search/jql',
     });
 
-    // A key dropped here is a work item on which the caller never acts, so an unreadable entry refuses the whole walk.
+    // A key dropped here is a work item on which the caller never acts, so one unreadable entry fails the whole walk.
     const issues = readArrayField(response.json, 'issues') ?? [];
     const page = issues.flatMap((issue) => (isRecord(issue) && typeof issue['key'] === 'string' ? [issue['key']] : []));
     if (page.length !== issues.length) {

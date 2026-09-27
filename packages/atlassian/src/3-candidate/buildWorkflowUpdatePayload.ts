@@ -25,8 +25,9 @@ export function buildWorkflowUpdatePayload(
     const update = plan.statusUpdates.find((entry) => entry.statusReference === status.statusReference);
 
     return {
-      // A rename leaves behind a description written for the status that it no longer is, so that description goes.
-      // A status whose name changes only in casing, or whose category alone changes, is still itself and keeps its own.
+      // A rename leaves behind a description written for the status that it no longer is; the payload drops that
+      // description. A status whose name changes only in casing, or whose category alone changes, is still itself
+      // and keeps its own.
       description: isRenamed(update) ? '' : (status.description ?? ''),
       id: status.id,
       name: update?.to ?? status.name,
@@ -35,15 +36,15 @@ export function buildWorkflowUpdatePayload(
     };
   });
 
-  // The write replaces the graph wholesale, so a transition reaching it short of the fields that this package
-  // does not model would lose them.
+  // The write replaces the graph wholesale, so a transition sent without the fields that this package does not
+  // model would lose them.
   const amendedTransitions: WorkflowTransition[] = workflow.transitions.map((transition) => {
     const rename = plan.transitionRenames.find((entry) => entry.id === transition.id);
     return rename === undefined ? transition : { ...transition, name: rename.to };
   });
 
-  // The API requires an id on a new transition rather than assigning one, so continue the decade spacing used by
-  // Jira for a team-managed project's global transitions. The floor covers a workflow holding no transition.
+  // The API requires an id on a new transition rather than assigning one. Continue the decade spacing used by Jira
+  // for a team-managed project's global transitions. The floor covers a workflow with no transition.
   let nextTransitionId = Math.max(0, ...workflow.transitions.map((transition) => Number(transition.id)));
 
   const payload: WorkflowUpdatePayload = {

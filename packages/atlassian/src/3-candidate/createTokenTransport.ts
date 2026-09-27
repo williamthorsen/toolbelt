@@ -40,10 +40,10 @@ export type JiraRequest = (method: string, path: string, body?: unknown) => Prom
 
 /** What one request returned. */
 export interface JiraResponse {
-  /** The parsed body, or `undefined` where it was not JSON. */
+  /** The parsed body, or `undefined` when it was not JSON. */
   readonly json: unknown;
   readonly status: number;
-  /** The raw body, set only where it did not parse as JSON. */
+  /** The raw body, set only when it did not parse as JSON. */
   readonly text: string | undefined;
   /** The URL at which the request was aimed, origin included. */
   readonly url: string;

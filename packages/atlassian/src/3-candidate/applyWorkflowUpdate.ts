@@ -11,8 +11,8 @@ const STATUS_PAGE_SIZE = 100;
 
 /**
  * Writes the reconciled status and transition graph in one call, then reads the statuses back and writes again,
- * through the status API, any status that the workflow write did not take. A plan holding no workflow change
- * issues no call.
+ * through the status API, any status that the workflow write did not take. A plan with no workflow change issues
+ * no call.
  *
  * @category Jira
  * @experimental
@@ -40,11 +40,11 @@ export async function applyWorkflowUpdate(
   return { correctedStatuses, written: true };
 }
 
-/** What the workflow write landed. */
+/** What the workflow write changed. */
 export interface WorkflowUpdateResult {
   /** Statuses that the workflow write did not take, written again through the status API. */
   readonly correctedStatuses: readonly StatusUpdate[];
-  /** Whether anything was written. A plan holding no workflow change issues no call. */
+  /** Whether anything was written. A plan with no workflow change issues no call. */
   readonly written: boolean;
 }
 
@@ -62,7 +62,7 @@ async function correctStatuses(
   if (statusUpdates.length === 0) return [];
 
   // One page covers a project's statuses many times over, and a status that fell off it is reported stale and
-  // written again, which the status API takes whether or not the first write had landed.
+  // written again, which the status API takes whether or not the first write had taken effect.
   const response = await requestOk(request, {
     label: 'read statuses back',
     method: 'GET',
@@ -93,8 +93,8 @@ async function correctStatuses(
 
 /**
  * Reports whether a live status has what an update asked for. Names are compared exactly here, unlike
- * everywhere else: This asks whether the write landed, and a rename that changed only casing is one that it has
- * to be able to report as unlanded.
+ * everywhere else: This asks whether the write took effect, and it has to be able to report that a rename that
+ * changed only casing did not.
  */
 function hasLanded(status: unknown, update: StatusUpdate): boolean {
   if (!isRecord(status)) return false;
