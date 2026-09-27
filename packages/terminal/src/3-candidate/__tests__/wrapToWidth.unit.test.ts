@@ -42,7 +42,7 @@ describe(wrapToWidth, () => {
     });
   });
 
-  describe('widths that no line can honour', () => {
+  describe('widths that a line cannot honour', () => {
     it('keeps a word wider than the content width whole on its own line', () => {
       expect(wrapToWidth('a supercalifragilistic word', { width: 10 })).toBe('a\nsupercalifragilistic\nword');
     });

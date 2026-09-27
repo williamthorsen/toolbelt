@@ -247,7 +247,7 @@ describe(captureStdio, () => {
       expect(stdio.stdout).toBe('before\nafter\n');
     });
 
-    it('leaves an outer spy holding the calls that it recorded', () => {
+    it('leaves an outer spy keeping the calls that it recorded', () => {
       // rdy-ignore-next-line toolbelt.vitest/no-hand-rolled-console-silence -- toolbelt.testing cannot depend on toolbelt.vitest; the reverse edge closes a workspace cycle
       const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
 

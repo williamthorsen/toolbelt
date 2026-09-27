@@ -8,20 +8,20 @@ const WHITESPACE_RUN = /\s+/gu;
  *
  * `indent` reserves its columns inside `width` rather than adding to it, so `width` is a line's full rendered
  * width and a caller passes the terminal's own. `hanging` leaves the first line's reserved columns empty of
- * spaces while narrowing it just the same, which is the shape a table needs: the row prefix fills those cells,
- * and the continuations line up beneath it.
+ * spaces while narrowing it just the same, which is the shape that a table needs: The row prefix fills those
+ * cells, and the continuations line up beneath it.
  *
  * Wrapping is soft. A word wider than the content width stays whole on its own line and overflows, which is one
  * of the two cases in which a line measures more than `width`. The other is an indent at or above `width`, which
- * reserves every column that the line has: content floors at one column, the indent still renders in full, and
- * the line measures `indent` plus whatever it holds. The indent is left whole rather than clamped, because a
+ * reserves every column that the line has: Content floors at one column, the indent still renders in full, and
+ * the line measures `indent` plus whatever it contains. The indent is left whole rather than clamped, because a
  * caller printing its own prefix into the reserved cells needs the count that it asked for.
  *
- * Whitespace collapses unconditionally, line breaks included, so text whose line structure carries meaning is
- * wrapped one paragraph at a time.
+ * Whitespace collapses unconditionally, line breaks included, so a caller wraps text whose line structure has
+ * meaning one paragraph at a time.
  *
- * Never throws. An infinite width wraps nothing, and a width at or below zero, or one that is not a number,
- * leaves one column for content. That floor discards nothing, since an over-long word already overflows.
+ * Never throws. At an infinite width it wraps nothing, and at a width at or below zero, or one that is not a
+ * number, it leaves one column for content. That floor discards nothing, since an over-long word already overflows.
  *
  * @category Terminal
  * @experimental
@@ -63,7 +63,7 @@ function resolveContentWidth(width: number, indent: number): number {
     return Infinity;
   }
   // `wrap-ansi` reads a `NaN` width as no width at all and returns the text unwrapped, which would silently
-  // exceed whatever the caller meant, so the guard is what keeps the floor below reachable.
+  // exceed whatever the caller meant, so the guard keeps the floor below reachable.
   if (!Number.isFinite(width)) {
     return 1;
   }

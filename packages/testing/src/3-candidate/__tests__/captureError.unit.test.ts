@@ -60,7 +60,7 @@ describe(captureError, () => {
       expectTypeOf(error).toEqualTypeOf<KitError>();
     });
 
-    it('returns an Error where no class is expected', async () => {
+    it('returns an Error when no class is expected', async () => {
       const error = await captureError(() => {
         throw new KitError('bad kit', []);
       });
@@ -121,10 +121,10 @@ describe(captureError, () => {
 
 // region | Helpers
 
-/** An abstract error base, which no caller can construct directly. */
+/** An abstract error base, which a caller cannot construct directly. */
 abstract class TestError extends Error {}
 
-/** A concrete error carrying a field of its own, which only a narrowed type can reach. */
+/** A concrete error with a field of its own, which only a narrowed type exposes. */
 class KitError extends TestError {
   readonly specifiers: string[];
 

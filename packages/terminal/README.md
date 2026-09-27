@@ -55,7 +55,7 @@ resolveOutputStyle({ argv: ['--style', 'plain'], env: {}, flag: '--style', isTty
 // { style: 'plain' }
 ```
 
-The flag is read from raw argv ahead of any parse, which lets a CLI render its own parse failure in the style that the invocation asked for. Because the same argv then reaches `parseArgs`, the scan reads it the way `parseArgs` does: `--style plain` and `--style=plain` both give a value, the `--` terminator ends the scan, and the last occurrence wins. A dash-led argument after a spaced flag is no value, `-` alone excepted, so `--style --verbose` leaves the flag contributing nothing and lets `parseArgs` raise the ambiguity itself. A value of `''` from either source reads as absent, so an unset-looking export does not shadow detection.
+The flag is read from raw argv ahead of any parse, which lets a CLI render its own parse failure in the style that the invocation asked for. Because the same argv then reaches `parseArgs`, the scan reads it the way `parseArgs` does: `--style plain` and `--style=plain` both give a value, the `--` terminator ends the scan, and the last occurrence wins. A dash-led argument after a spaced flag is no value, `-` alone excepted: `--style --verbose` leaves the flag contributing nothing and lets `parseArgs` raise the ambiguity itself. A value of `''` from either source reads as absent, which keeps an unset-looking export from shadowing detection.
 
 A value naming no setting is reported rather than thrown, because the caller has to render its complaint in some style and a resolver that threw would leave it none. Resolution continues to the next source, and the first rejected value is the one kept.
 
@@ -93,7 +93,7 @@ Rich requires all three signals to allow it, and anything else gives plain.
 | TTY state | the stream is a terminal                                    |
 | `TERM`    | anything but `linux`                                        |
 
-Each signal catches what the others miss. `CI` catches a runner that allocates a pseudo-terminal, where the TTY check alone would emit emoji into a log that nobody can grep, and `CI` is not universal either, since Jenkins does not set it. The TTY check catches an interactive pipe into `grep`. `TERM=linux` catches the Linux virtual console, a terminal outside CI whose kernel font draws no emoji at all.
+Each signal catches what the others miss. `CI` catches a runner that allocates a pseudo-terminal, for which the TTY check alone would emit emoji into a log that nobody can grep, and `CI` is not universal either, since Jenkins does not set it. The TTY check catches an interactive pipe into `grep`. `TERM=linux` catches the Linux virtual console, a terminal outside CI whose kernel font draws no emoji at all.
 
 `TERM=dumb` and `NO_COLOR` are not read. Each reports absent colour rather than absent Unicode, and a caller wanting plain output under either sets the flag or the environment variable.
 
@@ -114,16 +114,16 @@ console.log(text + ' '.repeat(gutter - width) + 'every check passed');
 // plain: PASS  every check passed
 ```
 
-A set is indexed by the style that `resolveOutputStyle` returns, so selecting a variant needs no function.
+Because a set is indexed by the style that `resolveOutputStyle` returns, selecting a variant needs no function.
 
 | Variant | Accepts                                                                       | Width      |
 | ------- | ----------------------------------------------------------------------------- | ---------- |
 | rich    | one code point with `Emoji_Presentation=Yes`, outside the regional indicators | 2          |
 | plain   | printable ASCII, U+0020 through U+007E                                        | its length |
 
-Each rule is drawn where the width stops being a guess. Every code point that the rich rule admits carries `East_Asian_Width=Wide`, and every printable ASCII code point carries `East_Asian_Width=Narrow`, so 2 and `.length` are the measured widths rather than assumed ones. The regional indicators are the one `Emoji_Presentation=Yes` range left out, each being narrow alone and reaching two cells only in the pair that forms a flag.
+Each rule is drawn where the width stops being a guess. Every code point that the rich rule admits has `East_Asian_Width=Wide`, and every printable ASCII code point has `East_Asian_Width=Narrow`, so 2 and `.length` are the measured widths rather than assumed ones. The regional indicators are the one `Emoji_Presentation=Yes` range left out, each being narrow alone and occupying two cells only in the pair that forms a flag.
 
-⚠️, ℹ️, and ⏭️ are each a code point plus U+FE0F, so each is refused; `STATUS_GLYPHS` carries 🟠 for `warning` in place of ⚠️. On the plain side `'→'` is refused as `East_Asian_Width=Ambiguous`, which measures one cell or two by locale, and `'✓'` is refused although it measures one everywhere, because a plain variant exists to survive a CI log, a `grep`, a screen reader, and a terminal with no emoji font, and `'✓'` survives none of the last. An empty plain variant is legal at width 0, which lets a name hold its column with no plain word.
+Each of ⚠️, ℹ️, and ⏭️ is refused as a code point plus U+FE0F; `STATUS_GLYPHS` uses 🟠 for `warning` in place of ⚠️. On the plain side `'→'` is refused as `East_Asian_Width=Ambiguous`, which measures one cell or two by locale, and `'✓'` is refused although it measures one everywhere, because a plain variant exists to survive a CI log, a `grep`, a screen reader, and a terminal with no emoji font, and `'✓'` survives none of the last. An empty plain variant is legal at width 0, which lets a name keep its column with no plain word.
 
 The alternatives cover less. `figures` has had no release since 2024-03 and falls back to legacy Windows console glyphs rather than ASCII, and `log-symbols` offers four symbols fixed at import. Neither pairs a rich glyph with a plain one, and neither reports a width, so a caller measures with `measureWidth` or guesses.
 
@@ -152,7 +152,7 @@ SOURCE_GLYPHS.plain.package; // { text: 'PKG', width: 3 }
 measureGlyphColumn(glyphs: Readonly<Record<string, Glyph>>): number;
 ```
 
-Reports the widest glyph in one style's record, which is the column width that aligns every one of them. It takes the record rather than a set and a style, so a caller passes what indexing already gave it. Deriving the width removes the hardcoded per-style constant that a CLI otherwise carries: adding a status with a longer plain word then widens the column on its own.
+Reports the widest glyph in one style's record, which is the column width that aligns every one of them. It takes the record rather than a set and a style, so a caller passes what indexing already gave it. Deriving the width removes the hardcoded per-style constant that a CLI otherwise declares: Adding a status with a longer plain word then widens the column on its own.
 
 ## `STATUS_GLYPHS`
 
@@ -165,7 +165,7 @@ Reports the widest glyph in one style's record, which is the column width that a
 | `skipped` | ⏩   | `SKIP`  |
 | `warning` | 🟠   | `WARN`  |
 
-The plain column measures 5 cells and the rich column measures 2. The outcomes that a reader acts on are told apart by shape rather than by hue, so ✅, ❌, ⏩, and 🚫 stay distinct for a reader with red-green colour blindness; the two remaining circles carry `info` and `warning`, whose blue and orange separate on the axis that such a reader keeps.
+The plain column measures 5 cells and the rich column measures 2. The outcomes that a reader acts on are told apart by shape rather than by hue, so ✅, ❌, ⏩, and 🚫 stay distinct for a reader with red-green colour blindness; the two remaining circles mark `info` and `warning`, whose blue and orange separate on the axis that such a reader keeps.
 
 ## Width
 
@@ -180,9 +180,9 @@ console.log(truncateToWidth(commitSubject, { width: 72 }));
 console.log(wrapToWidth(description, { indent: 4, width }));
 ```
 
-Node measures no width of its own. `util.stripVTControlCharacters` removes the escapes, which leaves a length rather than a count of cells, and `String.prototype.length` counts UTF-16 units throughout. `wrap-ansi` and `cli-truncate` do measure, and what the two wrappers here add is what those libraries leave to a caller: collapsing whitespace and indenting for one, a single ellipsis convention for the other, and for both a guard against a width that no terminal reports but that arithmetic produces.
+Node measures no width of its own. `util.stripVTControlCharacters` removes the escapes, which leaves a length rather than a count of cells, and `String.prototype.length` counts UTF-16 units throughout. `wrap-ansi` and `cli-truncate` do measure, and what the two wrappers here add is what those libraries leave to a caller: collapsing whitespace and indenting for one, a single ellipsis convention for the other, and for both a guard against a width that a terminal never reports but that arithmetic produces.
 
-Such a width is answered rather than thrown, and the two functions answer differently.
+Each function returns a result for such a width rather than throwing, and the two return different results.
 
 | Width                    | `wrapToWidth`                            | `truncateToWidth`  |
 | ------------------------ | ---------------------------------------- | ------------------ |
@@ -191,7 +191,7 @@ Such a width is answered rather than thrown, and the two functions answer differ
 | fractional               | the whole columns below it               | the same           |
 | an indent at or above it | one column for content, the indent whole | takes no indent    |
 
-Truncation exists to fit, and nothing fits in no columns. Wrapping reflows text instead of dropping it, and it already overflows for a word too wide to break, so a floor of one column costs it nothing. An indent that reserves every column that the line has overflows by the columns that it reserves: the indent is left whole rather than clamped, because a caller printing its own prefix into those cells needs the count that it asked for.
+Truncation exists to fit, and nothing fits in no columns. Wrapping reflows text instead of dropping it, and it already overflows for a word too wide to break, so a floor of one column discards nothing. An indent that reserves every column that the line has overflows by the columns that it reserves: The indent is left whole rather than clamped, because a caller printing its own prefix into those cells needs the count that it asked for.
 
 ## `measureWidth`
 
@@ -224,7 +224,7 @@ wrapToWidth('one two three four five', { indent: 4, width: 14 });
 // '    one two\n    three four\n    five'
 ```
 
-`hanging` leaves the first line's reserved columns bare while narrowing it just the same, which is the shape a table needs: the row prefix fills those cells, and the continuations line up beneath it.
+`hanging` leaves the first line's reserved columns bare while narrowing it just the same, which is the shape that a table needs: The row prefix fills those cells, and the continuations line up beneath it.
 
 ```ts
 const indent = measureWidth(prefix);
@@ -234,7 +234,7 @@ console.log(prefix + first);
 for (const line of rest) console.log(line);
 ```
 
-Wrapping is soft. A word wider than the content width stays whole on its own line and overflows, which is one of the two cases in which a line measures more than `width`; the other is the indent in the table above. Whitespace collapses unconditionally, line breaks included, so text whose line structure carries meaning is wrapped one paragraph at a time.
+Wrapping is soft. A word wider than the content width stays whole on its own line and overflows, which is one of the two cases in which a line measures more than `width`; the other is the indent in the table above. Whitespace collapses unconditionally, line breaks included, so a caller wraps text whose line structure has meaning one paragraph at a time.
 
 ## `truncateToWidth`
 
@@ -255,4 +255,4 @@ The ellipsis defaults to `…`, one cell wide. An ellipsis too wide for the widt
 truncateToWidth('abcdefgh', { ellipsis: '...', width: 2 }); // 'ab'
 ```
 
-The text is expected to hold no line break, which occupies no columns and would leave the result laid out across lines that the width says nothing about.
+The text is expected to contain no line break, which occupies no columns and would leave the result laid out across lines that the width says nothing about.

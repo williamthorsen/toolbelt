@@ -22,7 +22,7 @@ describe(pointArgvAt, () => {
       expect(argv.args).toStrictEqual([]);
     });
 
-    it('copies the arguments, so a later mutation of the caller’s array does not reach `process.argv`', () => {
+    it('copies the arguments, so a later mutation of the caller’s array does not affect `process.argv`', () => {
       const args = ['--quiet'];
 
       using argv = pointArgvAt(args);

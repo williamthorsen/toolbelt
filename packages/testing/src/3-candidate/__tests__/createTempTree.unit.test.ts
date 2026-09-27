@@ -80,7 +80,7 @@ describe(createTempTree, () => {
       using tree = createTempTree({ '.git/': '' });
       treeDir = tree.dir;
 
-      // Assert existence first, so a tree that was never created cannot pass the removal check vacuously.
+      // Assert existence first, so that a tree that was never created cannot pass the removal check vacuously.
       expect(fs.existsSync(treeDir)).toBe(true);
     }
 
@@ -113,7 +113,8 @@ describe(createTempTree, () => {
     expect(fs.existsSync(treeDir)).toBe(false);
   });
 
-  // A directory denying its own listing separates chmodding each directory before reading it from after.
+  // A directory that denies its own listing tells chmodding each directory before reading it apart from chmodding
+  // it after.
   it('removes a tree whose nested directory denies its own listing', () => {
     let treeDir: string;
 
@@ -137,7 +138,7 @@ describe(createTempTree, () => {
   });
 
   it('rejects an entry resolving outside the tree, leaving nothing on disk', () => {
-    // Spy on the creation call, which is the only route to the root of a tree for which no handle was returned.
+    // Spy on the creation call, which is the only way to find the root of a tree for which no handle was returned.
     using mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
 
     const create = () => createTempTree({ 'written.txt': 'contents', '../escaped.txt': '' });
@@ -202,7 +203,7 @@ describe('TempTree.list', () => {
 });
 
 describe('TempTree.listFiles', () => {
-  // `nested.ts` sorts ahead of `nested/deep/c.ts` only where the whole relative path is sorted, not each level.
+  // `nested.ts` sorts ahead of `nested/deep/c.ts` only when the whole relative path is sorted, not each level.
   it('lists every file below a directory, at any depth, relative to it, sorted', () => {
     using tree = createTempTree({ 'app/nested/deep/c.ts': '', 'app/nested.ts': '', 'app/a.ts': '' });
 
@@ -420,7 +421,7 @@ describe('TempTree.rm', () => {
 });
 
 describe('TempTree.symlink', () => {
-  it('links to a directory target, reaching its contents through the link', () => {
+  it('links to a directory target, reading its contents through the link', () => {
     using tree = createTempTree({ 'store/kit/package.json': '{ "name": "kit" }' });
 
     tree.symlink('node_modules/kit', '../store/kit');
@@ -476,7 +477,7 @@ describe('TempTree.symlink', () => {
     expect(fs.readlinkSync(linkPath)).toBe(tree.resolve('store/kit'));
   });
 
-  it('links a target outside the tree, reaching it through the link', () => {
+  it('links a target outside the tree, reading it through the link', () => {
     using outside = createTempTree({ 'kit/package.json': '{ "name": "kit" }' });
     using tree = createTempTree({});
 
@@ -507,7 +508,7 @@ describe('TempTree.symlink', () => {
       expect(symlinkSyncSpy).toHaveBeenCalledWith(tree.resolve('store/kit'), tree.resolve('link'), 'junction');
     });
 
-    // The link is nested, so the target resolves only if it is taken against the link's own directory.
+    // Because the link is nested, the target resolves only if it is taken against the link's own directory.
     it('links a relative directory target as a directory', () => {
       using symlinkSyncSpy = vi.spyOn(fs, 'symlinkSync');
       using tree = createTempTree({ 'store/kit/': '' });
@@ -616,7 +617,7 @@ describe('TempTree.writeAll', () => {
     expect(fs.readFileSync(tree.resolve('package.json'), 'utf8')).toBe('{ "name": "new" }');
   });
 
-  it('throws on a key that would ascend out of the tree, leaving the tree standing', () => {
+  it('throws on a key that would ascend out of the tree, leaving the tree intact', () => {
     using tree = createTempTree({ 'kept.txt': 'kept' });
 
     const writeAll = () => tree.writeAll({ '../escaped.txt': '' });
@@ -651,7 +652,7 @@ describe('TempTree.writeJson', () => {
     expect(writeJson).toThrow(/falls outside the temporary tree/);
   });
 
-  // An optional binding left empty reaches `writeJson` as `undefined`, which `unknown` accepts without complaint.
+  // An optional binding left empty is passed to `writeJson` as `undefined`, which `unknown` accepts without complaint.
   it('throws on an undefined value, writing no file', () => {
     using tree = createTempTree({});
 

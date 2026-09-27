@@ -1,17 +1,17 @@
 import type { OutputStyle } from './detectOutputStyle.ts';
 
-// Printable ASCII, every code point of which carries `East_Asian_Width=Narrow`, so its length is its cell count.
-// A narrow-looking character outside the range need not be: `→` and `▶` carry `East_Asian_Width=Ambiguous` and
-// so measure one cell or two by locale. The range is also the one that survives a CI log, a `grep`, a screen
+// Printable ASCII, every code point of which has `East_Asian_Width=Narrow`, so its length is its cell count.
+// A narrow-looking character outside the range need not be: `→` and `▶` have `East_Asian_Width=Ambiguous` and
+// measure one cell or two by locale. The range is also the one that survives a CI log, a `grep`, a screen
 // reader, and a terminal with no emoji font.
 const PLAIN_PATTERN = /^[\u{20}-\u{7E}]*$/u;
 
-// One code point carrying `Emoji_Presentation=Yes`, excluding the regional indicators. The anchors carry the
+// One code point with `Emoji_Presentation=Yes`, excluding the regional indicators. The anchors enforce the
 // single-code-point rule on their own, because the class matches a code point rather than a UTF-16 unit.
 //
-// Every code point that this class admits carries `East_Asian_Width=Wide`, which is what fixes `RICH_WIDTH`.
-// The 26 regional indicators are the only `Emoji_Presentation=Yes` code points that do not: each is
-// `East_Asian_Width=Neutral` alone and reaches two cells only in the pair that forms a flag.
+// Every code point that this class admits has `East_Asian_Width=Wide`, which fixes `RICH_WIDTH`.
+// The 26 regional indicators are the only `Emoji_Presentation=Yes` code points that do not: Each is
+// `East_Asian_Width=Neutral` alone and occupies two cells only in the pair that forms a flag.
 const RICH_PATTERN = /^[\p{Emoji_Presentation}--\p{Regional_Indicator}]$/v;
 
 // Cells occupied by every code point that `RICH_PATTERN` admits.
@@ -28,7 +28,7 @@ const RICH_WIDTH = 2;
  * A plain variant is printable ASCII, whose width is its length. `'✓'` and `'→'` are refused although each
  * looks one cell wide: `'→'` measures one cell or two by locale, and `'✓'` survives no terminal that lacks an
  * emoji font, which is what a plain variant exists for. An empty plain variant is legal at width 0, which lets
- * a name carry a rich decoration and no plain counterpart while still holding its column.
+ * a name have a rich decoration and no plain counterpart while still keeping its column.
  *
  * Throws on a violation, because a set is built from the author's own literals at module load: A violation is
  * a programming error rather than input whose complaint has to be rendered somehow. One error names every
@@ -93,7 +93,7 @@ function listVariantEntries<Name extends string>(
   return Object.entries(variants) as Array<[Name, GlyphVariants]>;
 }
 
-/** Lists what a name's variants violate, empty where each one satisfies its rule. */
+/** Lists what a name's variants violate, empty when each one satisfies its rule. */
 function listViolations(name: string, variants: GlyphVariants): string[] {
   const violations: string[] = [];
   const subject = JSON.stringify(name);
