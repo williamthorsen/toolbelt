@@ -1,7 +1,7 @@
 /**
  * Adoption checks for a project consuming @williamthorsen/toolbelt.objects.
  *
- * The kit ships inside the package, so it runs only where the package is installed and always at the version
+ * The kit is included in the package, so it runs only where the package is installed and always at the version
  * that the consumer has. Installing the package is the consent on which these checks rest.
  *
  * Two of the three checks take inventory rather than banning a pattern: A guarded prototype call and a
@@ -34,21 +34,21 @@ export default defineAdoptionKit({
       id: 'no-hand-rolled-own-property',
       kinds: ['own-property-call'],
       severity: 'recommend',
-      fix: `Object.hasOwn is the platform form and is enough wherever the result narrows nothing: It takes the target and the key directly. Take hasOwnProperty from ${PACKAGE_NAME}/candidate where the call guards a property read, since it returns a type predicate that narrows the target and Object.hasOwn returns a bare boolean. Reference: ${README_URL}`,
+      fix: `Object.hasOwn is the platform form and is enough wherever the result narrows nothing: It takes the target and the key directly. Take hasOwnProperty from ${PACKAGE_NAME}/candidate when the call guards a property read, since it returns a type predicate that narrows the target and Object.hasOwn returns a bare boolean. Reference: ${README_URL}`,
     },
     {
       name: 'No source guards a record by hand',
       id: 'no-hand-rolled-record-guard',
       kinds: ['record-inline'],
       severity: 'recommend',
-      fix: `Replace each expression named above with isRecord from ${PACKAGE_NAME} where it excludes arrays, and isRecordOrArray where it admits them. Both return a type predicate, so the narrowing performed by the expression is preserved. For the stricter question of whether a value has Object.prototype and nothing exotic, isPlainObject answers it; the expressions named above do not ask it. Reference: ${README_URL}`,
+      fix: `Replace each expression named above with isRecord from ${PACKAGE_NAME} when it excludes arrays, and isRecordOrArray when it admits them. Both return a type predicate, so the narrowing performed by the expression is preserved. For the stricter question of whether a value has Object.prototype and nothing exotic, isPlainObject answers it; the expressions named above do not ask it. Reference: ${README_URL}`,
     },
     {
       name: 'No source compares two serializations',
       id: 'no-stringify-comparison',
       kinds: ['stringify-compare'],
       severity: 'warn',
-      fix: `Replace each comparison named above with isEqual from ${PACKAGE_NAME}/candidate. Comparing serializations answers the wrong question twice: The result is key-order dependent, so two objects with the same entries in a different order compare unequal, and a Set serializes as an empty object whatever it holds, so any two Sets compare equal. isEqual sorts keys and converts Sets to arrays before comparing. Mind what serialization drops: A value that contains a function, a symbol, or undefined compares by what survives, under isEqual as much as by hand. Reference: ${README_URL}`,
+      fix: `Replace each comparison named above with isEqual from ${PACKAGE_NAME}/candidate. Comparing serializations answers the wrong question twice: The result is key-order dependent, so two objects with the same entries in a different order compare unequal, and a Set serializes as an empty object whatever it contains, which makes any two Sets compare equal. isEqual sorts keys and converts Sets to arrays before comparing. Mind what serialization drops: A value that contains a function, a symbol, or undefined compares by what survives, under isEqual as much as by hand. Reference: ${README_URL}`,
     },
   ],
 });

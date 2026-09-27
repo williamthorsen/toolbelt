@@ -25,10 +25,10 @@ describe('The readyup config', () => {
  * Reports every workspace that contains a kit and is absent from the config's `packages`, which is the
  * authoritative list for `rdy run --packages`.
  *
- * A workspace publishing a kit and missing from that list never runs over this repo, and the run says so
- * nowhere: It prints what it was configured to run, so an unlisted kit reads exactly like one that had
- * nothing to report. Workspaces are discovered rather than listed, so a package that gains a kit is covered
- * on arrival.
+ * A kit published by a workspace missing from that list never runs over this repo, and the run says so
+ * nowhere: It prints what it was configured to run, so an unlisted kit looks exactly like one that had
+ * nothing to report. Because this check discovers workspaces rather than listing them, it covers a package as
+ * soon as the package gains a kit.
  */
 function auditConfiguredPackages(monorepoRoot: string): { unlisted: string[]; workspaceCount: number } {
   const configured = new Set<string>(readyupConfig.packages);

@@ -7,7 +7,7 @@ import { readLiteral } from './readLiteral.ts';
 export interface DirectoryAscent {
   /** The line on which the innermost loop performing the ascent opens. */
   line: number;
-  /** The names that the loop probes each level for, or `undefined` where it probes none. */
+  /** The names that the loop probes each level for, or `undefined` when it probes none. */
   probedNames: readonly string[] | undefined;
 }
 
@@ -24,7 +24,8 @@ const DECLARATION = /\b(?:const|let|var)\s+(?<name>[A-Za-z_$][\w$]*)\s*(?::[^=;\
 // A declaration of a name, whether or not it assigns a value.
 const DECLARED_NAME = /\b(?:const|let|var)\s+(?<name>[A-Za-z_$][\w$]*)/g;
 // `dirname` called on a bare binding, through any receiver or none, so `path.dirname`, an aliased import, and a
-// destructured import all match. The assignment-back rule supplies the precision, so the anchor need not.
+// destructured import all match. The anchor need not be precise, because the assignment-back rule supplies the
+// precision.
 const DIRNAME_ASCENT = /(?:[A-Za-z_$][\w$]*\s*\.\s*)?\bdirname\s*\(\s*(?<subject>[A-Za-z_$][\w$]*)\s*\)/g;
 const LEADING_SEPARATOR = /^[/\\]+/;
 // The reads by which a walk asks what a level holds, in their synchronous and their promise spelling alike. Each
@@ -33,12 +34,12 @@ const LEVEL_PROBE = /\b(?:access|exists|lstat|readdir|readFile|stat)(?:Sync)?\s*
 const LOOP_KEYWORD = /\b(?<keyword>do|for|while)\b/g;
 // A quoted literal, the backtick opening a template, or a name read as a value, which leaves out the name of a member.
 const PATH_TOKEN = /(?<quoted>(?<quote>['"])[^'"]*\k<quote>)|`|(?<![\w$.])(?<name>[A-Za-z_$][\w$]*)/g;
-// An assignment, simple or compound, to a name that no declaration keyword introduces.
+// An assignment, simple or compound, to a name not preceded by a declaration keyword.
 const REASSIGNMENT =
   /(?<![\w$.])(?<!\b(?:const|let|var)\s+)(?<name>[A-Za-z_$][\w$]*)\s*(?:\*\*|<<|>>>?|&&|\|\||\?\?|[-+*/%&|^])?=(?![=>])/g;
 const SEPARATOR_RUN = /[/\\]+/g;
-// One bare binding assigned to another and nothing else, which is the step carrying an ascent back to the binding
-// that it ascends.
+// One bare binding assigned to another and nothing else, which is the step that assigns an ascent back to the
+// binding that it ascends.
 const SIMPLE_ASSIGNMENT = /(?<![\w$])(?<target>[A-Za-z_$][\w$]*)\s*=(?!=)\s*(?<value>[A-Za-z_$][\w$]*)(?![\w$.([])/g;
 // A `const` holding one string literal and nothing else. Blanking keeps a template's `${`, so a template holding
 // an interpolation does not match.
@@ -93,11 +94,11 @@ interface TemplateParts {
  * level for.
  *
  * Takes code blanked by `blankNonCode` and the source beneath it, so an ascent written in a comment or a literal is
- * not one while a probed name stays readable. Blanking preserves every offset, so a reported line still names the
- * line held by the source.
+ * not one while a probed name stays readable. Blanking preserves every offset, which keeps each reported line
+ * number valid in the source.
  *
- * Each ascent is reported once, on the innermost loop around it, so detectors that divide the walks between them
- * partition one set.
+ * Because each ascent is reported once, on the innermost loop around it, detectors that divide the walks between
+ * them partition one set.
  *
  * The scanner under-matches on purpose. A recursive walk-up function is no loop and goes unreported, as does an
  * ascent written as `resolve(dir, '..')` and a loop whose body is a single unbraced statement.
@@ -116,7 +117,7 @@ export function listDirectoryAscents(code: string, source: string): DirectoryAsc
   const constants = listStringConstants(code, source);
   const ascents = listLoops(code).flatMap((loop) => describeAscent(code, source, loop, constants) ?? []);
 
-  // Every loop around an ascent holds it, and the innermost of them is the one whose head names the site.
+  // Every loop around an ascent contains it, and the innermost of them is the one whose head names the site.
   return ascents
     .filter((ascent) => ascents.every((other) => other === ascent || !isNested(other.loop, ascent.loop)))
     .map((ascent) => ({ line: getLineAtOffset(code, ascent.loop.start), probedNames: ascent.probedNames }));
@@ -136,7 +137,7 @@ function countMatchesByName(text: string, pattern: RegExp): Map<string, number> 
   return counts;
 }
 
-/** Describes the ascent that a loop performs, or nothing where it performs none. */
+/** Describes the ascent that a loop performs, or nothing when it performs none. */
 function describeAscent(
   code: string,
   source: string,
@@ -167,10 +168,10 @@ function expandPathParts(parts: readonly PathPart[], scope: PathScope, subject: 
 }
 
 /**
- * Returns the binding that a region ascends, or nothing where it ascends none.
+ * Returns the binding that a region ascends, or nothing when it ascends none.
  *
- * The assignment back is what makes an ascent an ascent, and it is what keeps a loop that merely computes a
- * parent per item out of the report. One intermediate binding is followed, since comparing a level against its
+ * The assignment back makes an ascent an ascent, and it keeps a loop that merely computes a parent per item out
+ * of the report. One intermediate binding is followed, since comparing a level against its
  * parent forces the parent into one.
  */
 function findAscendedBinding(region: string): string | undefined {
@@ -192,9 +193,9 @@ function findAscendedBinding(region: string): string | undefined {
 }
 
 /**
- * Returns the offset of the brace opening a loop's body, or nothing where the head never closes or the body is a
+ * Returns the offset of the brace opening a loop's body, or nothing when the head never closes or the body is a
  * single unbraced statement. Such a body goes unreported rather than being read as the next brace group in the
- * source, which opens something else and would put the finding on a line that the loop does not hold.
+ * source, which opens something else and would put the finding on a line outside the loop.
  */
 function findBodyStart(code: string, afterKeyword: number, isDoLoop: boolean): number | undefined {
   let index = afterKeyword;
@@ -229,7 +230,7 @@ function findExpressionEnd(code: string, from: number, limit: number): number {
   return limit;
 }
 
-/** Reports whether one loop sits inside another. */
+/** Reports whether one loop is inside another. */
 function isNested(inner: Loop, outer: Loop): boolean {
   return outer.start <= inner.start && inner.end <= outer.end;
 }
@@ -238,7 +239,7 @@ function isNested(inner: Loop, outer: Loop): boolean {
  * Lists every binding that a loop declares with a value and never assigns again, with the expanded parts of that
  * value.
  *
- * A binding declared more than once in the loop, or reassigned there, holds no one value and is left out. A value
+ * A binding declared more than once in the loop, or reassigned there, has no single value and is left out. A value
  * ends at the first comma or semicolon outside every bracket, so in a source written without semicolons it runs on
  * into the statements after it, and a path read through it holds no name.
  */
@@ -262,7 +263,8 @@ function listLoopBindings(
     const parts = readPathParts(code, source, valueStart, findExpressionEnd(code, valueStart, loop.end));
     if (parts === undefined) continue;
 
-    // A value can read only the bindings declared before it, so each expands against those already listed.
+    // Each binding expands against those already listed, because a value can read only the bindings declared
+    // before it.
     bindings.push({ name, parts: expandPathParts(parts, { bindings, constants }, subject) });
   }
 
@@ -283,10 +285,10 @@ function listLoops(code: string): Loop[] {
 }
 
 /**
- * Returns the names that a loop probes each level for, or nothing where it probes for none.
+ * Returns the names that a loop probes each level for, or nothing when it probes for none.
  *
  * A probe is a read of a path built from the binding that the loop ascends, written in place or reached through a
- * binding or a constant in `scope`, which is what separates a search of the chain from a bare ascent. Only the path
+ * binding or a constant in `scope`, which separates a search of the chain from a bare ascent. Only the path
  * is read, so an encoding or an option passed beside it is no name. The list is empty when the loop reads the level
  * itself rather than a name under it, as a read of its entries does.
  */
@@ -333,7 +335,7 @@ function listSimpleAssignments(region: string): BindingAssignment[] {
 
 /**
  * Lists every `const` in a source that holds a string literal and is the only declaration of its name. A text scan
- * cannot see scope, so a name declared twice anywhere in the source holds no one value.
+ * cannot see scope, so a name declared twice anywhere in the source has no single value.
  */
 function listStringConstants(code: string, source: string): StringConstant[] {
   const constants: StringConstant[] = [];
@@ -350,7 +352,7 @@ function listStringConstants(code: string, source: string): StringConstant[] {
   return constants;
 }
 
-/** Returns the binding that the assignment opening at an offset assigns to, or nothing where none opens there. */
+/** Returns the binding that the assignment opening at an offset assigns to, or nothing when none opens there. */
 function readAssignedTarget(region: string, offset: number): string | undefined {
   const { before } = readAnchoredWindow(region, offset, ASSIGNMENT_WINDOW);
 

@@ -1,14 +1,14 @@
 /**
  * Adoption checks for a project consuming @williamthorsen/toolbelt.errors.
  *
- * The kit ships inside the package, so it runs only where the package is installed and always at the version
- * that the consumer has. Installing the package is the consent on which these checks rest: A lint rule reaching every
- * repository would press the same opinion on projects that never asked for it.
+ * The kit is included in the package, so it runs only where the package is installed and always at the version
+ * that the consumer has. Installing the package is the consent on which these checks rest: A lint rule applied to
+ * every repository would impose the same opinion on projects that never asked for it.
  *
  * The checks take inventory rather than banning a pattern. Every `instanceof Error` in the project is
  * accounted for and named, and severity reports the judgment: a hand-rolled description is a `warn`, a
  * narrowing that a guard would express better is a `recommend`. Nothing here is `error`, because none of it
- * breaks the package -- it reports how far adoption got.
+ * breaks the package: It reports how far adoption got.
  *
  * The kit declares what to look for and what to advise. What it reports lives in `src/readiness/`, where the
  * package's own suite covers it, and how the looking is done lives in `packages/adoption`.
@@ -35,7 +35,7 @@ export default defineAdoptionKit({
       name: 'No source defines its own description helper',
       id: 'no-describe-clone',
       kinds: ['describe-clone'],
-      fix: `Delete the function named above and import describeError from ${PACKAGE_NAME}. One import retires the whole helper. Reference: ${README_URL}`,
+      fix: `Delete the function named above and import describeError from ${PACKAGE_NAME}. One import replaces the whole helper. Reference: ${README_URL}`,
     },
     {
       name: 'No source describes a thrown value inline',
@@ -48,7 +48,7 @@ export default defineAdoptionKit({
       id: 'no-instanceof-error',
       kinds: ['assert', 'narrow'],
       severity: 'recommend',
-      fix: `Use isError from ${PACKAGE_NAME}, or assertIsError from ${PACKAGE_NAME}/candidate where the narrowing throws. Both recognize an Error crossing a realm boundary, which a bare instanceof test reports as false.`,
+      fix: `Use isError from ${PACKAGE_NAME}, or assertIsError from ${PACKAGE_NAME}/candidate when the narrowing throws. Both recognize an Error crossing a realm boundary, which a bare instanceof test reports as false.`,
     },
     {
       name: 'No source coerces a thrown value to an Error by hand',

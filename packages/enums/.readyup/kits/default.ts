@@ -1,15 +1,15 @@
 /**
  * Adoption checks for a project consuming @williamthorsen/toolbelt.enums.
  *
- * The kit ships inside the package, so it runs only where the package is installed and always at the version
+ * The kit is included in the package, so it runs only where the package is installed and always at the version
  * that the consumer has. Installing the package is the consent on which these checks rest.
  *
- * The one check takes inventory rather than banning a pattern: A hand-rolled membership test is correct code that
- * a published guard expresses better, so it reports at `recommend`. Nothing here is `warn`, because none of it is a
- * defect.
+ * The one check takes inventory rather than banning a pattern: Because a hand-rolled membership test is correct
+ * code that a published guard expresses better, the check reports at `recommend`. Nothing here is `warn`, because
+ * none of it is a defect.
  *
- * `toolbelt.arrays` publishes an `includes` of its own, but no kit reports an `includes` form, so this kit needs no
- * hand-off rule: A search of an enum's values belongs here.
+ * `toolbelt.arrays` publishes an `includes` of its own, but no kit reports an `includes` form: A search of an
+ * enum's values belongs here, and this kit needs no hand-off rule.
  *
  * The kit declares what to look for and what to advise. What it reports lives in `src/readiness/`, where the
  * package's own suite covers it, and how the looking is done lives in `packages/adoption`.
@@ -37,7 +37,7 @@ export default defineAdoptionKit({
       id: 'no-hand-rolled-enum-membership',
       kinds: ['values-includes'],
       severity: 'recommend',
-      fix: `Replace each test named above with isEnumValue from ${PACKAGE_NAME}. It returns a type predicate, so the value narrows to a member of the enum wherever the test passes, which a search of the values does not do even with a cast added to satisfy the compiler. Where the test only chooses between the value and undefined, toEnumValue from the same package replaces the whole expression. Both accept only an object whose values are strings or numbers, so a search of an object with values of any other type has no substitution here. Reference: ${README_URL}`,
+      fix: `Replace each test named above with isEnumValue from ${PACKAGE_NAME}. It returns a type predicate, so the value narrows to a member of the enum wherever the test passes, which a search of the values does not do even with a cast added to satisfy the compiler. When the test only chooses between the value and undefined, toEnumValue from the same package replaces the whole expression. Both accept only an object whose values are strings or numbers; a search of an object with values of any other type has no substitution here. Reference: ${README_URL}`,
     },
   ],
 });
