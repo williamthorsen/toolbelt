@@ -111,7 +111,7 @@ describe(assertNonEmptyArray, () => {
   });
 
   // eslint-disable-next-line vitest/expect-expect
-  it('if array is immutable, fails to compile', () => {
+  it('if array is mutable, fails to compile', () => {
     const mutableItems = ['item'];
 
     // The following assertion fails at compile-time but succeeds at runtime.

@@ -23,7 +23,7 @@ describe('ADOPTED_EXPORTS', () => {
     expect(callable.filter((name) => !ADOPTED_EXPORTS.includes(name))).toStrictEqual([]);
   });
 
-  it('names nothing a published tier does not export', () => {
+  it('names nothing that a published tier does not export', () => {
     const exported = new Set(PUBLISHED_TIERS.flatMap((tier) => Object.keys(tier)));
 
     expect(ADOPTED_EXPORTS.filter((name) => !exported.has(name))).toStrictEqual([]);
