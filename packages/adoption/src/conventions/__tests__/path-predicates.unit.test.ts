@@ -34,8 +34,8 @@ describe(isAdoptableSourceOrTest, () => {
     expect(exempt.filter((path) => isAdoptableSourceOrTest(path))).toStrictEqual([]);
   });
 
-  // A wrapper's exemption rests on what it must import, which binds no test of it. The two paths reach the
-  // claim through different terms, so neither term alone makes the case.
+  // A wrapper's exemption rests on what it must import, which binds no test of it. Each path satisfies a
+  // different term, so neither term alone covers both.
   it('claims a test covering a bootstrap wrapper, and a helper beside that test', () => {
     const claimed = ['bin/run.unit.test.ts', 'src/bin/__tests__/fixtures/sample.ts'];
 

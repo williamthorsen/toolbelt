@@ -37,9 +37,9 @@ pluralizeWithCount(3, 'match', 'matches');
 
 The plural defaults to the singular with an `s` appended, so anything else is the caller's to supply: `pluralize(2, 'box')` returns `'boxs'`. A rule set covering the regular endings would fix `box` and `category` while still returning `'heros'` and `'quizes'`, and the wrong forms that it left would be rarer without being easier to catch. A uniformly naive default is one that a caller learns to override.
 
-Selection is English: Only a count whose absolute value is exactly 1 takes the singular, so `-1` takes the singular and `0`, `1.5`, `NaN`, and `Infinity` take the plural. Neither function throws.
+Selection is English: Only a count whose absolute value is exactly 1 takes the singular. `-1` takes the singular, and `0`, `1.5`, `NaN`, and `Infinity` take the plural. Neither function throws.
 
-`Intl.PluralRules` would change none of that, since CLDR's English `one` rule selects exactly the same counts. What it offers is other locales, and those need a form per plural category rather than a pair: Polish takes three, Arabic six. Reach for `Intl.PluralRules` or ICU message formatting there.
+`Intl.PluralRules` would change none of that, since CLDR's English `one` rule selects exactly the same counts. What it offers is other locales, and those need a form per plural category rather than a pair: Polish takes three, Arabic six. Use `Intl.PluralRules` or ICU message formatting there.
 
 `pluralizeWithCount` interpolates the count as given, without grouping separators. Formatted output composes the two:
 
@@ -57,7 +57,7 @@ dedent`...`;
 dedent.withOptions(options: { valueIndentationStyle?: 'none' | 'line' }): Dedent;
 ```
 
-Removes the indentation inherited by a multi-line template literal from the source in which it is written, so the string that a reader sees is the string that the program gets.
+Removes the indentation inherited by a multi-line template literal from the source in which it is written, so that the string that a reader sees is the string that the program gets.
 
 ```ts
 import { dedent } from '@williamthorsen/toolbelt.strings';
@@ -71,7 +71,7 @@ function describeNpc() {
 // 'You are assisting the Game Master of a roleplaying game.\nCreate an ordinary, everyday person in a high-fantasy setting.'
 ```
 
-The opening line is discarded, and so is the closing line when it holds nothing but whitespace. A closing line that contains text is kept and dedented along with the rest, whereas `String.dedent` throws.
+The opening line is discarded, and so is the closing line when it contains nothing but whitespace. A closing line that contains text is kept and dedented along with the rest, whereas `String.dedent` throws.
 
 Dropping the closing line removes the terminator that preceded it, so text on the last line comes back without a trailing newline. When one is wanted, leave a blank line above the closing backtick: A blank line is emptied rather than discarded, and the terminator above it survives.
 
@@ -110,7 +110,7 @@ dedent`
 
 Removing nothing would be silent, and a template that silently declines to dedent is the failure that this function exists to prevent. A template with a genuine column-zero line is a different case, and the tag strips nothing from it without complaint.
 
-Blank lines are ignored when measuring and emptied in the output, so an editor's trailing whitespace on an otherwise empty line changes nothing. A line holding an interpolation counts as content even when the rest of it is blank, which means a value's **position** can affect the measurement even though its **content** cannot.
+Blank lines are ignored when measuring and emptied in the output, so an editor's trailing whitespace on an otherwise empty line changes nothing. A line containing an interpolation counts as content even when the rest of it is blank, which means a value's **position** can affect the measurement even though its **content** cannot.
 
 ### Interpolated values
 
@@ -126,7 +126,7 @@ dedent`
 // 'before\nx\ny\nafter'
 ```
 
-By default a value is spliced exactly as given, so a multi-line value's later lines land where its own text puts them. `valueIndentationStyle: 'line'` indents them to match the line on which the value opened:
+By default a value is spliced exactly as given, so a multi-line value's later lines appear where its own text puts them. `valueIndentationStyle: 'line'` indents them to match the line on which the value opened:
 
 ```ts
 const items = 'alpha\nbeta';
@@ -190,13 +190,13 @@ The indentation rules are the tag's: tabs and spaces only, compared as character
 
 Line terminators are recognized as `\r\n`, `\n`, `\r`, `\u2028`, and `\u2029`, and each is re-emitted unchanged, so CRLF text does not come back with mixed endings.
 
-A leading byte-order mark is held aside while the indentation is measured and restored afterwards. Without that, a file read with a BOM would have a first line starting with no tab or space, the common indentation would be nothing, and the call would silently do nothing at all.
+A leading byte-order mark is set aside while the indentation is measured and restored afterwards. Without that, a file read with a BOM would have a first line starting with no tab or space, the common indentation would be nothing, and the call would silently do nothing at all.
 
 Unlike the tag, this function never throws. It has no author's intent to check against.
 
 ## Relationship to `String.dedent`
 
-[`String.dedent`](https://github.com/tc39/proposal-string-dedent) has been a TC39 stage 2 proposal since June 2022, and as of September 2026 no engine ships it. At the January 2026 plenary, a planned request for stage 2.7 had not been made, and the committee listed the proposal as possibly in need of champions. This implementation adopts the settled core of the proposal and diverges from it on the points below:
+[`String.dedent`](https://github.com/tc39/proposal-string-dedent) has been a TC39 stage 2 proposal since June 2022, and as of September 2026 no engine implements it. At the January 2026 plenary, a planned request for stage 2.7 had not been made, and the committee listed the proposal as possibly in need of champions. This implementation adopts the settled core of the proposal and diverges from it on the points below:
 
 |                          | Here                                               | `String.dedent`                                              |
 | ------------------------ | -------------------------------------------------- | ------------------------------------------------------------ |
@@ -207,7 +207,7 @@ Unlike the tag, this function never throws. It has no author's intent to check a
 | Escaped line terminators | throws                                             | dedents the raw strings and re-cooks them                    |
 | Value indentation        | opt-in via `valueIndentationStyle`                 | none; not pursued in this proposal (issue #25)               |
 
-The two lenient edge rules are deliberate. Requiring a bare opening line would reject invisible trailing whitespace after the backtick, which no formatter shows and every editor tolerates; throwing on a closing line that contains text would reject `` dedent`\n  a\n  b` ``, which is a reasonable thing to write.
+The two lenient edge rules are deliberate. Requiring a bare opening line would reject invisible trailing whitespace after the backtick, which formatters do not show and editors tolerate; throwing on a closing line that contains text would reject `` dedent`\n  a\n  b` ``, which is a reasonable thing to write.
 
 ## `hashString`
 
@@ -229,20 +229,20 @@ hashString('user-4821', { max: 999 });
 
 The default range is the full 32-bit width, `[0, 4294967295]`. Bounding is opt-in through `min` and `max`, which are inclusive, because a narrow range imposes a collision floor that the caller should choose knowingly: At `{ max: 999 }`, two of roughly forty inputs collide more often than not.
 
-`offset` rotates the result rather than salting the digest, so every input shifts by the same amount and `hashString(str, { offset })` stays derivable from `hashString(str)`. It wraps at both bounds, so a negative offset and one larger than the range are both fine.
+`offset` rotates the result rather than salting the digest, so every input shifts by the same amount and `hashString(str, { offset })` stays derivable from `hashString(str)`. It wraps at both bounds: A negative offset and one larger than the range are both fine.
 
 ```ts
 hashString('user-4821', { max: 999, offset: 300 });
 // 844
 ```
 
-The returned value is a contract. For a given input and options it is fixed, and changing the algorithm would be a breaking change, so a result may be persisted or compared across releases. The digest is FNV-1a 32-bit finalized through MurmurHash3's `fmix32`, applied to the low and high byte of each UTF-16 code unit. Encoding the text as UTF-8 first would match published FNV-1a vectors, at the cost of conflating lone surrogates, which `TextEncoder` replaces with U+FFFD.
+The returned value is a contract. Because it is fixed for a given input and options, and changing the algorithm would be a breaking change, a result may be persisted or compared across releases. The digest is FNV-1a 32-bit finalized through MurmurHash3's `fmix32`, applied to the low and high byte of each UTF-16 code unit. Encoding the text as UTF-8 first would match published FNV-1a vectors, at the cost of conflating lone surrogates, which `TextEncoder` replaces with U+FFFD.
 
-A `RangeError` names the fault when `min`, `max`, or `offset` is not a safe integer, when `min` exceeds `max`, or when the range spans more than 2^32 values, which is wider than the digest can fill.
+The function throws a `RangeError` naming the fault when `min`, `max`, or `offset` is not a safe integer, when `min` exceeds `max`, or when the range spans more than 2^32 values, which is wider than the digest can fill.
 
 ## Adoption checks
 
-The package ships a ReadyUp kit, so a project that installs it can ask how far its adoption got:
+The package includes a ReadyUp kit, so a project that installs it can ask how far its adoption got:
 
 ```sh
 rdy run --packages
@@ -250,15 +250,15 @@ rdy run --packages
 
 The kit reads the project's tracked sources and reports every hand-rolled capitalization and pluralization in them, and every block of text laid out to do without `dedent`, each counted against the calls that the project already makes into this package. All four checks report at `recommend`: They are correct code that a published utility expresses better, not defects.
 
-A capitalization is claimed where the same subject supplies both halves, as in `word.charAt(0).toUpperCase() + word.slice(1)`. The subscript, `substring`, and template-substitution variants are claimed too. A tail that the source goes on to transform is not: In `word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()` the chained call reaches the tail alone, which `capitalize` does not reproduce. A call on the whole expression is claimed, since it applies to what `capitalize` returns. Taking `capitalize` from the `charAt(0)` form is an exact substitution; from the subscript form it is a correction, since indexing an empty string throws where `capitalize` returns the empty string.
+A capitalization is claimed when the same subject supplies both halves, as in `word.charAt(0).toUpperCase() + word.slice(1)`. The subscript, `substring`, and template-substitution variants are claimed too. A tail that the source goes on to transform is not: In `word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()` the chained call applies to the tail alone, which `capitalize` does not reproduce. A call on the whole expression is claimed, since it applies to what `capitalize` returns. Taking `capitalize` from the `charAt(0)` form is an exact substitution; from the subscript form it is a correction, since indexing an empty string throws whereas `capitalize` returns the empty string.
 
-A pluralization is claimed where a ternary tests a value against 1 and its branches are two string literals related as singular and singular plus `s`, covering `'item' : 'items'`, `'' : 's'`, and the `!==` mirror `'s' : ''`. A pair of identifiers is not claimed, and neither is a pair of unrelated literals such as `'active' : 'inactive'`: The plural relation is the only evidence available that the compared value counts something. `count > 1 ? 's' : ''` is not claimed either, since replacing it changes what the code prints at zero. Note that `pluralize` tests `Math.abs(count)`, so a count of `-1` takes the singular where a hand-rolled equality test takes the plural.
+A pluralization is claimed when a ternary tests a value against 1 and its branches are two string literals related as singular and singular plus `s`, covering `'item' : 'items'`, `'' : 's'`, and the `!==` mirror `'s' : ''`. A pair of identifiers is not claimed, and neither is a pair of unrelated literals such as `'active' : 'inactive'`: The plural relation is the only evidence available that the compared value counts something. `count > 1 ? 's' : ''` is not claimed either, since replacing it changes what the code prints at zero. Note that `pluralize` tests `Math.abs(count)`, so a count of `-1` takes the singular whereas a hand-rolled equality test takes the plural.
 
-An array of lines is claimed where an array literal laid out over several lines, holding at least two string or template literals, is joined with `'\n'`, as a fixture holding one line per element is. An array written on one line is not claimed, since nothing marks it as a block of text, and neither is one holding an identifier, a call, or a spread, which a template cannot hold as written, or one whose lines all share an indent, which `dedent` would strip. Rewritten as a `dedent` template, a trailing empty element becomes a blank line before the closing backtick.
+An array of lines is claimed when an array literal laid out over several lines, containing at least two string or template literals, is joined with `'\n'`, as a fixture containing one line per element is. An array written on one line is not claimed, since nothing marks it as a block of text, and neither is one containing an identifier, a call, or a spread, which a template cannot contain as written, or one whose lines all share an indent, which `dedent` would strip. Rewritten as a `dedent` template, a trailing empty element becomes a blank line before the closing backtick.
 
-A template is claimed where it opens on an indented line and its later lines drop below that line's indentation, which is how text is written to keep source indentation out of a string. A template whose text keeps the code's indentation is not claimed, since nothing tells layout from indentation that the string needs, and neither is a tagged template or the argument of a Vitest inline-snapshot matcher. `dedent` requires the text to start on the line after the opening backtick, and it rejects an escaped line terminator and an interpolated object or nullish value. Text that starts or ends with a line break takes a blank line after the opening backtick or before the closing one, since `dedent` drops the line break at each end.
+A template is claimed when it opens on an indented line and its later lines drop below that line's indentation, which is how text is written to keep source indentation out of a string. A template whose text keeps the code's indentation is not claimed, since the kit cannot tell layout from indentation that the string needs, and neither is a tagged template or the argument of a Vitest inline-snapshot matcher. `dedent` requires the text to start on the line after the opening backtick, and it rejects an escaped line terminator and an interpolated object or nullish value. Text that starts or ends with a line break takes a blank line after the opening backtick or before the closing one, since `dedent` drops the line break at each end.
 
-Bootstrap wrappers under `bin/` are exempt: Such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt from the capitalization and pluralization checks, since they write those forms deliberately, and are read by the two `dedent` checks, since a test's fixtures are where most multi-line text is written. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: The sweep drops it before the kit sees it, so committed bundler output yields no advice that anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
+Bootstrap wrappers under `bin/` are exempt: Such a wrapper imports only builtins so that its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt from the capitalization and pluralization checks, since they write those forms deliberately, and are read by the two `dedent` checks, since a test's fixtures contain most multi-line text. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: The sweep drops it before the kit sees it, so committed bundler output yields no advice that anyone could act on. Because the sweep is readyup's, this holds on readyup 0.35.0 or later.
 
 A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
 

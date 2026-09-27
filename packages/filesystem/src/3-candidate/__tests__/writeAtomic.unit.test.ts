@@ -57,7 +57,7 @@ describe(writeAtomic, () => {
       expect(fs.readdirSync(tree.dir)).toStrictEqual(['config.json']);
     });
 
-    it('lands each of two concurrent writes to one target whole', async () => {
+    it('keeps the target whole under two concurrent writes', async () => {
       using tree = createTempTree({});
       const filePath = tree.resolve('config.json');
 
@@ -117,7 +117,7 @@ describe(writeAtomic, () => {
   describe('failures', () => {
     // Requires a non-root process: root writes regardless of the directory's permission bits, and this then
     // fails loudly rather than passing.
-    it('surfaces a write failure, leaving no temp file', async () => {
+    it('rethrows a write failure, leaving no temp file', async () => {
       using tree = createTempTree({ 'locked/': '' });
       const dir = tree.resolve('locked');
       fs.chmodSync(dir, 0o555);
@@ -127,7 +127,7 @@ describe(writeAtomic, () => {
       expect(fs.readdirSync(dir)).toStrictEqual([]);
     });
 
-    it('surfaces a rename failure, removing the temp file', async () => {
+    it('rethrows a rename failure, removing the temp file', async () => {
       using tree = createTempTree({ 'target/keep.txt': 'keep\n' });
       const filePath = tree.resolve('target');
 
@@ -137,7 +137,7 @@ describe(writeAtomic, () => {
       expect(fs.readdirSync(filePath)).toStrictEqual(['keep.txt']);
     });
 
-    it('surfaces the original error when the cleanup itself fails', async () => {
+    it('rethrows the original error when the cleanup itself fails', async () => {
       using tree = createTempTree({ 'target/keep.txt': 'keep\n' });
       const rmSpy = vi.spyOn(fsPromises, 'rm').mockRejectedValueOnce(new Error('cleanup failed'));
 

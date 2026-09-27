@@ -328,7 +328,7 @@ var default_default = defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
   detect: listGuardClones,
   exportNames: ADOPTED_EXPORTS,
-  noSourcesReason: "the project holds no JavaScript or TypeScript sources outside the exempt paths",
+  noSourcesReason: "the project contains no JavaScript or TypeScript sources outside the exempt paths",
   packageName: PACKAGE_NAME,
   // A test writes these shapes deliberately, and a bootstrap wrapper hand-rolls its guards so that its
   // build-first message survives an incomplete install.
@@ -338,7 +338,7 @@ var default_default = defineAdoptionKit({
       name: "No source defines its own assertion",
       id: "no-assertion-clone",
       kinds: ["assert-clone", "nullish-assert-clone"],
-      fix: `Delete the function named above and import assert from ${PACKAGE_NAME}, or assertIsNonNullable where the function asserts that a value is neither null nor undefined. One import retires the whole helper, and both carry an asserts signature, so a caller that relied on the narrowing keeps it. Reference: ${README_URL}`
+      fix: `Delete the function named above and import assert from ${PACKAGE_NAME}, or assertIsNonNullable when the function asserts that a value is neither null nor undefined. One import replaces the whole helper, and both have an asserts signature, so a caller that relied on the narrowing keeps it. Reference: ${README_URL}`
     },
     {
       name: "No source defines its own type guard",

@@ -29,14 +29,14 @@ const CALL_PREFIX = /^(?:await )?(?:new )?/;
 // The catch clause opens the text past the try block, whose closing brace the group reader has just reported.
 const CATCH_CLAUSE = /^\s*catch\s*\(/;
 const FINALLY_CLAUSE = /^\s*finally\b/;
-// Whitespace is condensed by the time this reads, so one space is the most that can sit at a joint.
+// Whitespace is condensed by the time this reads, which leaves at most one space at a joint.
 const CAUGHT_ASSIGNMENT = /^(?<target>[\w$]+) ?= ?(?<caught>[\w$]+)(?: as .+)?$/;
 const IDENTIFIER = /^[\w$]+$/;
 // What may follow a literal for the literal to be the whole of an assertion's argument or a declaration's
 // initializer. A cast changes no runtime value.
 const LITERAL_ARGUMENT_TAIL = /^(?: as .+)?$/;
 const LITERAL_INITIALIZER_TAIL = /^ ?(?: as [^;]+)?;/;
-// Far enough to clear an enclosing hook's opening line, which is what separates the declaration from the try
+// Far enough to clear an enclosing hook's opening line, which separates the declaration from the try
 // in the longest site this recognizes. Longer reaches past the block and binds an unrelated declaration.
 const LOOKBEHIND_LENGTH = 400;
 const SCALAR_LITERAL = /^(?:-?\.?\d(?:[eE][+-]|[\w.])*|(?:false|null|true|undefined)(?![\w$]))/;
@@ -53,8 +53,8 @@ const TRY_ANCHOR = /\btry\s*\{/g;
  * variable, is not reported: The call threw something other than an `Error`, on which `captureError` fails the
  * test.
  *
- * The source is blanked before the anchor scan reads it, so a try written in a comment or a literal is
- * invisible here. Blanking preserves every offset, so a reported line still names the line held by the source.
+ * Because the source is blanked before the anchor scan reads it, a try written in a comment or a literal is
+ * invisible here. Blanking preserves every offset, which keeps each reported line number valid in the source.
  *
  * @internal
  */
@@ -91,13 +91,13 @@ export function listCaptureSites(source: string): Array<AdoptionSite<ErrorCaptur
 
 // region | Helpers
 
-/** Escapes the one regex metacharacter that an identifier may hold. */
+/** Escapes the one regex metacharacter that an identifier may contain. */
 function escapeIdentifier(name: string): string {
   return name.replaceAll('$', String.raw`\$`);
 }
 
 /**
- * Returns the offset of the closing brace of the block that encloses an offset, or nothing where no block
+ * Returns the offset of the closing brace of the block that encloses an offset, or nothing when no block
  * encloses it.
  */
 function findEnclosingBlockEnd(code: string, from: number): number | undefined {
@@ -114,9 +114,9 @@ function findEnclosingBlockEnd(code: string, from: number): number | undefined {
 }
 
 /**
- * Returns the offset past the literal that opens a text, or nothing where the text opens with no literal.
+ * Returns the offset past the literal that opens a text, or nothing when the text opens with no literal.
  *
- * A string arrives blanked with its delimiters kept, so the next delimiter of its kind closes it.
+ * A string is already blanked, with its delimiters kept, so the next delimiter of its kind closes it.
  */
 function findLiteralEnd(text: string): number | undefined {
   const opener = text[0];
@@ -132,7 +132,7 @@ function findLiteralEnd(text: string): number | undefined {
 }
 
 /**
- * Returns the offset at which a text first assigns a name, or nothing where it never assigns one.
+ * Returns the offset at which a text first assigns a name, or nothing when it never assigns one.
  *
  * An assertion past that offset reads whatever the assignment stored rather than the captured value.
  */
@@ -167,8 +167,8 @@ function hasNonErrorLiteralAssertion(blockRest: string, target: string, before: 
 /**
  * Reports whether a lookbehind declares a name outside the try block that follows it.
  *
- * `const` is not a spelling of this idiom: A catch block cannot reassign one, so a capture has to declare its
- * variable `let` or `var`. A declaration list naming several variables goes unrecognized, which keeps the
+ * `const` is not a spelling of this idiom: Because a catch block cannot reassign one, a capture has to declare
+ * its variable `let` or `var`. A declaration list naming several variables goes unrecognized, which keeps the
  * window from binding a name that some other statement in it happens to mention.
  */
 function hasOuterDeclaration(before: string, name: string): boolean {
@@ -203,7 +203,7 @@ function isNonErrorLiteral(expression: string): boolean {
 }
 
 /**
- * Reports whether a try block holds one call and nothing else.
+ * Reports whether a try block contains one call and nothing else.
  *
  * `captureError` takes a thunk and hands back what it threw, discarding what it returned, so a block that
  * keeps a result or runs a second statement is doing something that the substitution does not preserve. `await`
@@ -222,12 +222,12 @@ function isSingleCall(body: string): boolean {
  * Returns the variable to which a catch block assigns its caught value, with the offset past the block, or
  * nothing when it assigns none.
  *
- * A catch that logs, rethrows, or branches outlives the substitution, so only a lone assignment of the
- * parameter counts, with a cast admitted because it is how the hand-roll recovers the type that it lost. A catch
- * binding no parameter, or destructuring one, has nothing to capture.
+ * A catch that logs, rethrows, or branches does work that the substitution would drop. Only a lone assignment
+ * of the parameter counts, with a cast admitted because it is how the hand-roll recovers the type that it lost. A
+ * catch binding no parameter, or destructuring one, has nothing to capture.
  *
- * A `finally` clause disqualifies the site. `captureError` throws where the call completes normally, so the
- * substituted form skips whatever the clause holds on that path, and in a test that is a restore that stops
+ * A `finally` clause disqualifies the site. `captureError` throws when the call completes normally, so the
+ * substituted form skips whatever the clause contains on that path, and in a test that is a restore that stops
  * happening. One import has to replace the whole of a site for it to be claimed.
  */
 function readCatchCapture(tail: string): CatchCapture | undefined {

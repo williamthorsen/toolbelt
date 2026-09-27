@@ -121,7 +121,7 @@ describe(renderPlan, () => {
     expect(rendered).toContain('toggle    jsw.agility.backlog: DISABLED → ENABLED');
   });
 
-  it('reports a feature not held by the board as absent', () => {
+  it('reports a feature missing from the board as absent', () => {
     const rendered = renderPlan(
       buildPlan({ featureToggles: [{ feature: 'jsw.agility.backlog', from: undefined, to: 'ENABLED' }] }),
       CONFIGURATION,
@@ -152,7 +152,7 @@ describe(renderPlan, () => {
     );
   });
 
-  it('does not report a project as matching the spec where the only difference is locked', () => {
+  it('does not report a project as matching the spec when the only difference is locked', () => {
     const rendered = renderPlan(
       buildPlan({ lockedFeatures: [{ feature: 'jsw.agility.goals', from: 'DISABLED', to: 'ENABLED' }] }),
       CONFIGURATION,
@@ -169,13 +169,13 @@ describe(renderPlan, () => {
     expect(rendered).toContain("seed      move every 'To Do' work item off the board");
   });
 
-  it('does not report a matching project as having nothing to do where a seed was asked for', () => {
+  it('does not report a matching project as having nothing to do when a seed was asked for', () => {
     const rendered = renderPlan(buildPlan(), CONFIGURATION, { projectKey: PROJECT_KEY, seedBacklog: 'To Do' });
 
     expect(rendered).not.toContain('no changes');
   });
 
-  it('does not report a locked-only difference as having nothing to do where a seed was asked for', () => {
+  it('does not report a locked-only difference as having nothing to do when a seed was asked for', () => {
     const rendered = renderPlan(
       buildPlan({ lockedFeatures: [{ feature: 'jsw.agility.goals', from: 'DISABLED', to: 'ENABLED' }] }),
       CONFIGURATION,

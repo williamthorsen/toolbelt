@@ -22,7 +22,7 @@ Requires Node.js 24 or later.
 clamp(value: number, bounds: { min?: number; max?: number }): number;
 ```
 
-Returns the value constrained to the inclusive bounds; an omitted bound leaves that side unconstrained. A reversed range or a `NaN` bound throws a `RangeError`, where the `Math.max(min, Math.min(max, value))` idiom that it replaces returns a value for both. A `NaN` value passes through.
+Returns the value constrained to the inclusive bounds; an omitted bound leaves that side unconstrained. `clamp` throws a `RangeError` for a reversed range or a `NaN` bound, whereas the `Math.max(min, Math.min(max, value))` idiom that it replaces returns a value for both. It passes a `NaN` value through.
 
 ```ts
 import { clamp } from '@williamthorsen/toolbelt.numbers/candidate';
@@ -37,7 +37,7 @@ clamp(-5, { min: 0 }); // 0
 round(value: number, nDecimalPlaces?: number): number;
 ```
 
-Returns the value rounded to the given number of decimal places, or to a whole number where none is given.
+Returns the value rounded to the given number of decimal places, or to a whole number when none is given.
 
 ```ts
 import { round } from '@williamthorsen/toolbelt.numbers/candidate';
@@ -63,17 +63,17 @@ pickInteger({ min: 1, max: 6 }); // 1 through 6
 
 ## Adoption checks
 
-The package ships a ReadyUp kit, so a project that installs it can ask how far its adoption got:
+The package includes a ReadyUp kit. A project that installs it can ask how far its adoption got:
 
 ```sh
 rdy run --packages
 ```
 
-The kit reads the project's tracked sources and reports every hand-rolled clamp, decimal rounding, and random integer in them, each counted against the calls that the project already makes into this package. All three report at `recommend`: They are correct code that a published utility expresses better, not defects.
+The kit reads the project's tracked sources and reports every hand-rolled clamp, decimal rounding, and random integer in them, each counted against the calls that the project already makes into this package. The kit reports all three at `recommend`: They are correct code that a published utility expresses better, not defects.
 
 A random integer used as an array subscript is left alone. That site belongs to `@williamthorsen/toolbelt.arrays`, whose `pickItem` covers it, and reporting it here would mean seeing one line twice under conflicting advice.
 
-Bootstrap wrappers under `bin/` are exempt: Such a wrapper imports only builtins so its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they compute these values deliberately. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: The sweep drops it before the kit sees it, so committed bundler output yields no advice that anyone could act on. The sweep is readyup's, so this holds on readyup 0.35.0 or later.
+Bootstrap wrappers under `bin/` are exempt: Such a wrapper imports only builtins so that its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they compute these values deliberately. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: The sweep drops it before the kit sees it, so committed bundler output yields no advice that anyone could act on. Because the sweep is readyup's, this holds on readyup 0.35.0 or later.
 
 A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-ignore-next-line` on the line above. A pragma naming a check's id suppresses that check alone; with no id it covers every check on the line. A failed check prints its id ahead of its fraction, which is the form to write:
 

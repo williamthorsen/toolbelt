@@ -21,7 +21,7 @@ describe('The async adoption kit, run through rdy', () => {
     ]);
   });
 
-  // A `dir:` kit source has no namespace, so the bare id stands. A consumer running the kit from the
+  // A `dir:` kit source has no namespace, so the pragma names the bare id. A consumer running the kit from the
   // installed package writes `toolbelt.async/no-hand-rolled-sleep`.
   it('drops a site covered by a qualified pragma', () => {
     expect(runKit(`${SLEEP} // rdy-ignore no-hand-rolled-sleep -- reviewed\n`)).toStrictEqual([
@@ -33,11 +33,11 @@ describe('The async adoption kit, run through rdy', () => {
 // region | Helpers
 
 /**
- * Runs the package's compiled kit over a fixture repo holding the given sleep source, and reports what the
+ * Runs the package's compiled kit over a fixture repo containing the given sleep source, and reports what the
  * check named and counted.
  *
- * A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report reaches the
- * layer that acts on one.
+ * A pragma is honored by the runner rather than by the kit, so only a run can show that the runner acts on a kit's
+ * report.
  */
 function runKit(sleepSource: string): KitCheckReport[] {
   return listKitCheckReports(PACKAGE_DIR, {

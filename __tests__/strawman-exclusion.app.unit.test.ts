@@ -35,7 +35,7 @@ describe('The strawman tier', () => {
     expect(moduleCount).toBeGreaterThan(0);
   });
 
-  it('counts as absent where its directory holds no source file', () => {
+  it('counts as absent when its directory holds no source file', () => {
     using tree = createTempDir({
       'packages/fixture/package.json': PACKAGE_MANIFEST,
       'packages/fixture/src/0-strawman/': '',
@@ -48,7 +48,7 @@ describe('The strawman tier', () => {
     expect(strawmanCount).toBe(0);
   });
 
-  it('is reported where it holds a source file and its package declares no exclusion', () => {
+  it('is reported when it holds a source file and its package declares no exclusion', () => {
     using tree = createTempDir({
       'packages/fixture/package.json': PACKAGE_MANIFEST,
       'packages/fixture/src/0-strawman/idea.ts': '',

@@ -8,8 +8,8 @@ export type SiteKind = ErrorCaptureKind | StdioSpyKind;
 /**
  * Lists every site read by the kit's checks, from each of the idioms for which this package has advice.
  *
- * `defineAdoptionKit` takes one detector, so both reach the kit through this. The sites are sorted by line
- * because nothing downstream sorts them.
+ * `defineAdoptionKit` takes one detector, so both detectors are given to the kit through this function. The sites
+ * are sorted by line because nothing downstream sorts them.
  *
  * @internal
  */

@@ -23,11 +23,11 @@ describe(readLiteral, () => {
     expect(readLiteral(blanked, LITERAL_SPAN)).toBe(blank);
   });
 
-  it('reads nothing where the match captured no such group', () => {
+  it('reads nothing when the match captured no such group', () => {
     expect(readLiteral(SOURCE, undefined)).toBeUndefined();
   });
 
-  it('reads nothing where the span has no end', () => {
+  it('reads nothing when the span has no end', () => {
     expect(readLiteral(SOURCE, [12])).toBeUndefined();
   });
 });

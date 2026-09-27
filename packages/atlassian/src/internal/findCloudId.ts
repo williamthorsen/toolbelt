@@ -5,8 +5,8 @@ const SERVER_ERROR_STATUS = 500;
 const TENANT_INFO_PATH = '/_edge/tenant_info';
 
 /**
- * Reads a site's cloudId from its tenant-info endpoint, which responds without authentication, so no credential
- * reaches this request.
+ * Reads a site's cloudId from its tenant-info endpoint, which responds without authentication, so this request
+ * sends no credential.
  *
  * @internal
  */
@@ -17,7 +17,7 @@ export async function findCloudId(host: string, fetchImpl: typeof globalThis.fet
   // A gateway incident is retryable and a 4xx is not: Below 500 the host is no Atlassian site, which is a
   // usage error fixed by correcting the site.
   if (response.status >= SERVER_ERROR_STATUS) {
-    // `JiraResponse.text` contains a body only where there is one, which every other site gets from
+    // `JiraResponse.text` contains a body only when there is one, which every other site gets from
     // `readResponse`; an empty string here would end the error's message at its colon.
     const body = await response.text();
 
@@ -29,7 +29,7 @@ export async function findCloudId(host: string, fetchImpl: typeof globalThis.fet
     });
   }
   if (!response.ok) {
-    throw new Error(`Could not read the cloudId of '${host}'. ${url} answered ${response.status}.`);
+    throw new Error(`Could not read the cloudId of '${host}'. ${url} returned ${response.status}.`);
   }
 
   const payload: unknown = await response.json();

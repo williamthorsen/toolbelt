@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { createTempTree } from '../createTempTree.ts';
 import { pointCwdAt } from '../pointCwdAt.ts';
 
-// Bound before any scope replaces `process.cwd`, so a test can read where the process actually is.
+// Bound before any scope replaces `process.cwd`, so that a test can read where the process actually is.
 const nativeCwd = process.cwd.bind(process);
 
 describe(pointCwdAt, () => {

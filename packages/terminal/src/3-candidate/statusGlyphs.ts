@@ -5,14 +5,14 @@ import { defineGlyphSet } from './defineGlyphSet.ts';
  *
  * The outcomes that a reader acts on are told apart by shape, not by hue: ✅, ❌, ⏩, and 🚫 stay distinct for
  * the roughly 8% of men with deuteranopia or protanopia, for whom a green and a red circle differ only in a
- * lightness that no emoji font guarantees. `detectOutputStyle` chooses rich output for an interactive terminal
- * outside CI, so those readers see these glyphs rather than the plain words. The two remaining circles carry
- * `info` and `warning`, whose blue and orange separate on the axis that red-green colour blindness leaves intact.
+ * lightness that an emoji font does not guarantee. `detectOutputStyle` chooses rich output for an interactive
+ * terminal outside CI, so those readers see these glyphs rather than the plain words. The two remaining circles
+ * mark `info` and `warning`, whose blue and orange separate on the axis that red-green colour blindness leaves
+ * intact.
  *
- * ⚠️ is what a CLI reaches for first and is a code point plus a U+FE0F variation selector, so 🟠 carries
- * `warning` instead.
+ * ⚠️, a CLI's usual first choice, is a code point plus a U+FE0F variation selector; 🟠 marks `warning` instead.
  *
- * Each plain glyph is an uppercase word rather than an ASCII symbol, so `grep FAIL` finds a failure in a log.
+ * Each plain glyph is an uppercase word rather than an ASCII symbol, so that `grep FAIL` finds a failure in a log.
  */
 export const STATUS_GLYPHS = defineGlyphSet({
   blocked: { plain: 'BLOCK', rich: '🚫' },

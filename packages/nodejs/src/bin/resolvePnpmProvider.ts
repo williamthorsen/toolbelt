@@ -57,7 +57,7 @@ export type PnpmProvider =
   | {
       readonly kind: 'asdf-plugin';
       readonly path: string;
-      /** The `.tool-versions` entry selecting the plugin's version from the working directory, where one is in reach. */
+      /** The `.tool-versions` entry selecting the plugin's version from the working directory, if one is in reach. */
       readonly toolVersions: ToolVersionsEntry | undefined;
       /** The plugin versions that the shim's header names. */
       readonly versions: readonly string[];
@@ -69,7 +69,7 @@ export type PnpmProvider =
       readonly path: string;
     }
   | {
-      /** A pnpm that no other kind recognizes, named by its path alone. */
+      /** A pnpm matching no other kind, named by its path alone. */
       readonly kind: 'path';
       readonly path: string;
     }
@@ -92,7 +92,7 @@ export interface ResolvePnpmProviderOptions {
 
 // region | Helpers
 
-/** Classifies a bin by the npm package behind it, falling back to the path where no known package is. */
+/** Classifies a bin by the npm package behind it, falling back to the path when the package is unknown. */
 function classifyBin(
   pnpmPath: string,
   backingPackage: string | undefined,
@@ -104,7 +104,7 @@ function classifyBin(
   return { kind: 'path', path: pnpmPath };
 }
 
-/** Reads the nodejs version of the asdf install that holds a path, or `undefined` where no nodejs install does. */
+/** Reads the nodejs version of the asdf install that contains a path, or `undefined` when no nodejs install does. */
 function findNodeVersionOfInstall(filePath: string): string | undefined {
   const install = findAsdfInstall(filePath);
 

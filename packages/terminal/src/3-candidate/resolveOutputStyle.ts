@@ -81,7 +81,7 @@ export interface InvalidOutputStyle {
 }
 
 export interface OutputStyleResolution {
-  /** The first value that no source accepted, absent where every source named a setting or named nothing. */
+  /** The first rejected value, absent when every source named a setting or named nothing. */
   readonly invalid?: InvalidOutputStyle | undefined;
   readonly style: OutputStyle;
 }
@@ -101,10 +101,10 @@ export interface ResolveOutputStyleOptions extends DetectOutputStyleOptions {
  * Finds the value that an invocation gives the flag, scanning raw argv ahead of any parse.
  *
  * Reading it without `parseArgs` lets a caller render its own parse failure in the style that the invocation asked
- * for, so the same argv reaches `parseArgs` afterwards and the scan reads it the way `parseArgs` does: both
+ * for. Because the same argv is passed to `parseArgs` afterwards, the scan reads it the way `parseArgs` does: Both
  * `--style plain` and `--style=plain` give a value, the `--` terminator ends the scan, and the last occurrence wins.
  *
- * A dash-led argument after a spaced flag is no value, `-` alone excepted, because only the `=` form carries one.
+ * A dash-led argument after a spaced flag is no value, `-` alone excepted, because only the `=` form gives one.
  * `--style --verbose` therefore leaves the flag contributing nothing and the next source deciding, and `parseArgs`
  * raises the ambiguity itself instead of the caller complaining about the style vocabulary.
  */
@@ -132,7 +132,7 @@ function isOutputStyleSetting(value: string): value is OutputStyleSetting {
   return ACCEPTED_SETTINGS.has(value);
 }
 
-/** Reports whether an argument can stand as a spaced flag's value, which a dash-led one cannot unless it is `-`. */
+/** Reports whether an argument can serve as a spaced flag's value, which a dash-led one cannot unless it is `-`. */
 function isValueArgument(arg: string): boolean {
   return !arg.startsWith('-') || arg === STDIN_ARGUMENT;
 }

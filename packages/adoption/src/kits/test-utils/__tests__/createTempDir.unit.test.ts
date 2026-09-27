@@ -7,7 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { createTempDir } from '../createTempDir.ts';
 
 describe(createTempDir, () => {
-  it('creates a file holding the mapped contents, intermediate directories included', () => {
+  it('creates a file containing the mapped contents, intermediate directories included', () => {
     using tree = createTempDir({ 'src/nested/main.ts': 'export {};\n' });
 
     expect(fs.readFileSync(path.join(tree.dir, 'src/nested/main.ts'), 'utf8')).toBe('export {};\n');
@@ -37,7 +37,7 @@ describe(createTempDir, () => {
   // `createTempTree` reads a key ending in a separator as a directory. Without this rejection, a caller
   // copying that idiom over would get a file of the same name and no error.
   it('rejects an entry naming a directory, leaving nothing on disk', () => {
-    // Spy on the creation call, which is the only route to the root of a directory for which no handle was
+    // Spy on the creation call, which is the only way to find the root of a directory for which no handle was
     // returned.
     using mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
 

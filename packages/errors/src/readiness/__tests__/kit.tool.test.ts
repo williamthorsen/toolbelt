@@ -23,7 +23,7 @@ const CLONE = [
 const COERCE = 'export const wrapped = value instanceof Error ? value : new Error(String(value));\n';
 const DESCRIBE_INLINE = 'export const message = error instanceof Error ? error.message : String(error);\n';
 const NARROW = "export const isErrno = error instanceof Error && 'code' in error;\n";
-// The package's own describeError, holding the idiom that its first check reports.
+// The package's own describeError, containing the idiom that its first check reports.
 const OWN_DESCRIBE_ERROR = [
   'export function describeError(error) {',
   '  if (error instanceof Error) return error.message;',
@@ -58,7 +58,7 @@ describe('The errors adoption kit', () => {
 
     const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
 
-    // `no-instanceof-error` takes both the assert and the narrow kind, so its row holds two sites.
+    // `no-instanceof-error` takes both the assert and the narrow kind, so its row contains two sites.
     expect(outcomes.map(listReportedFindings)).toStrictEqual([
       [{ line: 2, path: 'src/clone.ts', reported: true, symbol: 'toMessage' }],
       [{ line: 1, path: 'src/describe.ts', reported: true }],
@@ -70,7 +70,7 @@ describe('The errors adoption kit', () => {
     ]);
   });
 
-  it('spans all five sites in the denominator, so the checks share one fraction', async () => {
+  it('spans all five sites in the one denominator that the checks share', async () => {
     using tree = createTrackedRepo(EVERY_IDIOM);
     using _cwd = pointCwdAt(tree.dir);
 
@@ -122,7 +122,7 @@ describe('The errors adoption kit', () => {
     await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
   });
 
-  it('skips every check where the sweep matches no source', async () => {
+  it('skips every check when the sweep matches no source', async () => {
     using tree = createTrackedRepo({
       'bin/run.js': DESCRIBE_INLINE,
       'package.json': MANIFEST,
@@ -131,7 +131,7 @@ describe('The errors adoption kit', () => {
     using _cwd = pointCwdAt(tree.dir);
 
     await expect(runSkip((await loadChecks())[0])).resolves.toBe(
-      'the project holds no JavaScript or TypeScript sources outside the exempt paths',
+      'the project contains no JavaScript or TypeScript sources outside the exempt paths',
     );
   });
 });
@@ -139,9 +139,9 @@ describe('The errors adoption kit', () => {
 // region | Helpers
 
 /**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist holds in declaration order.
+ * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
  *
- * A kit holds its project sweep on its own closure, so one import would give every test here the first
+ * A kit keeps its project sweep in its own closure, so one import would give every test here the first
  * fixture repo's findings. Resetting the registry leaves each test with a kit that has swept nothing yet.
  */
 async function loadChecks(): Promise<readonly RdyCheck[]> {

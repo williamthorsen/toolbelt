@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { listCaptureSites } from '../listCaptureSites.ts';
 
 // Each source a legitimate use of try/catch that the substitution does not reach. The first four are the
-// shapes that this repository actually holds; the rest are the ways a capture can look without being one.
+// shapes that this repository actually contains; the rest are the ways a capture can look without being one.
 const UNCLAIMED = [
   {
     label: 'a try/finally, which captures nothing',
@@ -45,7 +45,7 @@ const UNCLAIMED = [
     source: ['try {', '  parse(text);', '} catch (error) {', '  const caught = error;', '  report(caught);', '}'],
   },
   {
-    label: 'a target a catch block cannot reassign',
+    label: 'a target that a catch block cannot reassign',
     source: ['const caught = undefined;', 'try {', '  parse(text);', '} catch (error) {', '  caught = error;', '}'],
   },
   {
@@ -108,7 +108,7 @@ const LITERALS = [
 ];
 
 describe(listCaptureSites, () => {
-  it('reports a capture, naming its line and the variable it fills', () => {
+  it('reports a capture, naming its line and the variable that it fills', () => {
     const source = [
       "const thrown = { code: 'ENOENT' };",
       'let caught: unknown;',
@@ -140,7 +140,7 @@ describe(listCaptureSites, () => {
     expect(listCaptureSites(source)).toStrictEqual([{ kind: 'hand-rolled-error-capture', line: 5, symbol: 'thrown' }]);
   });
 
-  it('reads a call the formatter broke across lines, and a catch that casts', () => {
+  it('reads a call that the formatter broke across lines, and a catch that casts', () => {
     const source = [
       'let error: Error | undefined;',
       '',
@@ -169,7 +169,7 @@ describe(listCaptureSites, () => {
     expect(listCaptureSites(source)).toStrictEqual([{ kind: 'hand-rolled-error-capture', line: 2, symbol: 'caught' }]);
   });
 
-  it('reads a generic call and an optionally-called one as the single calls they are', () => {
+  it('reads a generic call and an optionally-called one as the single calls that they are', () => {
     const generic = [
       'let caught: unknown;',
       'try {',
@@ -195,7 +195,7 @@ describe(listCaptureSites, () => {
     ]);
   });
 
-  it('reports every capture a file holds', () => {
+  it('reports every capture that a file contains', () => {
     const capture = ['let caught: unknown;', 'try {', '  parse(text);', '} catch (error) {', '  caught = error;', '}'];
 
     expect(listCaptureSites([...capture, ...capture].join('\n'))).toHaveLength(2);
@@ -215,7 +215,7 @@ describe(listCaptureSites, () => {
     expect(listCaptureSites(buildAssertedCapture([], `expect(caught).toBe(${literal});`))).toStrictEqual([]);
   });
 
-  it('reads a literal through a type annotation, a cast, and an argument the formatter broke across lines', () => {
+  it('reads a literal through a type annotation, a cast, and an argument that the formatter broke across lines', () => {
     const annotated = buildAssertedCapture(
       ["const thrown: unknown = { code: 'ENOENT' };"],
       'expect(caught).toBe(thrown);',
@@ -244,7 +244,7 @@ describe(listCaptureSites, () => {
     expect(listCaptureSites(other)).toHaveLength(1);
   });
 
-  it('claims a capture whose literal assertion sits in the following test', () => {
+  it('claims a capture whose literal assertion is in the following test', () => {
     const source = [
       buildAssertedCapture([], 'expect(caught).toBeInstanceOf(TypeError);'),
       buildAssertedCapture([], "expect(caught).toBe('ENOENT');"),
@@ -278,7 +278,7 @@ describe(listCaptureSites, () => {
 
 // region | Helpers
 
-/** Builds a test holding a capture, with the declarations ahead of it and the assertion after it. */
+/** Builds a test containing a capture, with the declarations ahead of it and the assertion after it. */
 function buildAssertedCapture(declarations: string[], assertion: string): string {
   return [
     "it('rethrows what it cannot describe', () => {",

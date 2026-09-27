@@ -10,11 +10,11 @@ export type MathIdiomKind = 'clamp-nest' | 'random-integer' | 'round-scale';
  * Lists every hand-rolled arithmetic idiom in a source file that this package publishes a utility for.
  *
  * The three idioms share no anchor, so each is matched by its own detector and the results are merged in line
- * order. A file holding two of them reports both.
+ * order. For a file that contains two of them, both are reported.
  *
- * The source is blanked once here and the three read what it produces, so an idiom written in a comment or a
- * literal is invisible to all of them. Blanking preserves every offset, so a reported line still names the line
- * held by the source.
+ * Because the source is blanked once here and the three read what it produces, an idiom written in a comment or
+ * a literal is invisible to all of them. Blanking preserves every offset, which keeps each reported line number
+ * valid in the source.
  *
  * @internal
  */

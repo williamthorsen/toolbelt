@@ -8,9 +8,9 @@ const ENTRY_POINT = path.join(import.meta.dirname, '../tb-jira.ts');
 const SERVICE = 'tb-jira-pipes-test';
 
 describe('tb-jira over a pipe', () => {
-  // `auth set` opens the keychain before it reads, and that throws off macOS.
+  // `auth set` opens the keychain before it reads, and that throws on any platform other than macOS.
   it.skipIf(process.platform !== 'darwin')('reads a token whose producer writes after a delay', () => {
-    // A blank token is refused before anything is stored, so this reaches no keychain item.
+    // A blank token is refused before anything is stored, so the test touches no keychain item.
     const { stderr } = runPipeline(
       String.raw`{ sleep 0.3; printf '\n'; echo "producer-exit:$?" >&2; } | ${buildCommand([
         'auth',
@@ -27,8 +27,8 @@ describe('tb-jira over a pipe', () => {
     expect(stderr).toContain('The token is blank. Nothing was stored.');
   });
 
-  it('ends quietly where the reader exits before the output is written', () => {
-    // The `sleep` lets the reader exit first, so the CLI's write reaches a pipe that is already closed.
+  it('ends quietly when the reader exits before the output is written', () => {
+    // The `sleep` lets the reader exit first, so the CLI writes to a pipe that is already closed.
     const { status, stderr } = runPipeline(`{ sleep 0.1; ${buildCommand(['--help'])}; echo "exit:$?" >&2; } | true`);
 
     expect(stderr).toBe('exit:0\n');
@@ -43,7 +43,7 @@ function buildCommand(args: string[]): string {
   return [process.execPath, ENTRY_POINT, ...args].map(quoteForShell).join(' ');
 }
 
-/** Wraps a value for `bash -c`, so a path holding a space or a quote survives. */
+/** Wraps a value for `bash -c`, so that a path holding a space or a quote survives. */
 function quoteForShell(value: string): string {
   return `'${value.replaceAll("'", String.raw`'\''`)}'`;
 }

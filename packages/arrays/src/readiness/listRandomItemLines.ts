@@ -10,7 +10,7 @@ const WINDOW = { lookahead: 0, lookbehind: 80 };
  * Takes the blanked code produced by `listArrayIdioms`, so an index written in a comment or a literal is not one.
  *
  * A site is claimed for standing in array-subscript position, whatever it scales the draw by. That is the
- * whole set that `toolbelt.numbers` declines, and both kits read the answer from the same predicate, so
+ * whole set that `toolbelt.numbers` declines. Because both kits read the answer from the same predicate,
  * every floored random is claimed by exactly one of them.
  *
  * @internal

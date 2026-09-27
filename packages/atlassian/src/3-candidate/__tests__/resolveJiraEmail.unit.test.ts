@@ -15,7 +15,7 @@ describe(resolveJiraEmail, () => {
     expect(resolveJiraEmail({ env: { JIRA_EMAIL: EMAIL }, fallback: 'spec@example.com' })).toBe(EMAIL);
   });
 
-  it('falls back to the fallback, which is where a spec reaches the chain', () => {
+  it('falls back to the fallback, through which a caller passes the value from a spec', () => {
     expect(resolveJiraEmail({ env: {}, fallback: EMAIL })).toBe(EMAIL);
   });
 
@@ -27,7 +27,7 @@ describe(resolveJiraEmail, () => {
     expect(resolveJiraEmail({ env: { JIRA_EMAIL: ' '.repeat(3) }, fallback: EMAIL })).toBe(EMAIL);
   });
 
-  it('throws naming the environment variable where every source misses', () => {
+  it('throws naming the environment variable when every source misses', () => {
     expect(() => resolveJiraEmail({ env: {} })).toThrow('No Atlassian account email was given');
   });
 });

@@ -47,7 +47,7 @@ export function buildStatuses(): WorkflowStatus[] {
 
 /**
  * Builds one transition, with a `conditions` field that this package does not model. The workflow write replaces
- * the graph wholesale, so a transition that reaches it short of such a field loses it.
+ * the graph wholesale, so a transition sent without such a field loses it.
  */
 export function buildTransition(
   overrides: Partial<WorkflowTransition> & Pick<WorkflowTransition, 'id' | 'name'>,

@@ -159,7 +159,7 @@ describe(computeNormalIntervalProbabilities, () => {
 });
 
 /**
- * Returns a matcher per value, so an array comparison tolerates the CDF approximation's error.
+ * Returns a matcher per value, so that an array comparison tolerates the CDF approximation's error.
  */
 function buildCloseMatchers(values: number[]): unknown[] {
   return values.map((value): unknown => expect.closeTo(value, PRECISION));

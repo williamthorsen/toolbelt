@@ -36,11 +36,11 @@ describe(listJoinedLineArrays, () => {
     ]);
   });
 
-  it('claims an array holding a comment between its elements', () => {
+  it('claims an array containing a comment between its elements', () => {
     expect(listLines("const text = [\n  // heading\n  'first',\n  'second',\n].join('\\n');\n")).toStrictEqual([1]);
   });
 
-  it('claims an array whose indented elements sit beside one opening with an interpolation', () => {
+  it('claims an array whose indented elements are next to one opening with an interpolation', () => {
     expect(listLines("const text = [\n  `${heading}`,\n  '  detail',\n].join('\\n');\n")).toStrictEqual([1]);
   });
 
@@ -52,7 +52,7 @@ describe(listJoinedLineArrays, () => {
     expect(listLines("const text = [\n  '  first',\n  '  second',\n  '',\n].join('\\n');\n")).toStrictEqual([]);
   });
 
-  it('declines an array holding a single element', () => {
+  it('declines an array with a single element', () => {
     expect(listLines("const text = [\n  'only',\n].join('\\n');\n")).toStrictEqual([]);
   });
 
@@ -62,7 +62,7 @@ describe(listJoinedLineArrays, () => {
     ['a call', 'JSON.stringify(value)'],
     ['a tagged template', 'String.raw`first`'],
     ['a concatenation', "'first' + suffix"],
-  ])('declines an array holding %s', (_label, element) => {
+  ])('declines an array containing %s', (_label, element) => {
     expect(listLines(`const text = [\n  ${element},\n  'second',\n].join('\\n');\n`)).toStrictEqual([]);
   });
 
@@ -89,7 +89,7 @@ describe(listJoinedLineArrays, () => {
 
 // region | Helpers
 
-/** Runs the detector over a source and the blanked code that its caller would hand it. */
+/** Runs the detector over a source and the blanked code that its caller would pass it. */
 function listLines(source: string): number[] {
   return listJoinedLineArrays(blankNonCode(source), source);
 }

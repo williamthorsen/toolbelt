@@ -71,7 +71,7 @@ describe('The packaging adoption kit', () => {
     });
   });
 
-  it('leaves a walk probing for a repository marker alone out of the report and out of the denominator', async () => {
+  it('leaves a walk that probes only for a repository marker out of the report and out of the denominator', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/root.ts': MARKER_SEARCH });
     using _cwd = pointCwdAt(tree.dir);
 
@@ -111,7 +111,7 @@ describe('The packaging adoption kit', () => {
     await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
   });
 
-  it('skips the check where the sweep matches no source', async () => {
+  it('skips the check when the sweep matches no source', async () => {
     using tree = createTrackedRepo({
       'bin/run.js': MANIFEST_SEARCH,
       'package.json': MANIFEST,
@@ -120,7 +120,7 @@ describe('The packaging adoption kit', () => {
     using _cwd = pointCwdAt(tree.dir);
 
     await expect(runSkip((await loadChecks())[0])).resolves.toBe(
-      'the project holds no JavaScript or TypeScript sources outside the exempt paths',
+      'the project contains no JavaScript or TypeScript sources outside the exempt paths',
     );
   });
 });
@@ -128,9 +128,9 @@ describe('The packaging adoption kit', () => {
 // region | Helpers
 
 /**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist holds in declaration order.
+ * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
  *
- * A kit holds its project sweep on its own closure, so one import would give every test here the first
+ * A kit keeps its project sweep in its own closure, so one import would give every test here the first
  * fixture repo's findings. Resetting the registry leaves each test with a kit that has swept nothing yet.
  */
 async function loadChecks(): Promise<readonly RdyCheck[]> {

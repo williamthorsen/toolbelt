@@ -12,7 +12,7 @@ import { describe, expect, it, vi } from 'vitest';
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.async', version: '1.0.0' });
 const SLEEP = 'export const waited = new Promise((resolve) => setTimeout(resolve, 50));\n';
-// The package's own `delay`, holding the idiom that its check recommends replacing.
+// The package's own `delay`, containing the idiom that its check recommends replacing.
 const OWN_DELAY = 'export function delay(ms) {\n  return new Promise((resolve) => setTimeout(resolve, ms));\n}\n';
 // A timer call with a value, a callback that settles nothing, and an executor doing more than the timer.
 const UNCLAIMED = [
@@ -82,12 +82,12 @@ describe('The async adoption kit', () => {
     });
   });
 
-  it('skips the check where the sweep matches no source', async () => {
+  it('skips the check when the sweep matches no source', async () => {
     using tree = createTrackedRepo({ 'bin/run.js': SLEEP, 'package.json': MANIFEST });
     using _cwd = pointCwdAt(tree.dir);
 
     await expect(runSkip((await loadChecks())[0])).resolves.toBe(
-      'the project holds no JavaScript or TypeScript sources outside its bootstrap wrappers',
+      'the project contains no JavaScript or TypeScript sources outside its bootstrap wrappers',
     );
   });
 });
@@ -95,9 +95,9 @@ describe('The async adoption kit', () => {
 // region | Helpers
 
 /**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist holds in declaration order.
+ * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
  *
- * A kit holds its project sweep on its own closure, so one import would give every test here the first
+ * A kit keeps its project sweep in its own closure, so one import would give every test here the first
  * fixture repo's findings. Resetting the registry leaves each test with a kit that has swept nothing yet.
  */
 async function loadChecks(): Promise<readonly RdyCheck[]> {

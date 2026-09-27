@@ -8,8 +8,8 @@ const BYTE_ORDER_MARK = '\u{FEFF}';
  * its own line terminator. Blank lines are emptied and no line is discarded, so the result has the
  * same line count as the input.
  *
- * A leading byte-order mark is held aside while the indent is measured, so a file read with one
- * still dedents.
+ * A leading byte-order mark is set aside while the indent is measured, so that a file read with
+ * one still dedents.
  *
  * @category String
  * @stage release

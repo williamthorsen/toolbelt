@@ -3,7 +3,7 @@ import { findOwningManifest } from './findOwningManifest.ts';
 /**
  * Reads the version declared by the package owning a directory, defaulting to this module's own, which is
  * this package whether it runs from source under the test runner or from the build output once installed.
- * Throws where the owning manifest declares no string version.
+ * Throws when the owning manifest declares no string version.
  *
  * @internal
  */

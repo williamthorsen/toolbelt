@@ -13,7 +13,7 @@ describe(detectOutputStyle, () => {
     expect(detectOutputStyle({ env: BARE_ENV, isTty: TTY })).toBe('rich');
   });
 
-  it('chooses plain where the output is not a terminal', () => {
+  it('chooses plain when the output is not a terminal', () => {
     expect(detectOutputStyle({ env: BARE_ENV, isTty: PIPE })).toBe('plain');
   });
 

@@ -28,7 +28,7 @@ describe(resolveJiraBaseUrl, () => {
     expect(fetchImpl).toHaveBeenCalledWith('https://acme.atlassian.net/_edge/tenant_info', expect.anything());
   });
 
-  it('throws where the site is blank', async () => {
+  it('throws when the site is blank', async () => {
     await expect(resolveJiraBaseUrl({ cloudId: 'abc-123', site: ' '.repeat(3) })).rejects.toThrow('A site is required');
   });
 
@@ -55,6 +55,6 @@ describe(resolveJiraBaseUrl, () => {
   it('throws on a failed tenant-info read', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response('', { status: 404 }));
 
-    await expect(resolveJiraBaseUrl({ fetch: fetchImpl, site: 'acme.atlassian.net' })).rejects.toThrow('answered 404');
+    await expect(resolveJiraBaseUrl({ fetch: fetchImpl, site: 'acme.atlassian.net' })).rejects.toThrow('returned 404');
   });
 });

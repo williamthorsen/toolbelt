@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { listDirectoryChainMatches } from '../directory-chain-matches.ts';
 
 describe(listDirectoryChainMatches, () => {
-  it('returns the levels holding a match, nearest first, skipping those holding none', () => {
+  it('returns the levels containing a match, nearest first, skipping those containing none', () => {
     using tree = createTempTree({
       'app/src/': '',
       'app/stack.config.mjs': '',
@@ -72,7 +72,7 @@ describe(listDirectoryChainMatches, () => {
     expect(result.map((match) => match.dir)).toStrictEqual([tree.resolve('app')]);
   });
 
-  it('if no level holds a name, returns no matches', () => {
+  it('if no level contains a name, returns no matches', () => {
     using tree = createTempTree({ 'app/': '' });
 
     const result = listDirectoryChainMatches(tree.resolve('app'), ['stack.config.mjs'], { stopAtDir: tree.dir });

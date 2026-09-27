@@ -5,14 +5,14 @@ export interface FunctionBody {
   bodyEnd: number;
   /** The reported group's opening brace. */
   bodyStart: number;
-  /** The first parameter's name, where the list opens with a plain identifier. */
+  /** The first parameter's name, when the list opens with a plain identifier. */
   firstParameter?: string;
   /** The function head's own offset, ahead of the reported group. */
   headStart: number;
   name: string;
 }
 
-// A type-parameter list sits between the name and the parameters, and a guard that narrows to a type named by its
+// A type-parameter list comes between the name and the parameters, and a guard that narrows to a type named by its
 // caller cannot be written without one. `[^<>]*` declines a list nesting a further `<...>`, which leaves such a head
 // unreported rather than matching a prefix of it.
 const FUNCTION_HEAD =
@@ -27,14 +27,14 @@ const PLAIN_PARAMETER = /^\s*(?<name>[A-Za-z_$][\w$]*)\s*(?=[,:=?]|$)/;
  * parameter list.
  *
  * A detector reads the body to judge what a whole function does, which is the strongest finding available: One
- * substitution retires a function rather than a single expression. The first parameter is reported alongside,
- * so a detector can additionally require the body to test the function's own argument. Only a braced group is
- * reported, so a concise arrow returning an expression falls to per-site classification instead.
+ * substitution replaces a whole function rather than a single expression. The first parameter is reported
+ * alongside, so that a detector can additionally require the body to test the function's own argument. Only a
+ * braced group is reported, so a concise arrow returning an expression is left to per-site classification instead.
  *
- * The group is the body except where a `function`'s return-type annotation contains a brace of its own, as an
- * object type or inside a generic argument. There the annotation's group is reported in the body's place, and an
- * overload signature with a brace is reported as though it had a body. Telling a type's braces from a
- * block's takes a parser rather than delimiter counting, so a detector whose verdict would be wrong on such a
+ * The group is the body except when a `function`'s return-type annotation contains a brace of its own, as an
+ * object type or inside a generic argument. In that case the annotation's group is reported in the body's place,
+ * and an overload signature with a brace is reported as though it had a body. Because telling a type's braces
+ * from a block's takes a parser rather than delimiter counting, a detector whose verdict would be wrong on such a
  * function has to recognize it directly.
  *
  * @internal
@@ -76,7 +76,7 @@ export function listFunctionBodies(source: string): FunctionBody[] {
 // region | Helpers
 
 /**
- * Returns the offset from which the brace group is searched, or nothing where the parameter list never closes.
+ * Returns the offset from which the brace group is searched, or nothing when the parameter list never closes.
  *
  * A `function` head matches only as far as its opening parenthesis, so the parameter list is read past before
  * any brace counts: A destructured parameter, an object default, or an inline type literal would otherwise
@@ -91,16 +91,16 @@ function findBodySearchStart(source: string, head: RegExpExecArray): number | un
  * Returns the name with which the parameter list opens, or nothing when it opens with anything but a plain
  * identifier.
  *
- * A destructuring pattern and a rest element bind no single name at the first position, so a detector
- * anchoring on the function's own argument has to decline such a function rather than read past the pattern to
- * the identifier inside it.
+ * A destructuring pattern and a rest element bind no single name at the first position. A detector anchoring on
+ * the function's own argument has to decline such a function rather than read past the pattern to the
+ * identifier inside it.
  */
 function findFirstParameterName(parameterText: string | undefined): string | undefined {
   if (parameterText === undefined) return undefined;
   return PLAIN_PARAMETER.exec(parameterText)?.groups?.['name'];
 }
 
-/** Returns the text between a head's parentheses, or nothing where the list never closes. */
+/** Returns the text between a head's parentheses, or nothing when the list never closes. */
 function readParameterText(source: string, head: RegExpExecArray): string | undefined {
   const arrowParameters = head.groups?.['arrowParameters'];
   if (arrowParameters !== undefined) return arrowParameters;

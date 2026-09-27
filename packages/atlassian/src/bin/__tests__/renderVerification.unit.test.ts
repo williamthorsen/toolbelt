@@ -5,7 +5,7 @@ import type { VerificationReport } from '../../3-candidate/VerificationReport.ts
 import { renderVerification } from '../renderVerification.ts';
 
 describe(renderVerification, () => {
-  it('marks a status held by the server as the spec declares it', () => {
+  it('marks a status that the server has as the spec declares it', () => {
     const rendered = renderVerification(
       buildReport({ statuses: [{ category: 'TODO', matches: true, name: 'To Do', transition: 'To Do' }] }),
       buildColumns(),
@@ -14,7 +14,7 @@ describe(renderVerification, () => {
     expect(rendered).toContain("  ok   To Do (TODO), transition 'To Do'");
   });
 
-  it('marks a status not held by the server, naming what is absent', () => {
+  it('marks a status missing from the server, naming what is absent', () => {
     const rendered = renderVerification(
       buildReport({
         matches: false,
@@ -49,7 +49,7 @@ describe(renderVerification, () => {
       buildColumns(),
     );
 
-    expect(rendered).toContain('  LOCK jsw.agility.goals = DISABLED, which Jira has locked and no call can set');
+    expect(rendered).toContain('  LOCK jsw.agility.goals = DISABLED, which Jira has locked and the API cannot set');
     expect(rendered).not.toContain('MISS jsw.agility.goals');
   });
 
@@ -57,7 +57,7 @@ describe(renderVerification, () => {
     expect(renderVerification(buildReport(), buildColumns())).toContain('columns   To Do | In Progress | Done');
   });
 
-  it('names a status mapped to no column and what that costs', () => {
+  it('names a status mapped to no column and the consequence', () => {
     const rendered = renderVerification(buildReport(), buildColumns({ uncovered: ['Waiting'] }));
 
     expect(rendered).toContain("columns   'Waiting' map to no column, so their work items appear only in search;");
@@ -74,7 +74,7 @@ describe(renderVerification, () => {
     expect(rendered).toContain('\n          reorder by dragging in the board settings');
   });
 
-  it('says nothing about column order where the board already holds the spec order', () => {
+  it('says nothing about column order when the columns of the board already follow the spec order', () => {
     expect(renderVerification(buildReport(), buildColumns())).not.toContain('order differs');
   });
 });

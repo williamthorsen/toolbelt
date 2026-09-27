@@ -25,7 +25,7 @@ export const DEFAULT_ROOT_MARKERS: ReadonlyArray<string> = [
  *
  * Ascends from `startDir` (resolved to an absolute path) and returns the first directory that contains one of
  * `markers`. If no directory up to and including the filesystem root contains one, falls back to the nearest
- * ancestor holding a `package.json`, then to `startDir` itself; both fallbacks report a `null` marker.
+ * ancestor containing a `package.json`, then to `startDir` itself; both fallbacks report a `null` marker.
  *
  * @example
  * findProjectRoot(import.meta.dirname);  // { marker: '.git', rootDir: '/home/dev/my-app', source: 'marker' }

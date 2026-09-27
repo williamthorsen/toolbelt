@@ -10,7 +10,7 @@ import { NON_SOURCE_DIRS } from '../test-utils/non-source-dirs.ts';
 import { resolveSpecifier } from '../test-utils/resolveSpecifier.ts';
 import { isScaffolding } from '../test-utils/scaffolding-dirs.ts';
 
-// The non-tier directories that ship: Every module in one is its own build entry point.
+// The non-tier directories that are published: Every module in one is its own build entry point.
 const SUPPORT_DIRS = new Set(['internal', 'types']);
 
 describe('Support modules', () => {
@@ -55,7 +55,7 @@ function auditSupportModules(monorepoRoot: string): { moduleCount: number; unuse
 
 /**
  * Maps each source file to the files importing it. Only relative specifiers are read: A package-name
- * specifier reaches another workspace's published entry point, which no support module is.
+ * specifier resolves to another workspace's published entry point, which no support module is.
  */
 function indexImporters(sourceFiles: string[]): Map<string, string[]> {
   const importersByModule = new Map<string, string[]>();
@@ -77,7 +77,7 @@ function indexImporters(sourceFiles: string[]): Map<string, string[]> {
 }
 
 /**
- * Reports whether a file sits under a package's non-tier support directory.
+ * Reports whether a file is under a package's non-tier support directory.
  */
 function isSupportModule(filePath: string): boolean {
   const segments = filePath.split(path.sep);

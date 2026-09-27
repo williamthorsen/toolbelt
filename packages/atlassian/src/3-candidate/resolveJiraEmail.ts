@@ -4,8 +4,8 @@ const EMAIL_VARIABLE = 'JIRA_EMAIL';
 
 /**
  * Resolves the email that Basic auth pairs with the API token, from a supplied value, then the environment,
- * then the fallback. The email is not a secret, which is why it resolves apart from the token, and it names the
- * keychain account under which the token is stored.
+ * then the fallback. The email is not a secret, which is why it is resolved separately from the token, and it
+ * names the keychain account under which the token is stored.
  *
  * @category Jira
  * @experimental
@@ -28,6 +28,6 @@ export interface JiraEmailOptions {
   /** Takes precedence over every other source, so a caller that read one from its own surface passes it here. */
   readonly email?: string | undefined;
   readonly env?: Record<string, string | undefined> | undefined;
-  /** The last source, read only where the two above miss. A project spec's `email` reaches the chain here. */
+  /** The last source, read only when the two above miss. A caller passes a project spec's `email` here. */
   readonly fallback?: string | undefined;
 }

@@ -37,7 +37,7 @@ describe(promptSecret, () => {
     await expect(session.secret).rejects.toThrow(/differ/);
   });
 
-  it('rejects where the input ends before anything is typed', async () => {
+  it('rejects when the input ends before anything is typed', async () => {
     const session = startSession();
 
     session.endInput();
@@ -45,7 +45,7 @@ describe(promptSecret, () => {
     await expect(session.secret).rejects.toThrow(/ended before a secret was entered/);
   });
 
-  it('rejects where the input ends between the two entries', async () => {
+  it('rejects when the input ends between the two entries', async () => {
     const session = startSession('s3cret');
 
     await expect(session.secret).rejects.toThrow(/ended before a secret was entered/);

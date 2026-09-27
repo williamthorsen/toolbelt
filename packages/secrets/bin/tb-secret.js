@@ -8,8 +8,8 @@ import { existsSync } from 'node:fs';
 // at runtime from the build output.
 const entryPoint = new URL('../dist/esm/bin/tb-secret.js', import.meta.url);
 
-// Gate on the entry file itself: Node raises ERR_MODULE_NOT_FOUND for any unresolved module in the graph,
-// so keying the build-first message off the error code would also fire when the build is present and one
+// Gate on the entry file itself: Because Node raises ERR_MODULE_NOT_FOUND for any unresolved module in the
+// graph, keying the build-first message off the error code would also fire when the build is present and one
 // of its imports is missing.
 if (!existsSync(entryPoint)) {
   process.stderr.write(

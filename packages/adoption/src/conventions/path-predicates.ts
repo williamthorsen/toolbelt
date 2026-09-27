@@ -7,7 +7,7 @@ const TEST_SUFFIX = /\.(?:spec|test)\.[cm]?[jt]sx?$/;
  * Reports whether a path names a source read by an adoption sweep.
  *
  * The selection wanted by every kit sweeping a project's own sources: a JavaScript or TypeScript file that is
- * neither a bootstrap wrapper nor a test. A kit sweeping tests instead inverts the last of those and reaches for
+ * neither a bootstrap wrapper nor a test. A kit sweeping tests instead inverts the last of those and calls
  * `isTestFile` directly, and one sweeping both takes `isAdoptableSourceOrTest`.
  *
  * @internal
@@ -19,7 +19,7 @@ export function isAdoptableSource(path: string): boolean {
 /**
  * Reports whether a path names a source or a test read by an adoption sweep.
  *
- * The selection wanted by a kit whose idiom lives in a project's tests as much as in its other sources. A bootstrap
+ * The selection wanted by a kit whose idiom appears in a project's tests as much as in its other sources. A bootstrap
  * wrapper is exempt, its hand-rolled handling being deliberate; a test covering one is swept, since the constraint
  * behind that handling does not bind it.
  *
@@ -42,7 +42,7 @@ export function isBinWrapper(path: string): boolean {
 }
 
 /**
- * Reports whether a path sits inside a test directory.
+ * Reports whether a path is inside a test directory.
  *
  * Separate from `isTestFile` because the two select different sets: A helper module beside a suite is in a test
  * directory without being a test, and a sweep excluding tests must drop it while a sweep of tests must not

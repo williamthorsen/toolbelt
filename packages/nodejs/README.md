@@ -16,7 +16,7 @@ Requires Node.js 24 or later.
 
 ## CLI
 
-The package ships a `tb-node` command with two subcommands. `asdf-shims` reports the asdf shims that a nodejs version switch has stranded: A CLI installed with `npm install --global` under an earlier version keeps its shim on PATH, and the shim fails when invoked under a version that lacks the package. `pnpm` checks the pnpm that runs in the working directory against the nearest `packageManager` pin.
+The package provides a `tb-node` command with two subcommands. `asdf-shims` reports the asdf shims that a nodejs version switch has stranded: A CLI installed with `npm install --global` under an earlier version keeps its shim on PATH, and the shim fails when invoked under a version that lacks the package. `pnpm` checks the pnpm that runs in the working directory against the nearest `packageManager` pin.
 
 ```sh
 pnpm add --global @williamthorsen/toolbelt.nodejs   # puts tb-node on PATH
@@ -47,7 +47,7 @@ tb-node asdf-shims
 
 The active version is the one running the command, read from its install path, so the check spawns no process and needs no repository. A node outside asdf, such as one from Homebrew, is reported as not applicable rather than as clean.
 
-The remedies end with `asdf reshim nodejs` in its versionless form on purpose: It removes every shim and regenerates them from the installed versions, whereas `asdf reshim nodejs <version>` merges into an existing shim and keeps its stale lines. A shim that corepack provides gets `corepack enable` and `corepack disable` in place of the npm commands, led by `npm install --global corepack` where the active version ships no corepack, as Node 25 and later do not. A shim that an installed version of another asdf plugin also provides is not reported, since asdf may resolve the command there. One whose package cannot be read from the install gets the removal of the executable itself.
+The remedies end with `asdf reshim nodejs` in its versionless form on purpose: It removes every shim and regenerates them from the installed versions, whereas `asdf reshim nodejs <version>` merges into an existing shim and keeps its stale lines. A shim that corepack provides gets `corepack enable` and `corepack disable` in place of the npm commands, led by `npm install --global corepack` when the active version does not bundle corepack, as Node 25 and later do not. A shim that an installed version of another asdf plugin also provides is not reported, since asdf may resolve the command there. One whose package cannot be read from the install gets the removal of the executable itself.
 
 ### `tb-node pnpm`
 
@@ -62,9 +62,9 @@ tb-node pnpm
 #     set pnpm 12.4.0 in /Users/me/repo/.tool-versions
 ```
 
-The version that runs comes from running `pnpm --version` in the pinned directory, the one process that the command spawns: pnpm 10 and later switch themselves to the pinned version whatever provides them, and corepack selects it, so a version read from the filesystem would report the installed pnpm and false-alarm. That run may download the pinned version on first use. Matching the pin is the healthy state whatever the provider; the mismatch that the check catches is a pnpm older than 10, or one with self-management off, which an asdf pnpm plugin or a stale global install leaves in place.
+The version that runs comes from running `pnpm --version` in the pinned directory, the one process that the command spawns: pnpm 10 and later switch themselves to the pinned version whatever provides them, and corepack selects it, so a version read from the filesystem would report the installed pnpm and a mismatch that does not exist. That run may download the pinned version on first use. Matching the pin is the healthy state whatever the provider; the mismatch that the check catches is a pnpm older than 10, or one with self-management off, which an asdf pnpm plugin or a stale global install leaves in place.
 
-The provider is read without a spawn: An asdf shim's header names the plugin that provides it, and a `nodejs` shim resolves through the running node's bin symlink to corepack or to an npm-global pnpm; anything else is named by path. Repairs print only where the versions differ, and each installs the pin through whatever provides pnpm now, so no repair switches providers. Without a pin in reach, or with a pin naming another package manager, the command reports the provider alone and exits 3.
+The provider is read without a spawn: An asdf shim's header names the plugin that provides it, and a `nodejs` shim resolves through the running node's bin symlink to corepack or to an npm-global pnpm; anything else is named by path. Repairs print only when the versions differ, and each installs the pin through whatever provides pnpm now, so no repair switches providers. Without a pin in reach, or with a pin naming another package manager, the command reports the provider alone and exits 3.
 
 ### Exit codes
 
@@ -163,7 +163,7 @@ Finds the first executable file named `name` in a list of directories, or `undef
 import { findExecutableOnPath } from '@williamthorsen/toolbelt.nodejs/candidate';
 
 findExecutableOnPath('node', process.env['PATH']?.split(':') ?? [], { excludeDir: '/Users/me/.asdf/shims' });
-// '/opt/homebrew/bin/node', or undefined where only the shim provides it
+// '/opt/homebrew/bin/node', or undefined when only the shim provides it
 ```
 
 ## `resolveNpmPackageOfBin`
@@ -172,7 +172,7 @@ findExecutableOnPath('node', process.env['PATH']?.split(':') ?? [], { excludeDir
 resolveNpmPackageOfBin(binPath: string): string | undefined;
 ```
 
-Names the npm package that installed a bin, from the symlink that npm leaves in a `bin` directory, or `undefined` where the path is not such a symlink.
+Names the npm package that installed a bin, from the symlink that npm leaves in a `bin` directory, or `undefined` when the path is not such a symlink.
 
 ```ts
 import { resolveNpmPackageOfBin } from '@williamthorsen/toolbelt.nodejs/candidate';
@@ -187,7 +187,7 @@ resolveNpmPackageOfBin('/Users/me/.asdf/installs/nodejs/24.18.1/bin/pn');
 findPackageManagerPin(startDir: string): { dir: string; manifestPath: string; spec: string } | undefined;
 ```
 
-Finds the `packageManager` pin that governs a directory: the nearest `package.json` at or above it whose `packageManager` is a string, passing over a manifest without the field, or `undefined` where no ancestor declares one. The value is returned raw, for `parsePackageManagerSpec`.
+Finds the `packageManager` pin that governs a directory: the nearest `package.json` at or above it whose `packageManager` is a string, passing over a manifest without the field, or `undefined` when no ancestor declares one. The value is returned raw, for `parsePackageManagerSpec`.
 
 ```ts
 import { findPackageManagerPin } from '@williamthorsen/toolbelt.nodejs/candidate';
@@ -202,7 +202,7 @@ findPackageManagerPin('/Users/me/repo/packages/lib');
 parsePackageManagerSpec(spec: string): { hash: string | undefined; name: string; version: string } | undefined;
 ```
 
-Parses a `packageManager` value into its name, version, and integrity hash, or returns `undefined` where the name or the version is empty. The version ends at the first `+`, so a `+` inside the hash stays in it.
+Parses a `packageManager` value into its name, version, and integrity hash, or returns `undefined` when the name or the version is empty. The version ends at the first `+`, so a `+` inside the hash stays in it.
 
 ```ts
 import { parsePackageManagerSpec } from '@williamthorsen/toolbelt.nodejs/candidate';
@@ -226,5 +226,5 @@ Finds the `.tool-versions` entry that selects a plugin's version, in asdf's orde
 import { findToolVersionsEntry } from '@williamthorsen/toolbelt.nodejs/candidate';
 
 findToolVersionsEntry('pnpm', { homeDir: '/Users/me', startDir: '/Users/me/repo/packages/lib' });
-// { filePath: '/Users/me/repo/.tool-versions', version: '9.0.0' }, or undefined where no file names pnpm
+// { filePath: '/Users/me/repo/.tool-versions', version: '9.0.0' }, or undefined when no file names pnpm
 ```

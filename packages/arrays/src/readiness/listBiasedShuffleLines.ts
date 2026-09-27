@@ -9,11 +9,11 @@ import {
 const SORT_CALL = /\.\s*(?:sort|toSorted)\s*\(/g;
 const RANDOM_CALL = /Math\s*\.\s*random\s*\(\s*\)/g;
 const RETURN_KEYWORD = /\breturn\b/g;
-// The unparenthesized single-parameter arrow. Whitespace is condensed by the time this reads, so one space
-// is the most that can sit at the joint.
+// The unparenthesized single-parameter arrow. Whitespace is condensed before this pattern is tested, so one
+// space is the most that can be at the joint.
 const BARE_PARAMETER_ARROW = /^[\w$]+\s?=>/;
 const FUNCTION_KEYWORD = /^function\b/;
-// Digits are left out: A body is claimed for holding nothing but the draw and numeric literals, so what a
+// Digits are left out: A body is claimed for holding nothing but the draw and numeric literals. What a
 // subtraction or a ternary leaves behind has to read as empty.
 const IDENTIFIER_CHARACTER = /[A-Za-z_$]/;
 
@@ -23,7 +23,7 @@ const IDENTIFIER_CHARACTER = /[A-Za-z_$]/;
  * Takes the blanked code produced by `listArrayIdioms`, so a comparator written in a comment or a literal is not
  * one.
  *
- * A comparator is claimed for what its body does not hold rather than for a spelling: Strip the draw and a
+ * A comparator is claimed for what its body does not contain rather than for a spelling: Strip the draw and a
  * `return` from the body, and a residue with no identifier proves the body ordered on the draw alone. That
  * admits the subtractive forms, their mirror, and the ternary forms together, and it declines a comparator
  * that ranks by its operands and uses a draw only to break a tie -- a body naming its own parameters,
@@ -50,7 +50,7 @@ export function listBiasedShuffleLines(source: string): number[] {
 // region | Helpers
 
 /**
- * Returns the offset of the arrow whose body is the argument's own, or nothing where the argument is no arrow.
+ * Returns the offset of the arrow whose body is the argument's own, or nothing when the argument is no arrow.
  *
  * The arrow has to open the argument. A combinator assembling a comparator takes an arrow of its own, and an
  * arrow found anywhere in the text would be that one, whose body belongs to a function that this argument
@@ -78,9 +78,9 @@ function isRandomComparator(argument: string): boolean {
 }
 
 /**
- * Returns a comparator's body, or nothing where the argument is neither an arrow nor an inline function.
+ * Returns a comparator's body, or nothing when the argument is neither an arrow nor an inline function.
  *
- * A block body is returned with its braces, which the residue test reads past: Only an identifier disqualifies
+ * A block body is returned with its braces, which the residue test ignores: Only an identifier disqualifies
  * a body, and a brace is not one. A named reference passed as the comparator yields nothing, since its body
  * is not here to read.
  */
@@ -100,8 +100,8 @@ function readComparatorBody(argument: string): string | undefined {
 /**
  * Returns the comparator text with every parenthesis group wrapping the whole comparator stripped.
  *
- * A redundant parenthesis and the operand of a cast both wrap the arrow rather than opening it, which
- * an opening group holding no arrow past it reports. Stripping cannot admit a combinator, whose group opens
+ * A redundant parenthesis and the operand of a cast both wrap the arrow rather than opening it, and an
+ * opening group with no arrow after it identifies either one. Stripping cannot admit a combinator, whose group opens
  * past offset zero and is left as it stands.
  */
 function stripWrappingGroup(text: string): string {

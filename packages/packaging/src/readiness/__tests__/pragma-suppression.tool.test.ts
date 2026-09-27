@@ -33,7 +33,7 @@ describe('The packaging adoption kit, run through rdy', () => {
   });
 
   // `toolbelt.filesystem`'s walk check is the one that a reader is likeliest to name by mistake.
-  it('leaves a site standing where the pragma names another check', () => {
+  it('keeps a site in the report when the pragma names another check', () => {
     expect(runKit(buildSearch(' // rdy-ignore no-hand-rolled-directory-walk -- reviewed'))).toStrictEqual([
       { count: 2, detail: 'src/root.ts:3', id: 'no-hand-rolled-manifest-search', passedCount: 1 },
     ]);
@@ -42,7 +42,7 @@ describe('The packaging adoption kit, run through rdy', () => {
 
 // region | Helpers
 
-/** Builds a hand-rolled manifest search whose loop line carries the given trailing pragma. */
+/** Builds a hand-rolled manifest search whose loop line ends with the given pragma. */
 function buildSearch(pragma: string): string {
   return [
     'export function resolvePackageRoot() {',
@@ -62,8 +62,8 @@ function buildSearch(pragma: string): string {
  * Runs the package's compiled kit over a fixture repo containing the given source, and reports what the check
  * named and counted.
  *
- * A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report reaches the
- * layer that acts on one.
+ * A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report arrives at
+ * the layer that acts on one.
  */
 function runKit(source: string): KitCheckReport[] {
   return listKitCheckReports(PACKAGE_DIR, {

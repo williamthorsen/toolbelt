@@ -261,7 +261,7 @@ var default_default = defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
   detect: listSleepSites,
   exportNames: ADOPTED_EXPORTS,
-  noSourcesReason: "the project holds no JavaScript or TypeScript sources outside its bootstrap wrappers",
+  noSourcesReason: "the project contains no JavaScript or TypeScript sources outside its bootstrap wrappers",
   packageName: PACKAGE_NAME,
   // Tests are swept: A test that sleeps is sleeping rather than exhibiting a form, and tests are where this idiom
   // mostly lives, so a sweep exempting them would report nothing in most projects.
@@ -272,7 +272,7 @@ var default_default = defineAdoptionKit({
       id: "no-hand-rolled-sleep",
       kinds: ["hand-rolled-sleep"],
       severity: "recommend",
-      fix: `Replace each promise named above with delay from ${PACKAGE_NAME}/candidate, whose promise comes with a cancel that clears the timer and settles at once. A hand-rolled sleep hands back no such handle, so a caller that finishes early still waits out the whole delay, and in a test the pending timer holds the event loop open past the assertion that it was waiting for. Reference: ${README_URL}`
+      fix: `Replace each promise named above with delay from ${PACKAGE_NAME}/candidate, whose promise comes with a cancel that clears the timer and settles at once. Because a hand-rolled sleep hands back no such handle, a caller that finishes early still waits out the whole delay, and in a test the pending timer holds the event loop open past the assertion that it was waiting for. Reference: ${README_URL}`
     }
   ]
 });

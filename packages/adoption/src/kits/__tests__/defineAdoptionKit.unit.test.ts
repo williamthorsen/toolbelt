@@ -19,7 +19,7 @@ const SPEC: AdoptionKitSpec<Kind> = {
   description: 'Adoption checks for a project consuming @scope/pkg',
   detect: () => [],
   exportNames: ['doThing'],
-  noSourcesReason: 'the project holds no sources',
+  noSourcesReason: 'the project contains no sources',
   packageName: '@scope/pkg',
   pathFilter: () => true,
 };
@@ -67,7 +67,7 @@ describe(defineAdoptionKit, () => {
           id: 'no-test-clone',
           kinds: ['clone'],
           name: 'No test defines its own helper',
-          noSourcesReason: 'the project holds no tests',
+          noSourcesReason: 'the project contains no tests',
           pathFilter: (path) => path.includes('.test.'),
         },
       ],
@@ -94,7 +94,7 @@ describe(defineAdoptionKit, () => {
 
 // region | Helpers
 
-/** Lists the assembled kit's adoption checks, which the flat checklist holds in declaration order. */
+/** Lists the assembled kit's adoption checks, which the flat checklist contains in declaration order. */
 function listChecks(kit: ReturnType<typeof defineAdoptionKit>): readonly RdyCheck[] {
   const [checklist] = kit.checklists;
   if (checklist === undefined || !isFlatChecklist(checklist)) return [];

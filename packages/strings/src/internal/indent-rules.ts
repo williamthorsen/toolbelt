@@ -36,7 +36,7 @@ export function findLineIndent(line: string): string {
 }
 
 /**
- * Reports whether text holds nothing but indentation, and so contributes no content to measure.
+ * Reports whether text contains nothing but indentation, and so contributes no content to measure.
  *
  * @internal
  */

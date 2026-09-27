@@ -1,7 +1,7 @@
 // `_` and `/` are interchangeable branch-name separators, so both delimit a segment.
 const SEGMENT_SEPARATOR = /[/_]/;
 
-// The key group is optional, so one pattern covers a keyed ref and a bare-numeric one alike.
+// The key group is optional: One pattern covers a keyed ref and a bare-numeric one alike.
 const REF_PATTERN = /^(?:(?<key>[A-Za-z][A-Za-z0-9]+)-)?(?<number>[0-9]+)(?:\.(?<revisit>[0-9]+))?/;
 
 // A Jira project key: a letter, then letters and digits.
@@ -9,7 +9,7 @@ const KEY_PATTERN = /^[A-Za-z][A-Za-z0-9]+$/;
 
 /**
  * Finds the ticket ref encoded by a branch name, or `undefined` when it encodes none. A ref must begin a
- * `/`- or `_`-delimited segment, and the leftmost segment containing one wins. A key must be uppercase,
+ * `/`- or `_`-delimited segment, and the leftmost segment containing one is taken. A key must be uppercase,
  * unless `key` names the project's own key, which then matches in any casing and is the only key that
  * does; a bare-numeric ref is found either way. Throws a RangeError if `key` is not a well-formed key.
  *
@@ -31,7 +31,7 @@ export function findBranchTicketRef(branch: string, options: BranchTicketRefOpti
       continue;
     }
     const { key, number, revisit } = groups;
-    // A segment that has the shape but contains an unacceptable key is skipped, not taken as the answer.
+    // Skip a segment that has the shape but contains an unacceptable key, rather than taking it as the answer.
     if (number !== undefined && isAcceptableKey(key, declaredKey)) {
       return composeRef(key, number, revisit);
     }

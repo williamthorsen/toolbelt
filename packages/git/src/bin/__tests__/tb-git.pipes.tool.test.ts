@@ -6,8 +6,8 @@ import { describe, expect, it } from 'vitest';
 const ENTRY_POINT = path.join(import.meta.dirname, '../tb-git.ts');
 
 describe('tb-git over a pipe', () => {
-  it('ends quietly where the reader exits before the output is written', () => {
-    // The `sleep` lets the reader exit first, so the CLI's write reaches a pipe that is already closed.
+  it('ends quietly when the reader exits before the output is written', () => {
+    // The `sleep` lets the reader exit first, so the CLI writes to a pipe that is already closed.
     const { status, stderr } = runPipeline(`{ sleep 0.1; ${buildCommand(['--help'])}; echo "exit:$?" >&2; } | true`);
 
     expect(stderr).toBe('exit:0\n');
@@ -22,7 +22,7 @@ function buildCommand(args: string[]): string {
   return [process.execPath, ENTRY_POINT, ...args].map(quoteForShell).join(' ');
 }
 
-/** Wraps a value for `bash -c`, so a path holding a space or a quote survives. */
+/** Wraps a value for `bash -c`, so that a path holding a space or a quote survives. */
 function quoteForShell(value: string): string {
   return `'${value.replaceAll("'", String.raw`'\''`)}'`;
 }

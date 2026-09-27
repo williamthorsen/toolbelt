@@ -5,7 +5,7 @@ import path from 'node:path';
  * Finds the first executable file named `name` in a list of directories, searched in order, and returns its path
  * as `<dir>/<name>`. An empty entry and a directory that cannot be resolved are skipped, as is a directory whose
  * real path is that of `excludeDir`, so a differently spelled entry for an excluded directory is still excluded.
- * A symlink is followed, so a dangling one is not a match. Returns `undefined` when no directory provides one.
+ * Because a symlink is followed, a dangling one is not a match. Returns `undefined` when no directory provides one.
  *
  * @category Executables
  * @experimental
@@ -49,7 +49,7 @@ function isExecutableFile(filePath: string): boolean {
   }
 }
 
-/** Resolves a path's real path, or `undefined` where the path does not exist. */
+/** Resolves a path's real path, or `undefined` when the path does not exist. */
 function resolveRealPath(dirPath: string): string | undefined {
   try {
     return fs.realpathSync(dirPath);

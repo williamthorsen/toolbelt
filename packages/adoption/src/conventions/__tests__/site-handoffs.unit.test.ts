@@ -36,8 +36,8 @@ describe(isArraySubscript, () => {
     expect(keywords.filter((before) => isArraySubscript(before))).toStrictEqual([]);
   });
 
-  // `return[0]` parses as a returned array literal, so the keyword set decides the verdict where spacing cannot.
-  it('declines an unspaced keyword bracket, which no spacing distinguishes from a subscript', () => {
+  // `return[0]` parses as a returned array literal, so the keyword set decides the verdict, which spacing cannot.
+  it('declines an unspaced keyword bracket, which spacing cannot distinguish from a subscript', () => {
     expect(isArraySubscript('return[')).toBe(false);
   });
 

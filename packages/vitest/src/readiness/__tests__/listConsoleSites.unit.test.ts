@@ -118,7 +118,7 @@ expect(spy.mock.calls).toHaveLength(1);`;
       ]);
     });
 
-    it('binds nothing where a member assignment takes the spy', () => {
+    it('binds nothing when a member assignment takes the spy', () => {
       const source = `harness.spy = vi.spyOn(console, 'error').mockImplementation(() => {});
 expect(spy.mock.calls).toHaveLength(1);`;
 

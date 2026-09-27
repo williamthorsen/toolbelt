@@ -1,9 +1,9 @@
 /**
  * Adapts a `Disposable` factory into a Vitest fixture that disposes the value when its scope ends. Scope is
- * whichever one `test.extend` is given, so a fixture built here reaches all three of them.
+ * whichever one `test.extend` is given, so a fixture built here supports all three of them.
  *
  * A fixture depending on another fixture cannot be built this way: Vitest discovers dependencies by reading the
- * fixture function's own source, so such a fixture names them in its parameter list and registers `onCleanup` itself.
+ * fixture function's own source. Such a fixture names them in its parameter list and registers `onCleanup` itself.
  *
  * @category Testing
  * @experimental

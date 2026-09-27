@@ -2,15 +2,16 @@ import { getLineAtOffset, readLiteral } from '@williamthorsen/toolbelt.adoption'
 
 const OBJECT_TAG = 'object';
 const SUBJECT = String.raw`[\w$]+(?:\.[\w$]+)*`;
-// A quoted literal of any content: Blanking replaces a literal's characters with spaces, so what it holds is
+// A quoted literal of any content: Blanking replaces a literal's characters with spaces, so what it contains is
 // read from the unblanked source instead.
 const QUOTED = String.raw`(?<literal>(?<quote>['"])[^'"\n]*\k<quote>)`;
 // The array exclusion omitted by the shorter form, then the guard that ends the claim where the conjunction
 // does.
-// Both lengths are tried, and a further operand fails the lookahead at each, so a site continuing into a
+// Both lengths are tried, and a further operand fails the lookahead at each. A site continuing into a
 // property probe goes unclaimed.
 const TAIL = String.raw`(?:\s*&&\s*!\s*Array\s*\.\s*isArray\s*\(\s*\k<subject>\s*\))?(?!\s*&&)`;
-// `\s*` sits at every joint, so a conjunction wrapped by a formatter reads the same as one left on a line.
+// The pattern has `\s*` at every joint, so a conjunction wrapped by a formatter matches just as one left on a
+// line does.
 const TYPEOF_FIRST = new RegExp(
   String.raw`(?<![\w$.])typeof\s+(?<subject>${SUBJECT})\s*===\s*${QUOTED}\s*&&\s*\k<subject>\s*!==?\s*null${TAIL}`,
   'dg',
@@ -23,10 +24,10 @@ const NULL_FIRST = new RegExp(
 /**
  * Lists the line of every hand-rolled record guard in a source file.
  *
- * Takes both texts. The conjunction is matched on the blanked code, so a guard written in a comment is not
- * one, and the compared literal is then read from the unblanked source at the offset reported by the match:
- * Blanking replaces a literal's characters with spaces in place, so the two texts stay aligned while only the
- * unblanked one still says what the literal holds.
+ * Takes both texts. The conjunction is matched on the blanked code, in which a guard written in a comment is
+ * not one, and the compared literal is then read from the unblanked source at the offset reported by the match:
+ * Blanking replaces a literal's characters with spaces in place, which keeps the two texts aligned while only
+ * the unblanked one still contains the literal's text.
  *
  * Both operand orders count, and both lengths: the conjunction alone, which `isRecordOrArray` replaces, and
  * the same conjunction closing with the array exclusion, which `isRecord` replaces. A conjunction with a

@@ -11,7 +11,7 @@ const KITS_DIR = fileURLToPath(new URL('../../../.readyup/kits', import.meta.url
 const READINESS_DIR = fileURLToPath(new URL('..', import.meta.url));
 
 describe(listSleepSites, () => {
-  // The fix text describes the idiom without writing it out, which keeps the kit off its own report: A
+  // The fix text describes the idiom without writing it out, which keeps the kit from reporting itself: A
   // spelled-out idiom would be a site in the source and again in the bundle. readyup drops the compiled bundle
   // from its own sweep, and nothing in CI runs `rdy run --packages`, so this suite fails on an edit
   // that spells one out.
@@ -32,7 +32,7 @@ describe(listSleepSites, () => {
 
 // region | Helpers
 
-/** Lists the sources in which this package's own prose about the idiom lives. */
+/** Lists the sources that contain this package's own prose about the idiom. */
 function listSweptFiles(): string[] {
   return [KITS_DIR, READINESS_DIR].flatMap((directory) =>
     fs

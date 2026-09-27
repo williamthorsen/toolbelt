@@ -6,7 +6,7 @@ export type AssertionCloneKind = 'assert-clone' | 'nullish-assert-clone';
 
 interface GuardedTest {
   condition: string;
-  /** What the guard does where its condition holds. */
+  /** What the guard does when its condition holds. */
   outcome: 'return' | 'throw';
 }
 
@@ -18,11 +18,11 @@ const THROW_STATEMENT = /^throw\b/;
 /**
  * Returns the assertion that a function's body re-implements, or nothing when the body does more than assert.
  *
- * Takes the blanked body. A body qualifies only where every statement in it is a `throw` or a bare `return`
+ * Takes the blanked body. A body qualifies only when every statement in it is a `throw` or a bare `return`
  * under a guard, so a function that also computes, logs, or returns a value is left alone. Which assertion it
- * clones is then read off the guard that tests the function's own argument: `assert` where the argument is
- * tested for truth, `assertIsNonNullable` where it is tested against null and undefined. A guard on anything
- * else is passed over, so a domain assertion narrowing its argument through a call or an `instanceof` reports
+ * clones is then read off the guard that tests the function's own argument: `assert` when the argument is
+ * tested for truth, `assertIsNonNullable` when it is tested against null and undefined. A guard on anything
+ * else is passed over. A domain assertion narrowing its argument through a call or an `instanceof` reports
  * nothing here.
  *
  * @internal
@@ -85,7 +85,7 @@ function listGuardedTests(condensed: string): GuardedTest[] {
   return tests;
 }
 
-/** Reads what a guard does where its condition holds, past the brace that may open its block. */
+/** Reads what a guard does when its condition holds, past the brace that may open its block. */
 function readOutcome(afterCondition: string): GuardedTest['outcome'] | undefined {
   const statement = afterCondition.replace(/^\s*\{?\s*/, '');
   if (THROW_STATEMENT.test(statement)) return 'throw';

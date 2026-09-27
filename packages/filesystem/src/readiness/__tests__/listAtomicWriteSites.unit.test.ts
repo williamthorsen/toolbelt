@@ -44,7 +44,7 @@ describe(listAtomicWriteSites, () => {
     ]);
   });
 
-  // A closure and every function around it hold the same rename, and only the innermost names the site usefully.
+  // A closure and every function around it contain the same rename, and only the innermost names the site usefully.
   it('names the innermost function around a rename, reporting the site once', () => {
     const source = [
       'export function makeWriter(dir) {',
@@ -109,7 +109,7 @@ describe(listAtomicWriteSites, () => {
     expect(listAtomicWriteSites(source)).toStrictEqual([]);
   });
 
-  // The pairing rests on one binding named twice, which a computed argument gives the detector no way to follow.
+  // The pairing depends on one binding named twice, and the detector cannot follow a computed argument.
   it('declines a pair whose paths are computed at the call', () => {
     const source = [
       'function save(dir, content) {',
@@ -134,13 +134,13 @@ describe(listAtomicWriteSites, () => {
     expect(listAtomicWriteSites(source)).toStrictEqual([]);
   });
 
-  it('declines a write and a rename that no function body holds', () => {
+  it('declines a write and a rename outside any function body', () => {
     const source = 'fs.writeFileSync(tempPath, content);\nfs.renameSync(tempPath, filePath);\n';
 
     expect(listAtomicWriteSites(source)).toStrictEqual([]);
   });
 
-  it('declines a write and a rename that sit in separate bodies', () => {
+  it('declines a write and a rename that are in separate bodies', () => {
     const source = [
       'function stage(content) {',
       '  fs.writeFileSync(tempPath, content);',

@@ -45,7 +45,7 @@ describe(findDistributionByIntervalProbability, () => {
 
   it('honors a halfWidth that widens the window', () => {
     // Only the ratio of halfWidth to the standard deviation matters, so doubling the window doubles
-    // the standard deviation that reaches the same target.
+    // the standard deviation that yields the same target.
     const { standardDeviation } = findDistributionByIntervalProbability({
       halfWidth: 6,
       nIntervals: 5,

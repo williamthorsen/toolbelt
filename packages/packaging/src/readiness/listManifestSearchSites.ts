@@ -11,9 +11,9 @@ export type ManifestSearchKind = 'manifest-search';
  * Lists every hand-rolled search of the directory chain for `package.json` in a source, from the ascents that
  * `listDirectoryAscents` finds.
  *
- * A walk is claimed where `isManifestSearch` accepts the names that it probes, the rule by which
- * `toolbelt.filesystem`'s kit declines the same walk. A bare ascent and a walk probing root markers alone stay with
- * that kit.
+ * A walk is claimed when `isManifestSearch` accepts the names that it probes, the rule by which
+ * `toolbelt.filesystem`'s kit declines the same walk. That kit claims a bare ascent and a walk probing root markers
+ * alone.
  *
  * The source is blanked before the scan, so a walk written in a comment or a literal is invisible here, while each
  * probed name is still read from the source beneath.

@@ -99,7 +99,7 @@ export class SeededRng implements SeededGenerator {
 
   /** Returns a copy of this generator, advanced by the given number of increments. */
   clone<T extends SeededRng>(this: T, nIncrements = 0): T {
-    // `this.constructor` is typed as `Function`, so constructing the subclass requires an assertion.
+    // Constructing the subclass requires an assertion, because `this.constructor` is typed as `Function`.
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return new (this.constructor as Constructor<T>)(this._seed).increment(nIncrements);
   }

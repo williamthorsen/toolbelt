@@ -15,7 +15,7 @@ describe(resolveJiraSite, () => {
     expect(resolveJiraSite({ env: { JIRA_SITE: SITE }, fallback: 'spec.atlassian.net' })).toBe(SITE);
   });
 
-  it('falls back to the fallback, which is where a spec reaches the chain', () => {
+  it('falls back to the fallback, through which a caller passes the value from a spec', () => {
     expect(resolveJiraSite({ env: {}, fallback: SITE })).toBe(SITE);
   });
 
@@ -27,7 +27,7 @@ describe(resolveJiraSite, () => {
     expect(resolveJiraSite({ env: { JIRA_SITE: ' '.repeat(3) }, fallback: SITE })).toBe(SITE);
   });
 
-  it('throws naming the environment variable where every source misses', () => {
+  it('throws naming the environment variable when every source misses', () => {
     expect(() => resolveJiraSite({ env: {} })).toThrow('JIRA_SITE');
   });
 });

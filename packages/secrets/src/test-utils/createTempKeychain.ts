@@ -7,15 +7,15 @@ const SECURITY_PATH = '/usr/bin/security';
 
 /**
  * Whether this process can create a keychain, so that a test needing one skips rather than fails when it
- * cannot. A platform holding no `security` and a sandbox denying the `securityd` lookup both make it false.
- * Probing once at load keeps the cost to one keychain per file, and the guards that read it run at collection.
+ * cannot. A platform without `security` and a sandbox denying the `securityd` lookup both make it false.
+ * Probing once at load creates only one keychain per file, and the guards that read it run at collection.
  *
  * @internal
  */
 export const canCreateKeychain = probeKeychain();
 
 /**
- * Creates an unlocked keychain of its own, deleted on disposal, so that no test reaches the login keychain.
+ * Creates an unlocked keychain of its own, deleted on disposal, so that no test touches the login keychain.
  * Requires macOS.
  *
  * @internal
@@ -23,7 +23,7 @@ export const canCreateKeychain = probeKeychain();
 export function createTempKeychain(): TempKeychain {
   using stack = new DisposableStack();
 
-  // Registration order sets disposal order: The keychain is deleted before the directory that holds it.
+  // Registration order sets disposal order: The keychain is deleted before the directory that contains it.
   const tree = stack.use(createTempTree({}));
   const keychainPath = tree.resolve('probe.keychain-db');
   const password = randomUUID();
@@ -43,7 +43,7 @@ export function createTempKeychain(): TempKeychain {
   };
 }
 
-/** A keychain holding one test's items, deleted when the scope that created it ends. */
+/** A keychain containing one test's items, deleted when the scope that created it ends. */
 export interface TempKeychain extends Disposable {
   /** Path of the keychain file, which every `security` call names. */
   readonly path: string;
@@ -53,7 +53,7 @@ export interface TempKeychain extends Disposable {
 
 /**
  * Reduces a failure to the line naming its cause. `execFileSync` leads with the command that it ran, which
- * holds the probe keychain's password.
+ * contains the probe keychain's password.
  */
 function describeFailure(error: unknown): string {
   const message = (error instanceof Error ? error.message : String(error)).trim();
@@ -63,9 +63,9 @@ function describeFailure(error: unknown): string {
 }
 
 /**
- * Creates a keychain and deletes it, reporting what refused it, so a run that skips states its cause instead
- * of passing quietly. The notice goes to `process.stderr` because the runner's `silent: 'passed-only'`
- * withholds console output that no failing test claims, which is every line that this probe writes.
+ * Creates a keychain and deletes it, reporting what refused it, so that a run that skips states its cause
+ * instead of passing quietly. The notice goes to `process.stderr` because the runner's `silent: 'passed-only'`
+ * withholds console output unclaimed by a failing test, which is every line that this probe writes.
  */
 function probeKeychain(): boolean {
   try {
@@ -79,7 +79,7 @@ function probeKeychain(): boolean {
   }
 }
 
-/** Runs `security`, raising what it wrote where it failed, so that a broken fixture is not read as a result. */
+/** Runs `security`, raising what it wrote when it fails, so that a broken fixture is not read as a result. */
 function runSecurity(args: string[]): void {
   execFileSync(SECURITY_PATH, args, { encoding: 'utf8', stdio: 'pipe' });
 }

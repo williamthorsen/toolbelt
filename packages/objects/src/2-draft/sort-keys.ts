@@ -26,7 +26,7 @@ export function sortKeys<T extends PlainObject>(
 
 /**
  * Returns a copy of the data structure in which the keys of every plain object are sorted, descending into arrays
- * and plain objects; any other value is returned as is. Makes serialized data structures comparable where their
+ * and plain objects; any other value is returned as is. Makes serialized data structures comparable when their
  * keys may differ in order.
  *
  * @category Object

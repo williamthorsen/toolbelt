@@ -42,7 +42,7 @@ describe(buildVerificationReport, () => {
     });
   });
 
-  it('reports a status not held by the workflow as absent rather than matching', () => {
+  it('reports a status missing from the workflow as absent rather than matching', () => {
     const statuses = [buildStatus({ name: 'To Do', statusCategory: 'TODO' })];
 
     const report = buildVerificationReport(buildProjectConfiguration({ statuses }), SPEC);
@@ -56,7 +56,7 @@ describe(buildVerificationReport, () => {
     });
   });
 
-  it('names no transition for a status not held by the workflow, even where one has no target', () => {
+  it('names no transition for a status absent from the workflow, even when one has no target', () => {
     const configuration = buildProjectConfiguration({ statuses: [buildStatus({ name: 'To Do' })] });
     const transitions = [{ id: '30', name: 'Create', type: 'GLOBAL' }];
 
@@ -130,7 +130,7 @@ describe(buildVerificationReport, () => {
     expect(report.matches).toBe(true);
   });
 
-  it('still faults a status where a locked feature is held out', () => {
+  it('still faults a status when a locked feature is excluded from the match', () => {
     const spec: ProjectSpec = {
       ...SPEC,
       boardFeatures: { 'jsw.agility.backlog': 'ENABLED' },
@@ -141,7 +141,7 @@ describe(buildVerificationReport, () => {
     expect(buildVerificationReport(configuration, spec).matches).toBe(false);
   });
 
-  it('reports no features where the spec declares none', () => {
+  it('reports no features when the spec declares none', () => {
     const report = buildVerificationReport(buildProjectConfiguration(), SPEC);
 
     expect(report.features).toStrictEqual([]);

@@ -301,7 +301,7 @@ var default_default = defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
   detect: listMathIdioms,
   exportNames: ADOPTED_EXPORTS,
-  noSourcesReason: "the project holds no JavaScript or TypeScript sources outside the exempt paths",
+  noSourcesReason: "the project contains no JavaScript or TypeScript sources outside the exempt paths",
   packageName: PACKAGE_NAME,
   // A test computes these values deliberately, and a bootstrap wrapper's hand-rolled arithmetic keeps its
   // build-first message alive through an incomplete install.
@@ -312,7 +312,7 @@ var default_default = defineAdoptionKit({
       id: "no-hand-rolled-clamp",
       kinds: ["clamp-nest"],
       severity: "recommend",
-      fix: `Replace each expression named above with clamp from ${PACKAGE_NAME}/candidate, called as clamp(value, { min, max }). It is not a silent substitution: clamp throws a RangeError on a reversed range or a NaN bound, where the nested Math calls return a value for both. Reference: ${README_URL}`
+      fix: `Replace each expression named above with clamp from ${PACKAGE_NAME}/candidate, called as clamp(value, { min, max }). It is not a silent substitution: clamp throws a RangeError on a reversed range or a NaN bound, whereas the nested Math calls return a value for both. Reference: ${README_URL}`
     },
     {
       name: "No source rounds to decimal places by hand",
@@ -326,7 +326,7 @@ var default_default = defineAdoptionKit({
       id: "no-hand-rolled-random-integer",
       kinds: ["random-integer"],
       severity: "recommend",
-      fix: `Replace each expression named above with pickInteger from ${PACKAGE_NAME}/candidate, which also takes a seed. Mind the bound: Math.floor(Math.random() * N) stops at N - 1, where pickInteger's max is inclusive, so the replacement is pickInteger({ max: N - 1 }). A site indexing an array is left to toolbelt.arrays, whose pickItem covers it. Reference: ${README_URL}`
+      fix: `Replace each expression named above with pickInteger from ${PACKAGE_NAME}/candidate, which also takes a seed. Mind the bound: Math.floor(Math.random() * N) stops at N - 1, whereas pickInteger's max is inclusive, so the replacement is pickInteger({ max: N - 1 }). A site indexing an array is left to toolbelt.arrays, whose pickItem covers it. Reference: ${README_URL}`
     }
   ]
 });

@@ -27,7 +27,7 @@ describe('Compiled kit check ids', () => {
  *
  * Loading is half the assertion: `defineAdoptionKit` refuses a kit giving one id to two checks, and the
  * bundle inlines that guard, so an import runs it. Only `numbers` assembles a kit in its own suite,
- * and this reaches the rest. The bundle is loaded rather than the source, which needs no built tree
+ * and this test covers the rest. The bundle is loaded rather than the source, which needs no built tree
  * and is the artifact that a consumer runs.
  */
 async function auditCompiledKits(monorepoRoot: string): Promise<{ failures: string[]; workspaceCount: number }> {

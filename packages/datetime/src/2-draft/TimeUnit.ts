@@ -1,7 +1,7 @@
 import { round } from '@williamthorsen/toolbelt.numbers/candidate';
 
 /**
- * A unit of time, measured in milliseconds. Because durations are held in milliseconds, the largest
+ * A unit of time, measured in milliseconds. Because durations are stored in milliseconds, the largest
  * exact duration is `Number.MAX_SAFE_INTEGER` milliseconds, a little over 100 million days.
  *
  * @category DateTime

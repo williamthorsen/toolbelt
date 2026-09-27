@@ -30,10 +30,10 @@ describe(findCloudId, () => {
     });
   });
 
-  it('throws when the endpoint does not answer OK', async () => {
+  it('throws when the endpoint does not return OK', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response('', { status: 404 }));
 
-    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toThrow('answered 404');
+    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toThrow('returned 404');
   });
 
   it('raises a request error for a gateway incident, which a caller retries rather than corrects', async () => {
@@ -45,7 +45,7 @@ describe(findCloudId, () => {
     });
   });
 
-  it('names the absent body of a gateway incident rather than trailing off after the colon', async () => {
+  it('names the absent body of a gateway incident rather than ending the message at the colon', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response('', { status: 503 }));
 
     await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toThrow(

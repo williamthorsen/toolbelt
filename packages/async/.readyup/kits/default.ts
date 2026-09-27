@@ -1,11 +1,11 @@
 /**
  * Adoption checks for a project consuming @williamthorsen/toolbelt.async.
  *
- * The kit ships inside the package, so it runs only where the package is installed and always at the version
+ * The kit is included in the package, so it runs only where the package is installed and always at the version
  * that the consumer has. Installing the package is the consent on which these checks rest.
  *
- * The one check takes inventory rather than banning a pattern: A hand-rolled sleep is correct code that a
- * published utility expresses better, so it reports at `recommend`. Nothing here is `warn`, because none of it
+ * The one check takes inventory rather than banning a pattern: Because a hand-rolled sleep is correct code that a
+ * published utility expresses better, the check reports at `recommend`. Nothing here is `warn`, because none of it
  * is a defect.
  *
  * The kit declares what to look for and what to advise. What it reports lives in `src/readiness/`, where the
@@ -23,7 +23,7 @@ export default defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
   detect: listSleepSites,
   exportNames: ADOPTED_EXPORTS,
-  noSourcesReason: 'the project holds no JavaScript or TypeScript sources outside its bootstrap wrappers',
+  noSourcesReason: 'the project contains no JavaScript or TypeScript sources outside its bootstrap wrappers',
   packageName: PACKAGE_NAME,
   // Tests are swept: A test that sleeps is sleeping rather than exhibiting a form, and tests are where this idiom
   // mostly lives, so a sweep exempting them would report nothing in most projects.
@@ -34,7 +34,7 @@ export default defineAdoptionKit({
       id: 'no-hand-rolled-sleep',
       kinds: ['hand-rolled-sleep'],
       severity: 'recommend',
-      fix: `Replace each promise named above with delay from ${PACKAGE_NAME}/candidate, whose promise comes with a cancel that clears the timer and settles at once. A hand-rolled sleep hands back no such handle, so a caller that finishes early still waits out the whole delay, and in a test the pending timer holds the event loop open past the assertion that it was waiting for. Reference: ${README_URL}`,
+      fix: `Replace each promise named above with delay from ${PACKAGE_NAME}/candidate, whose promise comes with a cancel that clears the timer and settles at once. Because a hand-rolled sleep hands back no such handle, a caller that finishes early still waits out the whole delay, and in a test the pending timer holds the event loop open past the assertion that it was waiting for. Reference: ${README_URL}`,
     },
   ],
 });

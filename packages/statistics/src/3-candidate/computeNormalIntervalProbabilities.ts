@@ -67,7 +67,7 @@ function toNormalProbabilities(params: WindowParams): number[] {
 }
 
 /**
- * Returns the limiting probabilities as the standard deviation approaches 0: All mass sits at the
+ * Returns the limiting probabilities as the standard deviation approaches 0: All mass is at the
  * mean, which falls inside the middle interval when their count is odd and on the boundary between
  * the two central intervals when it is even.
  */

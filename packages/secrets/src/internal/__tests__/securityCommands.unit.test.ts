@@ -56,7 +56,7 @@ describe(composeSetLine, () => {
     expect(() => composeSetLine({ service: 'token' }, secret)).not.toThrow(/sesame/);
   });
 
-  it('leaves less room where the service, account, and keychain take more', () => {
+  it('leaves less room when the service, account, and keychain take more', () => {
     expect(findMaxSecretBytes({ service: 'token' }, KEYCHAIN)).toBeLessThan(findMaxSecretBytes({ service: 'token' }));
   });
 
@@ -75,7 +75,7 @@ describe(composeSetLine, () => {
 
 // region | Helpers
 
-/** Finds the longest secret for which a query leaves room, from the line that a one-byte secret composes to. */
+/** Finds the longest secret for which a query leaves room, from the line composed for a one-byte secret. */
 function findMaxSecretBytes(query: { service: string }, keychain?: string): number {
   const fixedBytes = Buffer.byteLength(composeSetLine(query, 'a', keychain), 'utf8') - 2;
 

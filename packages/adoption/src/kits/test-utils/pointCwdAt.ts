@@ -4,9 +4,9 @@ import process from 'node:process';
 
 /**
  * Points `process.cwd()` at a directory for the enclosing scope and restores the previous `process.cwd` on disposal.
- * The real process stays where it is: A sweep reads `process.cwd()`, and the git calls take `-C`.
+ * The process's real working directory does not change: A sweep reads `process.cwd()`, and the git calls take `-C`.
  *
- * Scaffolding for a kit test, held to node builtins because the adoption layer declares no workspace
+ * Scaffolding for a kit test, limited to node builtins because the adoption layer declares no workspace
  * dependency. Two conditions send a kit test here rather than to `toolbelt.testing`'s `pointCwdAt`: a devDep
  * on that package would close a dependency cycle; or the test must run on an unbuilt tree, which rules out
  * `toolbelt.testing/candidate`, whose export maps to `dist/`.

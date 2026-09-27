@@ -487,9 +487,9 @@ var default_default = defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
   detect: listFilesystemIdioms,
   exportNames: ADOPTED_EXPORTS,
-  noSourcesReason: "the project holds no JavaScript or TypeScript sources outside the exempt paths",
+  noSourcesReason: "the project contains no JavaScript or TypeScript sources outside the exempt paths",
   packageName: PACKAGE_NAME,
-  // A test writes these shapes deliberately, and a bootstrap wrapper hand-rolls what it reaches for so that its
+  // A test writes these shapes deliberately, and a bootstrap wrapper hand-rolls what it uses so that its
   // build-first message survives an incomplete install.
   pathFilter: isAdoptableSource,
   checks: [
@@ -498,14 +498,14 @@ var default_default = defineAdoptionKit({
       id: "no-hand-rolled-atomic-write",
       kinds: ["temp-write-rename"],
       severity: "recommend",
-      fix: `Replace the write and rename named above with writeAtomic from ${PACKAGE_NAME}/candidate, called as await writeAtomic(filePath, content). Check where the temp file is staged before taking the substitution as cosmetic: rename is atomic only within one filesystem, so a temp file under the system temporary directory fails with EXDEV the moment the target lives on another volume. writeAtomic stages beside the target, creates missing parent directories, copies an existing target's permission bits onto the replacement, and removes the temp file on failure. It fsyncs nothing, so it promises no torn reads rather than survival of a power loss. Reference: ${README_URL}`
+      fix: `Replace the write and rename named above with writeAtomic from ${PACKAGE_NAME}/candidate, called as await writeAtomic(filePath, content). Check where the temp file is staged before taking the substitution as cosmetic: rename is atomic only within one filesystem, so a temp file under the system temporary directory fails with EXDEV whenever the target is on another volume. writeAtomic stages beside the target, creates missing parent directories, copies an existing target's permission bits onto the replacement, and removes the temp file on failure. Because it fsyncs nothing, it promises no torn reads rather than survival of a power loss. Reference: ${README_URL}`
     },
     {
       name: "No source walks to the filesystem root by hand",
       id: "no-hand-rolled-directory-walk",
       kinds: ["chain-probe", "chain-walk"],
       severity: "recommend",
-      fix: `Replace the loop named above with the directory-chain function that matches what it does, all three from ${PACKAGE_NAME}. A loop that only ascends takes listDirectoryChain, which returns the levels as strings and reads nothing from disk. A loop that probes each level for a name takes findDirectoryChainMatch where it stops at the nearest match, and listDirectoryChainMatches where every level's match matters; the first touches no level beyond the one that matches. All three take a stopAtDir that bounds the ascent, which a hand-rolled loop usually runs without. A loop probing for package.json is left to toolbelt.packaging, whose own kit reports it: ${PACKAGING_README_URL}. Reference: ${README_URL}`
+      fix: `Replace the loop named above with the directory-chain function that matches what it does, all three from ${PACKAGE_NAME}. A loop that only ascends takes listDirectoryChain, which returns the levels as strings and reads nothing from disk. A loop that probes each level for a name takes findDirectoryChainMatch when it stops at the nearest match, and listDirectoryChainMatches when every level's match matters; the first touches no level beyond the one that matches. All three take a stopAtDir that bounds the ascent, which a hand-rolled loop usually runs without. A loop probing for package.json is left to toolbelt.packaging, whose own kit reports it: ${PACKAGING_README_URL}. Reference: ${README_URL}`
     }
   ]
 });

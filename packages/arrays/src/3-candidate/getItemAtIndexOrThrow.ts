@@ -3,8 +3,8 @@
  * `TypeError` if the index is not a safe integer. This function tests presence, so an item whose
  * value is `undefined` is returned, not thrown on; "no item" means an index that is negative,
  * past the end, or on a hole in a sparse array.
- * Use this function to obtain `T` without a type assertion under `noUncheckedIndexedAccess` where
- * the index is guaranteed by construction; where absence is a reachable case, handle the
+ * Use this function to obtain `T` without a type assertion under `noUncheckedIndexedAccess` when
+ * the index is guaranteed by construction; when absence is a reachable case, handle the
  * `undefined` from `Array.prototype.at` instead.
  *
  * @category Array

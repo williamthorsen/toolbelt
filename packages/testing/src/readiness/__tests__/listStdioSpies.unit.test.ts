@@ -54,7 +54,7 @@ const UNCLAIMED = [
 ];
 
 describe(listStdioSpies, () => {
-  it('reports nothing for a file holding no spy', () => {
+  it('reports nothing for a file containing no spy', () => {
     expect(listStdioSpies("it('works', () => {});")).toStrictEqual([]);
   });
 

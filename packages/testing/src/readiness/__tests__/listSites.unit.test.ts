@@ -3,11 +3,11 @@ import { describe, expect, it } from 'vitest';
 import { listSites } from '../listSites.ts';
 
 describe(listSites, () => {
-  it('reports nothing for a file holding none of the idioms', () => {
+  it('reports nothing for a file containing none of the idioms', () => {
     expect(listSites("it('works', () => {});")).toStrictEqual([]);
   });
 
-  it('reports a file holding only error captures', () => {
+  it('reports a file containing only error captures', () => {
     const source = ['let caught: unknown;', 'try {', '  parse(text);', '} catch (error) {', '  caught = error;', '}'];
 
     expect(listSites(source.join('\n'))).toStrictEqual([
@@ -15,7 +15,7 @@ describe(listSites, () => {
     ]);
   });
 
-  it('reports a file holding only stdio spies', () => {
+  it('reports a file containing only stdio spies', () => {
     const source = "vi.spyOn(process.stdout, 'write').mockImplementation(() => true);";
 
     expect(listSites(source)).toStrictEqual([{ kind: 'hand-rolled-stdio-capture', line: 1 }]);

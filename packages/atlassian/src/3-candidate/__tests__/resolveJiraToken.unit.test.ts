@@ -74,7 +74,7 @@ describe(resolveJiraToken, () => {
     expect(token).toBe('from-store');
   });
 
-  it('consults no command where none is configured', () => {
+  it('consults no command when none is configured', () => {
     const runCommand = vi.fn(() => 'from-command');
 
     resolveJiraToken({ account: ACCOUNT, env: {}, runCommand, store: createStore('from-store') });
@@ -82,7 +82,7 @@ describe(resolveJiraToken, () => {
     expect(runCommand).not.toHaveBeenCalled();
   });
 
-  it('names the storing command where every source misses', () => {
+  it('names the storing command when every source misses', () => {
     const store = createStore(undefined);
 
     expect(() => resolveJiraToken({ account: ACCOUNT, env: {}, store })).toThrow(

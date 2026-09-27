@@ -8,7 +8,7 @@ const config = defineConfig([
     files: ['**/*.ts', '**/*.mts'],
     languageOptions: {
       parserOptions: {
-        // Anchor the project service (enabled by the base config) at the repo root.
+        // Point the project service (enabled by the base config) at the repo root.
         tsconfigRootDir: import.meta.dirname,
       },
     },

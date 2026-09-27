@@ -13,7 +13,7 @@ const SPY = /\bvi\s*\.\s*spyOn\(\s*console\s*,\s*(['"])(?:debug|error|info|log|w
 const READ = /\.\s*mock\s*\.\s*(?:calls|lastCall)\b/g;
 const SILENCE_BINDING = /\b(?:const|let|using|var)\s+([\w$]+)\s*=\s*silenceConsole\s*\(/g;
 // The declaration keyword is optional, because a suite commonly declares the name in one scope and assigns
-// the spy in a hook. The leading guard holds the name to one that an identifier read can resolve:
+// the spy in a hook. The leading guard restricts the name to one that an identifier read can resolve:
 // `harness.spy = ` binds nothing, since a read written `spy.mock.calls` would not be reaching that property.
 const BINDING_TAIL = /(?:^|[^.\w$])(?:(?:const|let|using|var) )?([\w$]+)(?:: [^=]+)? = $/;
 const MEMBER_RECEIVER = /([\w$]+) ?\. ?(?:debug|error|info|log|warn) ?$/;
@@ -33,9 +33,9 @@ const WINDOW = { lookahead: 0, lookbehind: 64 };
  * source and takes its verdict from the blanked text at the same offsets. The read anchor is identifiers alone
  * and scans the blanked code directly.
  *
- * A read reports only once its receiver resolves to a console spy, either a name bound to one or a member of a
- * `silenceConsole` result. That keeps a read of some other spy's calls silent. A read chained straight
- * onto the spy call binds no name, so it reports at the spy's own site instead.
+ * The function reports a read only once its receiver resolves to a console spy, either a name bound to one or a
+ * member of a `silenceConsole` result. That leaves a read of some other spy's calls unreported. A read chained
+ * straight onto the spy call binds no name, so the function reports it at the spy's own site instead.
  *
  * @internal
  */
@@ -45,7 +45,7 @@ export function listConsoleSites(source: string): ConsoleSite[] {
   const spyBindings = new Set<string>();
 
   for (const match of source.matchAll(SPY)) {
-    // The anchor's own first character survives blanking exactly where the spy is code that the runtime runs.
+    // The anchor's own first character survives blanking exactly when the spy is code that the runtime runs.
     if (code[match.index] !== source[match.index]) continue;
 
     const binding = BINDING_TAIL.exec(readLookbehind(code, match.index))?.[1];
@@ -66,7 +66,7 @@ export function listConsoleSites(source: string): ConsoleSite[] {
     sites.push({ kind: 'console-calls-read', line: getLineAtOffset(code, match.index) });
   }
 
-  // Spies are collected ahead of reads, so a stable sort leaves a spy first where the two share a line.
+  // Because spies are collected ahead of reads, a stable sort leaves a spy first when the two share a line.
   return sites.toSorted((a, b) => a.line - b.line);
 }
 

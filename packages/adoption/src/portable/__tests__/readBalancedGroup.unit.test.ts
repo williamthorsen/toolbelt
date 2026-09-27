@@ -25,11 +25,11 @@ describe(readBalancedGroup, () => {
     expect(source.slice(group?.start, group?.end)).toBe('{ second }');
   });
 
-  it('returns nothing where the group never balances', () => {
+  it('returns nothing when the group never balances', () => {
     expect(readBalancedGroup('f({ a: 1 }', 0, PARENTHESES)).toBeUndefined();
   });
 
-  it('returns nothing where the source holds no opening delimiter', () => {
+  it('returns nothing when the source contains no opening delimiter', () => {
     expect(readBalancedGroup('nothing here', 0, BRACES)).toBeUndefined();
   });
 });

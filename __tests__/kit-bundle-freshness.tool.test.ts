@@ -14,7 +14,7 @@ const RDY_BIN_PATH = path.join('node_modules', '.bin', 'rdy');
 const VERDICT_FIELDS = ['status', 'sourceStatus', 'inputsStatus', 'rebuildStatus'];
 
 describe('Compiled kit bundles', () => {
-  it('every workspace with a kit holds a bundle current with its sources', () => {
+  it('every workspace with a kit contains a bundle current with its sources', () => {
     const { failures, workspaceCount } = auditKitBundles(findMonorepoRoot());
 
     expect(failures).toStrictEqual([]);
@@ -27,11 +27,12 @@ describe('Compiled kit bundles', () => {
 
 /**
  * Verifies the compiled bundle of every workspace with a kit against the hashes recorded by its manifest,
- * reporting those that fail. A bundle is a build artifact held in the tree, so nothing but this check notices
- * when a source that it inlines moves on without it -- least of all a source in another workspace, which the
- * kit's own package.json never mentions.
+ * reporting those that fail. A bundle is a build artifact committed to the tree, so nothing but this check
+ * notices when a source that it inlines changes after the bundle was compiled -- least of all a source in another
+ * workspace, which the kit's own package.json never mentions.
  *
- * Workspaces are discovered rather than listed, so a package that gains a kit is covered on arrival.
+ * Because this check discovers workspaces rather than listing them, it covers a package as soon as the package
+ * gains a kit.
  */
 function auditKitBundles(monorepoRoot: string): { failures: string[]; workspaceCount: number } {
   const failures: string[] = [];
@@ -83,7 +84,7 @@ function describeFailure(stdout: string): string | undefined {
     .join(', ');
 }
 
-/** Lists a kit's verdicts as reported, naming any that the report omits so a silent absence reads as one. */
+/** Lists a kit's verdicts as reported, naming any that the report omits so that its absence is visible. */
 function describeVerdicts(kit: Record<string, unknown>): string {
   return VERDICT_FIELDS.map((field) => `${field}=${readVerdict(kit[field])}`).join(', ');
 }

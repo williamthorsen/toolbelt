@@ -7,7 +7,7 @@ import type { ProjectSpec, SpecStatus } from '../ProjectSpec.ts';
 const newStatusReference = (): string => 'ref-minted';
 
 describe(buildReconciliationPlan, () => {
-  it('amends nothing where every spec status matches a live one', () => {
+  it('amends nothing when every spec status matches a live one', () => {
     const plan = buildReconciliationPlan(buildSpec(), buildProjectConfiguration(), { newStatusReference });
 
     expect(plan.creations).toStrictEqual([]);
@@ -52,7 +52,7 @@ describe(buildReconciliationPlan, () => {
     expect(plan.statusUpdates).toMatchObject([{ from: 'In Progress', to: 'Waiting' }]);
   });
 
-  it('creates a status not held by the workflow, under the supplied reference', () => {
+  it('creates a status absent from the workflow, under the supplied reference', () => {
     const spec = buildSpec([{ category: 'IN_PROGRESS', name: 'In Review' }]);
 
     const plan = buildReconciliationPlan(spec, buildProjectConfiguration(), { newStatusReference });
@@ -62,7 +62,7 @@ describe(buildReconciliationPlan, () => {
     ]);
   });
 
-  it('mints a reference of its own where the caller supplies none', () => {
+  it('generates a reference of its own when the caller supplies none', () => {
     const spec = buildSpec([{ category: 'IN_PROGRESS', name: 'In Review' }]);
 
     const plan = buildReconciliationPlan(spec, buildProjectConfiguration());
@@ -118,7 +118,7 @@ describe(buildReconciliationPlan, () => {
     expect(plan.featureToggles).toStrictEqual([]);
   });
 
-  it('reports a feature locked by Jira rather than planning a toggle that cannot take', () => {
+  it('reports a feature locked by Jira rather than planning a toggle that cannot take effect', () => {
     const spec = { ...buildSpec(), boardFeatures: { 'jsw.agility.backlog': 'ENABLED' } } satisfies ProjectSpec;
     const configuration = buildProjectConfiguration({ lockedFeatures: new Set(['jsw.agility.backlog']) });
 
@@ -138,7 +138,7 @@ describe(buildReconciliationPlan, () => {
     expect(plan.lockedFeatures).toStrictEqual([]);
   });
 
-  it('passes over a transition that is not global', () => {
+  it('skips a transition that is not global', () => {
     const statuses = [buildStatus({ name: 'To Do', statusCategory: 'TODO' })];
     const configuration = buildProjectConfiguration({ statuses });
     const workflow = {
@@ -158,7 +158,7 @@ describe(buildReconciliationPlan, () => {
 
 // region | Helpers
 
-/** Builds a spec over the live statuses held by the default configuration, unless entries are supplied. */
+/** Builds a spec over the live statuses in the default configuration, unless entries are supplied. */
 function buildSpec(statuses?: readonly SpecStatus[]): ProjectSpec {
   return {
     statuses: statuses ?? [

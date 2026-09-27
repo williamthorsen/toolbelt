@@ -125,7 +125,7 @@ describe(loadConfigCascade, () => {
     expect(result.entries.map((entry) => entry.filePath)).toStrictEqual([tree.resolve('app/.config/stack.config.mjs')]);
   });
 
-  it('if no level holds a config, returns no entries', async () => {
+  it('if no level contains a config, returns no entries', async () => {
     using tree = createTempTree({ 'app/': '' });
 
     const result = await loadConfigCascade<LabelledConfig>({

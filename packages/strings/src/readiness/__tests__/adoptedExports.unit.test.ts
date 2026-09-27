@@ -9,12 +9,12 @@ import { ADOPTED_EXPORTS } from '../adoptedExports.ts';
 // Every tier published by the package's `exports` map.
 const PUBLISHED_TIERS = [proposedExports, draftExports, candidateExports, releaseExports];
 // The `String.prototype` wrappers, whose names a file importing this package calls on strings that it never
-// took from here. Counting those calls as adoption would put the fraction beyond reach of any check.
+// took from here. Counting those calls as adoption would inflate the fraction.
 const EXCLUDED_EXPORTS = ['toLowerCase', 'toUpperCase', 'trim', 'trimEnd', 'trimStart'];
 
 describe('ADOPTED_EXPORTS', () => {
-  // Fails when a published tier gains a callable export that nothing added to the list against which
-  // adoption is counted.
+  // Fails when a published tier gains a callable export missing from the list against which adoption
+  // is counted.
   it('names every export that a consumer calls, but for the prototype wrappers', () => {
     const callable = PUBLISHED_TIERS.flatMap((tier) =>
       Object.entries(tier)

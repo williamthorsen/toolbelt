@@ -1,13 +1,13 @@
 /**
  * Adoption checks for a project consuming @williamthorsen/toolbelt.guards.
  *
- * The kit ships inside the package, so it runs only where the package is installed and always at the version
+ * The kit is included in the package, so it runs only where the package is installed and always at the version
  * that the consumer has. Installing the package is the consent on which these checks rest.
  *
- * Every finding here is a whole function that one import retires, which is why two of the three checks report
- * at `warn`: The code works, but the function duplicates one the project already has installed. The number
+ * Every finding here is a whole function that one import replaces, which is why two of the three checks report
+ * at `warn`: The code works, but the function duplicates one that the project already has installed. The number
  * guard is the exception and reports at `recommend`, because its substitution is the only inexact one, and it
- * carries an id of its own so a project can decline that advice by pragma while keeping the rest.
+ * has an id of its own so that a project can decline that advice by pragma while keeping the rest.
  *
  * Two neighbouring kits read overlapping territory and neither claims what this one does, so no hand-off rule
  * is needed: `toolbelt.objects` claims `typeof X === 'object'` only in conjunction with a null test, and
@@ -28,7 +28,7 @@ export default defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
   detect: listGuardClones,
   exportNames: ADOPTED_EXPORTS,
-  noSourcesReason: 'the project holds no JavaScript or TypeScript sources outside the exempt paths',
+  noSourcesReason: 'the project contains no JavaScript or TypeScript sources outside the exempt paths',
   packageName: PACKAGE_NAME,
   // A test writes these shapes deliberately, and a bootstrap wrapper hand-rolls its guards so that its
   // build-first message survives an incomplete install.
@@ -38,7 +38,7 @@ export default defineAdoptionKit({
       name: 'No source defines its own assertion',
       id: 'no-assertion-clone',
       kinds: ['assert-clone', 'nullish-assert-clone'],
-      fix: `Delete the function named above and import assert from ${PACKAGE_NAME}, or assertIsNonNullable where the function asserts that a value is neither null nor undefined. One import retires the whole helper, and both carry an asserts signature, so a caller that relied on the narrowing keeps it. Reference: ${README_URL}`,
+      fix: `Delete the function named above and import assert from ${PACKAGE_NAME}, or assertIsNonNullable when the function asserts that a value is neither null nor undefined. One import replaces the whole helper, and both have an asserts signature, so a caller that relied on the narrowing keeps it. Reference: ${README_URL}`,
     },
     {
       name: 'No source defines its own type guard',

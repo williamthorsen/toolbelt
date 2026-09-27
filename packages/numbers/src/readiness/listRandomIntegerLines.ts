@@ -11,7 +11,7 @@ const WINDOW = { lookahead: 0, lookbehind: 80 };
  *
  * A site in array-subscript position is left out: It is `toolbelt.arrays`' random-item idiom, whose kit
  * recommends `pickItem`. Leaving it out rather than reporting it under an unclaimed kind keeps it out of the
- * denominator too, which no check here could ever close.
+ * denominator too: Only `pickItem` replaces it.
  *
  * @internal
  */

@@ -46,7 +46,7 @@ describe(listIssueKeys, () => {
     expect(calls).toHaveLength(1);
   });
 
-  it('returns an empty list where nothing matches', async () => {
+  it('returns an empty list when nothing matches', async () => {
     const { request } = createFakeRequest({ [SEARCH_PATH]: { json: { issues: [] } } });
 
     await expect(listIssueKeys(request, JQL)).resolves.toStrictEqual([]);
@@ -60,7 +60,7 @@ describe(listIssueKeys, () => {
     await expect(listIssueKeys(request, JQL)).rejects.toThrow('returned work items that this cannot read');
   });
 
-  it('throws naming the query where the search is rejected', async () => {
+  it('throws naming the query when the search is rejected', async () => {
     const { request } = createFakeRequest({ [SEARCH_PATH]: { json: { errorMessages: [] }, status: 400 } });
 
     await expect(listIssueKeys(request, JQL)).rejects.toMatchObject({ label: `search '${JQL}'`, status: 400 });

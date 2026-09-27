@@ -14,21 +14,21 @@ export type AsyncIdiomKind = 'hand-rolled-sleep';
 const CLOSERS = ')]}';
 const OPENERS = '([{';
 // Digits are left out: A body is claimed for holding nothing but the timer call, so what remains beside it has
-// to read as empty, and a literal delay sits inside that call rather than beside it.
+// to read as empty, and a literal delay is inside that call rather than beside it.
 const IDENTIFIER_CHARACTER = /[A-Za-z_$]/;
-// A simple type argument is spanned, so the group that is read is the executor's own parameter list. One
+// Because a simple type argument is spanned, the group that is read is the executor's own parameter list. One
 // holding a parenthesis, as a nested generic or a function type would, goes unclaimed; a sleep resolves `void`.
 const PROMISE_CONSTRUCTION = /\bnew\s+Promise\s*(?:<[^<>()]*>\s*)?\(/g;
 const RETURN_KEYWORD = /\breturn\b/g;
-// Whitespace is condensed by the time this reads, so one space is the most that can sit at the joint.
+// Whitespace is condensed by the time this reads, which leaves at most one space at the joint.
 const TIMEOUT_CALL = /\bsetTimeout\s?\(/;
 
 /**
  * Lists every hand-rolled sleep in a source file, which is a promise whose executor sets a timer and does
  * nothing else.
  *
- * The source is blanked before the anchor scan reads it, so a construction written in a comment or a literal is
- * invisible here. Blanking preserves every offset, so a reported line still names the line held by the source.
+ * Because the source is blanked before the anchor scan reads it, a construction written in a comment or a literal
+ * is invisible here. Blanking preserves every offset, which keeps each reported line number valid in the source.
  *
  * @internal
  */
@@ -54,7 +54,7 @@ export function listSleepSites(source: string): Array<AdoptionSite<AsyncIdiomKin
 /** Reports whether a timer call's arguments are a bare delay that settles the executor's promise. */
 function isSleepArguments(argumentsText: string, parameter: string): boolean {
   const args = splitTopLevelArguments(argumentsText);
-  // A third argument settles the promise with a value, where `delay` settles with none.
+  // A third argument settles the promise with a value, whereas `delay` settles with none.
   if (args.length !== 2) return false;
 
   return resolvesParameter(args[0] ?? '', parameter);
@@ -88,7 +88,8 @@ function isSleepExecutor(argument: string): boolean {
  *
  * The bare parameter is that callback in its plainest spelling, and a function taking nothing and calling the
  * parameter is the same sleep spelled longer. A callback taking a parameter of its own, or doing anything
- * beside the call, is neither: The first receives something, and the second outlives the substitution.
+ * beside the call, is neither: The first receives something, and the second does work that the substitution
+ * would drop.
  */
 function resolvesParameter(text: string, parameter: string): boolean {
   const trimmed = text.trim();

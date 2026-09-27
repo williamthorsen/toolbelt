@@ -27,7 +27,7 @@ describe(defineGlyphSet, () => {
     expect(set.plain.blocked).toStrictEqual({ text: 'BLOCK', width: 5 });
   });
 
-  it('accepts an empty plain glyph at width 0, which holds a column for a name with no plain word', () => {
+  it('accepts an empty plain glyph at width 0, which keeps a column for a name with no plain word', () => {
     const set = defineGlyphSet({ kit: { plain: '', rich: '📓' } });
 
     expect(set.plain.kit).toStrictEqual({ text: '', width: 0 });

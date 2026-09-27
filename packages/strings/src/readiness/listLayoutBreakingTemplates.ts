@@ -4,7 +4,7 @@ const BLANK_LINE = /^[\t ]*\r?$/;
 const INDENT = /^[\t ]*/;
 // Vitest writes and re-indents an inline snapshot itself, so its layout is not the author's to fix.
 const INLINE_SNAPSHOT_CALL = /InlineSnapshot\(\s*$/;
-// Long enough to hold the matcher's name ahead of the backtick.
+// Long enough to include the matcher's name ahead of the backtick.
 const INLINE_SNAPSHOT_LOOKBEHIND = 64;
 
 /**
@@ -14,11 +14,11 @@ const INLINE_SNAPSHOT_LOOKBEHIND = 64;
  * Takes both texts: Templates are located on the blanked code, and the indentation of their lines is read from the
  * source beneath at the same offsets.
  *
- * A template is claimed where it opens on an indented line and the lines after that line, among those holding
- * content, share an indent that does not begin with the opening line's. That covers text written at column 0 inside
- * indented code, and indentation written in tabs beneath a line indented with spaces or the reverse. A line holding
- * only the closing backtick holds no content, and a line that begins inside an interpolation is code rather than
- * text, so neither is measured.
+ * A template is claimed when it opens on an indented line and the lines after that line, among those with content,
+ * share an indent that does not begin with the opening line's. That covers text written at column 0 inside indented
+ * code, and indentation written in tabs beneath a line indented with spaces or the reverse. A line containing only
+ * the closing backtick has no content, and a line that begins inside an interpolation is code rather than text, so
+ * neither is measured.
  *
  * @internal
  */
@@ -52,7 +52,7 @@ function findCommonIndent(indents: readonly string[]): string {
   return first.slice(0, length);
 }
 
-/** Returns the offset at which the line holding an offset begins. */
+/** Returns the offset at which the line containing an offset begins. */
 function findLineStart(source: string, offset: number): number {
   return source.lastIndexOf('\n', offset - 1) + 1;
 }
@@ -63,7 +63,7 @@ function isInlineSnapshotArgument(code: string, start: number): boolean {
 }
 
 /**
- * Lists the indent of each line after a template's opening line that holds template text with content, skipping a
+ * Lists the indent of each line after a template's opening line that contains template text with content, skipping a
  * line that begins inside an interpolation.
  */
 function listLaterLineIndents(source: string, template: TemplateLiteral): string[] {

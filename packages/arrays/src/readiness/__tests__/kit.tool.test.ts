@@ -14,7 +14,7 @@ const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.arra
 const ARRAIFY = 'export const list = Array.isArray(value) ? value : [value];\n';
 const RANDOM_ITEM = 'export const item = items[Math.floor(Math.random() * items.length)];\n';
 const SHUFFLE = 'export const mixed = items.sort(() => Math.random() - 0.5);\n';
-// The package's own `arraify`, holding the idiom that its check recommends replacing.
+// The package's own `arraify`, containing the idiom that its check recommends replacing.
 const OWN_ARRAIFY = 'export function arraify(value) {\n  return Array.isArray(value) ? value : [value];\n}\n';
 // A tiebreak declined by the shuffle check, a floored random that the item check leaves to `toolbelt.numbers`,
 // and a ternary choosing between two unrelated values.
@@ -87,12 +87,12 @@ describe('The arrays adoption kit', () => {
     });
   });
 
-  it('skips every check where the sweep matches no source', async () => {
+  it('skips every check when the sweep matches no source', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/wrap.unit.test.ts': ARRAIFY });
     using _cwd = pointCwdAt(tree.dir);
 
     await expect(runSkip((await loadChecks())[0])).resolves.toBe(
-      'the project holds no JavaScript or TypeScript sources outside the exempt paths',
+      'the project contains no JavaScript or TypeScript sources outside the exempt paths',
     );
   });
 });
@@ -100,9 +100,9 @@ describe('The arrays adoption kit', () => {
 // region | Helpers
 
 /**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist holds in declaration order.
+ * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
  *
- * A kit holds its project sweep on its own closure, so one import would give every test here the first
+ * A kit keeps its project sweep in its own closure, so one import would give every test here the first
  * fixture repo's findings. Resetting the registry leaves each test with a kit that has swept nothing yet.
  */
 async function loadChecks(): Promise<readonly RdyCheck[]> {

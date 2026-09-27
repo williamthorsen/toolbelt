@@ -33,7 +33,7 @@ export function pointCwdAt(dir: string, options: PointCwdAtOptions = {}): Pointe
     process.chdir(resolvedDir);
   }
 
-  // The move installs the native implementation, so an enclosing replacement does not report over it.
+  // Install the native implementation on a move, so that an enclosing replacement does not report over it.
   process.cwd = chdir ? nativeCwd : () => resolvedDir;
 
   return {

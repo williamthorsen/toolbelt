@@ -12,7 +12,7 @@ const COREPACK_TARGET = '../lib/node_modules/corepack/dist/pnpm.js';
 const PNPM_TARGET = '../lib/node_modules/pnpm/bin/pnpm.cjs';
 
 describe(resolvePnpmProvider, () => {
-  it('reports pnpm absent where no PATH directory provides it', () => {
+  it('reports pnpm absent when no PATH directory provides it', () => {
     using tree = createTempTree({ 'path/other': '' });
 
     expect(resolvePnpmProvider(buildOptions(tree))).toStrictEqual({ kind: 'absent' });
@@ -33,7 +33,7 @@ describe(resolvePnpmProvider, () => {
     });
   });
 
-  it('leaves the entry undefined where no .tool-versions in reach selects the plugin', () => {
+  it('leaves the entry undefined when no .tool-versions in reach selects the plugin', () => {
     using tree = createTempTree({ 'shims/pnpm': renderShim(['pnpm 9.0.0']) });
     markExecutable(tree, 'shims/pnpm');
 
@@ -55,7 +55,7 @@ describe(resolvePnpmProvider, () => {
     });
   });
 
-  it('reports a shim stranded where its header names nodejs but not the running version', () => {
+  it('reports a shim stranded when its header names nodejs but not the running version', () => {
     using tree = createTempTree({ 'shims/pnpm': renderShim(['nodejs 24.18.1']) });
     markExecutable(tree, 'shims/pnpm');
     linkBin(tree, OLD, COREPACK_TARGET);
@@ -67,7 +67,7 @@ describe(resolvePnpmProvider, () => {
     });
   });
 
-  it('reports a nodejs shim stranded where the running node is not an asdf install', () => {
+  it('reports a nodejs shim stranded when the running node is not an asdf install', () => {
     using tree = createTempTree({ 'shims/pnpm': renderShim(['nodejs 24.20.0']) });
     markExecutable(tree, 'shims/pnpm');
 
@@ -76,7 +76,7 @@ describe(resolvePnpmProvider, () => {
     expect(provider).toMatchObject({ kind: 'stranded-shim', providingVersions: [ACTIVE] });
   });
 
-  it('names a nodejs shim by path where its bin symlink names another package', () => {
+  it('names a nodejs shim by path when its bin symlink names another package', () => {
     using tree = createTempTree({ 'shims/pnpm': renderShim(['nodejs 24.20.0']) });
     markExecutable(tree, 'shims/pnpm');
     linkBin(tree, ACTIVE, '../lib/node_modules/@pnpm/exe/pnpm');

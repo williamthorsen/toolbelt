@@ -4,8 +4,8 @@ import { inspect } from 'node:util';
  * Runs a call expected to fail and returns the `Error` that it threw or rejected with.
  *
  * Accepts a synchronous or an asynchronous call. Fails the test when the call completes normally or throws a
- * non-`Error`, so a regression that stops the failure reports itself rather than leaving a later assertion to
- * run against `undefined`.
+ * non-`Error`, so a regression that stops the failure is reported at this call rather than by a later assertion
+ * running against `undefined`.
  *
  * @category Testing
  * @experimental
@@ -45,7 +45,7 @@ export async function captureError(
   throw new Error(`Expected the call to throw, but it returned: ${inspect(returned)}`);
 }
 
-/** Constructor of an error class, admitting an abstract base and one taking required arguments. */
+/** Constructor of an error class, accepting an abstract base and one taking required arguments. */
 type ErrorClass<E extends Error> = abstract new (...args: never[]) => E;
 
 // region | Helpers

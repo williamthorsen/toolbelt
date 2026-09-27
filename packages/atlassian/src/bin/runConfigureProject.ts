@@ -35,7 +35,7 @@ const BOARD_MOVE_LIMIT = 50;
 const CONFIGURE_HELP = `Usage: tb-jira configure-project <KEY> [options]
 
 Reconcile a Jira project's statuses, workflow transitions, and board features against a declarative spec, then
-report what the server holds afterwards. The run is idempotent: A project already matching the spec is left
+report what the server stores afterwards. The run is idempotent: A project already matching the spec is left
 untouched.
 
 Options:
@@ -67,11 +67,11 @@ Board columns cannot be set through the public API. The closing report names any
 column, and any column order differing from the spec's; both are fixed by dragging in the board settings.
 
 A board feature locked by Jira is reported as \`locked\` in the plan and \`LOCK\` in the closing report, and is
-never written: The call would answer 200 and change nothing. Neither it nor a column gap affects the exit code.`;
+never written: The call would return 200 and change nothing. Neither it nor a column gap affects the exit code.`;
 
 /**
  * Runs the `configure-project` subcommand: It resolves the credential, plans the reconciliation against the
- * project's live configuration, writes what the plan holds, and reports what the server holds afterwards.
+ * project's live configuration, writes what the plan contains, and reports what the server stores afterwards.
  *
  * @internal
  */

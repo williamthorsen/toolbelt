@@ -13,9 +13,9 @@ const OPPOSITE: Record<BoundingName, BoundingName> = { max: 'min', min: 'max' };
  *
  * Takes the blanked code produced by `listMathIdioms`, so a clamp written in a comment or a literal is not one.
  *
- * A clamp is a two-argument `Math.max` holding a two-argument `Math.min`, or the mirror of that, with the
- * nested call in either argument position. The nested call's own anchor falls inside the outer call and is
- * suppressed, so one clamp reports once rather than twice.
+ * A clamp is a two-argument `Math.max` containing a two-argument `Math.min`, or the mirror of that, with the
+ * nested call in either argument position. Because the nested call's own anchor falls inside the outer call, it
+ * is suppressed, and one clamp is reported once rather than twice.
  *
  * An inner call taking any number of arguments but two is not a clamp: `Math.max(a, Math.min(b, c, d))` is the
  * larger of `a` and the smallest of three, which `clamp` cannot express.
@@ -62,7 +62,7 @@ function isBoundingCall(argument: string, name: BoundingName): boolean {
 /**
  * Splits a call's argument text on its top-level commas, discarding the empty tail left by a trailing comma.
  *
- * A spread or an empty argument list yields a count of one, which no clamp shape has, so neither needs a case
+ * A spread or an empty argument list yields a count of one, which matches no clamp shape, so neither needs a case
  * of its own.
  */
 function listTopLevelArguments(inner: string): string[] {

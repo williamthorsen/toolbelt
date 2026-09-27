@@ -13,7 +13,7 @@ export function pluralize(count: number, singular: string, plural = `${singular}
 
 /**
  * Returns the singular or plural form of a word based on the count, along with the count itself.
- * The count is interpolated as given, so a caller wanting formatted output composes a formatted number with
+ * The count is interpolated as given. A caller wanting formatted output composes a formatted number with
  * `pluralize` instead.
  *
  * @category String

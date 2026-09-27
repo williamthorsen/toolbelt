@@ -8,12 +8,12 @@ const EXIT_NOT_FOUND = 44;
 const INTERACTIVE_ARGS = ['-i'];
 
 /**
- * Builds a store over one keychain, or over the default search list where none is named.
+ * Builds a store over one keychain, or over the default search list when none is named.
  *
  * @internal
  */
 export function buildKeychainStore(run: SecurityRunner, keychain?: string): WritableSecretStore {
-  /** Reads a secret, returning `undefined` when the keychain holds no such item. */
+  /** Reads a secret, returning `undefined` when the keychain contains no such item. */
   function findSecret(query: SecretQuery): string | undefined {
     const result = run(buildFindArgs(query, keychain));
     if (result.exitCode === EXIT_NOT_FOUND) return undefined;
@@ -26,7 +26,7 @@ export function buildKeychainStore(run: SecurityRunner, keychain?: string): Writ
   /**
    * Reads a secret back for verification, reporting a read that could not run as what it is. Retrieving a
    * secret needs access to the item's data, which an item created by another program may withhold, and the
-   * write has already landed by then.
+   * write has already completed by then.
    */
   function readBack(query: SecretQuery): string | undefined {
     try {
@@ -74,7 +74,7 @@ export function buildKeychainStore(run: SecurityRunner, keychain?: string): Writ
 
 /**
  * Throws if the stored secret differs from the one written. `security` reads a command line into a fixed
- * buffer, so a version whose buffer is smaller than this one accounts for would cut the secret; comparing
+ * buffer, so a version whose buffer is smaller than this one accounts for would truncate the secret; comparing
  * what came back turns that into a failure at the write rather than a wrong answer at the caller.
  */
 function assertStoredIntact(stored: string | undefined, secret: string): void {

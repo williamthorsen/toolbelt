@@ -60,7 +60,7 @@ describe(listChainWalkSites, () => {
     expect(sources.map((source) => listSites(source))).toStrictEqual([[], []]);
   });
 
-  it('declines a probe for a manifest, regardless of how many markers sit beside it', () => {
+  it('declines a probe for a manifest, regardless of how many markers are probed beside it', () => {
     const source = [
       'let dir = start;',
       'while (true) {',
@@ -74,7 +74,7 @@ describe(listChainWalkSites, () => {
     expect(listSites(source)).toStrictEqual([]);
   });
 
-  // A dependency's manifest is no manifest search, so the site stays with this kit.
+  // A probe for a dependency's manifest is not a manifest search, so this kit reports the site.
   it('names a probe for a manifest below the level as a search of the chain', () => {
     const probes = [
       "fs.existsSync(path.join(dir, 'node_modules', 'x', 'package.json'))",

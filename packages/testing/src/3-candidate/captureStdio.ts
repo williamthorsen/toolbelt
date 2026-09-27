@@ -15,8 +15,8 @@ const CONSOLE_STREAMS: Record<ConsoleMethod, 'stderr' | 'stdout'> = {
 
 /**
  * Captures everything written to stdout and stderr for the enclosing scope, restoring both streams when the
- * scope exits. A test runner replaces the global console, so console output reaches neither stream unless
- * `includeConsole` asks for it.
+ * scope exits. A test runner replaces the global console, so console output goes to neither stream unless
+ * `includeConsole` is set.
  *
  * @category Testing
  * @experimental
@@ -85,7 +85,7 @@ export interface CapturedStdio extends Disposable {
 
 /** Options for a capture scope. */
 export interface CaptureStdioOptions {
-  /** Whether console output joins the stream buffers, which a command reporting through `console` needs. */
+  /** Whether to add console output to the stream buffers, which a command reporting through `console` needs. */
   includeConsole?: boolean;
   /** Value that both streams report for `isTTY` while the scope is open, which exercises style detection. */
   isTty?: boolean;
@@ -118,7 +118,7 @@ function createWriteCapture(chunks: string[]): typeof process.stdout.write {
   };
 }
 
-/** Renders a chunk as the text that Node writes: `encoding` reads a string chunk and has no bearing on bytes. */
+/** Renders a chunk as the text that Node writes: `encoding` applies to a string chunk and has no bearing on bytes. */
 function decodeChunk(chunk: Uint8Array | string, encoding?: BufferEncoding | ((error?: Error) => void)): string {
   const bytes =
     typeof chunk === 'string'
@@ -129,8 +129,8 @@ function decodeChunk(chunk: Uint8Array | string, encoding?: BufferEncoding | ((e
 }
 
 /**
- * Replaces one property and returns the call that puts back the state that it found: the previous value where the
- * target owned the property, and absence where it did not. Both cases arise here, since
+ * Replaces one property and returns a function that restores the state that it found: the previous value if the
+ * target owned the property, and absence if it did not. Both cases arise here, since
  * `process.stdout.write` resolves from the stream's prototype and `isTTY` is unset outside a terminal.
  */
 function swapProperty<T extends object, K extends keyof T>(target: T, key: K, value: T[K]): () => void {

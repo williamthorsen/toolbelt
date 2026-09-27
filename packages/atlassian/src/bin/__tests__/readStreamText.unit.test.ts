@@ -9,7 +9,7 @@ describe(readStreamText, () => {
     await expect(readStreamText(buildStream(['first ', 'second']))).resolves.toBe('first second');
   });
 
-  it('returns an empty string where the stream contains nothing', async () => {
+  it('returns an empty string when the stream contains nothing', async () => {
     await expect(readStreamText(buildStream([]))).resolves.toBe('');
   });
 

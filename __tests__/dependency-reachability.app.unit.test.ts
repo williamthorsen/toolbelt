@@ -10,7 +10,7 @@ import { listExportedTierDirectories } from '../test-utils/listExportedTierDirec
 import { readManifest } from '../test-utils/readManifest.ts';
 
 // A specifier naming a package rather than a sibling file. A bare side-effect import contains no `from`, so a
-// dependency reached only that way would read as unreachable; no workspace writes one.
+// dependency reached only that way would be reported as unreachable; no workspace writes one.
 const PACKAGE_SPECIFIER_PATTERN = /from\s+'([^.'][^']*)'/g;
 
 describe('Runtime dependencies', () => {
@@ -30,8 +30,8 @@ describe('Runtime dependencies', () => {
  * imported by no exported module. Such a dependency installs for every consumer while nothing they can import
  * needs it.
  *
- * `devDependencies` stay out: They do not publish, and `packages/adoption` reaches its consumers through that
- * field. A type-only import counts, since a consumer typechecking against the shipped declarations needs it.
+ * `devDependencies` stay out: They do not publish, and `packages/adoption` is installed for its consumers through
+ * that field. A type-only import counts, since a consumer typechecking against the shipped declarations needs it.
  */
 function auditDependencyReachability(monorepoRoot: string): {
   dependencyCount: number;

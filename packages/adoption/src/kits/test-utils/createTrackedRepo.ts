@@ -3,10 +3,10 @@ import { execFileSync } from 'node:child_process';
 import { createTempDir, type TempDir } from './createTempDir.ts';
 
 /**
- * Creates a throwaway git working tree holding the given entries, every one of them tracked.
+ * Creates a throwaway git working tree containing the given entries, every one of them tracked.
  *
- * Adoption checks read the files that git tracks, so an untracked fixture file is invisible to them. Staging is
- * enough to be tracked, which keeps the fixture clear of the identity demanded by a commit.
+ * Adoption checks read the files that git tracks, so an untracked fixture file is invisible to them. Staging a
+ * file is enough to track it, which keeps the fixture free of the identity that a commit requires.
  */
 export function createTrackedRepo(entries: Record<string, string>): TempDir {
   const tree = createTempDir(entries);

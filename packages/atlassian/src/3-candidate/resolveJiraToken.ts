@@ -10,7 +10,7 @@ import {
 /**
  * Resolves the Jira API token from a supplied value, then the environment, then a configured command, then the
  * keychain. A token is stored per account, so `account` is the email with which Basic auth pairs it. Throws
- * where every source misses, naming the command that stores one.
+ * when every source misses, naming the command that stores one.
  *
  * @category Jira
  * @experimental
@@ -33,9 +33,12 @@ export function resolveJiraToken(options: JiraTokenOptions): string {
 }
 
 export interface JiraTokenOptions extends JiraTokenChainOptions {
-  /** The Atlassian account email, which names the keychain account holding the token. */
+  /** The Atlassian account email, which names the keychain account that stores the token. */
   readonly account: string;
-  /** The keychain service holding the token. A scoped token authenticates one product, so this defaults per product. */
+  /**
+   * The keychain service that stores the token. A scoped token authenticates one product, so this defaults per
+   * product.
+   */
   readonly service?: string | undefined;
   readonly store?: SecretStore | undefined;
 }

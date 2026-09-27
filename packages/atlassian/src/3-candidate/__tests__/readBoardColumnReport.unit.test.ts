@@ -32,7 +32,7 @@ describe(readBoardColumnReport, () => {
     expect(report.uncovered).toStrictEqual(['Done']);
   });
 
-  it('reports the two orders where the board runs its columns in another one', async () => {
+  it('reports the two orders when the board orders its columns differently', async () => {
     const { request } = createFakeRequest(buildRoutes(['Done', 'To Do', 'In Progress']));
 
     const report = await readBoardColumnReport(request, buildProjectConfiguration(), SPEC);
@@ -43,7 +43,7 @@ describe(readBoardColumnReport, () => {
     });
   });
 
-  it('passes over a column that the spec does not name rather than reporting it out of order', async () => {
+  it('skips a column that the spec does not name rather than reporting it out of order', async () => {
     const { request } = createFakeRequest(buildRoutes(['To Do', 'Blocked', 'In Progress', 'Done']));
 
     const report = await readBoardColumnReport(request, buildProjectConfiguration(), SPEC);
@@ -61,7 +61,7 @@ describe(readBoardColumnReport, () => {
     expect(report.order).toBeUndefined();
   });
 
-  it('passes over a spec status not held by the workflow, which the plan reports as a creation', async () => {
+  it('skips a spec status absent from the workflow, which the plan reports as a creation', async () => {
     const spec = { statuses: [...SPEC.statuses, { category: 'TODO', name: 'Triage' }] } satisfies ProjectSpec;
     const { request } = createFakeRequest(buildRoutes(['To Do', 'In Progress', 'Done']));
 
@@ -92,7 +92,7 @@ describe(readBoardColumnReport, () => {
     );
   });
 
-  it('throws naming the board where the configuration read is rejected', async () => {
+  it('throws naming the board when the configuration read is rejected', async () => {
     const { request } = createFakeRequest({ [CONFIGURATION_PATH]: { json: { errorMessages: [] }, status: 403 } });
 
     await expect(readBoardColumnReport(request, buildProjectConfiguration(), SPEC)).rejects.toMatchObject({

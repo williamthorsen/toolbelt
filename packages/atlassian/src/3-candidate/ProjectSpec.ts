@@ -1,5 +1,5 @@
 /**
- * The states that a spec may ask a board feature to be in. Jira also reports `COMING_SOON`, which nothing can
+ * The states that a spec may ask a board feature to be in. Jira also reports `COMING_SOON`, which a spec cannot
  * request.
  */
 export type BoardFeatureRequest = 'DISABLED' | 'ENABLED';

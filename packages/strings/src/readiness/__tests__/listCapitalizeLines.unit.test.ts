@@ -19,7 +19,7 @@ describe(listCapitalizeLines, () => {
     expect(listCapitalizeLines('const label = `${word[0].toUpperCase()}${word.slice(1)}`;\n')).toStrictEqual([1]);
   });
 
-  it('claims a subject reached through a member expression', () => {
+  it('claims a subject accessed through a member expression', () => {
     const source = 'const label = this.name.charAt(0).toUpperCase() + this.name.slice(1);\n';
 
     expect(listCapitalizeLines(source)).toStrictEqual([1]);
@@ -37,7 +37,7 @@ describe(listCapitalizeLines, () => {
     expect(listCapitalizeLines(source)).toStrictEqual([1, 2]);
   });
 
-  // The trailing call reaches the whole expression, which `capitalize` returns.
+  // The trailing call applies to the whole expression, which `capitalize` returns.
   it('claims a capitalization that the source transforms as a whole', () => {
     const source = 'const label = (word.charAt(0).toUpperCase() + word.slice(1)).trim();\n';
 
@@ -61,7 +61,7 @@ describe(listCapitalizeLines, () => {
     expect(listCapitalizeLines(source)).toStrictEqual([]);
   });
 
-  // The chained call reaches the tail alone, so `capitalize` is not the substitution that the fix text promises.
+  // The chained call applies to the tail alone, so `capitalize` is not the substitution that the fix text promises.
   it('declines a tail that the source goes on to transform', () => {
     const source = "const label = word.charAt(0).toUpperCase() + word.slice(1).replace(/_/g, ' ');\n";
 

@@ -88,7 +88,7 @@ describe(runTbJira, () => {
       expect(harness.stored()).toStrictEqual({});
     });
 
-    it('exits 1 where there was no token to remove', async () => {
+    it('exits 1 when there was no token to remove', async () => {
       const harness = createTbJiraHarness({ env: EMAIL_ENV });
 
       await expect(runTbJira(['auth', 'delete'], harness.effects)).resolves.toBe(1);
@@ -114,7 +114,7 @@ describe(runTbJira, () => {
       expect(harness.readOutput()).toContain('the JIRA_API_TOKEN environment variable');
     });
 
-    it('exits 1 where no source would supply a token', async () => {
+    it('exits 1 when no source would supply a token', async () => {
       const harness = createTbJiraHarness({ env: EMAIL_ENV });
 
       await expect(runTbJira(['auth', 'status'], harness.effects)).resolves.toBe(1);
@@ -122,7 +122,7 @@ describe(runTbJira, () => {
     });
 
     it('reports a token that the keychain cannot store as a usage error, not an unreachable keychain', async () => {
-      // A token too long for `security`'s command line reaches the store and is refused there, which is the
+      // A token too long for `security`'s command line is passed to the store and refused there, which is the
       // case not covered by the blank guard above.
       const harness = createTbJiraHarness({
         env: EMAIL_ENV,

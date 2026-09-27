@@ -46,7 +46,7 @@ describe(truncateToWidth, () => {
     });
 
     // Left to `cli-truncate`, which renders the mark in place of the text at a width of one, this empties it.
-    it.each([1, 2])('fills a width of %i that an ellipsis of no width marks nothing of', (width) => {
+    it.each([1, 2])('fills a width of %i with text when the ellipsis has no width', (width) => {
       const truncated = truncateToWidth('abcdefgh', { ellipsis: '', width });
 
       expect(truncated).toBe('abcdefgh'.slice(0, width));

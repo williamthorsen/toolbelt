@@ -10,7 +10,7 @@ import { listDirectoryChain } from '@williamthorsen/toolbelt.filesystem';
  * Ascends from the module's own directory and returns the first `package.json` declaring a `name`. One that
  * declares none is a marker manifest, such as the `{"type": "commonjs"}` file left in `dist/` by a dual-format
  * build, and the ascent passes over it. That is the whole difference from `node:module`'s `findPackageJSON`,
- * which returns the nearest manifest whatever it holds.
+ * which returns the nearest manifest whatever it contains.
  *
  * @internal
  */

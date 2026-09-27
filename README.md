@@ -13,7 +13,7 @@ asdf plugin add nodejs
 asdf install nodejs
 ```
 
-Then enable corepack so `pnpm` resolves to the version pinned in `package.json`:
+Then enable corepack so that `pnpm` resolves to the version pinned in `package.json`:
 
 ```shell
 corepack enable
@@ -75,7 +75,7 @@ nmr check
 
 ### Publishing
 
-Releases publish through npm [trusted publishing](https://docs.npmjs.com/trusted-publishers/) (OIDC), and the repo holds no `NPM_TOKEN`. The one publish run by hand is a new package's placeholder, described under the one-time setup below.
+Releases publish through npm [trusted publishing](https://docs.npmjs.com/trusted-publishers/) (OIDC), and the repo stores no `NPM_TOKEN`. The one publish run by hand is a new package's placeholder, described under the one-time setup below.
 
 Cut a release by running `release-kit` locally and pushing the tags that it creates:
 
@@ -99,7 +99,7 @@ Tags must be pushed from a developer machine, not by the dispatch `release.yaml`
 
 **One-time setup (per published package):** Two steps, in order. Both require account-level 2FA, and the second requires npm ≥ 11.15.0.
 
-First, claim the name with a placeholder version. npm accepts `npm trust` only for a package that the registry already holds, so a package's first publish cannot come from CI. Publish a bare manifest from a scratch directory. Never publish from `packages/{domain}`: that manifest carries the version from which release-kit bumps, and its build would ship an empty `dist/`.
+First, claim the name with a placeholder version. npm accepts `npm trust` only for a package that the registry already holds, so a package's first publish cannot come from CI. Publish a bare manifest from a scratch directory. Never publish from `packages/{domain}`: That manifest declares the version from which release-kit bumps, and its build would publish an empty `dist/`.
 
 ```shell
 placeholder_dir=$(mktemp -d) && printf '{ "name": "%s", "version": "0.0.0", "description": "Placeholder awaiting first release" }\n' @williamthorsen/toolbelt.{domain} > "$placeholder_dir/package.json" && npm publish "$placeholder_dir" --access public

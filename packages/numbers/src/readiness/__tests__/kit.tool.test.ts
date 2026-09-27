@@ -12,7 +12,7 @@ import { describe, expect, it, vi } from 'vitest';
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.numbers', version: '1.0.0' });
 const CLAMP = 'export const bounded = Math.max(min, Math.min(max, value));\n';
-// The package's own `clamp`, holding the idiom that its check recommends replacing.
+// The package's own `clamp`, containing the idiom that its check recommends replacing.
 const OWN_CLAMP = 'export function clamp(value, bounds) {\n  return Math.max(min, Math.min(max, value));\n}\n';
 const ROUND = 'export const rate = Math.round(value * 100) / 100;\n';
 const RANDOM = 'export const roll = Math.floor(Math.random() * sides);\n';
@@ -54,7 +54,7 @@ describe('The numbers adoption kit', () => {
   });
 
   // A subscripted random integer is `toolbelt.arrays`' site. Claiming it would report one line twice across
-  // the two kits; counting it would leave a fraction that no check here could close.
+  // the two kits; counting it would leave a fraction that the checks here could not close.
   it('neither reports nor counts a site that it hands off to another kit', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/pick.ts': UNCLAIMED });
     using _cwd = pointCwdAt(tree.dir);
@@ -76,12 +76,12 @@ describe('The numbers adoption kit', () => {
     });
   });
 
-  it('skips every check where the sweep matches no source', async () => {
+  it('skips every check when the sweep matches no source', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/bound.unit.test.ts': CLAMP });
     using _cwd = pointCwdAt(tree.dir);
 
     await expect(runSkip((await loadChecks())[0])).resolves.toBe(
-      'the project holds no JavaScript or TypeScript sources outside the exempt paths',
+      'the project contains no JavaScript or TypeScript sources outside the exempt paths',
     );
   });
 });
@@ -89,9 +89,9 @@ describe('The numbers adoption kit', () => {
 // region | Helpers
 
 /**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist holds in declaration order.
+ * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
  *
- * A kit holds its project sweep on its own closure, so one import would serve the first fixture repo's findings
+ * A kit keeps its project sweep in its own closure, so one import would serve the first fixture repo's findings
  * to every test here. Resetting the registry gives each test a kit that has swept nothing yet.
  */
 async function loadChecks(): Promise<readonly RdyCheck[]> {

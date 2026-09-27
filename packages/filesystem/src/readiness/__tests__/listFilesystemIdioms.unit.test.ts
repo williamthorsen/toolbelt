@@ -24,7 +24,7 @@ describe(listFilesystemIdioms, () => {
     ]);
   });
 
-  it('finds nothing in a source holding neither idiom', () => {
+  it('finds nothing in a source containing neither idiom', () => {
     expect(listFilesystemIdioms('export const dir = path.dirname(filePath);\n')).toStrictEqual([]);
   });
 

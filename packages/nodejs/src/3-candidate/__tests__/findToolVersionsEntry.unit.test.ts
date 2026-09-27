@@ -17,7 +17,7 @@ describe(findToolVersionsEntry, () => {
     });
   });
 
-  it('falls back to the home file where the ascent passes outside it', () => {
+  it('falls back to the home file when the ascent passes outside it', () => {
     using tree = createTempTree({
       'home/.tool-versions': 'pnpm 9.0.0\n',
       'elsewhere/repo/.tool-versions': 'nodejs 24.20.0\n',
@@ -41,7 +41,7 @@ describe(findToolVersionsEntry, () => {
     expect(findToolVersionsEntry('pnpm', buildOptions(tree.resolve('home/repo'), tree))?.version).toBe('9.0.0');
   });
 
-  it('returns undefined where no file in reach names the plugin', () => {
+  it('returns undefined when no file in reach names the plugin', () => {
     using tree = createTempTree({ 'home/repo/.tool-versions': 'nodejs 24.20.0\n' });
 
     expect(findToolVersionsEntry('pnpm', buildOptions(tree.resolve('home/repo'), tree))).toBeUndefined();

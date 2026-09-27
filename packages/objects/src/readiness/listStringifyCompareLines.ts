@@ -2,15 +2,15 @@ import { getLineAtOffset, PARENTHESES, readBalancedGroup } from '@williamthorsen
 
 const STRINGIFY_CALL = /(?<![\w$.])JSON\s*\.\s*stringify\s*\(/g;
 // What must follow the first call's argument list. Sticky, so it anchors at the offset reported by the
-// balanced read rather than scanning forward from it. Loose equality counts: Both operands are strings, so it
-// returns exactly what the strict test returns, and it is the same defect.
+// balanced read rather than scanning forward from it. Loose equality counts: Because both operands are
+// strings, it returns exactly what the strict test returns, and it is the same defect.
 const COMPARED_TO_STRINGIFY = /\s*[!=]==?\s*JSON\s*\.\s*stringify\s*\(/y;
 
 /**
  * Lists the line of every equality test between two `JSON.stringify` calls in a source file.
  *
- * Takes the blanked code produced by `listObjectIdioms`, so a comparison written in a comment or a literal is not
- * one.
+ * Takes the blanked code produced by `listObjectIdioms`, in which a comparison written in a comment or a literal
+ * is not one.
  *
  * The argument list is read as a balanced group rather than matched, because an argument may contain
  * parentheses of its own. Both equality operators count, strict and loose alike. A call compared against

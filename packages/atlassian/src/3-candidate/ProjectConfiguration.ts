@@ -8,11 +8,11 @@ export interface ProjectConfiguration {
   readonly features: ReadonlyMap<string, string>;
   /**
    * The features locked by Jira. A write against one returns 200 and changes nothing, so a toggle that it
-   * would plan can never take, and the run would report a mismatch on every later pass.
+   * would plan can never take effect, and the run would report a mismatch on every later pass.
    */
   readonly lockedFeatures: ReadonlySet<string>;
   readonly project: { readonly id: string };
-  /** The workflow's statuses as full objects. `Workflow.statuses` holds the same statuses as layout entries. */
+  /** The workflow's statuses as full objects. `Workflow.statuses` contains the same statuses as layout entries. */
   readonly statuses: readonly WorkflowStatus[];
   readonly workflow: Workflow;
 }
@@ -28,7 +28,7 @@ export interface Workflow {
   readonly version: unknown;
 }
 
-/** Where something sits on the workflow diagram. Jira omits a coordinate that it has not placed. */
+/** The position of something on the workflow diagram. Jira omits a coordinate that it has not placed. */
 export interface WorkflowLayout {
   readonly x?: number | undefined;
   readonly y?: number | undefined;
@@ -42,7 +42,7 @@ export interface WorkflowStatus {
   readonly statusReference: string;
 }
 
-/** Where one status sits on the workflow diagram. */
+/** The position of one status on the workflow diagram. */
 export interface WorkflowStatusLayout {
   readonly layout?: WorkflowLayout | undefined;
   readonly statusReference: string;
@@ -51,7 +51,7 @@ export interface WorkflowStatusLayout {
 /**
  * One transition of the workflow graph. The index signature contains the fields that this package does not model,
  * such as `actions`, `conditions`, `validators`, `properties`, and `triggers`: The workflow write replaces the
- * graph wholesale, so a transition that reaches it without them loses them.
+ * graph wholesale, so a transition sent without them loses them.
  */
 export interface WorkflowTransition {
   readonly [field: string]: unknown;

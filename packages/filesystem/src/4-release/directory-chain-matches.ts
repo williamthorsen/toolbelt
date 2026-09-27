@@ -16,10 +16,10 @@ export type DirectoryChainMatchOptions = ListDirectoryChainOptions;
 /**
  * Returns the nearest directory at or above `startDir` holding one of `names`, or `undefined` when none does.
  *
- * Probing stops at the first level that matches, so no level beyond it is touched. Where every level's match
+ * Probing stops at the first level that matches, so no level beyond it is touched. When every level's match
  * matters rather than the nearest, `listDirectoryChainMatches` collects them all.
  *
- * Each name is a path relative to the level against which it is probed, so a nested location such as
+ * Each name is a path relative to the level against which it is probed: A nested location such as
  * `.config/stack.config.mjs` works. A name that would leave its level is rejected before any level is probed.
  *
  * @example
@@ -52,10 +52,10 @@ export function findDirectoryChainMatch(
  * Returns, for each directory in the chain at or above `startDir`, the first of `names` that exists there.
  *
  * Ordering is nearest first, and a level yields at most one match: the earliest of `names` found there. A level
- * holding none contributes nothing, so an empty result is an ordinary outcome rather than an error. A name matches
- * a directory as readily as a file.
+ * containing none contributes nothing, so an empty result is an ordinary outcome rather than an error. A name
+ * matches a directory as readily as a file.
  *
- * Every level is probed. Where only the nearest match matters, `findDirectoryChainMatch` stops at the first.
+ * Every level is probed. When only the nearest match matters, `findDirectoryChainMatch` stops at the first.
  *
  * Each name is a path relative to the level against which it is probed, so a nested location such as
  * `.config/stack.config.mjs` works. A name that would leave its level is rejected before any level is probed.
@@ -100,7 +100,8 @@ function assertLevelRelativeNames(names: ReadonlyArray<string>): void {
       throw new Error(`Entry name must be relative to its directory level: ${name}`);
     }
 
-    // Normalizing first collapses interior `..` segments, so only a name that truly escapes is left leading with one.
+    // Normalize first to collapse interior `..` segments, leaving only a name that truly escapes still leading with
+    // one.
     const normalized = path.normalize(name);
 
     if (normalized === '..' || normalized.startsWith(`..${path.sep}`)) {

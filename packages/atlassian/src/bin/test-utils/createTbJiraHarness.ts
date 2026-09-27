@@ -89,8 +89,8 @@ export function createTbJiraHarness(options: HarnessOptions = {}): TbJiraHarness
 
         return Promise.resolve(Response.json({ cloudId: CLOUD_ID }));
       },
-      // The real ascent is covered by `findSpecPath`'s own test; here the path is composed, and whether it
-      // holds a spec is `files`' business.
+      // The real ascent is covered by `findSpecPath`'s own test; here the path is composed, and `files`
+      // decides whether a spec is there.
       findSpecPath: (fromDir) => path.join(fromDir, 'jira-project-spec.json'),
       isStdinTty: () => isTty,
       promptSecret: () => Promise.resolve(prompted),
@@ -145,7 +145,7 @@ export interface TbJiraHarness {
   /** How many times the token itself was retrieved, which reporting a source must never do. */
   secretReads: () => number;
   stored: () => Record<string, string>;
-  /** The credential with which the transport was built, or `undefined` where the run never reached it. */
+  /** The credential with which the transport was built, or `undefined` if the run never reached it. */
   transportOptions: () => TokenTransportOptions | undefined;
 }
 

@@ -20,7 +20,7 @@ const RENAME: StatusUpdate = {
 };
 
 describe(applyWorkflowUpdate, () => {
-  it('writes the payload and reports nothing corrected where the read-back shows the write took', async () => {
+  it('writes the payload and reports nothing corrected when the read-back shows the write took effect', async () => {
     const { calls, request } = createFakeRequest(
       buildRoutes([{ id: RENAME.id, name: 'Doing', statusCategory: 'IN_PROGRESS' }]),
     );
@@ -34,7 +34,7 @@ describe(applyWorkflowUpdate, () => {
     ]);
   });
 
-  it('writes through the status API where the read-back shows the write did not take', async () => {
+  it('writes through the status API when the read-back shows the write did not take effect', async () => {
     const { calls, request } = createFakeRequest(
       buildRoutes([{ id: RENAME.id, name: 'In Progress', statusCategory: 'IN_PROGRESS' }]),
     );
@@ -49,7 +49,7 @@ describe(applyWorkflowUpdate, () => {
     });
   });
 
-  it('reports a rename that changed only casing as unlanded, since the write asked for the new casing', async () => {
+  it('reports a rename that changed only casing as not applied, since the write asked for the new casing', async () => {
     const update: StatusUpdate = { ...RENAME, from: 'doing', to: 'Doing' };
     const { calls, request } = createFakeRequest(
       buildRoutes([{ id: update.id, name: 'doing', statusCategory: 'IN_PROGRESS' }]),
@@ -64,7 +64,7 @@ describe(applyWorkflowUpdate, () => {
     });
   });
 
-  it('keeps the description where only the category changed', async () => {
+  it('keeps the description when only the category changed', async () => {
     const update: StatusUpdate = { ...RENAME, category: 'DONE', to: RENAME.from };
     const { calls, request } = createFakeRequest(
       buildRoutes([{ id: update.id, name: update.to, statusCategory: 'IN_PROGRESS' }]),
@@ -77,7 +77,7 @@ describe(applyWorkflowUpdate, () => {
     });
   });
 
-  it('writes nothing where the plan holds no workflow change', async () => {
+  it('writes nothing when the plan contains no workflow change', async () => {
     const { calls, request } = createFakeRequest({});
 
     const result = await applyWorkflowUpdate(request, buildProjectConfiguration(), buildPlan([]));
@@ -86,7 +86,7 @@ describe(applyWorkflowUpdate, () => {
     expect(calls).toStrictEqual([]);
   });
 
-  it('reads no statuses back where the plan creates a status but amends none', async () => {
+  it('reads no statuses back when the plan creates a status but amends none', async () => {
     const plan = {
       ...buildPlan([]),
       creations: [{ category: 'TODO', name: 'Triage', statusReference: 'ref-triage' }],
@@ -99,7 +99,7 @@ describe(applyWorkflowUpdate, () => {
     expect(calls.map((call) => call.path)).toStrictEqual([UPDATE_PATH]);
   });
 
-  it('throws where the workflow write is rejected, leaving the status API untouched', async () => {
+  it('throws when the workflow write is rejected, leaving the status API untouched', async () => {
     const routes = { ...buildRoutes([]), [`POST ${UPDATE_PATH}`]: { json: { errors: {} }, status: 400 } };
     const { calls, request } = createFakeRequest(routes);
 

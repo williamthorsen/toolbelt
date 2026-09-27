@@ -6,7 +6,7 @@ import { listDirectoryChainMatches } from './directory-chain-matches.ts';
  * Loads every config file between a starting directory and `stopAtDir`, nearest first.
  *
  * At each level from `startDir` up to and including `stopAtDir`, the first of `fileNames` that exists
- * is taken as that level's config; levels holding none contribute nothing. The matched files are then
+ * is taken as that level's config; levels with none contribute nothing. The matched files are then
  * imported one at a time, nearest first, and `shouldStopAscent` is consulted after each: Once it returns
  * true, the ascent halts and no farther file is imported. Nothing above `stopAtDir` is ever read:
  * Each name must stay within the level against which it is probed, so one that escapes is rejected up front.
@@ -63,7 +63,10 @@ export interface ConfigCascade<TConfig> {
 
 export interface ConfigEntry<TConfig> {
   config: TConfig;
-  /** The cascade level at which the file was found, which differs from the file's own directory when `fileNames` holds a nested path. */
+  /**
+   * The cascade level at which the file was found, which differs from the file's own directory when `fileNames`
+   * contains a nested path.
+   */
   dir: string;
   filePath: string;
 }

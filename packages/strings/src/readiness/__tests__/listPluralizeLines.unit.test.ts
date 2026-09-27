@@ -32,19 +32,19 @@ describe(listPluralizeLines, () => {
     expect(listLines("const noun =\n  count === 1\n    ? 'item'\n    : 'items';\n")).toStrictEqual([2]);
   });
 
-  // The literals are read from the unblanked source at offsets reported by the blanked code, so anything that
-  // shifts one text against the other reads the wrong span.
-  it('reads the literals through a comment sitting inside the ternary', () => {
+  // The literals are read from the unblanked source at offsets found in the blanked code, so if anything shifts
+  // one text against the other, the detector reads the wrong span.
+  it('reads the literals through a comment inside the ternary', () => {
     expect(listLines("const noun = count === 1 ? /* one */ 'item' : 'items';\n")).toStrictEqual([1]);
   });
 
-  // Nothing here can tell a string identifier from any other, so the pair that proves the comparison counts
+  // The detector cannot tell a string identifier from any other, so the pair that proves the comparison counts
   // something is the only pair claimed.
   it('declines a pair of identifiers', () => {
     expect(listLines('const noun = amount === 1 ? this.singular : this.plural;\n')).toStrictEqual([]);
   });
 
-  it('declines a literal pair holding no singular-to-plural relation', () => {
+  it('declines a literal pair with no singular-to-plural relation', () => {
     expect(listLines("const label = status === 1 ? 'active' : 'inactive';\n")).toStrictEqual([]);
   });
 
@@ -68,7 +68,7 @@ describe(listPluralizeLines, () => {
 
 // region | Helpers
 
-/** Runs the detector over a source and the blanked code that its caller would hand it. */
+/** Runs the detector over a source and the blanked code that its caller would pass it. */
 function listLines(source: string): number[] {
   return listPluralizeLines(blankNonCode(source), source);
 }

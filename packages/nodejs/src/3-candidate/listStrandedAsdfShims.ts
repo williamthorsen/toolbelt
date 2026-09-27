@@ -11,7 +11,7 @@ import { resolveNpmPackageOfBin } from './resolveNpmPackageOfBin.ts';
  * invoked under that version. A shim that an installed version of another plugin also provides is passed over:
  * asdf may resolve the command through that plugin, which depends on version selection that the filesystem
  * does not record. Each entry names the versions that do provide the command, the first other
- * provider on `pathDirs` outside the shims directory where there is one, and the npm package that installed
+ * provider on `pathDirs` outside the shims directory if there is one, and the npm package that installed
  * the command under the first providing version whose bin symlink resolves to one. A missing shims directory
  * yields an empty array, and the result is sorted by name.
  *
@@ -47,7 +47,7 @@ export function listStrandedAsdfShims(options: ListStrandedAsdfShimsOptions): St
 }
 
 export interface ListStrandedAsdfShimsOptions {
-  /** The asdf data directory, which holds `shims/` and `installs/`. */
+  /** The asdf data directory, which contains `shims/` and `installs/`. */
   readonly dataDir: string;
   /** The directories of PATH, in search order. */
   readonly pathDirs: readonly string[];
@@ -58,7 +58,7 @@ export interface ListStrandedAsdfShimsOptions {
 
 /** A shim that the judged version does not provide. */
 export interface StrandedAsdfShim {
-  /** The npm package that installed the command, where a providing version's bin symlink resolves to one. */
+  /** The npm package that installed the command, when a providing version's bin symlink resolves to one. */
   readonly backingPackage: string | undefined;
   readonly name: string;
   /** The first executable of the same name on PATH outside the shims directory, which the shim shadows. */
@@ -89,7 +89,7 @@ function isInstalled(dataDir: string, provider: AsdfShimProvider): boolean {
   return fs.existsSync(path.join(dataDir, 'installs', provider.plugin, provider.version));
 }
 
-/** Lists the regular files directly under the shims directory, or nothing where the directory is absent. */
+/** Lists the regular files directly under the shims directory, or nothing when the directory is absent. */
 function listShimNames(shimsDir: string): string[] {
   try {
     return fs

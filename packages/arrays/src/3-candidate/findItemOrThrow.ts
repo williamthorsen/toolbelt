@@ -2,7 +2,7 @@
  * Returns the first item satisfying the predicate, or throws an `Error` naming what was sought when
  * no item does. The predicate alone decides the match, so an item that satisfies it is returned
  * whatever its value: `0`, `''`, `false`, `null`, and even `undefined` all pass through.
- * Use this function to obtain `T` where a match is guaranteed by construction; where absence is a
+ * Use this function to obtain `T` when a match is guaranteed by construction; when absence is a
  * reachable case, handle the `undefined` from `Array.prototype.find` instead.
  *
  * @category Array

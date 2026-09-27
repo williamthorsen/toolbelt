@@ -12,7 +12,7 @@ const READINESS_DIR = fileURLToPath(new URL('..', import.meta.url));
 
 describe(listErrorSites, () => {
   // Most files swept here write `instanceof Error` in a comment, a pattern, or a fix string, each of which would
-  // report a site of its own if blanking missed it. readyup drops the compiled bundle from its own sweep, and
+  // count as a site of its own if blanking missed it. readyup drops the compiled bundle from its own sweep, and
   // nothing in CI runs `rdy run --packages`, so nothing else would notice.
   it('finds nothing in the sources describing what it looks for', () => {
     const findings = listSweptFiles().flatMap((file) =>
@@ -31,7 +31,7 @@ describe(listErrorSites, () => {
 
 // region | Helpers
 
-/** Lists the sources in which this package's own prose about the operator lives. */
+/** Lists the sources in which this package's own prose about the operator appears. */
 function listSweptFiles(): string[] {
   return [KITS_DIR, READINESS_DIR].flatMap((directory) =>
     fs

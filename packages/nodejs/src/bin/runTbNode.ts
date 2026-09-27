@@ -47,11 +47,11 @@ as having no other provider, and the commands that provide or remove it are prin
 version of another asdf plugin also provides is not reported, since asdf may resolve the command there.
 
 The active version is the one running this command, read from its install path, so the check spawns nothing
-and needs no repository. It exits 1 where a shim is stranded, 0 where none is, and 3 where node is not an asdf
+and needs no repository. It exits 1 when a shim is stranded, 0 when none is, and 3 when node is not an asdf
 install.
 
-\`asdf reshim nodejs\` regenerates every shim from the installed versions, whereas \`asdf reshim nodejs <version>\`
-merges into an existing shim and keeps stale lines, so the printed remedies use the first form.
+The printed remedies use \`asdf reshim nodejs\`, which regenerates every shim from the installed versions,
+rather than \`asdf reshim nodejs <version>\`, which merges into an existing shim and keeps stale lines.
 
 Options:
   -h, --help  Print this help`;
@@ -63,15 +63,16 @@ declaring one, from the working directory upward, and name what provides the pnp
 corepack or an npm-global pnpm under a nodejs version, an asdf shim stranded under the running node, or otherwise
 its path.
 
-The version that runs is read by running \`pnpm --version\` in the pinned directory, the one process this command
-spawns: pnpm 10 and later switch themselves to the pinned version whatever provides them, and corepack selects
-it, so a version read from the filesystem would report the installed pnpm and false-alarm. That run may download
-the pinned version on first use.
+The version that runs is read by running \`pnpm --version\` in the pinned directory, the one process that this
+command spawns: pnpm 10 and later switch themselves to the pinned version whatever provides them, and corepack
+selects it, so a version read from the filesystem would report the installed pnpm and a mismatch that does not
+exist. That run may download the pinned version on first use.
 
-Repair commands print only where the versions differ, and install the pin through whatever provides pnpm now.
+It prints repair commands only when the versions differ, and they install the pin through whatever provides
+pnpm now.
 
-It exits 1 where the versions differ, where pnpm reported no version, or where pnpm is not on PATH; 0 where they
-match; and 3, with the reason on stderr, where no pin is in reach or the pin names another package manager.
+It exits 1 when the versions differ, when pnpm reported no version, or when pnpm is not on PATH; 0 when they
+match; and 3, with the reason on stderr, when no pin is in reach or the pin names another package manager.
 
 Options:
   -h, --help  Print this help`;
@@ -90,7 +91,7 @@ export function runTbNode(args: string[], effects: TbNodeEffects): TbNodeResult 
   }
 }
 
-/** What running `pnpm --version` produced: the version it printed, or why it produced none. */
+/** What running `pnpm --version` produced: the version that it printed, or why it produced none. */
 export type PnpmVersionResult = { readonly failure: string } | { readonly version: string };
 
 /** The effects deferred to the entry point, which keeps the runner free of I/O. */
@@ -109,7 +110,7 @@ export interface TbNodeEffects {
   /** Classifies the `pnpm` on PATH by what provides it. */
   readonly resolvePnpmProvider: typeof resolvePnpmProvider;
   readonly resolveVersion: () => string;
-  /** Runs `pnpm --version` in a directory; the one process the runner asks for. Never throws. */
+  /** Runs `pnpm --version` in a directory; the one process that the runner asks for. Never throws. */
   readonly runPnpmVersion: (dir: string) => PnpmVersionResult;
 }
 
@@ -134,7 +135,7 @@ function describeProvider(provider: PnpmProvider, execPath: string): string {
   return `pnpm on PATH: ${provider.path}${describeProviderKind(provider, execPath)}`;
 }
 
-/** Renders what provides a found `pnpm`, led by the separator, or nothing where only its path is known. */
+/** Renders what provides a found `pnpm`, led by the separator, or nothing when only its path is known. */
 function describeProviderKind(provider: Exclude<PnpmProvider, { kind: 'absent' }>, execPath: string): string {
   switch (provider.kind) {
     case 'asdf-plugin': {
@@ -210,8 +211,8 @@ function listPnpmRepairs(provider: PnpmProvider, version: string, pinDir: string
 }
 
 /**
- * Renders the commands that put the command under the active version, or nothing where the package is unknown.
- * Where the active version has no corepack to run, installing it leads the commands of a shim that it backs.
+ * Renders the commands that put the command under the active version, or nothing when the package is unknown.
+ * When the active version has no corepack to run, the commands for a shim that corepack backs start by installing it.
  */
 function listProvideCommands(shim: StrandedAsdfShim, lacksCorepack: boolean): string[] {
   if (shim.backingPackage === undefined) return [];
@@ -242,7 +243,7 @@ function renderReport(install: AsdfInstall, shims: readonly StrandedAsdfShim[]):
   const count = shims.length === 1 ? '1 stranded shim' : `${shims.length} stranded shims`;
   const headline = `${PLUGIN} ${install.version} (asdf): ${shims.length === 0 ? 'no stranded shims' : `${count} in ${shimsDir}`}`;
 
-  // A stranded `corepack` shim means that the active version ships no corepack, as node 25 and later do not.
+  // A stranded `corepack` shim means that the active version includes no corepack, as node 25 and later do not.
   const lacksCorepack = shims.some((shim) => shim.name === COREPACK);
 
   return [headline, ...shims.map((shim) => renderShim(shim, install, lacksCorepack))].join('\n\n');
@@ -264,7 +265,7 @@ function renderShim(shim: StrandedAsdfShim, install: AsdfInstall, lacksCorepack:
   return lines.join('\n');
 }
 
-/** Reports a check's outcome on stdout, one line per entry, with the exit code that the outcome earns. */
+/** Reports a check's outcome on stdout, one line per entry, with the exit code for that outcome. */
 function report(exitCode: number, lines: readonly string[]): TbNodeResult {
   return { exitCode, stderr: '', stdout: `${lines.join('\n')}\n` };
 }
@@ -305,7 +306,7 @@ function runAsdfShims(args: string[], effects: TbNodeEffects): TbNodeResult {
 
 /**
  * Parses the `pnpm` subcommand and checks the pnpm that runs in the working directory against the nearest
- * `packageManager` pin, naming the provider either way and printing repairs only where the versions differ.
+ * `packageManager` pin, naming the provider either way and printing repairs only when the versions differ.
  */
 function runPnpm(args: string[], effects: TbNodeEffects): TbNodeResult {
   const { values } = parseArgs({ allowPositionals: false, args, options: HELP_OPTION, strict: true });

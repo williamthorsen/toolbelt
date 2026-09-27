@@ -41,8 +41,8 @@ export function buildHasArgs(query: SecretQuery, keychain?: string): string[] {
  * 128-byte buffer that `security` fills when `-w` has no value.
  *
  * The secret goes in as `-X <hex>`. Its alphabet is closed, so no secret can alter the line's structure, and
- * every byte sequence is representable, a line break included. The service, account, and keychain have no such
- * form, so they are quoted instead and a line break in one is refused.
+ * every byte sequence is representable, a line break included. Because the service, account, and keychain have
+ * no such form, they are quoted instead and a line break in one is refused.
  *
  * @internal
  */
@@ -77,7 +77,7 @@ function assertLineFits(line: string, fixedBytes: number): void {
   );
 }
 
-/** Refuses a value that cannot sit on a command line, which is any that contains the break that ends one. */
+/** Refuses a value that cannot appear on a command line, which is any that contains the break that ends one. */
 function assertOneLine(value: string, field: string): void {
   if (!LINE_BREAK_PATTERN.test(value)) return;
 
@@ -92,8 +92,8 @@ function encodeHex(secret: string): string {
 }
 
 /**
- * Names the item to act on. The account is always passed, as the empty string where the caller gave none,
- * since a match on the service alone returns an arbitrary one of the items holding it.
+ * Names the item to act on. The account is always passed, as the empty string when the caller gave none,
+ * since a match on the service alone returns an arbitrary one of the items with that service.
  */
 function itemArgs({ account = '', service }: SecretQuery): string[] {
   return ['-a', account, '-s', service];

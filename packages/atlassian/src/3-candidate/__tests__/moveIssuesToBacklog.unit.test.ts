@@ -18,7 +18,7 @@ describe(moveIssuesToBacklog, () => {
     expect(calls[1]?.body).toStrictEqual({ issues: ['THOR-51'] });
   });
 
-  it('sends one batch where the keys fit exactly', async () => {
+  it('sends one batch when the keys fit exactly', async () => {
     const { calls, request } = createFakeRequest({ [BACKLOG_PATH]: { json: {} } });
 
     const result = await moveIssuesToBacklog(request, BOARD_ID, buildKeys(50));
@@ -34,7 +34,7 @@ describe(moveIssuesToBacklog, () => {
     expect(calls).toStrictEqual([]);
   });
 
-  it('throws naming the batch size where a move is rejected', async () => {
+  it('throws naming the batch size when a move is rejected', async () => {
     const { request } = createFakeRequest({ [BACKLOG_PATH]: { json: { errorMessages: [] }, status: 400 } });
 
     await expect(moveIssuesToBacklog(request, BOARD_ID, buildKeys(3))).rejects.toMatchObject({

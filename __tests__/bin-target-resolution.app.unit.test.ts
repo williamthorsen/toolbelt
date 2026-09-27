@@ -29,8 +29,8 @@ describe('Declared bins', () => {
 
 /**
  * Audits every workspace's `bin` against the wrapper that it names, reporting a target that pnpm cannot link
- * at install time and a wrapper that reaches no source module. Either ships a command that the package cannot
- * run, which no suite run from source otherwise reaches.
+ * at install time and a wrapper that reaches no source module. Either publishes a command that the package
+ * cannot run, a fault that a suite run from source does not otherwise detect.
  */
 function auditBinTargets(monorepoRoot: string): { binCount: number; danglingTargets: string[] } {
   const danglingTargets: string[] = [];

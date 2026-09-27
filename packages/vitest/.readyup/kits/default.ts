@@ -1,7 +1,7 @@
 /**
  * Adoption checks for a project consuming @williamthorsen/toolbelt.vitest.
  *
- * The kit ships inside the package, so it runs only where the package is installed and always at the version
+ * The kit is included in the package, so it runs only where the package is installed and always at the version
  * that the consumer has. Installing the package is the consent on which these checks rest.
  *
  * The checks take inventory rather than banning a pattern, and severity reports the judgment. A defect is a
@@ -24,7 +24,7 @@ export default defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
   detect: listSites,
   exportNames: ADOPTED_EXPORTS,
-  noSourcesReason: 'the project holds no test files',
+  noSourcesReason: 'the project contains no test files',
   packageName: PACKAGE_NAME,
   // Only tests are swept: Each of these idioms exists only in a test, so a sweep that skipped tests would report
   // nothing and say so as a pass.
@@ -34,7 +34,7 @@ export default defineAdoptionKit({
       name: 'No test declares its own process-exit sentinel error',
       id: 'no-exit-sentinel-clone',
       kinds: ['sentinel-clone'],
-      fix: `Delete the class named above and use throwOnProcessExit from ${PACKAGE_NAME}/candidate, whose ProcessExitError contains the code. One substitution retires the class and the mock together. Reference: ${README_URL}`,
+      fix: `Delete the class named above and use throwOnProcessExit from ${PACKAGE_NAME}/candidate, whose ProcessExitError contains the code. One substitution replaces the class and the mock together. Reference: ${README_URL}`,
     },
     {
       name: 'No test mocks process.exit without throwing',
@@ -67,7 +67,7 @@ export default defineAdoptionKit({
       id: 'no-hand-rolled-console-silence',
       kinds: ['console-silence'],
       severity: 'recommend',
-      fix: `Replace each spy named above with silenceConsole from ${PACKAGE_NAME}/candidate, binding it with using so the methods are restored when the scope exits. It silences the methods that it is given and hands back the spy behind each one. Reference: ${README_URL}`,
+      fix: `Replace each spy named above with silenceConsole from ${PACKAGE_NAME}/candidate, binding it with using so that the methods are restored when the scope exits. It silences the methods that it is given and hands back the spy behind each one. Reference: ${README_URL}`,
     },
     {
       name: "No test reads a console spy's recorded calls",
@@ -81,7 +81,7 @@ export default defineAdoptionKit({
       id: 'no-hand-rolled-test-disposal',
       kinds: ['disposal-hook'],
       severity: 'recommend',
-      fix: `Wrap each resource named above in disposeOnTestFinished from ${PACKAGE_NAME}/candidate, which registers the disposal and returns the resource at the type that it was given. Moving registration to the construction site retires the hook, and with it the unicorn/no-nonstandard-builtin-properties disable comment that the hand-written disposal contains where that rule is enabled, since unicorn's Symbol allowlist omits Symbol.dispose. Reference: ${README_URL}`,
+      fix: `Wrap each resource named above in disposeOnTestFinished from ${PACKAGE_NAME}/candidate, which registers the disposal and returns the resource at the type that it was given. Moving registration to the construction site removes the hook, and with it the unicorn/no-nonstandard-builtin-properties disable comment that the hand-written disposal contains when that rule is enabled, since unicorn's Symbol allowlist omits Symbol.dispose. Reference: ${README_URL}`,
     },
   ],
 });

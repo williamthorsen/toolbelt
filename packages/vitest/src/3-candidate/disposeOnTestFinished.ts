@@ -1,8 +1,8 @@
 import { onTestFinished } from 'vitest';
 
 /**
- * Registers a `Disposable`'s disposal with the current test and returns it unchanged, so a builder can wrap the
- * construction in place and hand back a value derived from the resource rather than the resource itself.
+ * Registers a `Disposable`'s disposal with the current test and returns it unchanged, so that a builder can wrap the
+ * construction in place and return a value derived from the resource rather than the resource itself.
  *
  * Disposal runs after the test, failure included, and in reverse registration order.
  *

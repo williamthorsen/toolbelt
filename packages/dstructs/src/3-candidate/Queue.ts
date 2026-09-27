@@ -15,7 +15,7 @@ export class Queue<T> {
     return this.#items.length > 0 ? this.#items[0] : undefined;
   }
 
-  /** Reports whether the queue holds no items. */
+  /** Reports whether the queue contains no items. */
   get isEmpty(): boolean {
     return this.#items.length === 0;
   }

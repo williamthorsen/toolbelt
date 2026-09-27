@@ -11,7 +11,7 @@ const ADOPTER = "import { pickItem } from '@williamthorsen/toolbelt.arrays';\npi
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 describe('The arrays adoption kit, run through rdy', () => {
-  it('names every site and spans them all in one denominator', () => {
+  it('names every site and counts them all in one denominator', () => {
     expect(runKit(`${ARRAIFY}\n`)).toStrictEqual([
       { count: 4, detail: 'src/mixed.ts:1', id: 'no-biased-shuffle', passedCount: 1 },
       { count: 4, detail: 'src/pick.ts:1', id: 'no-hand-rolled-random-item', passedCount: 1 },
@@ -41,11 +41,11 @@ describe('The arrays adoption kit, run through rdy', () => {
 // region | Helpers
 
 /**
- * Runs the package's compiled kit over a fixture repo holding the given array-wrap source, and reports what
+ * Runs the package's compiled kit over a fixture repo containing the given array-wrap source, and reports what
  * each check named and counted.
  *
- * A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report reaches the
- * layer that acts on one.
+ * A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report arrives at
+ * the layer that acts on one.
  */
 function runKit(wrapSource: string): KitCheckReport[] {
   return listKitCheckReports(PACKAGE_DIR, {

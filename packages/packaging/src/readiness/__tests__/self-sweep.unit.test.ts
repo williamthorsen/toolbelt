@@ -33,7 +33,7 @@ describe(listManifestSearchSites, () => {
 
 // region | Helpers
 
-/** Lists the sources in which this package's own prose about the walk lives. */
+/** Lists the sources that contain this package's own prose about the walk. */
 function listSweptFiles(): string[] {
   return [KITS_DIR, READINESS_DIR].flatMap((directory) =>
     fs

@@ -15,7 +15,7 @@ describe(firstFilled, () => {
     expect(firstFilled(' '.repeat(3), 'real')).toBe('real');
   });
 
-  it('returns undefined where every value is empty', () => {
+  it('returns undefined when every value is empty', () => {
     expect(firstFilled(undefined, '', '  ')).toBeUndefined();
   });
 });

@@ -1,28 +1,28 @@
-/** How one board feature declared by the spec stands against what the board holds. */
+/** How one board feature declared by the spec compares with what the board contains. */
 export interface FeatureVerification {
   readonly feature: string;
   /**
-   * Whether Jira has locked the feature. A locked one is reported rather than faulted, as a board column for which the
-   * spec has no counterpart is: No call can change it, so it is not something the run failed to do.
+   * Whether Jira has locked the feature. A locked one is reported rather than counted as a fault, as is a board column
+   * for which the spec has no counterpart: No call can change it, so it is not something that the run failed to do.
    */
   readonly locked: boolean;
   readonly matches: boolean;
-  /** The live state, or `undefined` where the board reports no such feature. */
+  /** The live state, or `undefined` when the board reports no such feature. */
   readonly state: string | undefined;
 }
 
-/** How one spec status stands against what the workflow holds. */
+/** How one spec status compares with what the workflow contains. */
 export interface StatusVerification {
-  /** The live category, or `undefined` where no live status claims the name. */
+  /** The live category, or `undefined` when no live status has the name. */
   readonly category: string | undefined;
   readonly matches: boolean;
   /** The name declared by the spec, which a reader is looking for in the report. */
   readonly name: string;
-  /** The global transition into the status, or `undefined` where none targets it. */
+  /** The global transition into the status, or `undefined` when none targets it. */
   readonly transition: string | undefined;
 }
 
-/** Each spec entry against what a read of the project holds. */
+/** Each spec entry compared with what a read of the project returns. */
 export interface VerificationReport {
   readonly features: readonly FeatureVerification[];
   /** Whether every status and feature declared by the spec matches. */

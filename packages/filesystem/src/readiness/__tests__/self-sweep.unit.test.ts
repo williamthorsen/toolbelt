@@ -12,8 +12,8 @@ const READINESS_DIR = fileURLToPath(new URL('..', import.meta.url));
 
 describe(listFilesystemIdioms, () => {
   // The kit sweeps its own declaration and readiness modules when it runs over this repo, and the compiled kit
-  // inlines shared modules that the sweep also reaches, so an edit writing either idiom as code in any of them puts
-  // the package on its own report. Nothing in CI runs `rdy run --packages` to catch it.
+  // inlines shared modules that the sweep also reaches, so an edit writing either idiom as code in any of them makes
+  // the kit report a finding against its own package. Nothing in CI runs `rdy run --packages` to catch it.
   it('finds nothing in the sources describing what it looks for', () => {
     const findings = listSweptFiles().flatMap((file) =>
       listFilesystemIdioms(fs.readFileSync(file, 'utf8')).map((site) => `${path.basename(file)}:${site.line}`),
@@ -33,7 +33,7 @@ describe(listFilesystemIdioms, () => {
 
 // region | Helpers
 
-/** Lists the sources in which this package's own prose about the idioms lives. */
+/** Lists the sources in which this package's own prose about the idioms appears. */
 function listSweptFiles(): string[] {
   return [KITS_DIR, READINESS_DIR].flatMap((directory) =>
     fs

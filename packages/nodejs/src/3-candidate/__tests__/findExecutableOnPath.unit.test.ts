@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { findExecutableOnPath } from '../findExecutableOnPath.ts';
 
 describe(findExecutableOnPath, () => {
-  it('returns the first directory that holds an executable of that name', () => {
+  it('returns the first directory that contains an executable of that name', () => {
     using tree = createTempTree({ 'a/tool': '', 'b/tool': '' });
     fs.chmodSync(tree.resolve('a/tool'), 0o755);
     fs.chmodSync(tree.resolve('b/tool'), 0o755);
@@ -42,7 +42,7 @@ describe(findExecutableOnPath, () => {
     expect(findExecutableOnPath('tool', dirs, { excludeDir: tree.resolve('shims') })).toBe(tree.resolve('b/tool'));
   });
 
-  it('returns undefined where no directory provides the executable', () => {
+  it('returns undefined when no directory provides the executable', () => {
     using tree = createTempTree({ 'a/other': '' });
 
     expect(findExecutableOnPath('tool', [tree.resolve('a')])).toBeUndefined();

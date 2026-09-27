@@ -24,13 +24,13 @@ const UNAUTHORIZED = 401;
  * @stage candidate
  */
 export class JiraRequestError extends Error {
-  /** The parsed body, or the raw text where it did not parse as JSON. */
+  /** The parsed body, or the raw text when it did not parse as JSON. */
   readonly body: unknown;
   /** What the call was doing, as the message reports it. */
   readonly label: string;
   readonly method: string;
   readonly path: string;
-  /** Which failure the status and body report, or `undefined` where they match none. */
+  /** Which failure the status and body report, or `undefined` when they match none. */
   readonly reason: JiraRejectionReason | undefined;
   readonly status: number;
   /** The URL at which the request was aimed, origin included. */
@@ -72,7 +72,7 @@ export interface JiraRequestErrorOptions {
 // region | Helpers
 
 /**
- * Classifies a rejection from its status and body, returning `undefined` where the two name no failure that a
+ * Classifies a rejection from its status and body, returning `undefined` when the two name no failure that a
  * caller can act on. The gateway rejects a token missing a scope with a 401 of its own, ahead of anything Jira
  * validates, so a scope shortfall and a bad credential are told apart by the message alone.
  */

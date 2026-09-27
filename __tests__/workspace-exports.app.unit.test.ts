@@ -47,7 +47,7 @@ describe('Workspace exports', () => {
     expect(tierCount).toBe(1);
   });
 
-  it('reports a populated tier that no export subpath reaches', () => {
+  it('reports a populated tier without an export subpath', () => {
     using tree = createTempDir({
       'packages/fixture/package.json': PACKAGE_MANIFEST,
       'packages/fixture/src/2-draft/index.ts': '',
@@ -66,7 +66,7 @@ describe('Workspace exports', () => {
 
 /**
  * Audits every workspace's `exports` map against its maturity-tier directories, reporting export targets that
- * reach no tier index and tiers that no subpath exposes. The counts separate a clean audit from a broken walk,
+ * reach no tier index and tiers without a subpath. The counts separate a clean audit from a broken walk,
  * which would report no defects either.
  */
 function auditWorkspaceExports(monorepoRoot: string): {

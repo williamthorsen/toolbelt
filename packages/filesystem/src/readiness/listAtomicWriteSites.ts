@@ -8,23 +8,23 @@ import {
 
 export type AtomicWriteKind = 'temp-write-rename';
 
-// The path argument, read only where it is a bare binding that a later call can name again. A computed argument
-// fails the class, and with it the pairing on which the finding rests.
+// The path argument, read only when it is a bare binding that a later call can name again. A computed argument
+// fails to match, and the pairing on which the finding depends fails with it.
 const BOUND_PATH_ARGUMENT = /^\s*(?<name>[A-Za-z_$][\w$]*)\s*(?:,|$)/;
 // The receiver is unconstrained: `fs.`, `fsp.`, `await fs.promises.`, and a destructured import all reach the same
-// call, and requiring the write and the rename to name one binding already carries the match. The word boundary
-// still declines a longer name ending in the anchor, such as `safeRename` or `renameFile`.
+// call, and requiring the write and the rename to name one binding already decides the match. The word boundary
+// still excludes a longer name ending in the anchor, such as `safeRename` or `renameFile`.
 const RENAME_CALL = /\brename(?:Sync)?\s*\(/g;
 const WRITE_CALL = /\bwriteFile(?:Sync)?\s*\(/g;
 
 interface PathArgument {
   name: string;
-  /** The call's own offset within the body that holds it. */
+  /** The call's own offset within the body that contains it. */
   offset: number;
 }
 
 interface RenameClaim {
-  /** The enclosing body's length, by which a nested function outbids every function around it. */
+  /** The enclosing body's length, which gives a nested function precedence over every function around it. */
   bodyLength: number;
   /** The rename's own offset in the whole source. */
   offset: number;
@@ -32,25 +32,26 @@ interface RenameClaim {
 }
 
 /**
- * Lists every hand-rolled atomic write in a source, which is a function body that writes a path held in a binding
+ * Lists every hand-rolled atomic write in a source, which is a function body that writes a path stored in a binding
  * and renames that same binding.
  *
- * Takes the blanked code produced by `listFilesystemIdioms`, so a write written in a comment or a literal is not one.
+ * Takes the blanked code produced by `listFilesystemIdioms`, which blanks comments and literals, so a write inside
+ * one does not count.
  *
- * The pairing is what holds the finding: A write alone, a rename alone, and a rename of a path that the body
- * copied rather than wrote each leave the body unreported. A body pairing twice reports twice, since each rename
+ * The finding requires the pairing: A write alone, a rename alone, and a rename of a path that the body copied
+ * rather than wrote each leave the body unreported. A body with two pairings is reported twice, since each rename
  * is a mechanism of its own to replace.
  *
  * The line reported is the rename's and the symbol is the innermost function enclosing it. The rename is the act
  * that identifies the idiom, and the enclosing function usually does more than write, so the substitution
- * replaces a mechanism rather than retiring a function. A write and rename at module scope go unreported, no
- * function body holding them.
+ * replaces a mechanism rather than retiring a function. A write and rename at module scope go unreported, because
+ * no function body contains them.
  *
  * @internal
  */
 export function listAtomicWriteSites(code: string): Array<AdoptionSite<AtomicWriteKind>> {
-  // Keyed on the rename's offset in the whole source: A nested function and every function around it hold the
-  // same rename, and the innermost of them is the one whose name describes the site.
+  // Key the claims on the rename's offset in the whole source: A nested function and every function around it
+  // contain the same rename, and the innermost of them is the one whose name describes the site.
   const claims = new Map<number, RenameClaim>();
 
   for (const fn of listFunctionBodies(code)) {

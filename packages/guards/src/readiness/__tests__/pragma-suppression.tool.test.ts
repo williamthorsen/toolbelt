@@ -32,8 +32,8 @@ describe('The guards adoption kit, run through rdy', () => {
     });
   });
 
-  // A `dir:` kit source has no namespace, so the bare id stands. A consumer running the kit from the
-  // installed package writes `toolbelt.guards/no-assertion-clone`.
+  // The pragma uses the bare id because a `dir:` kit source has no namespace. A consumer running the kit
+  // from the installed package writes `toolbelt.guards/no-assertion-clone`.
   it('drops a site covered by a qualified pragma', () => {
     expect(runKit(buildGuard(' // rdy-ignore no-assertion-clone -- reviewed'))[0]).toStrictEqual({
       count: 1,
@@ -43,7 +43,7 @@ describe('The guards adoption kit, run through rdy', () => {
     });
   });
 
-  it('leaves a site standing where the pragma names another check', () => {
+  it('keeps a site in the report when the pragma names another check', () => {
     expect(runKit(buildGuard(' // rdy-ignore no-number-guard-clone -- reviewed'))[0]).toStrictEqual({
       count: 2,
       detail: 'check (src/guard.ts:1)',
@@ -55,7 +55,7 @@ describe('The guards adoption kit, run through rdy', () => {
 
 // region | Helpers
 
-/** Builds a hand-rolled assertion whose head line carries the given trailing pragma. */
+/** Builds a hand-rolled assertion whose head line ends with the given pragma. */
 function buildGuard(pragma: string): string {
   return [
     `export function check(condition, message) {${pragma}`,
@@ -66,11 +66,11 @@ function buildGuard(pragma: string): string {
 }
 
 /**
- * Runs the package's compiled kit over a fixture repo holding the given guard source, and reports what each
+ * Runs the package's compiled kit over a fixture repo containing the given guard source, and reports what each
  * check named and counted.
  *
- * A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report reaches the
- * layer that acts on one.
+ * A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report arrives at
+ * the layer that acts on one.
  */
 function runKit(guardSource: string): KitCheckReport[] {
   return listKitCheckReports(PACKAGE_DIR, {

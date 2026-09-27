@@ -21,9 +21,9 @@ const WINDOW = { lookahead: 240, lookbehind: 80 };
  * A site inside a hand-rolled `describeError` reports as `describe-clone` rather than as the inline site that
  * it also is, so one finding names the function to retire instead of several naming its branches.
  *
- * The source is blanked before the anchor scan reads it, so an `instanceof Error` written in a comment, a
- * string, or a regular expression is invisible here. Blanking preserves every offset, so a reported line still
- * names the line held by the source.
+ * Because the source is blanked before the anchor scan reads it, an `instanceof Error` written in a comment, a
+ * string, or a regular expression is invisible here. Blanking preserves every offset, which keeps each reported
+ * line number valid in the source.
  *
  * @internal
  */

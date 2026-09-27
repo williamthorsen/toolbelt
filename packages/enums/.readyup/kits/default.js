@@ -200,7 +200,7 @@ var default_default = defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
   detect: listMembershipSites,
   exportNames: ADOPTED_EXPORTS,
-  noSourcesReason: "the project holds no JavaScript or TypeScript sources outside the exempt paths",
+  noSourcesReason: "the project contains no JavaScript or TypeScript sources outside the exempt paths",
   packageName: PACKAGE_NAME,
   // A test writes these forms deliberately, and a bootstrap wrapper hand-rolls what it checks so that its
   // build-first message survives an incomplete install.
@@ -211,7 +211,7 @@ var default_default = defineAdoptionKit({
       id: "no-hand-rolled-enum-membership",
       kinds: ["values-includes"],
       severity: "recommend",
-      fix: `Replace each test named above with isEnumValue from ${PACKAGE_NAME}. It returns a type predicate, so the value narrows to a member of the enum wherever the test passes, which a search of the values does not do even with a cast added to satisfy the compiler. Where the test only chooses between the value and undefined, toEnumValue from the same package replaces the whole expression. Both accept only an object whose values are strings or numbers, so a search of an object with values of any other type has no substitution here. Reference: ${README_URL}`
+      fix: `Replace each test named above with isEnumValue from ${PACKAGE_NAME}. It returns a type predicate, so the value narrows to a member of the enum wherever the test passes, which a search of the values does not do even with a cast added to satisfy the compiler. When the test only chooses between the value and undefined, toEnumValue from the same package replaces the whole expression. Both accept only an object whose values are strings or numbers; a search of an object with values of any other type has no substitution here. Reference: ${README_URL}`
     }
   ]
 });

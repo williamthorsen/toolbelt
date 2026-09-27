@@ -36,7 +36,7 @@ describe(listLayoutBreakingTemplates, () => {
     expect(listLines('function f() {\n  const text = `first`;\n}\n')).toStrictEqual([]);
   });
 
-  it('declines a template holding nothing but its closing line', () => {
+  it('declines a template containing nothing but its closing line', () => {
     expect(listLines('function f() {\n  const text = `\n`;\n}\n')).toStrictEqual([]);
   });
 
@@ -55,7 +55,7 @@ describe(listLayoutBreakingTemplates, () => {
   );
 
   // A line that begins inside an interpolation is laid out as code, whatever the text around it.
-  it('declines a consistently indented template holding a multi-line interpolation', () => {
+  it('declines a consistently indented template containing a multi-line interpolation', () => {
     const source = 'function f() {\n  const text = `\n    first ${format(\nvalue,\n)}\n    second\n  `;\n}\n';
 
     expect(listLines(source)).toStrictEqual([]);
@@ -72,7 +72,7 @@ describe(listLayoutBreakingTemplates, () => {
 
 // region | Helpers
 
-/** Runs the detector over a source and the blanked code that its caller would hand it. */
+/** Runs the detector over a source and the blanked code that its caller would pass it. */
 function listLines(source: string): number[] {
   return listLayoutBreakingTemplates(blankNonCode(source), source);
 }

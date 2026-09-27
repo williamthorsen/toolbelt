@@ -9,11 +9,11 @@ export type FilesystemIdiomKind = AtomicWriteKind | ChainWalkKind;
  * Lists every hand-rolled filesystem idiom in a source that this package publishes a function for.
  *
  * The two idioms share no anchor, so each is matched by its own detector and the results are merged in line
- * order. A file holding both reports both.
+ * order. The function reports both idioms in a file that contains both.
  *
- * The source is blanked once here and both detectors read what it produces, so an idiom written in a comment or a
- * literal is invisible to them. Blanking preserves every offset, so a reported line still names the line held by
- * the source, and the walk detector reads each probed name from the source beneath.
+ * This function blanks the source once, and both detectors read the result: Blanking hides an idiom written in a
+ * comment or a literal from them. Because blanking preserves every offset, a reported line still names the line in
+ * the source, and the walk detector reads each probed name from the original source.
  *
  * @internal
  */

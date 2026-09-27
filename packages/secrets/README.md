@@ -14,9 +14,9 @@ Requires Node.js 24 or later, and macOS: The one backend is the macOS keychain, 
 
 ## How a secret is stored
 
-An item is named by a **service** and an **account**. The service is the caller's own name for the secret, never derived from a host or a URL, so one item can serve every product that accepts the same token. The account is optional and defaults to the empty account, which is matched exactly: A lookup on a service holding several accounts returns the one that is asked for, rather than an arbitrary one.
+An item is named by a **service** and an **account**. The service is the caller's own name for the secret, never derived from a host or a URL, so one item can serve every product that accepts the same token. The account is optional and defaults to the empty account, which is matched exactly: A lookup on a service with several accounts returns the one that is asked for, rather than an arbitrary one.
 
-A secret reaches `security` through its interactive mode, which takes a whole command on stdin, so the secret never sits in an argument vector that any local process could read. It travels as hexadecimal, which encodes every byte, a line break included, and every write is read back and compared before it is reported as stored.
+Because the store passes a secret to `security` through its interactive mode, which takes a whole command on stdin, the secret never appears in an argument vector that any local process could read. It is sent as hexadecimal, which encodes every byte, a line break included, and every write is read back and compared before it is reported as stored.
 
 One command line contains the secret together with the service, the account, and the keychain, and `security` reads at most 4,095 bytes of it. That leaves room for a secret of roughly 2,000 bytes, and the exact ceiling falls as the other three grow. A secret that would not fit is refused, naming the room left; none is ever stored in part.
 
@@ -24,7 +24,7 @@ An item created here is local to the Mac that created it. `security` offers no i
 
 ## CLI
 
-The package ships a `tb-secret` command exposing the store to a shell caller.
+The package includes a `tb-secret` command exposing the store to a shell caller.
 
 ```sh
 pnpm add --global @williamthorsen/toolbelt.secrets   # puts tb-secret on PATH
@@ -42,7 +42,7 @@ npx @williamthorsen/toolbelt.secrets get my-token    # or run it without install
 
 | Option                  | Effect                                                  |
 | ----------------------- | ------------------------------------------------------- |
-| `-a, --account <name>`  | Account holding the secret (default: the empty account) |
+| `-a, --account <name>`  | Account of the secret (default: the empty account)      |
 | `-k, --keychain <path>` | Keychain to act on, rather than the default search list |
 
 At a terminal, `set` prompts for the secret twice and echoes nothing; piped, it reads stdin and drops one trailing newline, since `echo` adds one. The secret passes through this process either way.
@@ -107,11 +107,11 @@ store.findSecret({ account: 'me@example.com', service: 'atlassian-api-token' });
 // the token
 ```
 
-`findSecret` returns `undefined` where no item is stored, and throws where the keychain could not be reached, so absence is never confused with a failure. `deleteSecret` reports whether an item was there to remove.
+`findSecret` returns `undefined` when no item is stored, and throws when the keychain could not be reached, so absence is never confused with a failure. `deleteSecret` reports whether an item was there to remove.
 
-`hasSecret` reads the item's attributes rather than its data. That is the difference worth knowing: Retrieving a secret can raise a keychain access prompt where the item was created by another program, and an attribute lookup cannot.
+`hasSecret` reads the item's attributes rather than its data. That is the difference worth knowing: Retrieving a secret can raise a keychain access prompt when the item was created by another program, and an attribute lookup cannot.
 
-`setSecret` rejects an empty secret, which the keychain would hold as an item indistinguishable from a stray one, and one too long for the command line that contains it. Both are `UnstorableSecretError`, which is exported: Nothing was attempted, so a caller can tell a value that the keychain cannot store from a keychain that it could not reach. Every other secret is stored and returned byte for byte, whatever it holds. Each write is read back and compared, so a secret that did not survive the round trip fails at the write rather than at a later caller. That readback retrieves the secret, so replacing an item created by another program can raise the keychain access prompt described above, and a write whose readback is refused is reported as unverified rather than as stored.
+`setSecret` rejects an empty secret, which the keychain would store as an item indistinguishable from a stray one, and one too long for the command line that contains it. Both are `UnstorableSecretError`, which is exported: Nothing was attempted, so a caller can tell a value that the keychain cannot store from a keychain that it could not reach. Every other secret is stored and returned byte for byte, whatever it contains. Each write is read back and compared: A secret that did not survive the round trip fails at the write rather than at a later caller. Because that readback retrieves the secret, replacing an item created by another program can raise the keychain access prompt described above, and a write whose readback is refused is reported as unverified rather than as stored.
 
 ```ts
 const projectStore = createKeychainStore({ keychain: '/Users/me/Library/Keychains/project.keychain-db' });
@@ -127,7 +127,7 @@ A named keychain accepts a write like the default search list does. `SecretStore
 promptSecret(input: NodeJS.ReadableStream, output: NodeJS.WritableStream): Promise<string>;
 ```
 
-Reads a secret from a terminal without echoing it, asking twice and comparing, since nothing on screen shows what was typed. It rejects where the two entries differ, and where the input ends before a secret is entered, which is the one event that `Ctrl-C`, `Ctrl-D`, and a closed stream all share.
+Reads a secret from a terminal without echoing it, asking twice and comparing, since nothing on screen shows what was typed. It rejects when the two entries differ, and when the input ends before a secret is entered, which is the one event that `Ctrl-C`, `Ctrl-D`, and a closed stream all share.
 
 ```ts
 import { promptSecret } from '@williamthorsen/toolbelt.secrets/candidate';
@@ -135,4 +135,4 @@ import { promptSecret } from '@williamthorsen/toolbelt.secrets/candidate';
 const secret = await promptSecret(process.stdin, process.stderr);
 ```
 
-The prompts go to `output` and the line being edited does not, so a caller passing `process.stderr` leaves `stdout` free for the command's own result. `security` has a prompt of its own, but it fills a 128-byte buffer and hands back nothing to verify, which is why this reads the secret instead.
+The prompts go to `output` and the line being edited does not, so a caller passing `process.stderr` leaves `stdout` free for the command's own result. `security` has a prompt of its own, but it fills a 128-byte buffer and returns nothing to verify, which is why this reads the secret instead.
