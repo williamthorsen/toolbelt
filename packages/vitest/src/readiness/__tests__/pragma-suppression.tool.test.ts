@@ -30,7 +30,7 @@ const ADOPTER = [
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 describe('The vitest adoption kit, run through rdy', () => {
-  it('names every site and spans them all in one denominator', () => {
+  it('names every site and counts them all in one denominator', () => {
     expect(runKit(`${SILENCE}\n`)).toStrictEqual([
       { count: 9, detail: 'ExitError (src/sentinel.unit.test.ts:2)', id: 'no-exit-sentinel-clone', passedCount: 1 },
       { count: 9, detail: 'src/non-throwing.unit.test.ts:1', id: 'no-non-throwing-exit-mock', passedCount: 1 },
@@ -56,8 +56,8 @@ describe('The vitest adoption kit, run through rdy', () => {
     ]);
   });
 
-  // A `dir:` kit source has no namespace, so the bare id stands. A consumer running the kit from the
-  // installed package writes `toolbelt.vitest/no-hand-rolled-console-silence`.
+  // A `dir:` kit source has no namespace, so the pragma names the check by its bare id. A consumer running the
+  // kit from the installed package writes `toolbelt.vitest/no-hand-rolled-console-silence`.
   it('drops a site covered by a qualified pragma from the named check alone', () => {
     expect(runKit(`${SILENCE} // rdy-ignore no-hand-rolled-console-silence -- reviewed\n`)).toStrictEqual([
       { count: 9, detail: 'ExitError (src/sentinel.unit.test.ts:2)', id: 'no-exit-sentinel-clone', passedCount: 1 },
@@ -75,11 +75,11 @@ describe('The vitest adoption kit, run through rdy', () => {
 // region | Helpers
 
 /**
- * Runs the package's compiled kit over a fixture repo whose console silence carries the given source, and
- * reports what each check named and counted.
+ * Runs the package's compiled kit over a fixture repo whose `src/silence.unit.test.ts` contains the given source,
+ * and reports what each check named and counted.
  *
- * A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report reaches the
- * layer that acts on one.
+ * A pragma is honored by the runner rather than by the kit, so only a run can show that the runner applies the
+ * pragma to a kit's report.
  */
 function runKit(silenceSource: string): KitCheckReport[] {
   return listKitCheckReports(PACKAGE_DIR, {

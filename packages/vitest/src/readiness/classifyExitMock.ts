@@ -13,13 +13,13 @@ const THROWN_CLASS = /throw new (\w+)\(/;
 const BARE_REFERENCE = /^[\w$.]+$/;
 
 /**
- * Names what a `process.exit` mock is doing, from the text following the spy and the file that holds it.
+ * Names what a `process.exit` mock is doing, from the text following the spy and the file that contains it.
  *
  * Both come from the blanked code produced by `listExitMocks`, so a `throw` written in a comment does not make a
  * mock throwing, and a sentinel class named only in prose is not one that the file declares.
  *
- * A mock throwing a class declared by the same file reports as `sentinel-clone` rather than as the `throwing`
- * mock that it also is, so one finding names the class to retire alongside the mock.
+ * A mock throwing a class declared by the same file is classified as `sentinel-clone` rather than as the
+ * `throwing` mock that it also is, so that one finding names the class to retire alongside the mock.
  *
  * `non-throwing` is claimed only against a body that this read in full and found no `throw` in, because that
  * kind has the defect severity. Everything else is `unclassified`: an implementation given as a bare reference,

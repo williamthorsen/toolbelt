@@ -33,7 +33,7 @@ describe(createTempDir, () => {
       using tree = createTempDir({ 'package.json': '{}' });
       treeDir = tree.dir;
 
-      // Assert existence first, so a directory that was never created cannot pass the removal check vacuously.
+      // Assert existence first, so that a directory that was never created cannot pass the removal check vacuously.
       expect(fs.existsSync(treeDir)).toBe(true);
     }
 
@@ -41,11 +41,11 @@ describe(createTempDir, () => {
   });
 
   it('rejects a key naming a directory and holding contents, leaving nothing on disk', () => {
-    // Spy on the creation call, the only route to the root of a directory for which no handle was returned.
+    // Spy on the creation call, the only way to find the root of a directory for which no handle was returned.
     // The call-count assertion keeps a spy that recorded nothing from passing the removal check vacuously.
     using mkdtempSyncSpy = vi.spyOn(fs, 'mkdtempSync');
 
-    // The rejected key follows a written one, so the removal covers an entry already on disk.
+    // The rejected key follows a written one, so that the removal covers an entry already on disk.
     const create = () => createTempDir({ 'package.json': '{}', 'nested/': 'contents' });
 
     expect(create).toThrow('its value must be empty');

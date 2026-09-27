@@ -55,8 +55,9 @@ export function classifyConsoleMock(after: string): ConsoleMockKind {
 
 /**
  * Locates a `function` expression's body past any return-type annotation, whose own braces are not the body's.
- * Telling a type's braces from a block's takes a parser, so an annotation that contains one leaves the body starting
- * inside the type, where `isNoOp` declines it rather than mistaking it for an empty block.
+ * Telling a type's braces from a block's takes a parser, which this does not use, so an annotation that contains one
+ * leaves the body starting inside the type. `isNoOp` then declines that body rather than mistaking it for an empty
+ * block.
  */
 function findBodyPastAnnotation(rest: string): string | undefined {
   if (!rest.trimStart().startsWith(':')) return rest;
@@ -65,7 +66,7 @@ function findBodyPastAnnotation(rest: string): string | undefined {
   return brace === -1 ? undefined : rest.slice(brace);
 }
 
-/** Locates an arrow's body past its `=>`, which a return-type annotation may sit ahead of. */
+/** Locates an arrow's body past its `=>`, which a return-type annotation may precede. */
 function findBodyPastArrow(rest: string): string | undefined {
   const arrow = rest.indexOf('=>');
   return arrow === -1 ? undefined : rest.slice(arrow + 2);
@@ -76,7 +77,7 @@ function isNoOp(body: string): boolean {
   const trimmed = body.trim();
   const block = trimmed.startsWith('{') ? readBalancedGroup(trimmed, 0, BRACES) : undefined;
 
-  // A block is the body only where it spans the whole of it. `(key) => cache[key] = {}` ends in a brace group
+  // A block is the body only when it spans the whole of it. `(key) => cache[key] = {}` ends in a brace group
   // that is an assigned value rather than a body, and reading it as one would call a capture a silence.
   if (block !== undefined && block.end === trimmed.length) return trimmed.slice(1, -1).trim() === '';
 
@@ -84,7 +85,7 @@ function isNoOp(body: string): boolean {
 }
 
 /**
- * Splits an implementation into its parameter list and what follows, or returns nothing where neither of the
+ * Splits an implementation into its parameter list and what follows, or returns nothing when none of the
  * three heads that it accepts fits: a parenthesized list, a sole parameter written without parentheses, and a
  * `function` expression.
  */

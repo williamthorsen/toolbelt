@@ -13,7 +13,7 @@ const TESTS_DIR = fileURLToPath(new URL('.', import.meta.url));
 
 describe(listSites, () => {
   // This kit sweeps tests, so the sweep here reads them too. Every fixture beside this file writes its idiom
-  // inside a literal, which blanking keeps from reporting a site.
+  // inside a literal, which the detector blanks rather than reporting as a site.
   it('finds nothing in the sources describing what it looks for', () => {
     const findings = listSweptFiles().flatMap((file) =>
       listSites(fs.readFileSync(file, 'utf8')).map((site) => `${path.basename(file)}:${site.line}`),
@@ -36,7 +36,7 @@ describe(listSites, () => {
 
 // region | Helpers
 
-/** Lists the sources in which this package's own prose about the idioms lives. */
+/** Lists the sources that contain this package's own prose about the idioms. */
 function listSweptFiles(): string[] {
   return [KITS_DIR, READINESS_DIR, TESTS_DIR].flatMap((directory) =>
     fs

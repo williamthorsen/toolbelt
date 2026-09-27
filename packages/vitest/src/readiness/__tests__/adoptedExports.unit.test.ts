@@ -8,8 +8,7 @@ import { ADOPTED_EXPORTS } from '../adoptedExports.ts';
 const UNCALLED_EXPORTS = new Set(['ProcessExitError']);
 
 describe('ADOPTED_EXPORTS', () => {
-  // Fails when a published tier gains a callable export that nothing added to the list against which adoption is
-  // counted.
+  // Fails when a published tier gains a callable export missing from the list against which adoption is counted.
   it('names every export that a consumer calls', () => {
     const callable = [candidateExports, releaseExports].flatMap((tier) =>
       Object.entries(tier)

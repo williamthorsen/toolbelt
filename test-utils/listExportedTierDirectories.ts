@@ -4,7 +4,7 @@ import path from 'node:path';
 import { listExportTargets } from './listExportTargets.ts';
 
 /**
- * Lists the source directories of the maturity tiers exposed by a package's `exports` map, so a caller walks
+ * Lists the source directories of the maturity tiers exposed by a package's `exports` map, so that a caller walks
  * the tiers that a consumer can import rather than every tier on disk. A workspace organized without maturity
  * tiers, and the strawman tier named by no subpath, both yield nothing.
  */

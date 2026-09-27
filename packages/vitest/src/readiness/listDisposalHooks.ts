@@ -15,14 +15,14 @@ const DISPOSAL = /\[\s*Symbol\s*\.\s*dispose\s*\]\s*\(/;
  *
  * Nothing in the anchor is a string literal, so this scans the blanked code directly.
  *
- * The anchor is case-sensitive, which holds `disposeOnTestFinished` outside it, so an adopting
- * project's own calls are not reported. `\b` matches after a `.` as readily as at a line start, so the
- * test-context form `ctx.onTestFinished` is an anchor too.
+ * The anchor is case-sensitive, which keeps an adopting project's own `disposeOnTestFinished` calls outside
+ * it. Because `\b` matches after a `.` as readily as at a line start, the test-context form
+ * `ctx.onTestFinished` is an anchor too.
  *
- * Everything else the anchor covers yields no site at all, where the other two detectors report an
+ * Everything else the anchor covers yields no site at all, whereas the other two detectors report an
  * `unclassified` one. Their anchors are the idiom, so a mock that they cannot read is still a site; this one merely
- * hosts the idiom, and a cleanup hook disposing nothing would otherwise enter the denominator shared by every
- * check in the kit. Requiring the disposal's own call parentheses declines three cases at once: a callback given
+ * contains the idiom, and reporting a cleanup hook that disposes nothing would add it to the denominator shared by
+ * every check in the kit. Requiring the disposal's own call parentheses declines three cases at once: a callback given
  * as a bare reference, an unbound `resource[Symbol.dispose]` handed straight to the hook, and
  * `Symbol.asyncDispose`, which the package publishes no overload for.
  *

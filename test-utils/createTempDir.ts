@@ -12,7 +12,7 @@ import path from 'node:path';
  * dependency.
  */
 export function createTempDir(entries: Record<string, string>): TempDir {
-  // Realpathed because `os.tmpdir()` is a symlink on macOS, and a walk reports the resolved path.
+  // Resolve the realpath, because `os.tmpdir()` is a symlink on macOS and a walk reports the resolved path.
   const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'toolbelt-root-')));
 
   try {
