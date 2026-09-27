@@ -21,7 +21,7 @@ describe(formatDuration, () => {
       expect(formatDuration(0.4)).toBe('0ms');
     });
 
-    it('renders a duration of many days without reaching for a coarser unit', () => {
+    it('renders a duration of many days without switching to a coarser unit', () => {
       expect(formatDuration(864_000_000)).toBe('10d');
     });
   });

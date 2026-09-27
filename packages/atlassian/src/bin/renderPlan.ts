@@ -4,7 +4,7 @@ import { formatLabelledLine } from './labelled-lines.ts';
 
 /**
  * Renders the reconciliation plan as the run's unit of review, listing every write that it would make and reporting
- * a plan that holds none. Composes a string and prints nothing.
+ * a plan that contains none. Composes a string and prints nothing.
  *
  * @internal
  */
@@ -75,7 +75,7 @@ export interface PlanRenderOptions {
 // region | Helpers
 
 /**
- * Counts the writes that a plan holds. An unmanaged status is a report rather than a change, and a backlog seed is
+ * Counts the writes that a plan contains. An unmanaged status is a report rather than a change, and a backlog seed is
  * not in the plan at all: It is asked for on the command line rather than derived from the project's state.
  */
 function countChanges(plan: ReconciliationPlan): number {

@@ -4,10 +4,10 @@ const FINEST_INDEX = TimeUnit.coarsestFirst.length - 1;
 
 /**
  * Renders a duration as up to `maxUnits` short-labeled components, running from the coarsest unit
- * holding at least one whole count down toward milliseconds. The duration is rounded once, at the
- * finest unit shown, and the leading unit is chosen from the rounded value, so a rounding carry
+ * that the duration contains at least once down toward milliseconds. The duration is rounded once, at
+ * the finest unit shown, and the leading unit is chosen from the rounded value, so a rounding carry
  * promotes to the coarser unit rather than reporting `60s`. A component whose count is zero is
- * omitted unless it leads, so `maxUnits` caps the precision instead of padding with zeros.
+ * omitted unless it leads: `maxUnits` caps the precision instead of padding with zeros.
  *
  * @example
  * formatDuration(240_000); // '4m'
@@ -45,7 +45,7 @@ function selectComponents(milliseconds: number, maxUnits: number): DurationCompo
     const shownUnits = TimeUnit.coarsestFirst.slice(leadingIndex, leadingIndex + maxUnits);
     const rounded = roundToFinest(milliseconds, shownUnits);
 
-    // Rounding can carry the duration past a unit boundary. A lower index is a coarser unit, so
+    // Rounding can carry the duration past a unit boundary. Because a lower index is a coarser unit,
     // continuing only while the leading unit coarsens both resolves the carry and terminates.
     const carriedIndex = selectLeadingIndex(rounded);
     if (carriedIndex >= leadingIndex) {
@@ -56,8 +56,8 @@ function selectComponents(milliseconds: number, maxUnits: number): DurationCompo
 }
 
 /**
- * Returns the index of the coarsest unit holding at least one whole count, falling back to the
- * finest unit for a duration shorter than one of any unit.
+ * Returns the index of the coarsest unit that the duration contains at least once, falling back to
+ * the finest unit for a duration shorter than one of any unit.
  */
 function selectLeadingIndex(milliseconds: number): number {
   const index = TimeUnit.coarsestFirst.findIndex((unit) => milliseconds >= unit.inMillis);

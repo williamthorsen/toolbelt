@@ -45,7 +45,7 @@ export interface FakeCall {
 }
 
 export interface FakeRequestOptions {
-  /** The origin against which a route's path is resolved, which reaches `JiraResponse.url`. */
+  /** The origin against which a route's path is resolved, which appears in `JiraResponse.url`. */
   readonly baseUrl?: string | undefined;
 }
 
@@ -59,7 +59,7 @@ export interface FakeResponse {
 /** A route returning the same response every time, one per call in order, or one computed from the request body. */
 export type FakeRoute = FakeResponse | FakeRouteSequence | ((body: unknown) => FakeResponse);
 
-/** A route returning a different response per call, which fixtures a paginated read. */
+/** A route returning a different response per call, which simulates a paginated read. */
 export interface FakeRouteSequence {
   readonly sequence: readonly FakeResponse[];
 }
@@ -82,7 +82,7 @@ function answerRoute(route: FakeRoute, body: unknown, index: number, key: string
 
   const response = route.sequence[index];
   if (response === undefined) {
-    throw new Error(`Route '${key}' was called ${index + 1} times but holds ${route.sequence.length} responses.`);
+    throw new Error(`Route '${key}' was called ${index + 1} times but contains ${route.sequence.length} responses.`);
   }
 
   return response;

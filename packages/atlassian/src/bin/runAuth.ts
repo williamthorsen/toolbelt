@@ -22,13 +22,13 @@ const SOURCE_DESCRIPTIONS: Record<JiraTokenSource, string> = {
 
 const AUTH_HELP = `Usage: tb-jira auth <delete|set|status> [options]
 
-Manage the Jira API token. It is held in the macOS keychain under the service \`${DEFAULT_TOKEN_SERVICE}\`,
+Manage the Jira API token. It is stored in the macOS keychain under the service \`${DEFAULT_TOKEN_SERVICE}\`,
 with the Atlassian account email as the account, which is the same item that \`tb-secret\` reads and writes.
-\`delete\` and \`set\` require macOS. \`status\` opens the keychain only where the earlier sources miss.
+\`delete\` and \`set\` require macOS. \`status\` opens the keychain only when the earlier sources miss.
 
 Subcommands:
-  delete  Remove the stored token, exiting 1 where none is stored
-  set     Store a token, replacing one already held under the same email
+  delete  Remove the stored token, exiting 1 if none is stored
+  set     Store a token, replacing one already stored under the same email
   status  Report which source would supply the token, printing the token nowhere
 
 Options:
@@ -40,9 +40,9 @@ Options:
 At a terminal, \`set\` prompts for the token twice and echoes nothing; piped, it reads stdin and drops one
 trailing newline, since \`echo\` adds one.
 
-\`status\` names the first of JIRA_API_TOKEN, a configured command, and the keychain that would answer. It
+\`status\` names the first of JIRA_API_TOKEN, a configured command, and the keychain that would supply it. It
 probes the keychain for presence rather than reading it, so it raises no keychain access prompt; a configured
-command does run, and its output is discarded. Presence is not contents: An item holding only whitespace is
+command does run, and its output is discarded. Presence is not contents: An item containing only whitespace is
 reported here and dropped by the resolver, which \`set\` refuses to create.`;
 
 /**
@@ -87,8 +87,8 @@ function runDelete(effects: TbJiraEffects, account: string, service: string): nu
 }
 
 /**
- * Stores a token, read from the terminal without echo or from stdin where the input is piped. The store is
- * opened first, so a platform holding no keychain is reported before a token is typed into this process.
+ * Stores a token, read from the terminal without echo or from stdin when the input is piped. The store is
+ * opened first, so that a platform without a keychain is reported before a token is typed into this process.
  */
 async function runSet(effects: TbJiraEffects, account: string, service: string): Promise<number> {
   const store = callKeystore(() => effects.createStore());
@@ -105,7 +105,7 @@ async function runSet(effects: TbJiraEffects, account: string, service: string):
   return succeed(effects, `Stored a token for ${account} under ${service}.`);
 }
 
-/** Reports which source would supply the token, naming it rather than printing what it holds. */
+/** Reports which source would supply the token, naming it rather than printing the token. */
 function runStatus(effects: TbJiraEffects, account: string, service: string, tokenCommand: string | undefined): number {
   const source = findJiraTokenSource({
     account,

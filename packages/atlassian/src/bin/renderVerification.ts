@@ -3,9 +3,9 @@ import type { VerificationReport } from '../3-candidate/VerificationReport.ts';
 import { formatContinuationLine, formatLabelledLine } from './labelled-lines.ts';
 
 /**
- * Renders what the server holds after a run: each spec entry against the live configuration, then the board's
- * column coverage and order. A column gap is reported rather than faulted, since the public API cannot set a
- * column. Composes a string and prints nothing.
+ * Renders what the server stores after a run: each spec entry against the live configuration, then the board's
+ * column coverage and order. A column gap is reported rather than treated as a fault, since the public API cannot
+ * set a column. Composes a string and prints nothing.
  *
  * @internal
  */

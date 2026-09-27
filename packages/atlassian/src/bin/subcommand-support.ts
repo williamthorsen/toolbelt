@@ -57,7 +57,7 @@ export function callKeystore<T>(operation: () => T): T {
 
 /**
  * Wraps the keychain so that it is opened on first use rather than on construction. A run authenticated from
- * the environment then reaches no keychain at all, and a platform holding none is reported only where a caller
+ * the environment then never opens the keychain, and a platform without one is reported only when a caller
  * actually reads from it.
  *
  * @internal
