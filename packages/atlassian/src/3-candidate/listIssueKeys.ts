@@ -1,5 +1,6 @@
 import { isRecord } from '../internal/isRecord.ts';
 import { readArrayField } from '../internal/readArrayField.ts';
+import { readNextPageToken } from '../internal/readNextPageToken.ts';
 import type { JiraRequest } from './createTokenTransport.ts';
 import { requestOk } from './requestOk.ts';
 
@@ -43,16 +44,3 @@ export async function listIssueKeys(request: JiraRequest, jql: string): Promise<
 
   return keys;
 }
-
-// region | Helpers
-
-/** Narrows a search response's page token, whose absence ends the walk. */
-function readNextPageToken(payload: unknown): string | undefined {
-  if (!isRecord(payload)) return undefined;
-
-  const token = payload['nextPageToken'];
-
-  return typeof token === 'string' && token !== '' ? token : undefined;
-}
-
-// endregion | Helpers

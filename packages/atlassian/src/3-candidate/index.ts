@@ -15,6 +15,7 @@ export { findJiraTokenSource, type JiraTokenSource } from './findJiraTokenSource
 export { type JiraRejectionReason, JiraRequestError, type JiraRequestErrorOptions } from './JiraRequestError.ts';
 export { JiraTransportError, type JiraTransportErrorOptions } from './JiraTransportError.ts';
 export { listIssueKeys } from './listIssueKeys.ts';
+export { type IssueSummary, type IssueSummaryQuery, listIssueSummaries } from './listIssueSummaries.ts';
 export { type BacklogMoveResult, moveIssuesToBacklog } from './moveIssuesToBacklog.ts';
 export { parseProjectSpec } from './parseProjectSpec.ts';
 export type {
