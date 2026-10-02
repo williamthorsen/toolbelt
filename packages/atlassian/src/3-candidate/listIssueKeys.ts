@@ -2,6 +2,7 @@ import { isRecord } from '../internal/isRecord.ts';
 import { readArrayField } from '../internal/readArrayField.ts';
 import { readNextPageToken } from '../internal/readNextPageToken.ts';
 import type { JiraRequest } from './createTokenTransport.ts';
+import { JiraResponseError } from './JiraResponseError.ts';
 import { requestOk } from './requestOk.ts';
 
 const SEARCH_PAGE_SIZE = 100;
@@ -32,10 +33,16 @@ export async function listIssueKeys(request: JiraRequest, jql: string): Promise<
     });
 
     // A key dropped here is a work item on which the caller never acts, so one unreadable entry fails the whole walk.
-    const issues = readArrayField(response.json, 'issues') ?? [];
+    const issues = readArrayField(response.json, 'issues');
+    if (issues === undefined) {
+      throw new JiraResponseError({ message: `Search '${jql}' returned no 'issues' array.`, url: response.url });
+    }
     const page = issues.flatMap((issue) => (isRecord(issue) && typeof issue['key'] === 'string' ? [issue['key']] : []));
     if (page.length !== issues.length) {
-      throw new Error(`Search '${jql}' returned work items that this cannot read.`);
+      throw new JiraResponseError({
+        message: `Search '${jql}' returned work items that this cannot read.`,
+        url: response.url,
+      });
     }
     keys.push(...page);
 

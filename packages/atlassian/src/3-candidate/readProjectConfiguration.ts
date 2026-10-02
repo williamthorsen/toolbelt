@@ -1,6 +1,7 @@
 import { isRecord } from '../internal/isRecord.ts';
 import { readArrayField } from '../internal/readArrayField.ts';
 import type { JiraRequest } from './createTokenTransport.ts';
+import { JiraResponseError } from './JiraResponseError.ts';
 import type {
   ProjectConfiguration,
   Workflow,
@@ -17,7 +18,8 @@ const TEAM_MANAGED_STYLE = 'next-gen';
  * Reads the project, board, workflow, and board features against which a reconciliation is planned. Refuses a
  * project to which this reconciler cannot safely write: one that is not team-managed, one that does not resolve
  * to a single board of its own, and one whose issue types resolve to other than a single workflow. Each refusal
- * fails closed, so a response that it cannot read is a refusal rather than a pass.
+ * fails closed, so a response that it cannot read is a refusal rather than a pass: That refusal throws
+ * `JiraResponseError`, and one of the project's state throws a plain `Error`.
  *
  * @category Jira
  * @experimental
@@ -58,7 +60,13 @@ async function readBoard(
   });
 
   const values = readArrayField(response.json, 'values');
-  if (values === undefined || values.length === 0) {
+  if (values === undefined) {
+    throw new JiraResponseError({
+      message: `Project ${projectKey} returned no 'values' array of boards.`,
+      url: response.url,
+    });
+  }
+  if (values.length === 0) {
     throw new Error(`Project ${projectKey} has no board.`);
   }
 
@@ -68,7 +76,10 @@ async function readBoard(
     return board === undefined ? [] : [board];
   });
   if (boards.length !== values.length) {
-    throw new Error(`Project ${projectKey} returned boards that this cannot read.`);
+    throw new JiraResponseError({
+      message: `Project ${projectKey} returned boards that this cannot read.`,
+      url: response.url,
+    });
   }
   // A sole board is taken without a location, which Jira may omit, but never one whose location names another
   // project: Its id would send this project's feature writes and backlog moves to that project's board.
@@ -122,7 +133,7 @@ async function readFeatures(request: JiraRequest, boardId: number): Promise<Boar
 
   const values = readArrayField(response.json, 'features');
   if (values === undefined) {
-    throw new Error(`Board ${boardId} returned no 'features' array.`);
+    throw new JiraResponseError({ message: `Board ${boardId} returned no 'features' array.`, url: response.url });
   }
 
   const entries: [string, string][] = [];
@@ -141,7 +152,10 @@ async function readFeatures(request: JiraRequest, boardId: number): Promise<Boar
   }
 
   if (entries.length !== values.length) {
-    throw new Error(`Board ${boardId} returned features that this cannot read.`);
+    throw new JiraResponseError({
+      message: `Board ${boardId} returned features that this cannot read.`,
+      url: response.url,
+    });
   }
 
   return { features: new Map(entries), lockedFeatures: locked };
@@ -162,14 +176,17 @@ async function readIssueTypeIds(request: JiraRequest, projectKey: string, key: s
 
   const values = Array.isArray(response.json) ? response.json : undefined;
   if (values === undefined || values.length === 0) {
-    throw new Error(`Project ${projectKey} returned no issue types.`);
+    throw new JiraResponseError({ message: `Project ${projectKey} returned no issue types.`, url: response.url });
   }
 
   // An issue type dropped here is never passed to the workflow read, so a project on several workflows could pass
   // the exactly-one refusal. The count check keeps that refusal effective.
   const ids = values.flatMap((value) => (isRecord(value) && typeof value['id'] === 'string' ? [value['id']] : []));
   if (ids.length !== values.length) {
-    throw new Error(`Project ${projectKey} returned issue types that this cannot read.`);
+    throw new JiraResponseError({
+      message: `Project ${projectKey} returned issue types that this cannot read.`,
+      url: response.url,
+    });
   }
 
   return ids;
@@ -195,8 +212,7 @@ async function readProject(request: JiraRequest, projectKey: string, key: string
   const project = isRecord(response.json) ? response.json : undefined;
   const id = project?.['id'];
   if (typeof id !== 'string') {
-    // eslint-disable-next-line unicorn/prefer-type-error -- this module refuses every malformed Jira response with a plain `Error`.
-    throw new Error(`Project ${projectKey} returned no 'id'.`);
+    throw new JiraResponseError({ message: `Project ${projectKey} returned no 'id'.`, url: response.url });
   }
 
   const style = project?.['style'];
@@ -243,7 +259,10 @@ async function readWorkflow(
     path: '/rest/api/3/workflows?expand=statuses',
   });
 
-  const workflows = readArrayField(response.json, 'workflows') ?? [];
+  const workflows = readArrayField(response.json, 'workflows');
+  if (workflows === undefined) {
+    throw new JiraResponseError({ message: `Project ${projectKey} returned no 'workflows' array.`, url: response.url });
+  }
   if (workflows.length !== 1) {
     throw new Error(
       `Project ${projectKey} resolves its ${issueTypeIds.length} issue types to ${workflows.length} workflows. This reconciler writes one workflow, so a project that uses several is refused rather than half-reconciled.`,
@@ -252,17 +271,26 @@ async function readWorkflow(
 
   const workflow = readWorkflowGraph(workflows[0]);
   if (workflow === undefined) {
-    throw new Error(`Project ${projectKey} returned a workflow that this cannot read.`);
+    throw new JiraResponseError({
+      message: `Project ${projectKey} returned a workflow that this cannot read.`,
+      url: response.url,
+    });
   }
 
-  const values = readArrayField(response.json, 'statuses') ?? [];
+  const values = readArrayField(response.json, 'statuses');
+  if (values === undefined) {
+    throw new JiraResponseError({ message: `Project ${projectKey} returned no 'statuses' array.`, url: response.url });
+  }
   const statuses = values.flatMap((value) => {
     const status = readWorkflowStatus(value);
 
     return status === undefined ? [] : [status];
   });
   if (statuses.length !== values.length || statuses.length === 0) {
-    throw new Error(`Project ${projectKey} returned statuses that this cannot read.`);
+    throw new JiraResponseError({
+      message: `Project ${projectKey} returned statuses that this cannot read.`,
+      url: response.url,
+    });
   }
 
   return { statuses, workflow };

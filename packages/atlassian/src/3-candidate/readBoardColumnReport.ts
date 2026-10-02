@@ -2,7 +2,8 @@ import { isRecord } from '../internal/isRecord.ts';
 import { normalizeStatusName } from '../internal/normalizeStatusName.ts';
 import { readArrayField } from '../internal/readArrayField.ts';
 import type { BoardColumnReport } from './BoardColumnReport.ts';
-import type { JiraRequest } from './createTokenTransport.ts';
+import type { JiraRequest, JiraResponse } from './createTokenTransport.ts';
+import { JiraResponseError } from './JiraResponseError.ts';
 import type { ProjectConfiguration } from './ProjectConfiguration.ts';
 import type { ProjectSpec } from './ProjectSpec.ts';
 import { requestOk } from './requestOk.ts';
@@ -28,7 +29,7 @@ export async function readBoardColumnReport(
     path: `/rest/agile/1.0/board/${board.id}/configuration`,
   });
 
-  const columns = readColumns(board.id, response.json);
+  const columns = readColumns(board.id, response);
   const columnNames = columns.map((column) => column.name);
   const mapped = new Set(columns.flatMap((column) => column.statusIds));
 
@@ -58,14 +59,19 @@ function findOrderMismatch(columnNames: readonly string[], spec: ProjectSpec): B
  * Narrows the board configuration to each column's name and the ids of the statuses mapped to it. This refuses the
  * report when it cannot read a column or a status id: Dropping either would report a covered status as uncovered.
  */
-function readColumns(boardId: number, payload: unknown): readonly ReadColumn[] {
-  const columnConfig = isRecord(payload) ? payload['columnConfig'] : undefined;
-  const values = readArrayField(columnConfig, 'columns') ?? [];
+function readColumns(boardId: number, response: JiraResponse): readonly ReadColumn[] {
+  const { json, url } = response;
+  const columnConfig = isRecord(json) ? json['columnConfig'] : undefined;
+  const values = readArrayField(columnConfig, 'columns');
+  if (values === undefined) {
+    throw new JiraResponseError({ message: `Board ${boardId} returned no 'columns' array.`, url });
+  }
 
   const columns = values.flatMap((column) => {
     if (!isRecord(column) || typeof column['name'] !== 'string') return [];
 
-    const mapped = readArrayField(column, 'statuses') ?? [];
+    const mapped = readArrayField(column, 'statuses');
+    if (mapped === undefined) return [];
     const statusIds = mapped.flatMap((status) =>
       isRecord(status) && typeof status['id'] === 'string' ? [status['id']] : [],
     );
@@ -74,7 +80,7 @@ function readColumns(boardId: number, payload: unknown): readonly ReadColumn[] {
     return [{ name: column['name'], statusIds }];
   });
   if (columns.length !== values.length) {
-    throw new Error(`Board ${boardId} returned columns that this cannot read.`);
+    throw new JiraResponseError({ message: `Board ${boardId} returned columns that this cannot read.`, url });
   }
 
   return columns;

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { createFakeRequest, type FakeRoutes } from '../../test-utils/createFakeRequest.ts';
+import { JiraResponseError } from '../JiraResponseError.ts';
 import { readProjectConfiguration } from '../readProjectConfiguration.ts';
 
 const KEY = 'PROJ';
@@ -186,9 +187,10 @@ describe(readProjectConfiguration, () => {
       'GET /rest/agile/1.0/board': { json: { values: [{ id: BOARD_ID }, { name: 'no id' }] } },
     };
 
-    await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'returned boards that this cannot read',
-    );
+    const reading = readProjectConfiguration(createFakeRequest(routes).request, KEY);
+
+    await expect(reading).rejects.toThrow('returned boards that this cannot read');
+    await expect(reading).rejects.toBeInstanceOf(JiraResponseError);
   });
 
   it('refuses an issue type that it cannot read, which the workflow count would otherwise miss', async () => {
@@ -197,9 +199,10 @@ describe(readProjectConfiguration, () => {
       'GET /rest/api/3/project/PROJ/statuses': { json: [{ id: '10001' }, { name: 'no id' }] },
     };
 
-    await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'returned issue types that this cannot read',
-    );
+    const reading = readProjectConfiguration(createFakeRequest(routes).request, KEY);
+
+    await expect(reading).rejects.toThrow('returned issue types that this cannot read');
+    await expect(reading).rejects.toBeInstanceOf(JiraResponseError);
   });
 
   it('refuses a board feature that it cannot read rather than reporting it absent', async () => {
@@ -210,17 +213,36 @@ describe(readProjectConfiguration, () => {
       },
     };
 
-    await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'returned features that this cannot read',
-    );
+    const reading = readProjectConfiguration(createFakeRequest(routes).request, KEY);
+
+    await expect(reading).rejects.toThrow('returned features that this cannot read');
+    await expect(reading).rejects.toBeInstanceOf(JiraResponseError);
   });
 
-  it('refuses a project with no board', async () => {
+  it('refuses a project with no board as a project state, not as an unreadable response', async () => {
     const routes = { ...buildRoutes(), [`GET /rest/agile/1.0/board`]: { json: { values: [] } } };
 
-    await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'Project PROJ has no board.',
-    );
+    const reading = readProjectConfiguration(createFakeRequest(routes).request, KEY);
+
+    await expect(reading).rejects.toThrow('Project PROJ has no board.');
+    await expect(reading).rejects.not.toBeInstanceOf(JiraResponseError);
+  });
+
+  it.each([
+    ['boards', 'GET /rest/agile/1.0/board', {}, "returned no 'values' array of boards"],
+    ['features', `GET /rest/agile/1.0/board/${BOARD_ID}/features`, {}, "returned no 'features' array"],
+    ['issue types', 'GET /rest/api/3/project/PROJ/statuses', {}, 'returned no issue types'],
+    ['project id', 'GET /rest/api/3/project/PROJ', { style: 'next-gen' }, "returned no 'id'"],
+    ['workflows', 'POST /rest/api/3/workflows', { statuses: [] }, "returned no 'workflows' array"],
+    ['statuses', 'POST /rest/api/3/workflows', { workflows: [buildWorkflow()] }, "returned no 'statuses' array"],
+  ])('refuses a response missing its %s as unreadable, naming the URL', async (_subject, route, json, message) => {
+    const routes = { ...buildRoutes(), [route]: { json } };
+
+    const reading = readProjectConfiguration(createFakeRequest(routes).request, KEY);
+
+    await expect(reading).rejects.toThrow(message);
+    await expect(reading).rejects.toBeInstanceOf(JiraResponseError);
+    await expect(reading).rejects.toThrow('The response came from https://');
   });
 
   it('refuses a project whose issue types resolve to more than one workflow', async () => {
@@ -250,9 +272,10 @@ describe(readProjectConfiguration, () => {
       },
     };
 
-    await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'returned statuses that this cannot read',
-    );
+    const reading = readProjectConfiguration(createFakeRequest(routes).request, KEY);
+
+    await expect(reading).rejects.toThrow('returned statuses that this cannot read');
+    await expect(reading).rejects.toBeInstanceOf(JiraResponseError);
   });
 
   it('throws through requestOk when a read is rejected', async () => {

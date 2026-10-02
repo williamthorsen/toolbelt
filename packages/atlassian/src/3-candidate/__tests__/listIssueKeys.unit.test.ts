@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { createFakeRequest } from '../../test-utils/createFakeRequest.ts';
+import { JiraResponseError } from '../JiraResponseError.ts';
 import { listIssueKeys } from '../listIssueKeys.ts';
 
 const SEARCH_PATH = 'POST /rest/api/3/search/jql';
@@ -57,7 +58,19 @@ describe(listIssueKeys, () => {
       [SEARCH_PATH]: { json: { issues: [{ key: 'PROJ-1' }, { id: '10001' }] } },
     });
 
-    await expect(listIssueKeys(request, JQL)).rejects.toThrow('returned work items that this cannot read');
+    const reading = listIssueKeys(request, JQL);
+
+    await expect(reading).rejects.toThrow('returned work items that this cannot read');
+    await expect(reading).rejects.toBeInstanceOf(JiraResponseError);
+  });
+
+  it('refuses a response without an issues array rather than reading it as no matches', async () => {
+    const { request } = createFakeRequest({ [SEARCH_PATH]: { json: {} } });
+
+    const reading = listIssueKeys(request, JQL);
+
+    await expect(reading).rejects.toThrow("returned no 'issues' array");
+    await expect(reading).rejects.toBeInstanceOf(JiraResponseError);
   });
 
   it('throws naming the query when the search is rejected', async () => {

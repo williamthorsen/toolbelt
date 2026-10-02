@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { createFakeRequest, type FakeRoutes } from '../../test-utils/createFakeRequest.ts';
 import { buildProjectConfiguration } from '../../test-utils/projectConfiguration.ts';
+import { JiraResponseError } from '../JiraResponseError.ts';
 import type { ProjectSpec } from '../ProjectSpec.ts';
 import { readBoardColumnReport } from '../readBoardColumnReport.ts';
 
@@ -77,9 +78,10 @@ describe(readBoardColumnReport, () => {
       },
     });
 
-    await expect(readBoardColumnReport(request, buildProjectConfiguration(), SPEC)).rejects.toThrow(
-      'returned columns that this cannot read',
-    );
+    const reading = readBoardColumnReport(request, buildProjectConfiguration(), SPEC);
+
+    await expect(reading).rejects.toThrow('returned columns that this cannot read');
+    await expect(reading).rejects.toBeInstanceOf(JiraResponseError);
   });
 
   it('refuses a status id that it cannot read rather than reporting that status uncovered', async () => {
@@ -87,9 +89,30 @@ describe(readBoardColumnReport, () => {
       [CONFIGURATION_PATH]: { json: { columnConfig: { columns: [{ name: 'To Do', statuses: [{ name: 'no id' }] }] } } },
     });
 
-    await expect(readBoardColumnReport(request, buildProjectConfiguration(), SPEC)).rejects.toThrow(
-      'returned columns that this cannot read',
-    );
+    const reading = readBoardColumnReport(request, buildProjectConfiguration(), SPEC);
+
+    await expect(reading).rejects.toThrow('returned columns that this cannot read');
+    await expect(reading).rejects.toBeInstanceOf(JiraResponseError);
+  });
+
+  it('refuses a configuration without a columns array rather than reporting every status uncovered', async () => {
+    const { request } = createFakeRequest({ [CONFIGURATION_PATH]: { json: { columnConfig: {} } } });
+
+    const reading = readBoardColumnReport(request, buildProjectConfiguration(), SPEC);
+
+    await expect(reading).rejects.toThrow("Board 1 returned no 'columns' array.");
+    await expect(reading).rejects.toBeInstanceOf(JiraResponseError);
+  });
+
+  it('refuses a column without a statuses array rather than reading it as empty', async () => {
+    const { request } = createFakeRequest({
+      [CONFIGURATION_PATH]: { json: { columnConfig: { columns: [{ name: 'To Do' }] } } },
+    });
+
+    const reading = readBoardColumnReport(request, buildProjectConfiguration(), SPEC);
+
+    await expect(reading).rejects.toThrow('returned columns that this cannot read');
+    await expect(reading).rejects.toBeInstanceOf(JiraResponseError);
   });
 
   it('throws naming the board when the configuration read is rejected', async () => {
