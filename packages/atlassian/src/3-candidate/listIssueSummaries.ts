@@ -18,7 +18,8 @@ const SEARCH_PAGE_SIZE = 100;
  */
 export async function listIssueSummaries(request: JiraRequest, options: IssueSummaryQuery): Promise<IssueSummary[]> {
   const { jql, limit } = options;
-  if (!Number.isInteger(limit) || limit < 1) throw new RangeError(`A limit is a positive integer. Received ${limit}.`);
+  if (!Number.isSafeInteger(limit) || limit < 1)
+    throw new RangeError(`A limit is a positive integer. Received ${limit}.`);
 
   const summaries: IssueSummary[] = [];
   let nextPageToken: string | undefined;

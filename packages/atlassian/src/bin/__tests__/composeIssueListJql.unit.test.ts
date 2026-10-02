@@ -20,8 +20,8 @@ describe(composeIssueListJql, () => {
   });
 
   it('escapes a quote or backslash in a value rather than ending the string', () => {
-    expect(composeIssueListJql({ projectKey: 'A"B\\C', state: 'all' })).toBe(
-      'project = "A\\"B\\\\C" ORDER BY created DESC',
+    expect(composeIssueListJql({ projectKey: String.raw`A"B\C`, state: 'all' })).toBe(
+      String.raw`project = "A\"B\\C" ORDER BY created DESC`,
     );
   });
 });
