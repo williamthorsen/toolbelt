@@ -197,11 +197,11 @@ importers:
         specifier: 18.0.0
         version: 18.0.0(@typescript-eslint/utils@8.70.1(eslint@10.11.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(@vitest/eslint-plugin@1.6.27(@typescript-eslint/eslint-plugin@8.69.0(@typescript-eslint/parser@8.70.1(eslint@10.11.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.11.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.11.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)(vitest@4.1.11))(eslint@10.11.0(jiti@2.7.0)(supports-color@7.2.0))(readyup@0.38.0(esbuild@0.28.2))(supports-color@7.2.0)(typescript@6.0.3)
       '@williamthorsen/nmr':
-        specifier: 0.40.0
-        version: 0.40.0(prettier@3.9.9)(typescript@6.0.3)(vite@8.3.0(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(vitest@4.1.11)
+        specifier: 0.41.0
+        version: 0.41.0(prettier@3.9.9)(typescript@6.0.3)(vite@8.3.0(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(vitest@4.1.11)
       '@williamthorsen/release-kit':
-        specifier: 13.0.0
-        version: 13.0.0
+        specifier: 13.1.0
+        version: 13.1.0
       '@williamthorsen/strict-lint':
         specifier: 14.1.0
         version: 14.1.0(eslint@10.11.0(jiti@2.7.0)(supports-color@7.2.0))
@@ -1371,8 +1371,8 @@ packages:
     resolution: {integrity: sha512-jMmgLM038PCObjh5iqKZke1oVe62/C46iJxmSFED3TcRMvURPm/y5blW1qR8a9tuPghxjaJyZioodNhMNj7EtA==}
     engines: {node: '>=24.16.0'}
 
-  '@williamthorsen/nmr@0.40.0':
-    resolution: {integrity: sha512-+L7VKrLyGmHJwEwR7bB3KAYIeZsS4yC+fjTa3rqv3vE7QkhOi3waF+fw+8NorHD+oj5s93SPlcVpskz9imxpYQ==}
+  '@williamthorsen/nmr@0.41.0':
+    resolution: {integrity: sha512-FUCMfEvvaVUBjLCNjwRTUSNGtfYZBGqmfM4Ku5FGrannuALRnI+Jn7St7dkKsC2dGZWI9Q2Tg2prHqnw3drQwg==}
     engines: {node: '>=24.16.0', pnpm: '>=11'}
     hasBin: true
     peerDependencies:
@@ -1388,8 +1388,8 @@ packages:
       vitest:
         optional: true
 
-  '@williamthorsen/release-kit@13.0.0':
-    resolution: {integrity: sha512-jP3kluD2Bt23i70S+tDV1f9O5DLxAfDjdxPJOSa/yQheEV3V8tG0uUhrKeJ1uL+qDCO6VUESemDuJUQUlhAIoQ==}
+  '@williamthorsen/release-kit@13.1.0':
+    resolution: {integrity: sha512-KZSqiwNEj/qfElDV2HNYOhTVOcHW7EstsqZlcEVgyQHeAfzb3uT37+nilCDXOV5FiPNpbaEPZVbIg+HcCmUi4g==}
     engines: {node: '>=24.16.0'}
     hasBin: true
 
@@ -2305,8 +2305,8 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  prettier-plugin-sh@0.19.0:
-    resolution: {integrity: sha512-39VXFZH/cOGtcuu8aeSvqp/hhwomOR4QroZUj+jBz2cNb3os9s0sqFZSNlYts6jdtLLDU7D2YT3Z1+abtb7adQ==}
+  prettier-plugin-sh@0.20.2:
+    resolution: {integrity: sha512-4QVyY7Vav0f5i6AVa80SFwUJXaWsAv9t0yUZIivwI0ucxTei6Jwhso/khWqaKDj4QGdwjP2py1nxQrDUeZ0jyQ==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
       prettier: ^3.6.0
@@ -2390,8 +2390,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  sh-syntax@0.6.0:
-    resolution: {integrity: sha512-52VK6z/cdZHv7UURjIcwfBUQZrAhIEEe0bY4lrkfypjnFIKsDZdD3Uaz/dBiw/sF8BeX0Mssv140s8EnrsJ9dQ==}
+  sh-syntax@0.7.0:
+    resolution: {integrity: sha512-sgMyAxpHiGgAaNg+gD3ad41vha24CzIjjghD4mdiON1lUafZPLJNYknyjcXmU4geilPstd69zCKkpccY0YvajA==}
     engines: {node: '>=16.0.0'}
 
   shebang-command@2.0.0:
@@ -3461,12 +3461,12 @@ snapshots:
       diff: 9.0.0
       yaml: 2.9.1
 
-  '@williamthorsen/nmr@0.40.0(prettier@3.9.9)(typescript@6.0.3)(vite@8.3.0(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(vitest@4.1.11)':
+  '@williamthorsen/nmr@0.41.0(prettier@3.9.9)(typescript@6.0.3)(vite@8.3.0(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(vitest@4.1.11)':
     dependencies:
       '@williamthorsen/nmr-core': 0.13.1
       '@williamthorsen/toolbelt.errors': 0.8.1
       glob: 13.0.6
-      prettier-plugin-sh: 0.19.0(prettier@3.9.9)
+      prettier-plugin-sh: 0.20.2(prettier@3.9.9)
       taze: 21.1.0
       typescript: 6.0.3
     optionalDependencies:
@@ -3474,7 +3474,7 @@ snapshots:
       vite: 8.3.0(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)
       vitest: 4.1.11(@types/node@24.13.6)(@vitest/coverage-v8@4.1.11)(vite@8.3.0(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
-  '@williamthorsen/release-kit@13.0.0':
+  '@williamthorsen/release-kit@13.1.0':
     dependencies:
       '@williamthorsen/change-grammar': 0.1.0
       '@williamthorsen/nmr-core': 0.13.1
@@ -4344,11 +4344,11 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-sh@0.19.0(prettier@3.9.9):
+  prettier-plugin-sh@0.20.2(prettier@3.9.9):
     dependencies:
       '@reteps/dockerfmt': 0.5.4
       prettier: 3.9.9
-      sh-syntax: 0.6.0
+      sh-syntax: 0.7.0
 
   prettier@3.9.9: {}
 
@@ -4431,7 +4431,7 @@ snapshots:
 
   semver@7.8.5: {}
 
-  sh-syntax@0.6.0: {}
+  sh-syntax@0.7.0: {}
 
   shebang-command@2.0.0:
     dependencies:
