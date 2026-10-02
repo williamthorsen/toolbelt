@@ -11,7 +11,7 @@ import { readProjectConfiguration } from '../3-candidate/readProjectConfiguratio
 import { DEFAULT_TOKEN_SERVICE } from '../internal/jiraTokenChain.ts';
 import { createSubcommandRequest, CREDENTIAL_OPTIONS } from './createSubcommandRequest.ts';
 import { formatContinuationLine, formatLabelledLine } from './labelled-lines.ts';
-import { loadProjectSpec } from './loadProjectSpec.ts';
+import { type LoadedProjectSpec, loadProjectSpec } from './loadProjectSpec.ts';
 import { renderPlan } from './renderPlan.ts';
 import { renderVerification } from './renderVerification.ts';
 import { EXIT_MISMATCH, EXIT_OK, succeed, type TbJiraEffects } from './subcommand-support.ts';
@@ -22,7 +22,7 @@ import { EXIT_MISMATCH, EXIT_OK, succeed, type TbJiraEffects } from './subcomman
  */
 const BOARD_MOVE_LIMIT = 50;
 
-const CONFIGURE_HELP = `Usage: tb-jira configure-project <KEY> [options]
+const CONFIGURE_HELP = `Usage: tb-jira configure-project [KEY] [options]
 
 Reconcile a Jira project's statuses, workflow transitions, and board features against a declarative spec, then
 report what the server stores afterwards. The run is idempotent: A project already matching the spec is left
@@ -42,9 +42,10 @@ The spec is the consuming repo's file, found by ascending from the working direc
 \`jira-project-spec.json\`; \`--spec\` names one directly.
 
 Resolution orders, each stopping at the first source that supplies a value:
-  site   --site, then JIRA_SITE, then the spec's \`site\`
-  email  --email, then JIRA_EMAIL, then the spec's \`email\`
-  token  --token-stdin, then JIRA_API_TOKEN, then --token-command, then the macOS keychain
+  project  KEY, then the spec's \`projectKey\`
+  site     --site, then JIRA_SITE, then the spec's \`site\`
+  email    --email, then JIRA_EMAIL, then the spec's \`email\`
+  token    --token-stdin, then JIRA_API_TOKEN, then --token-command, then the macOS keychain
 
 The token is read from the keychain under the service \`${DEFAULT_TOKEN_SERVICE}\`, with the email as the
 account. Store one with \`tb-jira auth set\`. The base URL is the \`api.atlassian.com\` gateway, whose cloudId
@@ -80,13 +81,13 @@ export async function runConfigureProject(args: string[], effects: TbJiraEffects
 
   if (values.help === true) return succeed(effects, CONFIGURE_HELP);
 
-  const projectKey = selectProjectKey(positionals);
   const seedBacklog = values['seed-backlog'];
   const loaded = loadProjectSpec(effects, values.spec);
   if (loaded === undefined) {
     throw new Error(`No jira-project-spec.json at or above ${effects.cwd()}. Name one with --spec.`);
   }
   const { spec } = loaded;
+  const projectKey = selectProjectKey(positionals, loaded);
 
   const request = await createSubcommandRequest(effects, values, spec);
 
@@ -126,14 +127,17 @@ export async function runConfigureProject(args: string[], effects: TbJiraEffects
 
 // region | Helpers
 
-/** Chooses the project to reconcile, which is the sole positional. */
-function selectProjectKey(positionals: string[]): string {
+/** Chooses the project to reconcile: the sole positional, or else the spec's `projectKey`. */
+function selectProjectKey(positionals: string[], loaded: LoadedProjectSpec): string {
   if (positionals.length > 1) throw new Error(`Expected one project key. Received ${positionals.length}.`);
 
-  const [projectKey] = positionals;
-  if (projectKey === undefined || projectKey === '') throw new Error('A project key is required.');
+  const [projectKey = ''] = positionals;
+  if (projectKey !== '') return projectKey;
+  if (loaded.spec.projectKey !== undefined) return loaded.spec.projectKey;
 
-  return projectKey;
+  throw new Error(
+    `A project key is required: pass it as an argument, or set \`projectKey\` in the spec; ${loaded.path} does not set \`projectKey\`.`,
+  );
 }
 
 /** Moves every work item in one status off the board, reporting the call that puts them back. */

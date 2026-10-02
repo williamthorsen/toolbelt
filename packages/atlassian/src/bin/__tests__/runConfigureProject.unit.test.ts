@@ -19,6 +19,8 @@ const CONFORMANT_SPEC = JSON.stringify({
   ],
 });
 
+const KEYED_SPEC = JSON.stringify({ ...JSON.parse(CONFORMANT_SPEC), projectKey: KEY });
+
 const RENAMING_SPEC = JSON.stringify({
   site: 'spec.atlassian.net',
   statuses: [
@@ -32,14 +34,32 @@ describe('tb-jira configure-project', () => {
     const harness = createHarness();
 
     await expect(run(harness, ['--help'])).resolves.toBe(0);
-    expect(harness.readOutput()).toContain('Usage: tb-jira configure-project <KEY>');
+    expect(harness.readOutput()).toContain('Usage: tb-jira configure-project [KEY]');
   });
 
-  it('requires a project key', async () => {
+  it('requires a project key when the spec does not set one, naming both sources', async () => {
     const harness = createHarness();
 
     await expect(run(harness, [])).resolves.toBe(2);
-    expect(harness.readErrors()).toContain('A project key is required.');
+    expect(harness.readErrors()).toContain(
+      `A project key is required: pass it as an argument, or set \`projectKey\` in the spec; ${SPEC_PATH} does not set \`projectKey\`.`,
+    );
+  });
+
+  it("reconciles the spec's project when no key is passed", async () => {
+    const harness = createHarness({ files: { [SPEC_PATH]: KEYED_SPEC } });
+
+    await expect(run(harness, [])).resolves.toBe(0);
+    expect(harness.calls.some((call) => call.path === `/rest/api/3/project/${KEY}`)).toBe(true);
+  });
+
+  it("prefers a passed key to the spec's", async () => {
+    const harness = createHarness({
+      files: { [SPEC_PATH]: JSON.stringify({ ...JSON.parse(CONFORMANT_SPEC), projectKey: 'OTHER' }) },
+    });
+
+    await expect(run(harness, [KEY])).resolves.toBe(0);
+    expect(harness.calls.some((call) => call.path.includes('OTHER'))).toBe(false);
   });
 
   it('reports a project that already matches the spec, and exits 0', async () => {
