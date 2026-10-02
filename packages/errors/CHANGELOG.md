@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.8.2 — 2026-10-02
+
+### 📚 Documentation
+
+- Audits the comments in every authored TypeScript, JavaScript, shell, and YAML source and every `tsconfig*.json` against the comment discipline, cutting comments that paraphrase the code or narrate history, rewriting doc descriptions in the third-person indicative, and adding descriptions to the functions, methods, and classes that had none. (#353)
+- Revises READMEs, doc comments, and test names across the repository to follow the current `plain-speech` and writing-preference rules. (#354)
+- Rewords the help text and messages printed by `tb-jira`, `tb-node`, and `tb-secret`, and the advice and skip reasons reported by the adoption kits, to follow the same writing conventions. (#354)
+
 ## 0.8.0 — 2026-09-15
 
 ### 🎉 Features

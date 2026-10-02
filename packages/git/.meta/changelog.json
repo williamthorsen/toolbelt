@@ -1,5 +1,27 @@
 [
   {
+    "version": "0.4.2",
+    "date": "2026-10-02",
+    "sections": [
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Audits the comments in every authored TypeScript, JavaScript, shell, and YAML source and every `tsconfig*.json` against the comment discipline, cutting comments that paraphrase the code or narrate history, rewriting doc descriptions in the third-person indicative, and adding descriptions to the functions, methods, and classes that had none. (#353)",
+            "hash": "a63031711563d43c6909609fad4feccfe497e5d1",
+            "entry": 1
+          },
+          {
+            "description": "Revises READMEs, doc comments, and test names across the repository to follow the current `plain-speech` and writing-preference rules. (#354)",
+            "hash": "b4e08eede95e052f4c27db2640ed6515df14baf4",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.4.1",
     "date": "2026-09-17",
     "sections": [

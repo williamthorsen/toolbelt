@@ -1,5 +1,27 @@
 [
   {
+    "version": "0.8.9",
+    "date": "2026-10-02",
+    "sections": [
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Audits the comments in every authored TypeScript, JavaScript, shell, and YAML source and every `tsconfig*.json` against the comment discipline, cutting comments that paraphrase the code or narrate history, rewriting doc descriptions in the third-person indicative, and adding descriptions to the functions, methods, and classes that had none. (#353)",
+            "hash": "a63031711563d43c6909609fad4feccfe497e5d1",
+            "entry": 1
+          },
+          {
+            "description": "Revises READMEs, doc comments, and test names across the repository to follow the current `plain-speech` and writing-preference rules. (#354)",
+            "hash": "b4e08eede95e052f4c27db2640ed6515df14baf4",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.8.8",
     "date": "2026-09-17",
     "sections": [
@@ -215,7 +237,7 @@
         "items": [
           {
             "description": "Fix slug punctuation and require safe integers (#86)",
-            "body": "- Fixes an issue where the use of certain letters as the slug separator in `slugify` would leave punctuation marks in the result.\r\n- Time-unit conversions, scaling range bounds, normal-distribution interval counts, and array indices in object paths now reject values too large to represent exactly instead of silently losing precision.\r\n- Seeded number generators now produce distinct sequences for seeds at or beyond 2^53, where adjacent seeds previously collapsed onto nearly identical output. A seed of that size saved before this release no longer reproduces the same output.",
+            "body": "- Fixes an issue where the use of certain letters as the slug separator in `slugify` would leave punctuation marks in the result.\n- Time-unit conversions, scaling range bounds, normal-distribution interval counts, and array indices in object paths now reject values too large to represent exactly instead of silently losing precision.\n- Seeded number generators now produce distinct sequences for seeds at or beyond 2^53, where adjacent seeds previously collapsed onto nearly identical output. A seed of that size saved before this release no longer reproduces the same output.",
             "hash": "1e689beec79d9918389ac0067344c0aecaa8d0d5"
           },
           {

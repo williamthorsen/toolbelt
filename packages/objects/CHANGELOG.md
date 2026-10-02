@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.3.2 — 2026-10-02
+
+### 📚 Documentation
+
+- Audits the comments in every authored TypeScript, JavaScript, shell, and YAML source and every `tsconfig*.json` against the comment discipline, cutting comments that paraphrase the code or narrate history, rewriting doc descriptions in the third-person indicative, and adding descriptions to the functions, methods, and classes that had none. (#353)
+- Adds `@category` tags to 50 exported tier functions and classes, and `@stage` tags to the 49 of them that lacked one, which puts those 49 under the check in `stage-tag-alignment`. (#353)
+- Revises READMEs, doc comments, and test names across the repository to follow the current `plain-speech` and writing-preference rules. (#354)
+- Rewords the help text and messages printed by `tb-jira`, `tb-node`, and `tb-secret`, and the advice and skip reasons reported by the adoption kits, to follow the same writing conventions. (#354)
+
 ## 4.3.0 — 2026-09-15
 
 ### 🎉 Features
@@ -264,6 +273,50 @@ All notable changes to this project will be documented in this file.
 - Fix export of isKeyOf (#4)
 
   Fixes the export of `isKeyOf`, which had not been added to the candidate release index.
+
+### 📦 Dependencies
+
+- Adapt to dependency upgrades and bump Node engine to >=24 (#8)
+
+  Upgrades all dependencies to their latest versions, bumps the Node.js engine requirement from >=18.17.0 to >=24.0.0 across all 13 workspace packages, and adapts source code to satisfy new lint rules introduced by the upgraded ESLint plugins. Also upgrades `@williamthorsen/eslint-config-typescript` from 5.12.1 to 5.12.2 to fix ESM import issues in the compiled output.
+
+  Commit details:
+
+  - root|deps: Upgrade all deps to latest version
+
+  - root|refactor: Fix lint
+
+  - root|deps: Upgrade all deps to latest minor version
+
+  - root|deps: Allow unpatchable vulns in dev deps
+
+  - root|refactor: Adapt to dependency upgrades and bump Node engine to >=24
+  * Upgrade eslint-config-typescript to 5.12.2 (fixes ESM import issues, removes need for pnpm patch)
+  * Bump engines.node from >=18.17.0 to >=24.0.0 across all packages
+  * Update CI to Node 24.14.0 and pnpm 10.30.3
+  * Replace .sort() with .toSorted() to satisfy unicorn/no-array-sort
+  * Fix lint errors: remove useless default assignments, redundant type constituents, deprecated re-exports, and empty array args to Set constructor
+  - datetime|tests: Fix locale mismatch in Timestamp test
+
+  Pass the same 'en-US' locale to both the expected-value computation and
+  the method under test. Previously the test used the system default locale
+  for the expected value but explicit 'en-US' for the actual call, which
+  diverged under Node 24's updated Intl formatting.
+
+  - root|refactor: Replace toThrow with toThrowError across all tests
+
+  The vitest/no-alias-methods rule in strict-lint requires the canonical
+  toThrowError() name instead of the toThrow() alias.
+
+  - root|refactor: Fix remaining strict-lint errors
+  * Use import() in vi.mock for vitest/prefer-import-in-mock
+  * Replace expect(typeof x).toBe() with expectTypeOf for vitest/prefer-expect-type-of
+  * Use String.raw for regex escapes for unicorn/prefer-string-raw
+  - root|tooling: Use ws runner to fix recursive build command
+
+  The build script used `pnpm --recursive run build` but no workspace package defines a `build` script — they all use `ws build` through the workspace script runner. Aligns with all other recursive commands.
+
+## 3.2.1 — 2026-03-08
 
 ### 📦 Dependencies
 

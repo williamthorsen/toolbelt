@@ -1,5 +1,27 @@
 [
   {
+    "version": "0.6.2",
+    "date": "2026-10-02",
+    "sections": [
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Revises READMEs, doc comments, and test names across the repository to follow the current `plain-speech` and writing-preference rules. (#354)",
+            "hash": "b4e08eede95e052f4c27db2640ed6515df14baf4",
+            "entry": 1
+          },
+          {
+            "description": "Rewords the help text and messages printed by `tb-jira`, `tb-node`, and `tb-secret`, and the advice and skip reasons reported by the adoption kits, to follow the same writing conventions. (#354)",
+            "hash": "b4e08eede95e052f4c27db2640ed6515df14baf4",
+            "entry": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.6.0",
     "date": "2026-09-15",
     "sections": [

@@ -1,5 +1,79 @@
 [
   {
+    "version": "0.4.0",
+    "date": "2026-10-02",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds the `tb-jira issue list` subcommand, which prints a project's work items newest first, one line each with key, status, and summary, filtered by `--state` (`open` by default, `closed`, or `all`) and capped by `--limit` or `-L` (20 by default). (#357)",
+            "hash": "4e55b244a95a98242c5bae8e32976437618aca5c",
+            "entry": 1
+          },
+          {
+            "description": "Adds an optional `projectKey` field to `jira-project-spec.json`, from which `tb-jira issue list` and `tb-jira configure-project` take the project key when `--project` or the positional key is absent. (#357)",
+            "hash": "4e55b244a95a98242c5bae8e32976437618aca5c",
+            "entry": 2
+          },
+          {
+            "description": "Adds `listIssueSummaries` to the `/candidate` entry point of `@williamthorsen/toolbelt.atlassian`, which returns up to a given number of work items matched by a JQL query, each as `{ key, status, summary }`, following Jira's pages past 100 results. (#357)",
+            "hash": "4e55b244a95a98242c5bae8e32976437618aca5c",
+            "entry": 3
+          },
+          {
+            "description": "Adds `JiraResponseError` to `@williamthorsen/toolbelt.atlassian/candidate`, which the package's read functions throw in place of a plain `Error` when a 2xx response does not have the shape that they read, and which exposes the response's `url` as a field. (#358)",
+            "hash": "89f5f68cdc6f96e1dc1625842459f5fff15586a3",
+            "entry": 4
+          }
+        ]
+      },
+      {
+        "title": "🐛 Bug fixes",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Fixes the issue that `tb-jira` reported a Jira response that it could not read as a usage error, exiting `2` with a `--help` pointer; it now exits `4` and prints the message with the URL that returned the response. (#358)",
+            "hash": "89f5f68cdc6f96e1dc1625842459f5fff15586a3",
+            "entry": 1
+          },
+          {
+            "description": "Fixes the issue that the read functions in `@williamthorsen/toolbelt.atlassian/candidate` read a missing list field as an empty list, which made a search response without `issues` list nothing and a workflow response without `workflows` report a project on 0 workflows. (#358)",
+            "hash": "89f5f68cdc6f96e1dc1625842459f5fff15586a3",
+            "entry": 2
+          },
+          {
+            "description": "Fixes the issue that `applyWorkflowUpdate` read a status read-back without a `values` array as an empty list and wrote every status update again; it now throws `JiraResponseError` instead. (#358)",
+            "hash": "89f5f68cdc6f96e1dc1625842459f5fff15586a3",
+            "entry": 3
+          }
+        ]
+      },
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Audits the comments in every authored TypeScript, JavaScript, shell, and YAML source and every `tsconfig*.json` against the comment discipline, cutting comments that paraphrase the code or narrate history, rewriting doc descriptions in the third-person indicative, and adding descriptions to the functions, methods, and classes that had none. (#353)",
+            "hash": "a63031711563d43c6909609fad4feccfe497e5d1",
+            "entry": 1
+          },
+          {
+            "description": "Revises READMEs, doc comments, and test names across the repository to follow the current `plain-speech` and writing-preference rules. (#354)",
+            "hash": "b4e08eede95e052f4c27db2640ed6515df14baf4",
+            "entry": 1
+          },
+          {
+            "description": "Rewords the help text and messages printed by `tb-jira`, `tb-node`, and `tb-secret`, and the advice and skip reasons reported by the adoption kits, to follow the same writing conventions. (#354)",
+            "hash": "b4e08eede95e052f4c27db2640ed6515df14baf4",
+            "entry": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.3.1",
     "date": "2026-09-17",
     "sections": [

@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.0 — 2026-10-02
+
+### 🎉 Features
+
+- Adds the `tb-jira issue list` subcommand, which prints a project's work items newest first, one line each with key, status, and summary, filtered by `--state` (`open` by default, `closed`, or `all`) and capped by `--limit` or `-L` (20 by default). (#357)
+- Adds an optional `projectKey` field to `jira-project-spec.json`, from which `tb-jira issue list` and `tb-jira configure-project` take the project key when `--project` or the positional key is absent. (#357)
+- Adds `listIssueSummaries` to the `/candidate` entry point of `@williamthorsen/toolbelt.atlassian`, which returns up to a given number of work items matched by a JQL query, each as `{ key, status, summary }`, following Jira's pages past 100 results. (#357)
+- Adds `JiraResponseError` to `@williamthorsen/toolbelt.atlassian/candidate`, which the package's read functions throw in place of a plain `Error` when a 2xx response does not have the shape that they read, and which exposes the response's `url` as a field. (#358)
+
+### 🐛 Bug fixes
+
+- Fixes the issue that `tb-jira` reported a Jira response that it could not read as a usage error, exiting `2` with a `--help` pointer; it now exits `4` and prints the message with the URL that returned the response. (#358)
+- Fixes the issue that the read functions in `@williamthorsen/toolbelt.atlassian/candidate` read a missing list field as an empty list, which made a search response without `issues` list nothing and a workflow response without `workflows` report a project on 0 workflows. (#358)
+- Fixes the issue that `applyWorkflowUpdate` read a status read-back without a `values` array as an empty list and wrote every status update again; it now throws `JiraResponseError` instead. (#358)
+
+### 📚 Documentation
+
+- Audits the comments in every authored TypeScript, JavaScript, shell, and YAML source and every `tsconfig*.json` against the comment discipline, cutting comments that paraphrase the code or narrate history, rewriting doc descriptions in the third-person indicative, and adding descriptions to the functions, methods, and classes that had none. (#353)
+- Revises READMEs, doc comments, and test names across the repository to follow the current `plain-speech` and writing-preference rules. (#354)
+- Rewords the help text and messages printed by `tb-jira`, `tb-node`, and `tb-secret`, and the advice and skip reasons reported by the adoption kits, to follow the same writing conventions. (#354)
+
 ## 0.3.1 — 2026-09-17
 
 ### 🐛 Bug fixes

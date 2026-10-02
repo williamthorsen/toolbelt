@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.1 — 2026-10-02
+
+### 📚 Documentation
+
+- Audits the comments in every authored TypeScript, JavaScript, shell, and YAML source and every `tsconfig*.json` against the comment discipline, cutting comments that paraphrase the code or narrate history, rewriting doc descriptions in the third-person indicative, and adding descriptions to the functions, methods, and classes that had none. (#353)
+- Adds `@category` tags to 50 exported tier functions and classes, and `@stage` tags to the 49 of them that lacked one, which puts those 49 under the check in `stage-tag-alignment`. (#353)
+- Revises READMEs, doc comments, and test names across the repository to follow the current `plain-speech` and writing-preference rules. (#354)
+
 ## 0.2.0 — 2026-09-17
 
 ### 🎉 Features
