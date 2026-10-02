@@ -6,25 +6,15 @@ import { buildReconciliationPlan } from '../3-candidate/buildReconciliationPlan.
 import { buildVerificationReport } from '../3-candidate/buildVerificationReport.ts';
 import { listIssueKeys } from '../3-candidate/listIssueKeys.ts';
 import { moveIssuesToBacklog } from '../3-candidate/moveIssuesToBacklog.ts';
-import { parseProjectSpec } from '../3-candidate/parseProjectSpec.ts';
 import { readBoardColumnReport } from '../3-candidate/readBoardColumnReport.ts';
 import { readProjectConfiguration } from '../3-candidate/readProjectConfiguration.ts';
-import { resolveJiraBaseUrl } from '../3-candidate/resolveJiraBaseUrl.ts';
-import { resolveJiraEmail } from '../3-candidate/resolveJiraEmail.ts';
-import { resolveJiraSite } from '../3-candidate/resolveJiraSite.ts';
-import { resolveJiraToken } from '../3-candidate/resolveJiraToken.ts';
 import { DEFAULT_TOKEN_SERVICE } from '../internal/jiraTokenChain.ts';
+import { createSubcommandRequest, CREDENTIAL_OPTIONS } from './createSubcommandRequest.ts';
 import { formatContinuationLine, formatLabelledLine } from './labelled-lines.ts';
+import { loadProjectSpec } from './loadProjectSpec.ts';
 import { renderPlan } from './renderPlan.ts';
 import { renderVerification } from './renderVerification.ts';
-import {
-  createDeferredStore,
-  EXIT_MISMATCH,
-  EXIT_OK,
-  stripOneTrailingNewline,
-  succeed,
-  type TbJiraEffects,
-} from './subcommand-support.ts';
+import { EXIT_MISMATCH, EXIT_OK, succeed, type TbJiraEffects } from './subcommand-support.ts';
 
 /**
  * What `POST /rest/agile/1.0/board/{boardId}/issue` accepts in one call, which bounds the undo that the
@@ -80,14 +70,10 @@ export async function runConfigureProject(args: string[], effects: TbJiraEffects
     allowPositionals: true,
     args,
     options: {
+      ...CREDENTIAL_OPTIONS,
       'dry-run': { type: 'boolean', default: false },
-      email: { type: 'string' },
       help: { type: 'boolean', short: 'h' },
       'seed-backlog': { type: 'string' },
-      site: { type: 'string' },
-      spec: { type: 'string' },
-      'token-command': { type: 'string' },
-      'token-stdin': { type: 'boolean', default: false },
     },
     strict: true,
   });
@@ -96,24 +82,13 @@ export async function runConfigureProject(args: string[], effects: TbJiraEffects
 
   const projectKey = selectProjectKey(positionals);
   const seedBacklog = values['seed-backlog'];
-  const spec = parseProjectSpec(effects.readTextFile(values.spec ?? effects.findSpecPath(effects.cwd())));
+  const loaded = loadProjectSpec(effects, values.spec);
+  if (loaded === undefined) {
+    throw new Error(`No jira-project-spec.json at or above ${effects.cwd()}. Name one with --spec.`);
+  }
+  const { spec } = loaded;
 
-  const email = resolveJiraEmail({ email: values.email, env: effects.env, fallback: spec.email });
-  const request = effects.createRequest({
-    baseUrl: await resolveJiraBaseUrl({
-      fetch: effects.fetch,
-      site: resolveJiraSite({ env: effects.env, fallback: spec.site, site: values.site }),
-    }),
-    email,
-    fetch: effects.fetch,
-    token: resolveJiraToken({
-      account: email,
-      env: effects.env,
-      store: createDeferredStore(effects),
-      token: values['token-stdin'] ? stripOneTrailingNewline(await effects.readStdin()) : undefined,
-      tokenCommand: values['token-command'],
-    }),
-  });
+  const request = await createSubcommandRequest(effects, values, spec);
 
   const configuration = await readProjectConfiguration(request, projectKey);
   const plan = buildReconciliationPlan(spec, configuration);

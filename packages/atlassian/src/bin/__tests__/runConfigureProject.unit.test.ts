@@ -56,6 +56,13 @@ describe('tb-jira configure-project', () => {
     await expect(run(harness, [KEY])).resolves.toBe(0);
   });
 
+  it('reports a missing spec, naming the directory searched and the flag that skips the search', async () => {
+    const harness = createHarness({ files: {} });
+
+    await expect(run(harness, [KEY])).resolves.toBe(2);
+    expect(harness.readErrors()).toContain('No jira-project-spec.json at or above /repo. Name one with --spec.');
+  });
+
   it('reads the spec that --spec names', async () => {
     const harness = createHarness({ files: { '/elsewhere/spec.json': CONFORMANT_SPEC } });
 

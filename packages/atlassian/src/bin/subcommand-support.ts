@@ -27,8 +27,8 @@ export interface TbJiraEffects {
   readonly cwd: () => string;
   readonly env: Record<string, string | undefined>;
   readonly fetch: typeof globalThis.fetch;
-  /** Finds the consuming repo's project spec by ascending from a directory. */
-  readonly findSpecPath: (fromDir: string) => string;
+  /** Finds the consuming repo's project spec by ascending from a directory, returning `undefined` if none is found. */
+  readonly findSpecPath: (fromDir: string) => string | undefined;
   readonly isStdinTty: () => boolean;
   /** Reads a token from the terminal, echoing nothing and asking twice. */
   readonly promptSecret: () => Promise<string>;

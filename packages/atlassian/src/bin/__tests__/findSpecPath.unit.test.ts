@@ -29,11 +29,9 @@ describe(findSpecPath, () => {
     );
   });
 
-  it('names the directory from which it searched, and the flag that skips the search', () => {
+  it('returns undefined when no ancestor contains a spec', () => {
     using tree = createTempTree({ '.keep': '' });
-    const startDir = path.join(tree.dir, 'nested');
 
-    expect(() => findSpecPath(startDir)).toThrow(/jira-project-spec\.json/);
-    expect(() => findSpecPath(startDir)).toThrow(/--spec/);
+    expect(findSpecPath(path.join(tree.dir, 'nested'))).toBeUndefined();
   });
 });
