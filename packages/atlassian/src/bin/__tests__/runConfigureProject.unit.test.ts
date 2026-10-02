@@ -164,7 +164,7 @@ describe('tb-jira configure-project', () => {
     });
   });
 
-  describe('the credential', () => {
+  describe('an unreadable or refused project', () => {
     it('exits 4 without a help pointer when a response cannot be read', async () => {
       const harness = createHarness({
         routes: { [`GET /rest/api/3/project/${KEY}`]: { json: { style: 'next-gen' } } },
@@ -184,7 +184,9 @@ describe('tb-jira configure-project', () => {
       expect(harness.readErrors()).toContain(`Project ${KEY} has no board.`);
       expect(harness.readErrors()).toContain('Try `tb-jira configure-project --help`.');
     });
+  });
 
+  describe('the credential', () => {
     it('exits 4 naming the call that Jira rejected', async () => {
       const harness = createHarness({
         routes: { 'GET /rest/api/3/project/PROJ': { json: { errorMessages: ['Unauthorized'] }, status: 401 } },
