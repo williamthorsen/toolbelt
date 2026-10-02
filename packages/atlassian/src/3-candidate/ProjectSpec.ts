@@ -10,6 +10,8 @@ export interface ProjectSpec {
   readonly boardFeatures?: Readonly<Record<string, BoardFeatureRequest>> | undefined;
   /** The last source in the email resolution chain. */
   readonly email?: string | undefined;
+  /** The last source in the project-key resolution chain. */
+  readonly projectKey?: string | undefined;
   /** The last source in the site resolution chain. */
   readonly site?: string | undefined;
   readonly statuses: readonly SpecStatus[];

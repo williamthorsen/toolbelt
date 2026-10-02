@@ -31,6 +31,22 @@ describe(parseProjectSpec, () => {
     expect(spec.site).toBeUndefined();
   });
 
+  it('reads the optional project key', () => {
+    const spec = parseProjectSpec(JSON.stringify({ ...prototypeSpec, projectKey: 'PROJ' }));
+
+    expect(spec.projectKey).toBe('PROJ');
+  });
+
+  it('reports no project key when the spec has none', () => {
+    expect(parseProjectSpec(JSON.stringify(prototypeSpec)).projectKey).toBeUndefined();
+  });
+
+  it.each(['', '  ', 42])('refuses a project key of %j', (projectKey) => {
+    expect(() => parseProjectSpec(JSON.stringify({ ...prototypeSpec, projectKey }))).toThrow(
+      '`projectKey` is a non-empty string.',
+    );
+  });
+
   it('throws when the text is not JSON', () => {
     expect(() => parseProjectSpec('{ "statuses": [')).toThrow('A spec is JSON');
   });
