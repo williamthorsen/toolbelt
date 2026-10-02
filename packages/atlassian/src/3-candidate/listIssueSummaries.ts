@@ -2,6 +2,7 @@ import { isRecord } from '../internal/isRecord.ts';
 import { readArrayField } from '../internal/readArrayField.ts';
 import { readNextPageToken } from '../internal/readNextPageToken.ts';
 import type { JiraRequest } from './createTokenTransport.ts';
+import { JiraResponseError } from './JiraResponseError.ts';
 import { requestOk } from './requestOk.ts';
 
 /** The most that the search returns in one page when fields beyond the key are requested. */
@@ -37,13 +38,19 @@ export async function listIssueSummaries(request: JiraRequest, options: IssueSum
       path: '/rest/api/3/search/jql',
     });
 
-    const issues = readArrayField(response.json, 'issues') ?? [];
+    const issues = readArrayField(response.json, 'issues');
+    if (issues === undefined) {
+      throw new JiraResponseError({ message: `Search '${jql}' returned no 'issues' array.`, url: response.url });
+    }
     const page = issues.flatMap((issue) => {
       const summary = readIssueSummary(issue);
       return summary === undefined ? [] : [summary];
     });
     if (page.length !== issues.length) {
-      throw new Error(`Search '${jql}' returned work items that this cannot read.`);
+      throw new JiraResponseError({
+        message: `Search '${jql}' returned work items that this cannot read.`,
+        url: response.url,
+      });
     }
     summaries.push(...page.slice(0, limit - summaries.length));
 

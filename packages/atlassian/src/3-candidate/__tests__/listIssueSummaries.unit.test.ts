@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { createFakeRequest } from '../../test-utils/createFakeRequest.ts';
+import { JiraResponseError } from '../JiraResponseError.ts';
 import { listIssueSummaries } from '../listIssueSummaries.ts';
 
 const SEARCH_PATH = 'POST /rest/api/3/search/jql';
@@ -89,9 +90,19 @@ describe(listIssueSummaries, () => {
   ])('refuses a work item with %s rather than dropping it', async (_case, issue) => {
     const { request } = createFakeRequest({ [SEARCH_PATH]: { json: { issues: [issue] } } });
 
-    await expect(listIssueSummaries(request, { jql: JQL, limit: 20 })).rejects.toThrow(
-      'returned work items that this cannot read',
-    );
+    const reading = listIssueSummaries(request, { jql: JQL, limit: 20 });
+
+    await expect(reading).rejects.toThrow('returned work items that this cannot read');
+    await expect(reading).rejects.toBeInstanceOf(JiraResponseError);
+  });
+
+  it('refuses a response without an issues array rather than reading it as no matches', async () => {
+    const { request } = createFakeRequest({ [SEARCH_PATH]: { json: {} } });
+
+    const reading = listIssueSummaries(request, { jql: JQL, limit: 20 });
+
+    await expect(reading).rejects.toThrow("returned no 'issues' array");
+    await expect(reading).rejects.toBeInstanceOf(JiraResponseError);
   });
 
   it.each([0, -1, 1.5])('refuses a limit of %d before issuing any request', async (limit) => {

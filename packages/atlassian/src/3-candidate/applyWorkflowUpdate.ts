@@ -3,6 +3,7 @@ import { normalizeStatusName } from '../internal/normalizeStatusName.ts';
 import { readArrayField } from '../internal/readArrayField.ts';
 import { buildWorkflowUpdatePayload } from './buildWorkflowUpdatePayload.ts';
 import type { JiraRequest } from './createTokenTransport.ts';
+import { JiraResponseError } from './JiraResponseError.ts';
 import type { ProjectConfiguration } from './ProjectConfiguration.ts';
 import type { ReconciliationPlan, StatusUpdate } from './ReconciliationPlan.ts';
 import { requestOk } from './requestOk.ts';
@@ -69,7 +70,14 @@ async function correctStatuses(
     path: `/rest/api/3/statuses/search?projectId=${projectId}&maxResults=${STATUS_PAGE_SIZE}`,
   });
 
-  const live = readArrayField(response.json, 'values') ?? [];
+  // A missing list would report every update stale and write each one again, so it is refused instead.
+  const live = readArrayField(response.json, 'values');
+  if (live === undefined) {
+    throw new JiraResponseError({
+      message: `Project ${projectId} returned no 'values' array of statuses.`,
+      url: response.url,
+    });
+  }
   const stale = statusUpdates.filter((update) => live.every((status) => !hasLanded(status, update)));
   if (stale.length === 0) return [];
 

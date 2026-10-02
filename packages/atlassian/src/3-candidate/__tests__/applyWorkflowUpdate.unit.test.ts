@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createFakeRequest, type FakeRoutes } from '../../test-utils/createFakeRequest.ts';
 import { buildProjectConfiguration } from '../../test-utils/projectConfiguration.ts';
 import { applyWorkflowUpdate } from '../applyWorkflowUpdate.ts';
+import { JiraResponseError } from '../JiraResponseError.ts';
 import type { ReconciliationPlan, StatusUpdate } from '../ReconciliationPlan.ts';
 
 const UPDATE_PATH = '/rest/api/3/workflows/update';
@@ -97,6 +98,17 @@ describe(applyWorkflowUpdate, () => {
 
     expect(result).toStrictEqual({ correctedStatuses: [], written: true });
     expect(calls.map((call) => call.path)).toStrictEqual([UPDATE_PATH]);
+  });
+
+  it('refuses a read-back without a values array rather than writing every status again', async () => {
+    const routes = { ...buildRoutes([]), [`GET ${SEARCH_PATH}`]: { json: {} } };
+    const { calls, request } = createFakeRequest(routes);
+
+    const writing = applyWorkflowUpdate(request, buildProjectConfiguration(), buildPlan([RENAME]));
+
+    await expect(writing).rejects.toThrow("returned no 'values' array of statuses");
+    await expect(writing).rejects.toBeInstanceOf(JiraResponseError);
+    expect(calls.map((call) => call.method)).not.toContain('PUT');
   });
 
   it('throws when the workflow write is rejected, leaving the status API untouched', async () => {

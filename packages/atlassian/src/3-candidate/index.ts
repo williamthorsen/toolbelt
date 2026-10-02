@@ -13,6 +13,7 @@ export {
 } from './createTokenTransport.ts';
 export { findJiraTokenSource, type JiraTokenSource } from './findJiraTokenSource.ts';
 export { type JiraRejectionReason, JiraRequestError, type JiraRequestErrorOptions } from './JiraRequestError.ts';
+export { JiraResponseError, type JiraResponseErrorOptions } from './JiraResponseError.ts';
 export { JiraTransportError, type JiraTransportErrorOptions } from './JiraTransportError.ts';
 export { listIssueKeys } from './listIssueKeys.ts';
 export { type IssueSummary, type IssueSummaryQuery, listIssueSummaries } from './listIssueSummaries.ts';
