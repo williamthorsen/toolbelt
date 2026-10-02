@@ -1,3 +1,5 @@
+<!-- readme-type: library -->
+
 # @williamthorsen/toolbelt.atlassian
 
 Utilities for working with Atlassian Cloud.
@@ -18,7 +20,7 @@ Jira, Confluence, and Bitbucket Cloud. A scoped API token authenticates one prod
 
 ## CLI
 
-The package provides a `tb-jira` command exposing the reconciler and the credential to a shell caller.
+The package provides a `tb-jira` command exposing the reconciler, a work-item listing, and the credential to a shell caller.
 
 ```sh
 pnpm add --global @williamthorsen/toolbelt.atlassian   # puts tb-jira on PATH
@@ -27,12 +29,13 @@ npx @williamthorsen/toolbelt.atlassian configure-project THOR --dry-run
 
 `tb-jira --help`, each subcommand's `--help`, and `tb-jira --version` report the surface and the installed version.
 
-| Subcommand                      | Effect                                                                     |
-| ------------------------------- | -------------------------------------------------------------------------- |
-| `tb-jira auth delete`           | Removes the stored token                                                   |
-| `tb-jira auth set`              | Stores a token, replacing one already stored                               |
-| `tb-jira auth status`           | Reports which source would supply the token, printing the token nowhere    |
-| `tb-jira configure-project KEY` | Reconciles a project against the spec, then reports what the server stores |
+| Subcommand                        | Effect                                                                     |
+| --------------------------------- | -------------------------------------------------------------------------- |
+| `tb-jira auth delete`             | Removes the stored token                                                   |
+| `tb-jira auth set`                | Stores a token, replacing one already stored                               |
+| `tb-jira auth status`             | Reports which source would supply the token, printing the token nowhere    |
+| `tb-jira configure-project [KEY]` | Reconciles a project against the spec, then reports what the server stores |
+| `tb-jira issue list`              | Lists a project's work items, newest first                                 |
 
 Jira Cloud only, and team-managed projects only. A company-managed project is refused rather than reconciled: A status renamed there is renamed in every project on the site that uses it. `auth delete` and `auth set` additionally require macOS, the keychain being the one credential store.
 
@@ -58,6 +61,29 @@ The run prints the plan before it writes anything, and each write as it complete
 
 `--seed-backlog` selects by status rather than by board membership. It moves every work item in that status, and a repeat run re-sends the same keys, which Jira accepts as a no-op. The run reports the count that it moved and prints the undo: `POST /rest/agile/1.0/board/{boardId}/issue`, which takes at most 50 keys per call and needs only `write:board-scope:jira-software`, already in the grant below. The seed prints no keys of its own; instead, it prints the query that recovers them. Because a move leaves an item's status alone, that query still selects the same set.
 
+When the key is omitted, the run reconciles the project named by the spec's `projectKey`.
+
+### Listing work items
+
+```sh
+tb-jira issue list                                  # the spec's project, 20 open work items
+tb-jira issue list --project PROJ --limit 10        # another project, 10 work items
+tb-jira issue list --project PROJ -L 10 --state all # every status, Done included
+```
+
+| Option                  | Effect                                                    |
+| ----------------------- | --------------------------------------------------------- |
+| `--email <address>`     | Atlassian account email, which names the keychain account |
+| `-L`, `--limit <n>`     | Maximum number of work items to list (default: 20)        |
+| `--project <key>`       | Project key, rather than the spec's `projectKey`          |
+| `--site <host>`         | Jira site, such as `acme.atlassian.net`                   |
+| `--spec <path>`         | Spec file, rather than the upward search                  |
+| `--state <state>`       | `open` (default), `closed`, or `all`                      |
+| `--token-command <cmd>` | Shell line printing the API token                         |
+| `--token-stdin`         | Reads the API token from stdin                            |
+
+Each work item prints on one line, newest first: key, status, and summary, aligned in columns. `--state` selects as `gh issue list` does: `open` excludes the Done status category, `closed` keeps only it, and `all` applies no status filter. A listing with no matches prints nothing and exits 0.
+
 ### Managing the credential
 
 ```sh
@@ -79,15 +105,18 @@ tb-jira auth delete
 
 The consuming repo owns the file. `tb-jira` ascends from the working directory looking for `jira-project-spec.json` and takes the first one that it reaches, so one spec at a repo root serves every directory under it. `--spec` names one directly and skips the search.
 
+`configure-project` requires a spec. `issue list` does not: When the search finds none, the project, site, and email come from the flags and the environment alone.
+
 ### Resolution orders
 
 Each chain stops at the first source that supplies a value.
 
-| Value | Order                                                                             |
-| ----- | --------------------------------------------------------------------------------- |
-| site  | `--site`, then `JIRA_SITE`, then the spec's `site`                                |
-| email | `--email`, then `JIRA_EMAIL`, then the spec's `email`                             |
-| token | `--token-stdin`, then `JIRA_API_TOKEN`, then `--token-command`, then the keychain |
+| Value   | Order                                                                                         |
+| ------- | --------------------------------------------------------------------------------------------- |
+| project | `--project` for `issue list` or the `KEY` argument for `configure-project`, then `projectKey` |
+| site    | `--site`, then `JIRA_SITE`, then the spec's `site`                                            |
+| email   | `--email`, then `JIRA_EMAIL`, then the spec's `email`                                         |
+| token   | `--token-stdin`, then `JIRA_API_TOKEN`, then `--token-command`, then the keychain             |
 
 The keychain item is the service `toolbelt.atlassian.jira` with the email as the account, which `tb-jira auth set` writes and `tb-secret set toolbelt.atlassian.jira --account you@example.com` writes too. It is opened only when the earlier sources miss, so a run authenticated from the environment never opens the keychain and raises no access prompt.
 
@@ -227,6 +256,7 @@ A spec declares which statuses a Jira project should have and which board featur
 
 ```json
 {
+  "projectKey": "PROJ",
   "site": "acme.atlassian.net",
   "email": "you@example.com",
   "statuses": [
@@ -241,7 +271,7 @@ A spec declares which statuses a Jira project should have and which board featur
 
 `statuses` is required and non-empty. Each entry needs a `name` and a `category` of `TODO`, `IN_PROGRESS`, or `DONE`. Its `aliases` are the live names that also resolve to it, which is how a status is renamed: The new name goes in `name` and the current one in `aliases`. Names match case-insensitively, since Jira reports one status under two casings across endpoints, and no name or alias may be claimed by two entries.
 
-`boardFeatures` maps a feature key to `ENABLED` or `DISABLED`. Jira also reports `COMING_SOON`, which a spec may not request. `site` and `email` are the last source in their resolution chains.
+`boardFeatures` maps a feature key to `ENABLED` or `DISABLED`. Jira also reports `COMING_SOON`, which a spec may not request. `projectKey`, `site`, and `email` are optional, and each is the last source in its resolution chain.
 
 Jira locks some features, such as one belonging to a product that the site does not have. A write against a locked feature returns `200` and changes nothing, so a spec naming one is reported rather than written: The plan prints it as `locked`, the closing report marks it `LOCK`, and the exit code is unaffected. Without that, the toggle would be re-planned on every run and the project would never match.
 
@@ -278,6 +308,7 @@ Each takes the transport as its first argument and constructs none of its own. A
 | `applyWorkflowUpdate(request, configuration, plan)`   | The reconciled graph, then the statuses back, correcting through the status API any that the workflow write did not apply |
 | `applyBoardFeatures(request, configuration, plan)`    | One call per board-feature toggle in the plan                                                                             |
 | `listIssueKeys(request, jql)`                         | Every work-item key matched by a JQL query, following the search's page token                                             |
+| `listIssueSummaries(request, { jql, limit })`         | Up to `limit` work items matched by a JQL query, each as its key, status name, and summary                                |
 | `moveIssuesToBacklog(request, boardId, keys)`         | Work items off the board and into the backlog, in batches of 50                                                           |
 | `readBoardColumnReport(request, configuration, spec)` | The board's columns, reporting coverage and order                                                                         |
 | `buildVerificationReport(configuration, spec)`        | Nothing: It compares a configuration already read against the spec                                                        |
