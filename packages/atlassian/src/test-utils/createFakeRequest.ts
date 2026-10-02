@@ -64,7 +64,7 @@ export interface FakeRouteSequence {
   readonly sequence: readonly FakeResponse[];
 }
 
-/** Routes keyed by method and path, such as `GET /rest/api/3/project/THOR`. */
+/** Routes keyed by method and path, such as `GET /rest/api/3/project/PROJ`. */
 export type FakeRoutes = Record<string, FakeRoute>;
 
 export interface FakeTransport {

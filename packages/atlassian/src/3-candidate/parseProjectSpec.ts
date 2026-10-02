@@ -20,6 +20,7 @@ export function parseProjectSpec(text: string): ProjectSpec {
   return {
     boardFeatures: readBoardFeatures(document['boardFeatures']),
     email: readOptionalString(document['email'], 'email'),
+    projectKey: readOptionalString(document['projectKey'], 'projectKey'),
     site: readOptionalString(document['site'], 'site'),
     statuses: readStatuses(document['statuses']),
   };

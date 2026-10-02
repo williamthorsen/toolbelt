@@ -18,8 +18,8 @@ const CLOUD_ID = 'cloud-1';
  */
 export const HARNESS_BASE_URL = `https://api.atlassian.com/ex/jira/${CLOUD_ID}`;
 
-/** Jira reads the workflow graph through a POST, since the request contains the issue types in a body. */
-const READ_ONLY_POSTS = new Set(['/rest/api/3/workflows']);
+/** Jira reads the workflow graph and runs a search through a POST, since each request contains its query in a body. */
+const READ_ONLY_POSTS = new Set(['/rest/api/3/search/jql', '/rest/api/3/workflows']);
 
 export const HARNESS_VERSION = '9.9.9';
 
@@ -91,7 +91,11 @@ export function createTbJiraHarness(options: HarnessOptions = {}): TbJiraHarness
       },
       // The real ascent is covered by `findSpecPath`'s own test; here the path is composed, and `files`
       // decides whether a spec is there.
-      findSpecPath: (fromDir) => path.join(fromDir, 'jira-project-spec.json'),
+      findSpecPath: (fromDir) => {
+        const specPath = path.join(fromDir, 'jira-project-spec.json');
+
+        return files[specPath] === undefined ? undefined : specPath;
+      },
       isStdinTty: () => isTty,
       promptSecret: () => Promise.resolve(prompted),
       readStdin: () => Promise.resolve(stdin),

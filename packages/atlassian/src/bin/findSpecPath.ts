@@ -5,12 +5,11 @@ const SPEC_FILENAME = 'jira-project-spec.json';
 
 /**
  * Finds the project spec that the consuming repo owns, ascending from a directory to the filesystem root and
- * returning the first one that it reaches. Throws if no ancestor contains one, naming the directory from which
- * it searched.
+ * returning the first one that it reaches, or `undefined` when no ancestor contains one.
  *
  * @internal
  */
-export function findSpecPath(startDir: string): string {
+export function findSpecPath(startDir: string): string | undefined {
   let dir = path.resolve(startDir);
 
   for (;;) {
@@ -18,7 +17,7 @@ export function findSpecPath(startDir: string): string {
     if (fs.existsSync(specPath)) return specPath;
 
     const parent = path.dirname(dir);
-    if (parent === dir) throw new Error(`No ${SPEC_FILENAME} at or above ${startDir}. Name one with --spec.`);
+    if (parent === dir) return undefined;
 
     dir = parent;
   }

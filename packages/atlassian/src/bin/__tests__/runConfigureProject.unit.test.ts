@@ -5,7 +5,7 @@ import { runTbJira } from '../runTbJira.ts';
 import { createTbJiraHarness, HARNESS_BASE_URL, type HarnessOptions } from '../test-utils/createTbJiraHarness.ts';
 
 const BOARD_ID = 1;
-const KEY = 'THOR';
+const KEY = 'PROJ';
 const PROJECT_ID = '10000';
 const SPEC_PATH = '/repo/jira-project-spec.json';
 
@@ -18,6 +18,8 @@ const CONFORMANT_SPEC = JSON.stringify({
     { category: 'DONE', name: 'Done' },
   ],
 });
+
+const KEYED_SPEC = JSON.stringify({ ...JSON.parse(CONFORMANT_SPEC), projectKey: KEY });
 
 const RENAMING_SPEC = JSON.stringify({
   site: 'spec.atlassian.net',
@@ -32,14 +34,32 @@ describe('tb-jira configure-project', () => {
     const harness = createHarness();
 
     await expect(run(harness, ['--help'])).resolves.toBe(0);
-    expect(harness.readOutput()).toContain('Usage: tb-jira configure-project <KEY>');
+    expect(harness.readOutput()).toContain('Usage: tb-jira configure-project [KEY]');
   });
 
-  it('requires a project key', async () => {
+  it('requires a project key when the spec does not set one, naming both sources', async () => {
     const harness = createHarness();
 
     await expect(run(harness, [])).resolves.toBe(2);
-    expect(harness.readErrors()).toContain('A project key is required.');
+    expect(harness.readErrors()).toContain(
+      `A project key is required: pass it as an argument, or set \`projectKey\` in the spec; ${SPEC_PATH} does not set \`projectKey\`.`,
+    );
+  });
+
+  it("reconciles the spec's project when no key is passed", async () => {
+    const harness = createHarness({ files: { [SPEC_PATH]: KEYED_SPEC } });
+
+    await expect(run(harness, [])).resolves.toBe(0);
+    expect(harness.calls.some((call) => call.path === `/rest/api/3/project/${KEY}`)).toBe(true);
+  });
+
+  it("prefers a passed key to the spec's", async () => {
+    const harness = createHarness({
+      files: { [SPEC_PATH]: JSON.stringify({ ...JSON.parse(CONFORMANT_SPEC), projectKey: 'OTHER' }) },
+    });
+
+    await expect(run(harness, [KEY])).resolves.toBe(0);
+    expect(harness.calls.some((call) => call.path.includes('OTHER'))).toBe(false);
   });
 
   it('reports a project that already matches the spec, and exits 0', async () => {
@@ -54,6 +74,13 @@ describe('tb-jira configure-project', () => {
     const harness = createHarness({ cwd: '/repo', files: { [SPEC_PATH]: CONFORMANT_SPEC } });
 
     await expect(run(harness, [KEY])).resolves.toBe(0);
+  });
+
+  it('reports a missing spec, naming the directory searched and the flag that skips the search', async () => {
+    const harness = createHarness({ files: {} });
+
+    await expect(run(harness, [KEY])).resolves.toBe(2);
+    expect(harness.readErrors()).toContain('No jira-project-spec.json at or above /repo. Name one with --spec.');
   });
 
   it('reads the spec that --spec names', async () => {
@@ -140,7 +167,7 @@ describe('tb-jira configure-project', () => {
   describe('the credential', () => {
     it('exits 4 naming the call that Jira rejected', async () => {
       const harness = createHarness({
-        routes: { 'GET /rest/api/3/project/THOR': { json: { errorMessages: ['Unauthorized'] }, status: 401 } },
+        routes: { 'GET /rest/api/3/project/PROJ': { json: { errorMessages: ['Unauthorized'] }, status: 401 } },
       });
 
       await expect(run(harness, [KEY])).resolves.toBe(4);
@@ -150,7 +177,7 @@ describe('tb-jira configure-project', () => {
     it('exits 4 naming the scope shortfall and the URL when the gateway rejects the token', async () => {
       const harness = createHarness({
         routes: {
-          'GET /rest/api/3/project/THOR': {
+          'GET /rest/api/3/project/PROJ': {
             json: { code: 401, message: 'Unauthorized; scope does not match' },
             status: 401,
           },
@@ -159,7 +186,7 @@ describe('tb-jira configure-project', () => {
 
       await expect(run(harness, [KEY])).resolves.toBe(4);
       expect(harness.readErrors()).toContain('The token lacks a scope required by this endpoint.');
-      expect(harness.readErrors()).toContain(`${HARNESS_BASE_URL}/rest/api/3/project/THOR`);
+      expect(harness.readErrors()).toContain(`${HARNESS_BASE_URL}/rest/api/3/project/PROJ`);
     });
 
     it('reads the token from stdin, dropping the newline that a shell adds', async () => {
@@ -283,7 +310,7 @@ async function run(harness: ReturnType<typeof createTbJiraHarness>, args: string
 /** Builds every route walked by a whole run, against a team-managed project on one workflow. */
 function buildRoutes(): FakeRoutes {
   return {
-    'GET /rest/agile/1.0/board': { json: { values: [{ id: BOARD_ID, name: 'THOR board' }] } },
+    'GET /rest/agile/1.0/board': { json: { values: [{ id: BOARD_ID, name: 'PROJ board' }] } },
     [`GET /rest/agile/1.0/board/${BOARD_ID}/configuration`]: {
       json: {
         columnConfig: {
@@ -298,10 +325,10 @@ function buildRoutes(): FakeRoutes {
       json: { features: [{ feature: 'jsw.agility.backlog', state: 'DISABLED' }] },
     },
     [`POST /rest/agile/1.0/backlog/${BOARD_ID}/issue`]: { status: 204 },
-    'GET /rest/api/3/project/THOR': { json: { id: PROJECT_ID, key: KEY, style: 'next-gen' } },
-    'GET /rest/api/3/project/THOR/statuses': { json: [{ id: '10001' }] },
+    'GET /rest/api/3/project/PROJ': { json: { id: PROJECT_ID, key: KEY, style: 'next-gen' } },
+    'GET /rest/api/3/project/PROJ/statuses': { json: [{ id: '10001' }] },
     'GET /rest/api/3/statuses/search': { json: { values: [] } },
-    'POST /rest/api/3/search/jql': { json: { issues: [{ key: 'THOR-1' }, { key: 'THOR-2' }] } },
+    'POST /rest/api/3/search/jql': { json: { issues: [{ key: 'PROJ-1' }, { key: 'PROJ-2' }] } },
     'POST /rest/api/3/workflows': {
       json: {
         statuses: [
@@ -321,7 +348,7 @@ function buildWorkflow(): unknown {
   return {
     description: 'The project workflow.',
     id: 'workflow-1',
-    name: 'THOR: Software Simplified Workflow',
+    name: 'PROJ: Software Simplified Workflow',
     startPointLayout: { x: 0, y: 0 },
     statuses: [
       { layout: { x: 0, y: 0 }, statusReference: 'ref-1' },

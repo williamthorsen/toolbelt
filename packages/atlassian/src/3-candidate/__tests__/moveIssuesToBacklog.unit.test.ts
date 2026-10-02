@@ -15,7 +15,7 @@ describe(moveIssuesToBacklog, () => {
 
     expect(result).toStrictEqual({ batches: 2, moved: 51 });
     expect(calls[0]?.body).toStrictEqual({ issues: keys.slice(0, 50) });
-    expect(calls[1]?.body).toStrictEqual({ issues: ['THOR-51'] });
+    expect(calls[1]?.body).toStrictEqual({ issues: ['PROJ-51'] });
   });
 
   it('sends one batch when the keys fit exactly', async () => {
@@ -48,7 +48,7 @@ describe(moveIssuesToBacklog, () => {
 
 /** Builds sequentially numbered work-item keys, which makes a batch boundary readable in an assertion. */
 function buildKeys(count: number): string[] {
-  return Array.from({ length: count }, (_, index) => `THOR-${index + 1}`);
+  return Array.from({ length: count }, (_, index) => `PROJ-${index + 1}`);
 }
 
 // endregion | Helpers

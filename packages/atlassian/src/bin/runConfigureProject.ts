@@ -6,25 +6,15 @@ import { buildReconciliationPlan } from '../3-candidate/buildReconciliationPlan.
 import { buildVerificationReport } from '../3-candidate/buildVerificationReport.ts';
 import { listIssueKeys } from '../3-candidate/listIssueKeys.ts';
 import { moveIssuesToBacklog } from '../3-candidate/moveIssuesToBacklog.ts';
-import { parseProjectSpec } from '../3-candidate/parseProjectSpec.ts';
 import { readBoardColumnReport } from '../3-candidate/readBoardColumnReport.ts';
 import { readProjectConfiguration } from '../3-candidate/readProjectConfiguration.ts';
-import { resolveJiraBaseUrl } from '../3-candidate/resolveJiraBaseUrl.ts';
-import { resolveJiraEmail } from '../3-candidate/resolveJiraEmail.ts';
-import { resolveJiraSite } from '../3-candidate/resolveJiraSite.ts';
-import { resolveJiraToken } from '../3-candidate/resolveJiraToken.ts';
 import { DEFAULT_TOKEN_SERVICE } from '../internal/jiraTokenChain.ts';
+import { createSubcommandRequest, CREDENTIAL_OPTIONS } from './createSubcommandRequest.ts';
 import { formatContinuationLine, formatLabelledLine } from './labelled-lines.ts';
+import { type LoadedProjectSpec, loadProjectSpec } from './loadProjectSpec.ts';
 import { renderPlan } from './renderPlan.ts';
 import { renderVerification } from './renderVerification.ts';
-import {
-  createDeferredStore,
-  EXIT_MISMATCH,
-  EXIT_OK,
-  stripOneTrailingNewline,
-  succeed,
-  type TbJiraEffects,
-} from './subcommand-support.ts';
+import { EXIT_MISMATCH, EXIT_OK, succeed, type TbJiraEffects } from './subcommand-support.ts';
 
 /**
  * What `POST /rest/agile/1.0/board/{boardId}/issue` accepts in one call, which bounds the undo that the
@@ -32,7 +22,7 @@ import {
  */
 const BOARD_MOVE_LIMIT = 50;
 
-const CONFIGURE_HELP = `Usage: tb-jira configure-project <KEY> [options]
+const CONFIGURE_HELP = `Usage: tb-jira configure-project [KEY] [options]
 
 Reconcile a Jira project's statuses, workflow transitions, and board features against a declarative spec, then
 report what the server stores afterwards. The run is idempotent: A project already matching the spec is left
@@ -52,9 +42,10 @@ The spec is the consuming repo's file, found by ascending from the working direc
 \`jira-project-spec.json\`; \`--spec\` names one directly.
 
 Resolution orders, each stopping at the first source that supplies a value:
-  site   --site, then JIRA_SITE, then the spec's \`site\`
-  email  --email, then JIRA_EMAIL, then the spec's \`email\`
-  token  --token-stdin, then JIRA_API_TOKEN, then --token-command, then the macOS keychain
+  project  KEY, then the spec's \`projectKey\`
+  site     --site, then JIRA_SITE, then the spec's \`site\`
+  email    --email, then JIRA_EMAIL, then the spec's \`email\`
+  token    --token-stdin, then JIRA_API_TOKEN, then --token-command, then the macOS keychain
 
 The token is read from the keychain under the service \`${DEFAULT_TOKEN_SERVICE}\`, with the email as the
 account. Store one with \`tb-jira auth set\`. The base URL is the \`api.atlassian.com\` gateway, whose cloudId
@@ -80,40 +71,25 @@ export async function runConfigureProject(args: string[], effects: TbJiraEffects
     allowPositionals: true,
     args,
     options: {
+      ...CREDENTIAL_OPTIONS,
       'dry-run': { type: 'boolean', default: false },
-      email: { type: 'string' },
       help: { type: 'boolean', short: 'h' },
       'seed-backlog': { type: 'string' },
-      site: { type: 'string' },
-      spec: { type: 'string' },
-      'token-command': { type: 'string' },
-      'token-stdin': { type: 'boolean', default: false },
     },
     strict: true,
   });
 
   if (values.help === true) return succeed(effects, CONFIGURE_HELP);
 
-  const projectKey = selectProjectKey(positionals);
   const seedBacklog = values['seed-backlog'];
-  const spec = parseProjectSpec(effects.readTextFile(values.spec ?? effects.findSpecPath(effects.cwd())));
+  const loaded = loadProjectSpec(effects, values.spec);
+  if (loaded === undefined) {
+    throw new Error(`No jira-project-spec.json at or above ${effects.cwd()}. Name one with --spec.`);
+  }
+  const { spec } = loaded;
+  const projectKey = selectProjectKey(positionals, loaded);
 
-  const email = resolveJiraEmail({ email: values.email, env: effects.env, fallback: spec.email });
-  const request = effects.createRequest({
-    baseUrl: await resolveJiraBaseUrl({
-      fetch: effects.fetch,
-      site: resolveJiraSite({ env: effects.env, fallback: spec.site, site: values.site }),
-    }),
-    email,
-    fetch: effects.fetch,
-    token: resolveJiraToken({
-      account: email,
-      env: effects.env,
-      store: createDeferredStore(effects),
-      token: values['token-stdin'] ? stripOneTrailingNewline(await effects.readStdin()) : undefined,
-      tokenCommand: values['token-command'],
-    }),
-  });
+  const request = await createSubcommandRequest(effects, values, spec);
 
   const configuration = await readProjectConfiguration(request, projectKey);
   const plan = buildReconciliationPlan(spec, configuration);
@@ -151,14 +127,17 @@ export async function runConfigureProject(args: string[], effects: TbJiraEffects
 
 // region | Helpers
 
-/** Chooses the project to reconcile, which is the sole positional. */
-function selectProjectKey(positionals: string[]): string {
+/** Chooses the project to reconcile: the sole positional, or else the spec's `projectKey`. */
+function selectProjectKey(positionals: string[], loaded: LoadedProjectSpec): string {
   if (positionals.length > 1) throw new Error(`Expected one project key. Received ${positionals.length}.`);
 
-  const [projectKey] = positionals;
-  if (projectKey === undefined || projectKey === '') throw new Error('A project key is required.');
+  const [projectKey = ''] = positionals;
+  if (projectKey !== '') return projectKey;
+  if (loaded.spec.projectKey !== undefined) return loaded.spec.projectKey;
 
-  return projectKey;
+  throw new Error(
+    `A project key is required: pass it as an argument, or set \`projectKey\` in the spec; ${loaded.path} does not set \`projectKey\`.`,
+  );
 }
 
 /** Moves every work item in one status off the board, reporting the call that puts them back. */

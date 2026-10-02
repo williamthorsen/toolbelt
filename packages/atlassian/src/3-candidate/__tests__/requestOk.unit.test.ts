@@ -4,7 +4,7 @@ import { createFakeRequest, FAKE_BASE_URL } from '../../test-utils/createFakeReq
 import { JiraRequestError } from '../JiraRequestError.ts';
 import { requestOk } from '../requestOk.ts';
 
-const PATH = '/rest/api/3/project/THOR';
+const PATH = '/rest/api/3/project/PROJ';
 const REQUEST_URL = `${FAKE_BASE_URL}${PATH}`;
 
 describe(requestOk, () => {
@@ -12,14 +12,14 @@ describe(requestOk, () => {
     const { calls, request } = createFakeRequest({ [`POST ${PATH}`]: { json: { id: '10000' } } });
 
     const response = await requestOk(request, {
-      body: { key: 'THOR' },
+      body: { key: 'PROJ' },
       label: 'read project',
       method: 'POST',
       path: PATH,
     });
 
     expect(response.json).toStrictEqual({ id: '10000' });
-    expect(calls).toStrictEqual([{ body: { key: 'THOR' }, method: 'POST', path: PATH }]);
+    expect(calls).toStrictEqual([{ body: { key: 'PROJ' }, method: 'POST', path: PATH }]);
   });
 
   it('throws with the method, path, status, URL, and parsed reply', async () => {
@@ -27,13 +27,13 @@ describe(requestOk, () => {
       [`GET ${PATH}`]: { json: { errorMessages: ['No project could be found.'] }, status: 404 },
     });
 
-    const rejected = requestOk(request, { label: 'read project THOR', method: 'GET', path: PATH });
+    const rejected = requestOk(request, { label: 'read project PROJ', method: 'GET', path: PATH });
 
     await expect(rejected).rejects.toBeInstanceOf(JiraRequestError);
     await expect(rejected).rejects.toMatchObject({
       body: { errorMessages: ['No project could be found.'] },
       message: expect.stringContaining(
-        `read project THOR failed (HTTP 404 at ${REQUEST_URL}): {"errorMessages":["No project could be found."]}`,
+        `read project PROJ failed (HTTP 404 at ${REQUEST_URL}): {"errorMessages":["No project could be found."]}`,
       ),
       method: 'GET',
       path: PATH,

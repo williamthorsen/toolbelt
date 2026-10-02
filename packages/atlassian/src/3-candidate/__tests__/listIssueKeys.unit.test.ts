@@ -4,23 +4,23 @@ import { createFakeRequest } from '../../test-utils/createFakeRequest.ts';
 import { listIssueKeys } from '../listIssueKeys.ts';
 
 const SEARCH_PATH = 'POST /rest/api/3/search/jql';
-const JQL = 'project = "THOR" AND status = "To Do"';
+const JQL = 'project = "PROJ" AND status = "To Do"';
 
 describe(listIssueKeys, () => {
   it('follows the page token and returns every page in order', async () => {
     const { calls, request } = createFakeRequest({
       [SEARCH_PATH]: {
         sequence: [
-          { json: { issues: [{ key: 'THOR-1' }, { key: 'THOR-2' }], nextPageToken: 'page-2' } },
-          { json: { issues: [{ key: 'THOR-3' }], nextPageToken: 'page-3' } },
-          { json: { issues: [{ key: 'THOR-4' }] } },
+          { json: { issues: [{ key: 'PROJ-1' }, { key: 'PROJ-2' }], nextPageToken: 'page-2' } },
+          { json: { issues: [{ key: 'PROJ-3' }], nextPageToken: 'page-3' } },
+          { json: { issues: [{ key: 'PROJ-4' }] } },
         ],
       },
     });
 
     const keys = await listIssueKeys(request, JQL);
 
-    expect(keys).toStrictEqual(['THOR-1', 'THOR-2', 'THOR-3', 'THOR-4']);
+    expect(keys).toStrictEqual(['PROJ-1', 'PROJ-2', 'PROJ-3', 'PROJ-4']);
     expect(calls).toHaveLength(3);
   });
 
@@ -39,10 +39,10 @@ describe(listIssueKeys, () => {
 
   it('stops on an empty page token rather than walking forever', async () => {
     const { calls, request } = createFakeRequest({
-      [SEARCH_PATH]: { json: { issues: [{ key: 'THOR-1' }], nextPageToken: '' } },
+      [SEARCH_PATH]: { json: { issues: [{ key: 'PROJ-1' }], nextPageToken: '' } },
     });
 
-    await expect(listIssueKeys(request, JQL)).resolves.toStrictEqual(['THOR-1']);
+    await expect(listIssueKeys(request, JQL)).resolves.toStrictEqual(['PROJ-1']);
     expect(calls).toHaveLength(1);
   });
 
@@ -54,7 +54,7 @@ describe(listIssueKeys, () => {
 
   it('refuses a work item that it cannot read rather than dropping it from the walk', async () => {
     const { request } = createFakeRequest({
-      [SEARCH_PATH]: { json: { issues: [{ key: 'THOR-1' }, { id: '10001' }] } },
+      [SEARCH_PATH]: { json: { issues: [{ key: 'PROJ-1' }, { id: '10001' }] } },
     });
 
     await expect(listIssueKeys(request, JQL)).rejects.toThrow('returned work items that this cannot read');

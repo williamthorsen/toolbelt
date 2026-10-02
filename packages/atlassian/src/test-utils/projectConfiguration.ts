@@ -64,7 +64,7 @@ export function buildWorkflow(statuses: readonly WorkflowStatus[]): Workflow {
   return {
     description: 'The project workflow.',
     id: 'workflow-1',
-    name: 'THOR: Software Simplified Workflow',
+    name: 'PROJ: Software Simplified Workflow',
     startPointLayout: { x: 0, y: 0 },
     statuses: statuses.map((status) => ({ layout: { x: 0, y: 0 }, statusReference: status.statusReference })),
     transitions: statuses.map((status, index) =>
