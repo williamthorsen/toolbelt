@@ -2,6 +2,7 @@ import { JiraRequestError } from '../3-candidate/JiraRequestError.ts';
 import { JiraTransportError } from '../3-candidate/JiraTransportError.ts';
 import { runAuth } from './runAuth.ts';
 import { runConfigureProject } from './runConfigureProject.ts';
+import { runIssue } from './runIssue.ts';
 import {
   describeError,
   EXIT_KEYSTORE,
@@ -15,11 +16,13 @@ import {
 
 const ROOT_HELP = `Usage: tb-jira <subcommand> [options]
 
-Reconcile a Jira Cloud project against a declarative spec, and manage the API token with which it authenticates.
+Reconcile a Jira Cloud project against a declarative spec, list its work items, and manage the API token with
+which it authenticates.
 
 Subcommands:
   auth               Store, remove, and report the Jira API token
   configure-project  Reconcile a project's statuses, workflow, and board features against a spec
+  issue              List a project's work items
 
 Options:
   -h, --help     Print this help; each subcommand takes its own --help
@@ -66,7 +69,7 @@ export async function runTbJira(args: string[], effects: TbJiraEffects): Promise
       return EXIT_TRANSPORT;
     }
 
-    return fail(effects, describeError(error), args[0]);
+    return fail(effects, describeError(error), args);
   }
 }
 
@@ -78,11 +81,12 @@ async function dispatch(args: string[], effects: TbJiraEffects): Promise<number>
 
   if (command === 'auth') return await runAuth(rest, effects);
   if (command === 'configure-project') return await runConfigureProject(rest, effects);
+  if (command === 'issue') return await runIssue(rest, effects);
   if (command === '--help' || command === '-h') return succeed(effects, ROOT_HELP);
   if (command === '--version') return succeed(effects, effects.resolveVersion());
-  if (command === undefined) return fail(effects, 'A subcommand is required.', command);
+  if (command === undefined) return fail(effects, 'A subcommand is required.', args);
 
-  return fail(effects, `Unknown ${command.startsWith('-') ? 'option' : 'subcommand'}: ${command}`, command);
+  return fail(effects, `Unknown ${command.startsWith('-') ? 'option' : 'subcommand'}: ${command}`, args);
 }
 
 // endregion | Helpers

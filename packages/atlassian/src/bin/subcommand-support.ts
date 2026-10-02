@@ -14,7 +14,8 @@ export const EXIT_REQUEST = 4;
 export const EXIT_MISMATCH = 5;
 export const EXIT_TRANSPORT = 6;
 
-const SUBCOMMANDS = new Set(['auth', 'configure-project']);
+/** The command paths that have help of their own, deepest first, so that the first prefix match is the longest. */
+const COMMAND_PATHS: readonly (readonly string[])[] = [['issue', 'list'], ['auth'], ['configure-project'], ['issue']];
 
 /** Reports a failure to reach the keychain, which is neither a usage error nor an absent secret. */
 export class KeystoreError extends Error {}
@@ -100,12 +101,13 @@ export function describeError(error: unknown): string {
 }
 
 /**
- * Reports a usage or validation failure, pointing at the help of whichever command was invoked.
+ * Reports a usage or validation failure, pointing at the help of the deepest command that the arguments name.
  *
  * @internal
  */
-export function fail(effects: TbJiraEffects, message: string, command: string | undefined): number {
-  const scope = command !== undefined && SUBCOMMANDS.has(command) ? `tb-jira ${command}` : 'tb-jira';
+export function fail(effects: TbJiraEffects, message: string, args: readonly string[]): number {
+  const commandPath = COMMAND_PATHS.find((candidate) => candidate.every((part, index) => args[index] === part));
+  const scope = ['tb-jira', ...(commandPath ?? [])].join(' ');
   effects.writeError(`${message}\nTry \`${scope} --help\`.\n`);
 
   return EXIT_USAGE;

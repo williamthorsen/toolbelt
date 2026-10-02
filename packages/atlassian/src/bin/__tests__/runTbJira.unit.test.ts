@@ -48,6 +48,14 @@ describe(runTbJira, () => {
 
       expect(harness.readErrors()).toContain('Try `tb-jira auth --help`.');
     });
+
+    it('lists issue among its subcommands', async () => {
+      const harness = createTbJiraHarness();
+
+      await runTbJira(['--help'], harness.effects);
+
+      expect(harness.readOutput()).toContain('  issue              List a project');
+    });
   });
 
   describe('auth', () => {
