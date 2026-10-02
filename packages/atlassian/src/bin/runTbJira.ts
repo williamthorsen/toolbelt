@@ -1,4 +1,5 @@
 import { JiraRequestError } from '../3-candidate/JiraRequestError.ts';
+import { JiraResponseError } from '../3-candidate/JiraResponseError.ts';
 import { JiraTransportError } from '../3-candidate/JiraTransportError.ts';
 import { runAuth } from './runAuth.ts';
 import { runConfigureProject } from './runConfigureProject.ts';
@@ -33,7 +34,7 @@ Exit codes:
   1  No token is stored, or nothing was there to remove
   2  Usage or validation error
   3  The keychain could not be reached
-  4  A Jira request failed
+  4  A Jira request failed, or its response could not be read
   5  The run wrote, but the project does not match the spec
   6  Jira could not be reached
 
@@ -56,7 +57,7 @@ export async function runTbJira(args: string[], effects: TbJiraEffects): Promise
       return EXIT_KEYSTORE;
     }
 
-    if (error instanceof JiraRequestError) {
+    if (error instanceof JiraRequestError || error instanceof JiraResponseError) {
       effects.writeError(`${error.message}\n`);
 
       return EXIT_REQUEST;

@@ -81,6 +81,14 @@ describe('tb-jira issue list', () => {
     expect(harness.readOutput()).toBe('');
   });
 
+  it('exits 4 without a help pointer when the search response cannot be read', async () => {
+    const harness = createHarness({ routes: { [SEARCH_ROUTE]: { json: {} } } });
+
+    await expect(run(harness, [])).resolves.toBe(4);
+    expect(harness.readErrors()).toContain("returned no 'issues' array. The response came from https://");
+    expect(harness.readErrors()).not.toContain('--help');
+  });
+
   it('issues nothing but reads, which a listing never needs', async () => {
     const harness = createHarness({ readOnly: true });
 

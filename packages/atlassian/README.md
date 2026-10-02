@@ -185,17 +185,17 @@ The `403` comes from Jira rather than the gateway, and reports a permission that
 
 ### Exit codes
 
-| Code | Meaning                                                            |
-| ---- | ------------------------------------------------------------------ |
-| `0`  | The command succeeded                                              |
-| `1`  | No token is stored, or nothing was there to remove                 |
-| `2`  | Usage or validation error, with the message on stderr              |
-| `3`  | The keychain could not be reached, with the message on stderr      |
-| `4`  | A Jira request failed, with the URL, the status, and the diagnosis |
-| `5`  | The run wrote, and the project does not match the spec             |
-| `6`  | Jira could not be reached, with the URL and the reason             |
+| Code | Meaning                                                                                                             |
+| ---- | ------------------------------------------------------------------------------------------------------------------- |
+| `0`  | The command succeeded                                                                                               |
+| `1`  | No token is stored, or nothing was there to remove                                                                  |
+| `2`  | Usage or validation error, with the message on stderr                                                               |
+| `3`  | The keychain could not be reached, with the message on stderr                                                       |
+| `4`  | A Jira request failed, with the URL, the status, and the diagnosis, or its response could not be read, with the URL |
+| `5`  | The run wrote, and the project does not match the spec                                                              |
+| `6`  | Jira could not be reached, with the URL and the reason                                                              |
 
-A run that wrote and left the project short of the spec is `5` rather than `4`, so that a script can tell a rejected call from a reconciliation that did not take effect. A run that never reached Jira is `6` rather than `2`, so that a script can retry a name lookup or a refused connection and never retry a malformed spec. Two things never change the exit code, because no call could have changed either: a board column for which the spec has no counterpart, and a board feature locked by Jira.
+A response that `tb-jira` cannot read is `4` rather than `2`, because no change to the invocation can fix it. A run that wrote and left the project short of the spec is `5` rather than `4`, so that a script can tell a rejected call from a reconciliation that did not take effect. A run that never reached Jira is `6` rather than `2`, so that a script can retry a name lookup or a refused connection and never retry a malformed spec. Two things never change the exit code, because no call could have changed either: a board column for which the spec has no counterpart, and a board feature locked by Jira.
 
 ## Library
 
@@ -246,7 +246,7 @@ The service defaults to `toolbelt.atlassian.jira`; pass `service` to read anothe
 
 ### Errors
 
-Two error types separate a Jira that answered from a Jira that did not. `JiraRequestError` reports a status outside 2xx and has `body`, `label`, `method`, `path`, `reason`, `status`, and `url`, so that a caller branches on those rather than parsing the message; `reason` is the classification that ["Diagnosing a rejected request"](#diagnosing-a-rejected-request) tabulates. `JiraTransportError` reports a request that never arrived and has the `url` at which it was aimed, with the fault that the runtime raised as its `cause`.
+Three error types separate a Jira that answered from a Jira that did not, and an answer that this package can read from one that it cannot. `JiraRequestError` reports a status outside 2xx and has `body`, `label`, `method`, `path`, `reason`, `status`, and `url`, so that a caller branches on those rather than parsing the message; `reason` is the classification that ["Diagnosing a rejected request"](#diagnosing-a-rejected-request) tabulates. `JiraTransportError` reports a request that never arrived and has the `url` at which it was aimed, with the fault that the runtime raised as its `cause`. `JiraResponseError` reports a 2xx response that does not have the shape that its reader reads, a missing list field included, and has the `url` that returned it.
 
 The split matters because node's `fetch` reports every transport failure as `TypeError: fetch failed` and names the reason on `cause` alone. Reading the chain turns that into `getaddrinfo ENOTFOUND acme.atlassian.net`, and a retry is worth attempting for the second type and never for the first.
 
@@ -300,7 +300,7 @@ Because the workflow write replaces the graph wholesale, `buildWorkflowUpdatePay
 
 ### The API functions
 
-Each takes the transport as its first argument and constructs none of its own. A response outside 2xx throws `JiraRequestError`, whose fields ["Errors"](#errors) lists. Findings are returned rather than printed.
+Each takes the transport as its first argument and constructs none of its own. A response outside 2xx throws `JiraRequestError`, and a 2xx response that a reader cannot read throws `JiraResponseError`; ["Errors"](#errors) lists the fields of both. Findings are returned rather than printed.
 
 | Function                                              | Reads or writes                                                                                                           |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
@@ -336,7 +336,7 @@ const report = buildVerificationReport(await readProjectConfiguration(request, '
 
 ### What the read refuses
 
-`readProjectConfiguration` fails closed. Each of these throws rather than reconciling part of a project:
+`readProjectConfiguration` fails closed. Each of these throws rather than reconciling part of a project, a refusal of the project as a plain `Error` and an unreadable response as `JiraResponseError`:
 
 - **A project that is not team-managed.** A status renamed in a company-managed project is renamed in every project on the site that uses it. A project reporting no style, or one that this does not recognize, is refused alongside a company-managed one: A project that it cannot classify is not one to write to.
 - **A project that does not resolve to a single board of its own.** The board-feature, column, and backlog calls are board-scoped. The board query returns every board whose filter references the project, so a board owned by another project can come back alongside it; when several come back, the project's own board is the one whose location names the project, and an ambiguous set is refused.

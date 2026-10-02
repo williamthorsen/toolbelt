@@ -165,6 +165,26 @@ describe('tb-jira configure-project', () => {
   });
 
   describe('the credential', () => {
+    it('exits 4 without a help pointer when a response cannot be read', async () => {
+      const harness = createHarness({
+        routes: { [`GET /rest/api/3/project/${KEY}`]: { json: { style: 'next-gen' } } },
+      });
+
+      await expect(run(harness, [KEY])).resolves.toBe(4);
+      expect(harness.readErrors()).toContain(
+        `Project ${KEY} returned no 'id'. The response came from ${HARNESS_BASE_URL}`,
+      );
+      expect(harness.readErrors()).not.toContain('--help');
+    });
+
+    it('exits 2 with a help pointer when the project has no board', async () => {
+      const harness = createHarness({ routes: { 'GET /rest/agile/1.0/board': { json: { values: [] } } } });
+
+      await expect(run(harness, [KEY])).resolves.toBe(2);
+      expect(harness.readErrors()).toContain(`Project ${KEY} has no board.`);
+      expect(harness.readErrors()).toContain('Try `tb-jira configure-project --help`.');
+    });
+
     it('exits 4 naming the call that Jira rejected', async () => {
       const harness = createHarness({
         routes: { 'GET /rest/api/3/project/PROJ': { json: { errorMessages: ['Unauthorized'] }, status: 401 } },
