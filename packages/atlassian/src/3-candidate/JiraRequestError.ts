@@ -62,7 +62,7 @@ export class JiraRequestError extends Error {
 export type JiraRejectionReason = 'credential' | 'not-found' | 'permission' | 'scope';
 
 export interface JiraRequestErrorOptions {
-  /** What the call was doing, in the imperative, such as `read project THOR`. */
+  /** What the call was doing, in the imperative, such as `read project PROJ`. */
   readonly label: string;
   readonly method: string;
   readonly path: string;

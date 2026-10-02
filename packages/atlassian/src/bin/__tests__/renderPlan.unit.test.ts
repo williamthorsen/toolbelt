@@ -5,14 +5,14 @@ import { buildProjectConfiguration, buildStatus } from '../../test-utils/project
 import { renderPlan } from '../renderPlan.ts';
 
 const CONFIGURATION = buildProjectConfiguration();
-const PROJECT_KEY = 'THOR';
+const PROJECT_KEY = 'PROJ';
 
 describe(renderPlan, () => {
   it('leads with the project, board, and workflow against which the plan was built', () => {
     const rendered = renderPlan(buildPlan(), CONFIGURATION, { projectKey: PROJECT_KEY });
 
-    expect(rendered).toContain('project   THOR (id 10000), board 1');
-    expect(rendered).toContain('workflow  THOR: Software Simplified Workflow');
+    expect(rendered).toContain('project   PROJ (id 10000), board 1');
+    expect(rendered).toContain('workflow  PROJ: Software Simplified Workflow');
   });
 
   it('starts the text of every line in one column, the unmanaged line included', () => {

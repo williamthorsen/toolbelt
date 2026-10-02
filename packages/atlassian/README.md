@@ -24,7 +24,7 @@ The package provides a `tb-jira` command exposing the reconciler, a work-item li
 
 ```sh
 pnpm add --global @williamthorsen/toolbelt.atlassian   # puts tb-jira on PATH
-npx @williamthorsen/toolbelt.atlassian configure-project THOR --dry-run
+npx @williamthorsen/toolbelt.atlassian configure-project PROJ --dry-run
 ```
 
 `tb-jira --help`, each subcommand's `--help`, and `tb-jira --version` report the surface and the installed version.
@@ -42,9 +42,9 @@ Jira Cloud only, and team-managed projects only. A company-managed project is re
 ### Reconciling a project
 
 ```sh
-tb-jira configure-project THOR --dry-run                    # print the plan, write nothing
-tb-jira configure-project THOR                              # reconcile, then report what the server stores
-tb-jira configure-project THOR --seed-backlog 'To Do'       # also move every 'To Do' item off the board
+tb-jira configure-project PROJ --dry-run                    # print the plan, write nothing
+tb-jira configure-project PROJ                              # reconcile, then report what the server stores
+tb-jira configure-project PROJ --seed-backlog 'To Do'       # also move every 'To Do' item off the board
 ```
 
 | Option                  | Effect                                                              |
@@ -324,14 +324,14 @@ import {
   readProjectConfiguration,
 } from '@williamthorsen/toolbelt.atlassian/candidate';
 
-const configuration = await readProjectConfiguration(request, 'THOR');
+const configuration = await readProjectConfiguration(request, 'PROJ');
 const plan = buildReconciliationPlan(spec, configuration);
 
 await applyWorkflowUpdate(request, configuration, plan);
 await applyBoardFeatures(request, configuration, plan);
 
 // The run reports what the server stores, not what it sent.
-const report = buildVerificationReport(await readProjectConfiguration(request, 'THOR'), spec);
+const report = buildVerificationReport(await readProjectConfiguration(request, 'PROJ'), spec);
 ```
 
 ### What the read refuses

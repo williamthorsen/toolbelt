@@ -22,7 +22,7 @@ export async function requestOk(request: JiraRequest, options: RequestOkOptions)
 
 export interface RequestOkOptions {
   readonly body?: unknown;
-  /** What the call is doing, in the imperative, such as `read project THOR`. */
+  /** What the call is doing, in the imperative, such as `read project PROJ`. */
   readonly label: string;
   readonly method: string;
   readonly path: string;

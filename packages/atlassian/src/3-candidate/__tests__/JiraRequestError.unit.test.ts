@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { JiraResponse } from '../createTokenTransport.ts';
 import { JiraRequestError } from '../JiraRequestError.ts';
 
-const PATH = '/rest/api/3/project/THOR';
+const PATH = '/rest/api/3/project/PROJ';
 const REQUEST_URL = `https://api.atlassian.com/ex/jira/cloud-1${PATH}`;
 
 describe(JiraRequestError, () => {
@@ -24,7 +24,7 @@ describe(JiraRequestError, () => {
 
     expect(error.reason).toBe('scope');
     expect(error.message).toBe(
-      `read project THOR failed (HTTP 401 at ${REQUEST_URL}): {"code":401,"message":"Unauthorized; scope does not match"}` +
+      `read project PROJ failed (HTTP 401 at ${REQUEST_URL}): {"code":401,"message":"Unauthorized; scope does not match"}` +
         " The token lacks a scope required by this endpoint. A token's scopes are fixed at creation, so a replacement" +
         ' token with the full grant resolves it.',
     );
@@ -67,7 +67,7 @@ describe(JiraRequestError, () => {
     const error = buildError({ status: 503, text: 'Service Unavailable' });
 
     expect(error.reason).toBeUndefined();
-    expect(error.message).toBe(`read project THOR failed (HTTP 503 at ${REQUEST_URL}): Service Unavailable`);
+    expect(error.message).toBe(`read project PROJ failed (HTTP 503 at ${REQUEST_URL}): Service Unavailable`);
   });
 });
 
@@ -76,7 +76,7 @@ describe(JiraRequestError, () => {
 /** Builds an error over a response, defaulting every field that the test does not set. */
 function buildError(response: Partial<JiraResponse>): JiraRequestError {
   return new JiraRequestError({
-    label: 'read project THOR',
+    label: 'read project PROJ',
     method: 'GET',
     path: PATH,
     response: { json: undefined, status: 500, text: undefined, url: REQUEST_URL, ...response },

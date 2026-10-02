@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createFakeRequest, type FakeRoutes } from '../../test-utils/createFakeRequest.ts';
 import { readProjectConfiguration } from '../readProjectConfiguration.ts';
 
-const KEY = 'THOR';
+const KEY = 'PROJ';
 const PROJECT_ID = '10000';
 const BOARD_ID = 1;
 
@@ -89,7 +89,7 @@ describe(readProjectConfiguration, () => {
   it('takes the sole board without consulting its location', async () => {
     const routes = {
       ...buildRoutes(),
-      'GET /rest/agile/1.0/board': { json: { values: [{ id: BOARD_ID, name: 'THOR board' }] } },
+      'GET /rest/agile/1.0/board': { json: { values: [{ id: BOARD_ID, name: 'PROJ board' }] } },
     };
 
     const configuration = await readProjectConfiguration(createFakeRequest(routes).request, KEY);
@@ -104,7 +104,7 @@ describe(readProjectConfiguration, () => {
         json: {
           values: [
             { id: 99, location: { projectId: 20_000 }, name: 'Programme board' },
-            { id: BOARD_ID, location: { projectId: 10_000 }, name: 'THOR board' },
+            { id: BOARD_ID, location: { projectId: 10_000 }, name: 'PROJ board' },
           ],
         },
       },
@@ -194,7 +194,7 @@ describe(readProjectConfiguration, () => {
   it('refuses an issue type that it cannot read, which the workflow count would otherwise miss', async () => {
     const routes = {
       ...buildRoutes(),
-      'GET /rest/api/3/project/THOR/statuses': { json: [{ id: '10001' }, { name: 'no id' }] },
+      'GET /rest/api/3/project/PROJ/statuses': { json: [{ id: '10001' }, { name: 'no id' }] },
     };
 
     await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
@@ -219,7 +219,7 @@ describe(readProjectConfiguration, () => {
     const routes = { ...buildRoutes(), [`GET /rest/agile/1.0/board`]: { json: { values: [] } } };
 
     await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'Project THOR has no board.',
+      'Project PROJ has no board.',
     );
   });
 
@@ -256,10 +256,10 @@ describe(readProjectConfiguration, () => {
   });
 
   it('throws through requestOk when a read is rejected', async () => {
-    const routes = { ...buildRoutes(), 'GET /rest/api/3/project/THOR': { json: { errorMessages: [] }, status: 403 } };
+    const routes = { ...buildRoutes(), 'GET /rest/api/3/project/PROJ': { json: { errorMessages: [] }, status: 403 } };
 
     await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toMatchObject({
-      label: 'read project THOR',
+      label: 'read project PROJ',
       status: 403,
     });
   });
@@ -270,12 +270,12 @@ describe(readProjectConfiguration, () => {
 /** Builds the five routes that a whole read calls, against a team-managed project on one workflow. */
 function buildRoutes(): FakeRoutes {
   return {
-    'GET /rest/agile/1.0/board': { json: { values: [{ id: BOARD_ID, name: 'THOR board' }] } },
+    'GET /rest/agile/1.0/board': { json: { values: [{ id: BOARD_ID, name: 'PROJ board' }] } },
     [`GET /rest/agile/1.0/board/${BOARD_ID}/features`]: {
       json: { features: [{ feature: 'jsw.agility.backlog', state: 'DISABLED' }] },
     },
-    'GET /rest/api/3/project/THOR': { json: { id: PROJECT_ID, key: KEY, style: 'next-gen' } },
-    'GET /rest/api/3/project/THOR/statuses': { json: [{ id: '10001' }, { id: '10002' }] },
+    'GET /rest/api/3/project/PROJ': { json: { id: PROJECT_ID, key: KEY, style: 'next-gen' } },
+    'GET /rest/api/3/project/PROJ/statuses': { json: [{ id: '10001' }, { id: '10002' }] },
     'POST /rest/api/3/workflows': {
       json: {
         statuses: [
@@ -290,7 +290,7 @@ function buildRoutes(): FakeRoutes {
 
 /** Builds the whole route set around a project resource that returns the given project. */
 function buildRoutesForProject(project: Record<string, unknown>): FakeRoutes {
-  return { ...buildRoutes(), 'GET /rest/api/3/project/THOR': { json: project } };
+  return { ...buildRoutes(), 'GET /rest/api/3/project/PROJ': { json: project } };
 }
 
 /** Builds the workflow graph narrowed by the read, with a `conditions` field that this package does not model. */
@@ -298,7 +298,7 @@ function buildWorkflow(): unknown {
   return {
     description: 'The project workflow.',
     id: 'workflow-1',
-    name: 'THOR: Software Simplified Workflow',
+    name: 'PROJ: Software Simplified Workflow',
     startPointLayout: { x: 0, y: 0 },
     statuses: [
       { layout: { x: 0, y: 0 }, statusReference: 'ref-1' },
