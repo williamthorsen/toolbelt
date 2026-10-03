@@ -101,10 +101,10 @@
       ],
       "name": "default",
       "path": "kits/default.js",
-      "readyupVersion": "0.38.0",
+      "readyupVersion": "0.39.0",
       "source": "kits/default.ts",
       "sourceHash": "86b64892",
-      "targetHash": "2e8c4540"
+      "targetHash": "042dfaec"
     }
   ]
 }
