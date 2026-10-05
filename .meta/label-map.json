@@ -22,6 +22,7 @@
     "arrays": "scope:arrays",
     "async": "scope:async",
     "atlassian": "scope:atlassian",
+    "cli": "scope:cli",
     "datetime": "scope:datetime",
     "dstructs": "scope:dstructs",
     "enums": "scope:enums",

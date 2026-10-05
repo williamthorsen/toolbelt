@@ -12,6 +12,7 @@ const config = defineConfig({
       'scope:arrays': { color: '00ff96' },
       'scope:async': { color: '00ff96' },
       'scope:atlassian': { color: '00ff96' },
+      'scope:cli': { color: '00ff96' },
       'scope:datetime': { color: '00ff96' },
       'scope:dstructs': { color: '00ff96' },
       'scope:enums': { color: '00ff96' },
