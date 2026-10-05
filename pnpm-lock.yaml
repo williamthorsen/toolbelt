@@ -297,6 +297,8 @@ importers:
         specifier: workspace:*
         version: link:../testing
 
+  packages/cli: {}
+
   packages/datetime:
     dependencies:
       '@williamthorsen/toolbelt.numbers':
