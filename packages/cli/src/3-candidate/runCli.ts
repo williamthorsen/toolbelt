@@ -38,8 +38,8 @@ export interface RunCliOptions<C> {
  *
  * A `UsageError`, whether from parsing, from an unknown or missing command, or thrown by a `deriveContext` or a
  * `run`, is written to `stderr` with the scope reached so far and returns 2; an unknown command near a known one
- * adds a `Did you mean` line. Any other error propagates, as does
- * a `run` result other than nothing or an integer from 0 to 255. It writes only to the writers that it is
+ * adds a `Did you mean` line. Any other error propagates. A `run` result that is not a number maps to 0, and a
+ * number other than an integer from 0 to 255 throws a plain `Error`. It writes only to the writers that it is
  * given and never calls `process.exit`.
  * @category CLI
  * @stage candidate
@@ -232,9 +232,12 @@ function scanScope(
   return undefined;
 }
 
-/** Maps nothing to 0, and throws a plain `Error` on anything other than an integer from 0 to 255. */
+/**
+ * Maps a result that is not a number to 0, since a `void` handler may return any value, and throws a plain
+ * `Error` on a number other than an integer from 0 to 255.
+ */
 function validateExitCode(result: Awaited<RunResult>): number {
-  if (result === undefined) return 0;
+  if (typeof result !== 'number') return 0;
   if (Number.isSafeInteger(result) && result >= 0 && result <= 255) return result;
   throw new Error(`A command returned an invalid exit code: ${String(result)}`);
 }

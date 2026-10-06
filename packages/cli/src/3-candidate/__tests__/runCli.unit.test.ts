@@ -63,6 +63,7 @@ const tool = rootCli.defineGroup({
     }),
     later: defineCommand({ summary: 'Async', run: () => Promise.resolve(3) }),
     invalid: defineCommand({ summary: 'Invalid', run: () => 300 }),
+    logged: defineCommand({ summary: 'Logged', run: () => log() }),
   },
 });
 
@@ -320,6 +321,10 @@ describe(runCli, () => {
       await expect(run(['later'], tool)).resolves.toMatchObject({ code: 3 });
     });
 
+    it('maps a result that is not a number to 0, as a void handler may return one', async () => {
+      await expect(run(['logged'], tool)).resolves.toMatchObject({ code: 0 });
+    });
+
     it('throws on an exit code outside 0 to 255', async () => {
       await expect(run(['invalid'], tool)).rejects.toThrow('A command returned an invalid exit code: 300');
     });
@@ -363,6 +368,12 @@ describe(runCli, () => {
 });
 
 // region | Helpers
+
+/** Returns a value that its type hides, as a logger typed to return `void` may. */
+function log(): void {
+  const hidden: () => void = () => true;
+  return hidden();
+}
 
 /** A writer that records what it is given. */
 interface RecordingWriter extends Writer {
