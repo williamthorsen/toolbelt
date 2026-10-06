@@ -87,6 +87,22 @@ describe('createCli types', () => {
     ).toBeFunction();
   });
 
+  it('derives the context without flags', () => {
+    const leveled = createCli<LevelContext>();
+
+    expectTypeOf(() =>
+      createCli<RootContext>().defineGroup({
+        summary: 'Root',
+        deriveContext: (flags, context): LevelContext => {
+          // eslint-disable-next-line @typescript-eslint/no-generated-empty-object-type -- A group without flags parses to an empty `flags` object.
+          expectTypeOf(flags).toEqualTypeOf<Record<never, never>>();
+          return { ...context, level: 'low' };
+        },
+        commands: { list: leveled.defineCommand({ summary: 'List', run: () => 0 }) },
+      }),
+    ).toBeFunction();
+  });
+
   it('nests a context-free command under a contextful group', () => {
     expectTypeOf(() =>
       createCli<RootContext>().defineGroup({

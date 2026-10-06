@@ -36,7 +36,8 @@ export interface DefineCommand<C> {
 export interface DefineGroup<C> {
   // eslint-disable-next-line @typescript-eslint/no-generated-empty-object-type -- A group without flags parses to an empty `flags` object.
   <const S extends FlagSchema = Record<never, never>>(definition: PlainGroupDefinition<S, C>): Group<C>;
-  <const S extends FlagSchema, C2>(definition: DerivedGroupDefinition<S, C, C2>): Group<C>;
+  // eslint-disable-next-line @typescript-eslint/no-generated-empty-object-type -- A group without flags parses to an empty `flags` object.
+  <C2, const S extends FlagSchema = Record<never, never>>(definition: DerivedGroupDefinition<S, C, C2>): Group<C>;
 }
 
 /** The fields of a command definition other than its passthrough-specific ones. */
@@ -79,7 +80,10 @@ export function createCli<C>(): { defineCommand: DefineCommand<C>; defineGroup: 
   }
 
   function defineGroup<const S extends FlagSchema>(definition: PlainGroupDefinition<S, C>): Group<C>;
-  function defineGroup<const S extends FlagSchema, C2>(definition: DerivedGroupDefinition<S, C, C2>): Group<C>;
+  // eslint-disable-next-line @typescript-eslint/no-generated-empty-object-type -- A group without flags parses to an empty `flags` object.
+  function defineGroup<C2, const S extends FlagSchema = Record<never, never>>(
+    definition: DerivedGroupDefinition<S, C, C2>,
+  ): Group<C>;
   function defineGroup<S extends FlagSchema, C2>(
     definition: GroupDefinition<S> & {
       deriveContext?: (flags: ParsedFlags<S>, context: C) => C2;
@@ -135,7 +139,6 @@ type PlainGroupDefinition<S extends FlagSchema, C> = GroupDefinition<S> & {
 
 /** A group definition whose commands receive the context that `deriveContext` returns. */
 type DerivedGroupDefinition<S extends FlagSchema, C, C2> = GroupDefinition<S> & {
-  flags: CheckedFlags<S>;
   deriveContext: (flags: ParsedFlags<S>, context: C) => C2;
   commands: Record<string, CommandNode<C2>>;
 };
