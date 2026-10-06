@@ -445,6 +445,10 @@ importers:
         version: 0.39.0(esbuild@0.28.2)
 
   packages/secrets:
+    dependencies:
+      '@williamthorsen/toolbelt.cli':
+        specifier: workspace:*
+        version: link:../cli
     devDependencies:
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*

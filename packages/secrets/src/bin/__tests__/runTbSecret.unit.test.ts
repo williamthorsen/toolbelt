@@ -146,12 +146,12 @@ describe(runTbSecret, () => {
 
   describe('usage', () => {
     it.each([
-      { args: [], message: /A subcommand is required\./ },
-      { args: ['sniff', 'token'], message: /Unknown subcommand: sniff/ },
-      { args: ['--sniff'], message: /Unknown option: --sniff/ },
-      { args: ['get'], message: /A service name is required\./ },
-      { args: ['get', ''], message: /The service name is empty\./ },
-      { args: ['get', 'token', 'extra'], message: /Expected one service name\. Received 2\./ },
+      { args: [], message: /Error: A command is required\./ },
+      { args: ['sniff', 'token'], message: /Error: Unknown command: sniff/ },
+      { args: ['--sniff'], message: /Error: Unknown option: --sniff/ },
+      { args: ['get'], message: /Error: Missing argument: <service>/ },
+      { args: ['get', ''], message: /Error: The service name is empty\./ },
+      { args: ['get', 'token', 'extra'], message: /Error: Unexpected positional argument: extra/ },
     ])('exits 2 on $args', async ({ args, message }) => {
       const result = await runTbSecret(args, createHarness().effects);
 
@@ -162,7 +162,13 @@ describe(runTbSecret, () => {
     it('points at the subcommand’s own help when one was named', async () => {
       const result = await runTbSecret(['get'], createHarness().effects);
 
-      expect(result.stderr).toMatch(/Try `tb-secret get --help`\./);
+      expect(result.stderr).toMatch(/Try 'tb-secret get --help'\./);
+    });
+
+    it('suggests the closest command for a near miss', async () => {
+      const result = await runTbSecret(['gt', 'token'], createHarness().effects);
+
+      expect(result.stderr).toContain("Did you mean 'get'?");
     });
   });
 
@@ -170,17 +176,18 @@ describe(runTbSecret, () => {
     it.each([['--help'], ['-h']])('prints the root help under %s', async (flag) => {
       const result = await runTbSecret([flag], createHarness().effects);
 
-      expect(result.stdout).toMatch(/Usage: tb-secret <subcommand>/);
+      expect(result.stdout).toMatch(/Usage: tb-secret \[options\] <command>/);
+      expect(result.stdout).toContain('Exit codes:');
     });
 
     it.each([['delete'], ['get'], ['has'], ['set']])('prints the help of %s', async (subcommand) => {
       const result = await runTbSecret([subcommand, '--help'], createHarness().effects);
 
-      expect(result.stdout).toMatch(new RegExp(`Usage: tb-secret ${subcommand} <service>`));
+      expect(result.stdout).toMatch(new RegExp(String.raw`Usage: tb-secret ${subcommand} \[options\] <service>`));
     });
 
-    it('prints the installed version', async () => {
-      const result = await runTbSecret(['--version'], createHarness().effects);
+    it.each([['--version'], ['-V']])('prints the installed version under %s', async (flag) => {
+      const result = await runTbSecret([flag], createHarness().effects);
 
       expect(result.stdout).toBe(`${VERSION}\n`);
     });
