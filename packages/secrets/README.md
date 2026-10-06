@@ -31,7 +31,7 @@ pnpm add --global @williamthorsen/toolbelt.secrets   # puts tb-secret on PATH
 npx @williamthorsen/toolbelt.secrets get my-token    # or run it without installing
 ```
 
-`tb-secret --help`, each subcommand's `--help`, and `tb-secret --version` report the surface and the installed version.
+`tb-secret --help`, each subcommand's `--help`, and `tb-secret --version` (or `-V`) report the surface and the installed version.
 
 | Subcommand                   | Effect                                               |
 | ---------------------------- | ---------------------------------------------------- |
