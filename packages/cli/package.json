@@ -43,6 +43,11 @@
   "scripts": {
     "prepublishOnly": "nmr build"
   },
+  "devDependencies": {
+    "@williamthorsen/toolbelt.adoption": "workspace:*",
+    "esbuild": "catalog:",
+    "readyup": "catalog:"
+  },
   "engines": {
     "node": ">=24.0.0"
   },
