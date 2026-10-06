@@ -301,6 +301,14 @@ describe(runCli, () => {
       });
     });
 
+    it('suggests the closest command between the error and the help pointer', async () => {
+      await expect(run(['isue'], tool)).resolves.toStrictEqual({
+        code: 2,
+        stdout: '',
+        stderr: "Error: Unknown command: isue\nDid you mean 'issue'?\nTry 'tool --help'.\n",
+      });
+    });
+
     it('propagates any other error', async () => {
       await expect(run(['crash'], tool)).rejects.toThrow('boom');
     });

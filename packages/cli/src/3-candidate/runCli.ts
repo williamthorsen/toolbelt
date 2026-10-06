@@ -1,5 +1,6 @@
 import process from 'node:process';
 
+import { findClosestCommand } from './findClosestCommand.ts';
 import type { BoundCommand, BoundGroup, CommandNode, RunResult, Writer } from './nodes.ts';
 import { renderHelp } from './renderHelp.ts';
 import { resolveLongName } from './resolveLongName.ts';
@@ -36,7 +37,8 @@ export interface RunCliOptions<C> {
  * level, except after a passthrough command's token; it intercepts `-V`/`--version` at the root alone.
  *
  * A `UsageError`, whether from parsing, from an unknown or missing command, or thrown by a `deriveContext` or a
- * `run`, is written to `stderr` with the scope reached so far and returns 2. Any other error propagates, as does
+ * `run`, is written to `stderr` with the scope reached so far and returns 2; an unknown command near a known one
+ * adds a `Did you mean` line. Any other error propagates, as does
  * a `run` result other than nothing or an integer from 0 to 255. It writes only to the writers that it is
  * given and never calls `process.exit`.
  * @category CLI
@@ -69,6 +71,9 @@ export async function runCli<C>(
   } catch (error: unknown) {
     if (!(error instanceof UsageError)) throw error;
     stderr.write(`Error: ${error.message}\n`);
+    if (error instanceof UnknownCommandError && error.suggestion !== undefined) {
+      stderr.write(`Did you mean '${error.suggestion}'?\n`);
+    }
     stderr.write(`Try '${walk.scope.join(' ')} --help'.\n`);
     return USAGE_EXIT_CODE;
   }
@@ -97,7 +102,7 @@ export async function runCli<C>(
       const [token] = entry.rest;
       if (token !== undefined && isCommandToken(token)) {
         const child = entry.bindCommand(token);
-        if (child === undefined) throw new UsageError(`Unknown command: ${token}`);
+        if (child === undefined) throw new UnknownCommandError(token, Object.keys(node.commands));
         current = child;
         remaining = entry.rest.slice(1);
         state.scope.push(token);
@@ -135,6 +140,17 @@ export async function runCli<C>(
 }
 
 // region | Helpers
+
+/** Reports an unknown command token, with the closest command when one is near enough to suggest. */
+class UnknownCommandError extends UsageError {
+  readonly suggestion: string | undefined;
+
+  constructor(token: string, names: readonly string[]) {
+    super(`Unknown command: ${token}`);
+    this.name = 'UnknownCommandError';
+    this.suggestion = findClosestCommand(token, names);
+  }
+}
 
 type Requested = 'help' | 'version';
 
