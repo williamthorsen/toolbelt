@@ -58,13 +58,16 @@ export async function runPruneModules(
     homeDir: effects.homeDir,
   });
 
-  const dirs = listNodeModulesDirs(root, {
-    onUnreadable: (dir, error) => stderr.write(`warning: cannot read ${dir}: ${describeError(error)}\n`),
-  });
+  function warnUnreadable(entry: string, error: unknown): void {
+    stderr.write(`warning: cannot read ${entry}: ${describeError(error)}\n`);
+  }
+  const dirs = listNodeModulesDirs(root, { onUnreadable: warnUnreadable });
   const activeWindowMs = options.noActiveGuard ? undefined : (options.activeDays ?? DEFAULT_ACTIVE_DAYS) * DAY_MS;
   const now = effects.now();
   const seenInodes = new Set<string>();
-  const findings = dirs.map((dir) => classify(dir, { activeWindowMs, entries: protectList.entries, now, seenInodes }));
+  const findings = dirs.map((dir) =>
+    classify(dir, { activeWindowMs, entries: protectList.entries, now, seenInodes, warnUnreadable }),
+  );
   const candidates = findings.filter((finding) => finding.reason === undefined);
   const skippedCount = findings.length - candidates.length;
   const candidateBytes = sumBytes(candidates);
@@ -132,6 +135,7 @@ interface ClassifyContext {
   readonly entries: Parameters<typeof findProtectingPattern>[1];
   readonly now: number;
   readonly seenInodes: Set<string>;
+  readonly warnUnreadable: (entry: string, error: unknown) => void;
 }
 
 interface Finding {
@@ -156,7 +160,11 @@ function classify(dir: string, context: ClassifyContext): Finding {
     if (ageMs < context.activeWindowMs) return { bytes: 0, dir, reason: `active ${describeAge(ageMs)}` };
   }
 
-  return { bytes: measureDiskUsage(dir, context.seenInodes), dir, reason: undefined };
+  return {
+    bytes: measureDiskUsage(dir, context.seenInodes, { onUnreadable: context.warnUnreadable }),
+    dir,
+    reason: undefined,
+  };
 }
 
 /** Deletes a directory tree, reporting a failure on stderr; returns whether it succeeded. */

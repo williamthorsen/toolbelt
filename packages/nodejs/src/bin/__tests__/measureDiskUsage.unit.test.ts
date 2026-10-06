@@ -43,6 +43,22 @@ describe(measureDiskUsage, () => {
     );
   });
 
+  it('passes an unreadable directory to onUnreadable and counts the rest', () => {
+    using tree = createTempTree({ 'nm/a.js': CONTENTS, 'nm/locked/b.js': CONTENTS });
+    const expected = sumBlocks(tree.dir, ['nm', 'nm/a.js', 'nm/locked']);
+    fs.chmodSync(tree.resolve('nm/locked'), 0o000);
+    const unreadable: string[] = [];
+
+    const total = measureDiskUsage(tree.resolve('nm'), new Set(), {
+      onUnreadable: (entry) => {
+        unreadable.push(entry);
+      },
+    });
+
+    expect(total).toBe(expected);
+    expect(unreadable).toStrictEqual([tree.resolve('nm/locked')]);
+  });
+
   it('returns 0 for a path that does not exist', () => {
     using tree = createTempTree({});
 
