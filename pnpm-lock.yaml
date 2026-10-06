@@ -356,6 +356,9 @@ importers:
 
   packages/git:
     dependencies:
+      '@williamthorsen/toolbelt.cli':
+        specifier: workspace:*
+        version: link:../cli
       '@williamthorsen/toolbelt.strings':
         specifier: workspace:*
         version: link:../strings
