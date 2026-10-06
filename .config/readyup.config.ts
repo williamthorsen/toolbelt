@@ -12,6 +12,7 @@ export default defineRdyConfig({
     '@williamthorsen/release-kit',
     '@williamthorsen/toolbelt.arrays',
     '@williamthorsen/toolbelt.async',
+    '@williamthorsen/toolbelt.cli',
     '@williamthorsen/toolbelt.enums',
     '@williamthorsen/toolbelt.errors',
     '@williamthorsen/toolbelt.filesystem',

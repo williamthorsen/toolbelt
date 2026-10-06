@@ -5,7 +5,7 @@
       "checklists": [
         "adoption"
       ],
-      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.async",
+      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.cli",
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
@@ -64,32 +64,27 @@
           "path": "../../adoption/src/portable/readLiteral.ts"
         },
         {
-          "hash": "4f631650",
+          "hash": "6cbf5101",
           "kind": "module",
           "path": "kits/default.ts"
         },
         {
-          "hash": "b8fbd90f",
+          "hash": "5b8af3aa",
           "kind": "module",
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "dcf0508c",
+          "hash": "5d7fcf9b",
           "kind": "module",
-          "path": "../src/readiness/listSleepSites.ts"
-        },
-        {
-          "hash": "9333b24b",
-          "kind": "module",
-          "path": "../src/readiness/readExecutor.ts"
+          "path": "../src/readiness/listParserSites.ts"
         }
       ],
       "name": "default",
       "path": "kits/default.js",
       "readyupVersion": "0.39.0",
       "source": "kits/default.ts",
-      "sourceHash": "4f631650",
-      "targetHash": "1d22c70e"
+      "sourceHash": "6cbf5101",
+      "targetHash": "f0afb550"
     }
   ]
 }

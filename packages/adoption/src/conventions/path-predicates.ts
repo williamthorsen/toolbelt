@@ -8,7 +8,8 @@ const TEST_SUFFIX = /\.(?:spec|test)\.[cm]?[jt]sx?$/;
  *
  * The selection wanted by every kit sweeping a project's own sources: a JavaScript or TypeScript file that is
  * neither a bootstrap wrapper nor a test. A kit sweeping tests instead inverts the last of those and calls
- * `isTestFile` directly, and one sweeping both takes `isAdoptableSourceOrTest`.
+ * `isTestFile` directly, one sweeping both takes `isAdoptableSourceOrTest`, and one sweeping `bin/` too takes
+ * `isAdoptableSourceOrBin`.
  *
  * @internal
  */
@@ -27,6 +28,19 @@ export function isAdoptableSource(path: string): boolean {
  */
 export function isAdoptableSourceOrTest(path: string): boolean {
   return isJsTsSource(path) && (!isBinWrapper(path) || isTestFile(path) || isInTestDirectory(path));
+}
+
+/**
+ * Reports whether a path names a source read by an adoption sweep that includes `bin/` directories.
+ *
+ * The selection wanted by a kit whose idiom lives in a command-line runner, which commonly sits under `bin/` or
+ * `src/bin/`. A bootstrap wrapper that only forwards its arguments contains no such idiom, so sweeping it costs
+ * nothing. Tests stay exempt.
+ *
+ * @internal
+ */
+export function isAdoptableSourceOrBin(path: string): boolean {
+  return isJsTsSource(path) && !isTestFile(path) && !isInTestDirectory(path);
 }
 
 /**

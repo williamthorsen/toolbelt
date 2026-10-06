@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   isAdoptableSource,
+  isAdoptableSourceOrBin,
   isAdoptableSourceOrTest,
   isBinWrapper,
   isInTestDirectory,
@@ -18,6 +19,20 @@ describe(isAdoptableSource, () => {
     const exempt = ['README.md', 'bin/run.js', 'src/read.unit.test.ts', 'src/__tests__/fixtures/sample.ts'];
 
     expect(exempt.filter((path) => isAdoptableSource(path))).toStrictEqual([]);
+  });
+});
+
+describe(isAdoptableSourceOrBin, () => {
+  it('claims ordinary source and a source under a bin directory', () => {
+    const claimed = ['src/read.ts', 'bin/cli.js', 'src/bin/run.ts'];
+
+    expect(claimed.filter((path) => !isAdoptableSourceOrBin(path))).toStrictEqual([]);
+  });
+
+  it('declines a test, a helper beside a test, and a file that is not a source', () => {
+    const exempt = ['README.md', 'src/bin/run.unit.test.ts', 'src/bin/__tests__/fixtures/sample.ts'];
+
+    expect(exempt.filter((path) => isAdoptableSourceOrBin(path))).toStrictEqual([]);
   });
 });
 
