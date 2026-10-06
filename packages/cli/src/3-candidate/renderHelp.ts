@@ -24,7 +24,7 @@ export function renderHelp<C>(node: CommandNode<C>, invocation: string, options:
   let usage: string;
 
   if (node.kind === 'group') {
-    usage = `Usage: ${invocation} [options] <command>`;
+    usage = `Usage: ${invocation} [options] ${node.defaultCommand === undefined ? '<command>' : '[<command>]'}`;
     const commands = Object.entries(node.commands).map(([name, command]): Row => {
       const marker = name === node.defaultCommand ? ' (default)' : '';
       return [name, command.summary + marker];

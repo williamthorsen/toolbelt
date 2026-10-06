@@ -93,8 +93,17 @@ describe(renderHelp, () => {
       'v11y',
     );
 
-    expect(page.split('\n', 1)[0]).toBe('Usage: v11y [options] <command>');
+    expect(page.split('\n', 1)[0]).toBe('Usage: v11y [options] [<command>]');
     expect(page).toMatch(/\n\nCommands:\n {2}check +Check \(default\)\n {2}fix +Fix\n\n/);
+  });
+
+  it('marks the command as required in the usage line of a group without a default command', () => {
+    const page = renderHelp(
+      makeGroup({ defaultCommand: undefined, commands: { fix: makeCommand({ summary: 'Fix' }) } }),
+      'v11y',
+    );
+
+    expect(page.split('\n', 1)[0]).toBe('Usage: v11y [options] <command>');
   });
 
   it('lists help last, then the version line only when requested', () => {
