@@ -386,6 +386,10 @@ importers:
         version: link:../arrays
 
   packages/nodejs:
+    dependencies:
+      '@williamthorsen/toolbelt.cli':
+        specifier: workspace:*
+        version: link:../cli
     devDependencies:
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
