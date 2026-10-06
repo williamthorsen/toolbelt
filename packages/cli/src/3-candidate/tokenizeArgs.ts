@@ -42,6 +42,7 @@ export function tokenizeArgs(
     nodeOptions[long] = { type: 'boolean', short };
   }
 
+  // rdy-ignore-next-line toolbelt.cli/no-node-parse-args -- the package's own tokenizer, built on node:util
   const { tokens } = nodeParseArgs({
     args: [...argv],
     options: nodeOptions,

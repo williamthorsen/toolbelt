@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "kits": [
+    {
+      "checklists": [
+        "adoption"
+      ],
+      "description": "Adoption checks for a project consuming @williamthorsen/toolbelt.cli",
+      "esbuildVersion": "0.28.2",
+      "inputs": [
+        {
+          "hash": "1f0fc298",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/path-predicates.ts"
+        },
+        {
+          "hash": "921ba938",
+          "kind": "module",
+          "path": "../../adoption/src/conventions/site-handoffs.ts"
+        },
+        {
+          "hash": "e6e87602",
+          "kind": "module",
+          "path": "../../adoption/src/kits/defineAdoptionKit.ts"
+        },
+        {
+          "hash": "09840c67",
+          "kind": "module",
+          "path": "../../adoption/src/mod.ts"
+        },
+        {
+          "hash": "6fdaacac",
+          "kind": "module",
+          "path": "../../adoption/src/portable/condenseWhitespace.ts"
+        },
+        {
+          "hash": "3867c304",
+          "kind": "module",
+          "path": "../../adoption/src/portable/listDirectoryAscents.ts"
+        },
+        {
+          "hash": "982f3e6d",
+          "kind": "module",
+          "path": "../../adoption/src/portable/listFunctionBodies.ts"
+        },
+        {
+          "hash": "ce2e063d",
+          "kind": "module",
+          "path": "../../adoption/src/portable/listTemplateLiterals.ts"
+        },
+        {
+          "hash": "a5dc0993",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readAnchoredWindow.ts"
+        },
+        {
+          "hash": "9ff7cd2c",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readBalancedGroup.ts"
+        },
+        {
+          "hash": "81846f1a",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readLiteral.ts"
+        },
+        {
+          "hash": "6cbf5101",
+          "kind": "module",
+          "path": "kits/default.ts"
+        },
+        {
+          "hash": "5b8af3aa",
+          "kind": "module",
+          "path": "../src/readiness/adoptedExports.ts"
+        },
+        {
+          "hash": "5d7fcf9b",
+          "kind": "module",
+          "path": "../src/readiness/listParserSites.ts"
+        }
+      ],
+      "name": "default",
+      "path": "kits/default.js",
+      "readyupVersion": "0.39.0",
+      "source": "kits/default.ts",
+      "sourceHash": "6cbf5101",
+      "targetHash": "f0afb550"
+    }
+  ]
+}

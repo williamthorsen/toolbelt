@@ -37,11 +37,13 @@
     }
   },
   "files": [
+    ".readyup/kits/*.js",
+    ".readyup/manifest.json",
     "dist/*",
     "CHANGELOG.md"
   ],
   "scripts": {
-    "prepublishOnly": "nmr build"
+    "prepublishOnly": "rdy compile && nmr build"
   },
   "devDependencies": {
     "@williamthorsen/toolbelt.adoption": "workspace:*",
