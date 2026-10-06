@@ -78,7 +78,7 @@ export interface ParseResult<
 // region | Helpers
 
 /** Requires each flag's `default`, when declared, to have the flag's value type. */
-type CheckedFlags<S extends FlagSchema> = S & { readonly [K in keyof S]: { default?: FlagDefault<S[K]> } };
+export type CheckedFlags<S extends FlagSchema> = S & { readonly [K in keyof S]: { default?: FlagDefault<S[K]> } };
 
 /** Leaves the default of an erased definition unconstrained, since its value type is not known. */
 type FlagDefault<F extends FlagDefinition> = FlagDefinition extends F ? unknown : FlagValue<F>;
