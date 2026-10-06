@@ -84,12 +84,8 @@ export function parseValidatedArgs<S extends FlagSchema, O extends readonly Oper
 /** Validates a positional against the operand slot that it fills, in argument order. */
 function acceptPositional(value: string, positionals: string[], definitions: readonly OperandDefinition[]): void {
   const last = definitions.at(-1);
-  const definition =
-    positionals.length < definitions.length
-      ? definitions[positionals.length]
-      : last?.variadic === true
-        ? last
-        : undefined;
+  const overflow = last?.variadic === true ? last : undefined;
+  const definition = positionals.length < definitions.length ? definitions[positionals.length] : overflow;
   if (definition === undefined) {
     throw new ParseError('unexpected-positional', value, `Unexpected positional argument: ${value}`);
   }
