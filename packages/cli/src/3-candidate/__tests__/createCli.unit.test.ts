@@ -124,6 +124,9 @@ describe(defineGroup, () => {
     });
 
     expect(enter(group.bind(undefined), ['-q', '--json', 'x']).rest).toStrictEqual(['--json', 'x']);
+    expect(enter(group.bind(undefined), ['-qj', 'x']).rest).toStrictEqual(['-j', 'x']);
+    expect(enter(group.bind(undefined), ['-qFpkg', 'x']).rest).toStrictEqual(['-Fpkg', 'x']);
+    expect(enter(group.bind(undefined), ['-jq', 'x']).rest).toStrictEqual(['-jq', 'x']);
   });
 });
 

@@ -73,7 +73,7 @@ const v11y = defineGroup({
   commands: {
     check: defineCommand({
       summary: 'Check',
-      flags: { json: { type: 'boolean', description: 'JSON' } },
+      flags: { json: { type: 'boolean', description: 'JSON', short: 'j' } },
       operands: [{ name: 'paths', description: 'Paths', optional: true, variadic: true }],
       run: ({ flags, operands }) => {
         received.push({ command: 'check', flags, operands });
@@ -234,6 +234,19 @@ describe(runCli, () => {
         { command: 'check', flags: { json: true }, operands: { paths: [] } },
         { command: 'check', flags: { json: true }, operands: { paths: [] } },
       ]);
+    });
+
+    it('splits a cluster at the first flag that the group does not claim', async () => {
+      await expect(run(['-qj', 'src'], v11y)).resolves.toMatchObject({ code: 0 });
+
+      expect(received).toStrictEqual([{ command: 'check', flags: { json: true }, operands: { paths: ['src'] } }]);
+    });
+
+    it('passes a cluster that starts with a flag that the group does not claim to the command whole', async () => {
+      await expect(run(['-jq'], v11y)).resolves.toMatchObject({
+        code: 2,
+        stderr: "Error: Unknown option: -q\nTry 'tool check --help'.\n",
+      });
     });
 
     it('receives -- and what follows it as operands', async () => {

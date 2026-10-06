@@ -57,7 +57,10 @@ export interface PassthroughDefinition<C> extends Documentation {
 export interface GroupDefinition<S extends FlagSchema> extends Documentation {
   /** Global options of the group, accepted only before its command token. */
   flags?: CheckedFlags<S>;
-  /** Runs when the group's level has no command token, as though its name preceded the first argument that the group's flags do not claim. */
+  /**
+   * Runs when the group's level has no command token, as though its name preceded the first flag that the
+   * group's flags do not claim, splitting a cluster at that flag: `-qw` is read as `-q -w`.
+   */
   defaultCommand?: string;
 }
 

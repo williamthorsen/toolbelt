@@ -7,7 +7,10 @@ import { findFlagEntry, tokenizeArgs } from './tokenizeArgs.ts';
 import type { FlagDefinition, FlagSchema, OperandDefinition, ParseOptions, ParseResult, ParseSpec } from './types.ts';
 import { validateSpec } from './validateSpec.ts';
 
-/** Options of the parse that a group runs, which may also stop at the first flag that it does not claim. */
+/**
+ * Options of the parse that a group runs, which may also stop at the first flag that it does not claim. A
+ * flag that it does not claim within a cluster splits the cluster: The group keeps the flags before it.
+ */
 interface ParseModeOptions extends ParseOptions {
   stopAtUnclaimedFlag?: boolean;
 }
@@ -52,7 +55,14 @@ export function parseValidatedArgs<S extends FlagSchema, O extends readonly Oper
 
   const positionals: string[] = [];
   let rest: string[] = [];
+  let previousIndex = -1;
+  let precedingInArgument = 0;
   for (const token of tokens) {
+    if (token.kind === 'option') {
+      precedingInArgument = token.index === previousIndex ? precedingInArgument + 1 : 0;
+      previousIndex = token.index;
+    }
+
     if (stopAtPositional && token.kind !== 'option') {
       rest = argv.slice(token.index);
       break;
@@ -66,7 +76,7 @@ export function parseValidatedArgs<S extends FlagSchema, O extends readonly Oper
     const entry = findFlagEntry(flagsByName, token);
     if (entry === undefined) {
       if (options.stopAtUnclaimedFlag === true) {
-        rest = argv.slice(token.index);
+        rest = splitAtOption(argv, token.index, precedingInArgument);
         break;
       }
       throw new ParseError('unknown-flag', token.rawName, `Unknown option: ${token.rawName}`);
@@ -153,6 +163,16 @@ function readFlagValue(
     const reason = error instanceof Error ? error.message : String(error);
     throw new ParseError('invalid-value', value, `Invalid value for ${label}: ${value}. ${reason}`, { cause: error });
   }
+}
+
+/**
+ * Returns the arguments from an option onward. Each option before it in a cluster read one character, since
+ * a value-taking one would have read the rest of the cluster, so the option starts at that offset.
+ */
+function splitAtOption(argv: readonly string[], index: number, precedingInArgument: number): string[] {
+  const argument = argv[index];
+  if (argument === undefined || precedingInArgument === 0) return argv.slice(index);
+  return [`-${argument.slice(1 + precedingInArgument)}`, ...argv.slice(index + 1)];
 }
 
 // endregion | Helpers
