@@ -91,7 +91,7 @@ export async function runTbGit(args: string[], effects: TbGitEffects): Promise<T
   const exitCode = await runCli(args, ROOT, {
     name: 'tb-git',
     context: effects,
-    version: effects.resolveVersion,
+    version: () => resolveVersion(effects),
     stdout,
     stderr,
   });
@@ -147,6 +147,15 @@ async function reportFailures(
   } catch (error) {
     if (error instanceof UsageError) throw error;
 
+    throw new UsageError(error instanceof Error ? error.message : String(error), { cause: error });
+  }
+}
+
+/** Resolves the installed version, reporting a failure as a usage error, which exits 2. */
+function resolveVersion(effects: { readonly resolveVersion: () => string }): string {
+  try {
+    return effects.resolveVersion();
+  } catch (error) {
     throw new UsageError(error instanceof Error ? error.message : String(error), { cause: error });
   }
 }

@@ -86,6 +86,21 @@ describe(runTbGit, () => {
       expect(stdout).toContain('--key');
     });
 
+    it('reports a failure to resolve the version as a usage error', async () => {
+      const failing: TbGitEffects = {
+        ...EFFECTS,
+        resolveVersion: () => {
+          throw new Error('The manifest declares no version.');
+        },
+      };
+
+      await expect(runTbGit(['--version'], failing)).resolves.toStrictEqual({
+        exitCode: 2,
+        stderr: "Error: The manifest declares no version.\nTry 'tb-git --help'.\n",
+        stdout: '',
+      });
+    });
+
     it.each([['--version'], ['-V']])('prints the resolved version on %o', async (flag) => {
       await expect(run([flag])).resolves.toBe(`${VERSION}\n`);
     });

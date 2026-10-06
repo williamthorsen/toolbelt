@@ -84,7 +84,7 @@ export async function runTbNode(args: string[], effects: TbNodeEffects): Promise
   const exitCode = await runCli(args, ROOT, {
     name: 'tb-node',
     context: effects,
-    version: effects.resolveVersion,
+    version: () => resolveVersion(effects),
     stdout,
     stderr,
   });
@@ -274,6 +274,15 @@ async function reportFailures(body: () => number | Promise<number>): Promise<num
 /** Reports a check that does not apply: the reason on stderr, and whatever was learned on stdout. */
 function reportNotApplicable(reason: string, stdout: string): TbNodeResult {
   return { exitCode: EXIT_NOT_APPLICABLE, stderr: `${reason}\n`, stdout: `${stdout}\n` };
+}
+
+/** Resolves the installed version, reporting a failure as a usage error, which exits 2. */
+function resolveVersion(effects: { readonly resolveVersion: () => string }): string {
+  try {
+    return effects.resolveVersion();
+  } catch (error) {
+    throw new UsageError(error instanceof Error ? error.message : String(error), { cause: error });
+  }
 }
 
 /** Reports the shims that the active version does not provide. */

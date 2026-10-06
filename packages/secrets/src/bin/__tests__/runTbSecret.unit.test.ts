@@ -186,6 +186,21 @@ describe(runTbSecret, () => {
       expect(result.stdout).toMatch(new RegExp(String.raw`Usage: tb-secret ${subcommand} \[options\] <service>`));
     });
 
+    it('reports a failure to resolve the version as a usage error', async () => {
+      const effects = {
+        ...createHarness().effects,
+        resolveVersion: () => {
+          throw new Error('The manifest declares no version.');
+        },
+      };
+
+      await expect(runTbSecret(['--version'], effects)).resolves.toStrictEqual({
+        exitCode: 2,
+        stderr: "Error: The manifest declares no version.\nTry 'tb-secret --help'.\n",
+        stdout: '',
+      });
+    });
+
     it.each([['--version'], ['-V']])('prints the installed version under %s', async (flag) => {
       const result = await runTbSecret([flag], createHarness().effects);
 

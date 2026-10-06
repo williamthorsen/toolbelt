@@ -112,7 +112,7 @@ export async function runTbSecret(args: string[], effects: TbSecretEffects): Pro
   const exitCode = await runCli(args, ROOT, {
     name: 'tb-secret',
     context: effects,
-    version: effects.resolveVersion,
+    version: () => resolveVersion(effects),
     stdout,
     stderr,
   });
@@ -197,6 +197,15 @@ async function reportFailures(stderr: Writer, body: () => number | Promise<numbe
       return EXIT_KEYSTORE;
     }
 
+    throw new UsageError(describeError(error), { cause: error });
+  }
+}
+
+/** Resolves the installed version, reporting a failure as a usage error, which exits 2. */
+function resolveVersion(effects: { readonly resolveVersion: () => string }): string {
+  try {
+    return effects.resolveVersion();
+  } catch (error) {
     throw new UsageError(describeError(error), { cause: error });
   }
 }

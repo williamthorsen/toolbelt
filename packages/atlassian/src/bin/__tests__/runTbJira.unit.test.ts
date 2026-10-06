@@ -24,6 +24,19 @@ describe(runTbJira, () => {
       expect(harness.readOutput()).toBe(`${HARNESS_VERSION}\n`);
     });
 
+    it('reports a failure to resolve the version as a usage error', async () => {
+      const harness = createTbJiraHarness();
+      const effects = {
+        ...harness.effects,
+        resolveVersion: () => {
+          throw new Error('The manifest declares no version.');
+        },
+      };
+
+      await expect(runTbJira(['--version'], effects)).resolves.toBe(2);
+      expect(harness.readErrors()).toBe("Error: The manifest declares no version.\nTry 'tb-jira --help'.\n");
+    });
+
     it('reports a missing subcommand as a usage error', async () => {
       const harness = createTbJiraHarness({ env: EMAIL_ENV });
 

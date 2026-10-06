@@ -414,6 +414,21 @@ describe(runTbNode, () => {
   });
 
   describe('usage errors', () => {
+    it('reports a failure to resolve the version as a usage error', async () => {
+      const effects: TbNodeEffects = {
+        ...buildEffects([], []),
+        resolveVersion: () => {
+          throw new Error('The manifest declares no version.');
+        },
+      };
+
+      await expect(runTbNode(['--version'], effects)).resolves.toStrictEqual({
+        exitCode: 2,
+        stderr: "Error: The manifest declares no version.\nTry 'tb-node --help'.\n",
+        stdout: '',
+      });
+    });
+
     it('suggests the closest command for a near miss', async () => {
       expect((await runTbNode(['pnmp'], buildEffects([], []))).stderr).toContain("Did you mean 'pnpm'?");
     });

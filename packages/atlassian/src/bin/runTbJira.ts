@@ -1,9 +1,9 @@
-import { createCli, runCli } from '@williamthorsen/toolbelt.cli/candidate';
+import { createCli, runCli, UsageError } from '@williamthorsen/toolbelt.cli/candidate';
 
 import { authCommand } from './authCommand.ts';
 import { configureProjectCommand } from './configureProjectCommand.ts';
 import { issueGroup } from './issueGroup.ts';
-import type { TbJiraEffects } from './subcommand-support.ts';
+import { describeError, type TbJiraEffects } from './subcommand-support.ts';
 
 const { defineGroup } = createCli<TbJiraEffects>();
 
@@ -38,8 +38,21 @@ export async function runTbJira(args: string[], effects: TbJiraEffects): Promise
   return await runCli(args, ROOT, {
     name: 'tb-jira',
     context: effects,
-    version: effects.resolveVersion,
+    version: () => resolveVersion(effects),
     stdout: { write: effects.write },
     stderr: { write: effects.writeError },
   });
 }
+
+// region | Helpers
+
+/** Resolves the installed version, reporting a failure as a usage error, which exits 2. */
+function resolveVersion(effects: { readonly resolveVersion: () => string }): string {
+  try {
+    return effects.resolveVersion();
+  } catch (error) {
+    throw new UsageError(describeError(error), { cause: error });
+  }
+}
+
+// endregion | Helpers
