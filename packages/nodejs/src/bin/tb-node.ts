@@ -16,19 +16,18 @@ for (const stream of [process.stdout, process.stderr]) {
   });
 }
 
-const { exitCode, stderr, stdout } = await runTbNode(process.argv.slice(2), {
-  cwd: process.cwd(),
-  execPath: process.execPath,
-  findPin: findPackageManagerPin,
-  homeDir: os.homedir(),
-  listStrandedShims: listStrandedAsdfShims,
-  pathDirs: (process.env['PATH'] ?? '').split(path.delimiter),
-  resolvePnpmProvider,
-  resolveVersion: resolveSelfVersion,
-  runPnpmVersion,
-});
-
-if (stdout !== '') process.stdout.write(stdout);
-if (stderr !== '') process.stderr.write(stderr);
-
-process.exitCode = exitCode;
+process.exitCode = await runTbNode(
+  process.argv.slice(2),
+  {
+    cwd: process.cwd(),
+    execPath: process.execPath,
+    findPin: findPackageManagerPin,
+    homeDir: os.homedir(),
+    listStrandedShims: listStrandedAsdfShims,
+    pathDirs: (process.env['PATH'] ?? '').split(path.delimiter),
+    resolvePnpmProvider,
+    resolveVersion: resolveSelfVersion,
+    runPnpmVersion,
+  },
+  { stderr: process.stderr, stdout: process.stdout },
+);

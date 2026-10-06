@@ -73,23 +73,20 @@ const ROOT = defineGroup({
 });
 
 /**
- * Runs the `tb-node` command line, returning what to write and exit with rather than doing either, so that
- * the whole surface is exercisable without a process. Every failure is reported through the result: Nothing throws.
+ * Runs the `tb-node` command line, writing to the given writers and resolving to the exit code rather than exiting,
+ * so that the whole surface is exercisable without a process. Every failure is reported through the writers and the
+ * exit code: Nothing throws.
  *
  * @internal
  */
-export async function runTbNode(args: string[], effects: TbNodeEffects): Promise<TbNodeResult> {
-  const stdout = createTextBuffer();
-  const stderr = createTextBuffer();
-  const exitCode = await runCli(args, ROOT, {
+export async function runTbNode(args: string[], effects: TbNodeEffects, streams: TbNodeStreams): Promise<number> {
+  return runCli(args, ROOT, {
     name: 'tb-node',
     context: effects,
     version: () => resolveVersion(effects),
-    stdout,
-    stderr,
+    stdout: streams.stdout,
+    stderr: streams.stderr,
   });
-
-  return { exitCode, stderr: stderr.text, stdout: stdout.text };
 }
 
 /** What running `pnpm --version` produced: the version that it printed, or why it produced none. */
@@ -115,28 +112,20 @@ export interface TbNodeEffects {
   readonly runPnpmVersion: (dir: string) => PnpmVersionResult;
 }
 
-/** What the caller should write to each stream and exit with. */
+/** What a check should write to each stream and exit with. */
 export interface TbNodeResult {
   readonly exitCode: number;
   readonly stderr: string;
   readonly stdout: string;
 }
 
-// region | Helpers
-
-/** Returns a writer that accumulates what is written to it. */
-function createTextBuffer(): Writer & { readonly text: string } {
-  let text = '';
-
-  return {
-    get text() {
-      return text;
-    },
-    write(chunk: string) {
-      text += chunk;
-    },
-  };
+/** The writers that receive the command's output. */
+export interface TbNodeStreams {
+  readonly stderr: Writer;
+  readonly stdout: Writer;
 }
+
+// region | Helpers
 
 /** Renders the line naming the `pnpm` on PATH and what provides it. */
 function describeProvider(provider: PnpmProvider, execPath: string): string {
