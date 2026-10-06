@@ -132,7 +132,7 @@ function findLine(page: string, text: string): string {
 }
 
 function makeCommand(fields: Partial<Command<unknown>>): Command<unknown> {
-  return {
+  const command: Command<unknown> = {
     kind: 'command',
     summary: 'Summary',
     description: undefined,
@@ -140,13 +140,14 @@ function makeCommand(fields: Partial<Command<unknown>>): Command<unknown> {
     flags: {},
     operands: [],
     passthrough: false,
-    bind: () => ({ invoke: () => 0 }),
+    bind: () => ({ node: command, invoke: () => 0 }),
     ...fields,
   };
+  return command;
 }
 
 function makeGroup(fields: Partial<Group<unknown>>): Group<unknown> {
-  return {
+  const group: Group<unknown> = {
     kind: 'group',
     summary: 'Summary',
     description: undefined,
@@ -154,9 +155,10 @@ function makeGroup(fields: Partial<Group<unknown>>): Group<unknown> {
     flags: {},
     commands: {},
     defaultCommand: 'check',
-    bind: () => ({ enter: () => ({ rest: [], bindCommand: () => undefined }) }),
+    bind: () => ({ node: group, enter: () => ({ rest: [], bindCommand: () => undefined }) }),
     ...fields,
   };
+  return group;
 }
 
 // endregion | Helpers

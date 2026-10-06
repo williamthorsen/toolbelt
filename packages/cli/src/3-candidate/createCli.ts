@@ -81,10 +81,18 @@ export function createCli<C>(): { defineCommand: DefineCommand<C>; defineGroup: 
   function defineGroup<const S extends FlagSchema>(definition: PlainGroupDefinition<S, C>): Group<C>;
   function defineGroup<const S extends FlagSchema, C2>(definition: DerivedGroupDefinition<S, C, C2>): Group<C>;
   function defineGroup<S extends FlagSchema, C2>(
-    definition: PlainGroupDefinition<S, C> | DerivedGroupDefinition<S, C, C2>,
+    definition: GroupDefinition<S> & {
+      deriveContext?: (flags: ParsedFlags<S>, context: C) => C2;
+      commands: Record<string, CommandNode<C2>>;
+    },
   ): Group<C> {
-    if ('deriveContext' in definition) return buildGroup(definition, definition.deriveContext);
-    return buildGroup(definition, (_flags, context: C) => context);
+    return buildGroup(definition, definition.deriveContext ?? keepContext);
+
+    /** Passes the group's context through to its commands. */
+    function keepContext(_flags: ParsedFlags<S>, context: C): C2 {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Without `deriveContext`, the plain overload has bound the commands to `C`, so `C2` is `C`; the implementation signature cannot express that.
+      return context as unknown as C2;
+    }
   }
 
   return { defineCommand, defineGroup };
@@ -116,8 +124,14 @@ interface Documentation {
   epilog?: string;
 }
 
-/** A group definition whose commands receive the group's own context. */
-type PlainGroupDefinition<S extends FlagSchema, C> = GroupDefinition<S> & { commands: Record<string, CommandNode<C>> };
+/**
+ * A group definition whose commands receive the group's own context type. Its optional `deriveContext` gives the
+ * callback contextual types when this overload is tried first, before the derived overload.
+ */
+type PlainGroupDefinition<S extends FlagSchema, C> = GroupDefinition<S> & {
+  deriveContext?: (flags: ParsedFlags<S>, context: C) => C;
+  commands: Record<string, CommandNode<C>>;
+};
 
 /** A group definition whose commands receive the context that `deriveContext` returns. */
 type DerivedGroupDefinition<S extends FlagSchema, C, C2> = GroupDefinition<S> & {
@@ -137,35 +151,39 @@ function buildCommand<C>(
 
   if (definition.passthrough === true) {
     const { run } = definition;
-    return {
+    const command: Command<C> = {
       kind: 'command',
       ...documentation,
       flags: {},
       operands: [],
       passthrough: true,
       bind: (context): BoundCommand => ({
+        node: command,
         invoke: ({ args, stdout, stderr }) => run({ args: [...args], context, stdout, stderr }),
       }),
     };
+    return command;
   }
 
   validateSpec(definition);
   const { run } = definition;
   const flags = definition.flags ?? {};
   const operands = definition.operands ?? [];
-  return {
+  const command: Command<C> = {
     kind: 'command',
     ...documentation,
     flags,
     operands,
     passthrough: false,
     bind: (context): BoundCommand => ({
+      node: command,
       invoke: ({ args, stdout, stderr, baseDir }) => {
         const parsed = parseValidatedArgs(args, { flags, operands }, { baseDir });
         return run({ flags: parsed.flags, operands: parsed.operands, context, stdout, stderr });
       },
     }),
   };
+  return command;
 }
 
 function buildGroup<S extends FlagSchema, C, C2>(
@@ -183,7 +201,7 @@ function buildGroup<S extends FlagSchema, C, C2>(
     throw new Error(`Default command '${defaultCommand}' is not one of the group's commands.`);
   }
 
-  return {
+  const group: Group<C> = {
     kind: 'group',
     summary: definition.summary,
     description: definition.description,
@@ -192,6 +210,7 @@ function buildGroup<S extends FlagSchema, C, C2>(
     commands,
     defaultCommand,
     bind: (context): BoundGroup => ({
+      node: group,
       enter: (args, baseDir) => {
         const parsed = parseValidatedArgs(args, definition, {
           baseDir,
@@ -206,6 +225,7 @@ function buildGroup<S extends FlagSchema, C, C2>(
       },
     }),
   };
+  return group;
 }
 
 // endregion | Helpers

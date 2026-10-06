@@ -36,11 +36,13 @@ export type CommandNode<C> = Command<C> | Group<C>;
 
 /** A command whose context is supplied. */
 export interface BoundCommand {
+  readonly node: Command<never>;
   readonly invoke: (invocation: Invocation) => RunResult;
 }
 
 /** A group whose context is supplied. */
 export interface BoundGroup {
+  readonly node: Group<never>;
   /** Parses the group's flags and derives its commands' context; `rest` begins where the group's flags end. */
   readonly enter: (args: readonly string[], baseDir: string) => GroupEntry;
 }

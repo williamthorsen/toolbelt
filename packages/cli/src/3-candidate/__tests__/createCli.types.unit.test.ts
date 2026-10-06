@@ -70,6 +70,23 @@ describe('createCli types', () => {
     expectTypeOf(build).returns.toEqualTypeOf<Group<RootContext>>();
   });
 
+  it("types deriveContext's parameters when every command also fits the group's own context", () => {
+    const { defineCommand: define, defineGroup: group } = createCli<RootContext>();
+
+    expectTypeOf(() =>
+      group({
+        summary: 'Root',
+        flags: { style: { type: 'string', description: 'S' } },
+        deriveContext: (flags, context) => {
+          expectTypeOf(flags).toEqualTypeOf<{ style: string | undefined }>();
+          expectTypeOf(context).toEqualTypeOf<RootContext>();
+          return context;
+        },
+        commands: { ping: define({ summary: 'Ping', run: () => 0 }) },
+      }),
+    ).toBeFunction();
+  });
+
   it('nests a context-free command under a contextful group', () => {
     expectTypeOf(() =>
       createCli<RootContext>().defineGroup({

@@ -3,6 +3,7 @@ export type { Command, CommandNode, Group, Writer } from './nodes.ts';
 export { parseArgs } from './parseArgs.ts';
 export { ParseError, type ParseErrorKind } from './ParseError.ts';
 export { renderHelp, type RenderHelpOptions } from './renderHelp.ts';
+export { runCli, type RunCliOptions } from './runCli.ts';
 export type {
   FlagDefinition,
   FlagSchema,
