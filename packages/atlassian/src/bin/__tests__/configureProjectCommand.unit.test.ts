@@ -34,7 +34,7 @@ describe('tb-jira configure-project', () => {
     const harness = createHarness();
 
     await expect(run(harness, ['--help'])).resolves.toBe(0);
-    expect(harness.readOutput()).toContain('Usage: tb-jira configure-project [KEY]');
+    expect(harness.readOutput()).toContain('Usage: tb-jira configure-project [options] [<key>]');
   });
 
   it('requires a project key when the spec does not set one, naming both sources', async () => {
@@ -182,7 +182,7 @@ describe('tb-jira configure-project', () => {
 
       await expect(run(harness, [KEY])).resolves.toBe(2);
       expect(harness.readErrors()).toContain(`Project ${KEY} has no board.`);
-      expect(harness.readErrors()).toContain('Try `tb-jira configure-project --help`.');
+      expect(harness.readErrors()).toContain("Try 'tb-jira configure-project --help'.");
     });
   });
 

@@ -51,6 +51,7 @@
     "prepublishOnly": "nmr build"
   },
   "dependencies": {
+    "@williamthorsen/toolbelt.cli": "workspace:*",
     "@williamthorsen/toolbelt.secrets": "workspace:*"
   },
   "devDependencies": {

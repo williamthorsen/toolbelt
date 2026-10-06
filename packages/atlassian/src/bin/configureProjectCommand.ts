@@ -1,4 +1,4 @@
-import { parseArgs } from 'node:util';
+import { type Command, createCli } from '@williamthorsen/toolbelt.cli/candidate';
 
 import { applyBoardFeatures } from '../3-candidate/applyBoardFeatures.ts';
 import { applyWorkflowUpdate } from '../3-candidate/applyWorkflowUpdate.ts';
@@ -9,12 +9,14 @@ import { moveIssuesToBacklog } from '../3-candidate/moveIssuesToBacklog.ts';
 import { readBoardColumnReport } from '../3-candidate/readBoardColumnReport.ts';
 import { readProjectConfiguration } from '../3-candidate/readProjectConfiguration.ts';
 import { DEFAULT_TOKEN_SERVICE } from '../internal/jiraTokenChain.ts';
-import { createSubcommandRequest, CREDENTIAL_OPTIONS } from './createSubcommandRequest.ts';
+import { createSubcommandRequest, CREDENTIAL_OPTIONS, type CredentialValues } from './createSubcommandRequest.ts';
 import { formatContinuationLine, formatLabelledLine } from './labelled-lines.ts';
 import { type LoadedProjectSpec, loadProjectSpec } from './loadProjectSpec.ts';
 import { renderPlan } from './renderPlan.ts';
 import { renderVerification } from './renderVerification.ts';
-import { EXIT_MISMATCH, EXIT_OK, succeed, type TbJiraEffects } from './subcommand-support.ts';
+import { EXIT_MISMATCH, EXIT_OK, reportFailures, type TbJiraEffects } from './subcommand-support.ts';
+
+const { defineCommand } = createCli<TbJiraEffects>();
 
 /**
  * What `POST /rest/agile/1.0/board/{boardId}/issue` accepts in one call, which bounds the undo that the
@@ -22,27 +24,15 @@ import { EXIT_MISMATCH, EXIT_OK, succeed, type TbJiraEffects } from './subcomman
  */
 const BOARD_MOVE_LIMIT = 50;
 
-const CONFIGURE_HELP = `Usage: tb-jira configure-project [KEY] [options]
-
-Reconcile a Jira project's statuses, workflow transitions, and board features against a declarative spec, then
+const CONFIGURE_DESCRIPTION = `Reconcile a Jira project's statuses, workflow transitions, and board features against a declarative spec, then
 report what the server stores afterwards. The run is idempotent: A project already matching the spec is left
-untouched.
+untouched.`;
 
-Options:
-  -h, --help                 Print this help
-      --dry-run              Print the plan and write nothing
-      --email <address>      Atlassian account email; names the keychain account
-      --seed-backlog <name>  Move every work item in that status off the board and into the backlog
-      --site <host>          Jira site, such as acme.atlassian.net
-      --spec <path>          Spec file, rather than the upward search
-      --token-command <cmd>  Shell line printing the API token
-      --token-stdin          Read the API token from stdin
-
-The spec is the consuming repo's file, found by ascending from the working directory for
+const CONFIGURE_EPILOG = `The spec is the consuming repo's file, found by ascending from the working directory for
 \`jira-project-spec.json\`; \`--spec\` names one directly.
 
 Resolution orders, each stopping at the first source that supplies a value:
-  project  KEY, then the spec's \`projectKey\`
+  project  <key>, then the spec's \`projectKey\`
   site     --site, then JIRA_SITE, then the spec's \`site\`
   email    --email, then JIRA_EMAIL, then the spec's \`email\`
   token    --token-stdin, then JIRA_API_TOKEN, then --token-command, then the macOS keychain
@@ -61,33 +51,44 @@ A board feature locked by Jira is reported as \`locked\` in the plan and \`LOCK\
 never written: The call would return 200 and change nothing. Neither it nor a column gap affects the exit code.`;
 
 /**
- * Runs the `configure-project` subcommand: It resolves the credential, plans the reconciliation against the
- * project's live configuration, writes what the plan contains, and reports what the server stores afterwards.
+ * The `configure-project` command: It resolves the credential, plans the reconciliation against the project's live
+ * configuration, writes what the plan contains, and reports what the server stores afterwards.
  *
  * @internal
  */
-export async function runConfigureProject(args: string[], effects: TbJiraEffects): Promise<number> {
-  const { positionals, values } = parseArgs({
-    allowPositionals: true,
-    args,
-    options: {
-      ...CREDENTIAL_OPTIONS,
-      'dry-run': { type: 'boolean', default: false },
-      help: { type: 'boolean', short: 'h' },
-      'seed-backlog': { type: 'string' },
+export const configureProjectCommand: Command<TbJiraEffects> = defineCommand({
+  summary: "Reconcile a project's statuses, workflow, and board features against a spec",
+  description: CONFIGURE_DESCRIPTION,
+  epilog: CONFIGURE_EPILOG,
+  flags: {
+    ...CREDENTIAL_OPTIONS,
+    dryRun: { type: 'boolean', description: 'Print the plan and write nothing' },
+    seedBacklog: {
+      type: 'string',
+      description: 'Move every work item in that status off the board and into the backlog',
+      valueHint: 'name',
     },
-    strict: true,
-  });
+  },
+  operands: [{ name: 'key', description: "The project key; the spec's `projectKey` when omitted", optional: true }],
+  run: ({ context: effects, flags, operands, stderr }) =>
+    reportFailures(stderr, async () => await configureProject(effects, flags, operands.key)),
+});
 
-  if (values.help === true) return succeed(effects, CONFIGURE_HELP);
+// region | Helpers
 
-  const seedBacklog = values['seed-backlog'];
+/** Reconciles the project and reports the outcome, returning the exit code. */
+async function configureProject(
+  effects: TbJiraEffects,
+  values: CredentialValues & { dryRun: boolean; seedBacklog: string | undefined; spec: string | undefined },
+  keyOperand: string | undefined,
+): Promise<number> {
+  const seedBacklog = values.seedBacklog;
   const loaded = loadProjectSpec(effects, values.spec);
   if (loaded === undefined) {
     throw new Error(`No jira-project-spec.json at or above ${effects.cwd()}. Name one with --spec.`);
   }
   const { spec } = loaded;
-  const projectKey = selectProjectKey(positionals, loaded);
+  const projectKey = selectProjectKey(keyOperand, loaded);
 
   const request = await createSubcommandRequest(effects, values, spec);
 
@@ -95,7 +96,7 @@ export async function runConfigureProject(args: string[], effects: TbJiraEffects
   const plan = buildReconciliationPlan(spec, configuration);
   effects.write(`${renderPlan(plan, configuration, { projectKey, seedBacklog })}\n`);
 
-  if (values['dry-run']) {
+  if (values.dryRun) {
     effects.write('\ndry run: Nothing was written\n');
 
     return EXIT_OK;
@@ -125,14 +126,9 @@ export async function runConfigureProject(args: string[], effects: TbJiraEffects
   return report.matches ? EXIT_OK : EXIT_MISMATCH;
 }
 
-// region | Helpers
-
-/** Chooses the project to reconcile: the sole positional, or else the spec's `projectKey`. */
-function selectProjectKey(positionals: string[], loaded: LoadedProjectSpec): string {
-  if (positionals.length > 1) throw new Error(`Expected one project key. Received ${positionals.length}.`);
-
-  const [projectKey = ''] = positionals;
-  if (projectKey !== '') return projectKey;
+/** Chooses the project to reconcile: the operand, or else the spec's `projectKey`. */
+function selectProjectKey(projectKey: string | undefined, loaded: LoadedProjectSpec): string {
+  if (projectKey !== undefined && projectKey !== '') return projectKey;
   if (loaded.spec.projectKey !== undefined) return loaded.spec.projectKey;
 
   throw new Error(

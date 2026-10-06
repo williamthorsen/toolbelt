@@ -1,35 +1,16 @@
-import { JiraRequestError } from '../3-candidate/JiraRequestError.ts';
-import { JiraResponseError } from '../3-candidate/JiraResponseError.ts';
-import { JiraTransportError } from '../3-candidate/JiraTransportError.ts';
-import { runAuth } from './runAuth.ts';
-import { runConfigureProject } from './runConfigureProject.ts';
-import { runIssue } from './runIssue.ts';
-import {
-  describeError,
-  EXIT_KEYSTORE,
-  EXIT_REQUEST,
-  EXIT_TRANSPORT,
-  fail,
-  KeystoreError,
-  succeed,
-  type TbJiraEffects,
-} from './subcommand-support.ts';
+import { createCli, runCli } from '@williamthorsen/toolbelt.cli/candidate';
 
-const ROOT_HELP = `Usage: tb-jira <subcommand> [options]
+import { authCommand } from './authCommand.ts';
+import { configureProjectCommand } from './configureProjectCommand.ts';
+import { issueGroup } from './issueGroup.ts';
+import type { TbJiraEffects } from './subcommand-support.ts';
 
-Reconcile a Jira Cloud project against a declarative spec, list its work items, and manage the API token with
-which it authenticates.
+const { defineGroup } = createCli<TbJiraEffects>();
 
-Subcommands:
-  auth               Store, remove, and report the Jira API token
-  configure-project  Reconcile a project's statuses, workflow, and board features against a spec
-  issue              List a project's work items
-
-Options:
-  -h, --help     Print this help; each subcommand takes its own --help
-      --version  Print the installed version
-
-Exit codes:
+const ROOT = defineGroup({
+  summary:
+    'Reconcile a Jira Cloud project against a declarative spec, list its work items, and manage the API token with which it authenticates.',
+  epilog: `Exit codes:
   0  The command succeeded
   1  No token is stored, or nothing was there to remove
   2  Usage or validation error
@@ -38,7 +19,13 @@ Exit codes:
   5  The run wrote, but the project does not match the spec
   6  Jira could not be reached
 
-Jira Cloud and team-managed projects only.`;
+Jira Cloud and team-managed projects only.`,
+  commands: {
+    auth: authCommand,
+    'configure-project': configureProjectCommand,
+    issue: issueGroup,
+  },
+});
 
 /**
  * Runs the `tb-jira` command line, writing through the effects that it is given and returning the code to exit
@@ -48,46 +35,11 @@ Jira Cloud and team-managed projects only.`;
  * @internal
  */
 export async function runTbJira(args: string[], effects: TbJiraEffects): Promise<number> {
-  try {
-    return await dispatch(args, effects);
-  } catch (error) {
-    if (error instanceof KeystoreError) {
-      effects.writeError(`${error.message}\n`);
-
-      return EXIT_KEYSTORE;
-    }
-
-    if (error instanceof JiraRequestError || error instanceof JiraResponseError) {
-      effects.writeError(`${error.message}\n`);
-
-      return EXIT_REQUEST;
-    }
-
-    // A run that never reached Jira is retryable, and no help text can fix a network.
-    if (error instanceof JiraTransportError) {
-      effects.writeError(`${describeError(error)}\n`);
-
-      return EXIT_TRANSPORT;
-    }
-
-    return fail(effects, describeError(error), args);
-  }
+  return await runCli(args, ROOT, {
+    name: 'tb-jira',
+    context: effects,
+    version: effects.resolveVersion,
+    stdout: { write: effects.write },
+    stderr: { write: effects.writeError },
+  });
 }
-
-// region | Helpers
-
-/** Passes the arguments to a subcommand, or handles the root command's own options. */
-async function dispatch(args: string[], effects: TbJiraEffects): Promise<number> {
-  const [command, ...rest] = args;
-
-  if (command === 'auth') return await runAuth(rest, effects);
-  if (command === 'configure-project') return await runConfigureProject(rest, effects);
-  if (command === 'issue') return await runIssue(rest, effects);
-  if (command === '--help' || command === '-h') return succeed(effects, ROOT_HELP);
-  if (command === '--version') return succeed(effects, effects.resolveVersion());
-  if (command === undefined) return fail(effects, 'A subcommand is required.', args);
-
-  return fail(effects, `Unknown ${command.startsWith('-') ? 'option' : 'subcommand'}: ${command}`, args);
-}
-
-// endregion | Helpers

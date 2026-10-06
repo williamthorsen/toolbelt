@@ -289,6 +289,9 @@ importers:
 
   packages/atlassian:
     dependencies:
+      '@williamthorsen/toolbelt.cli':
+        specifier: workspace:*
+        version: link:../cli
       '@williamthorsen/toolbelt.secrets':
         specifier: workspace:*
         version: link:../secrets

@@ -13,13 +13,14 @@ describe(runTbJira, () => {
       const harness = createTbJiraHarness({ env: EMAIL_ENV });
 
       await expect(runTbJira(['--help'], harness.effects)).resolves.toBe(0);
-      expect(harness.readOutput()).toContain('Usage: tb-jira <subcommand>');
+      expect(harness.readOutput()).toContain('Usage: tb-jira [options] <command>');
+      expect(harness.readOutput()).toContain('Exit codes:');
     });
 
-    it('prints the installed version', async () => {
+    it.each([['--version'], ['-V']])('prints the installed version on %o', async (flag) => {
       const harness = createTbJiraHarness({ env: EMAIL_ENV });
 
-      await expect(runTbJira(['--version'], harness.effects)).resolves.toBe(0);
+      await expect(runTbJira([flag], harness.effects)).resolves.toBe(0);
       expect(harness.readOutput()).toBe(`${HARNESS_VERSION}\n`);
     });
 
@@ -27,7 +28,7 @@ describe(runTbJira, () => {
       const harness = createTbJiraHarness({ env: EMAIL_ENV });
 
       await expect(runTbJira([], harness.effects)).resolves.toBe(2);
-      expect(harness.readErrors()).toContain('A subcommand is required.');
+      expect(harness.readErrors()).toContain('Error: A command is required.');
     });
 
     it('distinguishes an unknown option from an unknown subcommand', async () => {
@@ -37,8 +38,8 @@ describe(runTbJira, () => {
       await runTbJira(['--nope'], options.effects);
       await runTbJira(['nope'], subcommands.effects);
 
-      expect(options.readErrors()).toContain('Unknown option: --nope');
-      expect(subcommands.readErrors()).toContain('Unknown subcommand: nope');
+      expect(options.readErrors()).toContain('Error: Unknown option: --nope');
+      expect(subcommands.readErrors()).toContain('Error: Unknown command: nope');
     });
 
     it('points a failing subcommand at the help of that subcommand', async () => {
@@ -46,7 +47,15 @@ describe(runTbJira, () => {
 
       await runTbJira(['auth', 'nope'], harness.effects);
 
-      expect(harness.readErrors()).toContain('Try `tb-jira auth --help`.');
+      expect(harness.readErrors()).toContain("Try 'tb-jira auth --help'.");
+    });
+
+    it('suggests the closest command for a near miss', async () => {
+      const harness = createTbJiraHarness();
+
+      await runTbJira(['isue'], harness.effects);
+
+      expect(harness.readErrors()).toContain("Did you mean 'issue'?");
     });
 
     it('lists issue among its subcommands', async () => {
@@ -81,10 +90,13 @@ describe(runTbJira, () => {
       expect(harness.stored()).toStrictEqual({ [`${EMAIL}|${SERVICE}`]: 'typed-token' });
     });
 
-    it('stores under the email and service that it is given', async () => {
+    it.each([
+      [['auth', 'set', '--email', 'other@example.com', '--service', 'custom']],
+      [['auth', '--email', 'other@example.com', '--service', 'custom', 'set']],
+    ])('stores under the email and service that it is given, on either side of the action: %o', async (args) => {
       const harness = createTbJiraHarness({ env: EMAIL_ENV, stdin: 'a-token' });
 
-      await runTbJira(['auth', 'set', '--email', 'other@example.com', '--service', 'custom'], harness.effects);
+      await runTbJira(args, harness.effects);
 
       expect(harness.stored()).toStrictEqual({ 'other@example.com|custom': 'a-token' });
     });

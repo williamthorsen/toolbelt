@@ -1,4 +1,4 @@
-import type { ParseArgsOptionsConfig } from 'node:util';
+import type { FlagSchema } from '@williamthorsen/toolbelt.cli/candidate';
 
 import type { JiraRequest } from '../3-candidate/createTokenTransport.ts';
 import { resolveJiraBaseUrl } from '../3-candidate/resolveJiraBaseUrl.ts';
@@ -13,12 +13,12 @@ import { createDeferredStore, stripOneTrailingNewline, type TbJiraEffects } from
  * @internal
  */
 export const CREDENTIAL_OPTIONS = {
-  email: { type: 'string' },
-  site: { type: 'string' },
-  spec: { type: 'string' },
-  'token-command': { type: 'string' },
-  'token-stdin': { type: 'boolean', default: false },
-} as const satisfies ParseArgsOptionsConfig;
+  email: { type: 'string', description: 'Atlassian account email; names the keychain account', valueHint: 'address' },
+  site: { type: 'string', description: 'Jira site, such as acme.atlassian.net', valueHint: 'host' },
+  spec: { type: 'string', description: 'Spec file, rather than the upward search', valueHint: 'path' },
+  tokenCommand: { type: 'string', description: 'Shell line printing the API token', valueHint: 'cmd' },
+  tokenStdin: { type: 'boolean', description: 'Read the API token from stdin' },
+} as const satisfies FlagSchema;
 
 /**
  * Resolves the site, email, and token from the flags, the environment, and the spec's fallbacks, and builds the
@@ -44,8 +44,8 @@ export async function createSubcommandRequest(
       account: email,
       env: effects.env,
       store: createDeferredStore(effects),
-      token: credentials['token-stdin'] ? stripOneTrailingNewline(await effects.readStdin()) : undefined,
-      tokenCommand: credentials['token-command'],
+      token: credentials.tokenStdin ? stripOneTrailingNewline(await effects.readStdin()) : undefined,
+      tokenCommand: credentials.tokenCommand,
     }),
   });
 }
@@ -60,6 +60,6 @@ export interface CredentialFallbacks {
 export interface CredentialValues {
   readonly email?: string | undefined;
   readonly site?: string | undefined;
-  readonly 'token-command'?: string | undefined;
-  readonly 'token-stdin'?: boolean | undefined;
+  readonly tokenCommand?: string | undefined;
+  readonly tokenStdin?: boolean | undefined;
 }
