@@ -400,6 +400,7 @@ describe(runTbNode, () => {
 
       expect(exitCode).toBe(0);
       expect(stdout).toContain('Usage: tb-node asdf-shims');
+      expect(stdout.match(/^Options:$/gm)).toHaveLength(1);
       expect(stdout).toContain('asdf reshim nodejs');
     });
 

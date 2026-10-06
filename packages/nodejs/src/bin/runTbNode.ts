@@ -35,10 +35,7 @@ and needs no repository. It exits 1 when a shim is stranded, 0 when none is, and
 install.
 
 The printed remedies use \`asdf reshim nodejs\`, which regenerates every shim from the installed versions,
-rather than \`asdf reshim nodejs <version>\`, which merges into an existing shim and keeps stale lines.
-
-Options:
-  -h, --help  Print this help`;
+rather than \`asdf reshim nodejs <version>\`, which merges into an existing shim and keeps stale lines.`;
 
 const PNPM_DESCRIPTION = `Check the pnpm that runs in the working directory against the packageManager pin of the nearest package.json
 declaring one, from the working directory upward, and name what provides the pnpm on PATH: the asdf pnpm plugin,
