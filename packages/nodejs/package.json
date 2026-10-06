@@ -1,10 +1,11 @@
 {
   "name": "@williamthorsen/toolbelt.nodejs",
   "version": "3.3.0",
-  "description": "Utilities for inspecting Node.js runtimes, toolchains, and the commands that they install",
+  "description": "Utilities for inspecting Node.js runtimes and toolchains, and for pruning node_modules directories",
   "keywords": [
     "cli",
     "esm",
+    "node_modules",
     "nodejs",
     "runtime",
     "toolbelt",
@@ -51,7 +52,8 @@
     "prepublishOnly": "nmr build"
   },
   "dependencies": {
-    "@williamthorsen/toolbelt.cli": "workspace:*"
+    "@williamthorsen/toolbelt.cli": "workspace:*",
+    "@williamthorsen/toolbelt.numbers": "workspace:*"
   },
   "devDependencies": {
     "@williamthorsen/toolbelt.testing": "workspace:*"

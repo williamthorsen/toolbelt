@@ -386,6 +386,26 @@ describe(runTbNode, () => {
       expect(stdout).toContain('Exit codes:');
       expect(stdout).toContain('asdf-shims');
       expect(stdout).toContain('pnpm');
+      expect(stdout).toContain('prune-modules');
+    });
+
+    it('prints the prune-modules help with its flags, protect-list, and exit codes', async () => {
+      const { exitCode, stdout } = await runWithBuffers(['prune-modules', '--help'], buildEffects([], []));
+
+      expect(exitCode).toBe(0);
+      expect(stdout).toContain('Usage: tb-node prune-modules');
+      for (const flag of [
+        '--active-days',
+        '--apply',
+        '--no-active-guard',
+        '--no-confirm',
+        '--protect-list',
+        '--root',
+      ]) {
+        expect(stdout).toContain(flag);
+      }
+      expect(stdout).toContain('~/.config/tb-node/protected-node-modules.txt');
+      expect(stdout).toContain('It exits 0 when it completes');
     });
 
     it.each([['--help'], ['-h']])('prints the pnpm help on %o', async (flag) => {
@@ -457,8 +477,11 @@ function buildEffects(shims: StrandedAsdfShim[], pathDirs: string[]): TbNodeEffe
     execPath: EXEC_PATH,
     findPin: () => PIN,
     homeDir: '/Users/me',
+    isStdinTty: () => false,
     listStrandedShims: () => shims,
+    now: () => 0,
     pathDirs,
+    readAnswer: () => Promise.resolve(undefined),
     resolvePnpmProvider: () => COREPACK_PROVIDER,
     resolveVersion: () => VERSION,
     runPnpmVersion: () => ({ version: '12.4.0' }),
