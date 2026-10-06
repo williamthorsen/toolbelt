@@ -105,8 +105,21 @@ describe(runPruneModules, () => {
     const { exitCode, stderr, stdout } = await runWithBuffers(['prune-modules'], buildEffects(tree));
 
     expect(exitCode).toBe(3);
-    expect(stderr).toBe(`Root ${tree.resolve('repos')} does not exist; nothing to prune.\n`);
+    expect(stderr).toBe(`Root ${tree.resolve('repos')} is not an existing directory; nothing to prune.\n`);
     expect(stdout).toBe('');
+  });
+
+  it.each([
+    ['through the symlinked root', '~/linked/*.live'],
+    ['by its real path', '~/repos/*.live'],
+  ])('protects a project that a pattern names %s', async (_, pattern) => {
+    using tree = createProjects();
+    tree.symlink('linked', tree.resolve('repos'));
+    tree.write(PROTECT_LIST, `${pattern}\n`);
+
+    const { stdout } = await runWithBuffers(['prune-modules', '--root', tree.resolve('linked')], buildEffects(tree));
+
+    expect(stdout).toContain(`${tree.resolve('linked/keep.live/node_modules')} (protected by ${pattern})`);
   });
 
   it('resolves --root and --protect-list against the working directory', async () => {

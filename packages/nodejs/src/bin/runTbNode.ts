@@ -81,7 +81,7 @@ Sizes are allocated disk space, as du reports it. A pnpm project shares files wi
 node_modules frees less until \`pnpm store prune\` runs.
 
 It exits 0 when it completes; 1 when a deletion fails or the confirmation is declined; and 3, with the reason on
-stderr, when the root does not exist.`;
+stderr, when the root is not an existing directory.`;
 
 const ROOT = defineGroup({
   summary:

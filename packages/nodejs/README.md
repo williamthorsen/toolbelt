@@ -97,12 +97,12 @@ The scan follows no symlinks and does not search inside a `node_modules` directo
 
 ### Exit codes
 
-| Code | Meaning                                                                                                                            |
-| ---- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `0`  | A check found nothing to fix, or `prune-modules` completed                                                                         |
-| `1`  | A check found something to fix, with the report on stdout, or a deletion failed or the confirmation was declined                   |
-| `2`  | Usage or validation error, with the message on stderr                                                                              |
-| `3`  | Not applicable, with the reason on stderr: the running node is not an asdf install, no pin is in reach, or the root does not exist |
+| Code | Meaning                                                                                                                                |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `0`  | A check found nothing to fix, or `prune-modules` completed                                                                             |
+| `1`  | A check found something to fix, with the report on stdout, or a deletion failed or the confirmation was declined                       |
+| `2`  | Usage or validation error, with the message on stderr                                                                                  |
+| `3`  | Not applicable, with the reason on stderr: the running node is not an asdf install, no pin is in reach, or the root is not a directory |
 
 ```sh
 if ! tb-node asdf-shims >/dev/null; then

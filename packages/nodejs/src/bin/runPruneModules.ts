@@ -45,10 +45,9 @@ export async function runPruneModules(
     throw new UsageError('Confirming --apply needs a terminal on stdin; pass --no-confirm to delete without asking.');
   }
 
-  const requestedRoot = options.root ?? path.join(effects.homeDir, DEFAULT_ROOT);
-  const root = resolveRoot(requestedRoot);
-  if (root === undefined) {
-    stderr.write(`Root ${requestedRoot} does not exist; nothing to prune.\n`);
+  const root = options.root ?? path.join(effects.homeDir, DEFAULT_ROOT);
+  if (fs.statSync(root, { throwIfNoEntry: false })?.isDirectory() !== true) {
+    stderr.write(`Root ${root} is not an existing directory; nothing to prune.\n`);
     return EXIT_NOT_APPLICABLE;
   }
 
@@ -146,7 +145,10 @@ interface Finding {
 function classify(dir: string, context: ClassifyContext): Finding {
   const projectDir = path.dirname(dir);
 
-  const protecting = findProtectingPattern(projectDir, context.entries);
+  // A pattern may name the project through a symlink, as the root was given, or by its real path.
+  const protecting =
+    findProtectingPattern(projectDir, context.entries) ??
+    findProtectingPattern(fs.realpathSync(projectDir), context.entries);
   if (protecting !== undefined) return { bytes: 0, dir, reason: `protected by ${protecting.pattern}` };
 
   if (context.activeWindowMs !== undefined) {
@@ -215,16 +217,6 @@ function renderFindings(findings: readonly Finding[]): string[] {
 
     return `${(labels[index] ?? '').padStart(width)}  ${finding.dir}${reason}`;
   });
-}
-
-/** Resolves the root through any symlink, or returns undefined when it does not exist. */
-function resolveRoot(root: string): string | undefined {
-  try {
-    return fs.realpathSync(root);
-  } catch (error) {
-    if (error instanceof Error && 'code' in error && error.code === 'ENOENT') return undefined;
-    throw error;
-  }
 }
 
 /** Sums the measured sizes of findings. */
