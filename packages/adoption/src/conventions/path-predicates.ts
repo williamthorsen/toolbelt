@@ -8,7 +8,8 @@ const TEST_SUFFIX = /\.(?:spec|test)\.[cm]?[jt]sx?$/;
  *
  * The selection wanted by every kit sweeping a project's own sources: a JavaScript or TypeScript file that is
  * neither a bootstrap wrapper nor a test. A kit sweeping tests instead inverts the last of those and calls
- * `isTestFile` directly, and one sweeping both takes `isAdoptableSourceOrTest`.
+ * `isTestFile` directly, one sweeping both takes `isAdoptableSourceOrTest`, and one sweeping `bin/` too takes
+ * `isAdoptableSourceOrBin`.
  *
  * @internal
  */

@@ -9,7 +9,7 @@
       "esbuildVersion": "0.28.2",
       "inputs": [
         {
-          "hash": "1f0fc298",
+          "hash": "fcd04dfa",
           "kind": "module",
           "path": "../../adoption/src/conventions/path-predicates.ts"
         },
