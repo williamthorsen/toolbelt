@@ -1,58 +1,83 @@
-import { parseArgs } from 'node:util';
+import { createCli, runCli, UsageError, type Writer } from '@williamthorsen/toolbelt.cli/candidate';
 
 import { deriveBranchNumber } from '../3-candidate/deriveBranchNumber.ts';
 import { findBranchTicketRef } from '../3-candidate/findBranchTicketRef.ts';
 
-const EXIT_OK = 0;
 const EXIT_NO_RESULT = 1;
-const EXIT_USAGE = 2;
 
-const SUBCOMMANDS = new Set(['branch-number', 'ticket-ref']);
+const { defineCommand, defineGroup } = createCli<TbGitEffects>();
 
-const HELP_OPTION = { help: { type: 'boolean', short: 'h' } } as const;
+const BRANCH_OPERAND = {
+  name: 'branch',
+  description: 'The branch name; the checked-out branch when omitted',
+  optional: true,
+} as const;
 
-const ROOT_HELP = `Usage: tb-git <subcommand> [<branch>] [options]
+const KEY_FLAG = {
+  type: 'string',
+  description: "The project's ticket key, matched in any casing",
+  valueHint: 'key',
+} as const;
 
-Utilities for working with git branch names.
-
-Subcommands:
-  branch-number  Print a stable number derived from a branch name
-  ticket-ref     Print the ID of the ticket encoded by a branch name
-
-Options:
-  -h, --help     Print this help; each subcommand takes its own --help
-      --version  Print the installed version
-
-With no <branch>, the checked-out branch is used.
-
-Exit codes:
+const ROOT = defineGroup({
+  summary: 'Utilities for working with git branch names.',
+  epilog: `Exit codes:
   0  A result was printed
   1  ticket-ref found no ticket in the branch name
-  2  Usage or validation error`;
+  2  Usage or validation error`,
+  commands: {
+    'branch-number': defineCommand({
+      summary: 'Print a stable number derived from a branch name',
+      description:
+        'Print the number of the ticket encoded by the branch name, or a hash of the name when it encodes none.',
+      epilog: 'Write a negative offset in the = form: --offset=-3.',
+      flags: {
+        key: KEY_FLAG,
+        max: {
+          type: 'string',
+          description: 'Upper bound, inclusive (default 4294967295)',
+          valueHint: 'n',
+          parse: parseNumber,
+        },
+        min: { type: 'string', description: 'Lower bound, inclusive (default 0)', valueHint: 'n', parse: parseNumber },
+        offset: {
+          type: 'string',
+          description: 'Rotate the result within the bounds',
+          valueHint: 'n',
+          parse: parseNumber,
+        },
+      },
+      operands: [BRANCH_OPERAND],
+      run: ({ context, flags, operands, stdout }) =>
+        reportFailures(() => {
+          const number = deriveBranchNumber(selectBranch(operands.branch, context), {
+            key: flags.key,
+            max: flags.max,
+            min: flags.min,
+            offset: flags.offset,
+          });
+          stdout.write(`${number}\n`);
+        }),
+    }),
+    'ticket-ref': defineCommand({
+      summary: 'Print the ID of the ticket encoded by a branch name',
+      description: 'Print the ID of the ticket encoded by the branch name, exiting 1 when it encodes none.',
+      flags: {
+        json: { type: 'boolean', description: 'Print the whole ref on one line as JSON' },
+        key: KEY_FLAG,
+      },
+      operands: [BRANCH_OPERAND],
+      run: ({ context, flags, operands, stdout }) =>
+        reportFailures(() => {
+          const ref = findBranchTicketRef(selectBranch(operands.branch, context), { key: flags.key });
+          if (ref === undefined) return EXIT_NO_RESULT;
 
-const BRANCH_NUMBER_HELP = `Usage: tb-git branch-number [<branch>] [options]
-
-Print the number of the ticket encoded by the branch name, or a hash of the name when it encodes none.
-
-Options:
-  -h, --help      Print this help
-      --key K     The project's ticket key, matched in any casing
-      --max N     Upper bound, inclusive (default 4294967295)
-      --min N     Lower bound, inclusive (default 0)
-      --offset N  Rotate the result within the bounds; write a negative one as --offset=-3
-
-With no <branch>, the checked-out branch is used.`;
-
-const TICKET_REF_HELP = `Usage: tb-git ticket-ref [<branch>] [options]
-
-Print the ID of the ticket encoded by the branch name, exiting 1 when it encodes none.
-
-Options:
-  -h, --help   Print this help
-      --json   Print the whole ref on one line as JSON
-      --key K  The project's ticket key, matched in any casing
-
-With no <branch>, the checked-out branch is used.`;
+          stdout.write(`${flags.json ? JSON.stringify(ref) : ref.id}\n`);
+          return;
+        }),
+    }),
+  },
+});
 
 /**
  * Runs the `tb-git` command line, returning what to write and exit with rather than doing either, so that
@@ -60,12 +85,18 @@ With no <branch>, the checked-out branch is used.`;
  *
  * @internal
  */
-export function runTbGit(args: string[], effects: TbGitEffects): TbGitResult {
-  try {
-    return dispatch(args, effects);
-  } catch (error) {
-    return fail(describeError(error), args[0]);
-  }
+export async function runTbGit(args: string[], effects: TbGitEffects): Promise<TbGitResult> {
+  const stdout = createTextBuffer();
+  const stderr = createTextBuffer();
+  const exitCode = await runCli(args, ROOT, {
+    name: 'tb-git',
+    context: effects,
+    version: () => resolveVersion(effects),
+    stdout,
+    stderr,
+  });
+
+  return { exitCode, stderr: stderr.text, stdout: stdout.text };
 }
 
 /** The effects deferred to the entry point, which keeps the runner free of I/O. */
@@ -83,106 +114,62 @@ export interface TbGitResult {
 
 // region | Helpers
 
-/** Extracts the message from an unknown thrown value. */
-function describeError(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
-}
+/** Returns a writer that accumulates what is written to it. */
+function createTextBuffer(): Writer & { readonly text: string } {
+  let text = '';
 
-/** Passes the arguments to a subcommand, or handles the root command's own options. */
-function dispatch(args: string[], effects: TbGitEffects): TbGitResult {
-  const [command, ...rest] = args;
-
-  if (command === 'branch-number') return runBranchNumber(rest, effects);
-  if (command === 'ticket-ref') return runTicketRef(rest, effects);
-  if (command === '--help' || command === '-h') return succeed(ROOT_HELP);
-  if (command === '--version') return succeed(effects.resolveVersion());
-  if (command === undefined) return fail('A subcommand is required.', command);
-
-  return fail(`Unknown ${command.startsWith('-') ? 'option' : 'subcommand'}: ${command}`, command);
-}
-
-/** Reports a usage or validation failure, pointing at the help of whichever command was invoked. */
-function fail(message: string, command: string | undefined): TbGitResult {
-  const scope = command !== undefined && SUBCOMMANDS.has(command) ? `tb-git ${command}` : 'tb-git';
-
-  return { exitCode: EXIT_USAGE, stderr: `${message}\nTry \`${scope} --help\`.\n`, stdout: '' };
-}
-
-/** Parses the `branch-number` subcommand and prints the number derived with its options. */
-function runBranchNumber(args: string[], effects: TbGitEffects): TbGitResult {
-  const { positionals, values } = parseArgs({
-    allowPositionals: true,
-    args,
-    options: {
-      ...HELP_OPTION,
-      key: { type: 'string' },
-      max: { type: 'string' },
-      min: { type: 'string' },
-      offset: { type: 'string' },
+  return {
+    get text() {
+      return text;
     },
-    strict: true,
-  });
-
-  if (values.help) return succeed(BRANCH_NUMBER_HELP);
-
-  const number = deriveBranchNumber(selectBranch(positionals, effects), {
-    key: values.key,
-    max: toNumber('max', values.max),
-    min: toNumber('min', values.min),
-    offset: toNumber('offset', values.offset),
-  });
-
-  return succeed(String(number));
-}
-
-/** Parses the `ticket-ref` subcommand and prints the ref that it finds, or reports that it found none. */
-function runTicketRef(args: string[], effects: TbGitEffects): TbGitResult {
-  const { positionals, values } = parseArgs({
-    allowPositionals: true,
-    args,
-    options: { ...HELP_OPTION, json: { type: 'boolean' }, key: { type: 'string' } },
-    strict: true,
-  });
-
-  if (values.help) return succeed(TICKET_REF_HELP);
-
-  const ref = findBranchTicketRef(selectBranch(positionals, effects), { key: values.key });
-  if (ref === undefined) return { exitCode: EXIT_NO_RESULT, stderr: '', stdout: '' };
-
-  return succeed(values.json === true ? JSON.stringify(ref) : ref.id);
-}
-
-/**
- * Chooses the branch to derive from: the sole positional, or the checked-out branch when none is given.
- * An empty positional is rejected rather than treated as absent, so a caller's own failed resolution of
- * the branch name is reported here instead of being silently replaced.
- */
-function selectBranch(positionals: string[], effects: TbGitEffects): string {
-  if (positionals.length > 1) {
-    throw new Error(`Expected at most one branch name. Received ${positionals.length}.`);
-  }
-
-  const [branch] = positionals;
-  if (branch === undefined) return effects.resolveBranch();
-  if (branch === '') throw new Error('The branch name is empty. Omit it to use the checked-out branch.');
-
-  return branch;
-}
-
-/** Reports a printed result, terminating the line written by the caller. */
-function succeed(output: string): TbGitResult {
-  return { exitCode: EXIT_OK, stderr: '', stdout: `${output}\n` };
+    write(chunk: string) {
+      text += chunk;
+    },
+  };
 }
 
 /**
  * Converts a flag's text to a number, leaving validation of a present value to the library that receives it.
- * A blank value is rejected here instead, since `Number('')` is `0` and an unset shell variable expands to it.
+ * A blank value is rejected here instead, since `Number(' ')` is `0`.
  */
-function toNumber(flag: string, value: string | undefined): number | undefined {
-  if (value === undefined) return undefined;
-  if (value.trim() === '') throw new Error(`The value of --${flag} is empty.`);
+function parseNumber(value: string): number {
+  if (value.trim() === '') throw new Error('The value is blank.');
 
   return Number(value);
+}
+
+/** Runs a command's body, reporting anything that it throws as a usage error, which exits 2 with a pointer to help. */
+async function reportFailures(
+  body: () => number | undefined | Promise<number | undefined>,
+): Promise<number | undefined> {
+  try {
+    return await body();
+  } catch (error) {
+    if (error instanceof UsageError) throw error;
+
+    throw new UsageError(error instanceof Error ? error.message : String(error), { cause: error });
+  }
+}
+
+/** Resolves the installed version, reporting a failure as a usage error, which exits 2. */
+function resolveVersion(effects: { readonly resolveVersion: () => string }): string {
+  try {
+    return effects.resolveVersion();
+  } catch (error) {
+    throw new UsageError(error instanceof Error ? error.message : String(error), { cause: error });
+  }
+}
+
+/**
+ * Chooses the branch to derive from: the operand, or the checked-out branch when none is given. An empty
+ * operand is rejected rather than treated as absent, so a caller's own failed resolution of the branch name is
+ * reported here instead of being silently replaced.
+ */
+function selectBranch(branch: string | undefined, effects: TbGitEffects): string {
+  if (branch === undefined) return effects.resolveBranch();
+  if (branch === '') throw new Error('The branch name is empty. Omit it to use the checked-out branch.');
+
+  return branch;
 }
 
 // endregion | Helpers

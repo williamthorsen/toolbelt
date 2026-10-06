@@ -289,6 +289,9 @@ importers:
 
   packages/atlassian:
     dependencies:
+      '@williamthorsen/toolbelt.cli':
+        specifier: workspace:*
+        version: link:../cli
       '@williamthorsen/toolbelt.secrets':
         specifier: workspace:*
         version: link:../secrets
@@ -356,6 +359,9 @@ importers:
 
   packages/git:
     dependencies:
+      '@williamthorsen/toolbelt.cli':
+        specifier: workspace:*
+        version: link:../cli
       '@williamthorsen/toolbelt.strings':
         specifier: workspace:*
         version: link:../strings
@@ -383,6 +389,10 @@ importers:
         version: link:../arrays
 
   packages/nodejs:
+    dependencies:
+      '@williamthorsen/toolbelt.cli':
+        specifier: workspace:*
+        version: link:../cli
     devDependencies:
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
@@ -438,6 +448,10 @@ importers:
         version: 0.39.0(esbuild@0.28.2)
 
   packages/secrets:
+    dependencies:
+      '@williamthorsen/toolbelt.cli':
+        specifier: workspace:*
+        version: link:../cli
     devDependencies:
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*

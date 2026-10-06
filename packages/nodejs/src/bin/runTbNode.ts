@@ -1,5 +1,6 @@
 import path from 'node:path';
-import { parseArgs } from 'node:util';
+
+import { createCli, runCli, UsageError, type Writer } from '@williamthorsen/toolbelt.cli/candidate';
 
 import { type AsdfInstall, findAsdfInstall } from '../3-candidate/findAsdfInstall.ts';
 import type { findPackageManagerPin } from '../3-candidate/findPackageManagerPin.ts';
@@ -9,7 +10,6 @@ import type { PnpmProvider, resolvePnpmProvider } from './resolvePnpmProvider.ts
 
 const EXIT_OK = 0;
 const EXIT_FINDINGS = 1;
-const EXIT_USAGE = 2;
 const EXIT_NOT_APPLICABLE = 3;
 
 const COREPACK = 'corepack';
@@ -17,53 +17,32 @@ const PLUGIN = 'nodejs';
 const PNPM = 'pnpm';
 const RESHIM = 'asdf reshim nodejs';
 
-const SUBCOMMANDS = new Set(['asdf-shims', PNPM]);
+const { defineCommand, defineGroup } = createCli<TbNodeEffects>();
 
-const HELP_OPTION = { help: { type: 'boolean', short: 'h' } } as const;
-
-const ROOT_HELP = `Usage: tb-node <subcommand> [options]
-
-Utilities for inspecting the Node.js runtime and the commands that it installs.
-
-Subcommands:
-  asdf-shims  Report asdf node shims that the active nodejs version does not provide
-  pnpm        Check the pnpm that runs here against the nearest packageManager pin
-
-Options:
-  -h, --help     Print this help; each subcommand takes its own --help
-      --version  Print the installed version
-
-Exit codes:
+const EXIT_CODES = `Exit codes:
   0  The check found nothing to fix
   1  The check found something to fix
   2  Usage or validation error
   3  The check does not apply; the reason is on stderr`;
 
-const ASDF_SHIMS_HELP = `Usage: tb-node asdf-shims [options]
-
-Report every asdf shim that names the nodejs plugin but not the active version. Such a shim stays on PATH and
+const ASDF_SHIMS_DESCRIPTION = `Report every asdf shim that names the nodejs plugin but not the active version. Such a shim stays on PATH and
 fails when invoked. Each is classified as an orphan, which shadows another executable of that name on PATH, or
 as having no other provider, and the commands that provide or remove it are printed. A shim that an installed
-version of another asdf plugin also provides is not reported, since asdf may resolve the command there.
+version of another asdf plugin also provides is not reported, since asdf may resolve the command there.`;
 
-The active version is the one running this command, read from its install path, so the check spawns nothing
+const ASDF_SHIMS_EPILOG = `The active version is the one running this command, read from its install path, so the check spawns nothing
 and needs no repository. It exits 1 when a shim is stranded, 0 when none is, and 3 when node is not an asdf
 install.
 
 The printed remedies use \`asdf reshim nodejs\`, which regenerates every shim from the installed versions,
-rather than \`asdf reshim nodejs <version>\`, which merges into an existing shim and keeps stale lines.
+rather than \`asdf reshim nodejs <version>\`, which merges into an existing shim and keeps stale lines.`;
 
-Options:
-  -h, --help  Print this help`;
-
-const PNPM_HELP = `Usage: tb-node pnpm [options]
-
-Check the pnpm that runs in the working directory against the packageManager pin of the nearest package.json
+const PNPM_DESCRIPTION = `Check the pnpm that runs in the working directory against the packageManager pin of the nearest package.json
 declaring one, from the working directory upward, and name what provides the pnpm on PATH: the asdf pnpm plugin,
 corepack or an npm-global pnpm under a nodejs version, an asdf shim stranded under the running node, or otherwise
-its path.
+its path.`;
 
-The version that runs is read by running \`pnpm --version\` in the pinned directory, the one process that this
+const PNPM_EPILOG = `The version that runs is read by running \`pnpm --version\` in the pinned directory, the one process that this
 command spawns: pnpm 10 and later switch themselves to the pinned version whatever provides them, and corepack
 selects it, so a version read from the filesystem would report the installed pnpm and a mismatch that does not
 exist. That run may download the pinned version on first use.
@@ -72,10 +51,26 @@ It prints repair commands only when the versions differ, and they install the pi
 pnpm now.
 
 It exits 1 when the versions differ, when pnpm reported no version, or when pnpm is not on PATH; 0 when they
-match; and 3, with the reason on stderr, when no pin is in reach or the pin names another package manager.
+match; and 3, with the reason on stderr, when no pin is in reach or the pin names another package manager.`;
 
-Options:
-  -h, --help  Print this help`;
+const ROOT = defineGroup({
+  summary: 'Utilities for inspecting the Node.js runtime and the commands that it installs.',
+  epilog: EXIT_CODES,
+  commands: {
+    'asdf-shims': defineCommand({
+      summary: 'Report asdf node shims that the active nodejs version does not provide',
+      description: ASDF_SHIMS_DESCRIPTION,
+      epilog: ASDF_SHIMS_EPILOG,
+      run: ({ context, stderr, stdout }) => reportFailures(() => writeResult(runAsdfShims(context), stdout, stderr)),
+    }),
+    [PNPM]: defineCommand({
+      summary: 'Check the pnpm that runs here against the nearest packageManager pin',
+      description: PNPM_DESCRIPTION,
+      epilog: PNPM_EPILOG,
+      run: ({ context, stderr, stdout }) => reportFailures(() => writeResult(runPnpm(context), stdout, stderr)),
+    }),
+  },
+});
 
 /**
  * Runs the `tb-node` command line, returning what to write and exit with rather than doing either, so that
@@ -83,12 +78,18 @@ Options:
  *
  * @internal
  */
-export function runTbNode(args: string[], effects: TbNodeEffects): TbNodeResult {
-  try {
-    return dispatch(args, effects);
-  } catch (error) {
-    return fail(describeError(error), args[0]);
-  }
+export async function runTbNode(args: string[], effects: TbNodeEffects): Promise<TbNodeResult> {
+  const stdout = createTextBuffer();
+  const stderr = createTextBuffer();
+  const exitCode = await runCli(args, ROOT, {
+    name: 'tb-node',
+    context: effects,
+    version: () => resolveVersion(effects),
+    stdout,
+    stderr,
+  });
+
+  return { exitCode, stderr: stderr.text, stdout: stdout.text };
 }
 
 /** What running `pnpm --version` produced: the version that it printed, or why it produced none. */
@@ -123,9 +124,18 @@ export interface TbNodeResult {
 
 // region | Helpers
 
-/** Extracts the message from an unknown thrown value. */
-function describeError(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
+/** Returns a writer that accumulates what is written to it. */
+function createTextBuffer(): Writer & { readonly text: string } {
+  let text = '';
+
+  return {
+    get text() {
+      return text;
+    },
+    write(chunk: string) {
+      text += chunk;
+    },
+  };
 }
 
 /** Renders the line naming the `pnpm` on PATH and what provides it. */
@@ -160,26 +170,6 @@ function describeProviderKind(provider: Exclude<PnpmProvider, { kind: 'absent' }
         : `, asdf shim stranded under ${PLUGIN} ${install.version}, ${providers}; see tb-node asdf-shims`;
     }
   }
-}
-
-/** Routes the arguments to a subcommand, or handles the root command's own options. */
-function dispatch(args: string[], effects: TbNodeEffects): TbNodeResult {
-  const [command, ...rest] = args;
-
-  if (command === 'asdf-shims') return runAsdfShims(rest, effects);
-  if (command === PNPM) return runPnpm(rest, effects);
-  if (command === '--help' || command === '-h') return succeed(ROOT_HELP);
-  if (command === '--version') return succeed(effects.resolveVersion());
-  if (command === undefined) return fail('A subcommand is required.', command);
-
-  return fail(`Unknown ${command.startsWith('-') ? 'option' : 'subcommand'}: ${command}`, command);
-}
-
-/** Reports a usage or validation failure, pointing at the help of whichever command was invoked. */
-function fail(message: string, command: string | undefined): TbNodeResult {
-  const scope = command !== undefined && SUBCOMMANDS.has(command) ? `tb-node ${command}` : 'tb-node';
-
-  return { exitCode: EXIT_USAGE, stderr: `${message}\nTry \`${scope} --help\`.\n`, stdout: '' };
 }
 
 /**
@@ -270,17 +260,33 @@ function report(exitCode: number, lines: readonly string[]): TbNodeResult {
   return { exitCode, stderr: '', stdout: `${lines.join('\n')}\n` };
 }
 
+/** Runs a command's body, reporting anything that it throws as a usage error, which exits 2 with a pointer to help. */
+async function reportFailures(body: () => number | Promise<number>): Promise<number> {
+  try {
+    return await body();
+  } catch (error) {
+    if (error instanceof UsageError) throw error;
+
+    throw new UsageError(error instanceof Error ? error.message : String(error), { cause: error });
+  }
+}
+
 /** Reports a check that does not apply: the reason on stderr, and whatever was learned on stdout. */
 function reportNotApplicable(reason: string, stdout: string): TbNodeResult {
   return { exitCode: EXIT_NOT_APPLICABLE, stderr: `${reason}\n`, stdout: `${stdout}\n` };
 }
 
-/** Parses the `asdf-shims` subcommand and reports the shims that the active version does not provide. */
-function runAsdfShims(args: string[], effects: TbNodeEffects): TbNodeResult {
-  const { values } = parseArgs({ allowPositionals: false, args, options: HELP_OPTION, strict: true });
+/** Resolves the installed version, reporting a failure as a usage error, which exits 2. */
+function resolveVersion(effects: { readonly resolveVersion: () => string }): string {
+  try {
+    return effects.resolveVersion();
+  } catch (error) {
+    throw new UsageError(error instanceof Error ? error.message : String(error), { cause: error });
+  }
+}
 
-  if (values.help) return succeed(ASDF_SHIMS_HELP);
-
+/** Reports the shims that the active version does not provide. */
+function runAsdfShims(effects: TbNodeEffects): TbNodeResult {
   const install = findAsdfInstall(effects.execPath);
   if (install === undefined || install.plugin !== PLUGIN) {
     return {
@@ -305,14 +311,10 @@ function runAsdfShims(args: string[], effects: TbNodeEffects): TbNodeResult {
 }
 
 /**
- * Parses the `pnpm` subcommand and checks the pnpm that runs in the working directory against the nearest
- * `packageManager` pin, naming the provider either way and printing repairs only when the versions differ.
+ * Checks the pnpm that runs in the working directory against the nearest `packageManager` pin, naming the provider
+ * either way and printing repairs only when the versions differ.
  */
-function runPnpm(args: string[], effects: TbNodeEffects): TbNodeResult {
-  const { values } = parseArgs({ allowPositionals: false, args, options: HELP_OPTION, strict: true });
-
-  if (values.help) return succeed(PNPM_HELP);
-
+function runPnpm(effects: TbNodeEffects): TbNodeResult {
   const { cwd, execPath } = effects;
   const provider = effects.resolvePnpmProvider({ cwd, execPath, homeDir: effects.homeDir, pathDirs: effects.pathDirs });
   const providerLine = describeProvider(provider, execPath);
@@ -361,9 +363,12 @@ function runPnpm(args: string[], effects: TbNodeEffects): TbNodeResult {
   return report(EXIT_FINDINGS, [`pnpm ${result.version} does not match ${pinLabel}`, `  ${providerLine}`, ...repairs]);
 }
 
-/** Reports a printed result, terminating the line written by the caller. */
-function succeed(output: string): TbNodeResult {
-  return { exitCode: EXIT_OK, stderr: '', stdout: `${output}\n` };
+/** Writes a check's result to the streams and returns its exit code. */
+function writeResult(result: TbNodeResult, stdout: Writer, stderr: Writer): number {
+  if (result.stdout !== '') stdout.write(result.stdout);
+  if (result.stderr !== '') stderr.write(result.stderr);
+
+  return result.exitCode;
 }
 
 // endregion | Helpers

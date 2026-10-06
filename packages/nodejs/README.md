@@ -25,7 +25,7 @@ npx @williamthorsen/toolbelt.nodejs asdf-shims      # or run it without installi
 
 The short `npx` form works because the package declares exactly one bin, which npm falls back to, whatever its name.
 
-`tb-node --help`, each subcommand's `--help`, and `tb-node --version` report the surface and the installed version.
+`tb-node --help`, each subcommand's `--help`, and `tb-node --version` (or `-V`) report the surface and the installed version.
 
 ### `tb-node asdf-shims`
 

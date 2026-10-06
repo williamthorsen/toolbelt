@@ -48,11 +48,19 @@ describe('tb-jira issue list', () => {
     expect(harness.calls[0]?.body).toMatchObject({ maxResults: 5 });
   });
 
-  it.each(['0', '-1', '1.5', 'ten', ''])('refuses a limit of %j as a usage error', async (limit) => {
+  it.each(['0', '-1', '1.5', 'ten'])('refuses a limit of %j as a usage error', async (limit) => {
     const harness = createHarness();
 
     await expect(run(harness, [`--limit=${limit}`])).resolves.toBe(2);
     expect(harness.readErrors()).toContain('--limit takes a positive integer.');
+    expect(harness.calls).toHaveLength(0);
+  });
+
+  it('refuses an empty limit as a usage error', async () => {
+    const harness = createHarness();
+
+    await expect(run(harness, ['--limit='])).resolves.toBe(2);
+    expect(harness.readErrors()).toContain('Missing value for option: --limit');
     expect(harness.calls).toHaveLength(0);
   });
 
@@ -71,7 +79,7 @@ describe('tb-jira issue list', () => {
     const harness = createHarness();
 
     await expect(run(harness, ['--state', 'done'])).resolves.toBe(2);
-    expect(harness.readErrors()).toContain('--state takes open, closed, or all.');
+    expect(harness.readErrors()).toContain('Invalid value for --state: done. Expected one of: all, closed, open');
   });
 
   it('prints nothing and exits 0 when nothing matches', async () => {
@@ -155,7 +163,7 @@ describe('tb-jira issue list', () => {
 
     await run(harness, ['--nope']);
 
-    expect(harness.readErrors()).toContain('Try `tb-jira issue list --help`.');
+    expect(harness.readErrors()).toContain("Try 'tb-jira issue list --help'.");
   });
 });
 
@@ -164,18 +172,18 @@ describe('tb-jira issue', () => {
     const harness = createHarness();
 
     await expect(runTbJira(['issue', '--help'], harness.effects)).resolves.toBe(0);
-    expect(harness.readOutput()).toContain('Usage: tb-jira issue <list>');
+    expect(harness.readOutput()).toContain('Usage: tb-jira issue [options] <command>');
   });
 
   it.each([
-    [[], 'A subcommand is required: list.'],
-    [['nope'], 'Unknown subcommand: nope'],
-    [['--nope'], 'Unknown option: --nope'],
+    [[], 'Error: A command is required.'],
+    [['nope'], 'Error: Unknown command: nope'],
+    [['--nope'], 'Error: Unknown option: --nope'],
   ])('reports %j as a usage error pointing at the help of issue', async (args, message) => {
     const harness = createHarness();
 
     await expect(runTbJira(['issue', ...args], harness.effects)).resolves.toBe(2);
-    expect(harness.readErrors()).toBe(`${message}\nTry \`tb-jira issue --help\`.\n`);
+    expect(harness.readErrors()).toBe(`${message}\nTry 'tb-jira issue --help'.\n`);
   });
 });
 

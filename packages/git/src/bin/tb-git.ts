@@ -10,7 +10,7 @@ for (const stream of [process.stdout, process.stderr]) {
   });
 }
 
-const { exitCode, stderr, stdout } = runTbGit(process.argv.slice(2), {
+const { exitCode, stderr, stdout } = await runTbGit(process.argv.slice(2), {
   resolveBranch: resolveCheckedOutBranch,
   resolveVersion: resolveSelfVersion,
 });

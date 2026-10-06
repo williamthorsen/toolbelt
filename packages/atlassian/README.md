@@ -27,15 +27,15 @@ pnpm add --global @williamthorsen/toolbelt.atlassian   # puts tb-jira on PATH
 npx @williamthorsen/toolbelt.atlassian configure-project PROJ --dry-run
 ```
 
-`tb-jira --help`, each subcommand's `--help`, and `tb-jira --version` report the surface and the installed version.
+`tb-jira --help`, each subcommand's `--help`, and `tb-jira --version` (or `-V`) report the surface and the installed version.
 
-| Subcommand                        | Effect                                                                     |
-| --------------------------------- | -------------------------------------------------------------------------- |
-| `tb-jira auth delete`             | Removes the stored token                                                   |
-| `tb-jira auth set`                | Stores a token, replacing one already stored                               |
-| `tb-jira auth status`             | Reports which source would supply the token, printing the token nowhere    |
-| `tb-jira configure-project [KEY]` | Reconciles a project against the spec, then reports what the server stores |
-| `tb-jira issue list`              | Lists a project's work items, newest first                                 |
+| Subcommand                          | Effect                                                                     |
+| ----------------------------------- | -------------------------------------------------------------------------- |
+| `tb-jira auth delete`               | Removes the stored token                                                   |
+| `tb-jira auth set`                  | Stores a token, replacing one already stored                               |
+| `tb-jira auth status`               | Reports which source would supply the token, printing the token nowhere    |
+| `tb-jira configure-project [<key>]` | Reconciles a project against the spec, then reports what the server stores |
+| `tb-jira issue list`                | Lists a project's work items, newest first                                 |
 
 Jira Cloud only, and team-managed projects only. A company-managed project is refused rather than reconciled: A status renamed there is renamed in every project on the site that uses it. `auth delete` and `auth set` additionally require macOS, the keychain being the one credential store.
 
@@ -111,12 +111,12 @@ The consuming repo owns the file. `tb-jira` ascends from the working directory l
 
 Each chain stops at the first source that supplies a value.
 
-| Value   | Order                                                                                         |
-| ------- | --------------------------------------------------------------------------------------------- |
-| project | `--project` for `issue list` or the `KEY` argument for `configure-project`, then `projectKey` |
-| site    | `--site`, then `JIRA_SITE`, then the spec's `site`                                            |
-| email   | `--email`, then `JIRA_EMAIL`, then the spec's `email`                                         |
-| token   | `--token-stdin`, then `JIRA_API_TOKEN`, then `--token-command`, then the keychain             |
+| Value   | Order                                                                                           |
+| ------- | ----------------------------------------------------------------------------------------------- |
+| project | `--project` for `issue list` or the `<key>` argument for `configure-project`, then `projectKey` |
+| site    | `--site`, then `JIRA_SITE`, then the spec's `site`                                              |
+| email   | `--email`, then `JIRA_EMAIL`, then the spec's `email`                                           |
+| token   | `--token-stdin`, then `JIRA_API_TOKEN`, then `--token-command`, then the keychain               |
 
 The keychain item is the service `toolbelt.atlassian.jira` with the email as the account, which `tb-jira auth set` writes and `tb-secret set toolbelt.atlassian.jira --account you@example.com` writes too. It is opened only when the earlier sources miss, so a run authenticated from the environment never opens the keychain and raises no access prompt.
 

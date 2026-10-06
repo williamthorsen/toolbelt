@@ -16,7 +16,7 @@ for (const stream of [process.stdout, process.stderr]) {
   });
 }
 
-const { exitCode, stderr, stdout } = runTbNode(process.argv.slice(2), {
+const { exitCode, stderr, stdout } = await runTbNode(process.argv.slice(2), {
   cwd: process.cwd(),
   execPath: process.execPath,
   findPin: findPackageManagerPin,

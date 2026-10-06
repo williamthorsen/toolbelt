@@ -1,3 +1,4 @@
+import { UsageError, type Writer } from '@williamthorsen/toolbelt.cli/candidate';
 import {
   type SecretStore,
   UnstorableSecretError,
@@ -5,17 +6,16 @@ import {
 } from '@williamthorsen/toolbelt.secrets/candidate';
 
 import type { JiraRequest, TokenTransportOptions } from '../3-candidate/createTokenTransport.ts';
+import { JiraRequestError } from '../3-candidate/JiraRequestError.ts';
+import { JiraResponseError } from '../3-candidate/JiraResponseError.ts';
+import { JiraTransportError } from '../3-candidate/JiraTransportError.ts';
 
 export const EXIT_OK = 0;
 export const EXIT_NO_RESULT = 1;
-export const EXIT_USAGE = 2;
 export const EXIT_KEYSTORE = 3;
 export const EXIT_REQUEST = 4;
 export const EXIT_MISMATCH = 5;
 export const EXIT_TRANSPORT = 6;
-
-/** The command paths that have help of their own, deepest first, so that the first prefix match is the longest. */
-const COMMAND_PATHS: readonly (readonly string[])[] = [['issue', 'list'], ['auth'], ['configure-project'], ['issue']];
 
 /** Reports a failure to reach the keychain, which is neither a usage error nor an absent secret. */
 export class KeystoreError extends Error {}
@@ -101,16 +101,23 @@ export function describeError(error: unknown): string {
 }
 
 /**
- * Reports a usage or validation failure, pointing at the help of the deepest command that the arguments name.
+ * Runs a command's body, writing each failure that has an exit code of its own to `stderr` and returning that code,
+ * and reporting anything else that it throws as a usage error, which exits 2 with a pointer to help.
  *
  * @internal
  */
-export function fail(effects: TbJiraEffects, message: string, args: readonly string[]): number {
-  const commandPath = COMMAND_PATHS.find((candidate) => candidate.every((part, index) => args[index] === part));
-  const scope = ['tb-jira', ...(commandPath ?? [])].join(' ');
-  effects.writeError(`${message}\nTry \`${scope} --help\`.\n`);
+export async function reportFailures(stderr: Writer, body: () => number | Promise<number>): Promise<number> {
+  try {
+    return await body();
+  } catch (error) {
+    if (error instanceof UsageError) throw error;
 
-  return EXIT_USAGE;
+    const failure = describeFailure(error);
+    if (failure === undefined) throw new UsageError(describeError(error), { cause: error });
+
+    stderr.write(`${failure.message}\n`);
+    return failure.exitCode;
+  }
 }
 
 /**
@@ -132,3 +139,19 @@ export function succeed(effects: TbJiraEffects, output: string): number {
 
   return EXIT_OK;
 }
+
+// region | Helpers
+
+/** Returns the exit code and message of a failure that is not a usage error, or `undefined` for any other error. */
+function describeFailure(error: unknown): { exitCode: number; message: string } | undefined {
+  if (error instanceof KeystoreError) return { exitCode: EXIT_KEYSTORE, message: error.message };
+  if (error instanceof JiraRequestError || error instanceof JiraResponseError) {
+    return { exitCode: EXIT_REQUEST, message: error.message };
+  }
+  // A run that never reached Jira is retryable, and no help text can fix a network.
+  if (error instanceof JiraTransportError) return { exitCode: EXIT_TRANSPORT, message: describeError(error) };
+
+  return undefined;
+}
+
+// endregion | Helpers

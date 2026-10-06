@@ -7,14 +7,16 @@ import { describe, expect, it } from 'vitest';
 import { collectReachableModuleSet } from '../test-utils/collectReachableModuleSet.ts';
 import { isRecord } from '../test-utils/isRecord.ts';
 import { listExportedTierDirectories } from '../test-utils/listExportedTierDirectories.ts';
+import { listStringLeaves } from '../test-utils/listStringLeaves.ts';
 import { readManifest } from '../test-utils/readManifest.ts';
+import { resolveBinSourceModule } from '../test-utils/resolveBinSourceModule.ts';
 
 // A specifier naming a package rather than a sibling file. A bare side-effect import contains no `from`, so a
 // dependency reached only that way would be reported as unreachable; no workspace writes one.
 const PACKAGE_SPECIFIER_PATTERN = /from\s+'([^.'][^']*)'/g;
 
 describe('Runtime dependencies', () => {
-  it('every declared dependency is reachable from an export subpath', () => {
+  it('every declared dependency is reachable from an export subpath or a declared bin', () => {
     const { dependencyCount, unreachableDependencies } = auditDependencyReachability(findMonorepoRoot());
 
     expect(unreachableDependencies).toStrictEqual([]);
@@ -26,9 +28,9 @@ describe('Runtime dependencies', () => {
 // region | Helpers
 
 /**
- * Audits every workspace's `dependencies` against what its export subpaths reach, reporting each dependency
- * imported by no exported module. Such a dependency installs for every consumer while nothing they can import
- * needs it.
+ * Audits every workspace's `dependencies` against what its export subpaths and declared bins reach, reporting each
+ * dependency imported by neither. Such a dependency installs for every consumer while nothing that they can import
+ * or run needs it. A bin counts because its dependency installs for every consumer that runs it.
  *
  * `devDependencies` stay out: They do not publish, and `packages/adoption` is installed for its consumers through
  * that field. A type-only import counts, since a consumer typechecking against the shipped declarations needs it.
@@ -50,13 +52,13 @@ function auditDependencyReachability(monorepoRoot: string): {
     if (dependencies.length === 0) continue;
 
     const workspace = path.relative(monorepoRoot, packageDirectory);
-    const specifiers = collectPackageSpecifierSet(packageDirectory);
+    const specifiers = collectPackageSpecifierSet(packageDirectory, manifest);
 
     for (const dependency of dependencies) {
       dependencyCount += 1;
 
       if (!isImported(dependency, specifiers)) {
-        unreachableDependencies.push(`${workspace}: ${dependency} is reachable from no export subpath`);
+        unreachableDependencies.push(`${workspace}: ${dependency} is reachable from no export subpath or bin`);
       }
     }
   }
@@ -67,12 +69,12 @@ function auditDependencyReachability(monorepoRoot: string): {
   };
 }
 
-/** Collects every package specifier written by the modules that a package's export subpaths reach. */
-function collectPackageSpecifierSet(packageDirectory: string): Set<string> {
+/** Collects every package specifier written by the modules that a package's export subpaths and bins reach. */
+function collectPackageSpecifierSet(packageDirectory: string, manifest: Record<string, unknown>): Set<string> {
   const specifiers = new Set<string>();
 
-  for (const tierDirectory of listExportedTierDirectories(packageDirectory)) {
-    const reached = collectReachableModuleSet(path.join(tierDirectory, 'index.ts'));
+  for (const entryPath of listEntryPaths(packageDirectory, manifest)) {
+    const reached = collectReachableModuleSet(entryPath);
 
     for (const filePath of reached) {
       const contents = fs.readFileSync(filePath, 'utf8');
@@ -96,6 +98,22 @@ function listDependencies(manifest: Record<string, unknown>): string[] {
   const dependencies = manifest['dependencies'];
 
   return isRecord(dependencies) ? Object.keys(dependencies).toSorted((a, b) => a.localeCompare(b)) : [];
+}
+
+/**
+ * Lists the modules from which a package's walk starts: each exported tier's index and each declared bin's source
+ * module. A bin that resolves to no source module adds none, since `bin-target-resolution` reports it.
+ */
+function listEntryPaths(packageDirectory: string, manifest: Record<string, unknown>): string[] {
+  const tierEntries = listExportedTierDirectories(packageDirectory).map((directory) =>
+    path.join(directory, 'index.ts'),
+  );
+  const binEntries = listStringLeaves(manifest['bin']).flatMap((target) => {
+    const resolution = resolveBinSourceModule(packageDirectory, target);
+    return 'sourcePath' in resolution ? [resolution.sourcePath] : [];
+  });
+
+  return [...tierEntries, ...binEntries];
 }
 
 // endregion | Helpers

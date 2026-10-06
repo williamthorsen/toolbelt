@@ -23,7 +23,7 @@ npx @williamthorsen/toolbelt.git branch-number   # or run it without installing
 
 The short `npx` form works because the package declares exactly one bin, which npm falls back to, whatever its name. Were a second bin added, the invocation would become `npx --package @williamthorsen/toolbelt.git tb-git ...`.
 
-`tb-git --help`, each subcommand's `--help`, and `tb-git --version` report the surface and the installed version.
+`tb-git --help`, each subcommand's `--help`, and `tb-git --version` (or `-V`) report the surface and the installed version.
 
 ### `tb-git branch-number [<branch>] [options]`
 
