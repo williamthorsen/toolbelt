@@ -403,6 +403,9 @@ importers:
       '@williamthorsen/toolbelt.cli':
         specifier: workspace:*
         version: link:../cli
+      '@williamthorsen/toolbelt.numbers':
+        specifier: workspace:*
+        version: link:../numbers
     devDependencies:
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*

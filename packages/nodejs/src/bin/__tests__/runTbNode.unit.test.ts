@@ -4,6 +4,7 @@ import type { PackageManagerPin } from '../../3-candidate/findPackageManagerPin.
 import type { StrandedAsdfShim } from '../../3-candidate/listStrandedAsdfShims.ts';
 import type { PnpmProvider } from '../resolvePnpmProvider.ts';
 import { type PnpmVersionResult, runTbNode, type TbNodeEffects } from '../runTbNode.ts';
+import { runWithBuffers } from '../test-utils/runWithBuffers.ts';
 
 const DATA_DIR = '/Users/me/.asdf';
 const EXEC_PATH = `${DATA_DIR}/installs/nodejs/24.20.0/bin/node`;
@@ -161,7 +162,7 @@ describe(runTbNode, () => {
       let received: unknown;
       const effects = buildEffects([], ['/usr/bin', '/opt/homebrew/bin']);
 
-      await runTbNode(['asdf-shims'], {
+      await runWithBuffers(['asdf-shims'], {
         ...effects,
         listStrandedShims: (options) => {
           received = options;
@@ -180,7 +181,7 @@ describe(runTbNode, () => {
     it.each(['/opt/homebrew/bin/node', `${DATA_DIR}/installs/python/3.13.1/bin/node`])(
       'exits 3 with the reason on stderr when node is not an asdf nodejs install: %s',
       async (execPath) => {
-        await expect(runTbNode(['asdf-shims'], { ...buildEffects([], []), execPath })).resolves.toStrictEqual({
+        await expect(runWithBuffers(['asdf-shims'], { ...buildEffects([], []), execPath })).resolves.toStrictEqual({
           exitCode: 3,
           stderr: `node at ${execPath} is not an asdf nodejs install; nothing to check.\n`,
           stdout: '',
@@ -189,8 +190,8 @@ describe(runTbNode, () => {
     );
 
     it('rejects a positional and an unknown option with exit 2', async () => {
-      expect((await runTbNode(['asdf-shims', 'extra'], buildEffects([], []))).exitCode).toBe(2);
-      await expect(runTbNode(['asdf-shims', '--all'], buildEffects([], []))).resolves.toMatchObject({
+      expect((await runWithBuffers(['asdf-shims', 'extra'], buildEffects([], []))).exitCode).toBe(2);
+      await expect(runWithBuffers(['asdf-shims', '--all'], buildEffects([], []))).resolves.toMatchObject({
         exitCode: 2,
         stderr: expect.stringContaining("Try 'tb-node asdf-shims --help'."),
       });
@@ -329,7 +330,7 @@ describe(runTbNode, () => {
         },
       };
 
-      expect((await runTbNode(['pnpm'], effects)).exitCode).toBe(1);
+      expect((await runWithBuffers(['pnpm'], effects)).exitCode).toBe(1);
       expect(ran).toBe(false);
     });
 
@@ -362,14 +363,14 @@ describe(runTbNode, () => {
         },
       };
 
-      await runTbNode(['pnpm'], effects);
+      await runWithBuffers(['pnpm'], effects);
 
       expect(received).toStrictEqual(['/repo/packages/lib', '/repo']);
     });
 
     it('rejects a positional and an unknown option with exit 2', async () => {
-      expect((await runTbNode(['pnpm', 'extra'], buildPnpmEffects({}))).exitCode).toBe(2);
-      await expect(runTbNode(['pnpm', '--all'], buildPnpmEffects({}))).resolves.toMatchObject({
+      expect((await runWithBuffers(['pnpm', 'extra'], buildPnpmEffects({}))).exitCode).toBe(2);
+      await expect(runWithBuffers(['pnpm', '--all'], buildPnpmEffects({}))).resolves.toMatchObject({
         exitCode: 2,
         stderr: expect.stringContaining("Try 'tb-node pnpm --help'."),
       });
@@ -378,17 +379,37 @@ describe(runTbNode, () => {
 
   describe('help and version', () => {
     it.each([['--help'], ['-h']])('prints the root help on %o', async (flag) => {
-      const { exitCode, stdout } = await runTbNode([flag], buildEffects([], []));
+      const { exitCode, stdout } = await runWithBuffers([flag], buildEffects([], []));
 
       expect(exitCode).toBe(0);
       expect(stdout).toContain('Usage: tb-node [options] <command>');
       expect(stdout).toContain('Exit codes:');
       expect(stdout).toContain('asdf-shims');
       expect(stdout).toContain('pnpm');
+      expect(stdout).toContain('prune-modules');
+    });
+
+    it('prints the prune-modules help with its flags, protect-list, and exit codes', async () => {
+      const { exitCode, stdout } = await runWithBuffers(['prune-modules', '--help'], buildEffects([], []));
+
+      expect(exitCode).toBe(0);
+      expect(stdout).toContain('Usage: tb-node prune-modules');
+      for (const flag of [
+        '--active-days',
+        '--apply',
+        '--no-active-guard',
+        '--no-confirm',
+        '--protect-list',
+        '--root',
+      ]) {
+        expect(stdout).toContain(flag);
+      }
+      expect(stdout).toContain('~/.config/tb-node/protected-node-modules.txt');
+      expect(stdout).toContain('It exits 0 when it completes');
     });
 
     it.each([['--help'], ['-h']])('prints the pnpm help on %o', async (flag) => {
-      const { exitCode, stdout } = await runTbNode(['pnpm', flag], buildEffects([], []));
+      const { exitCode, stdout } = await runWithBuffers(['pnpm', flag], buildEffects([], []));
 
       expect(exitCode).toBe(0);
       expect(stdout).toContain('Usage: tb-node pnpm');
@@ -396,7 +417,7 @@ describe(runTbNode, () => {
     });
 
     it.each([['--help'], ['-h']])('prints the subcommand help on %o', async (flag) => {
-      const { exitCode, stdout } = await runTbNode(['asdf-shims', flag], buildEffects([], []));
+      const { exitCode, stdout } = await runWithBuffers(['asdf-shims', flag], buildEffects([], []));
 
       expect(exitCode).toBe(0);
       expect(stdout).toContain('Usage: tb-node asdf-shims');
@@ -405,7 +426,7 @@ describe(runTbNode, () => {
     });
 
     it.each([['--version'], ['-V']])('prints the version on %o', async (flag) => {
-      await expect(runTbNode([flag], buildEffects([], []))).resolves.toStrictEqual({
+      await expect(runWithBuffers([flag], buildEffects([], []))).resolves.toStrictEqual({
         exitCode: 0,
         stderr: '',
         stdout: `${VERSION}\n`,
@@ -422,7 +443,7 @@ describe(runTbNode, () => {
         },
       };
 
-      await expect(runTbNode(['--version'], effects)).resolves.toStrictEqual({
+      await expect(runWithBuffers(['--version'], effects)).resolves.toStrictEqual({
         exitCode: 2,
         stderr: "Error: The manifest declares no version.\nTry 'tb-node --help'.\n",
         stdout: '',
@@ -430,7 +451,7 @@ describe(runTbNode, () => {
     });
 
     it('suggests the closest command for a near miss', async () => {
-      expect((await runTbNode(['pnmp'], buildEffects([], []))).stderr).toContain("Did you mean 'pnpm'?");
+      expect((await runWithBuffers(['pnmp'], buildEffects([], []))).stderr).toContain("Did you mean 'pnpm'?");
     });
 
     it.each([
@@ -438,7 +459,7 @@ describe(runTbNode, () => {
       [['frobnicate'], 'Error: Unknown command: frobnicate'],
       [['--frobnicate'], 'Error: Unknown option: --frobnicate'],
     ])('exits 2 pointing at the root help: %o', async (args, message) => {
-      await expect(runTbNode(args, buildEffects([], []))).resolves.toStrictEqual({
+      await expect(runWithBuffers(args, buildEffects([], []))).resolves.toStrictEqual({
         exitCode: 2,
         stderr: `${message}\nTry 'tb-node --help'.\n`,
         stdout: '',
@@ -456,8 +477,11 @@ function buildEffects(shims: StrandedAsdfShim[], pathDirs: string[]): TbNodeEffe
     execPath: EXEC_PATH,
     findPin: () => PIN,
     homeDir: '/Users/me',
+    isStdinTty: () => false,
     listStrandedShims: () => shims,
+    now: () => 0,
     pathDirs,
+    readAnswer: () => Promise.resolve(undefined),
     resolvePnpmProvider: () => COREPACK_PROVIDER,
     resolveVersion: () => VERSION,
     runPnpmVersion: () => ({ version: '12.4.0' }),
@@ -486,12 +510,12 @@ interface PnpmScenario {
 
 /** Runs `asdf-shims` under effects whose detection returns the given shims. */
 function run(shims: StrandedAsdfShim[], pathDirs: string[]) {
-  return runTbNode(['asdf-shims'], buildEffects(shims, pathDirs));
+  return runWithBuffers(['asdf-shims'], buildEffects(shims, pathDirs));
 }
 
 /** Runs `pnpm` under the scenario's effects. */
 function runPnpm(options: PnpmScenario) {
-  return runTbNode(['pnpm'], buildPnpmEffects(options));
+  return runWithBuffers(['pnpm'], buildPnpmEffects(options));
 }
 
 // endregion | Helpers

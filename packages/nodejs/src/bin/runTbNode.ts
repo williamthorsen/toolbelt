@@ -7,6 +7,13 @@ import type { findPackageManagerPin } from '../3-candidate/findPackageManagerPin
 import type { listStrandedAsdfShims, StrandedAsdfShim } from '../3-candidate/listStrandedAsdfShims.ts';
 import { parsePackageManagerSpec } from '../3-candidate/parsePackageManagerSpec.ts';
 import type { PnpmProvider, resolvePnpmProvider } from './resolvePnpmProvider.ts';
+import {
+  DEFAULT_PROTECT_LIST,
+  DEFAULT_ROOT,
+  parseActiveDays,
+  type PruneModulesEffects,
+  runPruneModules,
+} from './runPruneModules.ts';
 
 const EXIT_OK = 0;
 const EXIT_FINDINGS = 1;
@@ -20,10 +27,10 @@ const RESHIM = 'asdf reshim nodejs';
 const { defineCommand, defineGroup } = createCli<TbNodeEffects>();
 
 const EXIT_CODES = `Exit codes:
-  0  The check found nothing to fix
-  1  The check found something to fix
+  0  A check found nothing to fix, or prune-modules completed
+  1  A check found something to fix, or prune-modules failed to delete a directory or was declined
   2  Usage or validation error
-  3  The check does not apply; the reason is on stderr`;
+  3  The command does not apply; the reason is on stderr`;
 
 const ASDF_SHIMS_DESCRIPTION = `Report every asdf shim that names the nodejs plugin but not the active version. Such a shim stays on PATH and
 fails when invoked. Each is classified as an orphan, which shadows another executable of that name on PATH, or
@@ -53,8 +60,32 @@ pnpm now.
 It exits 1 when the versions differ, when pnpm reported no version, or when pnpm is not on PATH; 0 when they
 match; and 3, with the reason on stderr, when no pin is in reach or the pin names another package manager.`;
 
+const PRUNE_MODULES_DESCRIPTION = `Find every node_modules directory under a root and report, or with --apply delete, each one that the
+protect-list does not match and that is not recently active. The scan follows no symlinks and does not search
+inside a node_modules directory, and nothing outside the matched node_modules trees is touched. Without --apply,
+nothing is deleted.`;
+
+const PRUNE_MODULES_EPILOG = `Protect-list: ~/${DEFAULT_PROTECT_LIST} unless --protect-list names another file. A missing
+default file protects nothing; a missing named file is an error. One glob per line (*, **, ?), absolute or
+starting with ~, with # comments. A pattern protects every node_modules whose parent directory it matches or lies
+beneath a directory that it matches:
+
+  ~/repos/atlassian/mcp-*
+  ~/repos/*/*.live
+
+Active guard: a node_modules is kept when the git index of its enclosing work tree, or outside a work tree its
+parent directory, was modified within the last --active-days days (30 by default). A linked worktree is judged by
+its own index.
+
+Sizes are allocated disk space, as du reports it. A pnpm project shares files with the pnpm store, so deleting its
+node_modules frees less until \`pnpm store prune\` runs.
+
+It exits 0 when it completes; 1 when a deletion fails or the confirmation is declined; and 3, with the reason on
+stderr, when the root is not an existing directory.`;
+
 const ROOT = defineGroup({
-  summary: 'Utilities for inspecting the Node.js runtime and the commands that it installs.',
+  summary:
+    'Utilities for inspecting the Node.js runtime and the commands that it installs, and for pruning node_modules directories.',
   epilog: EXIT_CODES,
   commands: {
     'asdf-shims': defineCommand({
@@ -69,41 +100,62 @@ const ROOT = defineGroup({
       epilog: PNPM_EPILOG,
       run: ({ context, stderr, stdout }) => reportFailures(() => writeResult(runPnpm(context), stdout, stderr)),
     }),
+    'prune-modules': defineCommand({
+      summary: 'Delete the node_modules directories that the protect-list and the active guard do not keep',
+      description: PRUNE_MODULES_DESCRIPTION,
+      epilog: PRUNE_MODULES_EPILOG,
+      flags: {
+        activeDays: {
+          type: 'string',
+          description: 'Keep a directory whose project was active within this many days (default 30)',
+          valueHint: 'n',
+          parse: parseActiveDays,
+        },
+        apply: { type: 'boolean', description: 'Delete the directories, after confirmation' },
+        noActiveGuard: { type: 'boolean', description: 'Do not keep recently active directories' },
+        noConfirm: { type: 'boolean', description: 'Delete without asking for confirmation' },
+        protectList: {
+          type: 'path',
+          description: `The protect-list file (default ~/${DEFAULT_PROTECT_LIST})`,
+          valueHint: 'path',
+        },
+        root: { type: 'path', description: `The directory to scan (default ~/${DEFAULT_ROOT})`, valueHint: 'path' },
+      },
+      run: ({ context, flags, stderr, stdout }) =>
+        reportFailures(() => runPruneModules(flags, context, { stderr, stdout })),
+    }),
   },
 });
 
 /**
- * Runs the `tb-node` command line, returning what to write and exit with rather than doing either, so that
- * the whole surface is exercisable without a process. Every failure is reported through the result: Nothing throws.
+ * Runs the `tb-node` command line, writing to the given writers and resolving to the exit code rather than exiting,
+ * so that the whole surface is exercisable without a process. Every failure is reported through the writers and the
+ * exit code: Nothing throws.
  *
  * @internal
  */
-export async function runTbNode(args: string[], effects: TbNodeEffects): Promise<TbNodeResult> {
-  const stdout = createTextBuffer();
-  const stderr = createTextBuffer();
-  const exitCode = await runCli(args, ROOT, {
+export async function runTbNode(args: string[], effects: TbNodeEffects, streams: TbNodeStreams): Promise<number> {
+  return runCli(args, ROOT, {
     name: 'tb-node',
+    baseDir: effects.cwd,
     context: effects,
     version: () => resolveVersion(effects),
-    stdout,
-    stderr,
+    stdout: streams.stdout,
+    stderr: streams.stderr,
   });
-
-  return { exitCode, stderr: stderr.text, stdout: stdout.text };
 }
 
 /** What running `pnpm --version` produced: the version that it printed, or why it produced none. */
 export type PnpmVersionResult = { readonly failure: string } | { readonly version: string };
 
 /** The effects deferred to the entry point, which keeps the runner free of I/O. */
-export interface TbNodeEffects {
+export interface TbNodeEffects extends PruneModulesEffects {
   /** The working directory, from which the pin and the `.tool-versions` lookups ascend. */
   readonly cwd: string;
   /** The path of the node binary running the command, from which its asdf install is read. */
   readonly execPath: string;
   /** Finds the `packageManager` pin governing a directory. */
   readonly findPin: typeof findPackageManagerPin;
-  readonly homeDir: string;
   /** Lists the shims that the active version does not provide. */
   readonly listStrandedShims: typeof listStrandedAsdfShims;
   /** The directories of PATH, in search order. */
@@ -115,28 +167,20 @@ export interface TbNodeEffects {
   readonly runPnpmVersion: (dir: string) => PnpmVersionResult;
 }
 
-/** What the caller should write to each stream and exit with. */
+/** What a check should write to each stream and exit with. */
 export interface TbNodeResult {
   readonly exitCode: number;
   readonly stderr: string;
   readonly stdout: string;
 }
 
-// region | Helpers
-
-/** Returns a writer that accumulates what is written to it. */
-function createTextBuffer(): Writer & { readonly text: string } {
-  let text = '';
-
-  return {
-    get text() {
-      return text;
-    },
-    write(chunk: string) {
-      text += chunk;
-    },
-  };
+/** The writers that receive the command's output. */
+export interface TbNodeStreams {
+  readonly stderr: Writer;
+  readonly stdout: Writer;
 }
+
+// region | Helpers
 
 /** Renders the line naming the `pnpm` on PATH and what provides it. */
 function describeProvider(provider: PnpmProvider, execPath: string): string {

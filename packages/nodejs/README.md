@@ -2,7 +2,7 @@
 
 # @williamthorsen/toolbelt.nodejs
 
-Utilities for inspecting Node.js runtimes, toolchains, and the commands that they install.
+Utilities for inspecting Node.js runtimes and toolchains, and for pruning `node_modules` directories.
 
 <!-- section:release-notes --><!-- /section:release-notes -->
 
@@ -16,7 +16,7 @@ Requires Node.js 24 or later.
 
 ## CLI
 
-The package provides a `tb-node` command with two subcommands. `asdf-shims` reports the asdf shims that a nodejs version switch has stranded: A CLI installed with `npm install --global` under an earlier version keeps its shim on PATH, and the shim fails when invoked under a version that lacks the package. `pnpm` checks the pnpm that runs in the working directory against the nearest `packageManager` pin.
+The package provides a `tb-node` command with three subcommands. `asdf-shims` reports the asdf shims that a nodejs version switch has stranded: A CLI installed with `npm install --global` under an earlier version keeps its shim on PATH, and the shim fails when invoked under a version that lacks the package. `pnpm` checks the pnpm that runs in the working directory against the nearest `packageManager` pin. `prune-modules` deletes the `node_modules` directories that a protect-list and recent activity do not keep.
 
 ```sh
 pnpm add --global @williamthorsen/toolbelt.nodejs   # puts tb-node on PATH
@@ -66,14 +66,43 @@ The version that runs comes from running `pnpm --version` in the pinned director
 
 The provider is read without a spawn: An asdf shim's header names the plugin that provides it, and a `nodejs` shim resolves through the running node's bin symlink to corepack or to an npm-global pnpm; anything else is named by path. Repairs print only when the versions differ, and each installs the pin through whatever provides pnpm now, so no repair switches providers. Without a pin in reach, or with a pin naming another package manager, the command reports the provider alone and exits 3.
 
+### `tb-node prune-modules`
+
+Finds every `node_modules` directory under `~/repos`, or under `--root`, and reports each one that the protect-list does not match and that is not recently active. Nothing is deleted without `--apply`.
+
+```sh
+tb-node prune-modules
+# protect-list: /Users/me/.config/tb-node/protected-node-modules.txt
+# 412.3 MB  /Users/me/repos/packages/foo.12/node_modules
+#  skipped  /Users/me/repos/packages/foo.live/node_modules (protected by ~/repos/*/*.live)
+#  skipped  /Users/me/repos/packages/foo/node_modules (active 3 days ago)
+#
+# 1 directory totaling 412.3 MB would be deleted; 2 skipped
+
+tb-node prune-modules --apply   # asks before deleting; --no-confirm skips the question
+```
+
+The protect-list is read from `~/.config/tb-node/protected-node-modules.txt`, or from the file named by `--protect-list`. Each machine supplies its own; the package ships none, and a missing default file protects nothing. Each line is a glob (`*`, `**`, `?`), absolute or starting with `~`, and protects every `node_modules` whose parent directory it matches or lies beneath a directory that it matches:
+
+```
+# Comments start with #
+~/repos/atlassian/mcp-*
+~/repos/personal/codeassembly
+~/repos/*/*.live
+```
+
+A directory is also kept when its project was active within the last 30 days (`--active-days`, or `--no-active-guard` to turn the check off): Activity is the last change to the git index of the enclosing work tree, which staging, committing, and checking out rewrite, so a whole monorepo is active or inactive together and each linked worktree is judged by its own index. Outside a work tree, the parent directory's modification time stands in.
+
+The scan follows no symlinks and does not search inside a `node_modules` directory. Sizes are allocated disk space, as `du` reports it; a pnpm project shares its files with the pnpm store, so deleting its `node_modules` frees less than the reported size until `pnpm store prune` runs. `--apply` asks for confirmation only from a terminal: Without one, it fails unless `--no-confirm` is given.
+
 ### Exit codes
 
-| Code | Meaning                                                                                                   |
-| ---- | --------------------------------------------------------------------------------------------------------- |
-| `0`  | The check found nothing to fix                                                                            |
-| `1`  | The check found something to fix, with the report on stdout                                               |
-| `2`  | Usage or validation error, with the message on stderr                                                     |
-| `3`  | Not applicable, with the reason on stderr: the running node is not an asdf install, or no pin is in reach |
+| Code | Meaning                                                                                                                                |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `0`  | A check found nothing to fix, or `prune-modules` completed                                                                             |
+| `1`  | A check found something to fix, with the report on stdout, or a deletion failed or the confirmation was declined                       |
+| `2`  | Usage or validation error, with the message on stderr                                                                                  |
+| `3`  | Not applicable, with the reason on stderr: the running node is not an asdf install, no pin is in reach, or the root is not a directory |
 
 ```sh
 if ! tb-node asdf-shims >/dev/null; then
