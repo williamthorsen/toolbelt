@@ -1,5 +1,6 @@
 export {
   isAdoptableSource,
+  isAdoptableSourceOrBin,
   isAdoptableSourceOrTest,
   isBinWrapper,
   isInTestDirectory,

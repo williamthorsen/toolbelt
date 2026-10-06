@@ -30,6 +30,19 @@ export function isAdoptableSourceOrTest(path: string): boolean {
 }
 
 /**
+ * Reports whether a path names a source read by an adoption sweep that includes `bin/` directories.
+ *
+ * The selection wanted by a kit whose idiom lives in a command-line runner, which commonly sits under `bin/` or
+ * `src/bin/`. A bootstrap wrapper that only forwards its arguments contains no such idiom, so sweeping it costs
+ * nothing. Tests stay exempt.
+ *
+ * @internal
+ */
+export function isAdoptableSourceOrBin(path: string): boolean {
+  return isJsTsSource(path) && !isTestFile(path) && !isInTestDirectory(path);
+}
+
+/**
  * Reports whether a path is a bootstrap wrapper.
  *
  * Such a wrapper imports nothing, so its build-first message survives an incomplete install. The hand-rolled
