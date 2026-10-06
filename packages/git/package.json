@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.git",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "Utilities for working with git",
   "keywords": [
     "esm",

@@ -1,5 +1,27 @@
 [
   {
+    "version": "0.5.0",
+    "date": "2026-10-06",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Moves the argument parsing, dispatch, and help of `tb-git`, `tb-jira`, `tb-node`, and `tb-secret` to `@williamthorsen/toolbelt.cli`, which generates each command's help from its schema and reports a usage error as `Error: <message>`, followed by a `Did you mean` line for a mistyped command and a pointer to that command's `--help`. (#365)",
+            "hash": "d9924a0c93f279691b21b98f2567ce157a2cfff4",
+            "entry": 1
+          },
+          {
+            "description": "Adds `-V` to `tb-git`, `tb-jira`, `tb-node`, and `tb-secret` as a short form of `--version`. (#365)",
+            "hash": "d9924a0c93f279691b21b98f2567ce157a2cfff4",
+            "entry": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.4.2",
     "date": "2026-10-02",
     "sections": [

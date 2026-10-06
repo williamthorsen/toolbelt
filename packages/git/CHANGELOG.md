@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.5.0 — 2026-10-06
+
+### 🎉 Features
+
+- Moves the argument parsing, dispatch, and help of `tb-git`, `tb-jira`, `tb-node`, and `tb-secret` to `@williamthorsen/toolbelt.cli`, which generates each command's help from its schema and reports a usage error as `Error: <message>`, followed by a `Did you mean` line for a mistyped command and a pointer to that command's `--help`. (#365)
+- Adds `-V` to `tb-git`, `tb-jira`, `tb-node`, and `tb-secret` as a short form of `--version`. (#365)
+
 ## 0.4.2 — 2026-10-02
 
 ### 📚 Documentation
