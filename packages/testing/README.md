@@ -414,7 +414,7 @@ A spy-based helper cannot offer this: `vi.spyOn` hands back the existing spy for
 The package includes a ReadyUp kit, so a project that installs it can ask how far its adoption got:
 
 ```sh
-rdy run --packages
+rdy run --sources
 ```
 
 The kit reads the project's tracked test files and reports the two idioms for which this package publishes a replacement: a thrown value captured by hand, and the output of `process.stdout` or `process.stderr` captured through a spy. An error capture is named by the variable that it fills, and a stdio spy by its location. The kit reports both at `recommend`, never at `warn` or `error`: A capture written by hand works, and `captureError` or `captureStdio` expresses it better rather than correcting it.
@@ -445,10 +445,10 @@ A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-i
 try {
 ```
 
-Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep, a spelling that readyup 0.40.0 or later reads:
 
 ```ts
 export default defineRdyConfig({
-  packages: ['@williamthorsen/toolbelt.testing'],
+  sources: ['npm:@williamthorsen/toolbelt.testing'],
 });
 ```

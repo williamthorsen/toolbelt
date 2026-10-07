@@ -101,7 +101,7 @@ An item is returned whatever its value: `0`, `''`, `false`, `null`, and even `un
 The package includes a ReadyUp kit, so a project that installs it can ask how far its adoption got:
 
 ```sh
-rdy run --packages
+rdy run --sources
 ```
 
 The kit reads the project's tracked sources and reports three hand-rolled idioms in them, each counted against the calls that the project already makes into this package. The kit reports two of them at `recommend`: They are correct code that a published utility expresses better. It reports the first at `warn`, because that one is a defect.
@@ -123,10 +123,10 @@ A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-i
 const list = Array.isArray(value) ? value : [value];
 ```
 
-Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep, a spelling that readyup 0.40.0 or later reads:
 
 ```ts
 export default defineRdyConfig({
-  packages: ['@williamthorsen/toolbelt.arrays'],
+  sources: ['npm:@williamthorsen/toolbelt.arrays'],
 });
 ```

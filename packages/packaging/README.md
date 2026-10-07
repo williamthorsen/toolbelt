@@ -116,7 +116,7 @@ The function throws on a manifest that declares a `name` but no string `version`
 The package includes a ReadyUp kit, so a project that installs it can ask how far its adoption got:
 
 ```sh
-rdy run --packages
+rdy run --sources
 ```
 
 The kit reads the project's tracked sources and reports one idiom, counted against the calls that the project already makes into this package. It reports at `recommend`: A hand-rolled search is correct code that a published function expresses better, not a defect.
@@ -138,10 +138,10 @@ while (!fs.existsSync(path.join(dir, 'package.json'))) {
 }
 ```
 
-Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep, a spelling that readyup 0.40.0 or later reads:
 
 ```ts
 export default defineRdyConfig({
-  packages: ['@williamthorsen/toolbelt.packaging'],
+  sources: ['npm:@williamthorsen/toolbelt.packaging'],
 });
 ```

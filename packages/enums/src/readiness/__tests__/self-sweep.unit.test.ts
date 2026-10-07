@@ -13,7 +13,7 @@ const READINESS_DIR = fileURLToPath(new URL('..', import.meta.url));
 describe(listMembershipSites, () => {
   // The kit sweeps its own declaration and readiness modules when it runs over this repo, and the compiled kit
   // inlines shared modules that the sweep also reaches, so an edit writing the idiom as code in any of them puts the
-  // package on its own report. Nothing in CI runs `rdy run --packages` to catch it.
+  // package on its own report. Nothing in CI runs `rdy run --sources` to catch it.
   it('finds nothing in the sources describing what it looks for', () => {
     const findings = listSweptFiles().flatMap((file) =>
       listMembershipSites(fs.readFileSync(file, 'utf8')).map((site) => `${path.basename(file)}:${site.line}`),

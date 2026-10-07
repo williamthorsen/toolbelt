@@ -326,7 +326,7 @@ For the reason `silenceConsole`'s do not: Because `vi.spyOn` hands back the exis
 The package includes a ReadyUp kit. A project that installs it can ask how far its adoption got:
 
 ```sh
-rdy run --packages
+rdy run --sources
 ```
 
 The kit reads the project's tracked test files and reports the three idioms for which this package publishes a replacement: a `process.exit` mock, a console method captured or silenced by hand, and a disposal registered by hand on test finish. Each site is named by what it is doing and counted against the calls that the project already makes into this package.
@@ -377,10 +377,10 @@ A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-i
 vi.spyOn(process, 'exit').mockImplementation(() => undefined);
 ```
 
-Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep, a spelling that readyup 0.40.0 or later reads:
 
 ```ts
 export default defineRdyConfig({
-  packages: ['@williamthorsen/toolbelt.vitest'],
+  sources: ['npm:@williamthorsen/toolbelt.vitest'],
 });
 ```

@@ -245,7 +245,7 @@ The function throws a `RangeError` naming the fault when `min`, `max`, or `offse
 The package includes a ReadyUp kit, so a project that installs it can ask how far its adoption got:
 
 ```sh
-rdy run --packages
+rdy run --sources
 ```
 
 The kit reads the project's tracked sources and reports every hand-rolled capitalization and pluralization in them, and every block of text laid out to do without `dedent`, each counted against the calls that the project already makes into this package. All four checks report at `recommend`: They are correct code that a published utility expresses better, not defects.
@@ -267,10 +267,10 @@ A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-i
 const label = word.charAt(0).toUpperCase() + word.slice(1);
 ```
 
-Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep, a spelling that readyup 0.40.0 or later reads:
 
 ```ts
 export default defineRdyConfig({
-  packages: ['@williamthorsen/toolbelt.strings'],
+  sources: ['npm:@williamthorsen/toolbelt.strings'],
 });
 ```

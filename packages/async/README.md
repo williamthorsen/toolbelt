@@ -13,7 +13,7 @@ Requires Node.js 24 or later.
 The package includes a ReadyUp kit, so a project that installs it can ask how far its adoption got:
 
 ```sh
-rdy run --packages
+rdy run --sources
 ```
 
 The kit reads the project's tracked sources and reports every hand-rolled sleep in them, each counted against the calls that the project already makes into this package. It reports at `recommend` and never at `warn` or `error`, because a hand-rolled sleep is correct code that `delay` expresses better, not a defect.
@@ -33,10 +33,10 @@ A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-i
 await new Promise((resolve) => setTimeout(resolve, 50));
 ```
 
-Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep, a spelling that readyup 0.40.0 or later reads:
 
 ```ts
 export default defineRdyConfig({
-  packages: ['@williamthorsen/toolbelt.async'],
+  sources: ['npm:@williamthorsen/toolbelt.async'],
 });
 ```

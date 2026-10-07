@@ -99,7 +99,7 @@ A command whose context its group does not supply fails to typecheck. The contex
 The package ships a ReadyUp kit, so a project that installs it can ask how far its adoption got:
 
 ```sh
-rdy run --packages
+rdy run --sources
 ```
 
 The kit reads the project's tracked sources and reports two idioms, counted against the calls that the project already makes into this package. Both report at `recommend`: Hand-rolled argument parsing is correct code that this package expresses better, not a defect.
@@ -118,10 +118,10 @@ A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-i
 const { tokens } = parseArgs({ args, options, strict: false, tokens: true });
 ```
 
-Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep, a spelling that readyup 0.40.0 or later reads:
 
 ```ts
 export default defineRdyConfig({
-  packages: ['@williamthorsen/toolbelt.cli'],
+  sources: ['npm:@williamthorsen/toolbelt.cli'],
 });
 ```

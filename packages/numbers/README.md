@@ -66,7 +66,7 @@ pickInteger({ min: 1, max: 6 }); // 1 through 6
 The package includes a ReadyUp kit. A project that installs it can ask how far its adoption got:
 
 ```sh
-rdy run --packages
+rdy run --sources
 ```
 
 The kit reads the project's tracked sources and reports every hand-rolled clamp, decimal rounding, and random integer in them, each counted against the calls that the project already makes into this package. The kit reports all three at `recommend`: They are correct code that a published utility expresses better, not defects.
@@ -82,10 +82,10 @@ A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-i
 const bounded = Math.max(min, Math.min(max, value));
 ```
 
-Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep, a spelling that readyup 0.40.0 or later reads:
 
 ```ts
 export default defineRdyConfig({
-  packages: ['@williamthorsen/toolbelt.numbers'],
+  sources: ['npm:@williamthorsen/toolbelt.numbers'],
 });
 ```
