@@ -1,5 +1,22 @@
 [
   {
+    "version": "3.4.0",
+    "date": "2026-10-07",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds the `tb-node prune-modules` subcommand, which reports the `node_modules` directories under `~/repos` (or `--root`) that the protect-list at `~/.config/tb-node/protected-node-modules.txt` does not match and whose project's git index, or outside a work tree its directory, has not changed within 30 days (`--active-days`), and deletes them under `--apply`. (#369)",
+            "hash": "730bdc3bef373802d294c055841cb2bd7856894b",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "3.3.0",
     "date": "2026-10-06",
     "sections": [

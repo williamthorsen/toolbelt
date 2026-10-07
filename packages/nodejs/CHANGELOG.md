@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.4.0 — 2026-10-07
+
+### 🎉 Features
+
+- Adds the `tb-node prune-modules` subcommand, which reports the `node_modules` directories under `~/repos` (or `--root`) that the protect-list at `~/.config/tb-node/protected-node-modules.txt` does not match and whose project's git index, or outside a work tree its directory, has not changed within 30 days (`--active-days`), and deletes them under `--apply`. (#369)
+
 ## 3.3.0 — 2026-10-06
 
 ### 🎉 Features

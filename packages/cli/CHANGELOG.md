@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.0 — 2026-10-07
+
+### 🎉 Features
+
+- Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.cli` with two checks, `no-node-parse-args` and `no-hand-rolled-flag-scan`, which recommend the package's `parseArgs`, `defineCommand`, `defineGroup`, and `runCli` in place of `node:util`'s `parseArgs` and hand-written flag comparisons, including in runners under `bin/` and `src/bin/`. (#367)
+
 ## 0.2.0 — 2026-10-06
 
 ### 🎉 Features
