@@ -10,7 +10,7 @@ import { readManifest } from '../test-utils/readManifest.ts';
 const BUNDLE_PATH = path.join('.readyup', 'kits', 'default.js');
 
 describe('The readyup config', () => {
-  it('lists every workspace with a kit among the packages that it runs', () => {
+  it('lists every workspace with a kit among the sources that it runs', () => {
     const { unlisted, workspaceCount } = auditConfiguredPackages(findMonorepoRoot());
 
     expect(unlisted).toStrictEqual([]);
@@ -22,8 +22,8 @@ describe('The readyup config', () => {
 // region | Helpers
 
 /**
- * Reports every workspace that contains a kit and is absent from the config's `packages`, which is the
- * authoritative list for `rdy run --packages`.
+ * Reports every workspace that contains a kit and is absent from the config's `sources` as an `npm:` entry,
+ * which is the authoritative list for `rdy run --sources`.
  *
  * A kit published by a workspace missing from that list never runs over this repo, and the run says so
  * nowhere: It prints what it was configured to run, so an unlisted kit looks exactly like one that had
@@ -31,14 +31,14 @@ describe('The readyup config', () => {
  * soon as the package gains a kit.
  */
 function auditConfiguredPackages(monorepoRoot: string): { unlisted: string[]; workspaceCount: number } {
-  const configured = new Set<string>(readyupConfig.packages);
+  const configured = new Set<string>(readyupConfig.sources);
   const kitDirectories = getWorkspacePackageDirs(monorepoRoot).filter((directory) =>
     fs.existsSync(path.join(directory, BUNDLE_PATH)),
   );
 
   const unlisted = kitDirectories
     .map((directory) => readWorkspaceName(directory, monorepoRoot))
-    .filter((name) => !configured.has(name));
+    .filter((name) => !configured.has(`npm:${name}`));
 
   return { unlisted: unlisted.toSorted((a, b) => a.localeCompare(b)), workspaceCount: kitDirectories.length };
 }
