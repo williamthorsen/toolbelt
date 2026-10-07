@@ -9,7 +9,7 @@ on:
         required: false
         type: string
       bump:
-        description: 'Override version bump type (leave at auto to detect it from commits)'
+        description: 'Version bump type (auto detects it from commits)'
         required: false
         type: choice
         default: auto
@@ -19,7 +19,7 @@ on:
           - minor
           - major
       force:
-        description: 'Force a release even when no commits or no bump-worthy commits exist (defaults to patch; combine with --bump for a different level)'
+        description: 'Force a release even when there are not any commits, or any bump-worthy commits, since the last release (defaults to patch; combine with --bump for a different level)'
         required: false
         type: boolean
         default: false
@@ -33,6 +33,5 @@ jobs:
     uses: williamthorsen/node-monorepo-tools/.github/workflows/release.reusable.yaml@workflow/release-v1
     with:
       only: ${{ inputs.only }}
-      # `auto` stands for the empty bump, which the release workflow reads as auto-detect.
       bump: ${{ inputs.bump != 'auto' && inputs.bump || '' }}
       force: ${{ inputs.force }}
