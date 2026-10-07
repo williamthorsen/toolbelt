@@ -20,6 +20,12 @@ concurrency:
 
 jobs:
   code-quality:
-    uses: williamthorsen/.github/.github/workflows/code-quality-pnpm-workflow.yaml@v7
+    uses: williamthorsen/.github/.github/workflows/code-quality-pnpm-workflow.yaml@v8
     with:
-      check-command: pnpm exec nmr ci
+      check-commands: >-
+        [
+          { "name": "format", "command": "pnpm exec nmr fmt:check" },
+          { "name": "typecheck", "command": "pnpm exec nmr build && pnpm exec nmr typecheck" },
+          { "name": "lint", "command": "pnpm exec nmr build && pnpm exec nmr lint:strict" },
+          { "name": "test", "command": "pnpm exec nmr build && pnpm exec nmr test" }
+        ]
