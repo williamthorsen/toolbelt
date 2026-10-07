@@ -23,7 +23,7 @@ pnpm add @williamthorsen/toolbelt.filesystem
 The package includes a ReadyUp kit, so a project that installs it can ask how far its adoption got:
 
 ```sh
-rdy run --packages
+rdy run --sources
 ```
 
 The kit reads the project's tracked sources and reports two idioms, each counted against the calls that the project already makes into this package. The kit reports both at `recommend`: They are correct code that a published function expresses better, not defects.
@@ -45,11 +45,11 @@ while (dir !== stopAtDir) {
 }
 ```
 
-Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep, a spelling that readyup 0.40.0 or later reads:
 
 ```ts
 export default defineRdyConfig({
-  packages: ['@williamthorsen/toolbelt.filesystem'],
+  sources: ['npm:@williamthorsen/toolbelt.filesystem'],
 });
 ```
 

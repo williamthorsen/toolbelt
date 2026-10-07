@@ -13,7 +13,7 @@ Requires Node.js 24 or later.
 The package includes a ReadyUp kit, so a project that installs it can ask how far its adoption got:
 
 ```sh
-rdy run --packages
+rdy run --sources
 ```
 
 The kit reads the project's tracked sources and reports every function whose whole body re-implements a guard that this package publishes, naming the function and counting it against the calls that the project already makes into the package. The kit reports a hand-rolled assertion or type guard at `warn` under `no-assertion-clone` and `no-predicate-clone`, and a hand-rolled number guard at `recommend` under `no-number-guard-clone`, because `isNumber` returns `false` for `NaN` and a bare `typeof` check does not, which makes it the one substitution that changes behavior.
@@ -31,10 +31,10 @@ function isNumeric(value: unknown): value is number {
 }
 ```
 
-Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep, a spelling that readyup 0.40.0 or later reads:
 
 ```ts
 export default defineRdyConfig({
-  packages: ['@williamthorsen/toolbelt.guards'],
+  sources: ['npm:@williamthorsen/toolbelt.guards'],
 });
 ```

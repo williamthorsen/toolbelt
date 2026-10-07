@@ -14,7 +14,7 @@ const TESTS_DIR = fileURLToPath(new URL('.', import.meta.url));
 describe(listSites, () => {
   // This kit sweeps tests, so the sweep here reads them too. Every fixture beside this file writes its idiom
   // inside a literal, which blanking erases before the scan reads it; one rewritten as literal code would put
-  // the package's own suite on its own report, and nothing in CI runs `rdy run --packages` to catch it.
+  // the package's own suite on its own report, and nothing in CI runs `rdy run --sources` to catch it.
   it('finds nothing in the sources describing what it looks for', () => {
     const findings = listSweptFiles().flatMap((file) =>
       listSites(fs.readFileSync(file, 'utf8')).map((site) => `${path.basename(file)}:${site.line}`),

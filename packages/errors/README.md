@@ -96,7 +96,7 @@ try {
 The package includes a ReadyUp kit. A project that installs it can ask how far its adoption got:
 
 ```sh
-rdy run --packages
+rdy run --sources
 ```
 
 The kit reads the project's tracked sources and reports every `instanceof Error` in them, each named by what it is doing and counted against the calls that the project already makes into this package. The kit reports a hand-rolled description at `warn` and a narrowing or a hand-rolled coercion at `recommend`; it reports nothing at `error`, because none of it breaks the package.
@@ -112,10 +112,10 @@ A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-i
 if (error instanceof Error) throw error;
 ```
 
-Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep, a spelling that readyup 0.40.0 or later reads:
 
 ```ts
 export default defineRdyConfig({
-  packages: ['@williamthorsen/toolbelt.errors'],
+  sources: ['npm:@williamthorsen/toolbelt.errors'],
 });
 ```

@@ -13,7 +13,7 @@ Requires Node.js 24 or later.
 The package includes a ReadyUp kit, so a project that installs it can ask how far its adoption got:
 
 ```sh
-rdy run --packages
+rdy run --sources
 ```
 
 The kit reads the project's tracked sources and reports every search of an enum's values with `includes`, naming where it is and counting it against the calls that the project already makes into this package. The kit reports each site at `recommend` under `no-hand-rolled-enum-membership`: `isEnumValue` returns a type predicate and narrows the value, which the search does not, and `toEnumValue` replaces a test that only chooses between the value and `undefined`.
@@ -40,10 +40,10 @@ A reviewed site is silenced by an `rdy-ignore` pragma on its own line, or `rdy-i
 const registered = Object.values(handlers).includes(handler);
 ```
 
-Add the package to `.config/readyup.config.ts` to include it in a routine sweep:
+Add the package to `.config/readyup.config.ts` to include it in a routine sweep, a spelling that readyup 0.40.0 or later reads:
 
 ```ts
 export default defineRdyConfig({
-  packages: ['@williamthorsen/toolbelt.enums'],
+  sources: ['npm:@williamthorsen/toolbelt.enums'],
 });
 ```

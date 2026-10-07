@@ -13,7 +13,7 @@ const READINESS_DIR = fileURLToPath(new URL('..', import.meta.url));
 describe(listGuardClones, () => {
   // The kit sweeps its own declaration and readiness modules when it runs over this repo, and the compiled kit
   // inlines shared modules that the sweep also reaches, so an edit writing a guard clone as code in any of them
-  // makes the kit report a finding in its own package. Nothing in CI runs `rdy run --packages` to catch it.
+  // makes the kit report a finding in its own package. Nothing in CI runs `rdy run --sources` to catch it.
   it('finds nothing in the sources describing what it looks for', () => {
     const findings = listSweptFiles().flatMap((file) =>
       listGuardClones(fs.readFileSync(file, 'utf8')).map((site) => `${path.basename(file)}:${site.line}`),
