@@ -22,8 +22,9 @@ interface ParseModeOptions extends ParseOptions {
  * flag; a value-taking flag without a value (absent, empty as `--flag=`, or the next argument when it starts
  * with `-` and is not `-` itself); a boolean flag given a value; a positional beyond the declared operands;
  * a missing required operand; a value outside `choices`; or a value on which `parse` throws. A repeated flag
- * takes its last value. An absent boolean flag is `false`, an absent value flag takes its `default` or is
- * `undefined`, an absent optional operand is `undefined`, and an absent variadic operand is `[]`.
+ * takes its last value, unless it declares `multiple`, which collects every value in order. An absent boolean
+ * flag is `false`, an absent `multiple` flag is `[]`, an absent value flag takes its `default` or is `undefined`,
+ * an absent optional operand is `undefined`, and an absent variadic operand is `[]`.
  * @category CLI
  * @stage candidate
  */
@@ -81,7 +82,13 @@ export function parseValidatedArgs<S extends FlagSchema, O extends readonly Oper
       }
       throw new ParseError('unknown-flag', token.rawName, `Unknown option: ${token.rawName}`);
     }
-    flags[entry.key] = readFlagValue(token, entry.key, entry.definition, baseDir);
+    const value = readFlagValue(token, entry.key, entry.definition, baseDir);
+    const collected = flags[entry.key];
+    if (entry.definition.multiple === true && Array.isArray(collected)) {
+      collected.push(value);
+    } else {
+      flags[entry.key] = value;
+    }
   }
 
   const operands = assignOperands(positionals, operandDefinitions);
@@ -119,7 +126,8 @@ function assignOperands(positionals: string[], definitions: readonly OperandDefi
 }
 
 /** Returns the value of an absent flag that does not declare a `default`. */
-function initialValue(definition: FlagDefinition): false | undefined {
+function initialValue(definition: FlagDefinition): unknown[] | false | undefined {
+  if (definition.multiple === true) return [];
   return definition.type === 'boolean' ? false : undefined;
 }
 

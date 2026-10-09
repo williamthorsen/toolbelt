@@ -55,6 +55,10 @@ function validateFlagFields(key: string, definition: FlagSchema[string]): void {
     if ('default' in definition && typeof definition.default !== 'boolean') {
       throw new Error(`Boolean flag '${key}' must declare a boolean 'default'.`);
     }
+    if (definition.multiple === true) throw new Error(`Boolean flag '${key}' cannot declare 'multiple'.`);
+  }
+  if (definition.multiple === true && 'default' in definition) {
+    throw new Error(`Flag '${key}' declares 'multiple', which does not take a 'default'.`);
   }
 
   const { choices } = definition;

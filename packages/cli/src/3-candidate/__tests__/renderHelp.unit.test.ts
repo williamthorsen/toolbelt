@@ -71,6 +71,21 @@ describe(renderHelp, () => {
     expect(findLine(page, 'The level')).toMatch(/The level \(default: low\)$/);
   });
 
+  it('marks a multiple flag as repeatable, and only that flag', () => {
+    const page = renderHelp(
+      makeCommand({
+        flags: {
+          name: { type: 'string', description: 'The name' },
+          tag: { type: 'string', description: 'The tag', valueHint: 'name', multiple: true },
+        },
+      }),
+      'tool',
+    );
+
+    expect(findLine(page, 'The tag')).toMatch(/--tag <name> +The tag \(repeatable\)$/);
+    expect(findLine(page, 'The name')).toMatch(/The name$/);
+  });
+
   it('labels optional and variadic operands in the usage line and the arguments block', () => {
     const page = renderHelp(
       makeCommand({
