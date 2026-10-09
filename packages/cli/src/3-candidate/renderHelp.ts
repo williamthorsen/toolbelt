@@ -71,8 +71,9 @@ function formatFlagRow(key: string, definition: FlagDefinition): Row {
   const longName = `--${resolveLongName(key, definition)}`;
   const names = definition.short === undefined ? `    ${longName}` : `-${definition.short}, ${longName}`;
   const label = definition.type === 'boolean' ? names : `${names} <${formatValueLabel(definition)}>`;
-  const suffix = 'default' in definition ? ` (default: ${String(definition.default)})` : '';
-  return [label, definition.description + suffix];
+  const repeatable = definition.multiple === true ? ' (repeatable)' : '';
+  const defaultValue = 'default' in definition ? ` (default: ${String(definition.default)})` : '';
+  return [label, definition.description + repeatable + defaultValue];
 }
 
 function formatOperandLabel(operand: OperandDefinition): string {
