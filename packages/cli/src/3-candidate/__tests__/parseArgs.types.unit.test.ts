@@ -30,6 +30,26 @@ describe('parseArgs types', () => {
     }>();
   });
 
+  it('infers an array of the value type for a multiple flag', () => {
+    type Bump = 'major' | 'minor';
+    const parse = () =>
+      parseArgs([], {
+        flags: {
+          bump: { type: 'string', description: 'B', choices: ['major', 'minor'], multiple: true },
+          count: { type: 'string', description: 'C', parse: Number, multiple: true },
+          root: { type: 'path', description: 'R', multiple: true },
+          tag: { type: 'string', description: 'T', multiple: true },
+        },
+      });
+
+    expectTypeOf(parse).returns.toHaveProperty('flags').toEqualTypeOf<{
+      bump: Bump[];
+      count: number[];
+      root: string[];
+      tag: string[];
+    }>();
+  });
+
   it('infers each operand type by name', () => {
     const parse = () =>
       parseArgs([], {
@@ -71,6 +91,8 @@ describe('parseArgs types', () => {
       parseArgs([], { flags: { level: { type: 'string', description: 'L', choices: ['low'], default: 'high' } } });
       // @ts-expect-error -- The default must have the type that `parse` returns.
       parseArgs([], { flags: { max: { type: 'string', description: 'M', parse: Number, default: 'x' } } });
+      // @ts-expect-error -- A multiple flag does not take a default.
+      parseArgs([], { flags: { tag: { type: 'string', description: 'T', multiple: true, default: ['a'] } } });
     }).toBeFunction();
   });
 });

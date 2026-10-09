@@ -173,6 +173,46 @@ describe(parseArgs, () => {
     });
   });
 
+  describe('multiple', () => {
+    const flags = {
+      bump: { type: 'string', description: 'The bump', choices: ['major', 'minor'], multiple: true },
+      count: { type: 'string', description: 'The count', parse: Number, multiple: true },
+      root: { type: 'path', description: 'The root', multiple: true },
+      tag: { type: 'string', description: 'The tag', short: 't', multiple: true },
+      verbose: { type: 'boolean', description: 'Print more', short: 'v' },
+    } satisfies FlagSchema;
+
+    it('collects every value in order across the long, inline, and short forms', () => {
+      const argv = ['--tag', 'a', '--tag=b', '-t', 'c', '-vt', 'd'];
+
+      expect(parseArgs(argv, { flags }).flags).toMatchObject({ tag: ['a', 'b', 'c', 'd'], verbose: true });
+    });
+
+    it('is [] when absent, in a new array on each parse', () => {
+      const first = parseArgs(['--tag', 'a'], { flags }).flags.tag;
+      const second = parseArgs([], { flags }).flags;
+
+      expect(first).toStrictEqual(['a']);
+      expect(second).toMatchObject({ bump: [], count: [], root: [], tag: [] });
+    });
+
+    it('checks each value against choices', () => {
+      const error = captureParseError(() => parseArgs(['--bump', 'major', '--bump', 'x'], { flags }));
+
+      expect(error).toMatchObject({ kind: 'invalid-choice', token: 'x' });
+    });
+
+    it('converts each value through parse', () => {
+      expect(parseArgs(['--count', '1', '--count', '2'], { flags }).flags.count).toStrictEqual([1, 2]);
+    });
+
+    it('resolves each path value against baseDir', () => {
+      const result = parseArgs(['--root', 'a', '--root', '/b'], { flags }, { baseDir: '/base' });
+
+      expect(result.flags.root).toStrictEqual(['/base/a', '/b']);
+    });
+  });
+
   describe('path flags', () => {
     const flags = { config: { type: 'path', description: 'The config file' } } satisfies FlagSchema;
 

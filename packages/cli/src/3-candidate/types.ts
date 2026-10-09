@@ -14,6 +14,8 @@ export interface FlagDefinition {
   parse?: (raw: string) => unknown;
   /** Applies when the flag is absent, as is, without passing through `parse` or path resolution. */
   default?: unknown;
+  /** Collects every value of a repeated string or path flag, in order, into an array; excludes `default`. */
+  multiple?: boolean;
 }
 
 /** Maps each flag's key, which names it as `--` plus the key in kebab case, to its definition. */
@@ -50,9 +52,11 @@ export interface ParseOptions {
 export type ParsedFlags<S extends FlagSchema> = {
   -readonly [K in keyof S]: S[K] extends { type: 'boolean' }
     ? boolean
-    : S[K] extends { default: unknown }
-      ? FlagValue<S[K]>
-      : FlagValue<S[K]> | undefined;
+    : S[K] extends { multiple: true }
+      ? FlagValue<S[K]>[]
+      : S[K] extends { default: unknown }
+        ? FlagValue<S[K]>
+        : FlagValue<S[K]> | undefined;
 };
 
 /** Infers each operand's parsed value, keyed by its name. */
@@ -80,8 +84,15 @@ export interface ParseResult<
 /** Requires each flag's `default`, when declared, to have the flag's value type. */
 export type CheckedFlags<S extends FlagSchema> = S & { readonly [K in keyof S]: { default?: FlagDefault<S[K]> } };
 
-/** Leaves the default of an erased definition unconstrained, since its value type is not known. */
-type FlagDefault<F extends FlagDefinition> = FlagDefinition extends F ? unknown : FlagValue<F>;
+/**
+ * Leaves the default of an erased definition unconstrained, since its value type is not known, and forbids one on
+ * a `multiple` flag.
+ */
+type FlagDefault<F extends FlagDefinition> = FlagDefinition extends F
+  ? unknown
+  : F extends { multiple: true }
+    ? never
+    : FlagValue<F>;
 
 type FlagValue<F extends FlagDefinition> = F extends { parse: (raw: string) => infer T }
   ? T

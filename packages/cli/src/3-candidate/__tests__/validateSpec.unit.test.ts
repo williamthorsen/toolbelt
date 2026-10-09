@@ -48,6 +48,12 @@ describe(validateSpec, () => {
       { a: { type: 'string', description: 'A', choices: ['x'], default: 'y' } },
       /not one of/,
     ],
+    ['multiple on a boolean flag', { a: { type: 'boolean', description: 'A', multiple: true } }, /'multiple'/],
+    [
+      'a default on a multiple flag',
+      { a: { type: 'string', description: 'A', multiple: true, default: ['x'] } },
+      /does not take a 'default'/,
+    ],
     [
       'a non-boolean default on a boolean flag',
       { a: { type: 'boolean', description: 'A', default: 'yes' } },
