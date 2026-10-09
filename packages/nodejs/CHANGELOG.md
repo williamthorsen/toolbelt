@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.4.1 — 2026-10-09
+
+### 📦 Dependencies
+
+- Bumped `@williamthorsen/toolbelt.cli` to 0.4.0
+- Bumped `@williamthorsen/toolbelt.numbers` to 7.2.3
+
 ## 3.4.0 — 2026-10-07
 
 ### 🎉 Features

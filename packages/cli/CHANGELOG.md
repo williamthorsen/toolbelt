@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.0 — 2026-10-09
+
+### 🎉 Features
+
+- Adds a `multiple` option for a string or path flag of `parseArgs`, which collects every value of the repeated flag in order into an array that is `[]` when the flag is absent, and which `renderHelp` marks as `(repeatable)` in the generated help. (#373)
+
+### 📚 Documentation
+
+- Updates each kit README to show `rdy run --sources` and a `sources: ['npm:…']` config example, and states that this spelling needs readyup 0.40.0 or later. (#371)
+
 ## 0.3.0 — 2026-10-07
 
 ### 🎉 Features

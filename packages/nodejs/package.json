@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.nodejs",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "description": "Utilities for inspecting Node.js runtimes and toolchains, and for pruning node_modules directories",
   "keywords": [
     "cli",

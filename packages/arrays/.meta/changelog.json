@@ -1,5 +1,22 @@
 [
   {
+    "version": "6.3.3",
+    "date": "2026-10-09",
+    "sections": [
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Updates each kit README to show `rdy run --sources` and a `sources: ['npm:…']` config example, and states that this spelling needs readyup 0.40.0 or later. (#371)",
+            "hash": "e4f5c2e65a0d62bbf3ea215566c8cc7aff3b5ec6",
+            "entry": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "6.3.2",
     "date": "2026-10-02",
     "sections": [

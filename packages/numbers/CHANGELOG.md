@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 7.2.3 — 2026-10-09
+
+### 📚 Documentation
+
+- Updates each kit README to show `rdy run --sources` and a `sources: ['npm:…']` config example, and states that this spelling needs readyup 0.40.0 or later. (#371)
+
 ## 7.2.2 — 2026-10-02
 
 ### 📚 Documentation

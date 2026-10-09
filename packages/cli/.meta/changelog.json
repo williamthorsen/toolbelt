@@ -1,5 +1,33 @@
 [
   {
+    "version": "0.4.0",
+    "date": "2026-10-09",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds a `multiple` option for a string or path flag of `parseArgs`, which collects every value of the repeated flag in order into an array that is `[]` when the flag is absent, and which `renderHelp` marks as `(repeatable)` in the generated help. (#373)",
+            "hash": "539c62e2606eb1497d2b860b0c2d0d1d4eefc606",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Updates each kit README to show `rdy run --sources` and a `sources: ['npm:…']` config example, and states that this spelling needs readyup 0.40.0 or later. (#371)",
+            "hash": "e4f5c2e65a0d62bbf3ea215566c8cc7aff3b5ec6",
+            "entry": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.3.0",
     "date": "2026-10-07",
     "sections": [
