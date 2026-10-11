@@ -1,7 +1,6 @@
 import { firstFilled } from './firstFilled.ts';
 import { runTokenCommand, type TokenCommandRunner } from './runTokenCommand.ts';
 
-export const DEFAULT_TOKEN_SERVICE = 'toolbelt.atlassian.jira';
 export const TOKEN_VARIABLE = 'JIRA_API_TOKEN';
 
 /** The sources consulted for a Jira API token, in the order that they are consulted. */

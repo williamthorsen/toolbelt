@@ -1,7 +1,7 @@
 import { createKeychainStore } from '@williamthorsen/toolbelt.secrets/candidate';
 
-import { DEFAULT_TOKEN_SERVICE, type JiraTokenSource, walkJiraTokenChain } from '../internal/jiraTokenChain.ts';
-import type { JiraTokenOptions } from './resolveJiraToken.ts';
+import { type JiraTokenSource, walkJiraTokenChain } from '../internal/jiraTokenChain.ts';
+import { DEFAULT_TOKEN_SERVICE, type JiraTokenOptions } from './resolveJiraToken.ts';
 
 /** Stands in for the token at the keychain link, which this never reads. */
 const STORED = 'stored';

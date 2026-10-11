@@ -2,7 +2,7 @@ import { type Command, createCli } from '@williamthorsen/toolbelt.cli/candidate'
 
 import { findJiraTokenSource, type JiraTokenSource } from '../3-candidate/findJiraTokenSource.ts';
 import { resolveJiraEmail } from '../3-candidate/resolveJiraEmail.ts';
-import { DEFAULT_TOKEN_SERVICE } from '../internal/jiraTokenChain.ts';
+import { DEFAULT_TOKEN_SERVICE } from '../3-candidate/resolveJiraToken.ts';
 import {
   callKeystore,
   createDeferredStore,
@@ -32,7 +32,7 @@ const SOURCE_DESCRIPTIONS: Record<JiraTokenSource, string> = {
 export const authCommand: Command<TbJiraEffects> = defineCommand({
   summary: 'Store, remove, and report the Jira API token',
   description: `Manage the Jira API token. It is stored in the macOS keychain under the service \`${DEFAULT_TOKEN_SERVICE}\`,
-with the Atlassian account email as the account, which is the same item that \`tb-secret\` reads and writes.
+with the Atlassian account email as the account, which is the same item that \`thor-secret\` reads and writes.
 \`delete\` and \`set\` require macOS. \`status\` opens the keychain only when the earlier sources miss.`,
   epilog: `Actions:
   delete  Remove the stored token, exiting 1 if none is stored

@@ -1,11 +1,16 @@
 import { createKeychainStore, type SecretStore } from '@williamthorsen/toolbelt.secrets/candidate';
 
-import {
-  DEFAULT_TOKEN_SERVICE,
-  type JiraTokenChainOptions,
-  TOKEN_VARIABLE,
-  walkJiraTokenChain,
-} from '../internal/jiraTokenChain.ts';
+import { type JiraTokenChainOptions, TOKEN_VARIABLE, walkJiraTokenChain } from '../internal/jiraTokenChain.ts';
+
+/**
+ * The keychain service under which the Jira API token is stored when a caller names none. A command that writes the
+ * token must use this name, or `resolveJiraToken` and `findJiraTokenSource` do not find what it stored.
+ *
+ * @category Jira
+ * @experimental
+ * @stage candidate
+ */
+export const DEFAULT_TOKEN_SERVICE = 'toolbelt.atlassian.jira';
 
 /**
  * Resolves the Jira API token from a supplied value, then the environment, then a configured command, then the
@@ -25,7 +30,7 @@ export function resolveJiraToken(options: JiraTokenOptions): string {
 
   if (answer === undefined) {
     throw new Error(
-      `No Jira API token was found for '${account}'. Supply one, set ${TOKEN_VARIABLE}, or store one: tb-secret set ${service} --account ${account}`,
+      `No Jira API token was found for '${account}'. Supply one, set ${TOKEN_VARIABLE}, or store one: thor-secret set ${service} --account ${account}`,
     );
   }
 
