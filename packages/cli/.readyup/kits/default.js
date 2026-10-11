@@ -196,6 +196,7 @@ var ADOPTED_EXPORTS = [
   "defineGroup",
   "ParseError",
   "parseArgs",
+  "readStreamText",
   "renderHelp",
   "runCli",
   "UsageError"

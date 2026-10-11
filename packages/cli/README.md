@@ -90,6 +90,16 @@ process.exitCode = await runCli(process.argv.slice(2), root, {
 
 A command whose context its group does not supply fails to typecheck. The context-free `defineCommand` and `defineGroup` exports nest under any group.
 
+## Reading piped input
+
+`readStreamText` reads a stream to its end as text and waits for a producer that has not yet written, such as one that reaches a keychain or a network before it writes to the pipe:
+
+```ts
+import { readStreamText } from '@williamthorsen/toolbelt.cli/candidate';
+
+const input = process.stdin.isTTY ? undefined : await readStreamText(process.stdin);
+```
+
 ## Compared with alternatives
 
 [Commander](https://github.com/tj/commander.js) calls `process.exit` unless `exitOverride` is set, and it infers option types only through the separate `@commander-js/extra-typings` package. [Stricli](https://github.com/bloomberg/stricli) is a typed framework without dependencies that owns the application's shape and sets `process.exitCode`. This package has no runtime dependencies either, but it is three functions that a bin composes: Each command's types come from its own schema, effects arrive through injected writers and a typed context, and the bin decides what to do with the exit code. A minimal CLI bundled with esbuild contains about 11 KB of it, minified, or about 4 KB gzipped.
