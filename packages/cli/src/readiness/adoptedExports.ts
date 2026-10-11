@@ -9,6 +9,7 @@ export const ADOPTED_EXPORTS: readonly string[] = [
   'defineGroup',
   'ParseError',
   'parseArgs',
+  'readStreamText',
   'renderHelp',
   'runCli',
   'UsageError',
