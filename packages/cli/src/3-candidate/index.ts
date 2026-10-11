@@ -2,6 +2,7 @@ export { type CommandInput, createCli, defineCommand, defineGroup, type Passthro
 export type { Command, CommandNode, Group, Writer } from './nodes.ts';
 export { parseArgs } from './parseArgs.ts';
 export { ParseError, type ParseErrorKind } from './ParseError.ts';
+export { readStreamText } from './readStreamText.ts';
 export { renderHelp, type RenderHelpOptions } from './renderHelp.ts';
 export { runCli, type RunCliOptions } from './runCli.ts';
 export type {

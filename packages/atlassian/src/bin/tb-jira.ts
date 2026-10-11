@@ -1,10 +1,10 @@
 import fs from 'node:fs';
 
+import { readStreamText } from '@williamthorsen/toolbelt.cli/candidate';
 import { createKeychainStore, promptSecret } from '@williamthorsen/toolbelt.secrets/candidate';
 
 import { createTokenTransport } from '../3-candidate/createTokenTransport.ts';
 import { findSpecPath } from './findSpecPath.ts';
-import { readStreamText } from './readStreamText.ts';
 import { resolveSelfVersion } from './resolveSelfVersion.ts';
 import { runTbJira } from './runTbJira.ts';
 
