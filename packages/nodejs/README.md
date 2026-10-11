@@ -2,7 +2,7 @@
 
 # @williamthorsen/toolbelt.nodejs
 
-Utilities for inspecting Node.js runtimes and toolchains, and for pruning `node_modules` directories.
+Utilities for inspecting Node.js runtimes and toolchains.
 
 <!-- section:release-notes --><!-- /section:release-notes -->
 
@@ -16,99 +16,7 @@ Requires Node.js 24 or later.
 
 ## CLI
 
-The package provides a `tb-node` command with three subcommands. `asdf-shims` reports the asdf shims that a nodejs version switch has stranded: A CLI installed with `npm install --global` under an earlier version keeps its shim on PATH, and the shim fails when invoked under a version that lacks the package. `pnpm` checks the pnpm that runs in the working directory against the nearest `packageManager` pin. `prune-modules` deletes the `node_modules` directories that a protect-list and recent activity do not keep.
-
-```sh
-pnpm add --global @williamthorsen/toolbelt.nodejs   # puts tb-node on PATH
-npx @williamthorsen/toolbelt.nodejs asdf-shims      # or run it without installing
-```
-
-The short `npx` form works because the package declares exactly one bin, which npm falls back to, whatever its name.
-
-`tb-node --help`, each subcommand's `--help`, and `tb-node --version` (or `-V`) report the surface and the installed version.
-
-### `tb-node asdf-shims`
-
-Reports every asdf shim that names the nodejs plugin but not the active version, classifying each as an orphan, which shadows another executable of that name on PATH, or as having no other provider, and prints the commands that provide or remove it.
-
-```sh
-tb-node asdf-shims
-# nodejs 24.20.0 (asdf): 1 stranded shim in /Users/me/.asdf/shims
-#
-# pn: stranded, no other provider on PATH
-#   provided by nodejs 24.18.1 (npm package pnpm)
-#   to provide it under 24.20.0:
-#     npm install --global pnpm
-#     asdf reshim nodejs
-#   to remove it:
-#     ASDF_NODEJS_VERSION=24.18.1 npm uninstall --global pnpm
-#     asdf reshim nodejs
-```
-
-The active version is the one running the command, read from its install path, so the check spawns no process and needs no repository. A node outside asdf, such as one from Homebrew, is reported as not applicable rather than as clean.
-
-The remedies end with `asdf reshim nodejs` in its versionless form on purpose: It removes every shim and regenerates them from the installed versions, whereas `asdf reshim nodejs <version>` merges into an existing shim and keeps its stale lines. A shim that corepack provides gets `corepack enable` and `corepack disable` in place of the npm commands, led by `npm install --global corepack` when the active version does not bundle corepack, as Node 25 and later do not. A shim that an installed version of another asdf plugin also provides is not reported, since asdf may resolve the command there. One whose package cannot be read from the install gets the removal of the executable itself.
-
-### `tb-node pnpm`
-
-Checks the pnpm that runs in the working directory against the `packageManager` pin of the nearest `package.json` declaring one, from the working directory upward, and names what provides the `pnpm` on PATH: the asdf pnpm plugin, corepack or an npm-global pnpm under a nodejs version, an asdf shim stranded under the running node, or otherwise its path.
-
-```sh
-tb-node pnpm
-# pnpm 9.1.0 does not match packageManager pnpm@12.4.0 in /Users/me/repo/package.json
-#   pnpm on PATH: /Users/me/.asdf/shims/pnpm, asdf pnpm plugin (selected by /Users/me/repo/.tool-versions)
-#   to run the pinned version:
-#     asdf install pnpm 12.4.0
-#     set pnpm 12.4.0 in /Users/me/repo/.tool-versions
-```
-
-The version that runs comes from running `pnpm --version` in the pinned directory, the one process that the command spawns: pnpm 10 and later switch themselves to the pinned version whatever provides them, and corepack selects it, so a version read from the filesystem would report the installed pnpm and a mismatch that does not exist. That run may download the pinned version on first use. Matching the pin is the healthy state whatever the provider; the mismatch that the check catches is a pnpm older than 10, or one with self-management off, which an asdf pnpm plugin or a stale global install leaves in place.
-
-The provider is read without a spawn: An asdf shim's header names the plugin that provides it, and a `nodejs` shim resolves through the running node's bin symlink to corepack or to an npm-global pnpm; anything else is named by path. Repairs print only when the versions differ, and each installs the pin through whatever provides pnpm now, so no repair switches providers. Without a pin in reach, or with a pin naming another package manager, the command reports the provider alone and exits 3.
-
-### `tb-node prune-modules`
-
-Finds every `node_modules` directory under `~/repos`, or under `--root`, and reports each one that the protect-list does not match and that is not recently active. Nothing is deleted without `--apply`.
-
-```sh
-tb-node prune-modules
-# protect-list: /Users/me/.config/tb-node/protected-node-modules.txt
-# 412.3 MB  /Users/me/repos/packages/foo.12/node_modules
-#  skipped  /Users/me/repos/packages/foo.live/node_modules (protected by ~/repos/*/*.live)
-#  skipped  /Users/me/repos/packages/foo/node_modules (active 3 days ago)
-#
-# 1 directory totaling 412.3 MB would be deleted; 2 skipped
-
-tb-node prune-modules --apply   # asks before deleting; --no-confirm skips the question
-```
-
-The protect-list is read from `~/.config/tb-node/protected-node-modules.txt`, or from the file named by `--protect-list`. Each machine supplies its own; the package ships none, and a missing default file protects nothing. Each line is a glob (`*`, `**`, `?`), absolute or starting with `~`, and protects every `node_modules` whose parent directory it matches or lies beneath a directory that it matches:
-
-```
-# Comments start with #
-~/repos/atlassian/mcp-*
-~/repos/personal/codeassembly
-~/repos/*/*.live
-```
-
-A directory is also kept when its project was active within the last 30 days (`--active-days`, or `--no-active-guard` to turn the check off): Activity is the last change to the git index of the enclosing work tree, which staging, committing, and checking out rewrite, so a whole monorepo is active or inactive together and each linked worktree is judged by its own index. Outside a work tree, the parent directory's modification time stands in.
-
-The scan follows no symlinks and does not search inside a `node_modules` directory. Sizes are allocated disk space, as `du` reports it; a pnpm project shares its files with the pnpm store, so deleting its `node_modules` frees less than the reported size until `pnpm store prune` runs. `--apply` asks for confirmation only from a terminal: Without one, it fails unless `--no-confirm` is given.
-
-### Exit codes
-
-| Code | Meaning                                                                                                                                |
-| ---- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `0`  | A check found nothing to fix, or `prune-modules` completed                                                                             |
-| `1`  | A check found something to fix, with the report on stdout, or a deletion failed or the confirmation was declined                       |
-| `2`  | Usage or validation error, with the message on stderr                                                                                  |
-| `3`  | Not applicable, with the reason on stderr: the running node is not an asdf install, no pin is in reach, or the root is not a directory |
-
-```sh
-if ! tb-node asdf-shims >/dev/null; then
-  echo 'stranded shims: run `tb-node asdf-shims` for the remedies' >&2
-fi
-```
+For these functions on the command line, use `thor-node` from [`@williamthorsen/nodejs-tools`](https://www.npmjs.com/package/@williamthorsen/nodejs-tools).
 
 ## `listStrandedAsdfShims`
 
@@ -129,7 +37,7 @@ interface StrandedAsdfShim {
 }
 ```
 
-Lists the shims of a plugin that a version of it does not provide, which is what the CLI reports. Each entry names the versions that provide the command, the first other executable of that name on `pathDirs` outside the shims directory, and the npm package that installed it under a providing version.
+Lists the shims of a plugin that a version of it does not provide. Each entry names the versions that provide the command, the first other executable of that name on `pathDirs` outside the shims directory, and the npm package that installed it under a providing version.
 
 ```ts
 import { findAsdfInstall, listStrandedAsdfShims } from '@williamthorsen/toolbelt.nodejs/candidate';
