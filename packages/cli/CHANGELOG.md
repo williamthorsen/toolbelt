@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.5.0 — 2026-10-11
+
+### 🎉 Features
+
+- Adds `readStreamText` to `@williamthorsen/toolbelt.cli/candidate`, which reads a stream such as piped `stdin` to its end as text and waits for a producer that has not yet written, where a synchronous read of a non-blocking pipe fails with `EAGAIN`. (#381)
+
 ## 0.4.0 — 2026-10-09
 
 ### 🎉 Features

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.3 — 2026-10-11
+
+### ♻️ Refactoring
+
+- Replaces the private `readStreamText` copies in the `tb-jira` and `tb-secret` bins with imports from `@williamthorsen/toolbelt.cli/candidate`. (#381)
+
 ## 0.4.2 — 2026-10-09
 
 ### 📦 Dependencies

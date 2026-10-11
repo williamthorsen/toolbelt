@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.6.0 — 2026-10-11
+
+### 🎉 Features
+
+- Exports `DEFAULT_TOKEN_SERVICE` (`toolbelt.atlassian.jira`) from `@williamthorsen/toolbelt.atlassian/candidate`, so that a command that stores a Jira API token can use the keychain service that `resolveJiraToken` and `findJiraTokenSource` read by default instead of defining the name again. (#382)
+- Names `thor-secret` instead of `tb-secret` as the command that stores a Jira API token, in the missing-token error of `resolveJiraToken`, the `tb-jira auth` help, and the README. (#382)
+
+### ♻️ Refactoring
+
+- Replaces the private `readStreamText` copies in the `tb-jira` and `tb-secret` bins with imports from `@williamthorsen/toolbelt.cli/candidate`. (#381)
+
 ## 0.5.2 — 2026-10-09
 
 ### 📦 Dependencies

@@ -1,5 +1,38 @@
 [
   {
+    "version": "0.6.0",
+    "date": "2026-10-11",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Exports `DEFAULT_TOKEN_SERVICE` (`toolbelt.atlassian.jira`) from `@williamthorsen/toolbelt.atlassian/candidate`, so that a command that stores a Jira API token can use the keychain service that `resolveJiraToken` and `findJiraTokenSource` read by default instead of defining the name again. (#382)",
+            "hash": "27552116a356a743ac9bf0b93187ba0727c74215",
+            "entry": 1
+          },
+          {
+            "description": "Names `thor-secret` instead of `tb-secret` as the command that stores a Jira API token, in the missing-token error of `resolveJiraToken`, the `tb-jira auth` help, and the README. (#382)",
+            "hash": "27552116a356a743ac9bf0b93187ba0727c74215",
+            "entry": 2
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Replaces the private `readStreamText` copies in the `tb-jira` and `tb-secret` bins with imports from `@williamthorsen/toolbelt.cli/candidate`. (#381)",
+            "hash": "e9511be999d62720e414b2405287d7fd47300c0b",
+            "entry": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.5.2",
     "date": "2026-10-09",
     "sections": [
