@@ -1,6 +1,7 @@
+import { readStreamText } from '@williamthorsen/toolbelt.cli/candidate';
+
 import { createKeychainStore } from '../3-candidate/createKeychainStore.ts';
 import { promptSecret } from '../3-candidate/promptSecret.ts';
-import { readStreamText } from './readStreamText.ts';
 import { resolveSelfVersion } from './resolveSelfVersion.ts';
 import { runTbSecret } from './runTbSecret.ts';
 
