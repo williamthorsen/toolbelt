@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.0.0 — 2026-10-11
+
+### 🪦 Removed
+
+- 🚨 **Breaking:** Removes the `tb-node` command and its `asdf-shims`, `pnpm`, and `prune-modules` subcommands from `@williamthorsen/toolbelt.nodejs`, which no longer installs `@williamthorsen/toolbelt.cli` or `@williamthorsen/toolbelt.numbers` as dependencies. (#386)
+
 ## 3.4.2 — 2026-10-11
 
 ### 📦 Dependencies

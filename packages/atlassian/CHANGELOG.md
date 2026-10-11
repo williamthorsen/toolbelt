@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.7.0 — 2026-10-11
+
+### 🪦 Removed
+
+- 🚨 **Breaking:** Removes the `tb-jira` executable from `@williamthorsen/toolbelt.atlassian`, together with its `bin` declaration and the `@williamthorsen/toolbelt.cli` dependency that only the command used. (#385)
+
 ## 0.6.0 — 2026-10-11
 
 ### 🎉 Features

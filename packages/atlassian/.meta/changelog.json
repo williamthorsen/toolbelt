@@ -1,5 +1,24 @@
 [
   {
+    "version": "0.7.0",
+    "date": "2026-10-11",
+    "sections": [
+      {
+        "title": "🪦 Removed",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Removes the `tb-jira` executable from `@williamthorsen/toolbelt.atlassian`, together with its `bin` declaration and the `@williamthorsen/toolbelt.cli` dependency that only the command used. (#385)",
+            "breaking": true,
+            "migration": "Install `@williamthorsen/atlassian-tools` and replace each `tb-jira` invocation with `thor-jira`, such as `thor-jira auth set` or `thor-jira issue list`.",
+            "hash": "d51f8a9549d35290937236190a5e823fac645562",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.6.0",
     "date": "2026-10-11",
     "sections": [

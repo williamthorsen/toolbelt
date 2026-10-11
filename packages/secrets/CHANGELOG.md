@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.5.0 — 2026-10-11
+
+### 🪦 Removed
+
+- 🚨 **Breaking:** Removes the `tb-secret` executable from `@williamthorsen/toolbelt.secrets`, along with its `bin` declaration and its README section, and links the README to `thor-secret` in `@williamthorsen/secret-tools`. (#384)
+
 ## 0.4.3 — 2026-10-11
 
 ### ♻️ Refactoring

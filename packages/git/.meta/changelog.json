@@ -1,5 +1,24 @@
 [
   {
+    "version": "0.6.0",
+    "date": "2026-10-11",
+    "sections": [
+      {
+        "title": "🪦 Removed",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Removes the `tb-git` command from `@williamthorsen/toolbelt.git`, whose `deriveBranchNumber` and `findBranchTicketRef` functions stay exported. (#383)",
+            "breaking": true,
+            "migration": "Install `@williamthorsen/git-tools` and replace each `tb-git` call with `thor-git`, because upgrading `@williamthorsen/toolbelt.git` removes `tb-git` from the PATH.",
+            "hash": "89e3d60194619728c3f40e960cfd3c84d2ac2e92",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.5.3",
     "date": "2026-10-11",
     "sections": [

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.6.0 — 2026-10-11
+
+### 🪦 Removed
+
+- 🚨 **Breaking:** Removes the `tb-git` command from `@williamthorsen/toolbelt.git`, whose `deriveBranchNumber` and `findBranchTicketRef` functions stay exported. (#383)
+
 ## 0.5.3 — 2026-10-11
 
 ### 📦 Dependencies
