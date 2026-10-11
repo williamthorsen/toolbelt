@@ -36,11 +36,7 @@
       "import": "./dist/esm/1-proposed/index.js"
     }
   },
-  "bin": {
-    "tb-git": "./bin/tb-git.js"
-  },
   "files": [
-    "bin/*",
     "CHANGELOG.md",
     "dist/*"
   ],
@@ -48,7 +44,6 @@
     "prepublishOnly": "nmr build"
   },
   "dependencies": {
-    "@williamthorsen/toolbelt.cli": "workspace:*",
     "@williamthorsen/toolbelt.strings": "workspace:*"
   },
   "devDependencies": {
