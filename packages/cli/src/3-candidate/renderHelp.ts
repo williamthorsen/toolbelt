@@ -10,7 +10,7 @@ export interface RenderHelpOptions {
 
 /**
  * Returns the help page of a command or a group, without a trailing newline. `invocation` is the
- * space-joined command path, such as `tb-jira issue list`.
+ * space-joined command path, such as `thor-jira issue list`.
  *
  * The page contains the usage line, the description (else the summary), and then the `Commands:`,
  * `Arguments:`, and `Options:` blocks, each omitted when empty, and the epilog verbatim. Entries appear in
