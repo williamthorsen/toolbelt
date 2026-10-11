@@ -99,7 +99,7 @@ tb-jira auth delete
 | `--service <name>`      | Keychain service (default: `toolbelt.atlassian.jira`)        |
 | `--token-command <cmd>` | `status` only: the shell line to probe as the command source |
 
-`set` refuses a blank token, which the resolver would drop while `status` still reported the item as present. An item written by hand or by `tb-secret` can still contain one: `status` reports what is stored, not what it contains.
+`set` refuses a blank token, which the resolver would drop while `status` still reported the item as present. An item written by hand or by `thor-secret` can still contain one: `status` reports what is stored, not what it contains.
 
 ### Finding the spec
 
@@ -118,7 +118,7 @@ Each chain stops at the first source that supplies a value.
 | email   | `--email`, then `JIRA_EMAIL`, then the spec's `email`                                           |
 | token   | `--token-stdin`, then `JIRA_API_TOKEN`, then `--token-command`, then the keychain               |
 
-The keychain item is the service `toolbelt.atlassian.jira` with the email as the account, which `tb-jira auth set` writes and `tb-secret set toolbelt.atlassian.jira --account you@example.com` writes too. It is opened only when the earlier sources miss, so a run authenticated from the environment never opens the keychain and raises no access prompt.
+The keychain item is the service `toolbelt.atlassian.jira` with the email as the account, which `tb-jira auth set` writes and `thor-secret set toolbelt.atlassian.jira --account you@example.com` writes too. It is opened only when the earlier sources miss, so a run authenticated from the environment never opens the keychain and raises no access prompt.
 
 `tb-jira auth status` names the source that would supply the token, without printing the token. Because it probes the keychain for presence rather than reading it, it raises no access prompt either; a configured token command does run, and its output is discarded.
 
@@ -231,7 +231,7 @@ Basic auth pairs an email with an API token. They resolve on separate chains, be
 
 ```sh
 tb-jira auth set --email you@example.com                      # or, equivalently:
-tb-secret set toolbelt.atlassian.jira --account you@example.com
+thor-secret set toolbelt.atlassian.jira --account you@example.com
 ```
 
 The service defaults to `toolbelt.atlassian.jira`; pass `service` to read another.

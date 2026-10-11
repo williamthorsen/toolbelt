@@ -30,7 +30,7 @@ export function resolveJiraToken(options: JiraTokenOptions): string {
 
   if (answer === undefined) {
     throw new Error(
-      `No Jira API token was found for '${account}'. Supply one, set ${TOKEN_VARIABLE}, or store one: tb-secret set ${service} --account ${account}`,
+      `No Jira API token was found for '${account}'. Supply one, set ${TOKEN_VARIABLE}, or store one: thor-secret set ${service} --account ${account}`,
     );
   }
 

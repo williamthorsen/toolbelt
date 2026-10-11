@@ -265,7 +265,7 @@ describe('tb-jira configure-project', () => {
       const harness = createHarness({ env: {} });
 
       await expect(run(harness, [KEY])).resolves.toBe(2);
-      expect(harness.readErrors()).toContain('tb-secret set toolbelt.atlassian.jira');
+      expect(harness.readErrors()).toContain('thor-secret set toolbelt.atlassian.jira');
     });
 
     it('takes the email from the spec when neither the flag nor the environment supplies one', async () => {

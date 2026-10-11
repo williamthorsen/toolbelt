@@ -93,7 +93,7 @@ describe(resolveJiraToken, () => {
     const store = createStore(undefined);
 
     expect(() => resolveJiraToken({ account: ACCOUNT, env: {}, store })).toThrow(
-      `tb-secret set toolbelt.atlassian.jira --account ${ACCOUNT}`,
+      `thor-secret set toolbelt.atlassian.jira --account ${ACCOUNT}`,
     );
   });
 });
