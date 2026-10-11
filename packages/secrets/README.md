@@ -24,55 +24,7 @@ An item created here is local to the Mac that created it. `security` offers no i
 
 ## CLI
 
-The package includes a `tb-secret` command exposing the store to a shell caller.
-
-```sh
-pnpm add --global @williamthorsen/toolbelt.secrets   # puts tb-secret on PATH
-npx @williamthorsen/toolbelt.secrets get my-token    # or run it without installing
-```
-
-`tb-secret --help`, each subcommand's `--help`, and `tb-secret --version` (or `-V`) report the surface and the installed version.
-
-| Subcommand                   | Effect                                               |
-| ---------------------------- | ---------------------------------------------------- |
-| `tb-secret delete <service>` | Removes a secret                                     |
-| `tb-secret get <service>`    | Prints a secret                                      |
-| `tb-secret has <service>`    | Reports whether a secret is stored, printing nothing |
-| `tb-secret set <service>`    | Stores a secret                                      |
-
-| Option                  | Effect                                                  |
-| ----------------------- | ------------------------------------------------------- |
-| `-a, --account <name>`  | Account of the secret (default: the empty account)      |
-| `-k, --keychain <path>` | Keychain to act on, rather than the default search list |
-
-At a terminal, `set` prompts for the secret twice and echoes nothing; piped, it reads stdin and drops one trailing newline, since `echo` adds one. The secret passes through this process either way.
-
-```sh
-tb-secret set atlassian-api-token --account me@example.com   # prompts, echoing nothing
-
-pbpaste | tb-secret set atlassian-api-token                  # or pipe it
-
-export ATLASSIAN_API_TOKEN=$(tb-secret get atlassian-api-token --account me@example.com)
-```
-
-### Exit codes
-
-| Code | Meaning                                                       |
-| ---- | ------------------------------------------------------------- |
-| `0`  | The command succeeded                                         |
-| `1`  | No secret is stored under that service and account            |
-| `2`  | Usage or validation error, with the message on stderr         |
-| `3`  | The keychain could not be reached, with the message on stderr |
-
-An absent secret is `1` and a keychain that could not be reached is `3`, so a script can tell one from the other.
-
-```sh
-if token=$(tb-secret get atlassian-api-token); then
-  curl --user "me@example.com:$token" https://example.atlassian.net/rest/api/3/myself
-elif [ $? -eq 1 ]; then
-  echo 'No token stored. Run `tb-secret set atlassian-api-token`.' >&2
-fi
-```
+For these functions on the command line, use `thor-secret` from [`@williamthorsen/secret-tools`](https://www.npmjs.com/package/@williamthorsen/secret-tools).
 
 ## `createKeychainStore`
 
