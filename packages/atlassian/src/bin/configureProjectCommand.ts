@@ -8,7 +8,7 @@ import { listIssueKeys } from '../3-candidate/listIssueKeys.ts';
 import { moveIssuesToBacklog } from '../3-candidate/moveIssuesToBacklog.ts';
 import { readBoardColumnReport } from '../3-candidate/readBoardColumnReport.ts';
 import { readProjectConfiguration } from '../3-candidate/readProjectConfiguration.ts';
-import { DEFAULT_TOKEN_SERVICE } from '../internal/jiraTokenChain.ts';
+import { DEFAULT_TOKEN_SERVICE } from '../3-candidate/resolveJiraToken.ts';
 import { createSubcommandRequest, CREDENTIAL_OPTIONS, type CredentialValues } from './createSubcommandRequest.ts';
 import { formatContinuationLine, formatLabelledLine } from './labelled-lines.ts';
 import { type LoadedProjectSpec, loadProjectSpec } from './loadProjectSpec.ts';

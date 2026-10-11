@@ -2,7 +2,7 @@ import { type Command, createCli } from '@williamthorsen/toolbelt.cli/candidate'
 
 import { findJiraTokenSource, type JiraTokenSource } from '../3-candidate/findJiraTokenSource.ts';
 import { resolveJiraEmail } from '../3-candidate/resolveJiraEmail.ts';
-import { DEFAULT_TOKEN_SERVICE } from '../internal/jiraTokenChain.ts';
+import { DEFAULT_TOKEN_SERVICE } from '../3-candidate/resolveJiraToken.ts';
 import {
   callKeystore,
   createDeferredStore,

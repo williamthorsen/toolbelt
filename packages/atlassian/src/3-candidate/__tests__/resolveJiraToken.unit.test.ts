@@ -1,9 +1,16 @@
 import type { SecretQuery, SecretStore } from '@williamthorsen/toolbelt.secrets/candidate';
 import { describe, expect, it, vi } from 'vitest';
 
+import { DEFAULT_TOKEN_SERVICE } from '../index.ts';
 import { resolveJiraToken } from '../resolveJiraToken.ts';
 
 const ACCOUNT = 'someone@example.com';
+
+describe('DEFAULT_TOKEN_SERVICE', () => {
+  it('names the service under which a stored token stays readable', () => {
+    expect(DEFAULT_TOKEN_SERVICE).toBe('toolbelt.atlassian.jira');
+  });
+});
 
 describe(resolveJiraToken, () => {
   it('prefers a supplied token over every other source', () => {

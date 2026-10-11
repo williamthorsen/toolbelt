@@ -41,6 +41,6 @@ export { requestOk, type RequestOkOptions } from './requestOk.ts';
 export { type JiraBaseUrlOptions, resolveJiraBaseUrl } from './resolveJiraBaseUrl.ts';
 export { type JiraEmailOptions, resolveJiraEmail } from './resolveJiraEmail.ts';
 export { type JiraSiteOptions, resolveJiraSite } from './resolveJiraSite.ts';
-export { type JiraTokenOptions, resolveJiraToken } from './resolveJiraToken.ts';
+export { DEFAULT_TOKEN_SERVICE, type JiraTokenOptions, resolveJiraToken } from './resolveJiraToken.ts';
 export type { FeatureVerification, StatusVerification, VerificationReport } from './VerificationReport.ts';
 export type { WorkflowStatusUpdate, WorkflowUpdate, WorkflowUpdatePayload } from './WorkflowUpdatePayload.ts';
