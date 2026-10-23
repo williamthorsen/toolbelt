@@ -1,5 +1,7 @@
 import process from 'node:process';
 
+import { swapProperty } from '../internal/swapProperty.ts';
+
 /**
  * Records every process warning emitted in the enclosing scope without printing it, restoring
  * `process.emitWarning` when the scope exits. Each warning is the `Error` that Node would emit, recorded when
@@ -78,22 +80,6 @@ function buildWarning(warning: Error | string, typeOrOptions: unknown, code: unk
 /** Reports whether a value is an options object rather than a type string or a constructor. */
 function isWarningOptions(value: unknown): value is WarningOptions {
   return typeof value === 'object' && value !== null;
-}
-
-/**
- * Replaces one property and returns a function that restores the state that it found: the previous value if the
- * target owned the property, and absence if it did not.
- */
-function swapProperty<T extends object, K extends keyof T>(target: T, key: K, value: T[K]): () => void {
-  const hadOwnProperty = Object.hasOwn(target, key);
-  const previous = target[key];
-
-  target[key] = value;
-
-  return () => {
-    if (hadOwnProperty) target[key] = previous;
-    else Reflect.deleteProperty(target, key);
-  };
 }
 
 // endregion | Helpers

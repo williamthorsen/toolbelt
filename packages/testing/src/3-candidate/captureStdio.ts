@@ -2,6 +2,8 @@ import { Buffer } from 'node:buffer';
 import process from 'node:process';
 import { format } from 'node:util';
 
+import { swapProperty } from '../internal/swapProperty.ts';
+
 const CONSOLE_METHODS = ['debug', 'error', 'info', 'log', 'warn'] as const;
 
 /** Stream to which each console method reports, mirroring how Node routes them. */
@@ -126,23 +128,6 @@ function decodeChunk(chunk: Uint8Array | string, encoding?: BufferEncoding | ((e
       : Buffer.from(chunk);
 
   return bytes.toString('utf8');
-}
-
-/**
- * Replaces one property and returns a function that restores the state that it found: the previous value if the
- * target owned the property, and absence if it did not. Both cases arise here, since
- * `process.stdout.write` resolves from the stream's prototype and `isTTY` is unset outside a terminal.
- */
-function swapProperty<T extends object, K extends keyof T>(target: T, key: K, value: T[K]): () => void {
-  const hadOwnProperty = Object.hasOwn(target, key);
-  const previous = target[key];
-
-  target[key] = value;
-
-  return () => {
-    if (hadOwnProperty) target[key] = previous;
-    else Reflect.deleteProperty(target, key);
-  };
 }
 
 // endregion | Helpers
