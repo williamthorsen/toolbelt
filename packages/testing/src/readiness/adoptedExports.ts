@@ -6,6 +6,7 @@
 export const ADOPTED_EXPORTS: readonly string[] = [
   'captureError',
   'captureStdio',
+  'captureWarnings',
   'createTempTree',
   'pointArgvAt',
   'pointCwdAt',
