@@ -1,4 +1,4 @@
-import { afterEach, beforeEach } from 'vitest';
+import { beforeEach } from 'vitest';
 
 import { installOutputGuard, type Violation } from '../internal/outputGuard.ts';
 
@@ -24,13 +24,15 @@ const EXCERPT_LENGTH = 200;
 export function failOnUncapturedOutput(): void {
   const guard = installOutputGuard();
 
-  beforeEach(() => {
+  beforeEach(({ onTestFinished }) => {
     guard.startTest();
-  });
 
-  afterEach(() => {
-    const violations = guard.finishTest();
-    if (violations.length > 0) throw new Error(formatViolations(violations));
+    // Finish hooks unwind as a stack, so this one, registered first, runs after every `afterEach` and every
+    // finish hook that the test registers, whatever `sequence.hooks` says.
+    onTestFinished(() => {
+      const violations = guard.finishTest();
+      if (violations.length > 0) throw new Error(formatViolations(violations));
+    });
   });
 }
 

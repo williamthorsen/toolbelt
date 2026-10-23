@@ -12,15 +12,22 @@ const FIXTURE_DIR = fileURLToPath(new URL('fixtures/failOnUncapturedOutput/', im
 const VITEST_CLI = path.join(path.dirname(createRequire(import.meta.url).resolve('vitest/package.json')), 'vitest.mjs');
 
 describe(failOnUncapturedOutput, () => {
-  it('fails the test whose output no capture took, passes the captured one, and keeps the output off the terminal', () => {
+  it('fails each test whose output no capture took, passes the captured one, and keeps the output off the terminal', () => {
     const run = runFixture();
     const report = parseReport(run.stdout);
+    const failures = report.failureMessages.join('\n');
 
     expect(run.status).not.toBe(0);
-    expect(report.numFailedTests).toBe(1);
+    expect(report.numFailedTests).toBe(3);
     expect(report.numPassedTests).toBe(1);
-    expect(report.failureMessages.join('\n')).toContain('stderr: "UNCAPTURED-OUTPUT');
-    expect(run.stderr).not.toContain('UNCAPTURED-OUTPUT');
+    for (const expected of [
+      'stderr: "UNCAPTURED-OUTPUT',
+      'stderr: "FINISH-HOOK-OUTPUT',
+      'stdout: "AFTER-EACH-OUTPUT',
+    ]) {
+      expect(failures).toContain(expected);
+    }
+    expect(run.stderr + run.stdout).not.toMatch(/(?:UNCAPTURED|FINISH-HOOK|AFTER-EACH)-OUTPUT\n/u);
   });
 });
 
@@ -30,6 +37,24 @@ interface FixtureReport {
   failureMessages: string[];
   numFailedTests: number;
   numPassedTests: number;
+}
+
+/** Reports whether a parsed value has the fields of Vitest's JSON report that the test reads. */
+function isReport(value: unknown): value is {
+  numFailedTests: number;
+  numPassedTests: number;
+  testResults: Array<{ assertionResults: Array<{ failureMessages: string[] }> }>;
+} {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'numFailedTests' in value &&
+    typeof value.numFailedTests === 'number' &&
+    'numPassedTests' in value &&
+    typeof value.numPassedTests === 'number' &&
+    'testResults' in value &&
+    Array.isArray(value.testResults)
+  );
 }
 
 /** Reads the counts and failure messages from Vitest's JSON report. */
@@ -63,24 +88,6 @@ function runFixture(): { status: number | null; stderr: string; stdout: string }
   );
 
   return { status: result.status, stderr: result.stderr, stdout: result.stdout };
-}
-
-/** Reports whether a parsed value has the fields of Vitest's JSON report that the test reads. */
-function isReport(value: unknown): value is {
-  numFailedTests: number;
-  numPassedTests: number;
-  testResults: Array<{ assertionResults: Array<{ failureMessages: string[] }> }>;
-} {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'numFailedTests' in value &&
-    typeof value.numFailedTests === 'number' &&
-    'numPassedTests' in value &&
-    typeof value.numPassedTests === 'number' &&
-    'testResults' in value &&
-    Array.isArray(value.testResults)
-  );
 }
 
 // endregion | Helpers

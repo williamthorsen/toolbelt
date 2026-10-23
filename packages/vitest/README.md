@@ -104,11 +104,13 @@ Error: The test produced output that no capture took:
 
 A test passes when it takes the output with `captureStdio` or `captureWarnings` from `@williamthorsen/toolbelt.testing`, or with a spy on the stream, because each replaces the function that the guard wraps.
 
-### What it does not catch
+The guard checks a test after its `afterEach` hooks and `onTestFinished` callbacks have run, whatever `sequence.hooks` says, so output from either counts as the test's own.
+
+### Limits
 
 - Output made outside a test, such as in `beforeAll`, `afterAll`, or while a file is collected, passes through, because Vitest cannot tie it to a test.
 - `console.*` is out of scope, because Vitest intercepts it. With `disableConsoleIntercept: true`, console output goes to the streams, and the guard fails the test that wrote it.
-- Under `it.concurrent`, the failure goes to whichever running test finishes first, not necessarily to the one that wrote the output.
+- The guard attributes output to the test running when it lands, not to the test that scheduled it. A timer or an unawaited promise from one test that writes during the next fails the next test, and under `it.concurrent` the failure goes to whichever running test finishes first.
 
 ## `listConsoleLines`
 
