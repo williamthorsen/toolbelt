@@ -1,3 +1,5 @@
+<!-- readme-type: library -->
+
 # @williamthorsen/toolbelt.vitest
 
 Utilities for testing with Vitest.
@@ -12,7 +14,7 @@ pnpm add --save-dev @williamthorsen/toolbelt.vitest
 
 Requires Node.js 24 or later. Vitest is a peer dependency: The package uses the Vitest 4 that the consuming project already installs.
 
-`disposeOnTestFinished`, `listConsoleLines`, `makeFixture`, `silenceConsole`, and `throwOnProcessExit` are candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change.
+`disposeOnTestFinished`, `failOnUncapturedOutput`, `listConsoleLines`, `makeFixture`, `silenceConsole`, and `throwOnProcessExit` are candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change.
 
 ## `disposeOnTestFinished`
 
@@ -66,6 +68,47 @@ The working directory is restored before the directory into which it points is r
 ### Where Vitest's documentation disagrees
 
 Vitest documents `onTestFinished` as honoring `sequence.hooks`, and as not running for a test cancelled by a dynamic `ctx.skip()`. The 4.1 runner does neither: It passes a literal for the finish hooks, so they unwind in reverse whatever that option says, and it runs them for a dynamically skipped test too. The suite pins the skip half: A runner that stopped disposing there fails here rather than at a consumer. It cannot pin the other: Because `sequence.hooks` defaults to `stack`, which means reverse whether the runner consults the option or ignores it, no test under that default can tell the two apart.
+
+## `failOnUncapturedOutput`
+
+```ts
+failOnUncapturedOutput(): void;
+```
+
+Fails each test that writes to `process.stdout` or `process.stderr`, or emits a process warning, without capturing the output. Vitest's `silent` option intercepts only `console.*`, so these writes otherwise print between the results of a passing run.
+
+Call it from a setup file:
+
+```ts
+// vitest.setup.ts
+import { failOnUncapturedOutput } from '@williamthorsen/toolbelt.vitest/candidate';
+
+failOnUncapturedOutput();
+```
+
+```ts
+// vitest.config.ts
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: { setupFiles: ['./vitest.setup.ts'] },
+});
+```
+
+The guard holds the output back, so the terminal stays clean, and fails the test with a message naming each stream or warning and the start of its text:
+
+```text
+Error: The test produced output that no capture took:
+  stderr: "Retrying in 5s\n"
+```
+
+A test passes when it takes the output with `captureStdio` or `captureWarnings` from `@williamthorsen/toolbelt.testing`, or with a spy on the stream, because each replaces the function that the guard wraps.
+
+### What it does not catch
+
+- Output made outside a test, such as in `beforeAll`, `afterAll`, or while a file is collected, passes through, because Vitest cannot tie it to a test.
+- `console.*` is out of scope, because Vitest intercepts it. With `disableConsoleIntercept: true`, console output goes to the streams, and the guard fails the test that wrote it.
+- Under `it.concurrent`, the failure goes to whichever running test finishes first, not necessarily to the one that wrote the output.
 
 ## `listConsoleLines`
 

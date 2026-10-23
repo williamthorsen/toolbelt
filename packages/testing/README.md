@@ -14,7 +14,7 @@ pnpm add --save-dev @williamthorsen/toolbelt.testing
 
 Requires Node.js 24 or later. The package declares no dependencies and imports no test-runner API, so it works under Vitest, Jest, and `node:test` alike. A utility that does need the Vitest API lives in `@williamthorsen/toolbelt.vitest` instead.
 
-`captureError`, `captureStdio`, `createTempTree`, `pointArgvAt`, and `pointCwdAt` are candidate tier: imported from `@williamthorsen/toolbelt.testing/candidate` rather than the package root, and subject to change.
+`captureError`, `captureStdio`, `captureWarnings`, `createTempTree`, `pointArgvAt`, and `pointCwdAt` are candidate tier: imported from `@williamthorsen/toolbelt.testing/candidate` rather than the package root, and subject to change.
 
 ## `captureError`
 
@@ -161,6 +161,30 @@ expect(stdio.stdout).toBe('captured\ncaptured again\n');
 ```
 
 The reverse order holds too: A capture opened inside a silence takes the output for its own scope and hands the console back on exit, with the calls recorded by the silence still intact.
+
+## `captureWarnings`
+
+```ts
+captureWarnings(): CapturedWarnings;
+```
+
+Records every process warning emitted in the enclosing scope without printing it, and restores `process.emitWarning` when the scope exits.
+
+```ts
+import { captureWarnings } from '@williamthorsen/toolbelt.testing/candidate';
+
+it('warns that the option is deprecated', () => {
+  using captured = captureWarnings();
+
+  loadConfig({ legacy: true });
+
+  expect(captured.warnings).toMatchObject([{ name: 'DeprecationWarning', code: 'CFG001' }]);
+});
+```
+
+Each warning is the `Error` that Node would emit, with its `name`, `code`, and `detail`, and it is recorded during the `emitWarning` call. Node prints a warning on a later tick, so a `captureStdio` scope that has closed by then misses it, and the warning reaches the terminal anyway.
+
+`reset()` empties the record. Because the capture replaces `process.emitWarning`, the `'warning'` event does not fire while the scope is open, and a `process.on('warning')` listener in the code under test does not run.
 
 ## `createTempTree`
 
