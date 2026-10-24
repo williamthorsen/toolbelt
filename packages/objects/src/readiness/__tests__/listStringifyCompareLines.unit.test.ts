@@ -1,3 +1,4 @@
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { listStringifyCompareLines } from '../listStringifyCompareLines.ts';
@@ -35,11 +36,11 @@ describe(listStringifyCompareLines, () => {
   });
 
   it('claims each of several comparisons in one source', () => {
-    const source = [
-      'const one = JSON.stringify(a) === JSON.stringify(b);',
-      'const two = JSON.stringify(c) !== JSON.stringify(d);',
-      '',
-    ].join('\n');
+    const source = dedent`
+      const one = JSON.stringify(a) === JSON.stringify(b);
+      const two = JSON.stringify(c) !== JSON.stringify(d);
+
+    `;
 
     expect(listStringifyCompareLines(source)).toStrictEqual([1, 2]);
   });

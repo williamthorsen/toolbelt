@@ -1,22 +1,23 @@
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { listFilesystemIdioms } from '../listFilesystemIdioms.ts';
 
 describe(listFilesystemIdioms, () => {
   it('names each idiom that it finds and orders the sites by line', () => {
-    const source = [
-      'export function ascend(startDir) {',
-      '  let dir = startDir;',
-      '  while (dir !== root) {',
-      '    dir = path.dirname(dir);',
-      '  }',
-      '}',
-      'export function save(filePath, content) {',
-      '  fs.writeFileSync(tempPath, content);',
-      '  fs.renameSync(tempPath, filePath);',
-      '}',
-      '',
-    ].join('\n');
+    const source = dedent`
+      export function ascend(startDir) {
+        let dir = startDir;
+        while (dir !== root) {
+          dir = path.dirname(dir);
+        }
+      }
+      export function save(filePath, content) {
+        fs.writeFileSync(tempPath, content);
+        fs.renameSync(tempPath, filePath);
+      }
+
+    `;
 
     expect(listFilesystemIdioms(source)).toStrictEqual([
       { kind: 'chain-walk', line: 3 },

@@ -1,4 +1,5 @@
 import { blankNonCode } from '@williamthorsen/toolbelt.adoption';
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { listRecordLines } from '../listRecordLines.ts';
@@ -57,11 +58,11 @@ describe(listRecordLines, () => {
   });
 
   it('claims each of several guards in one source', () => {
-    const source = [
-      "const a = typeof x === 'object' && x !== null;",
-      "const b = typeof y === 'object' && y !== null && !Array.isArray(y);",
-      '',
-    ].join('\n');
+    const source = dedent`
+      const a = typeof x === 'object' && x !== null;
+      const b = typeof y === 'object' && y !== null && !Array.isArray(y);
+
+    `;
 
     expect(listLines(source)).toStrictEqual([1, 2]);
   });

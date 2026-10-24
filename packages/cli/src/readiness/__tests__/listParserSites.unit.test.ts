@@ -1,20 +1,21 @@
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { listParserSites } from '../listParserSites.ts';
 
 // A dispatcher of the shape that the toolbelt bins used before they adopted `runCli`.
-const DISPATCHER = [
-  "import { parseArgs } from 'node:util';",
-  '',
-  'export function dispatch(args: string[]): string {',
-  '  const [command, ...rest] = args;',
-  "  if (command === '--help' || command === '-h') return HELP;",
-  "  if (command === '--version') return VERSION;",
-  "  const { values } = parseArgs({ args: rest, options: { force: { type: 'boolean' } } });",
-  '  return run(values);',
-  '}',
-  '',
-].join('\n');
+const DISPATCHER = dedent`
+  import { parseArgs } from 'node:util';
+
+  export function dispatch(args: string[]): string {
+    const [command, ...rest] = args;
+    if (command === '--help' || command === '-h') return HELP;
+    if (command === '--version') return VERSION;
+    const { values } = parseArgs({ args: rest, options: { force: { type: 'boolean' } } });
+    return run(values);
+  }
+
+`;
 
 describe(listParserSites, () => {
   it('reports a dispatcher once for its flag comparisons and once for its parseArgs call', () => {
@@ -39,14 +40,14 @@ describe(listParserSites, () => {
     });
 
     it("reports each call, and none through toolbelt.cli's own parseArgs", () => {
-      const source = [
-        "import { parseArgs as parseNodeArgs } from 'node:util';",
-        "import { parseArgs } from '@williamthorsen/toolbelt.cli/candidate';",
-        'const first = parseNodeArgs({ args });',
-        'const second = parseNodeArgs({ args });',
-        'const schemaTyped = parseArgs(args, spec);',
-        '',
-      ].join('\n');
+      const source = dedent`
+        import { parseArgs as parseNodeArgs } from 'node:util';
+        import { parseArgs } from '@williamthorsen/toolbelt.cli/candidate';
+        const first = parseNodeArgs({ args });
+        const second = parseNodeArgs({ args });
+        const schemaTyped = parseArgs(args, spec);
+
+      `;
 
       expect(listParserSites(source)).toStrictEqual([
         { kind: 'node-parse-args', line: 3 },
@@ -61,13 +62,13 @@ describe(listParserSites, () => {
     });
 
     it('does not report a type-only import or an import written in a comment or a literal', () => {
-      const source = [
-        "import type { parseArgs } from 'node:util';",
-        "// import { parseArgs } from 'node:util';",
-        'const text = "import { parseArgs } from \'node:util\'";',
-        'parseArgs({ args });',
-        '',
-      ].join('\n');
+      const source = dedent`
+        import type { parseArgs } from 'node:util';
+        // import { parseArgs } from 'node:util';
+        const text = "import { parseArgs } from 'node:util'";
+        parseArgs({ args });
+
+      `;
 
       expect(listParserSites(source)).toStrictEqual([]);
     });
@@ -95,16 +96,16 @@ describe(listParserSites, () => {
     );
 
     it('reports each function once, at its first comparison', () => {
-      const source = [
-        'function parseRoot(arg) {',
-        "  if (arg === '--help') return 'help';",
-        "  if (arg === '--version') return 'version';",
-        '}',
-        'const parseIssue = (arg) => {',
-        "  switch (arg) { case '--all': return 'all'; case '-q': return 'quiet'; }",
-        '};',
-        '',
-      ].join('\n');
+      const source = dedent`
+        function parseRoot(arg) {
+          if (arg === '--help') return 'help';
+          if (arg === '--version') return 'version';
+        }
+        const parseIssue = (arg) => {
+          switch (arg) { case '--all': return 'all'; case '-q': return 'quiet'; }
+        };
+
+      `;
 
       expect(listParserSites(source)).toStrictEqual([
         { kind: 'flag-scan', line: 2, symbol: 'parseRoot' },
@@ -120,15 +121,15 @@ describe(listParserSites, () => {
     });
 
     it('attributes a comparison to the innermost named function', () => {
-      const source = [
-        'function outer() {',
-        '  function inner(arg) {',
-        "    return arg === '--force';",
-        '  }',
-        '  return inner;',
-        '}',
-        '',
-      ].join('\n');
+      const source = dedent`
+        function outer() {
+          function inner(arg) {
+            return arg === '--force';
+          }
+          return inner;
+        }
+
+      `;
 
       expect(listParserSites(source)).toStrictEqual([{ kind: 'flag-scan', line: 3, symbol: 'inner' }]);
     });

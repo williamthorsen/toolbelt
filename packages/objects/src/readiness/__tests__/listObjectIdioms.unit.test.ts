@@ -1,15 +1,16 @@
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { listObjectIdioms } from '../listObjectIdioms.ts';
 
 describe(listObjectIdioms, () => {
   it('names each idiom by its kind, merged in line order', () => {
-    const source = [
-      'const has = Object.prototype.hasOwnProperty.call(target, key);',
-      "const isRecord = typeof value === 'object' && value !== null;",
-      'const same = JSON.stringify(a) === JSON.stringify(b);',
-      '',
-    ].join('\n');
+    const source = dedent`
+      const has = Object.prototype.hasOwnProperty.call(target, key);
+      const isRecord = typeof value === 'object' && value !== null;
+      const same = JSON.stringify(a) === JSON.stringify(b);
+
+    `;
 
     expect(listObjectIdioms(source)).toStrictEqual([
       { kind: 'own-property-call', line: 1 },
@@ -19,22 +20,22 @@ describe(listObjectIdioms, () => {
   });
 
   it('finds no idiom in a comment', () => {
-    const source = [
-      '// Object.prototype.hasOwnProperty.call(target, key)',
-      "/* typeof value === 'object' && value !== null */",
-      '// JSON.stringify(a) === JSON.stringify(b)',
-      '',
-    ].join('\n');
+    const source = dedent`
+      // Object.prototype.hasOwnProperty.call(target, key)
+      /* typeof value === 'object' && value !== null */
+      // JSON.stringify(a) === JSON.stringify(b)
+
+    `;
 
     expect(listObjectIdioms(source)).toStrictEqual([]);
   });
 
   it('finds no idiom in a string literal', () => {
-    const source = [
-      "const a = 'Object.prototype.hasOwnProperty.call(target, key)';",
-      'const b = "JSON.stringify(a) === JSON.stringify(b)";',
-      '',
-    ].join('\n');
+    const source = dedent`
+      const a = 'Object.prototype.hasOwnProperty.call(target, key)';
+      const b = "JSON.stringify(a) === JSON.stringify(b)";
+
+    `;
 
     expect(listObjectIdioms(source)).toStrictEqual([]);
   });

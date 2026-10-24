@@ -1,6 +1,7 @@
 import path from 'node:path';
 
 import { type KitCheckReport, listKitCheckReports } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
@@ -11,22 +12,22 @@ const NON_THROWING = "vi.spyOn(process, 'exit').mockImplementation(() => {});\n"
 const READ = ["using silent = silenceConsole(['warn']);", 'expect(silent.warn.mock.calls).toHaveLength(1);', ''].join(
   '\n',
 );
-const SENTINEL_CLONE = [
-  'class ExitError extends Error {}',
-  "vi.spyOn(process, 'exit').mockImplementation((code) => {",
-  '  throw new ExitError(code);',
-  '});',
-  '',
-].join('\n');
+const SENTINEL_CLONE = dedent`
+  class ExitError extends Error {}
+  vi.spyOn(process, 'exit').mockImplementation((code) => {
+    throw new ExitError(code);
+  });
+
+`;
 const SILENCE = "vi.spyOn(console, 'warn').mockImplementation(() => {});";
 const THROWING = ["vi.spyOn(process, 'exit').mockImplementation(() => {", "  throw new Error('exit');", '});', ''].join(
   '\n',
 );
-const ADOPTER = [
-  "import { throwOnProcessExit } from '@williamthorsen/toolbelt.vitest';",
-  'using _exit = throwOnProcessExit();',
-  '',
-].join('\n');
+const ADOPTER = dedent`
+  import { throwOnProcessExit } from '@williamthorsen/toolbelt.vitest';
+  using _exit = throwOnProcessExit();
+
+`;
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 describe('The vitest adoption kit, run through rdy', () => {

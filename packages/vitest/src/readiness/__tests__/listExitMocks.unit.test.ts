@@ -1,3 +1,4 @@
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { listExitMocks } from '../listExitMocks.ts';
@@ -8,13 +9,15 @@ describe(listExitMocks, () => {
   });
 
   it('names the line and the sentinel class declared by a clone', () => {
-    const source = `class ExitError extends Error {}
+    const source = dedent`
+      class ExitError extends Error {}
 
-beforeEach(() => {
-  vi.spyOn(process, 'exit').mockImplementation((code) => {
-    throw new ExitError(code);
-  });
-});`;
+      beforeEach(() => {
+        vi.spyOn(process, 'exit').mockImplementation((code) => {
+          throw new ExitError(code);
+        });
+      });
+    `;
 
     expect(listExitMocks(source)).toStrictEqual([{ kind: 'sentinel-clone', line: 4, symbol: 'ExitError' }]);
   });
@@ -26,10 +29,12 @@ beforeEach(() => {
   });
 
   it('reports every mock in a file', () => {
-    const source = `vi.spyOn(process, 'exit').mockImplementation(() => {});
-vi.spyOn(process, 'exit').mockImplementation(() => {
-  throw new Error('exit');
-});`;
+    const source = dedent`
+      vi.spyOn(process, 'exit').mockImplementation(() => {});
+      vi.spyOn(process, 'exit').mockImplementation(() => {
+        throw new Error('exit');
+      });
+    `;
 
     expect(listExitMocks(source).map((mock) => mock.kind)).toStrictEqual(['non-throwing', 'throwing']);
   });
@@ -47,12 +52,12 @@ vi.spyOn(process, 'exit').mockImplementation(() => {
   });
 
   it('declines a sentinel class that the file names only in a comment', () => {
-    const source = [
-      '// class ExitError extends Error {}',
-      "vi.spyOn(process, 'exit').mockImplementation(() => {",
-      '  throw new ExitError();',
-      '});',
-    ].join('\n');
+    const source = dedent`
+      // class ExitError extends Error {}
+      vi.spyOn(process, 'exit').mockImplementation(() => {
+        throw new ExitError();
+      });
+    `;
 
     expect(listExitMocks(source)).toStrictEqual([{ kind: 'throwing', line: 2 }]);
   });

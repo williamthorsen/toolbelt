@@ -6,91 +6,92 @@ import {
   runSkip,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { isFlatChecklist, type RdyCheck } from 'readyup';
 import { describe, expect, it, vi } from 'vitest';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.filesystem', version: '1.0.0' });
 
-const ATOMIC_WRITE = [
-  'export async function save(filePath, content) {',
-  '  const tempPath = `${filePath}.tmp`;',
-  '  await fs.writeFile(tempPath, content);',
-  '  await fs.rename(tempPath, filePath);',
-  '}',
-  '',
-].join('\n');
-const CHAIN_WALK = [
-  'export function listAncestors(startDir) {',
-  '  const dirs = [];',
-  '  let dir = startDir;',
-  '  let previous;',
-  '  while (dir !== previous) {',
-  '    previous = dir;',
-  '    dirs.push(dir);',
-  '    dir = path.dirname(dir);',
-  '  }',
-  '  return dirs;',
-  '}',
-  '',
-].join('\n');
-const CHAIN_PROBE = [
-  'export function findMarker(startDir) {',
-  '  let dir = startDir;',
-  '  while (true) {',
-  "    if (fs.existsSync(path.join(dir, '.git'))) return dir;",
-  '    const parent = path.dirname(dir);',
-  '    if (parent === dir) return undefined;',
-  '    dir = parent;',
-  '  }',
-  '}',
-  '',
-].join('\n');
+const ATOMIC_WRITE = dedent`
+  export async function save(filePath, content) {
+    const tempPath = \`\${filePath}.tmp\`;
+    await fs.writeFile(tempPath, content);
+    await fs.rename(tempPath, filePath);
+  }
+
+`;
+const CHAIN_WALK = dedent`
+  export function listAncestors(startDir) {
+    const dirs = [];
+    let dir = startDir;
+    let previous;
+    while (dir !== previous) {
+      previous = dir;
+      dirs.push(dir);
+      dir = path.dirname(dir);
+    }
+    return dirs;
+  }
+
+`;
+const CHAIN_PROBE = dedent`
+  export function findMarker(startDir) {
+    let dir = startDir;
+    while (true) {
+      if (fs.existsSync(path.join(dir, '.git'))) return dir;
+      const parent = path.dirname(dir);
+      if (parent === dir) return undefined;
+      dir = parent;
+    }
+  }
+
+`;
 // A walk that `toolbelt.packaging` claims, which this kit declines rather than reporting under a kind that the
 // checks here could not close.
-const MANIFEST_PROBE = [
-  'export function findRoot(startDir) {',
-  '  let dir = startDir;',
-  '  while (true) {',
-  "    if (fs.existsSync(path.join(dir, 'package.json'))) return dir;",
-  '    const parent = path.dirname(dir);',
-  '    if (parent === dir) return undefined;',
-  '    dir = parent;',
-  '  }',
-  '}',
-  '',
-].join('\n');
+const MANIFEST_PROBE = dedent`
+  export function findRoot(startDir) {
+    let dir = startDir;
+    while (true) {
+      if (fs.existsSync(path.join(dir, 'package.json'))) return dir;
+      const parent = path.dirname(dir);
+      if (parent === dir) return undefined;
+      dir = parent;
+    }
+  }
+
+`;
 // The package's own writeAtomic and listDirectoryChain, each written with the idiom that its check reports.
-const OWN_WRITE_ATOMIC = [
-  'export async function writeAtomic(filePath, content) {',
-  '  await fs.writeFile(tempPath, content);',
-  '  await fs.rename(tempPath, filePath);',
-  '}',
-  '',
-].join('\n');
-const OWN_DIRECTORY_CHAIN = [
-  'export function listDirectoryChain(startDir) {',
-  '  let dir = startDir;',
-  '  let previous;',
-  '  while (dir !== previous) {',
-  '    previous = dir;',
-  '    dir = path.dirname(dir);',
-  '  }',
-  '}',
-  '',
-].join('\n');
+const OWN_WRITE_ATOMIC = dedent`
+  export async function writeAtomic(filePath, content) {
+    await fs.writeFile(tempPath, content);
+    await fs.rename(tempPath, filePath);
+  }
+
+`;
+const OWN_DIRECTORY_CHAIN = dedent`
+  export function listDirectoryChain(startDir) {
+    let dir = startDir;
+    let previous;
+    while (dir !== previous) {
+      previous = dir;
+      dir = path.dirname(dir);
+    }
+  }
+
+`;
 // Prose about both idioms, and reads that perform neither.
-const UNCLAIMED = [
-  '// Ascends by dir = path.dirname(dir) until it reaches the filesystem root.',
-  'export const parentDir = path.dirname(filePath);',
-  'export const backup = () => fs.renameSync(filePath, backupPath);',
-  '',
-].join('\n');
-const ADOPTER = [
-  "import { writeAtomic } from '@williamthorsen/toolbelt.filesystem/candidate';",
-  'export const save = (filePath, content) => writeAtomic(filePath, content);',
-  '',
-].join('\n');
+const UNCLAIMED = dedent`
+  // Ascends by dir = path.dirname(dir) until it reaches the filesystem root.
+  export const parentDir = path.dirname(filePath);
+  export const backup = () => fs.renameSync(filePath, backupPath);
+
+`;
+const ADOPTER = dedent`
+  import { writeAtomic } from '@williamthorsen/toolbelt.filesystem/candidate';
+  export const save = (filePath, content) => writeAtomic(filePath, content);
+
+`;
 const EVERY_IDIOM = {
   'package.json': MANIFEST,
   'src/ancestors.ts': CHAIN_WALK,

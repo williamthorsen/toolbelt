@@ -1,3 +1,4 @@
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { listMembershipSites } from '../listMembershipSites.ts';
@@ -73,10 +74,10 @@ describe(listMembershipSites, () => {
   });
 
   it('reports each of several tests in one source', () => {
-    const source = [
-      'const first = Object.values(Color).includes(value);',
-      'const second = Object.values(Shade).includes(value);',
-    ].join('\n');
+    const source = dedent`
+      const first = Object.values(Color).includes(value);
+      const second = Object.values(Shade).includes(value);
+    `;
 
     expect(listMembershipSites(source).map((site) => site.line)).toStrictEqual([1, 2]);
   });

@@ -1,4 +1,5 @@
 import { createTrackedRepo, pointCwdAt, runCheck, runSkip } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { isFlatChecklist, type RdyCheck } from 'readyup';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -6,30 +7,30 @@ const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.cli', version: '1.0.0' });
 
 // A runner of the shape that the toolbelt bins used before they adopted `runCli`.
-const RUNNER = [
-  "import { parseArgs } from 'node:util';",
-  '',
-  'export function run(args) {',
-  '  const [command, ...rest] = args;',
-  "  if (command === '--help' || command === '-h') return HELP;",
-  '  const { values } = parseArgs({ args: rest, options: {} });',
-  '  return values;',
-  '}',
-  '',
-].join('\n');
+const RUNNER = dedent`
+  import { parseArgs } from 'node:util';
+
+  export function run(args) {
+    const [command, ...rest] = args;
+    if (command === '--help' || command === '-h') return HELP;
+    const { values } = parseArgs({ args: rest, options: {} });
+    return values;
+  }
+
+`;
 // The package's own runCli, written with the comparisons that its check reports.
-const OWN_RUN_CLI = [
-  'export function runCli(argv, root) {',
-  "  if (argv[0] === '--help') return 0;",
-  '  return dispatch(argv, root);',
-  '}',
-  '',
-].join('\n');
-const ADOPTER = [
-  "import { defineGroup, runCli } from '@williamthorsen/toolbelt.cli/candidate';",
-  'export const exitCode = await runCli(argv, defineGroup({ summary: "A tool", commands: {} }), options);',
-  '',
-].join('\n');
+const OWN_RUN_CLI = dedent`
+  export function runCli(argv, root) {
+    if (argv[0] === '--help') return 0;
+    return dispatch(argv, root);
+  }
+
+`;
+const ADOPTER = dedent`
+  import { defineGroup, runCli } from '@williamthorsen/toolbelt.cli/candidate';
+  export const exitCode = await runCli(argv, defineGroup({ summary: "A tool", commands: {} }), options);
+
+`;
 
 describe('The cli adoption kit', () => {
   it('reports each kind under its own check, and counts both against calls into the package', async () => {

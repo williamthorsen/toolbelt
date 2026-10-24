@@ -1,15 +1,16 @@
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { listAtomicWriteSites } from '../listAtomicWriteSites.ts';
 
-const PROMISE_FORM = [
-  'export async function save(filePath, content) {',
-  '  const tempPath = `${filePath}.tmp`;',
-  '  await fs.writeFile(tempPath, content);',
-  '  await fs.rename(tempPath, filePath);',
-  '}',
-  '',
-].join('\n');
+const PROMISE_FORM = dedent`
+  export async function save(filePath, content) {
+    const tempPath = \`\${filePath}.tmp\`;
+    await fs.writeFile(tempPath, content);
+    await fs.rename(tempPath, filePath);
+  }
+
+`;
 
 describe(listAtomicWriteSites, () => {
   it('claims a body that writes a path and renames it, naming the rename and the function', () => {
@@ -28,15 +29,15 @@ describe(listAtomicWriteSites, () => {
   });
 
   it('claims each pair in a body that writes two files', () => {
-    const source = [
-      'function saveBoth(dataPath, metaPath) {',
-      '  fs.writeFileSync(dataTemp, data);',
-      '  fs.renameSync(dataTemp, dataPath);',
-      '  fs.writeFileSync(metaTemp, meta);',
-      '  fs.renameSync(metaTemp, metaPath);',
-      '}',
-      '',
-    ].join('\n');
+    const source = dedent`
+      function saveBoth(dataPath, metaPath) {
+        fs.writeFileSync(dataTemp, data);
+        fs.renameSync(dataTemp, dataPath);
+        fs.writeFileSync(metaTemp, meta);
+        fs.renameSync(metaTemp, metaPath);
+      }
+
+    `;
 
     expect(listAtomicWriteSites(source)).toStrictEqual([
       { kind: 'temp-write-rename', line: 3, symbol: 'saveBoth' },
@@ -46,16 +47,16 @@ describe(listAtomicWriteSites, () => {
 
   // A closure and every function around it contain the same rename, and only the innermost names the site usefully.
   it('names the innermost function around a rename, reporting the site once', () => {
-    const source = [
-      'export function makeWriter(dir) {',
-      '  const write = async (target, content) => {',
-      '    await fs.writeFile(tempPath, content);',
-      '    await fs.rename(tempPath, target);',
-      '  };',
-      '  return write;',
-      '}',
-      '',
-    ].join('\n');
+    const source = dedent`
+      export function makeWriter(dir) {
+        const write = async (target, content) => {
+          await fs.writeFile(tempPath, content);
+          await fs.rename(tempPath, target);
+        };
+        return write;
+      }
+
+    `;
 
     expect(listAtomicWriteSites(source)).toStrictEqual([{ kind: 'temp-write-rename', line: 4, symbol: 'write' }]);
   });
@@ -74,62 +75,62 @@ describe(listAtomicWriteSites, () => {
 
   // Copying and renaming is a move, which `writeAtomic` does not perform.
   it('declines a copy followed by a rename', () => {
-    const source = [
-      'function move(sourcePath, filePath) {',
-      '  fs.copyFileSync(sourcePath, tempPath);',
-      '  fs.renameSync(tempPath, filePath);',
-      '}',
-      '',
-    ].join('\n');
+    const source = dedent`
+      function move(sourcePath, filePath) {
+        fs.copyFileSync(sourcePath, tempPath);
+        fs.renameSync(tempPath, filePath);
+      }
+
+    `;
 
     expect(listAtomicWriteSites(source)).toStrictEqual([]);
   });
 
   it('declines a rename of a path that the body wrote under another name', () => {
-    const source = [
-      'function save(filePath, content) {',
-      '  fs.writeFileSync(logPath, content);',
-      '  fs.renameSync(tempPath, filePath);',
-      '}',
-      '',
-    ].join('\n');
+    const source = dedent`
+      function save(filePath, content) {
+        fs.writeFileSync(logPath, content);
+        fs.renameSync(tempPath, filePath);
+      }
+
+    `;
 
     expect(listAtomicWriteSites(source)).toStrictEqual([]);
   });
 
   it('declines a rename that precedes the write of its source', () => {
-    const source = [
-      'function restore(filePath, content) {',
-      '  fs.renameSync(tempPath, filePath);',
-      '  fs.writeFileSync(tempPath, content);',
-      '}',
-      '',
-    ].join('\n');
+    const source = dedent`
+      function restore(filePath, content) {
+        fs.renameSync(tempPath, filePath);
+        fs.writeFileSync(tempPath, content);
+      }
+
+    `;
 
     expect(listAtomicWriteSites(source)).toStrictEqual([]);
   });
 
   // The pairing depends on one binding named twice, and the detector cannot follow a computed argument.
   it('declines a pair whose paths are computed at the call', () => {
-    const source = [
-      'function save(dir, content) {',
-      "  fs.writeFileSync(path.join(dir, 'x.tmp'), content);",
-      "  fs.renameSync(path.join(dir, 'x.tmp'), path.join(dir, 'x'));",
-      '}',
-      '',
-    ].join('\n');
+    const source = dedent`
+      function save(dir, content) {
+        fs.writeFileSync(path.join(dir, 'x.tmp'), content);
+        fs.renameSync(path.join(dir, 'x.tmp'), path.join(dir, 'x'));
+      }
+
+    `;
 
     expect(listAtomicWriteSites(source)).toStrictEqual([]);
   });
 
   it('declines calls whose names merely end in the anchors', () => {
-    const source = [
-      'function save(filePath, content) {',
-      '  safeWriteFile(tempPath, content);',
-      '  safeRename(tempPath, filePath);',
-      '}',
-      '',
-    ].join('\n');
+    const source = dedent`
+      function save(filePath, content) {
+        safeWriteFile(tempPath, content);
+        safeRename(tempPath, filePath);
+      }
+
+    `;
 
     expect(listAtomicWriteSites(source)).toStrictEqual([]);
   });
@@ -141,15 +142,15 @@ describe(listAtomicWriteSites, () => {
   });
 
   it('declines a write and a rename that are in separate bodies', () => {
-    const source = [
-      'function stage(content) {',
-      '  fs.writeFileSync(tempPath, content);',
-      '}',
-      'function publish(filePath) {',
-      '  fs.renameSync(tempPath, filePath);',
-      '}',
-      '',
-    ].join('\n');
+    const source = dedent`
+      function stage(content) {
+        fs.writeFileSync(tempPath, content);
+      }
+      function publish(filePath) {
+        fs.renameSync(tempPath, filePath);
+      }
+
+    `;
 
     expect(listAtomicWriteSites(source)).toStrictEqual([]);
   });

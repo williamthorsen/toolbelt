@@ -1,3 +1,4 @@
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { listSleepSites } from '../listSleepSites.ts';
@@ -63,10 +64,10 @@ describe(listSleepSites, () => {
   });
 
   it('reports each of several sleeps in one source', () => {
-    const source = [
-      'await new Promise((resolve) => setTimeout(resolve, 10));',
-      'await new Promise((resolve) => setTimeout(resolve, 20));',
-    ].join('\n');
+    const source = dedent`
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    `;
 
     expect(listSleepSites(source).map((site) => site.line)).toStrictEqual([1, 2]);
   });

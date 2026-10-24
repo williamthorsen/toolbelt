@@ -1,3 +1,4 @@
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { listOwnPropertyCallLines } from '../listOwnPropertyCallLines.ts';
@@ -16,11 +17,11 @@ describe(listOwnPropertyCallLines, () => {
   });
 
   it('claims each of several calls in one source', () => {
-    const source = [
-      'const a = Object.prototype.hasOwnProperty.call(x, k);',
-      'const b = Object.prototype.hasOwnProperty.call(y, k);',
-      '',
-    ].join('\n');
+    const source = dedent`
+      const a = Object.prototype.hasOwnProperty.call(x, k);
+      const b = Object.prototype.hasOwnProperty.call(y, k);
+
+    `;
 
     expect(listOwnPropertyCallLines(source)).toStrictEqual([1, 2]);
   });

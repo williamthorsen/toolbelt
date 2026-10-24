@@ -1,13 +1,14 @@
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { parseAsdfShim } from '../parseAsdfShim.ts';
 
-const SHIM = [
-  '#!/usr/bin/env bash',
-  '# asdf-plugin: nodejs 24.20.0',
-  '# asdf-plugin: nodejs 24.19.0',
-  'exec asdf exec "pnpm" "$@"',
-].join('\n');
+const SHIM = dedent`
+  #!/usr/bin/env bash
+  # asdf-plugin: nodejs 24.20.0
+  # asdf-plugin: nodejs 24.19.0
+  exec asdf exec "pnpm" "$@"
+`;
 
 describe(parseAsdfShim, () => {
   it('lists every provider in header order', () => {

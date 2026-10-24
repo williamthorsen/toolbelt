@@ -1,14 +1,15 @@
 import path from 'node:path';
 
 import { type KitCheckReport, listKitCheckReports } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
-const ADOPTER = [
-  "import { defineGroup, runCli } from '@williamthorsen/toolbelt.cli/candidate';",
-  'export const exitCode = await runCli(argv, defineGroup({ summary: "A tool", commands: {} }), options);',
-  '',
-].join('\n');
+const ADOPTER = dedent`
+  import { defineGroup, runCli } from '@williamthorsen/toolbelt.cli/candidate';
+  export const exitCode = await runCli(argv, defineGroup({ summary: "A tool", commands: {} }), options);
+
+`;
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 describe('The cli adoption kit, run through rdy', () => {
@@ -48,17 +49,17 @@ describe('The cli adoption kit, run through rdy', () => {
 
 /** Builds a hand-rolled runner whose flag comparison and parseArgs call end with the given pragmas. */
 function buildRunner(flagScanPragma: string, parseArgsPragma: string): string {
-  return [
-    "import { parseArgs } from 'node:util';",
-    '',
-    'export function run(args) {',
-    '  const [command, ...rest] = args;',
-    `  if (command === '--help') return HELP;${flagScanPragma}`,
-    `  const { values } = parseArgs({ args: rest, options: {} });${parseArgsPragma}`,
-    '  return values;',
-    '}',
-    '',
-  ].join('\n');
+  return dedent`
+    import { parseArgs } from 'node:util';
+
+    export function run(args) {
+      const [command, ...rest] = args;
+      if (command === '--help') return HELP;${flagScanPragma}
+      const { values } = parseArgs({ args: rest, options: {} });${parseArgsPragma}
+      return values;
+    }
+
+  `;
 }
 
 /**

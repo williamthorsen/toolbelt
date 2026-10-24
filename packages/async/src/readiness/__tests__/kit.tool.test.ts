@@ -5,6 +5,7 @@ import {
   runSkip,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
 import { isFlatChecklist, type RdyCheck } from 'readyup';
 import { describe, expect, it, vi } from 'vitest';
@@ -15,12 +16,12 @@ const SLEEP = 'export const waited = new Promise((resolve) => setTimeout(resolve
 // The package's own `delay`, containing the idiom that its check recommends replacing.
 const OWN_DELAY = 'export function delay(ms) {\n  return new Promise((resolve) => setTimeout(resolve, ms));\n}\n';
 // A timer call with a value, a callback that settles nothing, and an executor doing more than the timer.
-const UNCLAIMED = [
-  'export const tagged = new Promise((resolve) => setTimeout(resolve, 50, token));',
-  'export const stalled = new Promise((resolve) => setTimeout(done, 50));',
-  'export const tracked = new Promise((resolve) => { report(); setTimeout(resolve, 50); });',
-  '',
-].join('\n');
+const UNCLAIMED = dedent`
+  export const tagged = new Promise((resolve) => setTimeout(resolve, 50, token));
+  export const stalled = new Promise((resolve) => setTimeout(done, 50));
+  export const tracked = new Promise((resolve) => { report(); setTimeout(resolve, 50); });
+
+`;
 const ADOPTER = "import { delay } from '@williamthorsen/toolbelt.async';\nawait delay(50);\n";
 
 describe('The async adoption kit', () => {

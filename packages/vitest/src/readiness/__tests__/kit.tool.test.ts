@@ -6,6 +6,7 @@ import {
   runSkip,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { isFlatChecklist, type RdyCheck } from 'readyup';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -14,45 +15,45 @@ const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.vite
 
 const CAPTURE = "vi.spyOn(console, 'log').mockImplementation((...args) => { lines.push(args); });\n";
 const CONSOLE_SPY_ONLY = "vi.spyOn(console, 'debug');\n";
-const DISPOSAL = [
-  "it('builds a tree', () => {",
-  '  const tree = createTempTree({});',
-  '  onTestFinished(() => tree[Symbol.dispose]());',
-  '});',
-  '',
-].join('\n');
+const DISPOSAL = dedent`
+  it('builds a tree', () => {
+    const tree = createTempTree({});
+    onTestFinished(() => tree[Symbol.dispose]());
+  });
+
+`;
 const LOSSY_CAPTURE = "vi.spyOn(console, 'error').mockImplementation((message) => { lines.push(message); });\n";
 const NON_THROWING = "vi.spyOn(process, 'exit').mockImplementation(() => {});\n";
 const READ = ["using silent = silenceConsole(['warn']);", 'expect(silent.warn.mock.calls).toHaveLength(1);', ''].join(
   '\n',
 );
-const SENTINEL_CLONE = [
-  'class ExitError extends Error {}',
-  '',
-  'beforeEach(() => {',
-  "  vi.spyOn(process, 'exit').mockImplementation((code) => {",
-  '    throw new ExitError(code);',
-  '  });',
-  '});',
-  '',
-].join('\n');
+const SENTINEL_CLONE = dedent`
+  class ExitError extends Error {}
+
+  beforeEach(() => {
+    vi.spyOn(process, 'exit').mockImplementation((code) => {
+      throw new ExitError(code);
+    });
+  });
+
+`;
 const SILENCE = "vi.spyOn(console, 'warn').mockImplementation(() => {});\n";
 const THROWING = ["vi.spyOn(process, 'exit').mockImplementation(() => {", "  throw new Error('exit');", '});', ''].join(
   '\n',
 );
 const UNREADABLE_EXIT_MOCK = "vi.spyOn(process, 'exit').mockImplementation(handleExit);\n";
 // A spy on a method for which the package has no advice, and a `mock.calls` read on a spy that is no console spy.
-const UNCLAIMED = [
-  "vi.spyOn(console, 'table').mockImplementation(() => {});",
-  "const existsSyncSpy = vi.spyOn(fs, 'existsSync').mockReturnValue(true);",
-  'expect(existsSyncSpy.mock.calls).toHaveLength(2);',
-  '',
-].join('\n');
-const ADOPTER = [
-  "import { throwOnProcessExit } from '@williamthorsen/toolbelt.vitest';",
-  'using _exit = throwOnProcessExit();',
-  '',
-].join('\n');
+const UNCLAIMED = dedent`
+  vi.spyOn(console, 'table').mockImplementation(() => {});
+  const existsSyncSpy = vi.spyOn(fs, 'existsSync').mockReturnValue(true);
+  expect(existsSyncSpy.mock.calls).toHaveLength(2);
+
+`;
+const ADOPTER = dedent`
+  import { throwOnProcessExit } from '@williamthorsen/toolbelt.vitest';
+  using _exit = throwOnProcessExit();
+
+`;
 const EVERY_IDIOM = {
   'package.json': MANIFEST,
   'src/capture.unit.test.ts': CAPTURE,

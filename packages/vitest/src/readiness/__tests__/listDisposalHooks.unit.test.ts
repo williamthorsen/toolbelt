@@ -1,3 +1,4 @@
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { listDisposalHooks } from '../listDisposalHooks.ts';
@@ -8,12 +9,12 @@ describe(listDisposalHooks, () => {
   });
 
   it('names the line of a disposal written as a concise arrow', () => {
-    const source = [
-      "it('builds a tree', () => {",
-      '  const tree = createTempTree({});',
-      '  onTestFinished(() => tree[Symbol.dispose]());',
-      '});',
-    ].join('\n');
+    const source = dedent`
+      it('builds a tree', () => {
+        const tree = createTempTree({});
+        onTestFinished(() => tree[Symbol.dispose]());
+      });
+    `;
 
     expect(listDisposalHooks(source)).toStrictEqual([{ kind: 'disposal-hook', line: 3 }]);
   });
@@ -56,11 +57,13 @@ describe(listDisposalHooks, () => {
   });
 
   it('reports every hook in a file', () => {
-    const source = [
-      'onTestFinished(() => tree[Symbol.dispose]());',
-      'onTestFinished(() => cwd.restore());',
-      'onTestFinished(() => {\n  stdio[Symbol.dispose]();\n});',
-    ].join('\n');
+    const source = dedent`
+      onTestFinished(() => tree[Symbol.dispose]());
+      onTestFinished(() => cwd.restore());
+      onTestFinished(() => {
+        stdio[Symbol.dispose]();
+      });
+    `;
 
     expect(listDisposalHooks(source).map((hook) => hook.line)).toStrictEqual([1, 3]);
   });
