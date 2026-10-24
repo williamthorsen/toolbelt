@@ -51,6 +51,9 @@
   },
   "devDependencies": {
     "@williamthorsen/toolbelt.adoption": "workspace:*",
+    "@williamthorsen/toolbelt.async": "workspace:*",
+    "@williamthorsen/toolbelt.testing": "workspace:*",
+    "@williamthorsen/toolbelt.vitest": "workspace:*",
     "esbuild": "catalog:",
     "readyup": "catalog:"
   },

@@ -312,6 +312,15 @@ importers:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
         version: link:../adoption
+      '@williamthorsen/toolbelt.async':
+        specifier: workspace:*
+        version: link:../async
+      '@williamthorsen/toolbelt.testing':
+        specifier: workspace:*
+        version: link:../testing
+      '@williamthorsen/toolbelt.vitest':
+        specifier: workspace:*
+        version: link:../vitest
       esbuild:
         specifier: 'catalog:'
         version: 0.28.2

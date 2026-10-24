@@ -1,5 +1,6 @@
 import { Readable } from 'node:stream';
 
+import { delay } from '@williamthorsen/toolbelt.async/candidate';
 import { describe, expect, it } from 'vitest';
 
 import { readStreamText } from '../readStreamText.ts';
@@ -27,7 +28,7 @@ function buildStream(chunks: string[]): Readable {
 
 /** Yields one chunk only after a delay, as a producer that has to reach a keychain or a network does. */
 async function* emitLate(chunk: string): AsyncGenerator<string> {
-  await new Promise((resolve) => setTimeout(resolve, 20));
+  await delay(20);
 
   yield chunk;
 }
