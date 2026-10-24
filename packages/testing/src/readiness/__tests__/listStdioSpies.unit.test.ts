@@ -59,6 +59,7 @@ describe(listStdioSpies, () => {
   });
 
   it('reports a spy on each stream, naming its line', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
     const source = [
       'beforeEach(() => {',
       "  stdoutSpy = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);",

@@ -4,6 +4,7 @@ import { listMathIdioms } from '../listMathIdioms.ts';
 
 describe(listMathIdioms, () => {
   it('names each idiom that it finds and orders the sites by line', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on numbers, so numbers cannot import dedent without a cycle
     const source = [
       'const roll = Math.floor(Math.random() * sides);',
       'const rate = Math.round(value * 100) / 100;',

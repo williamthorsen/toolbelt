@@ -41,6 +41,7 @@ describe(listErrorSites, () => {
   });
 
   it('names a negated narrowing that throws', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
     const source = [
       'if (!(value instanceof Error)) {',
       '  console.error(value);',
@@ -64,6 +65,7 @@ describe(listErrorSites, () => {
   });
 
   it('names a locally defined describeError as a clone, once, with its function name', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
     const source = [
       'export function describeError(error: unknown): string {',
       '  if (error instanceof Error) return error.message;',
@@ -75,6 +77,7 @@ describe(listErrorSites, () => {
   });
 
   it('names a three-arm description helper as a clone', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
     const source = [
       'function toPanelMessage(error: unknown): string {',
       '  if (error instanceof Error) {',
@@ -91,6 +94,7 @@ describe(listErrorSites, () => {
   });
 
   it('leaves a function that composes rather than describes to the per-site classification', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
     const source = [
       'function toDetail(error: unknown, parts: string[]): string {',
       '  if (error instanceof Error) {',
@@ -112,6 +116,7 @@ describe(listErrorSites, () => {
   });
 
   it('reports every site in a file', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
     const source = [
       'const message = error instanceof Error ? error.message : String(error);',
       'const wrapped = value instanceof Error ? value : new Error(String(value));',
@@ -138,6 +143,7 @@ describe(listErrorSites, () => {
   });
 
   it('reports a site that the prose beside it never obscures', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
     const source = [
       '// Falls back to instanceof Error where the guard is unavailable.',
       'const message = error instanceof Error ? error.message : String(error);',

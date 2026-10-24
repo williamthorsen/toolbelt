@@ -4,6 +4,7 @@ import { type KitCheckReport, listKitCheckReports } from '@williamthorsen/toolbe
 import { describe, expect, it } from 'vitest';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
 const ADOPTER = [
   "import { captureError } from '@williamthorsen/toolbelt.testing';",
   'const caught = await captureError(() => parseConfig(text));',
@@ -41,6 +42,7 @@ describe('The testing adoption kit, run through rdy', () => {
 
 /** Builds a captured-error test source whose `try` line ends with the given pragma. */
 function buildCapture(pragma: string): string {
+  // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
   return [
     'let caught: unknown;',
     '',

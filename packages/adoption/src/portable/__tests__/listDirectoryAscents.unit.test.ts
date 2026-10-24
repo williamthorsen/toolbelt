@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { listDirectoryAscents } from '../listDirectoryAscents.ts';
 
 // The saved-parent ascent, which compares each level against its parent to find the filesystem root.
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
 const SAVED_PARENT_WALK = [
   'export function ascend(startDir) {',
   '  let dir = startDir;',
@@ -17,6 +18,7 @@ const SAVED_PARENT_WALK = [
 ].join('\n');
 
 // The saved-previous ascent, which assigns the parent in place and compares against the level that it left.
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
 const SAVED_PREVIOUS_WALK = [
   'export function ascend(startDir) {',
   '  let dir = startDir;',
@@ -59,6 +61,7 @@ describe(listDirectoryAscents, () => {
   });
 
   it('reads the name that a probe for a repository marker looks for', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
     const source = [
       'let dir = start;',
       'while (true) {',
@@ -120,6 +123,7 @@ describe(listDirectoryAscents, () => {
   });
 
   it('reads every name that the loop probes for, in source order', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
     const source = [
       'let dir = start;',
       'while (true) {',
@@ -134,6 +138,7 @@ describe(listDirectoryAscents, () => {
   });
 
   it('reads the name that a path held in a binding declared in the loop looks for', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
     const source = [
       'for (let current = start; isDependencyFile(current); current = path.dirname(current)) {',
       "  const manifestPath = path.join(current, 'package.json');",
@@ -149,6 +154,7 @@ describe(listDirectoryAscents, () => {
 
   it('reads the name that a path built from a string constant looks for, however the path is built', () => {
     const probes = ['path.join(directory, PACKAGE_MANIFEST)', '`${directory}/${PACKAGE_MANIFEST}`'].map((probe) =>
+      // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
       [
         "const PACKAGE_MANIFEST = 'package.json';",
         'for (let directory = start; ; directory = path.dirname(directory)) {',
@@ -176,6 +182,7 @@ describe(listDirectoryAscents, () => {
   });
 
   it('reads one name through a binding built from another binding and a constant', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
     const source = [
       "const MANIFEST = 'package.json';",
       'let dir = start;',
@@ -192,6 +199,7 @@ describe(listDirectoryAscents, () => {
   });
 
   it('reads one name from a path that appends to a binding holding the level', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
     const source = [
       'let dir = start;',
       'while (true) {',
@@ -206,6 +214,7 @@ describe(listDirectoryAscents, () => {
   });
 
   it('reads no name through a binding holding another binding past the level', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
     const source = [
       'let dir = start;',
       'while (true) {',
@@ -222,6 +231,7 @@ describe(listDirectoryAscents, () => {
   // No such binding holds one value per level, so the probe reaches no level that the scan can see.
   it('reads no probe through a binding declared outside the loop, declared twice in it, or reassigned in it', () => {
     const sources = [
+      // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
       [
         'let dir = start;',
         "const manifestPath = path.join(dir, 'package.json');",
@@ -231,6 +241,7 @@ describe(listDirectoryAscents, () => {
         '}',
         '',
       ].join('\n'),
+      // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
       [
         'let dir = start;',
         'while (true) {',
@@ -240,6 +251,7 @@ describe(listDirectoryAscents, () => {
         '}',
         '',
       ].join('\n'),
+      // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
       [
         'let dir = start;',
         'while (true) {',
@@ -260,6 +272,7 @@ describe(listDirectoryAscents, () => {
   });
 
   it('reads no name through a binding in a source written without semicolons', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
     const source = [
       'let dir = start',
       'while (true) {',
@@ -289,6 +302,7 @@ describe(listDirectoryAscents, () => {
   });
 
   it('reports nothing for a loop that computes a parent per item without assigning it back', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
     const source = [
       'for (const file of files) {',
       '  const parent = path.dirname(file);',
@@ -301,6 +315,7 @@ describe(listDirectoryAscents, () => {
   });
 
   it('reports nothing for a recursive walk-up function, which is no loop', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
     const source = [
       'function findUp(dir) {',
       "  if (fs.existsSync(path.join(dir, '.git'))) return dir;",
@@ -331,6 +346,7 @@ describe(listDirectoryAscents, () => {
 
   // A loop around an ascent contains every line that the ascent contains, and only the innermost names the site.
   it('reports an ascent once, on the innermost loop around it', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
     const source = [
       'for (const name of names) {',
       '  let dir = start;',

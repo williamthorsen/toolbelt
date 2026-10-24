@@ -12,12 +12,14 @@ import { describe, expect, it, vi } from 'vitest';
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.guards', version: '1.0.0' });
 
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
 const ASSERTION = [
   'export function check(condition, message) {',
   '  if (!condition) throw new Error(message);',
   '}',
   '',
 ].join('\n');
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
 const NULLISH_ASSERTION = [
   'export function demand(value) {',
   '  if (value === null || value === undefined) throw new Error(MISSING);',
@@ -27,6 +29,7 @@ const NULLISH_ASSERTION = [
 const PREDICATE = ['export function isText(value) {', "  return typeof value === 'string';", '}', ''].join('\n');
 const NUMBER_GUARD = ['export function isNum(value) {', "  return typeof value === 'number';", '}', ''].join('\n');
 // The package's own assert, containing the idiom that the first check reports.
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
 const OWN_ASSERT = [
   'export function assert(condition, message) {',
   '  if (condition) return;',
@@ -36,6 +39,7 @@ const OWN_ASSERT = [
 ].join('\n');
 // Prose about a guard, and a source that tests nothing at all.
 const UNCLAIMED = ['// Returns true where typeof value === “string”.', 'export const answer = 42;', ''].join('\n');
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
 const ADOPTER = [
   "import { isString } from '@williamthorsen/toolbelt.guards';",
   'export const named = isString(value);',

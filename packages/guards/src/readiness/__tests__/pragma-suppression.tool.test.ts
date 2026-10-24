@@ -4,6 +4,7 @@ import { type KitCheckReport, listKitCheckReports } from '@williamthorsen/toolbe
 import { describe, expect, it } from 'vitest';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
 const ADOPTER = [
   "import { isString } from '@williamthorsen/toolbelt.guards';",
   'export const named = isString(value);',
@@ -57,6 +58,7 @@ describe('The guards adoption kit, run through rdy', () => {
 
 /** Builds a hand-rolled assertion whose head line ends with the given pragma. */
 function buildGuard(pragma: string): string {
+  // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
   return [
     `export function check(condition, message) {${pragma}`,
     '  if (!condition) throw new Error(message);',

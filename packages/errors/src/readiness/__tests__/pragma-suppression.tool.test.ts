@@ -4,6 +4,7 @@ import { type KitCheckReport, listKitCheckReports } from '@williamthorsen/toolbe
 import { describe, expect, it } from 'vitest';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
 const CLONE = [
   'export function toMessage(error) {',
   '  if (error instanceof Error) return error.message;',
@@ -14,6 +15,7 @@ const CLONE = [
 const COERCE = 'export const wrapped = value instanceof Error ? value : new Error(String(value));\n';
 const DESCRIBE_INLINE = 'export const message = error instanceof Error ? error.message : String(error);';
 const NARROW = "export const isErrno = error instanceof Error && 'code' in error;\n";
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
 const ADOPTER = [
   "import { describeError } from '@williamthorsen/toolbelt.errors';",
   'export const message = describeError(error);',
