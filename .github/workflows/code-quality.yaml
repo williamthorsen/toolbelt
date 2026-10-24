@@ -28,5 +28,5 @@ jobs:
           { "name": "typecheck", "command": "pnpm exec nmr build && pnpm exec nmr typecheck" },
           { "name": "lint", "command": "pnpm exec nmr build && pnpm exec nmr lint:strict" },
           { "name": "test", "command": "pnpm exec nmr build && pnpm exec nmr test" },
-          { "name": "vitest-5", "command": "pnpm exec nmr build && .github/scripts/check-vitest-compat.sh 5" }
+          { "name": "vitest-4", "command": "pnpm exec nmr build && .github/scripts/check-vitest-compat.sh 4" }
         ]
