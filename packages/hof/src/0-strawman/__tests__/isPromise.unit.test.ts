@@ -4,7 +4,7 @@ import { isNotPromise, isPromise } from '../isPromise.ts';
 
 describe(isPromise, () => {
   it('identifies native promises as promises', () => {
-    const promise = new Promise<void>((resolve) => resolve());
+    const promise = Promise.resolve();
 
     expect(isPromise(promise)).toBe(true);
     expect(isNotPromise(promise)).toBe(false);

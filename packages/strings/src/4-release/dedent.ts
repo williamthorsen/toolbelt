@@ -59,10 +59,12 @@ function buildTemplateLines(templateStrings: TemplateStringsArray): TemplateLine
   for (const [literalIndex, literal] of templateStrings.entries()) {
     for (const { terminator, text } of splitLines(literal)) {
       segments.push({ kind: 'literal', text });
-      if (terminator !== '') {
-        lines.push({ segments, terminator });
-        segments = [];
+      if (terminator === '') {
+        continue;
       }
+
+      lines.push({ segments, terminator });
+      segments = [];
     }
     if (literalIndex < templateStrings.length - 1) {
       segments.push({ kind: 'value', valueIndex: literalIndex });

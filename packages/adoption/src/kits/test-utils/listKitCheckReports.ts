@@ -64,13 +64,13 @@ function readCheckReport(check: unknown): KitCheckReport {
 function readFirstChecklistChecks(report: unknown): unknown[] {
   const runError = isRecord(report) ? report['error'] : undefined;
   const runMessage = isRecord(runError) ? runError['message'] : undefined;
-  if (typeof runMessage === 'string') throw new Error(`rdy refused the run: ${runMessage}`);
+  if (typeof runMessage === 'string') throw new TypeError(`rdy refused the run: ${runMessage}`);
 
   const kits = isRecord(report) ? report['kits'] : undefined;
   const kit = isUnknownArray(kits) ? kits[0] : undefined;
   const error = isRecord(kit) ? kit['error'] : undefined;
   const loadMessage = isRecord(error) ? error['message'] : undefined;
-  if (typeof loadMessage === 'string') throw new Error(`rdy could not load the kit: ${loadMessage}`);
+  if (typeof loadMessage === 'string') throw new TypeError(`rdy could not load the kit: ${loadMessage}`);
 
   const checklists = isRecord(kit) ? kit['checklists'] : undefined;
   const checklist = isUnknownArray(checklists) ? checklists[0] : undefined;

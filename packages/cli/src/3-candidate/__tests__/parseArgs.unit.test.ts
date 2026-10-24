@@ -132,7 +132,7 @@ describe(parseArgs, () => {
         description: 'The maximum',
         parse: (raw: string): number => {
           const value = Number(raw);
-          if (!Number.isSafeInteger(value)) throw new Error('Expected an integer.');
+          if (!Number.isSafeInteger(value)) throw new TypeError('Expected an integer.');
           return value;
         },
       },

@@ -34,6 +34,6 @@ export function listGuardClones(source: string): Array<AdoptionSite<GuardCloneKi
     const body = code.slice(fn.bodyStart, fn.bodyEnd);
     const kind = findPredicateClone(body, source, fn.bodyStart, parameter) ?? findAssertionClone(body, parameter);
 
-    return kind === undefined ? [] : [{ kind, line: getLineAtOffset(code, fn.headStart), symbol: fn.name }];
+    return kind === undefined ? [] : { kind, line: getLineAtOffset(code, fn.headStart), symbol: fn.name };
   });
 }

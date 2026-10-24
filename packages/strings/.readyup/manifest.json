@@ -30,7 +30,7 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "e6e87602",
+          "hash": "7b9002b8",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -55,7 +55,7 @@
           "path": "../../adoption/src/portable/listFunctionBodies.ts"
         },
         {
-          "hash": "ce2e063d",
+          "hash": "1e9b8276",
           "kind": "module",
           "path": "../../adoption/src/portable/listTemplateLiterals.ts"
         },
@@ -90,7 +90,7 @@
           "path": "../src/readiness/listCapitalizeLines.ts"
         },
         {
-          "hash": "46548a31",
+          "hash": "8b2ec215",
           "kind": "module",
           "path": "../src/readiness/listJoinedLineArrays.ts"
         },
@@ -115,7 +115,7 @@
       "readyupVersion": "0.43.0",
       "source": "kits/default.ts",
       "sourceHash": "86b64892",
-      "targetHash": "15b14068"
+      "targetHash": "5ba0c5bc"
     }
   ]
 }

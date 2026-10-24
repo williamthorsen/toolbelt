@@ -30,7 +30,7 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "e6e87602",
+          "hash": "7b9002b8",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -55,7 +55,7 @@
           "path": "../../adoption/src/portable/listFunctionBodies.ts"
         },
         {
-          "hash": "ce2e063d",
+          "hash": "1e9b8276",
           "kind": "module",
           "path": "../../adoption/src/portable/listTemplateLiterals.ts"
         },
@@ -105,7 +105,7 @@
       "readyupVersion": "0.43.0",
       "source": "kits/default.ts",
       "sourceHash": "36f96c10",
-      "targetHash": "46dce341"
+      "targetHash": "b63f6acf"
     }
   ]
 }

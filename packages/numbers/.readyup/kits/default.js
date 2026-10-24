@@ -85,10 +85,9 @@ function defineAdoptionKit(spec) {
       if (seen.has(id)) duplicated.add(id);
       seen.add(id);
     }
-    if (duplicated.size > 0) {
-      const ids = [...duplicated].toSorted().join(", ");
-      throw new Error(`${spec.packageName}'s kit gives one id to more than one check: ${ids}`);
-    }
+    if (duplicated.size === 0) return;
+    const ids = [...duplicated].toSorted().join(", ");
+    throw new Error(`${spec.packageName}'s kit gives one id to more than one check: ${ids}`);
   }
   function isSweptPath(path) {
     return sweptPathFilters.some((pathFilter) => pathFilter(path));

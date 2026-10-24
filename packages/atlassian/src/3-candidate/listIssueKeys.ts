@@ -37,7 +37,7 @@ export async function listIssueKeys(request: JiraRequest, jql: string): Promise<
     if (issues === undefined) {
       throw new JiraResponseError({ message: `Search '${jql}' returned no 'issues' array.`, url: response.url });
     }
-    const page = issues.flatMap((issue) => (isRecord(issue) && typeof issue['key'] === 'string' ? [issue['key']] : []));
+    const page = issues.flatMap((issue) => (isRecord(issue) && typeof issue['key'] === 'string' ? issue['key'] : []));
     if (page.length !== issues.length) {
       throw new JiraResponseError({
         message: `Search '${jql}' returned work items that this cannot read.`,

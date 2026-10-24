@@ -29,7 +29,7 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "e6e87602",
+          "hash": "7b9002b8",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -54,7 +54,7 @@
           "path": "../../adoption/src/portable/listFunctionBodies.ts"
         },
         {
-          "hash": "ce2e063d",
+          "hash": "1e9b8276",
           "kind": "module",
           "path": "../../adoption/src/portable/listTemplateLiterals.ts"
         },
@@ -94,7 +94,7 @@
           "path": "../src/readiness/findPredicateClone.ts"
         },
         {
-          "hash": "4aee6811",
+          "hash": "07e1b45f",
           "kind": "module",
           "path": "../src/readiness/listGuardClones.ts"
         },
@@ -109,7 +109,7 @@
       "readyupVersion": "0.43.0",
       "source": "kits/default.ts",
       "sourceHash": "7151d213",
-      "targetHash": "32fd1b75"
+      "targetHash": "5c802963"
     }
   ]
 }

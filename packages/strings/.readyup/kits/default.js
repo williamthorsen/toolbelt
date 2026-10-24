@@ -88,10 +88,9 @@ function defineAdoptionKit(spec) {
       if (seen.has(id)) duplicated.add(id);
       seen.add(id);
     }
-    if (duplicated.size > 0) {
-      const ids = [...duplicated].toSorted().join(", ");
-      throw new Error(`${spec.packageName}'s kit gives one id to more than one check: ${ids}`);
-    }
+    if (duplicated.size === 0) return;
+    const ids = [...duplicated].toSorted().join(", ");
+    throw new Error(`${spec.packageName}'s kit gives one id to more than one check: ${ids}`);
   }
   function isSweptPath(path) {
     return sweptPathFilters.some((pathFilter) => pathFilter(path));
@@ -239,10 +238,11 @@ function findTypeArgumentsStart(code, close) {
   let depth = 0;
   for (let index = close; index >= 0; index -= 1) {
     if (code[index] === ">") depth += 1;
-    if (code[index] === "<") {
-      depth -= 1;
-      if (depth === 0) return index;
+    if (code[index] !== "<") {
+      continue;
     }
+    depth -= 1;
+    if (depth === 0) return index;
   }
   return void 0;
 }
@@ -334,10 +334,11 @@ function findOpeningBracket(code, close) {
   let depth = 0;
   for (let index = close; index >= 0; index -= 1) {
     if (code[index] === "]") depth += 1;
-    if (code[index] === "[") {
-      depth -= 1;
-      if (depth === 0) return index;
+    if (code[index] !== "[") {
+      continue;
     }
+    depth -= 1;
+    if (depth === 0) return index;
   }
   return void 0;
 }
