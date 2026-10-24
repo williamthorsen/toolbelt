@@ -19,10 +19,10 @@ export function findPackageManagerPin(startDir: string): PackageManagerPin | und
   for (const dir of listDirectoryChain(startDir)) {
     const manifestPath = path.join(dir, 'package.json');
 
-    if (fs.existsSync(manifestPath)) {
-      const spec = readPackageManager(parseManifest(manifestPath));
-      if (spec !== undefined) return { dir, manifestPath, spec };
-    }
+    if (!fs.existsSync(manifestPath)) continue;
+
+    const spec = readPackageManager(parseManifest(manifestPath));
+    if (spec !== undefined) return { dir, manifestPath, spec };
   }
 
   return undefined;
