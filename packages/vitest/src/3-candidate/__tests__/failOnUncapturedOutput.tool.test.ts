@@ -1,9 +1,11 @@
 import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
+import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, it } from 'vitest';
 
 import { failOnUncapturedOutput } from '../failOnUncapturedOutput.ts';
@@ -13,8 +15,9 @@ const VITEST_CLI = path.join(path.dirname(createRequire(import.meta.url).resolve
 
 describe(failOnUncapturedOutput, () => {
   it('fails each test whose output no capture took, passes the captured one, and keeps the output off the terminal', () => {
-    const run = runFixture();
-    const report = parseReport(run.stdout);
+    using tree = createTempTree({});
+    const run = runFixture(tree.resolve('report.json'));
+    const report = parseReport(tree.readJson('report.json'));
     const failures = report.failureMessages.join('\n');
 
     expect(run.status).not.toBe(0);
@@ -28,6 +31,7 @@ describe(failOnUncapturedOutput, () => {
       expect(failures).toContain(expected);
     }
     expect(run.stderr + run.stdout).not.toMatch(/(?:UNCAPTURED|FINISH-HOOK|AFTER-EACH)-OUTPUT\n/u);
+    expect(fs.existsSync(path.join(FIXTURE_DIR, '.vitest'))).toBe(false);
   });
 });
 
@@ -57,10 +61,9 @@ function isReport(value: unknown): value is {
   );
 }
 
-/** Reads the counts and failure messages from Vitest's JSON report. */
-function parseReport(stdout: string): FixtureReport {
-  const report: unknown = JSON.parse(stdout);
-  if (!isReport(report)) throw new Error(`Unexpected report shape: ${stdout.slice(0, 200)}`);
+/** Reads the counts and failure messages from Vitest's parsed JSON report. */
+function parseReport(report: unknown): FixtureReport {
+  if (!isReport(report)) throw new Error(`Unexpected report shape: ${JSON.stringify(report).slice(0, 200)}`);
 
   return {
     failureMessages: report.testResults.flatMap((file) =>
@@ -71,8 +74,11 @@ function parseReport(stdout: string): FixtureReport {
   };
 }
 
-/** Runs Vitest on the fixture with its own config, so that the repo's config does not apply. */
-function runFixture(): { status: number | null; stderr: string; stdout: string } {
+/**
+ * Runs Vitest on the fixture with its own config, so that the repo's config does not apply, and writes the JSON
+ * report to `reportPath`: Vitest 5 writes it to a file even when no path is given, and Vitest 4 to stdout.
+ */
+function runFixture(reportPath: string): { status: number | null; stderr: string; stdout: string } {
   const result = spawnSync(
     process.execPath,
     [
@@ -83,6 +89,7 @@ function runFixture(): { status: number | null; stderr: string; stdout: string }
       '--config',
       path.join(FIXTURE_DIR, 'vitest.config.ts'),
       '--reporter=json',
+      `--outputFile=${reportPath}`,
     ],
     { cwd: FIXTURE_DIR, encoding: 'utf8' },
   );

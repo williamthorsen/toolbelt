@@ -12,7 +12,7 @@ Utilities for testing with Vitest.
 pnpm add --save-dev @williamthorsen/toolbelt.vitest
 ```
 
-Requires Node.js 24 or later. Vitest is a peer dependency: The package uses the Vitest 4 that the consuming project already installs.
+Requires Node.js 24 or later. Vitest is a peer dependency: The package uses the Vitest 4 or 5 that the consuming project already installs.
 
 `disposeOnTestFinished`, `failOnUncapturedOutput`, `listConsoleLines`, `makeFixture`, `silenceConsole`, and `throwOnProcessExit` are candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change.
 
