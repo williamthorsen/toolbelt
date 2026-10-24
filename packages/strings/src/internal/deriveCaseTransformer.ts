@@ -1,3 +1,5 @@
+import { capitalize } from '../3-candidate/capitalize.ts';
+
 /**
  * Derives the case change that turns `source` into `target` and returns a function that applies it to other text,
  * or `undefined` when none applies. Only a lowercase source supports a case change, which is either upper-casing
@@ -23,7 +25,7 @@ export function deriveCaseTransformer(source: string, target: string): Transform
     return (text: string) => text.toUpperCase();
   }
 
-  if (target === source.charAt(0).toUpperCase() + source.slice(1)) {
+  if (target === capitalize(source)) {
     return (text: string) => text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
   }
 
