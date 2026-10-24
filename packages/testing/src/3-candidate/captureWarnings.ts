@@ -64,6 +64,7 @@ interface WarningOptions {
  * as a constructor for the stack trace is not a type or a code.
  */
 function buildWarning(warning: Error | string, typeOrOptions: unknown, code: unknown): Error {
+  // rdy-ignore-next-line toolbelt.errors/no-instanceof-error -- a caller-supplied argument, not a caught value
   if (warning instanceof Error) return warning;
 
   const options = isWarningOptions(typeOrOptions) ? typeOrOptions : { type: typeOrOptions, code };
@@ -79,6 +80,7 @@ function buildWarning(warning: Error | string, typeOrOptions: unknown, code: unk
 
 /** Reports whether a value is an options object rather than a type string or a constructor. */
 function isWarningOptions(value: unknown): value is WarningOptions {
+  // rdy-ignore-next-line toolbelt.objects/no-hand-rolled-record-guard -- `objects` devDepends on `testing`
   return typeof value === 'object' && value !== null;
 }
 

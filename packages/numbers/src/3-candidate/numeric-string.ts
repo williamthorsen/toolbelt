@@ -38,6 +38,7 @@ export function safeParseNumber(value: Maybe<string>, fallback: number | Error):
 export function safeParseNumber(value: Maybe<string>, fallback?: undefined): number | undefined;
 export function safeParseNumber(value: Maybe<string>, fallback?: number | Error): number | undefined {
   if (!isNumericString(value)) {
+    // rdy-ignore-next-line toolbelt.errors/no-instanceof-error -- a caller-supplied argument, not a caught value
     if (fallback instanceof Error) throw fallback;
     return fallback;
   }

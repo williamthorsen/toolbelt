@@ -31,6 +31,7 @@ export function safeParseInteger(value: Maybe<string>, fallback: number | Error)
 export function safeParseInteger(value: Maybe<string>, fallback?: undefined): number | undefined;
 export function safeParseInteger(value: Maybe<string>, fallback?: number | Error): number | undefined {
   if (!isIntegerString(value)) {
+    // rdy-ignore-next-line toolbelt.errors/no-instanceof-error -- a caller-supplied argument, not a caught value
     if (fallback instanceof Error) {
       throw fallback;
     }

@@ -10,6 +10,7 @@ export function assert(condition: unknown, error?: Error | string): asserts cond
     return;
   }
 
+  // rdy-ignore-next-line toolbelt.errors/no-instanceof-error -- a caller-supplied argument, not a caught value
   if (error instanceof Error) {
     throw error;
   }

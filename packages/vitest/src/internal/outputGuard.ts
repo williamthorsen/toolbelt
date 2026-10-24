@@ -142,6 +142,7 @@ function decodeChunk(chunk: unknown, encoding: unknown): string {
 
 /** Renders the arguments of an `emitWarning` call as `name [code]: message`, as Node would name the warning. */
 function formatWarning(warning: unknown, typeOrOptions: unknown, code: unknown): string {
+  // rdy-ignore-next-line toolbelt.errors/no-instanceof-error -- a caller-supplied argument, not a caught value
   if (warning instanceof Error) {
     const errorCode: unknown = Reflect.get(warning, 'code');
     return joinWarning(warning.name, errorCode, warning.message);
