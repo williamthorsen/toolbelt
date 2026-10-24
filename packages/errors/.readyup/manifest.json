@@ -2,6 +2,17 @@
   "version": 1,
   "kits": [
     {
+      "checklistChecks": [
+        {
+          "checklist": "adoption",
+          "checks": [
+            "No source defines its own description helper",
+            "No source describes a thrown value inline",
+            "No source narrows a thrown value by hand",
+            "No source coerces a thrown value to an Error by hand"
+          ]
+        }
+      ],
       "checklists": [
         "adoption"
       ],
@@ -19,7 +30,7 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "e6e87602",
+          "hash": "7b9002b8",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -44,7 +55,7 @@
           "path": "../../adoption/src/portable/listFunctionBodies.ts"
         },
         {
-          "hash": "ce2e063d",
+          "hash": "1e9b8276",
           "kind": "module",
           "path": "../../adoption/src/portable/listTemplateLiterals.ts"
         },
@@ -91,10 +102,10 @@
       ],
       "name": "default",
       "path": "kits/default.js",
-      "readyupVersion": "0.40.0",
+      "readyupVersion": "0.43.0",
       "source": "kits/default.ts",
       "sourceHash": "36f96c10",
-      "targetHash": "c20b031c"
+      "targetHash": "b63f6acf"
     }
   ]
 }

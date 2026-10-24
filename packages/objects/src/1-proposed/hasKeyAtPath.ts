@@ -14,5 +14,5 @@ export function hasKeyAtPath(obj: unknown, keys: readonly string[]): boolean {
     return false;
   }
 
-  return tail.length === 0 ? true : hasKeyAtPath(Object.getOwnPropertyDescriptor(obj, head)?.value, tail);
+  return tail.length === 0 || hasKeyAtPath(Object.getOwnPropertyDescriptor(obj, head)?.value, tail);
 }

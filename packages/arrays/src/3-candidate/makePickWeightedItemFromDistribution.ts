@@ -21,10 +21,12 @@ export function makePickWeightedItemFromDistribution<TItem, TCategory extends st
 
   for (const item of items) {
     const weight = distribution[getCategory(item)] ?? defaultWeight;
-    if (weight > 0) {
-      filteredItems.push(item);
-      filteredWeights.push(weight);
+    if (!(weight > 0)) {
+      continue;
     }
+
+    filteredItems.push(item);
+    filteredWeights.push(weight);
   }
 
   if (filteredItems.length === 0) {

@@ -181,7 +181,7 @@ async function readIssueTypeIds(request: JiraRequest, projectKey: string, key: s
 
   // An issue type dropped here is never passed to the workflow read, so a project on several workflows could pass
   // the exactly-one refusal. The count check keeps that refusal effective.
-  const ids = values.flatMap((value) => (isRecord(value) && typeof value['id'] === 'string' ? [value['id']] : []));
+  const ids = values.flatMap((value) => (isRecord(value) && typeof value['id'] === 'string' ? value['id'] : []));
   if (ids.length !== values.length) {
     throw new JiraResponseError({
       message: `Project ${projectKey} returned issue types that this cannot read.`,

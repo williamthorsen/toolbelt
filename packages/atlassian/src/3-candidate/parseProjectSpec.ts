@@ -56,7 +56,7 @@ function parseJson(text: string): unknown {
 /** Reads the live names also claimed by an entry, which are optional and each a non-empty name. */
 function readAliases(value: unknown, name: string): readonly string[] | undefined {
   if (value === undefined) return undefined;
-  if (!Array.isArray(value)) throw new Error(`The aliases of status '${name}' are a list of names.`);
+  if (!Array.isArray(value)) throw new TypeError(`The aliases of status '${name}' are a list of names.`);
 
   const aliases: string[] = [];
   for (const alias of value) {

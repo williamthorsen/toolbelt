@@ -131,10 +131,10 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
       seen.add(id);
     }
 
-    if (duplicated.size > 0) {
-      const ids = [...duplicated].toSorted().join(', ');
-      throw new Error(`${spec.packageName}'s kit gives one id to more than one check: ${ids}`);
-    }
+    if (duplicated.size === 0) return;
+
+    const ids = [...duplicated].toSorted().join(', ');
+    throw new Error(`${spec.packageName}'s kit gives one id to more than one check: ${ids}`);
   }
 
   /** Reports whether any check reads a path, which puts it in the kit's one sweep. */

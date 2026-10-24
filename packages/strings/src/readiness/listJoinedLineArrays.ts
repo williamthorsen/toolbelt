@@ -83,10 +83,12 @@ function findOpeningBracket(code: string, close: number): number | undefined {
   let depth = 0;
   for (let index = close; index >= 0; index -= 1) {
     if (code[index] === ']') depth += 1;
-    if (code[index] === '[') {
-      depth -= 1;
-      if (depth === 0) return index;
+    if (code[index] !== '[') {
+      continue;
     }
+
+    depth -= 1;
+    if (depth === 0) return index;
   }
   return undefined;
 }

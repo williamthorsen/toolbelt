@@ -37,7 +37,7 @@ export async function readBoardColumnReport(
   const uncovered = spec.statuses.flatMap((wanted) => {
     const live = statuses.find((status) => normalizeStatusName(status.name) === normalizeStatusName(wanted.name));
 
-    return live === undefined || mapped.has(live.id) ? [] : [wanted.name];
+    return live === undefined || mapped.has(live.id) ? [] : wanted.name;
   });
 
   return { columns: columnNames, order: findOrderMismatch(columnNames, spec), uncovered };
@@ -73,11 +73,11 @@ function readColumns(boardId: number, response: JiraResponse): readonly ReadColu
     const mapped = readArrayField(column, 'statuses');
     if (mapped === undefined) return [];
     const statusIds = mapped.flatMap((status) =>
-      isRecord(status) && typeof status['id'] === 'string' ? [status['id']] : [],
+      isRecord(status) && typeof status['id'] === 'string' ? status['id'] : [],
     );
     if (statusIds.length !== mapped.length) return [];
 
-    return [{ name: column['name'], statusIds }];
+    return { name: column['name'], statusIds };
   });
   if (columns.length !== values.length) {
     throw new JiraResponseError({ message: `Board ${boardId} returned columns that this cannot read.`, url });

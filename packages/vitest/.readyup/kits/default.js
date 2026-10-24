@@ -1,6 +1,6 @@
 /** @noformat -- @generated. Do not edit. Compiled by rdy. */
 /* eslint-disable */
-export const __readyupVersion = "0.40.0";
+export const __readyupVersion = "0.43.0";
 
 
 // ../adoption/src/conventions/path-predicates.ts
@@ -51,10 +51,9 @@ function defineAdoptionKit(spec) {
       if (seen.has(id)) duplicated.add(id);
       seen.add(id);
     }
-    if (duplicated.size > 0) {
-      const ids = [...duplicated].toSorted().join(", ");
-      throw new Error(`${spec.packageName}'s kit gives one id to more than one check: ${ids}`);
-    }
+    if (duplicated.size === 0) return;
+    const ids = [...duplicated].toSorted().join(", ");
+    throw new Error(`${spec.packageName}'s kit gives one id to more than one check: ${ids}`);
   }
   function isSweptPath(path) {
     return sweptPathFilters.some((pathFilter) => pathFilter(path));
