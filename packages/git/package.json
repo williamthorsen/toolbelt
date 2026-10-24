@@ -38,6 +38,7 @@
   },
   "files": [
     "CHANGELOG.md",
+    ".meta/changelog.json",
     "dist/*"
   ],
   "scripts": {

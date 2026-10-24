@@ -41,7 +41,8 @@
   },
   "files": [
     "dist/*",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    ".meta/changelog.json"
   ],
   "scripts": {
     "prepublishOnly": "nmr build"
