@@ -2,6 +2,14 @@
   "version": 1,
   "kits": [
     {
+      "checklistChecks": [
+        {
+          "checklist": "adoption",
+          "checks": [
+            "No source tests enum membership by hand"
+          ]
+        }
+      ],
       "checklists": [
         "adoption"
       ],
@@ -81,10 +89,10 @@
       ],
       "name": "default",
       "path": "kits/default.js",
-      "readyupVersion": "0.40.0",
+      "readyupVersion": "0.43.0",
       "source": "kits/default.ts",
       "sourceHash": "696611fd",
-      "targetHash": "05513ef1"
+      "targetHash": "895ca2f3"
     }
   ]
 }

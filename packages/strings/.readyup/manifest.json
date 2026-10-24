@@ -2,6 +2,17 @@
   "version": 1,
   "kits": [
     {
+      "checklistChecks": [
+        {
+          "checklist": "adoption",
+          "checks": [
+            "No source capitalizes a string by hand",
+            "No source pluralizes a word by hand",
+            "No source joins an array of lines into text",
+            "No source lets a template drop below its indentation"
+          ]
+        }
+      ],
       "checklists": [
         "adoption"
       ],
@@ -101,10 +112,10 @@
       ],
       "name": "default",
       "path": "kits/default.js",
-      "readyupVersion": "0.40.0",
+      "readyupVersion": "0.43.0",
       "source": "kits/default.ts",
       "sourceHash": "86b64892",
-      "targetHash": "846e554e"
+      "targetHash": "15b14068"
     }
   ]
 }

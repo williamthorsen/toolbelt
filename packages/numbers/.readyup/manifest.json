@@ -2,6 +2,16 @@
   "version": 1,
   "kits": [
     {
+      "checklistChecks": [
+        {
+          "checklist": "adoption",
+          "checks": [
+            "No source clamps a value by hand",
+            "No source rounds to decimal places by hand",
+            "No source derives a random integer by hand"
+          ]
+        }
+      ],
       "checklists": [
         "adoption"
       ],
@@ -96,10 +106,10 @@
       ],
       "name": "default",
       "path": "kits/default.js",
-      "readyupVersion": "0.40.0",
+      "readyupVersion": "0.43.0",
       "source": "kits/default.ts",
       "sourceHash": "eecd2c1e",
-      "targetHash": "3296a47b"
+      "targetHash": "6907ff7b"
     }
   ]
 }

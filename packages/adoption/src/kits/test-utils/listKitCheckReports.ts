@@ -60,8 +60,12 @@ function readCheckReport(check: unknown): KitCheckReport {
   return { count, detail: typeof detail === 'string' ? detail : undefined, id, passedCount };
 }
 
-/** Reads the checks of the run's first checklist, throwing with rdy's own message when the kit did not load. */
+/** Reads the checks of the run's first checklist, throwing with rdy's own message when the run or the kit failed. */
 function readFirstChecklistChecks(report: unknown): unknown[] {
+  const runError = isRecord(report) ? report['error'] : undefined;
+  const runMessage = isRecord(runError) ? runError['message'] : undefined;
+  if (typeof runMessage === 'string') throw new Error(`rdy refused the run: ${runMessage}`);
+
   const kits = isRecord(report) ? report['kits'] : undefined;
   const kit = isUnknownArray(kits) ? kits[0] : undefined;
   const error = isRecord(kit) ? kit['error'] : undefined;
