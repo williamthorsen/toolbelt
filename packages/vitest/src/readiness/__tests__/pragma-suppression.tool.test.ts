@@ -9,9 +9,11 @@ const CAPTURE = "vi.spyOn(console, 'log').mockImplementation((...args) => { line
 const DISPOSAL = 'onTestFinished(() => tree[Symbol.dispose]());\n';
 const LOSSY_CAPTURE = "vi.spyOn(console, 'error').mockImplementation((message) => { lines.push(message); });\n";
 const NON_THROWING = "vi.spyOn(process, 'exit').mockImplementation(() => {});\n";
-const READ = ["using silent = silenceConsole(['warn']);", 'expect(silent.warn.mock.calls).toHaveLength(1);', ''].join(
-  '\n',
-);
+const READ = dedent`
+  using silent = silenceConsole(['warn']);
+  expect(silent.warn.mock.calls).toHaveLength(1);
+
+`;
 const SENTINEL_CLONE = dedent`
   class ExitError extends Error {}
   vi.spyOn(process, 'exit').mockImplementation((code) => {
@@ -20,9 +22,12 @@ const SENTINEL_CLONE = dedent`
 
 `;
 const SILENCE = "vi.spyOn(console, 'warn').mockImplementation(() => {});";
-const THROWING = ["vi.spyOn(process, 'exit').mockImplementation(() => {", "  throw new Error('exit');", '});', ''].join(
-  '\n',
-);
+const THROWING = dedent`
+  vi.spyOn(process, 'exit').mockImplementation(() => {
+    throw new Error('exit');
+  });
+
+`;
 const ADOPTER = dedent`
   import { throwOnProcessExit } from '@williamthorsen/toolbelt.vitest';
   using _exit = throwOnProcessExit();

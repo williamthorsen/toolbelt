@@ -24,9 +24,11 @@ const DISPOSAL = dedent`
 `;
 const LOSSY_CAPTURE = "vi.spyOn(console, 'error').mockImplementation((message) => { lines.push(message); });\n";
 const NON_THROWING = "vi.spyOn(process, 'exit').mockImplementation(() => {});\n";
-const READ = ["using silent = silenceConsole(['warn']);", 'expect(silent.warn.mock.calls).toHaveLength(1);', ''].join(
-  '\n',
-);
+const READ = dedent`
+  using silent = silenceConsole(['warn']);
+  expect(silent.warn.mock.calls).toHaveLength(1);
+
+`;
 const SENTINEL_CLONE = dedent`
   class ExitError extends Error {}
 
@@ -38,9 +40,12 @@ const SENTINEL_CLONE = dedent`
 
 `;
 const SILENCE = "vi.spyOn(console, 'warn').mockImplementation(() => {});\n";
-const THROWING = ["vi.spyOn(process, 'exit').mockImplementation(() => {", "  throw new Error('exit');", '});', ''].join(
-  '\n',
-);
+const THROWING = dedent`
+  vi.spyOn(process, 'exit').mockImplementation(() => {
+    throw new Error('exit');
+  });
+
+`;
 const UNREADABLE_EXIT_MOCK = "vi.spyOn(process, 'exit').mockImplementation(handleExit);\n";
 // A spy on a method for which the package has no advice, and a `mock.calls` read on a spy that is no console spy.
 const UNCLAIMED = dedent`
