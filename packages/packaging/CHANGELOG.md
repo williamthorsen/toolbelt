@@ -2,7 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.6.4 — 2026-10-24
+
+### 📦 Dependencies
+
+- Upgrade dependencies to latest compatible versions (#391)
+
+  Upgrades Node.js, pnpm, and the repository's dependencies to their latest compatible releases, which clears the three dev advisories that failed `nmr audit`. The upgrade to `@williamthorsen/eslint-config-typescript` 20.1.3 adds unicorn lint rules, and the code is adapted to them in the same change.
+
 ## 0.6.3 — 2026-10-09
+
+### 🎉 Features
+
+- Add a ReadyUp kit recommending toolbelt.cli over hand-rolled argument parsing (#367)
+
+  Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.cli` that reports, through `rdy run --packages`, each call to `node:util`'s `parseArgs` and each function that compares arguments against flag names by hand. Includes `bin/` and `src/bin/` in the kit's sweep, which the other toolbelt kits exempt, because a command-line runner usually lives there.
 
 ### 📚 Documentation
 
@@ -11,6 +25,10 @@ All notable changes to this project will be documented in this file.
 ## 0.6.2 — 2026-10-02
 
 ### 📚 Documentation
+
+- Sweep the repository's comments against the comment discipline (#353)
+
+  Sweeps the comments in every authored source file against the comment discipline. The sweep cuts comments that restate the code or narrate history, corrects descriptions that contradicted the code, and adds descriptions to declarations that lacked one. It also tags the exported tier functions and classes that lacked `@category` and `@stage`, and corrects test titles that misstated their tests.
 
 - Revises READMEs, doc comments, and test names across the repository to follow the current `plain-speech` and writing-preference rules. (#354)
 - Rewords the help text and messages printed by `tb-jira`, `tb-node`, and `tb-secret`, and the advice and skip reasons reported by the adoption kits, to follow the same writing conventions. (#354)

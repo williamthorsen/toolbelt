@@ -1,5 +1,22 @@
 [
   {
+    "version": "4.1.4",
+    "date": "2026-10-24",
+    "sections": [
+      {
+        "title": "📦 Dependencies",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Upgrade dependencies to latest compatible versions (#391)",
+            "body": "Upgrades Node.js, pnpm, and the repository's dependencies to their latest compatible releases, which clears the three dev advisories that failed `nmr audit`. The upgrade to `@williamthorsen/eslint-config-typescript` 20.1.3 adds unicorn lint rules, and the code is adapted to them in the same change.",
+            "hash": "7ecdab12fec8c866d54cef4c072b90376664ece0"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "4.1.3",
     "date": "2026-10-02",
     "sections": [

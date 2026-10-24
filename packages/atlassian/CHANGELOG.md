@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.7.1 — 2026-10-24
+
+### 📦 Dependencies
+
+- Upgrades `@williamthorsen/eslint-config-typescript` from 18.0.0 to 20.1.3 and adapts the code to its new unicorn rules, which makes `parseProjectSpec` in `toolbelt.atlassian` throw a `TypeError` rather than a plain `Error` when a status's aliases value is not a list. (#391)
+
 ## 0.7.0 — 2026-10-11
 
 ### 🪦 Removed

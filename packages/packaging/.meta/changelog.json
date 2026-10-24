@@ -1,8 +1,36 @@
 [
   {
+    "version": "0.6.4",
+    "date": "2026-10-24",
+    "sections": [
+      {
+        "title": "📦 Dependencies",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Upgrade dependencies to latest compatible versions (#391)",
+            "body": "Upgrades Node.js, pnpm, and the repository's dependencies to their latest compatible releases, which clears the three dev advisories that failed `nmr audit`. The upgrade to `@williamthorsen/eslint-config-typescript` 20.1.3 adds unicorn lint rules, and the code is adapted to them in the same change.",
+            "hash": "7ecdab12fec8c866d54cef4c072b90376664ece0"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.6.3",
     "date": "2026-10-09",
     "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Add a ReadyUp kit recommending toolbelt.cli over hand-rolled argument parsing (#367)",
+            "body": "Adds a ReadyUp adoption kit to `@williamthorsen/toolbelt.cli` that reports, through `rdy run --packages`, each call to `node:util`'s `parseArgs` and each function that compares arguments against flag names by hand. Includes `bin/` and `src/bin/` in the kit's sweep, which the other toolbelt kits exempt, because a command-line runner usually lives there.",
+            "hash": "9ba17df22caf393c492f3452ee5cabaa6850391d"
+          }
+        ]
+      },
       {
         "title": "📚 Documentation",
         "audience": "dev",
@@ -24,6 +52,11 @@
         "title": "📚 Documentation",
         "audience": "dev",
         "items": [
+          {
+            "description": "Sweep the repository's comments against the comment discipline (#353)",
+            "body": "Sweeps the comments in every authored source file against the comment discipline. The sweep cuts comments that restate the code or narrate history, corrects descriptions that contradicted the code, and adds descriptions to declarations that lacked one. It also tags the exported tier functions and classes that lacked `@category` and `@stage`, and corrects test titles that misstated their tests.",
+            "hash": "a63031711563d43c6909609fad4feccfe497e5d1"
+          },
           {
             "description": "Revises READMEs, doc comments, and test names across the repository to follow the current `plain-speech` and writing-preference rules. (#354)",
             "hash": "b4e08eede95e052f4c27db2640ed6515df14baf4",

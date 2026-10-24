@@ -1,5 +1,34 @@
 [
   {
+    "version": "0.6.0",
+    "date": "2026-10-24",
+    "sections": [
+      {
+        "title": "🪦 Removed",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Remove tb-jira from toolbelt.atlassian (#385)",
+            "body": "Removes the `tb-jira` command from `@williamthorsen/toolbelt.atlassian`, which now provides only its library functions, and points the README to `thor-jira` in `@williamthorsen/atlassian-tools` for the same tasks on the command line. The package no longer depends on `@williamthorsen/toolbelt.cli`.",
+            "breaking": true,
+            "hash": "d51f8a9549d35290937236190a5e823fac645562"
+          }
+        ]
+      },
+      {
+        "title": "📦 Dependencies",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Upgrade dependencies to latest compatible versions (#391)",
+            "body": "Upgrades Node.js, pnpm, and the repository's dependencies to their latest compatible releases, which clears the three dev advisories that failed `nmr audit`. The upgrade to `@williamthorsen/eslint-config-typescript` 20.1.3 adds unicorn lint rules, and the code is adapted to them in the same change.",
+            "hash": "7ecdab12fec8c866d54cef4c072b90376664ece0"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.5.0",
     "date": "2026-10-11",
     "sections": [

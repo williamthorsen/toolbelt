@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.1.4 — 2026-10-24
+
+### 📦 Dependencies
+
+- Upgrade dependencies to latest compatible versions (#391)
+
+  Upgrades Node.js, pnpm, and the repository's dependencies to their latest compatible releases, which clears the three dev advisories that failed `nmr audit`. The upgrade to `@williamthorsen/eslint-config-typescript` 20.1.3 adds unicorn lint rules, and the code is adapted to them in the same change.
+
 ## 4.1.3 — 2026-10-02
 
 ### 📚 Documentation
