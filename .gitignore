@@ -1,5 +1,6 @@
 # Agents
 .agents/*.branch-manifest.json
+.claude/skills/
 
 # Editor directories and files
 .idea/
