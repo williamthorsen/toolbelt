@@ -1,3 +1,4 @@
 packages:
   use:
     - '@williamthorsen/nmr'
+    - readyup
