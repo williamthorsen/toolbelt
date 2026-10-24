@@ -404,6 +404,9 @@ importers:
       '@williamthorsen/toolbelt.errors':
         specifier: workspace:*
         version: link:../errors
+      '@williamthorsen/toolbelt.filesystem':
+        specifier: workspace:*
+        version: link:../filesystem
     devDependencies:
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*

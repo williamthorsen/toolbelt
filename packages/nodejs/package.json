@@ -47,7 +47,8 @@
     "prepublishOnly": "nmr build"
   },
   "dependencies": {
-    "@williamthorsen/toolbelt.errors": "workspace:*"
+    "@williamthorsen/toolbelt.errors": "workspace:*",
+    "@williamthorsen/toolbelt.filesystem": "workspace:*"
   },
   "devDependencies": {
     "@williamthorsen/toolbelt.testing": "workspace:*"
