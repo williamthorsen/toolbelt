@@ -5,9 +5,10 @@ set -euo pipefail
 #
 # Installs the latest release of the given Vitest major as a devDependency of
 # @williamthorsen/toolbelt.vitest alone, then runs the package's tests with Vitest directly and its
-# typecheck. Vitest runs without nmr's tier projects, which do not resolve on every major. The
-# install rewrites the package manifest and the lockfile, so the script runs only when CI is set,
-# on a runner that is discarded afterwards. Run it after the workspace is built.
+# typecheck. An import-free vitest.config.ts written into the package stops Vitest from loading the
+# root config, whose nmr factory imports `vitest/config` from the root's Vitest major. The install
+# and that config rewrite the working tree, so the script runs only when CI is set, on a runner that
+# is discarded afterwards. Run it after the workspace is built.
 #
 # Usage:
 #   check-vitest-compat.sh <major>
@@ -26,7 +27,7 @@ main() {
 
   # Validate arguments
   if [[ $# -ne 1 || ! "$1" =~ ^[0-9]+$ ]]; then
-    echo "$PROG: Expected one argument, a Vitest major version such as 5" >&2
+    echo "$PROG: Expected one argument, a Vitest major version such as 4" >&2
     show_usage
   fi
   local major="$1"
@@ -51,6 +52,9 @@ main() {
   pnpm --dir "$repo_dir" --filter "$PACKAGE" add --save-dev "vitest@$major"
   echo "$PROG: Resolved vitest $(node --print "require('$package_dir/node_modules/vitest/package.json').version")"
 
+  # Isolate the run from the root config
+  printf 'export default {};\n' >"$package_dir/vitest.config.ts"
+
   # Run the suite and the typecheck
   pnpm --dir "$package_dir" exec vitest run
   pnpm --dir "$package_dir" exec nmr typecheck
@@ -70,7 +74,7 @@ Usage:
   $PROG --help
 
 Arguments:
-  <major>      Vitest major version to install, such as 5 (required)
+  <major>      Vitest major version to install, such as 4 (required)
 
 Options:
   --help       Show this help
@@ -79,7 +83,7 @@ Dependencies:
   pnpm         Installs Vitest and runs the checks
 
 Examples:
-  CI=true $PROG 5
+  CI=true $PROG 4
 USAGE
   exit "$code"
 }
