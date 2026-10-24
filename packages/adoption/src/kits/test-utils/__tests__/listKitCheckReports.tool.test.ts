@@ -38,9 +38,17 @@ describe(listKitCheckReports, () => {
   it('throws with rdy’s own message when the package contains no kit', () => {
     using kitPackage = createTempDir({});
 
-    // Only rdy's load error names the directory that it searched.
+    // Only rdy's own error names the directory that it searched.
     expect(() => listKitCheckReports(kitPackage.dir, { 'package.json': MANIFEST })).toThrow(
       path.join(kitPackage.dir, '.readyup', 'kits'),
+    );
+  });
+
+  it('throws with rdy’s own message when the kit fails to load', () => {
+    using kitPackage = createTempDir({ '.readyup/kits/default.js': "throw new Error('boom');\n" });
+
+    expect(() => listKitCheckReports(kitPackage.dir, { 'package.json': MANIFEST })).toThrow(
+      /^rdy could not load the kit: .*boom$/,
     );
   });
 });
