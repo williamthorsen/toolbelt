@@ -49,6 +49,9 @@
   "scripts": {
     "prepublishOnly": "rdy compile && nmr build"
   },
+  "dependencies": {
+    "@williamthorsen/toolbelt.objects": "workspace:*"
+  },
   "devDependencies": {
     "@williamthorsen/toolbelt.adoption": "workspace:*",
     "@williamthorsen/toolbelt.testing": "workspace:*",

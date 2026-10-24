@@ -1,6 +1,8 @@
 import { Buffer } from 'node:buffer';
 import process from 'node:process';
 
+import { isRecordOrArray } from '@williamthorsen/toolbelt.objects';
+
 const GUARD_KEY = Symbol.for('@williamthorsen/toolbelt.vitest/outputGuard');
 
 /**
@@ -145,7 +147,7 @@ function formatWarning(warning: unknown, typeOrOptions: unknown, code: unknown):
     return joinWarning(warning.name, errorCode, warning.message);
   }
 
-  const isOptions = typeof typeOrOptions === 'object' && typeOrOptions !== null;
+  const isOptions = isRecordOrArray(typeOrOptions);
   const type: unknown = isOptions ? Reflect.get(typeOrOptions, 'type') : typeOrOptions;
   const warningCode: unknown = isOptions ? Reflect.get(typeOrOptions, 'code') : code;
 

@@ -1,4 +1,5 @@
 import { describeError } from '@williamthorsen/toolbelt.errors';
+import { isRecord } from '@williamthorsen/toolbelt.objects';
 
 import { normalizeStatusName } from '../internal/normalizeStatusName.ts';
 import type { BoardFeatureRequest, ProjectSpec, SpecStatus, StatusCategory } from './ProjectSpec.ts';
@@ -33,11 +34,6 @@ export function parseProjectSpec(text: string): ProjectSpec {
 /** Reports whether a value is a state that a spec may request, which the two also reported by Jira are not. */
 function isBoardFeatureRequest(value: unknown): value is BoardFeatureRequest {
   return typeof value === 'string' && BOARD_FEATURE_REQUESTS.includes(value);
-}
-
-/** Reports whether a value is a JSON object, which neither an array nor null is. */
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 /** Reports whether a value is one of the three categories into which Jira sorts a status. */

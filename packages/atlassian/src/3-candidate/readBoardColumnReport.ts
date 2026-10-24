@@ -1,4 +1,5 @@
-import { isRecord } from '../internal/isRecord.ts';
+import { isRecord } from '@williamthorsen/toolbelt.objects';
+
 import { normalizeStatusName } from '../internal/normalizeStatusName.ts';
 import { readArrayField } from '../internal/readArrayField.ts';
 import type { BoardColumnReport } from './BoardColumnReport.ts';

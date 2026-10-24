@@ -292,6 +292,9 @@ importers:
       '@williamthorsen/toolbelt.errors':
         specifier: workspace:*
         version: link:../errors
+      '@williamthorsen/toolbelt.objects':
+        specifier: workspace:*
+        version: link:../objects
       '@williamthorsen/toolbelt.secrets':
         specifier: workspace:*
         version: link:../secrets
@@ -447,6 +450,9 @@ importers:
       '@williamthorsen/toolbelt.filesystem':
         specifier: workspace:*
         version: link:../filesystem
+      '@williamthorsen/toolbelt.objects':
+        specifier: workspace:*
+        version: link:../objects
     devDependencies:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
@@ -544,6 +550,10 @@ importers:
   packages/tools: {}
 
   packages/vitest:
+    dependencies:
+      '@williamthorsen/toolbelt.objects':
+        specifier: workspace:*
+        version: link:../objects
     devDependencies:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
