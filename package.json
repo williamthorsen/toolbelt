@@ -21,12 +21,9 @@
   "license": "ISC",
   "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
   "type": "module",
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
     "postinstall": "nmr report-overrides --quiet && codeassembly sync --warn-only",
-    "prepare": "lefthook install"
+    "prepare": "lefthook check-install || lefthook install"
   },
   "devDependencies": {
     "@types/node": "24.19.2",
