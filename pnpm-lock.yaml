@@ -277,6 +277,9 @@ importers:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
         version: link:../adoption
+      '@williamthorsen/toolbelt.strings':
+        specifier: workspace:*
+        version: link:../strings
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
         version: link:../testing
@@ -315,6 +318,9 @@ importers:
       '@williamthorsen/toolbelt.async':
         specifier: workspace:*
         version: link:../async
+      '@williamthorsen/toolbelt.strings':
+        specifier: workspace:*
+        version: link:../strings
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
         version: link:../testing
@@ -345,6 +351,9 @@ importers:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
         version: link:../adoption
+      '@williamthorsen/toolbelt.strings':
+        specifier: workspace:*
+        version: link:../strings
       esbuild:
         specifier: 'catalog:'
         version: 0.28.2
@@ -373,6 +382,9 @@ importers:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
         version: link:../adoption
+      '@williamthorsen/toolbelt.strings':
+        specifier: workspace:*
+        version: link:../strings
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
         version: link:../testing
@@ -420,6 +432,9 @@ importers:
         specifier: workspace:*
         version: link:../filesystem
     devDependencies:
+      '@williamthorsen/toolbelt.strings':
+        specifier: workspace:*
+        version: link:../strings
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
         version: link:../testing
@@ -444,6 +459,9 @@ importers:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
         version: link:../adoption
+      '@williamthorsen/toolbelt.strings':
+        specifier: workspace:*
+        version: link:../strings
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
         version: link:../testing
@@ -466,6 +484,9 @@ importers:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
         version: link:../adoption
+      '@williamthorsen/toolbelt.strings':
+        specifier: workspace:*
+        version: link:../strings
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
         version: link:../testing
@@ -567,6 +588,9 @@ importers:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
         version: link:../adoption
+      '@williamthorsen/toolbelt.strings':
+        specifier: workspace:*
+        version: link:../strings
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
         version: link:../testing

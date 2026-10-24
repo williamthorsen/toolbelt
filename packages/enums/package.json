@@ -52,6 +52,7 @@
   },
   "devDependencies": {
     "@williamthorsen/toolbelt.adoption": "workspace:*",
+    "@williamthorsen/toolbelt.strings": "workspace:*",
     "esbuild": "catalog:",
     "readyup": "catalog:"
   },

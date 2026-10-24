@@ -51,6 +51,7 @@
     "@williamthorsen/toolbelt.filesystem": "workspace:*"
   },
   "devDependencies": {
+    "@williamthorsen/toolbelt.strings": "workspace:*",
     "@williamthorsen/toolbelt.testing": "workspace:*"
   },
   "engines": {
