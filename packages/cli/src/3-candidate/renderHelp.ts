@@ -13,9 +13,10 @@ export interface RenderHelpOptions {
  * space-joined command path, such as `thor-jira issue list`.
  *
  * The page contains the usage line, the description (else the summary), and then the `Commands:`,
- * `Arguments:`, and `Options:` blocks, each omitted when empty, and the epilog verbatim. Entries appear in
- * declaration order, with `-h, --help` and then `-V, --version` last, and every block's descriptions share
- * one column. A passthrough command's page omits the blocks, since it does not parse its arguments.
+ * `Arguments:`, and `Options:` blocks, each omitted when empty, then, on the page of a group with commands, a
+ * line pointing to each command's own help, and the epilog verbatim. Entries appear in declaration order,
+ * with `-h, --help` and then `-V, --version` last, and every block's descriptions share one column. A
+ * passthrough command's page omits the blocks, since it does not parse its arguments.
  * @category CLI
  * @stage candidate
  */
@@ -54,6 +55,9 @@ export function renderHelp<C>(node: CommandNode<C>, invocation: string, options:
       [block.title, ...block.rows.map(([label, description]) => `  ${label.padEnd(width)}  ${description}`)].join('\n'),
     ),
   ];
+  if (node.kind === 'group' && Object.keys(node.commands).length > 0) {
+    sections.push(`Run '${invocation} <command> --help' for a command's options.`);
+  }
   if (node.epilog !== undefined) sections.push(node.epilog);
   return sections.join('\n\n');
 }

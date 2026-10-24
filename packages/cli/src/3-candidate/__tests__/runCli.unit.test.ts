@@ -113,6 +113,12 @@ describe(runCli, () => {
       expect(result.stderr).toBe('');
     });
 
+    it("names a nested group's scoped invocation in its pointer to the commands' help", async () => {
+      const { stdout } = await run(['-q', 'issue', '--help'], tool);
+
+      expect(stdout).toContain("\n\nRun 'tool issue <command> --help' for a command's options.\n");
+    });
+
     it('wins over a parse error at the same level', async () => {
       await expect(run(['--bogus', '--help'], tool)).resolves.toMatchObject({ code: 0, stderr: '' });
       await expect(run(['issue', 'list', '--bogus', '--help'], tool)).resolves.toMatchObject({ code: 0, stderr: '' });
