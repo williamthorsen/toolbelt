@@ -46,6 +46,9 @@
   "scripts": {
     "prepublishOnly": "nmr build"
   },
+  "dependencies": {
+    "@williamthorsen/toolbelt.errors": "workspace:*"
+  },
   "devDependencies": {
     "@williamthorsen/toolbelt.testing": "workspace:*"
   },

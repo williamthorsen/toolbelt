@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { describeError } from '@williamthorsen/toolbelt.errors';
+
 /**
  * Finds the `packageManager` pin that governs a directory: the nearest `package.json` at or above it whose
  * `packageManager` is a string. A manifest without the field is passed over, so a workspace package under a
@@ -47,7 +49,7 @@ function parseManifest(manifestPath: string): unknown {
   try {
     return JSON.parse(contents);
   } catch (error) {
-    const detail = error instanceof Error ? error.message : String(error);
+    const detail = describeError(error);
 
     throw new Error(`${manifestPath} is not valid JSON: ${detail}`, { cause: error });
   }

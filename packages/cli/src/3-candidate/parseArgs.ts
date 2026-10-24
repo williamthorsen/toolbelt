@@ -1,6 +1,8 @@
 import path from 'node:path';
 import process from 'node:process';
 
+import { describeError } from '@williamthorsen/toolbelt.errors';
+
 import { ParseError } from './ParseError.ts';
 import { resolveLongName } from './resolveLongName.ts';
 import { findFlagEntry, tokenizeArgs } from './tokenizeArgs.ts';
@@ -168,7 +170,7 @@ function readFlagValue(
   try {
     return definition.parse(raw);
   } catch (error: unknown) {
-    const reason = error instanceof Error ? error.message : String(error);
+    const reason = describeError(error);
     throw new ParseError('invalid-value', value, `Invalid value for ${label}: ${value}. ${reason}`, { cause: error });
   }
 }

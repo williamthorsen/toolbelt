@@ -1,5 +1,7 @@
 import { inspect } from 'node:util';
 
+import { isError } from '@williamthorsen/toolbelt.errors';
+
 /**
  * Runs a call expected to fail and returns the `Error` that it threw or rejected with.
  *
@@ -55,7 +57,7 @@ type ErrorClass<E extends Error> = abstract new (...args: never[]) => E;
  * was tested against the class and `inspect` would print the whole stack in its place.
  */
 function renderThrown(value: unknown): string {
-  return value instanceof Error ? `${value.constructor.name}: ${value.message}` : inspect(value);
+  return isError(value) ? `${value.constructor.name}: ${value.message}` : inspect(value);
 }
 
 // endregion | Helpers

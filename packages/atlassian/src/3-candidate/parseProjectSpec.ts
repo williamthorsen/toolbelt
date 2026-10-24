@@ -1,3 +1,5 @@
+import { describeError } from '@williamthorsen/toolbelt.errors';
+
 import { normalizeStatusName } from '../internal/normalizeStatusName.ts';
 import type { BoardFeatureRequest, ProjectSpec, SpecStatus, StatusCategory } from './ProjectSpec.ts';
 
@@ -49,7 +51,7 @@ function parseJson(text: string): unknown {
     const document: unknown = JSON.parse(text);
     return document;
   } catch (error) {
-    throw new Error(`A spec is JSON: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+    throw new Error(`A spec is JSON: ${describeError(error)}`, { cause: error });
   }
 }
 

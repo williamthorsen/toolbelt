@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 
+import { describeError } from '@williamthorsen/toolbelt.errors';
 import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
 
 const SECURITY_PATH = '/usr/bin/security';
@@ -56,7 +57,7 @@ export interface TempKeychain extends Disposable {
  * contains the probe keychain's password.
  */
 function describeFailure(error: unknown): string {
-  const message = (error instanceof Error ? error.message : String(error)).trim();
+  const message = describeError(error).trim();
   const cause = message.split('\n').at(-1)?.trim();
 
   return cause === undefined || cause === '' ? 'the reason is unknown' : cause;

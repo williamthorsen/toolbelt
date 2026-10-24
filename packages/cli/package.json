@@ -46,6 +46,9 @@
   "scripts": {
     "prepublishOnly": "rdy compile && nmr build"
   },
+  "dependencies": {
+    "@williamthorsen/toolbelt.errors": "workspace:*"
+  },
   "devDependencies": {
     "@williamthorsen/toolbelt.adoption": "workspace:*",
     "esbuild": "catalog:",
