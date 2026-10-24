@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { listDirectoryChain } from '@williamthorsen/toolbelt.filesystem';
+import { isRecord } from '@williamthorsen/toolbelt.objects';
 
 /**
  * Returns the manifest of the package that owns the module at `fromUrl`, together with where it was found.
@@ -48,11 +49,11 @@ export interface PackageManifest {
 /**
  * Narrows parsed JSON to a manifest shape, which is any JSON object: Every declared field is optional.
  *
- * Arrays are excluded explicitly, since `typeof` reports one as an object. An array admitted here would be
- * passed over as nameless, making a malformed manifest resolve to an ancestor instead of raising.
+ * Arrays are excluded: An array admitted here would be passed over as nameless, making a malformed manifest
+ * resolve to an ancestor instead of raising.
  */
 function isPackageManifest(value: unknown): value is PackageManifest {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+  return isRecord(value);
 }
 
 /** Reads and parses a manifest, rejecting one that is unreadable as JSON or is not a JSON object. */

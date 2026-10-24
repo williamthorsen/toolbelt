@@ -1,4 +1,4 @@
-import { isRecord } from './isRecord.ts';
+import { isRecord } from '@williamthorsen/toolbelt.objects';
 
 /**
  * Narrows a search response's page token, whose absence ends a paginated walk.

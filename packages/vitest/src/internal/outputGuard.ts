@@ -1,6 +1,8 @@
 import { Buffer } from 'node:buffer';
 import process from 'node:process';
 
+import { isRecordOrArray } from '@williamthorsen/toolbelt.objects';
+
 const GUARD_KEY = Symbol.for('@williamthorsen/toolbelt.vitest/outputGuard');
 
 /**
@@ -140,12 +142,13 @@ function decodeChunk(chunk: unknown, encoding: unknown): string {
 
 /** Renders the arguments of an `emitWarning` call as `name [code]: message`, as Node would name the warning. */
 function formatWarning(warning: unknown, typeOrOptions: unknown, code: unknown): string {
+  // rdy-ignore-next-line toolbelt.errors/no-instanceof-error -- a caller-supplied argument, not a caught value
   if (warning instanceof Error) {
     const errorCode: unknown = Reflect.get(warning, 'code');
     return joinWarning(warning.name, errorCode, warning.message);
   }
 
-  const isOptions = typeof typeOrOptions === 'object' && typeOrOptions !== null;
+  const isOptions = isRecordOrArray(typeOrOptions);
   const type: unknown = isOptions ? Reflect.get(typeOrOptions, 'type') : typeOrOptions;
   const warningCode: unknown = isOptions ? Reflect.get(typeOrOptions, 'code') : code;
 

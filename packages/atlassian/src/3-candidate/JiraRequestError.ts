@@ -1,4 +1,5 @@
-import { isRecord } from '../internal/isRecord.ts';
+import { isRecord } from '@williamthorsen/toolbelt.objects';
+
 import type { JiraResponse } from './createTokenTransport.ts';
 
 const FORBIDDEN = 403;

@@ -1,6 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { describeError } from '@williamthorsen/toolbelt.errors';
+import { listDirectoryChain } from '@williamthorsen/toolbelt.filesystem';
+
 /**
  * Finds the `packageManager` pin that governs a directory: the nearest `package.json` at or above it whose
  * `packageManager` is a string. A manifest without the field is passed over, so a workspace package under a
@@ -13,21 +16,16 @@ import path from 'node:path';
  * @stage candidate
  */
 export function findPackageManagerPin(startDir: string): PackageManagerPin | undefined {
-  let dir = path.resolve(startDir);
-
-  for (;;) {
+  for (const dir of listDirectoryChain(startDir)) {
     const manifestPath = path.join(dir, 'package.json');
 
-    if (fs.existsSync(manifestPath)) {
-      const spec = readPackageManager(parseManifest(manifestPath));
-      if (spec !== undefined) return { dir, manifestPath, spec };
-    }
+    if (!fs.existsSync(manifestPath)) continue;
 
-    const parent = path.dirname(dir);
-    if (parent === dir) return undefined;
-
-    dir = parent;
+    const spec = readPackageManager(parseManifest(manifestPath));
+    if (spec !== undefined) return { dir, manifestPath, spec };
   }
+
+  return undefined;
 }
 
 /** A `packageManager` declaration and where it was found. */
@@ -47,7 +45,7 @@ function parseManifest(manifestPath: string): unknown {
   try {
     return JSON.parse(contents);
   } catch (error) {
-    const detail = error instanceof Error ? error.message : String(error);
+    const detail = describeError(error);
 
     throw new Error(`${manifestPath} is not valid JSON: ${detail}`, { cause: error });
   }

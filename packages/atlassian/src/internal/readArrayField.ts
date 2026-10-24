@@ -1,4 +1,4 @@
-import { isRecord } from './isRecord.ts';
+import { isRecord } from '@williamthorsen/toolbelt.objects';
 
 /**
  * Narrows a named field of a payload to an array, which is how every Jira response with a list nests its values.

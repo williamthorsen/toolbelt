@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { listDirectoryChain } from '@williamthorsen/toolbelt.filesystem';
+
 const FILE_NAME = '.tool-versions';
 
 /**
@@ -19,10 +21,9 @@ export function findToolVersionsEntry(
   options: FindToolVersionsEntryOptions,
 ): ToolVersionsEntry | undefined {
   const homeDir = path.resolve(options.homeDir);
-  const ancestors = listAncestors(path.resolve(options.startDir));
   let visitedHome = false;
 
-  for (const dir of ancestors) {
+  for (const dir of listDirectoryChain(options.startDir)) {
     if (dir === homeDir) visitedHome = true;
 
     const entry = readEntry(path.join(dir, FILE_NAME), plugin);
@@ -46,19 +47,6 @@ export interface ToolVersionsEntry {
 }
 
 // region | Helpers
-
-/** Lists a directory and its ancestors up to the root, nearest first. */
-function listAncestors(startDir: string): string[] {
-  const ancestors = [startDir];
-
-  for (let dir = startDir; ;) {
-    const parent = path.dirname(dir);
-    if (parent === dir) return ancestors;
-
-    ancestors.push(parent);
-    dir = parent;
-  }
-}
 
 /** Reads the plugin's entry out of one file, or `undefined` when the file is absent or names no version for it. */
 function readEntry(filePath: string, plugin: string): ToolVersionsEntry | undefined {

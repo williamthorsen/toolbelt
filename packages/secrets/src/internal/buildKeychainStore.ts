@@ -1,3 +1,5 @@
+import { describeError } from '@williamthorsen/toolbelt.errors';
+
 import type { SecretQuery, WritableSecretStore } from '../3-candidate/SecretStore.ts';
 import { assertStorableSecret } from './assertStorableSecret.ts';
 import { parseSecurityPassword } from './parseSecurityPassword.ts';
@@ -32,7 +34,7 @@ export function buildKeychainStore(run: SecurityRunner, keychain?: string): Writ
     try {
       return findSecret(query);
     } catch (error) {
-      const detail = error instanceof Error ? error.message : String(error);
+      const detail = describeError(error);
 
       throw new Error(`The secret was written but could not be read back to verify it. ${detail}`, { cause: error });
     }

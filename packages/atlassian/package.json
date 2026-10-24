@@ -48,6 +48,8 @@
     "prepublishOnly": "nmr build"
   },
   "dependencies": {
+    "@williamthorsen/toolbelt.errors": "workspace:*",
+    "@williamthorsen/toolbelt.objects": "workspace:*",
     "@williamthorsen/toolbelt.secrets": "workspace:*"
   },
   "devDependencies": {

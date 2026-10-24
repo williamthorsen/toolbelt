@@ -108,6 +108,7 @@ describe(installOutputGuard, () => {
       {
         label: 'a spy on the stream',
         capture: () => {
+          // rdy-ignore-next-line toolbelt.testing/no-hand-rolled-stdio-capture -- the spy is the subject under test
           const spy = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
           return { [Symbol.dispose]: () => spy.mockRestore() };
         },

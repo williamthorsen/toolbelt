@@ -289,6 +289,12 @@ importers:
 
   packages/atlassian:
     dependencies:
+      '@williamthorsen/toolbelt.errors':
+        specifier: workspace:*
+        version: link:../errors
+      '@williamthorsen/toolbelt.objects':
+        specifier: workspace:*
+        version: link:../objects
       '@williamthorsen/toolbelt.secrets':
         specifier: workspace:*
         version: link:../secrets
@@ -298,10 +304,23 @@ importers:
         version: link:../testing
 
   packages/cli:
+    dependencies:
+      '@williamthorsen/toolbelt.errors':
+        specifier: workspace:*
+        version: link:../errors
     devDependencies:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
         version: link:../adoption
+      '@williamthorsen/toolbelt.async':
+        specifier: workspace:*
+        version: link:../async
+      '@williamthorsen/toolbelt.testing':
+        specifier: workspace:*
+        version: link:../testing
+      '@williamthorsen/toolbelt.vitest':
+        specifier: workspace:*
+        version: link:../vitest
       esbuild:
         specifier: 'catalog:'
         version: 0.28.2
@@ -393,6 +412,13 @@ importers:
         version: link:../arrays
 
   packages/nodejs:
+    dependencies:
+      '@williamthorsen/toolbelt.errors':
+        specifier: workspace:*
+        version: link:../errors
+      '@williamthorsen/toolbelt.filesystem':
+        specifier: workspace:*
+        version: link:../filesystem
     devDependencies:
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
@@ -433,6 +459,9 @@ importers:
       '@williamthorsen/toolbelt.filesystem':
         specifier: workspace:*
         version: link:../filesystem
+      '@williamthorsen/toolbelt.objects':
+        specifier: workspace:*
+        version: link:../objects
     devDependencies:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
@@ -448,6 +477,10 @@ importers:
         version: 0.43.0(esbuild@0.28.2)
 
   packages/secrets:
+    dependencies:
+      '@williamthorsen/toolbelt.errors':
+        specifier: workspace:*
+        version: link:../errors
     devDependencies:
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
@@ -508,6 +541,10 @@ importers:
         version: 10.0.2
 
   packages/testing:
+    dependencies:
+      '@williamthorsen/toolbelt.errors':
+        specifier: workspace:*
+        version: link:../errors
     devDependencies:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
@@ -522,6 +559,10 @@ importers:
   packages/tools: {}
 
   packages/vitest:
+    dependencies:
+      '@williamthorsen/toolbelt.objects':
+        specifier: workspace:*
+        version: link:../objects
     devDependencies:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*

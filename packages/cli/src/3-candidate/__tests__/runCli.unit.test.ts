@@ -1,5 +1,5 @@
-import process from 'node:process';
-
+import { captureStdio } from '@williamthorsen/toolbelt.testing/candidate';
+import { throwOnProcessExit } from '@williamthorsen/toolbelt.vitest/candidate';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createCli, defineCommand, defineGroup } from '../createCli.ts';
@@ -357,19 +357,16 @@ describe(runCli, () => {
   });
 
   it('writes only to the injected writers and never exits', async () => {
-    const exit = vi.spyOn(process, 'exit').mockImplementation(() => {
-      throw new Error('process.exit was called');
-    });
-    const stdoutWrite = vi.spyOn(process.stdout, 'write');
-    const stderrWrite = vi.spyOn(process.stderr, 'write');
+    using exit = throwOnProcessExit();
+    using stdio = captureStdio();
 
     for (const argv of [['--help'], ['nope'], ['issue', 'list'], ['fail'], ['exec', 'x']]) {
       await run(argv, tool, { version: () => '1' });
     }
 
-    expect(exit).not.toHaveBeenCalled();
-    expect(stdoutWrite).not.toHaveBeenCalled();
-    expect(stderrWrite).not.toHaveBeenCalled();
+    expect(exit.spy).not.toHaveBeenCalled();
+    expect(stdio.stdout).toBe('');
+    expect(stdio.stderr).toBe('');
   });
 
   it('runs a context-free root without a context', async () => {

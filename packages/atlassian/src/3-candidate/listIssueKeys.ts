@@ -1,4 +1,5 @@
-import { isRecord } from '../internal/isRecord.ts';
+import { isRecord } from '@williamthorsen/toolbelt.objects';
+
 import { readArrayField } from '../internal/readArrayField.ts';
 import { readNextPageToken } from '../internal/readNextPageToken.ts';
 import type { JiraRequest } from './createTokenTransport.ts';
