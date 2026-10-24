@@ -147,6 +147,7 @@ import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
 var ADOPTED_EXPORTS = [
   "captureError",
   "captureStdio",
+  "captureWarnings",
   "createTempTree",
   "pointArgvAt",
   "pointCwdAt"

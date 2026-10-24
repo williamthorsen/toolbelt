@@ -1,4 +1,5 @@
 export { disposeOnTestFinished } from './disposeOnTestFinished.ts';
+export { failOnUncapturedOutput } from './failOnUncapturedOutput.ts';
 export { listConsoleLines } from './listConsoleLines.ts';
 export { makeFixture } from './makeFixture.ts';
 export { type ConsoleMethod, silenceConsole } from './silenceConsole.ts';
