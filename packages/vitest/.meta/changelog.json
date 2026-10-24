@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.12.0",
+    "date": "2026-10-24",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Widens the `vitest` peer dependency of `@williamthorsen/toolbelt.vitest` from `^4.0.0` to `^4.0.0 || ^5.0.0`, so that a project on Vitest 5 uses the package within its declared support. (#395)",
+            "hash": "0632be9ee4c1b81106be3e3927f5d01026af0bf2",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.11.0",
     "date": "2026-10-24",
     "sections": [

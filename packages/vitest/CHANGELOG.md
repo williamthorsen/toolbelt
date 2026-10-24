@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.12.0 — 2026-10-24
+
+### 🎉 Features
+
+- Widens the `vitest` peer dependency of `@williamthorsen/toolbelt.vitest` from `^4.0.0` to `^4.0.0 || ^5.0.0`, so that a project on Vitest 5 uses the package within its declared support. (#395)
+
 ## 0.11.0 — 2026-10-24
 
 ### 🎉 Features
