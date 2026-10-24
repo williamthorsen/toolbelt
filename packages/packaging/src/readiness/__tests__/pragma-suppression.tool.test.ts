@@ -1,14 +1,15 @@
 import path from 'node:path';
 
 import { type KitCheckReport, listKitCheckReports } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
-const ADOPTER = [
-  "import { findPackageRoot } from '@williamthorsen/toolbelt.packaging/candidate';",
-  'export const packageRoot = () => findPackageRoot(import.meta.url);',
-  '',
-].join('\n');
+const ADOPTER = dedent`
+  import { findPackageRoot } from '@williamthorsen/toolbelt.packaging/candidate';
+  export const packageRoot = () => findPackageRoot(import.meta.url);
+
+`;
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 describe('The packaging adoption kit, run through rdy', () => {
@@ -44,18 +45,18 @@ describe('The packaging adoption kit, run through rdy', () => {
 
 /** Builds a hand-rolled manifest search whose loop line ends with the given pragma. */
 function buildSearch(pragma: string): string {
-  return [
-    'export function resolvePackageRoot() {',
-    '  let dir = path.dirname(fileURLToPath(import.meta.url));',
-    `  while (!fs.existsSync(path.join(dir, 'package.json'))) {${pragma}`,
-    '    const parent = path.dirname(dir);',
-    "    if (parent === dir) throw new Error('no package.json found');",
-    '    dir = parent;',
-    '  }',
-    '  return dir;',
-    '}',
-    '',
-  ].join('\n');
+  return dedent`
+    export function resolvePackageRoot() {
+      let dir = path.dirname(fileURLToPath(import.meta.url));
+      while (!fs.existsSync(path.join(dir, 'package.json'))) {${pragma}
+        const parent = path.dirname(dir);
+        if (parent === dir) throw new Error('no package.json found');
+        dir = parent;
+      }
+      return dir;
+    }
+
+  `;
 }
 
 /**

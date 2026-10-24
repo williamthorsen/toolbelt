@@ -13,6 +13,7 @@ const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.errors', version: '1.0.0' });
 
 const ASSERT = ['if (!(value instanceof Error)) {', "  throw new TypeError('Expected an Error');", '}', ''].join('\n');
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
 const CLONE = [
   'export function toMessage(error) {',
   '  if (error instanceof Error) return error.message;',
@@ -24,6 +25,7 @@ const COERCE = 'export const wrapped = value instanceof Error ? value : new Erro
 const DESCRIBE_INLINE = 'export const message = error instanceof Error ? error.message : String(error);\n';
 const NARROW = "export const isErrno = error instanceof Error && 'code' in error;\n";
 // The package's own describeError, containing the idiom that its first check reports.
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
 const OWN_DESCRIBE_ERROR = [
   'export function describeError(error) {',
   '  if (error instanceof Error) return error.message;',
@@ -32,11 +34,13 @@ const OWN_DESCRIBE_ERROR = [
   '',
 ].join('\n');
 // Prose about the operator, and a source that never tests for an Error at all.
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
 const UNCLAIMED = [
   '// Returns the message where the value is an instanceof Error.',
   'export const answer = 42;',
   '',
 ].join('\n');
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
 const ADOPTER = [
   "import { describeError } from '@williamthorsen/toolbelt.errors';",
   'export const message = describeError(error);',

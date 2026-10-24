@@ -1,15 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
+import { dedent } from '../../4-release/dedent.ts';
 import { listStringIdioms } from '../listStringIdioms.ts';
 
 describe(listStringIdioms, () => {
   it('names each idiom by its kind, merged in line order', () => {
-    const source = [
-      "const noun = count === 1 ? 'item' : 'items';",
-      'const label = word.charAt(0).toUpperCase() + word.slice(1);',
-      "const other = total !== 1 ? 's' : '';",
-      '',
-    ].join('\n');
+    const source = dedent`
+      const noun = count === 1 ? 'item' : 'items';
+      const label = word.charAt(0).toUpperCase() + word.slice(1);
+      const other = total !== 1 ? 's' : '';
+
+    `;
 
     expect(listStringIdioms(source)).toStrictEqual([
       { kind: 'pluralize-inline', line: 1 },
@@ -32,21 +33,21 @@ describe(listStringIdioms, () => {
   });
 
   it('finds neither idiom in a comment', () => {
-    const source = [
-      '// const label = word.charAt(0).toUpperCase() + word.slice(1);',
-      "/* const noun = count === 1 ? 'item' : 'items'; */",
-      '',
-    ].join('\n');
+    const source = dedent`
+      // const label = word.charAt(0).toUpperCase() + word.slice(1);
+      /* const noun = count === 1 ? 'item' : 'items'; */
+
+    `;
 
     expect(listStringIdioms(source)).toStrictEqual([]);
   });
 
   it('finds neither idiom in a string literal', () => {
-    const source = [
-      "const advice = 'replace word.charAt(0).toUpperCase() + word.slice(1)';",
-      "const other = \"count === 1 ? 'item' : 'items'\";",
-      '',
-    ].join('\n');
+    const source = dedent`
+      const advice = 'replace word.charAt(0).toUpperCase() + word.slice(1)';
+      const other = "count === 1 ? 'item' : 'items'";
+
+    `;
 
     expect(listStringIdioms(source)).toStrictEqual([]);
   });

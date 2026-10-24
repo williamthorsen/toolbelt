@@ -1,60 +1,61 @@
 import { createTrackedRepo, pointCwdAt, runCheck, runSkip } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { isFlatChecklist, type RdyCheck } from 'readyup';
 import { describe, expect, it, vi } from 'vitest';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.packaging', version: '1.0.0' });
 
-const MANIFEST_SEARCH = [
-  'export function resolvePackageRoot() {',
-  '  let dir = path.dirname(fileURLToPath(import.meta.url));',
-  "  while (!fs.existsSync(path.join(dir, 'package.json'))) {",
-  '    const parent = path.dirname(dir);',
-  "    if (parent === dir) throw new Error('no package.json found');",
-  '    dir = parent;',
-  '  }',
-  '  return dir;',
-  '}',
-  '',
-].join('\n');
+const MANIFEST_SEARCH = dedent`
+  export function resolvePackageRoot() {
+    let dir = path.dirname(fileURLToPath(import.meta.url));
+    while (!fs.existsSync(path.join(dir, 'package.json'))) {
+      const parent = path.dirname(dir);
+      if (parent === dir) throw new Error('no package.json found');
+      dir = parent;
+    }
+    return dir;
+  }
+
+`;
 // A walk that `toolbelt.filesystem` claims, which this kit declines rather than reporting under advice that does
 // not fit it.
-const MARKER_SEARCH = [
-  'export function findRepositoryRoot(startDir) {',
-  '  let dir = startDir;',
-  '  while (true) {',
-  "    if (fs.existsSync(path.join(dir, '.git'))) return dir;",
-  '    const parent = path.dirname(dir);',
-  '    if (parent === dir) return undefined;',
-  '    dir = parent;',
-  '  }',
-  '}',
-  '',
-].join('\n');
+const MARKER_SEARCH = dedent`
+  export function findRepositoryRoot(startDir) {
+    let dir = startDir;
+    while (true) {
+      if (fs.existsSync(path.join(dir, '.git'))) return dir;
+      const parent = path.dirname(dir);
+      if (parent === dir) return undefined;
+      dir = parent;
+    }
+  }
+
+`;
 // The package's own findPackageRoot, written with the walk that its check reports.
-const OWN_FIND_PACKAGE_ROOT = [
-  'export function findPackageRoot(fromUrl) {',
-  '  let dir = path.dirname(fileURLToPath(fromUrl));',
-  "  while (!fs.existsSync(path.join(dir, 'package.json'))) {",
-  '    const parent = path.dirname(dir);',
-  "    if (parent === dir) throw new Error('no package.json found');",
-  '    dir = parent;',
-  '  }',
-  '  return dir;',
-  '}',
-  '',
-].join('\n');
+const OWN_FIND_PACKAGE_ROOT = dedent`
+  export function findPackageRoot(fromUrl) {
+    let dir = path.dirname(fileURLToPath(fromUrl));
+    while (!fs.existsSync(path.join(dir, 'package.json'))) {
+      const parent = path.dirname(dir);
+      if (parent === dir) throw new Error('no package.json found');
+      dir = parent;
+    }
+    return dir;
+  }
+
+`;
 // Prose about the walk, and a read of a manifest that searches no chain.
-const UNCLAIMED = [
-  "// Ascends by dir = path.dirname(dir) until path.join(dir, 'package.json') exists.",
-  "export const readManifest = (root) => JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));",
-  '',
-].join('\n');
-const ADOPTER = [
-  "import { findPackageRoot } from '@williamthorsen/toolbelt.packaging/candidate';",
-  'export const packageRoot = () => findPackageRoot(import.meta.url);',
-  '',
-].join('\n');
+const UNCLAIMED = dedent`
+  // Ascends by dir = path.dirname(dir) until path.join(dir, 'package.json') exists.
+  export const readManifest = (root) => JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+
+`;
+const ADOPTER = dedent`
+  import { findPackageRoot } from '@williamthorsen/toolbelt.packaging/candidate';
+  export const packageRoot = () => findPackageRoot(import.meta.url);
+
+`;
 
 describe('The packaging adoption kit', () => {
   it('reports a manifest search, naming where it is, and counts it against a call into the package', async () => {

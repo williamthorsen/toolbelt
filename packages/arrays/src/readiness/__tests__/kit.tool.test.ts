@@ -18,6 +18,7 @@ const SHUFFLE = 'export const mixed = items.sort(() => Math.random() - 0.5);\n';
 const OWN_ARRAIFY = 'export function arraify(value) {\n  return Array.isArray(value) ? value : [value];\n}\n';
 // A tiebreak declined by the shuffle check, a floored random that the item check leaves to `toolbelt.numbers`,
 // and a ternary choosing between two unrelated values.
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on arrays, so arrays cannot import dedent without a cycle
 const UNCLAIMED = [
   'export const ranked = rows.sort((a, b) => a.score - b.score || Math.random() - 0.5);',
   'export const roll = Math.floor(Math.random() * sides);',

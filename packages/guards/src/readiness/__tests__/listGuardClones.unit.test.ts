@@ -4,6 +4,7 @@ import { listGuardClones } from '../listGuardClones.ts';
 
 // Every fixture is a joined literal, which blanking erases before the detector reads this file. A fixture
 // written as live code would appear in the package's own report.
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
 const ASSERT_CLONE = [
   'function assert(condition, message) {',
   '  if (!condition) {',
@@ -12,6 +13,7 @@ const ASSERT_CLONE = [
   '}',
   '',
 ].join('\n');
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
 const ASSERT_CLONE_RETURNING = [
   'function invariant(condition, message) {',
   '  if (condition) return;',
@@ -19,12 +21,14 @@ const ASSERT_CLONE_RETURNING = [
   '}',
   '',
 ].join('\n');
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
 const NULLISH_ASSERT_CLONE = [
   'function assertDefined(value) {',
   '  if (value === null || value === undefined) throw new Error(MISSING);',
   '}',
   '',
 ].join('\n');
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
 const NULLISH_ASSERT_CLONE_RETURNING = [
   'function assertPresent(value) {',
   '  if (value !== null && value !== undefined) return;',
@@ -35,12 +39,14 @@ const NULLISH_ASSERT_CLONE_RETURNING = [
 const STRING_CLONE = ['function isText(value) {', "  return typeof value === 'string';", '}', ''].join('\n');
 const BOOLEAN_CLONE = ['function isFlag(value) {', "  return typeof value === 'boolean';", '}', ''].join('\n');
 const NUMBER_CLONE = ['function isNum(value) {', "  return typeof value === 'number';", '}', ''].join('\n');
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
 const NUMBER_CLONE_EXCLUDING_NAN = [
   'function isRealNumber(value) {',
   "  return typeof value === 'number' && !Number.isNaN(value);",
   '}',
   '',
 ].join('\n');
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
 const NON_NULLABLE_CLONE = [
   'function isDefined(value) {',
   '  return value !== null && value !== undefined;',
@@ -101,6 +107,7 @@ describe(listGuardClones, () => {
   // The package's own `assert`, verbatim but for its type annotations: The likeliest clone in other code is a
   // copy of it, and its extra guard on the error argument must not take it out of the class.
   it('reports a copy of this package’s own assert', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
     const source = [
       'export function assert(condition, error) {',
       '  if (condition) {',
@@ -121,12 +128,14 @@ describe(listGuardClones, () => {
   // The two kinds that narrow to a caller-named type: Neither can be written without a type parameter, so a
   // head that admits none leaves both unreachable in the only spelling that they have.
   it('reports a generic presence guard and a generic presence assertion', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
     const guard = [
       'export function isDefined<T>(value: T): value is NonNullable<T> {',
       '  return value !== null && value !== undefined;',
       '}',
       '',
     ].join('\n');
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
     const assertion = [
       'export function assertDefined<T>(value: T): asserts value is NonNullable<T> {',
       '  if (value === null || value === undefined) throw new Error(MISSING);',
@@ -149,6 +158,7 @@ describe(listGuardClones, () => {
   // The rules that limit the kit to functions that an import replaces. Each of these is working code that the
   // exports of this package could not replace.
   it('declines a guard that tests the result of a call', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
     const source = [
       'function assertIsUser(value) {',
       '  if (!isUser(value)) throw new TypeError(NOT_A_USER);',
@@ -160,6 +170,7 @@ describe(listGuardClones, () => {
   });
 
   it('declines a guard that narrows by instanceof, which toolbelt.errors claims', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
     const source = [
       'function assertIsError(value) {',
       '  if (!(value instanceof Error)) throw new TypeError(NOT_AN_ERROR);',
@@ -177,6 +188,7 @@ describe(listGuardClones, () => {
   });
 
   it('declines a function that does anything besides assert', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
     const source = [
       'function assert(condition) {',
       '  record(condition);',
@@ -189,6 +201,7 @@ describe(listGuardClones, () => {
   });
 
   it('declines a predicate whose body contains more than the comparison', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
     const source = [
       'function isText(value) {',
       '  const tag = typeof value;',
@@ -233,6 +246,7 @@ describe(listGuardClones, () => {
   }, 2_000);
 
   it('declines a guard written in a comment or a string', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
     const source = [
       "// function isText(value) { return typeof value === 'string'; }",
       'const sample = "function isText(value) { return typeof value === \'string\'; }";',

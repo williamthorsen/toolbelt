@@ -4,6 +4,7 @@ import { listArrayIdioms } from '../listArrayIdioms.ts';
 
 describe(listArrayIdioms, () => {
   it('reports each idiom under its own kind, in line order', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on arrays, so arrays cannot import dedent without a cycle
     const source = [
       'const list = Array.isArray(value) ? value : [value];',
       'const item = items[Math.floor(Math.random() * items.length)];',
@@ -19,6 +20,7 @@ describe(listArrayIdioms, () => {
   });
 
   it('reports nothing for an idiom written in a comment or a literal', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on arrays, so arrays cannot import dedent without a cycle
     const source = [
       '// const mixed = items.sort(() => Math.random() - 0.5);',
       "const advice = 'Array.isArray(value) ? value : [value]';",

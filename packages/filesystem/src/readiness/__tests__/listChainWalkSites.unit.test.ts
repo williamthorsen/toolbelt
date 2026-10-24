@@ -1,36 +1,37 @@
 import { blankNonCode } from '@williamthorsen/toolbelt.adoption';
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { listChainWalkSites } from '../listChainWalkSites.ts';
 
 describe(listChainWalkSites, () => {
   it('names a bare ascent as a walk of the chain', () => {
-    const source = [
-      'export function ascend(startDir) {',
-      '  let dir = startDir;',
-      '  let previous;',
-      '  while (dir !== previous) {',
-      '    previous = dir;',
-      '    dir = path.dirname(dir);',
-      '  }',
-      '}',
-      '',
-    ].join('\n');
+    const source = dedent`
+      export function ascend(startDir) {
+        let dir = startDir;
+        let previous;
+        while (dir !== previous) {
+          previous = dir;
+          dir = path.dirname(dir);
+        }
+      }
+
+    `;
 
     expect(listSites(source)).toStrictEqual([{ kind: 'chain-walk', line: 4 }]);
   });
 
   it('names a probe for a repository marker as a search of the chain', () => {
-    const source = [
-      'let dir = start;',
-      'while (true) {',
-      "  if (fs.existsSync(path.join(dir, '.git'))) return dir;",
-      '  const parent = path.dirname(dir);',
-      '  if (parent === dir) break;',
-      '  dir = parent;',
-      '}',
-      '',
-    ].join('\n');
+    const source = dedent`
+      let dir = start;
+      while (true) {
+        if (fs.existsSync(path.join(dir, '.git'))) return dir;
+        const parent = path.dirname(dir);
+        if (parent === dir) break;
+        dir = parent;
+      }
+
+    `;
 
     expect(listSites(source)).toStrictEqual([{ kind: 'chain-probe', line: 2 }]);
   });
@@ -61,15 +62,15 @@ describe(listChainWalkSites, () => {
   });
 
   it('declines a probe for a manifest, regardless of how many markers are probed beside it', () => {
-    const source = [
-      'let dir = start;',
-      'while (true) {',
-      "  if (fs.existsSync(path.join(dir, '.git'))) break;",
-      "  if (fs.existsSync(path.join(dir, 'package.json'))) break;",
-      '  dir = path.dirname(dir);',
-      '}',
-      '',
-    ].join('\n');
+    const source = dedent`
+      let dir = start;
+      while (true) {
+        if (fs.existsSync(path.join(dir, '.git'))) break;
+        if (fs.existsSync(path.join(dir, 'package.json'))) break;
+        dir = path.dirname(dir);
+      }
+
+    `;
 
     expect(listSites(source)).toStrictEqual([]);
   });

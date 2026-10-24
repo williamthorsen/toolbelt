@@ -57,6 +57,7 @@ describe(listKitCheckReports, () => {
 
 /** Builds a kit module whose one checklist contains the given check literals. */
 function buildKit(checks: string[]): string {
+  // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
   return [
     "import fs from 'node:fs';",
     '',

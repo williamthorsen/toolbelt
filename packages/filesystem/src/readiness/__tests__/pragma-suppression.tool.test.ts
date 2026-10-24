@@ -1,14 +1,15 @@
 import path from 'node:path';
 
 import { type KitCheckReport, listKitCheckReports } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
-const ADOPTER = [
-  "import { writeAtomic } from '@williamthorsen/toolbelt.filesystem/candidate';",
-  'export const store = (filePath, content) => writeAtomic(filePath, content);',
-  '',
-].join('\n');
+const ADOPTER = dedent`
+  import { writeAtomic } from '@williamthorsen/toolbelt.filesystem/candidate';
+  export const store = (filePath, content) => writeAtomic(filePath, content);
+
+`;
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 describe('The filesystem adoption kit, run through rdy', () => {
@@ -56,13 +57,13 @@ describe('The filesystem adoption kit, run through rdy', () => {
 
 /** Builds a hand-rolled atomic write whose rename line ends with the given pragma. */
 function buildWrite(pragma: string): string {
-  return [
-    'export async function save(filePath, content) {',
-    '  await fs.writeFile(tempPath, content);',
-    `  await fs.rename(tempPath, filePath);${pragma}`,
-    '}',
-    '',
-  ].join('\n');
+  return dedent`
+    export async function save(filePath, content) {
+      await fs.writeFile(tempPath, content);
+      await fs.rename(tempPath, filePath);${pragma}
+    }
+
+  `;
 }
 
 /**

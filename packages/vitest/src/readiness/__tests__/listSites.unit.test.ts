@@ -1,3 +1,4 @@
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { listSites } from '../listSites.ts';
@@ -26,12 +27,14 @@ describe(listSites, () => {
   });
 
   it('interleaves every idiom in line order', () => {
-    const source = `vi.spyOn(console, 'warn').mockImplementation(() => {});
-vi.spyOn(process, 'exit').mockImplementation(() => {
-  throw new Error('exit');
-});
-onTestFinished(() => tree[Symbol.dispose]());
-vi.spyOn(console, 'error').mockImplementation((message) => { lines.push(message); });`;
+    const source = dedent`
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
+      vi.spyOn(process, 'exit').mockImplementation(() => {
+        throw new Error('exit');
+      });
+      onTestFinished(() => tree[Symbol.dispose]());
+      vi.spyOn(console, 'error').mockImplementation((message) => { lines.push(message); });
+    `;
 
     expect(listSites(source)).toStrictEqual([
       { kind: 'console-silence', line: 1 },
@@ -42,10 +45,12 @@ vi.spyOn(console, 'error').mockImplementation((message) => { lines.push(message)
   });
 
   it('reports the symbol named by an exit mock', () => {
-    const source = `class ExitError extends Error {}
-vi.spyOn(process, 'exit').mockImplementation((code) => {
-  throw new ExitError(code);
-});`;
+    const source = dedent`
+      class ExitError extends Error {}
+      vi.spyOn(process, 'exit').mockImplementation((code) => {
+        throw new ExitError(code);
+      });
+    `;
 
     expect(listSites(source)).toStrictEqual([{ kind: 'sentinel-clone', line: 2, symbol: 'ExitError' }]);
   });

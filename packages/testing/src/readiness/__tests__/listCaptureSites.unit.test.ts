@@ -109,6 +109,7 @@ const LITERALS = [
 
 describe(listCaptureSites, () => {
   it('reports a capture, naming its line and the variable that it fills', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
     const source = [
       "const thrown = { code: 'ENOENT' };",
       'let caught: unknown;',
@@ -124,6 +125,7 @@ describe(listCaptureSites, () => {
   });
 
   it('reaches a declaration made outside an enclosing hook', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
     const source = [
       'let thrown: unknown;',
       '',
@@ -141,6 +143,7 @@ describe(listCaptureSites, () => {
   });
 
   it('reads a call that the formatter broke across lines, and a catch that casts', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
     const source = [
       'let error: Error | undefined;',
       '',
@@ -157,6 +160,7 @@ describe(listCaptureSites, () => {
   });
 
   it('reads a construction as the single call that it is', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
     const source = [
       'let caught: unknown;',
       'try {',
@@ -254,6 +258,7 @@ describe(listCaptureSites, () => {
   });
 
   it('claims a capture whose variable a later capture reassigns ahead of the literal assertion', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
     const source = [
       "it('describes what it parses and rethrows the rest', () => {",
       'let caught: unknown;',

@@ -6,6 +6,7 @@ import {
   runSkip,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { isFlatChecklist, type RdyCheck } from 'readyup';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -17,24 +18,24 @@ const ARGUMENT_CAST = 'export const known = Object.values(Color).includes(value 
 const ASSERTED = 'export const known = (Object.values(Color) as string[]).includes(value);\n';
 const TYPE_ARGUMENT = 'export const known = Object.values<string>(Color).includes(value);\n';
 // The package's own guard, written with the idiom that its check reports.
-const OWN_GUARD = [
-  'export function isEnumValue(enumObject, value) {',
-  '  return Object.values(enumObject).includes(value);',
-  '}',
-  '',
-].join('\n');
+const OWN_GUARD = dedent`
+  export function isEnumValue(enumObject, value) {
+    return Object.values(enumObject).includes(value);
+  }
+
+`;
 // Prose describing a search, and reads of an enum that search no values.
-const UNCLAIMED = [
-  '// Returns true where Object.values(Color).includes(value).',
-  'export const count = Object.values(Color).length;',
-  'export const hasKey = Object.keys(Color).includes(key);',
-  '',
-].join('\n');
-const ADOPTER = [
-  "import { isEnumValue } from '@williamthorsen/toolbelt.enums';",
-  'export const known = isEnumValue(Color, value);',
-  '',
-].join('\n');
+const UNCLAIMED = dedent`
+  // Returns true where Object.values(Color).includes(value).
+  export const count = Object.values(Color).length;
+  export const hasKey = Object.keys(Color).includes(key);
+
+`;
+const ADOPTER = dedent`
+  import { isEnumValue } from '@williamthorsen/toolbelt.enums';
+  export const known = isEnumValue(Color, value);
+
+`;
 const EVERY_FORM = {
   'package.json': MANIFEST,
   'src/argument-cast.ts': ARGUMENT_CAST,
