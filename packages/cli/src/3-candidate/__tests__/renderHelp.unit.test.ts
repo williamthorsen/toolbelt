@@ -140,6 +140,17 @@ describe(renderHelp, () => {
     );
   });
 
+  it("points a group's page to its commands' help, after the options and before the epilog", () => {
+    const page = renderHelp(makeGroup({ commands: { check: makeCommand({}) }, epilog: 'Epilog' }), 'v11y');
+
+    expect(page).toMatch(/Print this help\n\nRun 'v11y <command> --help' for a command's options\.\n\nEpilog$/);
+  });
+
+  it('omits the pointer from the page of a group without commands and from a command page', () => {
+    expect(renderHelp(makeGroup({ defaultCommand: undefined }), 'v11y')).not.toContain('<command> --help');
+    expect(renderHelp(makeCommand({}), 'v11y check')).not.toContain('<command> --help');
+  });
+
   it('renders a passthrough command without the argument and option blocks', () => {
     expect(renderHelp(makeCommand({ passthrough: true, summary: 'Pass' }), 'tool exec')).toBe(
       'Usage: tool exec [<args>...]\n\nPass',
