@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.3.0",
+    "date": "2026-10-25",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds the structured changelog `.meta/changelog.json` to each package's npm tarball, beside `CHANGELOG.md`. (#398)",
+            "hash": "2ce82cd51b7b78270274ae9318c2bc726eb09cf0",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.2.1",
     "date": "2026-10-02",
     "sections": [

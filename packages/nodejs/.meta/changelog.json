@@ -1,5 +1,44 @@
 [
   {
+    "version": "4.1.0",
+    "date": "2026-10-25",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds the structured changelog `.meta/changelog.json` to each package's npm tarball, beside `CHANGELOG.md`. (#398)",
+            "hash": "2ce82cd51b7b78270274ae9318c2bc726eb09cf0",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Replaces hand-rolled error descriptions, `instanceof Error` checks on caught values, record guards, directory ascents, and first-letter capitalization in package source with `describeError`, `isError`, `isRecord`, `isRecordOrArray`, `listDirectoryChain`, and `capitalize`, and declares each helper's package from another workspace as a `workspace:*` runtime dependency of the package that adopts it. (#400)",
+            "hash": "dc681ce947df9aebf203f9457b10bc8afd2adec1",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Rewrites the array-join fixtures and the untagged multi-line template fixtures in the readiness and parser tests as `dedent` templates that render the same text, and declares `@williamthorsen/toolbelt.strings` as a devDependency of each package that now imports `dedent` in its tests. (#401)",
+            "hash": "3453f00005619f771b84ba0263bf5c40df8b2795",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "4.0.0",
     "date": "2026-10-11",
     "sections": [

@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.7.0 — 2026-10-25
+
+### 🎉 Features
+
+- Adds the structured changelog `.meta/changelog.json` to each package's npm tarball, beside `CHANGELOG.md`. (#398)
+- Adds the line "Run '<invocation> <command> --help' for a command's options." to the page that `renderHelp` renders for a group with commands, before any epilog and with a nested group's scoped invocation, and leaves command pages and the pages of groups without commands unchanged. (#402)
+
+### ♻️ Refactoring
+
+- Replaces hand-rolled error descriptions, `instanceof Error` checks on caught values, record guards, directory ascents, and first-letter capitalization in package source with `describeError`, `isError`, `isRecord`, `isRecordOrArray`, `listDirectoryChain`, and `capitalize`, and declares each helper's package from another workspace as a `workspace:*` runtime dependency of the package that adopts it. (#400)
+
+### 🧪 Tests
+
+- Replaces the hand-rolled sleep, stdio spies, and `process.exit` mock in the `cli` tests with `delay`, `captureStdio`, and `throwOnProcessExit`. (#400)
+- Rewrites the array-join fixtures and the untagged multi-line template fixtures in the readiness and parser tests as `dedent` templates that render the same text, and declares `@williamthorsen/toolbelt.strings` as a devDependency of each package that now imports `dedent` in its tests. (#401)
+
 ## 0.6.0 — 2026-10-24
 
 ### 🪦 Removed

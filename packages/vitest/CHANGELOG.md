@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.13.0 — 2026-10-25
+
+### 🎉 Features
+
+- Adds the structured changelog `.meta/changelog.json` to each package's npm tarball, beside `CHANGELOG.md`. (#398)
+
+### ♻️ Refactoring
+
+- Replaces hand-rolled error descriptions, `instanceof Error` checks on caught values, record guards, directory ascents, and first-letter capitalization in package source with `describeError`, `isError`, `isRecord`, `isRecordOrArray`, `listDirectoryChain`, and `capitalize`, and declares each helper's package from another workspace as a `workspace:*` runtime dependency of the package that adopts it. (#400)
+
+### 🧪 Tests
+
+- Rewrites the array-join fixtures and the untagged multi-line template fixtures in the readiness and parser tests as `dedent` templates that render the same text, and declares `@williamthorsen/toolbelt.strings` as a devDependency of each package that now imports `dedent` in its tests. (#401)
+
+### ⚙️ Tooling
+
+- Adds an `rdy-ignore-next-line` pragma that names the check and states the reason to each site reported by the toolbelt kits that cannot or should not adopt the named helper, such as an `instanceof Error` check on a caller-supplied argument or a record guard in a package that the helper's package depends on. (#400)
+
 ## 0.12.0 — 2026-10-24
 
 ### 🎉 Features

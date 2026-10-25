@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.objects",
-  "version": "4.3.4",
+  "version": "4.4.0",
   "description": "Utilities for working with objects in JavaScript and TypeScript",
   "keywords": [
     "deep-equal",

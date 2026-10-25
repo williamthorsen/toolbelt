@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.9.0 — 2026-10-25
+
+### 🎉 Features
+
+- Adds the structured changelog `.meta/changelog.json` to each package's npm tarball, beside `CHANGELOG.md`. (#398)
+
+### 🧪 Tests
+
+- Declines each `toolbelt.strings/no-joined-line-array` finding in the packages that `toolbelt.strings` depends on with an `rdy-ignore-next-line` pragma, which names the dependency path that would make a `dedent` import create a workspace cycle. (#401)
+
 ## 0.8.4 — 2026-10-24
 
 ### 📦 Dependencies

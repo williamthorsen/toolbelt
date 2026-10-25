@@ -1,5 +1,55 @@
 [
   {
+    "version": "0.8.0",
+    "date": "2026-10-25",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds the structured changelog `.meta/changelog.json` to each package's npm tarball, beside `CHANGELOG.md`. (#398)",
+            "hash": "2ce82cd51b7b78270274ae9318c2bc726eb09cf0",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Replaces hand-rolled error descriptions, `instanceof Error` checks on caught values, record guards, directory ascents, and first-letter capitalization in package source with `describeError`, `isError`, `isRecord`, `isRecordOrArray`, `listDirectoryChain`, and `capitalize`, and declares each helper's package from another workspace as a `workspace:*` runtime dependency of the package that adopts it. (#400)",
+            "hash": "dc681ce947df9aebf203f9457b10bc8afd2adec1",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Declines each `toolbelt.strings/no-joined-line-array` finding in the packages that `toolbelt.strings` depends on with an `rdy-ignore-next-line` pragma, which names the dependency path that would make a `dedent` import create a workspace cycle. (#401)",
+            "hash": "3453f00005619f771b84ba0263bf5c40df8b2795",
+            "entry": 2
+          }
+        ]
+      },
+      {
+        "title": "⚙️ Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Adds an `rdy-ignore-next-line` pragma that names the check and states the reason to each site reported by the toolbelt kits that cannot or should not adopt the named helper, such as an `instanceof Error` check on a caller-supplied argument or a record guard in a package that the helper's package depends on. (#400)",
+            "hash": "dc681ce947df9aebf203f9457b10bc8afd2adec1",
+            "entry": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.7.0",
     "date": "2026-10-24",
     "sections": [

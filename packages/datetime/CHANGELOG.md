@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.1.0 — 2026-10-25
+
+### 🎉 Features
+
+- Adds the structured changelog `.meta/changelog.json` to each package's npm tarball, beside `CHANGELOG.md`. (#398)
+
 ## 4.0.12 — 2026-10-24
 
 ### 📦 Dependencies
