@@ -15,6 +15,27 @@ describe(makePickWeightedItemFromDistribution, () => {
     expect(items).toContain(pickedItem);
   });
 
+  it('over many seeds, picks each item in proportion to its weight', () => {
+    const items = ['a', 'b', 'c'];
+    const distribution = { a: 1, b: 2, c: 3 };
+    const options = { getCategory: (item: string) => item };
+    const nSeeds = 10_000;
+    const tolerance = 0.01;
+
+    const pickItem = makePickWeightedItemFromDistribution(items, distribution, options);
+    const counts = new Map<string, number>();
+    for (let seed = 0; seed < nSeeds; seed++) {
+      const pickedItem = pickItem({ seed });
+      counts.set(pickedItem, (counts.get(pickedItem) ?? 0) + 1);
+    }
+
+    const totalWeight = Object.values(distribution).reduce((sum, weight) => sum + weight, 0);
+    for (const [item, weight] of Object.entries(distribution)) {
+      const share = (counts.get(item) ?? 0) / nSeeds;
+      expect(Math.abs(share - weight / totalWeight)).toBeLessThanOrEqual(tolerance);
+    }
+  });
+
   it('picks an item using a custom default weight', () => {
     const items = ['a', 'b', 'c'];
     const distribution = { a: 0, b: 0 };

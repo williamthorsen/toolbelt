@@ -1,5 +1,4 @@
 import { pickWeightedItem } from './pickWeightedItem.ts';
-import { toCumulativeValues } from './toCumulativeValues.ts';
 
 /**
  * Returns a function that pseudo-randomly picks an item from the array using weighted odds, which are derived
@@ -33,9 +32,7 @@ export function makePickWeightedItemFromDistribution<TItem, TCategory extends st
     throw new Error('Cannot create function with an empty array.');
   }
 
-  const cumulativeWeights = toCumulativeValues(filteredWeights);
-
-  return pickWeightedItem(filteredItems, cumulativeWeights);
+  return pickWeightedItem(filteredItems, filteredWeights);
 }
 
 type Distribution<TCategory extends string> = Record<TCategory, number>;
