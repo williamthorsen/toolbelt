@@ -10,7 +10,7 @@ describe(findCloseMatch, () => {
     ['a substitution', 'tast', 'test'],
     ['an insertion', 'syncc', 'sync'],
     ['a deletion', 'syn', 'sync'],
-    ['two edits', 'buidl', 'build'],
+    ['two edits', 'chk', 'check'],
     ['an exact match', 'list', 'list'],
   ])('returns the candidate for %s', (_case, input, expected) => {
     expect(findCloseMatch(input, candidates)).toBe(expected);
