@@ -1,6 +1,7 @@
 import process from 'node:process';
 
-import { findClosestCommand } from './findClosestCommand.ts';
+import { findCloseMatch } from '@williamthorsen/toolbelt.strings/candidate';
+
 import type { BoundCommand, BoundGroup, CommandNode, RunResult, Writer } from './nodes.ts';
 import { renderHelp } from './renderHelp.ts';
 import { resolveLongName } from './resolveLongName.ts';
@@ -148,7 +149,7 @@ class UnknownCommandError extends UsageError {
   constructor(token: string, names: readonly string[]) {
     super(`Unknown command: ${token}`);
     this.name = 'UnknownCommandError';
-    this.suggestion = findClosestCommand(token, names);
+    this.suggestion = findCloseMatch(token, names.toSorted());
   }
 }
 

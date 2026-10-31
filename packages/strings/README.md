@@ -14,7 +14,7 @@ pnpm add @williamthorsen/toolbelt.strings
 
 Requires Node.js 24 or later.
 
-`dedent`, `pluralize`, `pluralizeWithCount`, and `stripCommonIndent` are release tier, imported from the package root. `hashString` is candidate tier: imported from `@williamthorsen/toolbelt.strings/candidate` rather than the package root, and subject to change.
+`dedent`, `pluralize`, `pluralizeWithCount`, and `stripCommonIndent` are release tier, imported from the package root. `findCloseMatch` and `hashString` are candidate tier: imported from `@williamthorsen/toolbelt.strings/candidate` rather than the package root, and subject to change.
 
 ## `pluralize` and `pluralizeWithCount`
 
@@ -239,6 +239,26 @@ hashString('user-4821', { max: 999, offset: 300 });
 The returned value is a contract. Because it is fixed for a given input and options, and changing the algorithm would be a breaking change, a result may be persisted or compared across releases. The digest is FNV-1a 32-bit finalized through MurmurHash3's `fmix32`, applied to the low and high byte of each UTF-16 code unit. Encoding the text as UTF-8 first would match published FNV-1a vectors, at the cost of conflating lone surrogates, which `TextEncoder` replaces with U+FFFD.
 
 The function throws a `RangeError` naming the fault when `min`, `max`, or `offset` is not a safe integer, when `min` exceeds `max`, or when the range spans more than 2^32 values, which is wider than the digest can fill.
+
+## `findCloseMatch`
+
+```ts
+findCloseMatch(input: string, candidates: readonly string[]): string | undefined;
+```
+
+Returns the candidate that a mistyped input most likely meant, for a "Did you mean" message.
+
+```ts
+import { findCloseMatch } from '@williamthorsen/toolbelt.strings/candidate';
+
+findCloseMatch('chekc', ['build', 'check', 'test']);
+// 'check'
+
+findCloseMatch('deploy', ['build', 'check', 'test']);
+// undefined
+```
+
+A candidate qualifies when it is within 2 edits of the input and fewer edits away than the input has characters, counting an insertion, a deletion, a substitution, or a swap of adjacent characters as one edit. A tie goes to the earliest candidate, so the order of `candidates` sets the preference. The comparison is by code point and case-sensitive: Normalize both sides first for a case-insensitive match.
 
 ## Adoption checks
 

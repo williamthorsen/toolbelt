@@ -311,6 +311,9 @@ importers:
       '@williamthorsen/toolbelt.errors':
         specifier: workspace:*
         version: link:../errors
+      '@williamthorsen/toolbelt.strings':
+        specifier: workspace:*
+        version: link:../strings
     devDependencies:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
@@ -318,9 +321,6 @@ importers:
       '@williamthorsen/toolbelt.async':
         specifier: workspace:*
         version: link:../async
-      '@williamthorsen/toolbelt.strings':
-        specifier: workspace:*
-        version: link:../strings
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
         version: link:../testing

@@ -80,7 +80,7 @@
           "path": "kits/default.ts"
         },
         {
-          "hash": "a281922d",
+          "hash": "476634a2",
           "kind": "module",
           "path": "../src/readiness/adoptedExports.ts"
         },
@@ -115,7 +115,7 @@
       "readyupVersion": "0.44.0",
       "source": "kits/default.ts",
       "sourceHash": "86b64892",
-      "targetHash": "3a6d6dc1"
+      "targetHash": "29bf528d"
     }
   ]
 }
