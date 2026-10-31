@@ -55,7 +55,7 @@ const otherIt = baseIt.extend(
 );
 
 // Registered at file level, so it wraps every test in the file rather than one suite's.
-// eslint-disable-next-line vitest/require-hook -- `aroundEach` is a hook, and postdates the rule's list of them.
+// eslint-disable-next-line vitest/require-top-level-describe -- the test observes a file-level hook, which no `describe` may contain.
 it.aroundEach(async (runTest, { task }) => {
   fileHookLog.push(task.name);
 
@@ -116,14 +116,12 @@ describe(makeFixture, () => {
   });
 
   describe('around hooks', () => {
-    // eslint-disable-next-line vitest/require-hook -- `aroundEach` is a hook, and postdates the rule's list of them.
     it.aroundEach(async (runTest, { hookProbe: _hookProbe, tree }) => {
       using _cwd = pointCwdAt(tree.dir);
 
       await runTest();
     });
 
-    // eslint-disable-next-line vitest/require-hook -- `aroundAll` is a hook, and postdates the rule's list of them.
     it.aroundAll(async (runSuite, { hookFileProbe }) => {
       aroundAllLog.push(hookFileProbe.label);
 
