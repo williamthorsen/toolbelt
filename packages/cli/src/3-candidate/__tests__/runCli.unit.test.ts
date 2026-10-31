@@ -329,6 +329,20 @@ describe(runCli, () => {
       });
     });
 
+    it('breaks a tie between suggestions in favour of the alphabetically first command', async () => {
+      const tied = defineGroup({
+        summary: 'Tied',
+        commands: {
+          cat: defineCommand({ summary: 'Cat', run: () => {} }),
+          bar: defineCommand({ summary: 'Bar', run: () => {} }),
+        },
+      });
+
+      await expect(run(['bat'], tied)).resolves.toMatchObject({
+        stderr: "Error: Unknown command: bat\nDid you mean 'bar'?\nTry 'tool --help'.\n",
+      });
+    });
+
     it('propagates any other error', async () => {
       await expect(run(['crash'], tool)).rejects.toThrow('boom');
     });

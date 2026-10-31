@@ -47,12 +47,12 @@
     "prepublishOnly": "rdy compile && nmr build"
   },
   "dependencies": {
-    "@williamthorsen/toolbelt.errors": "workspace:*"
+    "@williamthorsen/toolbelt.errors": "workspace:*",
+    "@williamthorsen/toolbelt.strings": "workspace:*"
   },
   "devDependencies": {
     "@williamthorsen/toolbelt.adoption": "workspace:*",
     "@williamthorsen/toolbelt.async": "workspace:*",
-    "@williamthorsen/toolbelt.strings": "workspace:*",
     "@williamthorsen/toolbelt.testing": "workspace:*",
     "@williamthorsen/toolbelt.vitest": "workspace:*",
     "esbuild": "catalog:",
