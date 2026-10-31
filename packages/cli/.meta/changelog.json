@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.7.1",
+    "date": "2026-10-31",
+    "sections": [
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Replaces the private `findClosestCommand` in `@williamthorsen/toolbelt.cli` with `findCloseMatch`, which moves `@williamthorsen/toolbelt.strings` from the package's `devDependencies` to its `dependencies`. (#407)",
+            "hash": "386fed8a030c4e2cead622647e19463aa26a3dd1",
+            "entry": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.7.0",
     "date": "2026-10-25",
     "sections": [

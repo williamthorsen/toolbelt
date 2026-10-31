@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.7.1 — 2026-10-31
+
+### ♻️ Refactoring
+
+- Replaces the private `findClosestCommand` in `@williamthorsen/toolbelt.cli` with `findCloseMatch`, which moves `@williamthorsen/toolbelt.strings` from the package's `devDependencies` to its `dependencies`. (#407)
+
 ## 0.7.0 — 2026-10-25
 
 ### 🎉 Features

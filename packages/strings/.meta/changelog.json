@@ -1,5 +1,22 @@
 [
   {
+    "version": "8.2.0",
+    "date": "2026-10-31",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds `findCloseMatch` to `@williamthorsen/toolbelt.strings/candidate`, which returns the candidate closest to a mistyped input by optimal string alignment distance (Levenshtein distance that counts a swap of adjacent characters as one edit), returns `undefined` unless a candidate is within 2 edits and fewer edits away than the input has characters, and breaks a tie in favour of the earliest candidate. (#407)",
+            "hash": "386fed8a030c4e2cead622647e19463aa26a3dd1",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "8.1.0",
     "date": "2026-10-25",
     "sections": [

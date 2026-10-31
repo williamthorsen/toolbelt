@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.cli",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "A parser, help renderer, and command router for command-line tools",
   "keywords": [
     "cli",

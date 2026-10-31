@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.13.1 — 2026-10-31
+
+### 📦 Dependencies
+
+- Upgrade eslint and @vitest/eslint-plugin (#408)
+
+  Upgrades `eslint` from 10.13.0 to 10.14.0 and `@vitest/eslint-plugin` from 1.6.27 to 1.6.28, and removes the stale `peerDependencyRules` exemption for `eslint-plugin-import` from `pnpm-workspace.yaml`.
+
 ## 0.13.0 — 2026-10-25
 
 ### 🎉 Features

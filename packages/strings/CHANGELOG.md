@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 8.2.0 — 2026-10-31
+
+### 🎉 Features
+
+- Adds `findCloseMatch` to `@williamthorsen/toolbelt.strings/candidate`, which returns the candidate closest to a mistyped input by optimal string alignment distance (Levenshtein distance that counts a swap of adjacent characters as one edit), returns `undefined` unless a candidate is within 2 edits and fewer edits away than the input has characters, and breaks a tie in favour of the earliest candidate. (#407)
+
 ## 8.1.0 — 2026-10-25
 
 ### 🎉 Features
