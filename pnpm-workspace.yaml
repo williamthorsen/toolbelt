@@ -5,7 +5,7 @@ packages:
 catalog:
   '@sindresorhus/is': 8.1.0
   esbuild: 0.28.2
-  readyup: 0.43.0
+  readyup: 0.44.0
   vitest: 5.0.5
 
 allowBuilds:
