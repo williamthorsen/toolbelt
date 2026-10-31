@@ -12,6 +12,7 @@ export const ADOPTED_EXPORTS: readonly string[] = [
   'condenseWhitespace',
   'dedent',
   'enclose',
+  'findCloseMatch',
   'hashString',
   'interpolate',
   'Interpolator',

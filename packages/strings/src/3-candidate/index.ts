@@ -1,4 +1,5 @@
 export { capitalize } from './capitalize.ts';
+export { findCloseMatch } from './findCloseMatch.ts';
 export { hashString, type HashStringOptions } from './hashString.ts';
 export {
   interpolate,

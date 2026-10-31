@@ -271,6 +271,7 @@ var ADOPTED_EXPORTS = [
   "condenseWhitespace",
   "dedent",
   "enclose",
+  "findCloseMatch",
   "hashString",
   "interpolate",
   "Interpolator",
