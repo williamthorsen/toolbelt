@@ -4,12 +4,6 @@ import { describe, expect, expectTypeOf, it, type Mock } from 'vitest';
 import { listConsoleLines } from '../listConsoleLines.ts';
 import { silenceConsole } from '../silenceConsole.ts';
 
-/**
- * The type to which `vi.spyOn(console, 'error')` resolves, narrower than the `MockInstance` returned by
- * `silenceConsole`.
- */
-type ConsoleMethodSpy = Mock<typeof console.error>;
-
 describe(listConsoleLines, () => {
   describe('runtime behavior', () => {
     it('returns nothing for a method that was never called', () => {
@@ -68,6 +62,12 @@ describe(listConsoleLines, () => {
     });
 
     it('accepts a spy typed by the method that it replaces', () => {
+      /**
+       * The type to which `vi.spyOn(console, 'error')` resolves, narrower than the `MockInstance` returned by
+       * `silenceConsole`.
+       */
+      type ConsoleMethodSpy = Mock<typeof console.error>;
+
       expectTypeOf<ConsoleMethodSpy>().toExtend<Parameters<typeof listConsoleLines>[0]>();
     });
 

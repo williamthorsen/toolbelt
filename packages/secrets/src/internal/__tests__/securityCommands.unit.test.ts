@@ -4,7 +4,7 @@ import { UnstorableSecretError } from '../../3-candidate/UnstorableSecretError.t
 import { composeSetLine } from '../securityCommands.ts';
 
 const KEYCHAIN = '/tmp/project.keychain-db';
-const MAX_LINE_BYTES = 4_095;
+const MAX_LINE_BYTES = 4095;
 const QUERY = { account: 'me@example.com', service: 'atlassian-api-token' };
 
 describe(composeSetLine, () => {
@@ -47,7 +47,7 @@ describe(composeSetLine, () => {
   });
 
   it('reports the ceiling, the size, and the room left, and repeats no part of the secret', () => {
-    const secret = 'sesame'.repeat(1_000);
+    const secret = 'sesame'.repeat(1000);
 
     expect(() => composeSetLine({ service: 'token' }, secret)).toThrow(
       'The command line would be 12044 bytes and `security` reads at most 4095. The rest of the command leaves ' +

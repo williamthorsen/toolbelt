@@ -184,7 +184,7 @@ describe(buildKeychainStore, () => {
     it('rejects a secret too long for one command line without running anything', () => {
       const spy = createWriteSpy('');
 
-      expect(() => buildKeychainStore(spy.run).setSecret(QUERY, 'a'.repeat(4_096))).toThrow(/too long/);
+      expect(() => buildKeychainStore(spy.run).setSecret(QUERY, 'a'.repeat(4096))).toThrow(/too long/);
       expect(spy.calls).toStrictEqual([]);
     });
 

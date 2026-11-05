@@ -21,7 +21,7 @@ const TAB_SECRET = 'a\tb';
 
 // `security` cuts a secret read from stdin at 128 bytes, and 129 is the shortest length that exposes the cut. The
 // longest is a little under the 4,095-byte command line that contains the secret as hexadecimal.
-const BOUNDARY_LENGTHS = [127, 128, 129, 190, 1_900];
+const BOUNDARY_LENGTHS = [127, 128, 129, 190, 1900];
 
 describe.skipIf(!canCreateKeychain)(createKeychainStore, () => {
   it('reads a secret that `security` prints between quotes', () => {
@@ -130,7 +130,7 @@ describe.skipIf(!canCreateKeychain)(createKeychainStore, () => {
       withKeychain((keychain) => {
         const store = createKeychainStore({ keychain });
 
-        expect(() => store.setSecret({ service: WRITTEN_SERVICE }, buildSecret(2_100))).toThrow(/too long/);
+        expect(() => store.setSecret({ service: WRITTEN_SERVICE }, buildSecret(2100))).toThrow(/too long/);
         expect(store.hasSecret({ service: WRITTEN_SERVICE })).toBe(false);
       });
     });

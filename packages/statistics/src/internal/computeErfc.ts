@@ -50,11 +50,11 @@ const MIDDLE_TAIL_DENOMINATOR = [
 // rb0-rb6, and sb1-sb7 after a leading 1: the same form for 1/0.35 <= |x| < 28.
 const FAR_TAIL_NUMERATOR = [
   -0.009_864_942_924_700_1, -0.799_283_237_680_523, -17.757_954_917_754_752, -160.636_384_855_821_92,
-  -637.566_443_368_389_6, -1_025.095_131_611_077_2, -483.519_191_608_651_4,
+  -637.566_443_368_389_6, -1025.095_131_611_077_2, -483.519_191_608_651_4,
 ] as const;
 const FAR_TAIL_DENOMINATOR = [
-  1, 30.338_060_743_482_46, 325.792_512_996_573_9, 1_536.729_586_084_437, 3_199.858_219_508_595_5,
-  2_553.050_406_433_164_4, 474.528_541_206_955_37, -22.440_952_446_585_82,
+  1, 30.338_060_743_482_46, 325.792_512_996_573_9, 1536.729_586_084_437, 3199.858_219_508_595_5, 2553.050_406_433_164_4,
+  474.528_541_206_955_37, -22.440_952_446_585_82,
 ] as const;
 
 const lowWordView = new DataView(new ArrayBuffer(8));
@@ -112,7 +112,7 @@ function computeTail(magnitude: number): number {
   // (truncated - magnitude) * (truncated + magnitude) accounts for the rest of magnitude^2.
   const truncated = clearLowWord(magnitude);
   return (
-    (Math.exp(-truncated * truncated - 0.562_5) *
+    (Math.exp(-truncated * truncated - 0.5625) *
       Math.exp((truncated - magnitude) * (truncated + magnitude) + correction)) /
     magnitude
   );

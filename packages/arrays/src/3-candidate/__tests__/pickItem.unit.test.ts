@@ -16,7 +16,7 @@ describe(pickItem, () => {
   });
 
   it('if the array has a single item, draws once from the seed', () => {
-    const seed = vi.fn<() => number>(() => 1_234);
+    const seed = vi.fn<() => number>(() => 1234);
 
     pickItem([1], { seed });
 
@@ -45,7 +45,7 @@ describe(pickItem, () => {
   });
 
   it('given the same seed, returns the same item', () => {
-    const seed = 1_234;
+    const seed = 1234;
 
     const randomItem1 = pickItem(sourceArray, { seed });
     const randomItem2 = pickItem(sourceArray, { seed });
@@ -54,7 +54,7 @@ describe(pickItem, () => {
   });
 
   it('accepts a function as a seed', () => {
-    const seed = 1_234;
+    const seed = 1234;
     const seedFn = () => seed;
 
     const randomItem1 = pickItem(sourceArray, { seed });
@@ -64,7 +64,7 @@ describe(pickItem, () => {
   });
 
   it('given an identical seed, always returns the same result', () => {
-    const items = Array.from({ length: 1_000 }, (_, index) => index);
+    const items = Array.from({ length: 1000 }, (_, index) => index);
     const seeds = Array.from({ length: 5 }, (_, index) => index);
     const snapshot = [861, 3, 138, 281, 437];
     const results = seeds.map((seed) => pickItem(items, { seed }));

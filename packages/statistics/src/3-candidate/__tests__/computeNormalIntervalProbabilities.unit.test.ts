@@ -26,7 +26,7 @@ describe(computeNormalIntervalProbabilities, () => {
     const nIntervals = 2;
     const { additive, cumulative } = computeNormalIntervalProbabilities({
       mean: 0,
-      standardDeviation: 0.896_8,
+      standardDeviation: 0.8968,
       nIntervals,
     });
 

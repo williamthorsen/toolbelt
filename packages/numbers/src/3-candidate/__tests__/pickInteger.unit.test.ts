@@ -24,7 +24,7 @@ describe(pickInteger, () => {
 
   it('returns a value no less than the min', () => {
     const min = 1;
-    const max = 1_000;
+    const max = 1000;
 
     const randomInt = pickInteger({ min, max });
 
@@ -33,7 +33,7 @@ describe(pickInteger, () => {
 
   it('returns a value no greater than the max', () => {
     const min = 1;
-    const max = 1_000;
+    const max = 1000;
     generateRandomMock.mockReturnValue(0.999_999);
 
     const randomInt = pickInteger({ min, max });
@@ -76,7 +76,7 @@ describe(pickInteger, () => {
   it('if min and max truncate to the same integer, draws once from the seed', async () => {
     const actual = await vi.importActual<{ generateRandom: typeof generateRandom }>('../generateRandom.ts');
     generateRandomMock.mockImplementation(actual.generateRandom);
-    const seed = vi.fn<() => number>(() => 1_234);
+    const seed = vi.fn<() => number>(() => 1234);
 
     expect(pickInteger({ min: 3, max: 3, seed })).toBe(3);
     expect(seed).toHaveBeenCalledTimes(1);
@@ -104,8 +104,8 @@ describe(pickInteger, () => {
   });
 
   it('accepts a function as a seed', () => {
-    const seed = 1_234;
-    const seedFn = vi.fn<() => number>(() => 1_234);
+    const seed = 1234;
+    const seedFn = vi.fn<() => number>(() => 1234);
 
     const randomInt1 = pickInteger({ max: 10, seed });
     const randomInt2 = pickInteger({ max: 10, seed: seedFn });
