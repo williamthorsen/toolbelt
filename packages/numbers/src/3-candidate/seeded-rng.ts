@@ -99,6 +99,8 @@ export class SeededRng implements SeededGenerator {
 
   /** Returns a copy of this generator, advanced by the given number of increments. */
   clone<T extends SeededRng>(this: T, nIncrements = 0): T {
+    type Constructor<U, Arguments extends unknown[] = unknown[]> = new (...arguments_: Arguments) => U;
+
     // Constructing the subclass requires an assertion, because `this.constructor` is typed as `Function`.
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return new (this.constructor as Constructor<T>)(this._seed).increment(nIncrements);
@@ -181,8 +183,6 @@ export class Int32SeededRng extends SeededRng {
   }
 }
 // region | Types
-type Constructor<T, Arguments extends unknown[] = unknown[]> = new (...arguments_: Arguments) => T;
-
 type EmptyObject = Record<string, never> | Record<number, never>;
 
 type OptionsWithSeed<O> = O & { seed?: Seed | undefined };
