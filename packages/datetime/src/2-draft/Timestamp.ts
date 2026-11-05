@@ -52,7 +52,7 @@ export class Timestamp {
    * Creates a timestamp from seconds since the Unix epoch, with seconds as its time unit.
    */
   static fromSeconds(seconds: number): Timestamp {
-    return new Timestamp(new Date(seconds * 1_000), { timeUnit: TimeUnit.Seconds });
+    return new Timestamp(new Date(seconds * 1000), { timeUnit: TimeUnit.Seconds });
   }
 
   /**

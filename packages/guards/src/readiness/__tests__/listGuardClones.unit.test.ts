@@ -243,7 +243,7 @@ describe(listGuardClones, () => {
     const source = ['function render(value) {', '  return `' + 'x'.repeat(40_000) + '`;', '}', ''].join('\n');
 
     expect(summarize(source)).toStrictEqual([]);
-  }, 2_000);
+  }, 2000);
 
   it('declines a guard written in a comment or a string', () => {
     // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle

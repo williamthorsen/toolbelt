@@ -17,25 +17,22 @@ describe(deriveBranchNumber, () => {
   });
 
   it('offsets a ticket number into a range that does not start at zero', () => {
-    expect(deriveBranchNumber('1232', { min: 3_000, max: 3_999 })).toBe(3_232);
+    expect(deriveBranchNumber('1232', { min: 3000, max: 3999 })).toBe(3232);
   });
 
   it('delegates to hashString when the branch encodes no ticket', () => {
     expect(deriveBranchNumber(TICKETLESS)).toBe(hashString(TICKETLESS));
     expect(deriveBranchNumber(TICKETLESS, BUCKETED)).toBe(hashString(TICKETLESS, BUCKETED));
-    expect(deriveBranchNumber(TICKETLESS, { min: 3_000, max: 3_999, offset: 7 })).toBe(
-      hashString(TICKETLESS, { min: 3_000, max: 3_999, offset: 7 }),
+    expect(deriveBranchNumber(TICKETLESS, { min: 3000, max: 3999, offset: 7 })).toBe(
+      hashString(TICKETLESS, { min: 3000, max: 3999, offset: 7 }),
     );
   });
 
   // For a branch named after a digest, the ref path receives the value that hashString would have bounded, so the
   // two bounding formulas have to agree. The option-free case catches a change to the default range.
-  it.each([{}, { min: 3_000, max: 3_999, offset: 7 }])(
-    'bounds a ref number as hashString bounds a digest',
-    (options) => {
-      expect(deriveBranchNumber(String(hashString(TICKETLESS)), options)).toBe(hashString(TICKETLESS, options));
-    },
-  );
+  it.each([{}, { min: 3000, max: 3999, offset: 7 }])('bounds a ref number as hashString bounds a digest', (options) => {
+    expect(deriveBranchNumber(String(hashString(TICKETLESS)), options)).toBe(hashString(TICKETLESS, options));
+  });
 
   it('honours a declared key and then matches no other key', () => {
     expect(deriveBranchNumber('mac-22/feat/x', { key: 'mac' })).toBe(22);
@@ -47,8 +44,8 @@ describe(deriveBranchNumber, () => {
       const rotatedRef = deriveBranchNumber('232', { ...BUCKETED, offset: 5 });
       const rotatedHash = deriveBranchNumber(TICKETLESS, { ...BUCKETED, offset: 5 });
 
-      expect(rotatedRef).toBe((deriveBranchNumber('232', BUCKETED) + 5) % 1_000);
-      expect(rotatedHash).toBe((deriveBranchNumber(TICKETLESS, BUCKETED) + 5) % 1_000);
+      expect(rotatedRef).toBe((deriveBranchNumber('232', BUCKETED) + 5) % 1000);
+      expect(rotatedHash).toBe((deriveBranchNumber(TICKETLESS, BUCKETED) + 5) % 1000);
     });
 
     it('wraps a negative offset', () => {

@@ -47,7 +47,7 @@ describe(pluralizeWithCount, () => {
   });
 
   it('interpolates the count as given, without grouping separators', () => {
-    expect(pluralizeWithCount(1_234, 'apple')).toBe('1234 apples');
+    expect(pluralizeWithCount(1234, 'apple')).toBe('1234 apples');
   });
 
   it('uses a custom plural form if given', () => {

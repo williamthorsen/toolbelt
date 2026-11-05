@@ -28,9 +28,7 @@ describe(findDistributionByIntervalProbability, () => {
 
       expect(converged).toBe(true);
       expect(Math.abs(standardDeviation - expectedSd)).toBeLessThan(tolerance);
-      expect(Math.abs(getItemAtIndexOrThrow(intervalProbabilities.additive, 0) / probability - 1)).toBeLessThan(
-        0.000_1,
-      );
+      expect(Math.abs(getItemAtIndexOrThrow(intervalProbabilities.additive, 0) / probability - 1)).toBeLessThan(0.0001);
       expect(intervalProbabilities).toStrictEqual(
         computeNormalIntervalProbabilities({ nIntervals, standardDeviation }),
       );
@@ -40,7 +38,7 @@ describe(findDistributionByIntervalProbability, () => {
   it('reports the divergence from the target on a converged result', () => {
     const { divergenceFromTarget } = findDistributionByIntervalProbability({ nIntervals: 5, probability: 0.05 });
 
-    expect(Math.abs(divergenceFromTarget)).toBeLessThan(0.000_1);
+    expect(Math.abs(divergenceFromTarget)).toBeLessThan(0.0001);
   });
 
   it('honors a halfWidth that widens the window', () => {
@@ -74,7 +72,7 @@ describe(findDistributionByIntervalProbability, () => {
   });
 
   it('throws an error if the target exceeds the probability reachable at the top of the range', () => {
-    const throwingFn = () => findDistributionByIntervalProbability({ nIntervals: 5, probability: 0.199_5 });
+    const throwingFn = () => findDistributionByIntervalProbability({ nIntervals: 5, probability: 0.1995 });
 
     expect(throwingFn).toThrow('is above the maximum reachable');
     expect(throwingFn).toThrow('standard deviation in range [0.01, 20]');

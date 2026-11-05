@@ -4,7 +4,7 @@ import { hashString, type HashStringOptions } from '../hashString.ts';
 
 const MAX_UINT32 = 0xffff_ffff;
 const UINT32_SIZE = 2 ** 32;
-const N_BUCKETS = 1_000;
+const N_BUCKETS = 1000;
 const BUCKETED: HashStringOptions = { max: N_BUCKETS - 1 };
 
 describe(hashString, () => {
@@ -37,7 +37,7 @@ describe(hashString, () => {
   const rangeCases: ReadonlyArray<{ max: number; min: number; scenario: string }> = [
     { scenario: 'a zero-based range', min: 0, max: N_BUCKETS - 1 },
     { scenario: 'a range spanning zero', min: -50, max: 50 },
-    { scenario: 'a range above zero', min: 1_000, max: 1_099 },
+    { scenario: 'a range above zero', min: 1000, max: 1099 },
     { scenario: 'the widest permitted range', min: 0, max: MAX_UINT32 },
   ];
 
@@ -51,7 +51,7 @@ describe(hashString, () => {
     expect(hashString('sample', { min: 42, max: 42 })).toBe(42);
   });
 
-  it.each([0, 7, -7, 3_001, -3_001, N_BUCKETS])('rotates a bounded result by an offset of %i', (offset) => {
+  it.each([0, 7, -7, 3001, -3001, N_BUCKETS])('rotates a bounded result by an offset of %i', (offset) => {
     const base = hashString('sample', BUCKETED);
     const expected = (((base + offset) % N_BUCKETS) + N_BUCKETS) % N_BUCKETS;
 
@@ -98,7 +98,7 @@ describe(hashString, () => {
     );
 
     // At 999 degrees of freedom the p = 0.001 critical value is about 1156.
-    expect(chiSquare).toBeLessThan(1_200);
+    expect(chiSquare).toBeLessThan(1200);
   });
 
   it('leaves no bucket of a bounded range empty', () => {
