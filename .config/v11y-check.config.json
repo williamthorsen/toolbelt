@@ -4,18 +4,11 @@
     "severityThreshold": "moderate",
     "allowlist": [
       {
-        "addedAt": "2026-10-31T06:34:36.563Z",
-        "id": "1244012",
-        "path": ".>@williamthorsen/eslint-config-typescript>eslint-plugin-package-json>eslint-json-compat-utils>eslint>minimatch",
-        "reason": "Added by v11y sync at 2026-10-31 06:34:36 UTC",
+        "addedAt": "2026-11-05T07:00:18.107Z",
+        "id": "1244623",
+        "path": ".>@williamthorsen/strict-lint>eslint>minimatch",
+        "reason": "Added by v11y sync at 2026-11-05 07:00:18 UTC",
         "url": "https://github.com/advisories/GHSA-g3hv-75wg-m249"
-      },
-      {
-        "addedAt": "2026-10-31T06:34:36.563Z",
-        "id": "1244013",
-        "path": ".>rimraf>glob",
-        "reason": "Added by v11y sync at 2026-10-31 06:34:36 UTC",
-        "url": "https://github.com/advisories/GHSA-3g3m-2fjr-6pw4"
       }
     ]
   },
