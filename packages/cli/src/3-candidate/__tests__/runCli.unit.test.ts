@@ -128,7 +128,7 @@ describe(runCli, () => {
       await expect(run(['--bogus', 'issue', '--help'], tool)).resolves.toStrictEqual({
         code: 2,
         stdout: '',
-        stderr: "Error: Unknown option: --bogus\nTry 'tool --help'.\n",
+        stderr: "tool: Unknown option: --bogus\nTry 'tool --help'.\n",
       });
     });
 
@@ -172,14 +172,14 @@ describe(runCli, () => {
     it('is not reserved below the root', async () => {
       await expect(run(['issue', '--version'], tool, { version })).resolves.toMatchObject({
         code: 2,
-        stderr: "Error: Unknown option: --version\nTry 'tool issue --help'.\n",
+        stderr: "tool: Unknown option: --version\nTry 'tool issue --help'.\n",
       });
     });
 
     it('is not reserved without a version', async () => {
       await expect(run(['-V'], tool)).resolves.toMatchObject({
         code: 2,
-        stderr: expect.stringMatching(/^Error: Unknown option: -V\n/),
+        stderr: expect.stringMatching(/^tool: Unknown option: -V\n/),
       });
     });
 
@@ -224,7 +224,7 @@ describe(runCli, () => {
       await expect(run(['--style', 'loud', 'ping'], root)).resolves.toStrictEqual({
         code: 2,
         stdout: '',
-        stderr: "Error: Unsupported style: loud\nTry 'tool --help'.\n",
+        stderr: "tool: Unsupported style: loud\nTry 'tool --help'.\n",
       });
     });
   });
@@ -251,7 +251,7 @@ describe(runCli, () => {
     it('passes a cluster that starts with a flag that the group does not claim to the command whole', async () => {
       await expect(run(['-jq'], v11y)).resolves.toMatchObject({
         code: 2,
-        stderr: "Error: Unknown option: -q\nTry 'tool check --help'.\n",
+        stderr: "tool: Unknown option: -q\nTry 'tool check --help'.\n",
       });
     });
 
@@ -270,7 +270,7 @@ describe(runCli, () => {
     it('treats an unrecognized word as an unknown command', async () => {
       await expect(run(['fux'], v11y)).resolves.toMatchObject({
         code: 2,
-        stderr: expect.stringMatching(/^Error: Unknown command: fux\n/),
+        stderr: expect.stringMatching(/^tool: Unknown command: fux\n/),
       });
       expect(received).toStrictEqual([]);
     });
@@ -278,7 +278,7 @@ describe(runCli, () => {
     it('reports its own usage errors with its scope', async () => {
       await expect(run(['--bogus'], v11y)).resolves.toMatchObject({
         code: 2,
-        stderr: "Error: Unknown option: --bogus\nTry 'tool check --help'.\n",
+        stderr: "tool: Unknown option: --bogus\nTry 'tool check --help'.\n",
       });
     });
 
@@ -294,7 +294,7 @@ describe(runCli, () => {
       await expect(run(['nope'], tool)).resolves.toStrictEqual({
         code: 2,
         stdout: '',
-        stderr: "Error: Unknown command: nope\nTry 'tool --help'.\n",
+        stderr: "tool: Unknown command: nope\nTry 'tool --help'.\n",
       });
     });
 
@@ -302,14 +302,14 @@ describe(runCli, () => {
       await expect(run(argv, tool)).resolves.toStrictEqual({
         code: 2,
         stdout: '',
-        stderr: "Error: A command is required.\nTry 'tool --help'.\n",
+        stderr: "tool: A command is required.\nTry 'tool --help'.\n",
       });
     });
 
     it('reports a parse error with the scope of the command reached', async () => {
       await expect(run(['issue', 'list', '--bogus'], tool)).resolves.toMatchObject({
         code: 2,
-        stderr: "Error: Unknown option: --bogus\nTry 'tool issue list --help'.\n",
+        stderr: "tool: Unknown option: --bogus\nTry 'tool issue list --help'.\n",
       });
     });
 
@@ -317,7 +317,7 @@ describe(runCli, () => {
       await expect(run(['fail'], tool)).resolves.toStrictEqual({
         code: 2,
         stdout: '',
-        stderr: "Error: Bad input\nTry 'tool fail --help'.\n",
+        stderr: "tool: Bad input\nTry 'tool fail --help'.\n",
       });
     });
 
@@ -325,7 +325,7 @@ describe(runCli, () => {
       await expect(run(['isue'], tool)).resolves.toStrictEqual({
         code: 2,
         stdout: '',
-        stderr: "Error: Unknown command: isue\nDid you mean 'issue'?\nTry 'tool --help'.\n",
+        stderr: "tool: Unknown command: isue\nDid you mean 'issue'?\nTry 'tool --help'.\n",
       });
     });
 
@@ -339,7 +339,7 @@ describe(runCli, () => {
       });
 
       await expect(run(['bat'], tied)).resolves.toMatchObject({
-        stderr: "Error: Unknown command: bat\nDid you mean 'bar'?\nTry 'tool --help'.\n",
+        stderr: "tool: Unknown command: bat\nDid you mean 'bar'?\nTry 'tool --help'.\n",
       });
     });
 
