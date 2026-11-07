@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 7.3.1 — 2026-11-07
+
+### ♻️ Refactoring
+
+- Moves the `Constructor` type alias in `seeded-rng.ts` into `SeededRng.clone` and the `ConsoleMethodSpy` alias in `listConsoleLines.unit.test.ts` into the test that uses it, as `unicorn/prefer-smaller-scope` requires. (#410)
+
 ## 7.3.0 — 2026-10-25
 
 ### 🎉 Features

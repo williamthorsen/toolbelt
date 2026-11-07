@@ -1,5 +1,16 @@
 [
   {
+    "version": "0.7.2",
+    "date": "2026-11-07",
+    "sections": [
+      {
+        "title": "📦 Dependencies",
+        "audience": "dev",
+        "items": [{ "description": "Bumped `@williamthorsen/toolbelt.strings` to 8.2.1" }]
+      }
+    ]
+  },
+  {
     "version": "0.7.1",
     "date": "2026-10-31",
     "sections": [

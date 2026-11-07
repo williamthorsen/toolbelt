@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.8.0 — 2026-11-07
+
+### 🎉 Features
+
+- Prefixes each usage error written by `runCli` with the program name from its `name` option, as `<name>: <message>` in place of `Error: <message>`, and leaves the `Did you mean` and `Try '… --help'.` lines that follow it unchanged. (#412)
+
 ## 0.7.1 — 2026-10-31
 
 ### ♻️ Refactoring

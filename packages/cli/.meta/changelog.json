@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.8.0",
+    "date": "2026-11-07",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Prefixes each usage error written by `runCli` with the program name from its `name` option, as `<name>: <message>` in place of `Error: <message>`, and leaves the `Did you mean` and `Try '… --help'.` lines that follow it unchanged. (#412)",
+            "hash": "7f408a8b57865172f8199e8114734f4815d1f93d",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.7.1",
     "date": "2026-10-31",
     "sections": [

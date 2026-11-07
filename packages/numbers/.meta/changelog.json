@@ -1,5 +1,22 @@
 [
   {
+    "version": "7.3.1",
+    "date": "2026-11-07",
+    "sections": [
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Moves the `Constructor` type alias in `seeded-rng.ts` into `SeededRng.clone` and the `ConsoleMethodSpy` alias in `listConsoleLines.unit.test.ts` into the test that uses it, as `unicorn/prefer-smaller-scope` requires. (#410)",
+            "hash": "738792441acb4e923b09d0d46eb63c929730551a",
+            "entry": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "7.3.0",
     "date": "2026-10-25",
     "sections": [
