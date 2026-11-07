@@ -40,13 +40,13 @@ process.exitCode = await runCli(process.argv.slice(2), root, {
 });
 ```
 
-`demo greet --loud Ada` prints `HELLO, ADA`, `demo --help` and `demo greet --help` print help generated from the definitions, and `demo gret` prints `Error: Unknown command: gret`, `Did you mean 'greet'?`, and `Try 'demo --help'.`, then exits with code 2.
+`demo greet --loud Ada` prints `HELLO, ADA`, `demo --help` and `demo greet --help` print help generated from the definitions, and `demo gret` prints `demo: Unknown command: gret`, `Did you mean 'greet'?`, and `Try 'demo --help'.`, then exits with code 2.
 
 ## The three parts
 
 - **`parseArgs(argv, spec, options?)`** parses arguments strictly against a schema of flags and operands, and infers their types from it: A `choices` list narrows a value to a union, `parse` converts it, `default` makes it non-optional, and `multiple` collects a repeated string or path flag into an array. It rejects an unknown flag, a missing or extra operand, and a value outside `choices`, each as a `ParseError`.
 - **`renderHelp(node, invocation)`** returns the help page of a command or a group from the same definitions, so that help cannot drift from the flags that a command accepts. The page of a group with commands also names `<invocation> <command> --help`, before any epilog, as where each command's options are listed.
-- **`runCli(argv, root, options)`** walks a tree of groups and commands, intercepts `-h`/`--help` at every level, reports any `UsageError` as `Error: <message>` with a pointer to help, and resolves to the exit code. It writes only to the writers that it is given and never calls `process.exit`, so that a test can run a whole CLI in process.
+- **`runCli(argv, root, options)`** walks a tree of groups and commands, intercepts `-h`/`--help` at every level, reports any `UsageError` as `<name>: <message>`, where `<name>` is its `name` option, with a pointer to help, and resolves to the exit code. It writes only to the writers that it is given and never calls `process.exit`, so that a test can run a whole CLI in process.
 
 `defineCommand` and `defineGroup` build the tree and validate each definition when it is made, so that a duplicate flag or a misplaced operand fails at startup rather than when a user reaches it.
 

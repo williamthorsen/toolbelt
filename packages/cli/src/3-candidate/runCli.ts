@@ -38,10 +38,10 @@ export interface RunCliOptions<C> {
  * level, except after a passthrough command's token; it intercepts `-V`/`--version` at the root alone.
  *
  * A `UsageError`, whether from parsing, from an unknown or missing command, or thrown by a `deriveContext` or a
- * `run`, is written to `stderr` with the scope reached so far and returns 2; an unknown command near a known one
- * adds a `Did you mean` line. Any other error propagates. A `run` result that is not a number maps to 0, and a
- * number other than an integer from 0 to 255 throws a plain `Error`. It writes only to the writers that it is
- * given and never calls `process.exit`.
+ * `run`, is written to `stderr` as `<name>: <message>`, followed by a pointer to help for the scope reached so
+ * far, and returns 2; an unknown command near a known one adds a `Did you mean` line. Any other error propagates.
+ * A `run` result that is not a number maps to 0, and a number other than an integer from 0 to 255 throws a plain
+ * `Error`. It writes only to the writers that it is given and never calls `process.exit`.
  * @category CLI
  * @stage candidate
  */
@@ -71,7 +71,7 @@ export async function runCli<C>(
     return outcome;
   } catch (error: unknown) {
     if (!(error instanceof UsageError)) throw error;
-    stderr.write(`Error: ${error.message}\n`);
+    stderr.write(`${name}: ${error.message}\n`);
     if (error instanceof UnknownCommandError && error.suggestion !== undefined) {
       stderr.write(`Did you mean '${error.suggestion}'?\n`);
     }
