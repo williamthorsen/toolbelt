@@ -2,9 +2,6 @@ import { readLiteral } from '@williamthorsen/toolbelt.adoption';
 
 import { isNonNullableTest, isNullishTest } from './nullish-tests.ts';
 
-export type PredicateCloneKind =
-  'boolean-clone' | 'non-nullable-clone' | 'nullish-clone' | 'number-clone' | 'string-clone';
-
 // One `return` of one expression and nothing else: A second statement or a nested block fails the class, which
 // limits the finding to a function that the import replaces outright. The expression is matched greedily and
 // trimmed by the caller rather than by a lazy quantifier against a trailing `\s*`: Blanking replaces a template
@@ -51,6 +48,9 @@ export function findPredicateClone(
 
   return undefined;
 }
+
+export type PredicateCloneKind =
+  'boolean-clone' | 'non-nullable-clone' | 'nullish-clone' | 'number-clone' | 'string-clone';
 
 // region | Helpers
 
