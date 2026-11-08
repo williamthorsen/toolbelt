@@ -1,10 +1,39 @@
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+
 import type { RdyCheck, RdyKit } from 'readyup';
 import { describe, expect, it } from 'vitest';
 
-import { listKitChecks } from '../check-outcomes.ts';
+import { listFreshKitChecks, listKitChecks } from '../check-outcomes.ts';
+import { createTempDir } from '../createTempDir.ts';
 
 const FIRST: RdyCheck = { name: 'first', check: () => true };
 const SECOND: RdyCheck = { name: 'second', check: () => true };
+
+describe(listFreshKitChecks, () => {
+  it('returns the checks of a separately evaluated kit on each call', async () => {
+    using kitDir = createTempDir({
+      'kit.js':
+        "export default { checklists: [{ name: 'adoption', checks: [{ name: 'first', check: () => true }] }] };\n",
+    });
+    const kitUrl = pathToFileURL(path.join(kitDir.dir, 'kit.js'));
+
+    const [first] = await listFreshKitChecks(kitUrl);
+    const [second] = await listFreshKitChecks(kitUrl);
+
+    expect(first).toHaveProperty('name', 'first');
+    expect(second).toHaveProperty('name', 'first');
+    expect(second).not.toBe(first);
+  });
+
+  it('throws when the module exports no kit', async () => {
+    using kitDir = createTempDir({ 'kit.js': 'export const answer = 42;\n' });
+
+    await expect(listFreshKitChecks(pathToFileURL(path.join(kitDir.dir, 'kit.js')))).rejects.toThrow(
+      'the module exports no kit',
+    );
+  });
+});
 
 describe(listKitChecks, () => {
   it("returns the checks of the kit's first flat checklist in declaration order", () => {
