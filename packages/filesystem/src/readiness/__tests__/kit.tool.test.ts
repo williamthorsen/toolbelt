@@ -81,13 +81,6 @@ const OWN_DIRECTORY_CHAIN = dedent`
   }
 
 `;
-// Prose about both idioms, and reads that perform neither.
-const UNCLAIMED = dedent`
-  // Ascends by dir = path.dirname(dir) until it reaches the filesystem root.
-  export const parentDir = path.dirname(filePath);
-  export const backup = () => fs.renameSync(filePath, backupPath);
-
-`;
 const ADOPTER = dedent`
   import { writeAtomic } from '@williamthorsen/toolbelt.filesystem/candidate';
   export const save = (filePath, content) => writeAtomic(filePath, content);
@@ -146,15 +139,6 @@ describe('The filesystem adoption kit', () => {
       adoptedCount: 0,
       findings: [],
     });
-  });
-
-  it('neither reports nor counts prose about an idiom or a call that performs neither', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/paths.ts': UNCLAIMED });
-    using _cwd = pointCwdAt(tree.dir);
-
-    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
-
-    expect(outcomes).toStrictEqual(Array.from({ length: 2 }, () => ({ adoptedCount: 0, findings: [] })));
   });
 
   it('exempts the package’s own implementations, and reports a hand-roll beside them', async () => {

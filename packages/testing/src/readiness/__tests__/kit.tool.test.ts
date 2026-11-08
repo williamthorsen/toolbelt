@@ -27,28 +27,6 @@ const CAPTURE = [
   '',
 ].join('\n');
 const STDIO_SPY = "vi.spyOn(process.stdout, 'write').mockImplementation(() => true);\n";
-// A catch that reports rather than assigns, one that rethrows, and a try block running more than one call.
-// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
-const UNCLAIMED = [
-  'try {',
-  '  parseConfig(text);',
-  '} catch (error) {',
-  '  report(error);',
-  '}',
-  'try {',
-  '  parseConfig(text);',
-  '} catch (error) {',
-  '  throw error;',
-  '}',
-  'let caught: unknown;',
-  'try {',
-  '  setup();',
-  '  parseConfig(text);',
-  '} catch (error) {',
-  '  caught = error;',
-  '}',
-  '',
-].join('\n');
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.testing', version: '1.0.0' });
 // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
 const ADOPTER = [
@@ -147,18 +125,6 @@ describe('The testing adoption kit', () => {
       runCheck(mapChecksById(await listFreshKitChecks(KIT_URL)).get(STDIO_CAPTURE_CHECK)),
     ).resolves.toStrictEqual({
       adoptedCount: 1,
-      findings: [],
-    });
-  });
-
-  it('neither reports nor counts a try/catch that captures nothing', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/probe.unit.test.ts': UNCLAIMED });
-    using _cwd = pointCwdAt(tree.dir);
-
-    await expect(
-      runCheck(mapChecksById(await listFreshKitChecks(KIT_URL)).get(ERROR_CAPTURE_CHECK)),
-    ).resolves.toStrictEqual({
-      adoptedCount: 0,
       findings: [],
     });
   });

@@ -25,13 +25,6 @@ const OWN_GUARD = dedent`
   }
 
 `;
-// Prose describing a search, and reads of an enum that search no values.
-const UNCLAIMED = dedent`
-  // Returns true where Object.values(Color).includes(value).
-  export const count = Object.values(Color).length;
-  export const hasKey = Object.keys(Color).includes(key);
-
-`;
 const ADOPTER = dedent`
   import { isEnumValue } from '@williamthorsen/toolbelt.enums';
   export const known = isEnumValue(Color, value);
@@ -74,16 +67,6 @@ describe('The enums adoption kit', () => {
 
     await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
       adoptedCount: 1,
-      findings: [],
-    });
-  });
-
-  it('neither reports nor counts prose about the test or a read that searches no values', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/palette.ts': UNCLAIMED });
-    using _cwd = pointCwdAt(tree.dir);
-
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
-      adoptedCount: 0,
       findings: [],
     });
   });

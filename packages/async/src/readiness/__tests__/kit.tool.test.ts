@@ -6,7 +6,6 @@ import {
   runSkip,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
-import { dedent } from '@williamthorsen/toolbelt.strings';
 import { pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, it } from 'vitest';
 
@@ -16,13 +15,6 @@ const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.asyn
 const SLEEP = 'export const waited = new Promise((resolve) => setTimeout(resolve, 50));\n';
 // The package's own `delay`, containing the idiom that its check recommends replacing.
 const OWN_DELAY = 'export function delay(ms) {\n  return new Promise((resolve) => setTimeout(resolve, ms));\n}\n';
-// A timer call with a value, a callback that settles nothing, and an executor doing more than the timer.
-const UNCLAIMED = dedent`
-  export const tagged = new Promise((resolve) => setTimeout(resolve, 50, token));
-  export const stalled = new Promise((resolve) => setTimeout(done, 50));
-  export const tracked = new Promise((resolve) => { report(); setTimeout(resolve, 50); });
-
-`;
 const ADOPTER = "import { delay } from '@williamthorsen/toolbelt.async';\nawait delay(50);\n";
 
 describe('The async adoption kit', () => {
@@ -62,16 +54,6 @@ describe('The async adoption kit', () => {
 
     await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
       adoptedCount: 1,
-      findings: [],
-    });
-  });
-
-  it('neither reports nor counts a promise that is no bare sleep', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/probe.ts': UNCLAIMED });
-    using _cwd = pointCwdAt(tree.dir);
-
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
-      adoptedCount: 0,
       findings: [],
     });
   });

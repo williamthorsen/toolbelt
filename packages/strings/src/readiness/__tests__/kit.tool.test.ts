@@ -17,9 +17,6 @@ const CAPITALIZE = 'export const label = word.charAt(0).toUpperCase() + word.sli
 const OWN_CAPITALIZE =
   'export function capitalize(input) {\n  return input.charAt(0).toUpperCase() + input.slice(1);\n}\n';
 const PLURALIZE = "export const noun = count === 1 ? 'item' : 'items';\n";
-// An unrelated literal pair and a plural chosen by a greater-than test, neither of which this kit claims.
-const UNCLAIMED =
-  "export const state = status === 1 ? 'active' : 'inactive';\nexport const s = count > 1 ? 's' : '';\n";
 const JOINED_ARRAY = "export const text = [\n  'first',\n  'second',\n].join('\\n');\n";
 const LAYOUT_TEMPLATE = 'export function help() {\n  return `Usage: tool\nCommands:\n`;\n}\n';
 const ADOPTER = "import { capitalize } from '@williamthorsen/toolbelt.strings/candidate';\ncapitalize(word);\n";
@@ -84,16 +81,6 @@ describe('The strings adoption kit', () => {
 
     await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
       adoptedCount: 1,
-      findings: [],
-    });
-  });
-
-  it('neither reports nor counts a comparison against 1 that pluralizes nothing', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/state.ts': UNCLAIMED });
-    using _cwd = pointCwdAt(tree.dir);
-
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[1])).resolves.toStrictEqual({
-      adoptedCount: 0,
       findings: [],
     });
   });

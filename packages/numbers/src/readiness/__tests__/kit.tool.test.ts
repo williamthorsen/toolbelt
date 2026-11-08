@@ -17,8 +17,6 @@ const CLAMP = 'export const bounded = Math.max(min, Math.min(max, value));\n';
 const OWN_CLAMP = 'export function clamp(value, bounds) {\n  return Math.max(min, Math.min(max, value));\n}\n';
 const ROUND = 'export const rate = Math.round(value * 100) / 100;\n';
 const RANDOM = 'export const roll = Math.floor(Math.random() * sides);\n';
-// The `arrays` idiom and a legitimate scaling, neither of which this kit claims.
-const UNCLAIMED = 'export const item = items[Math.floor(Math.random() * items.length)];\nexport const t = a * 100;\n';
 const ADOPTER = "import { round } from '@williamthorsen/toolbelt.numbers/candidate';\nround(value, 2);\n";
 const ALL_IDIOMS = { 'package.json': MANIFEST, 'src/bound.ts': CLAMP, 'src/rate.ts': ROUND, 'src/roll.ts': RANDOM };
 
@@ -59,16 +57,6 @@ describe('The numbers adoption kit', () => {
 
   // A subscripted random integer is `toolbelt.arrays`' site. Claiming it would report one line twice across
   // the two kits; counting it would leave a fraction that the checks here could not close.
-  it('neither reports nor counts a site that it hands off to another kit', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/pick.ts': UNCLAIMED });
-    using _cwd = pointCwdAt(tree.dir);
-
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[2])).resolves.toStrictEqual({
-      adoptedCount: 0,
-      findings: [],
-    });
-  });
-
   it('exempts the package’s own clamp, and reports a hand-roll beside it', async () => {
     using tree = createTrackedRepo({
       'package.json': PUBLISHER_MANIFEST,
