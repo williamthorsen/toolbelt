@@ -1,6 +1,6 @@
 import {
   createTrackedRepo,
-  listKitChecks,
+  listFreshKitChecks,
   listReportedFindings,
   pointCwdAt,
   runCheck,
@@ -9,8 +9,9 @@ import {
 } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import type { RdyCheck } from 'readyup';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
+const KIT_URL = new URL('../../../.readyup/kits/default.ts', import.meta.url);
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.vitest', version: '1.0.0' });
 
@@ -79,7 +80,7 @@ describe('The vitest adoption kit', () => {
     using tree = createTrackedRepo(EVERY_IDIOM);
     using _cwd = pointCwdAt(tree.dir);
 
-    const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
+    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
 
     // Nine kinds over eight checks: `no-hand-rolled-exit-mock` takes the throwing and the unreadable mock,
     // and `no-hand-rolled-console-capture` takes the full capture and the spy left unclassified.
@@ -105,7 +106,7 @@ describe('The vitest adoption kit', () => {
     using tree = createTrackedRepo(EVERY_IDIOM);
     using _cwd = pointCwdAt(tree.dir);
 
-    const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
+    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
 
     expect(outcomes.map(summarizeFraction)).toStrictEqual(
       Array.from({ length: 8 }, () => ({ adoptedCount: 0, findingCount: 10 })),
@@ -116,14 +117,20 @@ describe('The vitest adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/exit.unit.test.ts': ADOPTER });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
+    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+      adoptedCount: 1,
+      findings: [],
+    });
   });
 
   it('neither reports nor counts a spy for which the package has no advice', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/probe.unit.test.ts': UNCLAIMED });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 0, findings: [] });
+    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+      adoptedCount: 0,
+      findings: [],
+    });
   });
 
   // Because the test file beside it keeps the check running, a narrowed filter reports the silence here rather than
@@ -159,7 +166,7 @@ describe('The vitest adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/config.ts': SILENCE });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runSkip((await loadChecks())[0])).resolves.toBe('the project contains no test files');
+    await expect(runSkip((await listFreshKitChecks(KIT_URL))[0])).resolves.toBe('the project contains no test files');
   });
 });
 
@@ -167,20 +174,7 @@ describe('The vitest adoption kit', () => {
 
 /** Finds a check by its id, for the assertions that depend on which of the eight checks reported. */
 async function findCheck(id: string): Promise<RdyCheck | undefined> {
-  return (await loadChecks()).find((check) => check.id === id);
-}
-
-/**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
- *
- * A kit keeps its project sweep in its own closure, so one import would give every test here the first
- * fixture repo's findings. Resetting the registry leaves each test with a kit that has swept nothing yet.
- */
-async function loadChecks(): Promise<readonly RdyCheck[]> {
-  vi.resetModules();
-  const kit = (await import('../../../.readyup/kits/default.ts')).default;
-
-  return listKitChecks(kit);
+  return (await listFreshKitChecks(KIT_URL)).find((check) => check.id === id);
 }
 
 // endregion | Helpers

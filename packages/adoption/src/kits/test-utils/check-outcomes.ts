@@ -1,4 +1,20 @@
+import { randomUUID } from 'node:crypto';
+
 import { type FindingOutcome, isFlatChecklist, type OutcomeFinding, type RdyCheck, type RdyKit } from 'readyup';
+
+/**
+ * Imports the kit module at `kitUrl` afresh and lists its checks, as `listKitChecks` does. A kit keeps its project
+ * sweep in its own closure, so a reused import would give every caller the first fixture repo's findings. A query
+ * string unique to the call makes the module loader evaluate the kit module again, and with it the closure.
+ */
+export async function listFreshKitChecks(kitUrl: URL): Promise<readonly RdyCheck[]> {
+  const freshUrl = new URL(kitUrl);
+  freshUrl.searchParams.set('fresh', randomUUID());
+
+  const kitModule: unknown = await import(/* @vite-ignore */ freshUrl.href);
+  if (!hasKitExport(kitModule)) throw new Error('the module exports no kit');
+  return listKitChecks(kitModule.default);
+}
 
 /**
  * Lists the checks of a kit's first checklist, in declaration order. Throws when that checklist is missing or
@@ -43,3 +59,14 @@ export function summarizeFraction(outcome: FindingOutcome): {
 } {
   return { adoptedCount: outcome.adoptedCount, findingCount: outcome.findings.length };
 }
+
+// region | Helpers
+
+/** Reports whether a module's default export has the shape of a kit. */
+function hasKitExport(value: unknown): value is { default: RdyKit } {
+  if (typeof value !== 'object' || value === null || !('default' in value)) return false;
+  const kit: unknown = value.default;
+  return typeof kit === 'object' && kit !== null && 'checklists' in kit && Array.isArray(kit.checklists);
+}
+
+// endregion | Helpers

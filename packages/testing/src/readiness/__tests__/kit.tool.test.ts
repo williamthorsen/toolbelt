@@ -1,16 +1,17 @@
 import {
   createTrackedRepo,
-  listKitChecks,
+  listFreshKitChecks,
   listReportedFindings,
   runCheck,
   runSkip,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
 import type { RdyCheck } from 'readyup';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { pointCwdAt } from '../../3-candidate/pointCwdAt.ts';
 
+const KIT_URL = new URL('../../../.readyup/kits/default.ts', import.meta.url);
 const ERROR_CAPTURE_CHECK = 'no-hand-rolled-error-capture';
 const STDIO_CAPTURE_CHECK = 'no-hand-rolled-stdio-capture';
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
@@ -67,7 +68,9 @@ describe('The testing adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/config.unit.test.ts': CAPTURE });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks()).get(ERROR_CAPTURE_CHECK))).resolves.toStrictEqual({
+    await expect(
+      runCheck(mapChecksById(await listFreshKitChecks(KIT_URL)).get(ERROR_CAPTURE_CHECK)),
+    ).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 3, path: 'src/config.unit.test.ts', reported: true, symbol: 'caught' }],
     });
@@ -77,7 +80,9 @@ describe('The testing adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/output.unit.test.ts': STDIO_SPY });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks()).get(STDIO_CAPTURE_CHECK))).resolves.toStrictEqual({
+    await expect(
+      runCheck(mapChecksById(await listFreshKitChecks(KIT_URL)).get(STDIO_CAPTURE_CHECK)),
+    ).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 1, path: 'src/output.unit.test.ts', reported: true }],
     });
@@ -94,7 +99,9 @@ describe('The testing adoption kit', () => {
     });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks()).get(ERROR_CAPTURE_CHECK))).resolves.toStrictEqual({
+    await expect(
+      runCheck(mapChecksById(await listFreshKitChecks(KIT_URL)).get(ERROR_CAPTURE_CHECK)),
+    ).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -109,7 +116,7 @@ describe('The testing adoption kit', () => {
     });
     using _cwd = pointCwdAt(tree.dir);
 
-    const checks = await loadChecks();
+    const checks = mapChecksById(await listFreshKitChecks(KIT_URL));
     const errorCaptureOutcome = await runCheck(checks.get(ERROR_CAPTURE_CHECK));
     const stdioCaptureOutcome = await runCheck(checks.get(STDIO_CAPTURE_CHECK));
 
@@ -124,7 +131,9 @@ describe('The testing adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/config.unit.test.ts': ADOPTER });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks()).get(ERROR_CAPTURE_CHECK))).resolves.toStrictEqual({
+    await expect(
+      runCheck(mapChecksById(await listFreshKitChecks(KIT_URL)).get(ERROR_CAPTURE_CHECK)),
+    ).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -134,7 +143,9 @@ describe('The testing adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/output.unit.test.ts': STDIO_ADOPTER });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks()).get(STDIO_CAPTURE_CHECK))).resolves.toStrictEqual({
+    await expect(
+      runCheck(mapChecksById(await listFreshKitChecks(KIT_URL)).get(STDIO_CAPTURE_CHECK)),
+    ).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -144,7 +155,9 @@ describe('The testing adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/probe.unit.test.ts': UNCLAIMED });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks()).get(ERROR_CAPTURE_CHECK))).resolves.toStrictEqual({
+    await expect(
+      runCheck(mapChecksById(await listFreshKitChecks(KIT_URL)).get(ERROR_CAPTURE_CHECK)),
+    ).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [],
     });
@@ -154,7 +167,9 @@ describe('The testing adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/config.unit.test.ts': CAPTURE + CAPTURE });
     using _cwd = pointCwdAt(tree.dir);
 
-    expect(listReportedFindings(await runCheck((await loadChecks()).get(ERROR_CAPTURE_CHECK)))).toStrictEqual([
+    expect(
+      listReportedFindings(await runCheck(mapChecksById(await listFreshKitChecks(KIT_URL)).get(ERROR_CAPTURE_CHECK))),
+    ).toStrictEqual([
       { line: 3, path: 'src/config.unit.test.ts', reported: true, symbol: 'caught' },
       { line: 10, path: 'src/config.unit.test.ts', reported: true, symbol: 'caught' },
     ]);
@@ -167,16 +182,16 @@ describe('The testing adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': PUBLISHER_MANIFEST, 'src/config.unit.test.ts': CAPTURE });
     using _cwd = pointCwdAt(tree.dir);
 
-    expect(listReportedFindings(await runCheck((await loadChecks()).get(ERROR_CAPTURE_CHECK)))).toStrictEqual([
-      { line: 3, path: 'src/config.unit.test.ts', reported: true, symbol: 'caught' },
-    ]);
+    expect(
+      listReportedFindings(await runCheck(mapChecksById(await listFreshKitChecks(KIT_URL)).get(ERROR_CAPTURE_CHECK))),
+    ).toStrictEqual([{ line: 3, path: 'src/config.unit.test.ts', reported: true, symbol: 'caught' }]);
   });
 
   it('skips the check when the sweep matches no source', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/config.ts': CAPTURE });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runSkip((await loadChecks()).get(ERROR_CAPTURE_CHECK))).resolves.toBe(
+    await expect(runSkip(mapChecksById(await listFreshKitChecks(KIT_URL)).get(ERROR_CAPTURE_CHECK))).resolves.toBe(
       'the project contains no test files',
     );
   });
@@ -184,17 +199,9 @@ describe('The testing adoption kit', () => {
 
 // region | Helpers
 
-/**
- * Loads a fresh kit and maps each of its adoption checks by id.
- *
- * A kit keeps its project sweep in its own closure, so one import would give every test here the first
- * fixture repo's findings. Resetting the registry leaves each test with a kit that has swept nothing yet.
- */
-async function loadChecks(): Promise<Map<string, RdyCheck>> {
-  vi.resetModules();
-  const kit = (await import('../../../.readyup/kits/default.ts')).default;
-
-  return new Map(listKitChecks(kit).map((check) => [check.id ?? check.name, check]));
+/** Maps a kit's checks by id, falling back to the name for a check that declares none. */
+function mapChecksById(checks: readonly RdyCheck[]): Map<string, RdyCheck> {
+  return new Map(checks.map((check) => [check.id ?? check.name, check]));
 }
 
 // endregion | Helpers

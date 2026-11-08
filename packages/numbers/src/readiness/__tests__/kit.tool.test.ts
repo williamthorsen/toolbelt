@@ -1,15 +1,15 @@
 import {
   createTrackedRepo,
-  listKitChecks,
+  listFreshKitChecks,
   listReportedFindings,
   runCheck,
   runSkip,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
-import type { RdyCheck } from 'readyup';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
+const KIT_URL = new URL('../../../.readyup/kits/default.ts', import.meta.url);
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.numbers', version: '1.0.0' });
 const CLAMP = 'export const bounded = Math.max(min, Math.min(max, value));\n';
@@ -27,7 +27,7 @@ describe('The numbers adoption kit', () => {
     using tree = createTrackedRepo(ALL_IDIOMS);
     using _cwd = pointCwdAt(tree.dir);
 
-    const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
+    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
 
     expect(outcomes.map(listReportedFindings)).toStrictEqual([
       [{ line: 1, path: 'src/bound.ts', reported: true }],
@@ -40,7 +40,7 @@ describe('The numbers adoption kit', () => {
     using tree = createTrackedRepo(ALL_IDIOMS);
     using _cwd = pointCwdAt(tree.dir);
 
-    const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
+    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
 
     expect(outcomes.map(summarizeFraction)).toStrictEqual(
       Array.from({ length: 3 }, () => ({ adoptedCount: 0, findingCount: 3 })),
@@ -51,7 +51,10 @@ describe('The numbers adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/rate.ts': ADOPTER });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[1])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
+    await expect(runCheck((await listFreshKitChecks(KIT_URL))[1])).resolves.toStrictEqual({
+      adoptedCount: 1,
+      findings: [],
+    });
   });
 
   // A subscripted random integer is `toolbelt.arrays`' site. Claiming it would report one line twice across
@@ -60,7 +63,10 @@ describe('The numbers adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/pick.ts': UNCLAIMED });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[2])).resolves.toStrictEqual({ adoptedCount: 0, findings: [] });
+    await expect(runCheck((await listFreshKitChecks(KIT_URL))[2])).resolves.toStrictEqual({
+      adoptedCount: 0,
+      findings: [],
+    });
   });
 
   it('exempts the package’s own clamp, and reports a hand-roll beside it', async () => {
@@ -71,7 +77,7 @@ describe('The numbers adoption kit', () => {
     });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({
+    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 1, path: 'src/other.ts', reported: true }],
     });
@@ -81,25 +87,8 @@ describe('The numbers adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/bound.unit.test.ts': CLAMP });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runSkip((await loadChecks())[0])).resolves.toBe(
+    await expect(runSkip((await listFreshKitChecks(KIT_URL))[0])).resolves.toBe(
       'the project contains no JavaScript or TypeScript sources outside the exempt paths',
     );
   });
 });
-
-// region | Helpers
-
-/**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
- *
- * A kit keeps its project sweep in its own closure, so one import would serve the first fixture repo's findings
- * to every test here. Resetting the registry gives each test a kit that has swept nothing yet.
- */
-async function loadChecks(): Promise<readonly RdyCheck[]> {
-  vi.resetModules();
-  const kit = (await import('../../../.readyup/kits/default.ts')).default;
-
-  return listKitChecks(kit);
-}
-
-// endregion | Helpers

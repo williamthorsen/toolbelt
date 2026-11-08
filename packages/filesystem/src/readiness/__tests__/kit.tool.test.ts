@@ -1,6 +1,6 @@
 import {
   createTrackedRepo,
-  listKitChecks,
+  listFreshKitChecks,
   listReportedFindings,
   pointCwdAt,
   runCheck,
@@ -8,9 +8,9 @@ import {
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
-import type { RdyCheck } from 'readyup';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
+const KIT_URL = new URL('../../../.readyup/kits/default.ts', import.meta.url);
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.filesystem', version: '1.0.0' });
 
@@ -105,7 +105,7 @@ describe('The filesystem adoption kit', () => {
     using tree = createTrackedRepo(EVERY_IDIOM);
     using _cwd = pointCwdAt(tree.dir);
 
-    const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
+    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
 
     // The write check names the function to change; a loop declares nothing, so the walk check names the location.
     expect(outcomes.map(listReportedFindings)).toStrictEqual([
@@ -121,7 +121,7 @@ describe('The filesystem adoption kit', () => {
     using tree = createTrackedRepo(EVERY_IDIOM);
     using _cwd = pointCwdAt(tree.dir);
 
-    const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
+    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
 
     expect(outcomes.map(summarizeFraction)).toStrictEqual(
       Array.from({ length: 2 }, () => ({ adoptedCount: 0, findingCount: 3 })),
@@ -132,21 +132,27 @@ describe('The filesystem adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/save.ts': ADOPTER });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
+    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+      adoptedCount: 1,
+      findings: [],
+    });
   });
 
   it('leaves a walk that probes for a manifest out of the report and out of the denominator', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/root.ts': MANIFEST_PROBE });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[1])).resolves.toStrictEqual({ adoptedCount: 0, findings: [] });
+    await expect(runCheck((await listFreshKitChecks(KIT_URL))[1])).resolves.toStrictEqual({
+      adoptedCount: 0,
+      findings: [],
+    });
   });
 
   it('neither reports nor counts prose about an idiom or a call that performs neither', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/paths.ts': UNCLAIMED });
     using _cwd = pointCwdAt(tree.dir);
 
-    const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
+    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
 
     expect(outcomes).toStrictEqual(Array.from({ length: 2 }, () => ({ adoptedCount: 0, findings: [] })));
   });
@@ -160,7 +166,7 @@ describe('The filesystem adoption kit', () => {
     });
     using _cwd = pointCwdAt(tree.dir);
 
-    const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
+    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
 
     expect(outcomes.flatMap(listReportedFindings)).toStrictEqual([
       { line: 4, path: 'src/other.ts', reported: true, symbol: 'save' },
@@ -176,7 +182,7 @@ describe('The filesystem adoption kit', () => {
     });
     using _cwd = pointCwdAt(tree.dir);
 
-    const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
+    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
 
     expect(outcomes).toStrictEqual(Array.from({ length: 2 }, () => ({ adoptedCount: 1, findings: [] })));
   });
@@ -189,25 +195,8 @@ describe('The filesystem adoption kit', () => {
     });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runSkip((await loadChecks())[0])).resolves.toBe(
+    await expect(runSkip((await listFreshKitChecks(KIT_URL))[0])).resolves.toBe(
       'the project contains no JavaScript or TypeScript sources outside the exempt paths',
     );
   });
 });
-
-// region | Helpers
-
-/**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
- *
- * A kit keeps its project sweep in its own closure, so one import would give every test here the first
- * fixture repo's findings. Resetting the registry leaves each test with a kit that has swept nothing yet.
- */
-async function loadChecks(): Promise<readonly RdyCheck[]> {
-  vi.resetModules();
-  const kit = (await import('../../../.readyup/kits/default.ts')).default;
-
-  return listKitChecks(kit);
-}
-
-// endregion | Helpers

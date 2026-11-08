@@ -1,14 +1,14 @@
 import {
   createTrackedRepo,
-  listKitChecks,
+  listFreshKitChecks,
   pointCwdAt,
   runCheck,
   runSkip,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
-import type { RdyCheck } from 'readyup';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
+const KIT_URL = new URL('../../../.readyup/kits/default.ts', import.meta.url);
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.cli', version: '1.0.0' });
 
@@ -42,7 +42,7 @@ describe('The cli adoption kit', () => {
   it('reports each kind under its own check, and counts both against calls into the package', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/adopter.ts': ADOPTER, 'src/run.ts': RUNNER });
     using _cwd = pointCwdAt(tree.dir);
-    const [parseArgsCheck, flagScanCheck] = await loadChecks();
+    const [parseArgsCheck, flagScanCheck] = await listFreshKitChecks(KIT_URL);
 
     await expect(runCheck(parseArgsCheck)).resolves.toStrictEqual({
       adoptedCount: 2,
@@ -68,7 +68,7 @@ describe('The cli adoption kit', () => {
       'src/bin/run.ts': RUNNER,
     });
     using _cwd = pointCwdAt(tree.dir);
-    const [parseArgsCheck] = await loadChecks();
+    const [parseArgsCheck] = await listFreshKitChecks(KIT_URL);
 
     await expect(runCheck(parseArgsCheck)).resolves.toMatchObject({
       findings: [
@@ -87,7 +87,7 @@ describe('The cli adoption kit', () => {
       'src/runCli.ts': OWN_RUN_CLI,
     });
     using _cwd = pointCwdAt(tree.dir);
-    const [, flagScanCheck] = await loadChecks();
+    const [, flagScanCheck] = await listFreshKitChecks(KIT_URL);
 
     await expect(runCheck(flagScanCheck)).resolves.toStrictEqual({
       adoptedCount: 0,
@@ -101,7 +101,7 @@ describe('The cli adoption kit', () => {
   it('skips the checks when the sweep matches no source', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/__tests__/run.unit.test.ts': RUNNER });
     using _cwd = pointCwdAt(tree.dir);
-    const checks = await loadChecks();
+    const checks = await listFreshKitChecks(KIT_URL);
 
     await expect(Promise.all(checks.map((check) => runSkip(check)))).resolves.toStrictEqual([
       'the project contains no JavaScript or TypeScript sources outside its tests',
@@ -109,20 +109,3 @@ describe('The cli adoption kit', () => {
     ]);
   });
 });
-
-// region | Helpers
-
-/**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
- *
- * A kit keeps its project sweep in its own closure, so one import would give every test here the first
- * fixture repo's findings. Resetting the registry leaves each test with a kit that has swept nothing yet.
- */
-async function loadChecks(): Promise<readonly RdyCheck[]> {
-  vi.resetModules();
-  const kit = (await import('../../../.readyup/kits/default.ts')).default;
-
-  return listKitChecks(kit);
-}
-
-// endregion | Helpers
