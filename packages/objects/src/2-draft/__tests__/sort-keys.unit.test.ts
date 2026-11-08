@@ -51,6 +51,28 @@ describe(sortKeys, () => {
 
     expect(Object.keys(actual)).toStrictEqual(['z', 'a']);
   });
+
+  it('copies enumerable symbol-keyed properties after the sorted string keys, in their original order', () => {
+    const first = Symbol('first');
+    const second = Symbol('second');
+    const input = { [second]: 3, b: 1, [first]: 4, a: 2 };
+
+    const actual = sortKeys(input);
+
+    expect(Reflect.ownKeys(actual)).toStrictEqual(['a', 'b', second, first]);
+    expect(actual[second]).toBe(3);
+    expect(actual[first]).toBe(4);
+  });
+
+  it('does not copy a non-enumerable symbol-keyed property', () => {
+    const hidden = Symbol('hidden');
+    const input: PlainObject = { b: 1, a: 2 };
+    Object.defineProperty(input, hidden, { enumerable: false, value: 3 });
+
+    const actual = sortKeys(input);
+
+    expect(Reflect.ownKeys(actual)).toStrictEqual(['a', 'b']);
+  });
 });
 
 describe(sortObjectKeys, () => {
@@ -134,5 +156,17 @@ describe(sortObjectKeys, () => {
 
     expect(Object.keys(actual)).toStrictEqual(['a', 'm', 'z']);
     expect(actual.m).toBe(nested);
+  });
+
+  it('copies symbol-keyed properties after the sorted string keys, sorting their values', () => {
+    const tag = Symbol('tag');
+    const nested = { y: 1, b: 2 };
+    const input = { z: 1, [tag]: nested, a: 2 };
+
+    const actual = sortObjectKeys(input);
+
+    expect(Reflect.ownKeys(actual)).toStrictEqual(['a', 'z', tag]);
+    expect(actual[tag]).not.toBe(nested);
+    expect(Object.keys(actual[tag])).toStrictEqual(['b', 'y']);
   });
 });
