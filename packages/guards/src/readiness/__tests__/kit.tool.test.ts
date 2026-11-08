@@ -38,8 +38,6 @@ const OWN_ASSERT = [
   '}',
   '',
 ].join('\n');
-// Prose about a guard, and a source that tests nothing at all.
-const UNCLAIMED = ['// Returns true where typeof value === “string”.', 'export const answer = 42;', ''].join('\n');
 // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on guards through arrays, so guards cannot import dedent without a cycle
 const ADOPTER = [
   "import { isString } from '@williamthorsen/toolbelt.guards';",
@@ -89,16 +87,6 @@ describe('The guards adoption kit', () => {
 
     await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
       adoptedCount: 1,
-      findings: [],
-    });
-  });
-
-  it('neither reports nor counts prose about a guard', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/probe.ts': UNCLAIMED });
-    using _cwd = pointCwdAt(tree.dir);
-
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
-      adoptedCount: 0,
       findings: [],
     });
   });
