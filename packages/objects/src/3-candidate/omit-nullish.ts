@@ -1,6 +1,3 @@
-/* eslint unicorn/no-array-reduce: off */
-/* eslint @typescript-eslint/consistent-type-assertions: off */
-
 /**
  * Returns a copy of the object without the keys whose values are null or undefined.
  *
@@ -9,12 +6,13 @@
  * @stage candidate
  */
 export function omitNullish<T extends object>(obj: NotArray<T>): NonNullishProperties<T> {
-  return Object.keys(obj).reduce((acc, key) => {
-    if (obj[key as keyof T] !== null && obj[key as keyof T] !== undefined) {
-      acc[key as keyof T] = obj[key as keyof T];
-    }
-    return acc;
-  }, {} as T);
+  const entries: Array<[string, unknown]> = Object.entries(obj);
+  // The copy holds exactly the string-keyed own enumerable properties of `obj` whose values are neither null nor
+  // undefined, which TypeScript cannot infer from `Object.fromEntries`.
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  return Object.fromEntries(
+    entries.filter(([, value]) => value !== null && value !== undefined),
+  ) as NonNullishProperties<T>;
 }
 
 /**
@@ -25,12 +23,11 @@ export function omitNullish<T extends object>(obj: NotArray<T>): NonNullishPrope
  * @stage candidate
  */
 export function omitUndefined<T extends object>(obj: NotArray<T>): DefinedProperties<T> {
-  return Object.keys(obj).reduce((acc, key) => {
-    if (obj[key as keyof T] !== undefined) {
-      acc[key as keyof T] = obj[key as keyof T];
-    }
-    return acc;
-  }, {} as T);
+  const entries: Array<[string, unknown]> = Object.entries(obj);
+  // The copy holds exactly the string-keyed own enumerable properties of `obj` whose values are not undefined, which
+  // TypeScript cannot infer from `Object.fromEntries`.
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  return Object.fromEntries(entries.filter(([, value]) => value !== undefined)) as DefinedProperties<T>;
 }
 
 export type DefinedProperties<T> = Pick<T, NonNeverKeys<T> & NonUndefinedKeys<T>>;
