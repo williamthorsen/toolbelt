@@ -1,15 +1,15 @@
 import {
   createTrackedRepo,
-  listKitChecks,
+  listFreshKitChecks,
   listReportedFindings,
   pointCwdAt,
   runCheck,
   runSkip,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
-import type { RdyCheck } from 'readyup';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
+const KIT_URL = new URL('../../../.readyup/kits/default.ts', import.meta.url);
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.guards', version: '1.0.0' });
 
@@ -59,7 +59,7 @@ describe('The guards adoption kit', () => {
     using tree = createTrackedRepo(EVERY_IDIOM);
     using _cwd = pointCwdAt(tree.dir);
 
-    const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
+    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
 
     // `no-assertion-clone` takes both assertion kinds, so its row contains two sites.
     expect(outcomes.map(listReportedFindings)).toStrictEqual([
@@ -76,7 +76,7 @@ describe('The guards adoption kit', () => {
     using tree = createTrackedRepo(EVERY_IDIOM);
     using _cwd = pointCwdAt(tree.dir);
 
-    const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
+    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
 
     expect(outcomes.map(summarizeFraction)).toStrictEqual(
       Array.from({ length: 3 }, () => ({ adoptedCount: 0, findingCount: 4 })),
@@ -87,14 +87,20 @@ describe('The guards adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/report.ts': ADOPTER });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
+    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+      adoptedCount: 1,
+      findings: [],
+    });
   });
 
   it('neither reports nor counts prose about a guard', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/probe.ts': UNCLAIMED });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 0, findings: [] });
+    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+      adoptedCount: 0,
+      findings: [],
+    });
   });
 
   it('exempts the package’s own assert, and reports a hand-roll beside it', async () => {
@@ -105,7 +111,7 @@ describe('The guards adoption kit', () => {
     });
     using _cwd = pointCwdAt(tree.dir);
 
-    const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
+    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
 
     expect(outcomes.flatMap(listReportedFindings)).toStrictEqual([
       { line: 1, path: 'src/other.ts', reported: true, symbol: 'check' },
@@ -121,7 +127,10 @@ describe('The guards adoption kit', () => {
     });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
+    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+      adoptedCount: 1,
+      findings: [],
+    });
   });
 
   it('skips every check when the sweep matches no source', async () => {
@@ -132,25 +141,8 @@ describe('The guards adoption kit', () => {
     });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runSkip((await loadChecks())[0])).resolves.toBe(
+    await expect(runSkip((await listFreshKitChecks(KIT_URL))[0])).resolves.toBe(
       'the project contains no JavaScript or TypeScript sources outside the exempt paths',
     );
   });
 });
-
-// region | Helpers
-
-/**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
- *
- * A kit keeps its project sweep in its own closure, so one import would give every test here the first
- * fixture repo's findings. Resetting the registry leaves each test with a kit that has swept nothing yet.
- */
-async function loadChecks(): Promise<readonly RdyCheck[]> {
-  vi.resetModules();
-  const kit = (await import('../../../.readyup/kits/default.ts')).default;
-
-  return listKitChecks(kit);
-}
-
-// endregion | Helpers

@@ -1,15 +1,15 @@
 import {
   createTrackedRepo,
-  listKitChecks,
+  listFreshKitChecks,
   listReportedFindings,
   runCheck,
   runSkip,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
-import type { RdyCheck } from 'readyup';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
+const KIT_URL = new URL('../../../.readyup/kits/default.ts', import.meta.url);
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.strings', version: '1.0.0' });
 const CAPITALIZE = 'export const label = word.charAt(0).toUpperCase() + word.slice(1);\n';
@@ -38,7 +38,7 @@ describe('The strings adoption kit', () => {
     using tree = createTrackedRepo(EVERY_IDIOM);
     using _cwd = pointCwdAt(tree.dir);
 
-    const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
+    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
 
     expect(outcomes.map(listReportedFindings)).toStrictEqual([
       [{ line: 1, path: 'src/label.ts', reported: true }],
@@ -52,7 +52,7 @@ describe('The strings adoption kit', () => {
     using tree = createTrackedRepo(EVERY_IDIOM);
     using _cwd = pointCwdAt(tree.dir);
 
-    const outcomes = await Promise.all((await loadChecks()).map((check) => runCheck(check)));
+    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
 
     expect(outcomes.map(summarizeFraction)).toStrictEqual(
       Array.from({ length: 4 }, () => ({ adoptedCount: 0, findingCount: 4 })),
@@ -67,7 +67,7 @@ describe('The strings adoption kit', () => {
     });
     using _cwd = pointCwdAt(tree.dir);
 
-    const checks = await loadChecks();
+    const checks = await listFreshKitChecks(KIT_URL);
 
     await expect(runCheck(checks[0])).resolves.toStrictEqual({
       adoptedCount: 0,
@@ -82,14 +82,20 @@ describe('The strings adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/label.ts': ADOPTER });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
+    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+      adoptedCount: 1,
+      findings: [],
+    });
   });
 
   it('neither reports nor counts a comparison against 1 that pluralizes nothing', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/state.ts': UNCLAIMED });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[1])).resolves.toStrictEqual({ adoptedCount: 0, findings: [] });
+    await expect(runCheck((await listFreshKitChecks(KIT_URL))[1])).resolves.toStrictEqual({
+      adoptedCount: 0,
+      findings: [],
+    });
   });
 
   it('exempts the package’s own capitalize, and reports a hand-roll beside it', async () => {
@@ -100,7 +106,7 @@ describe('The strings adoption kit', () => {
     });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({
+    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 1, path: 'src/other.ts', reported: true }],
     });
@@ -110,7 +116,7 @@ describe('The strings adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/label.unit.test.ts': CAPITALIZE });
     using _cwd = pointCwdAt(tree.dir);
 
-    const checks = await loadChecks();
+    const checks = await listFreshKitChecks(KIT_URL);
 
     await expect(Promise.all(checks.map((check) => runSkip(check)))).resolves.toStrictEqual([
       SOURCES_REASON,
@@ -124,7 +130,7 @@ describe('The strings adoption kit', () => {
     using tree = createTrackedRepo({ 'bin/tool.js': JOINED_ARRAY, 'package.json': MANIFEST });
     using _cwd = pointCwdAt(tree.dir);
 
-    const checks = await loadChecks();
+    const checks = await listFreshKitChecks(KIT_URL);
 
     await expect(Promise.all(checks.map((check) => runSkip(check)))).resolves.toStrictEqual([
       SOURCES_REASON,
@@ -134,20 +140,3 @@ describe('The strings adoption kit', () => {
     ]);
   });
 });
-
-// region | Helpers
-
-/**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
- *
- * A kit keeps its project sweep in its own closure, so one import would give every test here the first
- * fixture repo's findings. Resetting the registry gives each test a kit that has swept nothing yet.
- */
-async function loadChecks(): Promise<readonly RdyCheck[]> {
-  vi.resetModules();
-  const kit = (await import('../../../.readyup/kits/default.ts')).default;
-
-  return listKitChecks(kit);
-}
-
-// endregion | Helpers

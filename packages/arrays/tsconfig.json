@@ -3,6 +3,7 @@
   "extends": "../../tsconfig.json",
   "include": [
     ".config/**/*.ts",
+    ".readyup/**/*.ts",
     "src/", //
     "*.ts",
   ],

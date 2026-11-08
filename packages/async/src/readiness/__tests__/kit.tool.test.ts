@@ -1,6 +1,6 @@
 import {
   createTrackedRepo,
-  listKitChecks,
+  listFreshKitChecks,
   listReportedFindings,
   runCheck,
   runSkip,
@@ -8,9 +8,9 @@ import {
 } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import { pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
-import type { RdyCheck } from 'readyup';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
+const KIT_URL = new URL('../../../.readyup/kits/default.ts', import.meta.url);
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.async', version: '1.0.0' });
 const SLEEP = 'export const waited = new Promise((resolve) => setTimeout(resolve, 50));\n';
@@ -30,7 +30,7 @@ describe('The async adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/wait.ts': SLEEP });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({
+    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 1, path: 'src/wait.ts', reported: true }],
     });
@@ -41,7 +41,7 @@ describe('The async adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/wait.unit.test.ts': SLEEP });
     using _cwd = pointCwdAt(tree.dir);
 
-    expect(listReportedFindings(await runCheck((await loadChecks())[0]))).toStrictEqual([
+    expect(listReportedFindings(await runCheck((await listFreshKitChecks(KIT_URL))[0]))).toStrictEqual([
       { line: 1, path: 'src/wait.unit.test.ts', reported: true },
     ]);
   });
@@ -50,7 +50,7 @@ describe('The async adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/first.ts': SLEEP, 'src/second.ts': SLEEP });
     using _cwd = pointCwdAt(tree.dir);
 
-    expect(summarizeFraction(await runCheck((await loadChecks())[0]))).toStrictEqual({
+    expect(summarizeFraction(await runCheck((await listFreshKitChecks(KIT_URL))[0]))).toStrictEqual({
       adoptedCount: 0,
       findingCount: 2,
     });
@@ -60,14 +60,20 @@ describe('The async adoption kit', () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/wait.ts': ADOPTER });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 1, findings: [] });
+    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+      adoptedCount: 1,
+      findings: [],
+    });
   });
 
   it('neither reports nor counts a promise that is no bare sleep', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/probe.ts': UNCLAIMED });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({ adoptedCount: 0, findings: [] });
+    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+      adoptedCount: 0,
+      findings: [],
+    });
   });
 
   it('exempts the package’s own delay, and reports a hand-roll beside it', async () => {
@@ -78,7 +84,7 @@ describe('The async adoption kit', () => {
     });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await loadChecks())[0])).resolves.toStrictEqual({
+    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 1, path: 'src/other.ts', reported: true }],
     });
@@ -88,25 +94,8 @@ describe('The async adoption kit', () => {
     using tree = createTrackedRepo({ 'bin/run.js': SLEEP, 'package.json': MANIFEST });
     using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runSkip((await loadChecks())[0])).resolves.toBe(
+    await expect(runSkip((await listFreshKitChecks(KIT_URL))[0])).resolves.toBe(
       'the project contains no JavaScript or TypeScript sources outside its bootstrap wrappers',
     );
   });
 });
-
-// region | Helpers
-
-/**
- * Loads a fresh kit and lists its adoption checks, which the flat checklist contains in declaration order.
- *
- * A kit keeps its project sweep in its own closure, so one import would give every test here the first
- * fixture repo's findings. Resetting the registry leaves each test with a kit that has swept nothing yet.
- */
-async function loadChecks(): Promise<readonly RdyCheck[]> {
-  vi.resetModules();
-  const kit = (await import('../../../.readyup/kits/default.ts')).default;
-
-  return listKitChecks(kit);
-}
-
-// endregion | Helpers
