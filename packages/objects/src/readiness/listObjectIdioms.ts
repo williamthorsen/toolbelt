@@ -4,8 +4,6 @@ import { listOwnPropertyCallLines } from './listOwnPropertyCallLines.ts';
 import { listRecordLines } from './listRecordLines.ts';
 import { listStringifyCompareLines } from './listStringifyCompareLines.ts';
 
-export type ObjectIdiomKind = 'own-property-call' | 'record-inline' | 'stringify-compare';
-
 /**
  * Lists every hand-rolled object idiom in a source file that this package publishes a utility for.
  *
@@ -28,6 +26,8 @@ export function listObjectIdioms(source: string): Array<AdoptionSite<ObjectIdiom
 
   return sites.toSorted((a, b) => a.line - b.line);
 }
+
+export type ObjectIdiomKind = 'own-property-call' | 'record-inline' | 'stringify-compare';
 
 // region | Helpers
 
