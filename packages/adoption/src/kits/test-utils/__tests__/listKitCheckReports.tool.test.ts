@@ -30,26 +30,31 @@ describe(listKitCheckReports, () => {
       '.readyup/kits/default.js': buildKit(["{ id: 'verdict', name: 'returns a verdict', check: () => true }"]),
     });
 
-    expect(() => listKitCheckReports(kitPackage.dir, { 'package.json': MANIFEST })).toThrow(
-      'the report holds a check with no fraction',
-    );
+    const error = captureThrown(() => listKitCheckReports(kitPackage.dir, { 'package.json': MANIFEST }));
+
+    expect(error).toBeInstanceOf(TypeError);
+    expect(error).toHaveProperty('message', 'the report holds a check with no fraction');
   });
 
   it('throws with rdy’s own message when the package contains no kit', () => {
     using kitPackage = createTempDir({});
 
+    const error = captureThrown(() => listKitCheckReports(kitPackage.dir, { 'package.json': MANIFEST }));
+
+    expect(error).toBeInstanceOf(Error);
+    expect(error).not.toBeInstanceOf(TypeError);
     // Only rdy's own error names the directory that it searched.
-    expect(() => listKitCheckReports(kitPackage.dir, { 'package.json': MANIFEST })).toThrow(
-      path.join(kitPackage.dir, '.readyup', 'kits'),
-    );
+    expect(error).toHaveProperty('message', expect.stringContaining(path.join(kitPackage.dir, '.readyup', 'kits')));
   });
 
   it('throws with rdy’s own message when the kit fails to load', () => {
     using kitPackage = createTempDir({ '.readyup/kits/default.js': "throw new Error('boom');\n" });
 
-    expect(() => listKitCheckReports(kitPackage.dir, { 'package.json': MANIFEST })).toThrow(
-      /^rdy could not load the kit: .*boom$/,
-    );
+    const error = captureThrown(() => listKitCheckReports(kitPackage.dir, { 'package.json': MANIFEST }));
+
+    expect(error).toBeInstanceOf(Error);
+    expect(error).not.toBeInstanceOf(TypeError);
+    expect(error).toHaveProperty('message', expect.stringMatching(/^rdy could not load the kit: .*boom$/));
   });
 });
 
@@ -71,6 +76,17 @@ function buildKit(checks: string[]): string {
     '};',
     '',
   ].join('\n');
+}
+
+/** Calls the function and returns what it threw, failing the test when it returns. */
+function captureThrown(fn: () => unknown): unknown {
+  try {
+    fn();
+  } catch (error) {
+    return error;
+  }
+
+  expect.unreachable('the call returned without throwing');
 }
 
 // endregion | Helpers

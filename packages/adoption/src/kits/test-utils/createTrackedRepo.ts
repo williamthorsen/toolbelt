@@ -23,9 +23,10 @@ export function createTrackedRepo(entries: Record<string, string>): TempDir {
 
 // region | Helpers
 
-/** Runs a git command against a directory, discarding its output. */
+/** Runs a git command against a directory, discarding its standard output. */
 function runGit(dir: string, ...args: string[]): void {
-  execFileSync('git', ['-C', dir, ...args], { stdio: 'ignore' });
+  // Pipe stderr so that the error thrown on a failure contains git's reason.
+  execFileSync('git', ['-C', dir, ...args], { stdio: ['ignore', 'ignore', 'pipe'] });
 }
 
 // endregion | Helpers
