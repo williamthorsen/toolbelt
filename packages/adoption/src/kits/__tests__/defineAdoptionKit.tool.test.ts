@@ -25,33 +25,6 @@ const ADOPTER = "import { doThing } from '@scope/pkg';\ndoThing();\ndoThing();\n
 const IMPLEMENTATION =
   'export function doThing(x) {\n  return x.name;\n}\n\nexport function other(x) {\n  return x.name;\n}\n';
 
-/** Reports a `clone` on any line declaring a function and an `inline` on any line reading `.name`. */
-function detect(text: string): Array<AdoptionSite<Kind>> {
-  return text.split('\n').flatMap((content, index): Array<AdoptionSite<Kind>> => {
-    if (content.startsWith('function ')) {
-      return [{ kind: 'clone', line: index + 1, symbol: content.slice(9).split('(', 1)[0] ?? '' }];
-    }
-    return content.includes('.name') ? [{ kind: 'inline', line: index + 1 }] : [];
-  });
-}
-
-/** Builds a spec with a clone check and an inline check over TypeScript sources, applying any overrides. */
-function buildSpec(overrides: Partial<AdoptionKitSpec<Kind>> = {}): AdoptionKitSpec<Kind> {
-  return {
-    checks: [
-      { fix: 'delete it', id: 'no-clone', kinds: ['clone'], name: 'clone check' },
-      { fix: 'replace it', id: 'no-inline', kinds: ['inline'], name: 'inline check' },
-    ],
-    description: 'Adoption checks for a project consuming @scope/pkg',
-    detect,
-    exportNames: ['doThing'],
-    noSourcesReason: 'the project contains no sources',
-    packageName: '@scope/pkg',
-    pathFilter: (path) => path.endsWith('.ts'),
-    ...overrides,
-  };
-}
-
 describe(defineAdoptionKit, () => {
   it('reports each finding of a check’s kinds, naming its path and line', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/a.ts': CLONE, 'src/b.ts': INLINE });
@@ -249,6 +222,23 @@ describe(defineAdoptionKit, () => {
 
 // region | Helpers
 
+/** Builds a spec with a clone check and an inline check over TypeScript sources, applying any overrides. */
+function buildSpec(overrides: Partial<AdoptionKitSpec<Kind>> = {}): AdoptionKitSpec<Kind> {
+  return {
+    checks: [
+      { fix: 'delete it', id: 'no-clone', kinds: ['clone'], name: 'clone check' },
+      { fix: 'replace it', id: 'no-inline', kinds: ['inline'], name: 'inline check' },
+    ],
+    description: 'Adoption checks for a project consuming @scope/pkg',
+    detect,
+    exportNames: ['doThing'],
+    noSourcesReason: 'the project contains no sources',
+    packageName: '@scope/pkg',
+    pathFilter: (path) => path.endsWith('.ts'),
+    ...overrides,
+  };
+}
+
 /** Builds a spec whose kit reads non-test sources, with an inline check of its own that reads tests as well. */
 function buildTestScopedSpec(): AdoptionKitSpec<Kind> {
   return buildSpec({
@@ -264,6 +254,16 @@ function buildTestScopedSpec(): AdoptionKitSpec<Kind> {
       },
     ],
     pathFilter: (path) => path.endsWith('.ts') && !path.endsWith('.test.ts'),
+  });
+}
+
+/** Reports a `clone` on any line declaring a function and an `inline` on any line reading `.name`. */
+function detect(text: string): Array<AdoptionSite<Kind>> {
+  return text.split('\n').flatMap((content, index): Array<AdoptionSite<Kind>> => {
+    if (content.startsWith('function ')) {
+      return [{ kind: 'clone', line: index + 1, symbol: content.slice(9).split('(', 1)[0] ?? '' }];
+    }
+    return content.includes('.name') ? [{ kind: 'inline', line: index + 1 }] : [];
   });
 }
 

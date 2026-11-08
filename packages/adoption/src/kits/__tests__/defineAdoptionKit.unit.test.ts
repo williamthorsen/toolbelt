@@ -50,16 +50,16 @@ describe(defineAdoptionKit, () => {
   });
 
   it('refuses a kit giving one id to more than one check, which would silence both at once', () => {
-    const collided: AdoptionKitSpec<Kind> = {
+    const collidingSpec: AdoptionKitSpec<Kind> = {
       ...SPEC,
       checks: SPEC.checks.map((check) => ({ ...check, id: 'no-clone' })),
     };
 
-    expect(() => defineAdoptionKit(collided)).toThrow("@scope/pkg's kit gives one id to more than one check");
+    expect(() => defineAdoptionKit(collidingSpec)).toThrow("@scope/pkg's kit gives one id to more than one check");
   });
 
   it('refuses a kit reading one kind through two path filters, which would split the shared denominator', () => {
-    const split: AdoptionKitSpec<Kind> = {
+    const splitSpec: AdoptionKitSpec<Kind> = {
       ...SPEC,
       checks: [
         ...SPEC.checks,
@@ -74,7 +74,9 @@ describe(defineAdoptionKit, () => {
       ],
     };
 
-    expect(() => defineAdoptionKit(split)).toThrow("@scope/pkg's kit reads one kind through more than one path filter");
+    expect(() => defineAdoptionKit(splitSpec)).toThrow(
+      "@scope/pkg's kit reads one kind through more than one path filter",
+    );
   });
 
   it('defaults severity to warn and honors a declared override', () => {
