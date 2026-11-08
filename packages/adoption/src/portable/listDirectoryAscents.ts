@@ -3,6 +3,7 @@ import { getLineAtOffset } from 'readyup/check-utils';
 import { readAnchoredWindow } from './readAnchoredWindow.ts';
 import { BRACES, PARENTHESES, readBalancedGroup } from './readBalancedGroup.ts';
 import { readLiteral } from './readLiteral.ts';
+import { findExpressionEnd, type PathPart, readPathParts } from './readPathParts.ts';
 
 export interface DirectoryAscent {
   /** The line on which the innermost loop performing the ascent opens. */
@@ -16,9 +17,6 @@ export interface DirectoryAscent {
 const ASSIGNED_TARGET = /(?<target>[A-Za-z_$][\w$]*) ?= ?$/;
 // Only the lookbehind is read, and only far enough to see the binding that takes the ascent.
 const ASSIGNMENT_WINDOW = { lookahead: 0, lookbehind: 80 };
-// The brackets that hold a comma inside one expression: a call's, an array's, an object's, and an interpolation's.
-const BRACKET_CLOSERS = new Set([')', ']', '}']);
-const BRACKET_OPENERS = new Set(['(', '[', '{']);
 // A declaration assigning a value, matched through its `=` so that the value opens at the end of the match.
 const DECLARATION = /\b(?:const|let|var)\s+(?<name>[A-Za-z_$][\w$]*)\s*(?::[^=;\n]*)?=(?![=>])/g;
 // A declaration of a name, whether or not it assigns a value.
@@ -32,8 +30,6 @@ const LEADING_SEPARATOR = /^[/\\]+/;
 // takes the path that it reads as its first argument.
 const LEVEL_PROBE = /\b(?:access|exists|lstat|readdir|readFile|stat)(?:Sync)?\s*\(/g;
 const LOOP_KEYWORD = /\b(?<keyword>do|for|while)\b/g;
-// A quoted literal, the backtick opening a template, or a name read as a value, which leaves out the name of a member.
-const PATH_TOKEN = /(?<quoted>(?<quote>['"])[^'"]*\k<quote>)|`|(?<![\w$.])(?<name>[A-Za-z_$][\w$]*)/g;
 // An assignment, simple or compound, to a name not preceded by a declaration keyword.
 const REASSIGNMENT =
   /(?<![\w$.])(?<!\b(?:const|let|var)\s+)(?<name>[A-Za-z_$][\w$]*)\s*(?:\*\*|<<|>>>?|&&|\|\||\?\?|[-+*/%&|^])?=(?![=>])/g;
@@ -70,9 +66,6 @@ interface LoopBinding {
   parts: readonly PathPart[];
 }
 
-/** A name that a path reads as a value, or the text of a literal that it holds. */
-type PathPart = { kind: 'read'; name: string } | { kind: 'text'; text: string };
-
 interface PathScope {
   bindings: readonly LoopBinding[];
   constants: readonly StringConstant[];
@@ -81,12 +74,6 @@ interface PathScope {
 interface StringConstant {
   name: string;
   value: string;
-}
-
-interface TemplateParts {
-  /** One past the closing backtick. */
-  end: number;
-  parts: PathPart[];
 }
 
 /**
@@ -209,25 +196,6 @@ function findBodyStart(code: string, afterKeyword: number, isDoLoop: boolean): n
   while (index < code.length && WHITESPACE.test(code.charAt(index))) index += 1;
 
   return code.charAt(index) === '{' ? index : undefined;
-}
-
-/**
- * Returns the offset at which an expression opening at `from` ends: the first comma or semicolon outside every
- * bracket, the bracket closing the group that holds the expression, or `limit`.
- */
-function findExpressionEnd(code: string, from: number, limit: number): number {
-  let depth = 0;
-
-  for (let index = from; index < limit; index += 1) {
-    const character = code.charAt(index);
-    if (BRACKET_OPENERS.has(character)) depth += 1;
-    else if (BRACKET_CLOSERS.has(character)) {
-      if (depth === 0) return index;
-      depth -= 1;
-    } else if ((character === ',' || character === ';') && depth === 0) return index;
-  }
-
-  return limit;
 }
 
 /** Reports whether one loop is inside another. */
@@ -360,38 +328,6 @@ function readAssignedTarget(region: string, offset: number): string | undefined 
 }
 
 /**
- * Reads the expression between two offsets as the names that it reads and the literal text that it holds, in
- * source order, or nothing when a template in it never closes.
- *
- * A literal's text is read from the source beneath. A template contributes the chunks of its text with the parts of
- * each interpolation between them.
- */
-function readPathParts(code: string, source: string, start: number, end: number): PathPart[] | undefined {
-  const parts: PathPart[] = [];
-  let resumeAt = start;
-
-  for (const match of code.slice(start, end).matchAll(PATH_TOKEN)) {
-    const offset = start + match.index;
-    if (offset < resumeAt) continue;
-
-    const name = match.groups?.['name'];
-    const quoted = match.groups?.['quoted'];
-    if (name !== undefined) {
-      parts.push({ kind: 'read', name });
-    } else if (quoted !== undefined) {
-      parts.push({ kind: 'text', text: source.slice(offset + 1, offset + quoted.length - 1) });
-    } else {
-      const template = readTemplateParts(code, source, offset, end);
-      if (template === undefined) return undefined;
-      parts.push(...template.parts);
-      resumeAt = template.end;
-    }
-  }
-
-  return parts;
-}
-
-/**
  * Returns the level-relative name that the parts past the ascended binding hold, or nothing when a read remains
  * among them or they hold no text.
  *
@@ -409,39 +345,6 @@ function readProbedName(parts: readonly PathPart[]): string | undefined {
   const name = segments.join('/').replaceAll(SEPARATOR_RUN, '/').replace(LEADING_SEPARATOR, '');
 
   return name === '' ? undefined : name;
-}
-
-/**
- * Reads the template opening at an offset, or nothing when it does not close before `end`.
- *
- * Blanking empties a template's text and keeps each `${`, so the first backtick or `${` in the code past a chunk
- * of text is the one that ends it.
- */
-function readTemplateParts(code: string, source: string, open: number, end: number): TemplateParts | undefined {
-  const parts: PathPart[] = [];
-  let textStart = open + 1;
-
-  for (;;) {
-    const close = code.indexOf('`', textStart);
-    if (close === -1 || close >= end) return undefined;
-
-    const interpolation = code.indexOf('${', textStart);
-    if (interpolation === -1 || interpolation > close) {
-      parts.push({ kind: 'text', text: source.slice(textStart, close) });
-      return { end: close + 1, parts };
-    }
-
-    parts.push({ kind: 'text', text: source.slice(textStart, interpolation) });
-
-    const group = readBalancedGroup(code, interpolation + 1, BRACES);
-    if (group === undefined || group.end > end) return undefined;
-
-    const interpolated = readPathParts(code, source, group.start + 1, group.end - 1);
-    if (interpolated === undefined) return undefined;
-
-    parts.push(...interpolated);
-    textStart = group.end;
-  }
 }
 
 // endregion | Helpers
