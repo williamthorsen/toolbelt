@@ -1,7 +1,8 @@
-import { isFlatChecklist, type RdyCheck } from 'readyup';
+import type { RdyCheck } from 'readyup';
 import { describe, expect, it } from 'vitest';
 
 import { type AdoptionKitSpec, defineAdoptionKit } from '../defineAdoptionKit.ts';
+import { listKitChecks } from '../test-utils/check-outcomes.ts';
 
 type Kind = 'clone' | 'inline' | 'unclassified';
 
@@ -96,9 +97,7 @@ describe(defineAdoptionKit, () => {
 
 /** Lists the assembled kit's adoption checks, which the flat checklist contains in declaration order. */
 function listChecks(kit: ReturnType<typeof defineAdoptionKit>): readonly RdyCheck[] {
-  const [checklist] = kit.checklists;
-  if (checklist === undefined || !isFlatChecklist(checklist)) return [];
-  return checklist.checks;
+  return listKitChecks(kit);
 }
 
 // endregion | Helpers
