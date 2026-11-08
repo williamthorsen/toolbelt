@@ -2,3 +2,6 @@
 project:
   slug: toolbelt
   ticket_ref_prefix: '#'
+  maturity: early
+  sensitivity: low
+  audience: public
