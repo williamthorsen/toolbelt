@@ -93,10 +93,10 @@ function readTemplateParts(
   for (const interpolation of template.interpolations) {
     parts.push({ kind: 'text', text: source.slice(textStart, interpolation.start) });
 
-    const interpolated = readParts(code, source, templates, interpolation.start + 2, interpolation.end - 1);
-    if (interpolated === undefined) return undefined;
+    const interpolatedParts = readParts(code, source, templates, interpolation.start + 2, interpolation.end - 1);
+    if (interpolatedParts === undefined) return undefined;
 
-    parts.push(...interpolated);
+    parts.push(...interpolatedParts);
     textStart = interpolation.end;
   }
 

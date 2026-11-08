@@ -43,39 +43,6 @@ const STRING_CONSTANT =
   /\bconst\s+(?<name>[A-Za-z_$][\w$]*)\s*(?::\s*string\s*)?=\s*(?<literal>(?<quote>['"`])[^'"`$]*\k<quote>)\s*(?:as\s+const\s*)?(?=[;,)\n]|$)/dg;
 const WHITESPACE = /\s/;
 
-interface BindingAssignment {
-  target: string;
-  value: string;
-}
-
-interface Loop {
-  /** One past the body's closing brace. */
-  end: number;
-  /** The loop keyword's own offset. */
-  start: number;
-}
-
-interface LoopAscent {
-  loop: Loop;
-  probedNames: string[] | undefined;
-}
-
-interface LoopBinding {
-  name: string;
-  /** The parts of the value that the declaration assigns, with each binding and constant in them expanded. */
-  parts: readonly PathPart[];
-}
-
-interface PathScope {
-  bindings: readonly LoopBinding[];
-  constants: readonly StringConstant[];
-}
-
-interface StringConstant {
-  name: string;
-  value: string;
-}
-
 /**
  * Lists every loop in a source that ascends the directory chain by `dirname`, with the names that it probes each
  * level for.
@@ -111,6 +78,39 @@ export function listDirectoryAscents(code: string, source: string): DirectoryAsc
 }
 
 // region | Helpers
+
+interface BindingAssignment {
+  target: string;
+  value: string;
+}
+
+interface Loop {
+  /** One past the body's closing brace. */
+  end: number;
+  /** The loop keyword's own offset. */
+  start: number;
+}
+
+interface LoopAscent {
+  loop: Loop;
+  probedNames: string[] | undefined;
+}
+
+interface LoopBinding {
+  name: string;
+  /** The parts of the value that the declaration assigns, with each binding and constant in them expanded. */
+  parts: readonly PathPart[];
+}
+
+interface PathScope {
+  bindings: readonly LoopBinding[];
+  constants: readonly StringConstant[];
+}
+
+interface StringConstant {
+  name: string;
+  value: string;
+}
 
 /** Counts the matches of a pattern by the name that each captures. */
 function countMatchesByName(text: string, pattern: RegExp): Map<string, number> {
@@ -276,12 +276,12 @@ function listProbedNames(
 
     const pathStart = argumentList.start + 1;
     const parts = readPathParts(code, source, pathStart, findExpressionEnd(code, pathStart, argumentList.end - 1));
-    const expanded = parts === undefined ? [] : expandPathParts(parts, scope, subject);
-    const subjectIndex = expanded.findIndex((part) => part.kind === 'read' && part.name === subject);
+    const expandedParts = parts === undefined ? [] : expandPathParts(parts, scope, subject);
+    const subjectIndex = expandedParts.findIndex((part) => part.kind === 'read' && part.name === subject);
     if (subjectIndex === -1) continue;
 
     isProbing = true;
-    const name = readProbedName(expanded.slice(subjectIndex + 1));
+    const name = readProbedName(expandedParts.slice(subjectIndex + 1));
     if (name !== undefined) names.push(name);
   }
 

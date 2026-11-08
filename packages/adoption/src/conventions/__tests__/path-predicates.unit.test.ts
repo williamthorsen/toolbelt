@@ -16,45 +16,45 @@ describe(isAdoptableSource, () => {
   });
 
   it('declines every path exempted by one of its parts', () => {
-    const exempt = ['README.md', 'bin/run.js', 'src/read.unit.test.ts', 'src/__tests__/fixtures/sample.ts'];
+    const exemptPaths = ['README.md', 'bin/run.js', 'src/read.unit.test.ts', 'src/__tests__/fixtures/sample.ts'];
 
-    expect(exempt.filter((path) => isAdoptableSource(path))).toStrictEqual([]);
+    expect(exemptPaths.filter((path) => isAdoptableSource(path))).toStrictEqual([]);
   });
 });
 
 describe(isAdoptableSourceOrBin, () => {
   it('claims ordinary source and a source under a bin directory', () => {
-    const claimed = ['src/read.ts', 'bin/cli.js', 'src/bin/run.ts'];
+    const claimedPaths = ['src/read.ts', 'bin/cli.js', 'src/bin/run.ts'];
 
-    expect(claimed.filter((path) => !isAdoptableSourceOrBin(path))).toStrictEqual([]);
+    expect(claimedPaths.filter((path) => !isAdoptableSourceOrBin(path))).toStrictEqual([]);
   });
 
   it('declines a test, a helper beside a test, and a file that is not a source', () => {
-    const exempt = ['README.md', 'src/bin/run.unit.test.ts', 'src/bin/__tests__/fixtures/sample.ts'];
+    const exemptPaths = ['README.md', 'src/bin/run.unit.test.ts', 'src/bin/__tests__/fixtures/sample.ts'];
 
-    expect(exempt.filter((path) => isAdoptableSourceOrBin(path))).toStrictEqual([]);
+    expect(exemptPaths.filter((path) => isAdoptableSourceOrBin(path))).toStrictEqual([]);
   });
 });
 
 describe(isAdoptableSourceOrTest, () => {
   it('claims ordinary source and a test alike', () => {
-    const claimed = ['src/read.ts', 'src/read.unit.test.ts', 'src/__tests__/fixtures/sample.ts'];
+    const claimedPaths = ['src/read.ts', 'src/read.unit.test.ts', 'src/__tests__/fixtures/sample.ts'];
 
-    expect(claimed.filter((path) => !isAdoptableSourceOrTest(path))).toStrictEqual([]);
+    expect(claimedPaths.filter((path) => !isAdoptableSourceOrTest(path))).toStrictEqual([]);
   });
 
   it('declines a bootstrap wrapper', () => {
-    const exempt = ['bin/run.js', 'src/bin/cli.ts'];
+    const exemptPaths = ['bin/run.js', 'src/bin/cli.ts'];
 
-    expect(exempt.filter((path) => isAdoptableSourceOrTest(path))).toStrictEqual([]);
+    expect(exemptPaths.filter((path) => isAdoptableSourceOrTest(path))).toStrictEqual([]);
   });
 
   // A wrapper's exemption rests on what it must import, which binds no test of it. Each path satisfies a
   // different term, so neither term alone covers both.
   it('claims a test covering a bootstrap wrapper, and a helper beside that test', () => {
-    const claimed = ['bin/run.unit.test.ts', 'src/bin/__tests__/fixtures/sample.ts'];
+    const claimedPaths = ['bin/run.unit.test.ts', 'src/bin/__tests__/fixtures/sample.ts'];
 
-    expect(claimed.filter((path) => !isAdoptableSourceOrTest(path))).toStrictEqual([]);
+    expect(claimedPaths.filter((path) => !isAdoptableSourceOrTest(path))).toStrictEqual([]);
   });
 
   it('declines a file that is not a source', () => {
