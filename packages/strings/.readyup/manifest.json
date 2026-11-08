@@ -45,7 +45,7 @@
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
         {
-          "hash": "3867c304",
+          "hash": "00b237f4",
           "kind": "module",
           "path": "../../adoption/src/portable/listDirectoryAscents.ts"
         },
@@ -73,6 +73,11 @@
           "hash": "81846f1a",
           "kind": "module",
           "path": "../../adoption/src/portable/readLiteral.ts"
+        },
+        {
+          "hash": "c242d29a",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readPathParts.ts"
         },
         {
           "hash": "86b64892",

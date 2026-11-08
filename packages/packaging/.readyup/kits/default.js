@@ -170,18 +170,166 @@ function readLiteral(source, span) {
   return start === void 0 || end === void 0 ? void 0 : source.slice(start + 1, end - 1);
 }
 
+// ../adoption/src/portable/listTemplateLiterals.ts
+var EXPRESSION_KEYWORDS = /* @__PURE__ */ new Set([
+  "await",
+  "case",
+  "default",
+  "delete",
+  "do",
+  "else",
+  "in",
+  "instanceof",
+  "of",
+  "return",
+  "throw",
+  "typeof",
+  "void",
+  "yield"
+]);
+var WORD_CHARACTER = /[\w$]/;
+function listTemplateLiterals(code) {
+  const templates = [];
+  scanCode(0, false);
+  return templates.toSorted((a, b) => a.start - b.start);
+  function scanCode(from, isInterpolation) {
+    let braceDepth = 0;
+    let index = from;
+    while (index < code.length) {
+      const character = code[index];
+      if (character === "`") {
+        const end = scanTemplate(index);
+        if (end === void 0) return code.length;
+        index = end;
+        continue;
+      }
+      if (isInterpolation && character === "{") braceDepth += 1;
+      if (isInterpolation && character === "}") {
+        if (braceDepth === 0) return index;
+        braceDepth -= 1;
+      }
+      index += 1;
+    }
+    return code.length;
+  }
+  function scanTemplate(start) {
+    const interpolations = [];
+    let index = start + 1;
+    while (index < code.length) {
+      if (code[index] === "`") {
+        templates.push({ end: index + 1, interpolations, isTagged: isTagPosition(code, start), start });
+        return index + 1;
+      }
+      if (code[index] === "$" && code[index + 1] === "{") {
+        const close = scanCode(index + 2, true);
+        if (close === code.length) return void 0;
+        interpolations.push({ end: close + 1, start: index });
+        index = close + 1;
+        continue;
+      }
+      index += 1;
+    }
+    return void 0;
+  }
+}
+function findPrecedingCodeEnd(code, offset) {
+  let end = offset;
+  while (end > 0 && /\s/.test(code[end - 1] ?? "")) end -= 1;
+  return end;
+}
+function findTypeArgumentsStart(code, close) {
+  let depth = 0;
+  for (let index = close; index >= 0; index -= 1) {
+    if (code[index] === ">") depth += 1;
+    if (code[index] !== "<") {
+      continue;
+    }
+    depth -= 1;
+    if (depth === 0) return index;
+  }
+  return void 0;
+}
+function isTagPosition(code, offset) {
+  const end = findPrecedingCodeEnd(code, offset);
+  const character = code[end - 1];
+  if (character === void 0) return false;
+  if (character === ")" || character === "]") return true;
+  if (character === ">" && code[end - 2] !== "=") {
+    const typeArgumentsStart = findTypeArgumentsStart(code, end - 1);
+    return typeArgumentsStart !== void 0 && isTagPosition(code, typeArgumentsStart);
+  }
+  if (!WORD_CHARACTER.test(character)) return false;
+  let wordStart = end;
+  while (wordStart > 0 && WORD_CHARACTER.test(code[wordStart - 1] ?? "")) wordStart -= 1;
+  const isMemberName = code[findPrecedingCodeEnd(code, wordStart) - 1] === ".";
+  return isMemberName || !EXPRESSION_KEYWORDS.has(code.slice(wordStart, end));
+}
+
+// ../adoption/src/portable/readPathParts.ts
+var BRACKET_CLOSERS = /* @__PURE__ */ new Set([")", "]", "}"]);
+var BRACKET_OPENERS = /* @__PURE__ */ new Set(["(", "[", "{"]);
+var PATH_TOKEN = /(?<quoted>(?<quote>['"])[^'"]*\k<quote>)|`|(?<![\w$.])(?<name>[A-Za-z_$][\w$]*)/g;
+function findExpressionEnd(code, from, limit) {
+  let depth = 0;
+  for (let index = from; index < limit; index += 1) {
+    const character = code.charAt(index);
+    if (BRACKET_OPENERS.has(character)) depth += 1;
+    else if (BRACKET_CLOSERS.has(character)) {
+      if (depth === 0) return index;
+      depth -= 1;
+    } else if ((character === "," || character === ";") && depth === 0) return index;
+  }
+  return limit;
+}
+function readPathParts(code, source, start, end) {
+  return readParts(code, source, listTemplateLiterals(code), start, end);
+}
+function readParts(code, source, templates, start, end) {
+  const parts = [];
+  let resumeAt = start;
+  for (const match of code.slice(start, end).matchAll(PATH_TOKEN)) {
+    const offset = start + match.index;
+    if (offset < resumeAt) continue;
+    const name = match.groups?.["name"];
+    const quoted = match.groups?.["quoted"];
+    if (name !== void 0) {
+      parts.push({ kind: "read", name });
+    } else if (quoted !== void 0) {
+      parts.push({ kind: "text", text: source.slice(offset + 1, offset + quoted.length - 1) });
+    } else {
+      const template = templates.find((candidate) => candidate.start === offset);
+      if (template === void 0 || template.end > end) return void 0;
+      const templateParts = readTemplateParts(code, source, templates, template);
+      if (templateParts === void 0) return void 0;
+      parts.push(...templateParts);
+      resumeAt = template.end;
+    }
+  }
+  return parts;
+}
+function readTemplateParts(code, source, templates, template) {
+  const parts = [];
+  let textStart = template.start + 1;
+  for (const interpolation of template.interpolations) {
+    parts.push({ kind: "text", text: source.slice(textStart, interpolation.start) });
+    const interpolated = readParts(code, source, templates, interpolation.start + 2, interpolation.end - 1);
+    if (interpolated === void 0) return void 0;
+    parts.push(...interpolated);
+    textStart = interpolation.end;
+  }
+  parts.push({ kind: "text", text: source.slice(textStart, template.end - 1) });
+  return parts;
+}
+
 // ../adoption/src/portable/listDirectoryAscents.ts
 var ASSIGNED_TARGET = /(?<target>[A-Za-z_$][\w$]*) ?= ?$/;
 var ASSIGNMENT_WINDOW = { lookahead: 0, lookbehind: 80 };
-var BRACKET_CLOSERS = /* @__PURE__ */ new Set([")", "]", "}"]);
-var BRACKET_OPENERS = /* @__PURE__ */ new Set(["(", "[", "{"]);
 var DECLARATION = /\b(?:const|let|var)\s+(?<name>[A-Za-z_$][\w$]*)\s*(?::[^=;\n]*)?=(?![=>])/g;
 var DECLARED_NAME = /\b(?:const|let|var)\s+(?<name>[A-Za-z_$][\w$]*)/g;
 var DIRNAME_ASCENT = /(?:[A-Za-z_$][\w$]*\s*\.\s*)?\bdirname\s*\(\s*(?<subject>[A-Za-z_$][\w$]*)\s*\)/g;
 var LEADING_SEPARATOR = /^[/\\]+/;
 var LEVEL_PROBE = /\b(?:access|exists|lstat|readdir|readFile|stat)(?:Sync)?\s*\(/g;
 var LOOP_KEYWORD = /\b(?<keyword>do|for|while)\b/g;
-var PATH_TOKEN = /(?<quoted>(?<quote>['"])[^'"]*\k<quote>)|`|(?<![\w$.])(?<name>[A-Za-z_$][\w$]*)/g;
 var REASSIGNMENT = /(?<![\w$.])(?<!\b(?:const|let|var)\s+)(?<name>[A-Za-z_$][\w$]*)\s*(?:\*\*|<<|>>>?|&&|\|\||\?\?|[-+*/%&|^])?=(?![=>])/g;
 var SEPARATOR_RUN = /[/\\]+/g;
 var SIMPLE_ASSIGNMENT = /(?<![\w$])(?<target>[A-Za-z_$][\w$]*)\s*=(?!=)\s*(?<value>[A-Za-z_$][\w$]*)(?![\w$.([])/g;
@@ -237,18 +385,6 @@ function findBodyStart(code, afterKeyword, isDoLoop) {
   }
   while (index < code.length && WHITESPACE.test(code.charAt(index))) index += 1;
   return code.charAt(index) === "{" ? index : void 0;
-}
-function findExpressionEnd(code, from, limit) {
-  let depth = 0;
-  for (let index = from; index < limit; index += 1) {
-    const character = code.charAt(index);
-    if (BRACKET_OPENERS.has(character)) depth += 1;
-    else if (BRACKET_CLOSERS.has(character)) {
-      if (depth === 0) return index;
-      depth -= 1;
-    } else if ((character === "," || character === ";") && depth === 0) return index;
-  }
-  return limit;
 }
 function isNested(inner, outer) {
   return outer.start <= inner.start && inner.end <= outer.end;
@@ -318,27 +454,6 @@ function readAssignedTarget(region, offset) {
   const { before } = readAnchoredWindow(region, offset, ASSIGNMENT_WINDOW);
   return ASSIGNED_TARGET.exec(before)?.groups?.["target"];
 }
-function readPathParts(code, source, start, end) {
-  const parts = [];
-  let resumeAt = start;
-  for (const match of code.slice(start, end).matchAll(PATH_TOKEN)) {
-    const offset = start + match.index;
-    if (offset < resumeAt) continue;
-    const name = match.groups?.["name"];
-    const quoted = match.groups?.["quoted"];
-    if (name !== void 0) {
-      parts.push({ kind: "read", name });
-    } else if (quoted !== void 0) {
-      parts.push({ kind: "text", text: source.slice(offset + 1, offset + quoted.length - 1) });
-    } else {
-      const template = readTemplateParts(code, source, offset, end);
-      if (template === void 0) return void 0;
-      parts.push(...template.parts);
-      resumeAt = template.end;
-    }
-  }
-  return parts;
-}
 function readProbedName(parts) {
   const segments = [];
   for (const part of parts) {
@@ -347,26 +462,6 @@ function readProbedName(parts) {
   }
   const name = segments.join("/").replaceAll(SEPARATOR_RUN, "/").replace(LEADING_SEPARATOR, "");
   return name === "" ? void 0 : name;
-}
-function readTemplateParts(code, source, open, end) {
-  const parts = [];
-  let textStart = open + 1;
-  for (; ; ) {
-    const close = code.indexOf("`", textStart);
-    if (close === -1 || close >= end) return void 0;
-    const interpolation = code.indexOf("${", textStart);
-    if (interpolation === -1 || interpolation > close) {
-      parts.push({ kind: "text", text: source.slice(textStart, close) });
-      return { end: close + 1, parts };
-    }
-    parts.push({ kind: "text", text: source.slice(textStart, interpolation) });
-    const group = readBalancedGroup(code, interpolation + 1, BRACES);
-    if (group === void 0 || group.end > end) return void 0;
-    const interpolated = readPathParts(code, source, group.start + 1, group.end - 1);
-    if (interpolated === void 0) return void 0;
-    parts.push(...interpolated);
-    textStart = group.end;
-  }
 }
 
 // ../adoption/src/mod.ts
