@@ -1,5 +1,6 @@
 import {
   createTrackedRepo,
+  listKitChecks,
   listReportedFindings,
   runCheck,
   runSkip,
@@ -7,7 +8,7 @@ import {
 } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import { pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
-import { isFlatChecklist, type RdyCheck } from 'readyup';
+import type { RdyCheck } from 'readyup';
 import { describe, expect, it, vi } from 'vitest';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
@@ -105,9 +106,7 @@ async function loadChecks(): Promise<readonly RdyCheck[]> {
   vi.resetModules();
   const kit = (await import('../../../.readyup/kits/default.ts')).default;
 
-  const [checklist] = kit.checklists;
-  if (checklist === undefined || !isFlatChecklist(checklist)) return [];
-  return checklist.checks;
+  return listKitChecks(kit);
 }
 
 // endregion | Helpers

@@ -1,11 +1,12 @@
 import {
   createTrackedRepo,
+  listKitChecks,
   listReportedFindings,
   runCheck,
   runSkip,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
-import { isFlatChecklist, type RdyCheck } from 'readyup';
+import type { RdyCheck } from 'readyup';
 import { describe, expect, it, vi } from 'vitest';
 
 import { pointCwdAt } from '../../3-candidate/pointCwdAt.ts';
@@ -193,9 +194,7 @@ async function loadChecks(): Promise<Map<string, RdyCheck>> {
   vi.resetModules();
   const kit = (await import('../../../.readyup/kits/default.ts')).default;
 
-  const [checklist] = kit.checklists;
-  if (checklist === undefined || !isFlatChecklist(checklist)) return new Map();
-  return new Map(checklist.checks.map((check) => [check.id ?? check.name, check]));
+  return new Map(listKitChecks(kit).map((check) => [check.id ?? check.name, check]));
 }
 
 // endregion | Helpers

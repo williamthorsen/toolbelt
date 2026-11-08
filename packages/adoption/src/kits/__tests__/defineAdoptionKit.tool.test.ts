@@ -1,8 +1,14 @@
-import { isFlatChecklist, type RdyCheck } from 'readyup';
+import type { RdyCheck } from 'readyup';
 import { describe, expect, it } from 'vitest';
 
 import { type AdoptionKitSpec, type AdoptionSite, defineAdoptionKit } from '../defineAdoptionKit.ts';
-import { listReportedFindings, runCheck, runSkip, summarizeFraction } from '../test-utils/check-outcomes.ts';
+import {
+  listKitChecks,
+  listReportedFindings,
+  runCheck,
+  runSkip,
+  summarizeFraction,
+} from '../test-utils/check-outcomes.ts';
 import { createTempDir } from '../test-utils/createTempDir.ts';
 import { createTrackedRepo } from '../test-utils/createTrackedRepo.ts';
 import { pointCwdAt } from '../test-utils/pointCwdAt.ts';
@@ -263,9 +269,7 @@ function buildTestScopedSpec(): AdoptionKitSpec<Kind> {
 
 /** Lists the assembled kit's adoption checks, which the flat checklist contains in declaration order. */
 function listChecks(spec: AdoptionKitSpec<Kind>): readonly RdyCheck[] {
-  const [checklist] = defineAdoptionKit(spec).checklists;
-  if (checklist === undefined || !isFlatChecklist(checklist)) return [];
-  return checklist.checks;
+  return listKitChecks(defineAdoptionKit(spec));
 }
 
 // endregion | Helpers
