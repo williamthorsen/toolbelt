@@ -39,13 +39,13 @@ import {
 var NOT_A_REPO = "the project is not a git working tree, and these checks read the files that git tracks";
 var NOTHING_TO_REPORT = { findings: [] };
 function defineAdoptionKit(spec) {
-  assertCheckIdsAreUnique();
+  assertCheckIdsAreUnique(spec);
   const cache = {};
   const adoptedPackage = { exportNames: spec.exportNames, packageName: spec.packageName };
   const kitScope = { noSourcesReason: spec.noSourcesReason, pathFilter: spec.pathFilter };
-  const pathFiltersByKind = mapPathFiltersByKind();
+  const pathFiltersByKind = mapPathFiltersByKind(spec, kitScope);
   const sweptPathFilters = [
-    .../* @__PURE__ */ new Set([spec.pathFilter, ...spec.checks.map((check) => resolveScope(check).pathFilter)])
+    .../* @__PURE__ */ new Set([spec.pathFilter, ...spec.checks.map((check) => resolveScope(check, kitScope).pathFilter)])
   ];
   return defineRdyKit({
     description: spec.description,
@@ -57,47 +57,19 @@ function defineAdoptionKit(spec) {
           name: check.name,
           id: check.id,
           ...check.severity !== void 0 && { severity: check.severity },
-          skip: () => skipUnlessProjectHoldsSources(resolveScope(check)),
+          skip: () => skipUnlessProjectHoldsSources(resolveScope(check, kitScope)),
           check: () => reportKinds(check.kinds),
           fix: check.fix
         }))
       }
     ]
   });
-  function assertCheckIdsAreUnique() {
-    const seen = /* @__PURE__ */ new Set();
-    const duplicated = /* @__PURE__ */ new Set();
-    for (const { id } of spec.checks) {
-      if (seen.has(id)) duplicated.add(id);
-      seen.add(id);
-    }
-    if (duplicated.size === 0) return;
-    const ids = [...duplicated].toSorted().join(", ");
-    throw new Error(`${spec.packageName}'s kit gives one id to more than one check: ${ids}`);
-  }
   function isSweptPath(path) {
     return sweptPathFilters.some((pathFilter) => pathFilter(path));
   }
   function loadSummary() {
     cache.summary ??= readProject();
     return cache.summary;
-  }
-  function mapPathFiltersByKind() {
-    const pathFilters = /* @__PURE__ */ new Map();
-    const conflicted = /* @__PURE__ */ new Set();
-    for (const check of spec.checks) {
-      const { pathFilter } = resolveScope(check);
-      for (const kind of check.kinds) {
-        const assigned = pathFilters.get(kind);
-        if (assigned !== void 0 && assigned !== pathFilter) conflicted.add(kind);
-        pathFilters.set(kind, pathFilter);
-      }
-    }
-    if (conflicted.size > 0) {
-      const kinds = [...conflicted].toSorted().join(", ");
-      throw new Error(`${spec.packageName}'s kit reads one kind through more than one path filter: ${kinds}`);
-    }
-    return pathFilters;
   }
   async function readProject() {
     const sources = await readTrackedSources(isSweptPath);
@@ -120,14 +92,42 @@ function defineAdoptionKit(spec) {
       shouldReport: (finding) => kinds.includes(finding.kind)
     });
   }
-  function resolveScope(check) {
-    return check.pathFilter === void 0 ? kitScope : { noSourcesReason: check.noSourcesReason, pathFilter: check.pathFilter };
-  }
   async function skipUnlessProjectHoldsSources(scope) {
     const summary = await loadSummary();
     if (summary === void 0) return NOT_A_REPO;
     return summary.sources.some((source) => scope.pathFilter(source.path)) ? false : scope.noSourcesReason;
   }
+}
+function assertCheckIdsAreUnique(spec) {
+  const seenIds = /* @__PURE__ */ new Set();
+  const duplicateIds = /* @__PURE__ */ new Set();
+  for (const { id } of spec.checks) {
+    if (seenIds.has(id)) duplicateIds.add(id);
+    seenIds.add(id);
+  }
+  if (duplicateIds.size === 0) return;
+  const ids = [...duplicateIds].toSorted().join(", ");
+  throw new Error(`${spec.packageName}'s kit gives one id to more than one check: ${ids}`);
+}
+function mapPathFiltersByKind(spec, kitScope) {
+  const pathFilters = /* @__PURE__ */ new Map();
+  const conflictingKinds = /* @__PURE__ */ new Set();
+  for (const check of spec.checks) {
+    const { pathFilter } = resolveScope(check, kitScope);
+    for (const kind of check.kinds) {
+      const assignedPathFilter = pathFilters.get(kind);
+      if (assignedPathFilter !== void 0 && assignedPathFilter !== pathFilter) conflictingKinds.add(kind);
+      pathFilters.set(kind, pathFilter);
+    }
+  }
+  if (conflictingKinds.size > 0) {
+    const kinds = [...conflictingKinds].toSorted().join(", ");
+    throw new Error(`${spec.packageName}'s kit reads one kind through more than one path filter: ${kinds}`);
+  }
+  return pathFilters;
+}
+function resolveScope(check, kitScope) {
+  return check.pathFilter === void 0 ? kitScope : { noSourcesReason: check.noSourcesReason, pathFilter: check.pathFilter };
 }
 
 // ../adoption/src/portable/condenseWhitespace.ts
@@ -312,9 +312,9 @@ function readTemplateParts(code, source, templates, template) {
   let textStart = template.start + 1;
   for (const interpolation of template.interpolations) {
     parts.push({ kind: "text", text: source.slice(textStart, interpolation.start) });
-    const interpolated = readParts(code, source, templates, interpolation.start + 2, interpolation.end - 1);
-    if (interpolated === void 0) return void 0;
-    parts.push(...interpolated);
+    const interpolatedParts = readParts(code, source, templates, interpolation.start + 2, interpolation.end - 1);
+    if (interpolatedParts === void 0) return void 0;
+    parts.push(...interpolatedParts);
     textStart = interpolation.end;
   }
   parts.push({ kind: "text", text: source.slice(textStart, template.end - 1) });
@@ -421,11 +421,11 @@ function listProbedNames(code, source, loop, subject, scope) {
     if (argumentList === void 0) continue;
     const pathStart = argumentList.start + 1;
     const parts = readPathParts(code, source, pathStart, findExpressionEnd(code, pathStart, argumentList.end - 1));
-    const expanded = parts === void 0 ? [] : expandPathParts(parts, scope, subject);
-    const subjectIndex = expanded.findIndex((part) => part.kind === "read" && part.name === subject);
+    const expandedParts = parts === void 0 ? [] : expandPathParts(parts, scope, subject);
+    const subjectIndex = expandedParts.findIndex((part) => part.kind === "read" && part.name === subject);
     if (subjectIndex === -1) continue;
     isProbing = true;
-    const name = readProbedName(expanded.slice(subjectIndex + 1));
+    const name = readProbedName(expandedParts.slice(subjectIndex + 1));
     if (name !== void 0) names.push(name);
   }
   return isProbing ? names : void 0;
