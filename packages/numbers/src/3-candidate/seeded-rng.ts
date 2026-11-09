@@ -3,7 +3,6 @@ import { checkIsRngLike, evaluateSeed, type Seed, type SeededGenerator } from '.
 import { IntegerSeed } from '../internal/IntegerSeed.ts';
 import { wrapSum } from '../internal/wrapSum.ts';
 import { pickInteger } from './pickInteger.ts';
-import { scaleInt } from './scale.ts';
 
 /**
  * A pseudo-random number generator that behaves deterministically when given a seed.
@@ -14,17 +13,10 @@ import { scaleInt } from './scale.ts';
  */
 export class SeededRng implements SeededGenerator {
   private _seed = 0; // internally incremented value to provide deterministic behaviour
-  private baseSeed = 0; // original value used to create the seed
-  private nIncrements = 0;
 
   /** Creates a generator from the seed, or from a random seed when none is given. */
   constructor(seed?: Seed) {
     this.initializeSeeds(SeededRng.evaluateSeed(seed));
-  }
-
-  /** Returns the upper bound of the seed range, as an accessor because a static property cannot be overridden. */
-  get maxBase(): number {
-    return IntegerSeed.max;
   }
 
   /** Returns a function that yields the next value on each call, sharing this instance's state. */
@@ -110,11 +102,8 @@ export class SeededRng implements SeededGenerator {
   increment(nIncrements = 1): this {
     const n = Math.floor(nIncrements);
     for (let i = 0; i < n; i++) {
-      // TODO: Consider whether scaling is justified by the use case of a smaller seed range
-      const scaledSeed = this.scaleUpSeed(this._seed);
-      this._seed = this.scaleDownSeed(IntegerSeed.next(scaledSeed));
+      this._seed = IntegerSeed.next(this._seed);
     }
-    this.nIncrements += n;
     return this;
   }
 
@@ -133,25 +122,14 @@ export class SeededRng implements SeededGenerator {
     return this.generateValue();
   }
 
-  /** Maps a seed from the full integer-seed range onto this generator's range. */
-  scaleDownSeed(seed: number): number {
-    return scaleInt(seed, { min: 1, max: this.maxBase }, { min: 1, max: IntegerSeed.max });
-  }
-
-  /** Maps a seed from this generator's range onto the full integer-seed range. */
-  scaleUpSeed(value: number): number {
-    return scaleInt(value, { min: 1, max: IntegerSeed.max }, { min: 1, max: this.maxBase });
-  }
-
   /** Returns the value derived from the current seed. */
   protected generateValue(): number {
     return computeFakeMathRandom(this._seed);
   }
 
-  /** Records the base seed, wrapped into range, and starts the current seed at it. */
-  protected initializeSeeds(baseSeed?: number): void {
-    this.baseSeed = wrapSum(this.maxBase, IntegerSeed.toInt(baseSeed));
-    this._seed = this.baseSeed;
+  /** Starts the current seed at the given seed, wrapped into the integer-seed range. */
+  protected initializeSeeds(seed?: number): void {
+    this._seed = wrapSum(IntegerSeed.max, IntegerSeed.toInt(seed));
   }
 }
 

@@ -327,6 +327,24 @@ describe(SeededRng, () => {
       expect(IntSeededRng.withSeed(captureSeed, 1234)()).toBeInstanceOf(IntSeededRng);
     });
   });
+
+  // Pins literal values, so that a change to the seed arithmetic shows up as a changed sequence.
+  describe('sequence', () => {
+    for (const [Rng, values] of [
+      [SeededRng, [0.067_474_613_463_261_45, 0.636_010_787_280_281_5, 0.664_314_296_871_570_1]],
+      [IntSeededRng, [4_919_824_314_725_660, 6_753_773_014_744_331, 3_781_421_979_852_382]],
+      [Int32SeededRng, [2_345_955_045, 3_220_449_931, 1_803_122_511]],
+    ] as const) {
+      it(`given seed 1234, ${Rng.name} yields the same values and seeds`, () => {
+        const rng = new Rng(1234);
+
+        expect([rng.next(), rng.next(), rng.next()]).toStrictEqual(values);
+        expect(rng.seed).toBe(895_431_078);
+        expect(new Rng(1234).increment(5).seed).toBe(933_663_541);
+        expect(new Rng(1234).clone(5).seed).toBe(933_663_541);
+      });
+    }
+  });
 });
 
 for (const [preset, Rng, max] of [
