@@ -36,17 +36,17 @@ describe('IntegerSeed', () => {
       const output = IntegerSeed.toInt(input);
 
       expect(output).toBeGreaterThanOrEqual(1);
-      expect(output).toBeLessThanOrEqual(IntegerSeed.max);
+      expect(output).toBeLessThan(IntegerSeed.max);
       expect(output).not.toBe(input % IntegerSeed.max); // 4194304, which barely differs from neighboring seeds
     });
 
-    it('given an input of 0, returns the max integer', () => {
-      const input = 0;
+    it.each([0, IntegerSeed.max, -IntegerSeed.max, 2 * IntegerSeed.max])(
+      'given %i, a multiple of IntegerSeed.max, returns IntegerSeed.max - 1',
+      (input) => {
+        const output = IntegerSeed.toInt(input);
 
-      const output = IntegerSeed.toInt(input);
-
-      expect(output).toBe(IntegerSeed.max);
-      expect(output).not.toBe(0);
-    });
+        expect(output).toBe(IntegerSeed.max - 1);
+      },
+    );
   });
 });

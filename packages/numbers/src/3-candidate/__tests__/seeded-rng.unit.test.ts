@@ -226,6 +226,14 @@ describe(SeededRng, () => {
 
       expect(seed1.next()).not.toBe(seed2.next());
     });
+
+    for (const seed of [0, IntegerSeed.max]) {
+      it(`given seed ${seed}, a multiple of IntegerSeed.max, yields a sequence that advances`, () => {
+        const rng = new SeededRng(seed);
+
+        expect(rng.next()).not.toBe(rng.next());
+      });
+    }
   });
 
   describe('get rng', () => {
@@ -389,6 +397,14 @@ for (const [preset, Rng, max] of [
 
         expect(rng.seed).toBe(expectedSeed);
       });
+
+      for (const seed of [0, max]) {
+        it(`given seed ${seed}, a multiple of max, yields a sequence that advances`, () => {
+          const rng = new Rng(seed);
+
+          expect(rng.next()).not.toBe(rng.next());
+        });
+      }
     });
 
     describe('static spawn()', () => {
