@@ -1,5 +1,3 @@
-/* eslint-disable vitest/prefer-each */
-
 import { describe, expect, it, vi } from 'vitest';
 
 import type { Seed, SeededGenerator } from '../../internal/evaluateSeed.ts';
@@ -31,31 +29,35 @@ describe(SeededRng, () => {
       };
     }
 
-    for (const seedInput of [SEED_NUMBER, () => SEED_NUMBER]) {
-      it(`given a seed of type ${typeof seedInput}, SeededRng.clone(seed) has the same result as new SeededRng(seed).clone()`, () => {
+    it.each([
+      { type: 'number', seedInput: SEED_NUMBER },
+      { type: 'function', seedInput: () => SEED_NUMBER },
+    ])(
+      'given a seed of type $type, SeededRng.clone(seed) has the same result as new SeededRng(seed).clone()',
+      ({ seedInput }) => {
         const staticRng = SeededRng.clone(seedInput);
         const instanceRng = new SeededRng(seedInput).clone();
 
         expect(staticRng.peek()).toBe(SEED_NUMBER_RNG);
         expect(staticRng.next()).toBe(instanceRng.next());
         expect(staticRng.next()).toBe(instanceRng.next());
-      });
-    }
+      },
+    );
 
     // But if `seed` is self-incrementing, then
     // - the seed of `SeededRng.clone(seed)` is the same as its parent's seed, but
     // - the seed of `new SeededRng(seed).clone()` is advanced by one relative to its parent's.
-    for (const [label, seedInputFn] of [
-      ['SeededRng', () => new SeededRng(SEED_NUMBER)],
-      ['SeededGenerator', getRngLike],
-    ] as const) {
+    describe.each([
+      { label: 'SeededRng', seedInputFn: () => new SeededRng(SEED_NUMBER) },
+      { label: 'SeededGenerator', seedInputFn: getRngLike },
+    ])('given an RNG seed of type $label', ({ seedInputFn }) => {
       it('produces consistent results', () => {
         expect(seedInputFn().seed).toBe(SEED_NUMBER);
         expect(seedInputFn().seed).toBe(seedInputFn().seed);
         expect(seedInputFn().next()).toBe(seedInputFn().next());
       });
 
-      it(`given an RNG seed of type ${label}, SeededRng.clone(seed) behaves differently from new SeededRng.clone(input)`, () => {
+      it('SeededRng.clone(seed) behaves differently from new SeededRng.clone(input)', () => {
         const seedInput1 = seedInputFn();
         const seedInput2 = seedInputFn();
         expect(seedInput1.seed).toBe(SEED_NUMBER);
@@ -76,7 +78,7 @@ describe(SeededRng, () => {
         expect(seedInput2.seed).not.toBe(SEED_NUMBER); // the input seed has advanced
         expect(instanceRng.seed).not.toBe(seedInput2.seed); // and the clone's seed differs from it
       });
-    }
+    });
 
     it('given an RNG, returns a new RNG', () => {
       const seedRng = new SeededRng();
@@ -227,13 +229,14 @@ describe(SeededRng, () => {
       expect(seed1.next()).not.toBe(seed2.next());
     });
 
-    for (const seed of [0, IntegerSeed.max]) {
-      it(`given seed ${seed}, a multiple of IntegerSeed.max, yields a sequence that advances`, () => {
+    it.each([0, IntegerSeed.max])(
+      'given seed %i, a multiple of IntegerSeed.max, yields a sequence that advances',
+      (seed) => {
         const rng = new SeededRng(seed);
 
         expect(rng.next()).not.toBe(rng.next());
-      });
-    }
+      },
+    );
   });
 
   describe('get rng', () => {
@@ -338,104 +341,98 @@ describe(SeededRng, () => {
 
   // Pins literal values, so that a change to the seed arithmetic shows up as a changed sequence.
   describe('sequence', () => {
-    for (const [Rng, values] of [
-      [SeededRng, [0.067_474_613_463_261_45, 0.636_010_787_280_281_5, 0.664_314_296_871_570_1]],
-      [IntSeededRng, [4_919_824_314_725_660, 6_753_773_014_744_331, 3_781_421_979_852_382]],
-      [Int32SeededRng, [2_345_955_045, 3_220_449_931, 1_803_122_511]],
-    ] as const) {
-      it(`given seed 1234, ${Rng.name} yields the same values and seeds`, () => {
-        const rng = new Rng(1234);
+    it.each([
+      { Rng: SeededRng, values: [0.067_474_613_463_261_45, 0.636_010_787_280_281_5, 0.664_314_296_871_570_1] },
+      { Rng: IntSeededRng, values: [4_919_824_314_725_660, 6_753_773_014_744_331, 3_781_421_979_852_382] },
+      { Rng: Int32SeededRng, values: [2_345_955_045, 3_220_449_931, 1_803_122_511] },
+    ])('given seed 1234, $Rng.name yields the same values and seeds', ({ Rng, values }) => {
+      const rng = new Rng(1234);
 
-        expect([rng.next(), rng.next(), rng.next()]).toStrictEqual(values);
-        expect(rng.seed).toBe(895_431_078);
-        expect(new Rng(1234).increment(5).seed).toBe(933_663_541);
-        expect(new Rng(1234).clone(5).seed).toBe(933_663_541);
-      });
-    }
+      expect([rng.next(), rng.next(), rng.next()]).toStrictEqual(values);
+      expect(rng.seed).toBe(895_431_078);
+      expect(new Rng(1234).increment(5).seed).toBe(933_663_541);
+      expect(new Rng(1234).clone(5).seed).toBe(933_663_541);
+    });
   });
 });
 
-for (const [preset, Rng, max] of [
-  ['Int', IntSeededRng, 2 ** 31 - 1],
-  ['Int32', Int32SeededRng, 2 ** 31 - 1],
-] as const) {
-  const className = `${preset}SeededRng`;
+describe.each([
+  { Rng: IntSeededRng, max: 2 ** 31 - 1 },
+  { Rng: Int32SeededRng, max: 2 ** 31 - 1 },
+])('$Rng.name class', ({ Rng, max }) => {
+  const className = Rng.name;
 
-  describe(`${className} class`, () => {
-    describe('static clone()', () => {
-      it('returns a new instance of the same class', () => {
-        const rng = new Rng(1234.5);
+  describe('static clone()', () => {
+    it('returns a new instance of the same class', () => {
+      const rng = new Rng(1234.5);
 
-        const clone = Rng.clone(rng);
+      const clone = Rng.clone(rng);
 
-        expect(clone).toBeInstanceOf(Rng);
-      });
-    });
-
-    describe('constructor', () => {
-      it(`returns an instance of ${className}`, () => {
-        const rng = new Rng();
-
-        expect(rng).toBeInstanceOf(Rng);
-      });
-
-      it('generates an integer seed', () => {
-        const rng = new Rng();
-        expect(Number.isSafeInteger(rng.seed)).toBe(true);
-      });
-
-      it('always generates integer values', () => {
-        const seed = new Rng(1234.5);
-        expect(Number.isSafeInteger(seed.next())).toBe(true);
-        expect(Number.isSafeInteger(seed.next())).toBe(true);
-      });
-
-      it(`if the input seed exceeds max (${max}), uses modulo max`, () => {
-        const expectedSeed = 1;
-
-        const rng = new Rng(max + 1);
-
-        expect(rng.seed).toBe(expectedSeed);
-      });
-
-      for (const seed of [0, max]) {
-        it(`given seed ${seed}, a multiple of max, yields a sequence that advances`, () => {
-          const rng = new Rng(seed);
-
-          expect(rng.next()).not.toBe(rng.next());
-        });
-      }
-    });
-
-    describe('static spawn()', () => {
-      it('returns a new instance of the same class', () => {
-        const rng = new Rng();
-
-        const spawned = Rng.spawn(rng);
-
-        expect(spawned).toBeInstanceOf(Rng);
-      });
-    });
-
-    describe('clone()', () => {
-      it('returns a new instance of the same class with the same seed', () => {
-        const parentRng = new Rng();
-
-        const childRng = parentRng.clone();
-
-        expect(childRng).toBeInstanceOf(Rng);
-        expect(childRng.seed).toBe(parentRng.seed);
-      });
-    });
-
-    describe('next()', () => {
-      it('generates integer values', () => {
-        const rng = new Rng(1234.5);
-        const oldSeed = rng.seed;
-
-        expect(Number.isSafeInteger(rng.next())).toBe(true);
-        expect(rng.seed).not.toBe(oldSeed);
-      });
+      expect(clone).toBeInstanceOf(Rng);
     });
   });
-}
+
+  describe('constructor', () => {
+    it(`returns an instance of ${className}`, () => {
+      const rng = new Rng();
+
+      expect(rng).toBeInstanceOf(Rng);
+    });
+
+    it('generates an integer seed', () => {
+      const rng = new Rng();
+      expect(Number.isSafeInteger(rng.seed)).toBe(true);
+    });
+
+    it('always generates integer values', () => {
+      const seed = new Rng(1234.5);
+      expect(Number.isSafeInteger(seed.next())).toBe(true);
+      expect(Number.isSafeInteger(seed.next())).toBe(true);
+    });
+
+    it(`if the input seed exceeds max (${max}), uses modulo max`, () => {
+      const expectedSeed = 1;
+
+      const rng = new Rng(max + 1);
+
+      expect(rng.seed).toBe(expectedSeed);
+    });
+
+    it.each([0, max])('given seed %i, a multiple of max, yields a sequence that advances', (seed) => {
+      const rng = new Rng(seed);
+
+      expect(rng.next()).not.toBe(rng.next());
+    });
+  });
+
+  describe('static spawn()', () => {
+    it('returns a new instance of the same class', () => {
+      const rng = new Rng();
+
+      const spawned = Rng.spawn(rng);
+
+      expect(spawned).toBeInstanceOf(Rng);
+    });
+  });
+
+  describe('clone()', () => {
+    it('returns a new instance of the same class with the same seed', () => {
+      const parentRng = new Rng();
+
+      const childRng = parentRng.clone();
+
+      expect(childRng).toBeInstanceOf(Rng);
+      expect(childRng.seed).toBe(parentRng.seed);
+    });
+  });
+
+  describe('next()', () => {
+    it('generates integer values', () => {
+      const rng = new Rng(1234.5);
+      const oldSeed = rng.seed;
+
+      expect(Number.isSafeInteger(rng.next())).toBe(true);
+      expect(rng.seed).not.toBe(oldSeed);
+    });
+  });
+});
