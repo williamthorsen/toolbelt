@@ -30,5 +30,6 @@ export {
   PARENTHESES,
   readBalancedGroup,
 } from './portable/readBalancedGroup.ts';
+export { type FunctionLiteral, readFunctionLiteral } from './portable/readFunctionLiteral.ts';
 export { readLiteral } from './portable/readLiteral.ts';
 export { blankNonCode, getLineAtOffset } from 'readyup/check-utils';
