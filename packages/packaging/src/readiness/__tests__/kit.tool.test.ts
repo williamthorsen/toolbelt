@@ -1,10 +1,4 @@
-import {
-  createTrackedRepo,
-  listFreshKitChecks,
-  pointCwdAt,
-  runCheck,
-  runSkip,
-} from '@williamthorsen/toolbelt.adoption/test-utils';
+import { createKitFixture, runCheck, runSkip } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
@@ -59,67 +53,62 @@ const ADOPTER = dedent`
 
 describe('The packaging adoption kit', () => {
   it('reports a manifest search, naming where it is, and counts it against a call into the package', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'package.json': MANIFEST,
       'src/adopter.ts': ADOPTER,
       'src/root.ts': MANIFEST_SEARCH,
     });
-    using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [{ line: 3, path: 'src/root.ts', reported: true }],
     });
   });
 
   it('leaves a walk that probes only for a repository marker out of the report and out of the denominator', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/root.ts': MARKER_SEARCH });
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/root.ts': MARKER_SEARCH });
 
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [],
     });
   });
 
   it('exempts the package’s own findPackageRoot, and reports a hand-roll beside it', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'package.json': PUBLISHER_MANIFEST,
       'src/findPackageRoot.ts': OWN_FIND_PACKAGE_ROOT,
       'src/other.ts': MANIFEST_SEARCH,
     });
-    using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 3, path: 'src/other.ts', reported: true }],
     });
   });
 
   it('leaves a test file and a bootstrap wrapper alone', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'bin/run.js': MANIFEST_SEARCH,
       'package.json': MANIFEST,
       'src/__tests__/root.unit.test.ts': MANIFEST_SEARCH,
       'src/adopter.ts': ADOPTER,
     });
-    using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
   });
 
   it('skips the check when the sweep matches no source', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'bin/run.js': MANIFEST_SEARCH,
       'package.json': MANIFEST,
       'src/__tests__/root.unit.test.ts': MANIFEST_SEARCH,
     });
-    using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runSkip((await listFreshKitChecks(KIT_URL))[0])).resolves.toBe(
+    await expect(runSkip(kit.checks[0])).resolves.toBe(
       'the project contains no JavaScript or TypeScript sources outside the exempt paths',
     );
   });

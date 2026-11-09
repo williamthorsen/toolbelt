@@ -1,10 +1,4 @@
-import {
-  createTrackedRepo,
-  listFreshKitChecks,
-  pointCwdAt,
-  runCheck,
-  runSkip,
-} from '@williamthorsen/toolbelt.adoption/test-utils';
+import { createKitFixture, runCheck, runSkip } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
@@ -40,9 +34,12 @@ const ADOPTER = dedent`
 
 describe('The cli adoption kit', () => {
   it('reports each kind under its own check, and counts both against calls into the package', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/adopter.ts': ADOPTER, 'src/run.ts': RUNNER });
-    using _cwd = pointCwdAt(tree.dir);
-    const [parseArgsCheck, flagScanCheck] = await listFreshKitChecks(KIT_URL);
+    using kit = await createKitFixture(KIT_URL, {
+      'package.json': MANIFEST,
+      'src/adopter.ts': ADOPTER,
+      'src/run.ts': RUNNER,
+    });
+    const [parseArgsCheck, flagScanCheck] = kit.checks;
 
     await expect(runCheck(parseArgsCheck)).resolves.toStrictEqual({
       adoptedCount: 2,
@@ -61,14 +58,13 @@ describe('The cli adoption kit', () => {
   });
 
   it('sweeps a runner under bin/ and src/bin/, and leaves a test alone', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'bin/cli.js': RUNNER,
       'package.json': MANIFEST,
       'src/bin/__tests__/run.unit.test.ts': RUNNER,
       'src/bin/run.ts': RUNNER,
     });
-    using _cwd = pointCwdAt(tree.dir);
-    const [parseArgsCheck] = await listFreshKitChecks(KIT_URL);
+    const [parseArgsCheck] = kit.checks;
 
     await expect(runCheck(parseArgsCheck)).resolves.toMatchObject({
       findings: [
@@ -81,13 +77,12 @@ describe('The cli adoption kit', () => {
   });
 
   it('exempts the package’s own runCli, and reports a hand-roll beside it', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'package.json': PUBLISHER_MANIFEST,
       'src/run.ts': RUNNER,
       'src/runCli.ts': OWN_RUN_CLI,
     });
-    using _cwd = pointCwdAt(tree.dir);
-    const [, flagScanCheck] = await listFreshKitChecks(KIT_URL);
+    const [, flagScanCheck] = kit.checks;
 
     await expect(runCheck(flagScanCheck)).resolves.toStrictEqual({
       adoptedCount: 0,
@@ -99,9 +94,8 @@ describe('The cli adoption kit', () => {
   });
 
   it('skips the checks when the sweep matches no source', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/__tests__/run.unit.test.ts': RUNNER });
-    using _cwd = pointCwdAt(tree.dir);
-    const checks = await listFreshKitChecks(KIT_URL);
+    using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/__tests__/run.unit.test.ts': RUNNER });
+    const checks = kit.checks;
 
     await expect(Promise.all(checks.map((check) => runSkip(check)))).resolves.toStrictEqual([
       'the project contains no JavaScript or TypeScript sources outside its tests',

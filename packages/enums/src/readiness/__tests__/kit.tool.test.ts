@@ -1,8 +1,6 @@
 import {
-  createTrackedRepo,
-  listFreshKitChecks,
+  createKitFixture,
   listReportedFindings,
-  pointCwdAt,
   runCheck,
   runSkip,
   summarizeFraction,
@@ -40,10 +38,9 @@ const EVERY_FORM = {
 
 describe('The enums adoption kit', () => {
   it('reports every form of the test, naming where it is', async () => {
-    using tree = createTrackedRepo(EVERY_FORM);
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, EVERY_FORM);
 
-    expect(listReportedFindings(await runCheck((await listFreshKitChecks(KIT_URL))[0]))).toStrictEqual([
+    expect(listReportedFindings(await runCheck(kit.checks[0]))).toStrictEqual([
       { line: 1, path: 'src/argument-cast.ts', reported: true },
       { line: 1, path: 'src/asserted.ts', reported: true },
       { line: 1, path: 'src/direct.ts', reported: true },
@@ -52,63 +49,58 @@ describe('The enums adoption kit', () => {
   });
 
   it('spans every site in the denominator', async () => {
-    using tree = createTrackedRepo(EVERY_FORM);
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, EVERY_FORM);
 
-    expect(summarizeFraction(await runCheck((await listFreshKitChecks(KIT_URL))[0]))).toStrictEqual({
+    expect(summarizeFraction(await runCheck(kit.checks[0]))).toStrictEqual({
       adoptedCount: 0,
       findingCount: 4,
     });
   });
 
   it('counts a call into the package as adoption', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/known.ts': ADOPTER });
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/known.ts': ADOPTER });
 
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
   });
 
   it('exempts the package’s own isEnumValue, and reports a hand-roll beside it', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'package.json': PUBLISHER_MANIFEST,
       'src/isEnumValue.ts': OWN_GUARD,
       'src/other.ts': DIRECT,
     });
-    using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 1, path: 'src/other.ts', reported: true }],
     });
   });
 
   it('leaves a test file and a bootstrap wrapper alone', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'bin/run.js': DIRECT,
       'package.json': MANIFEST,
       'src/__tests__/palette.unit.test.ts': DIRECT,
       'src/known.ts': ADOPTER,
     });
-    using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
   });
 
   it('skips the check when the sweep matches no source', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'bin/run.js': DIRECT,
       'package.json': MANIFEST,
       'src/__tests__/palette.unit.test.ts': DIRECT,
     });
-    using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runSkip((await listFreshKitChecks(KIT_URL))[0])).resolves.toBe(
+    await expect(runSkip(kit.checks[0])).resolves.toBe(
       'the project contains no JavaScript or TypeScript sources outside the exempt paths',
     );
   });

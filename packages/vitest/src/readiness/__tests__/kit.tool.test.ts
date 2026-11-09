@@ -1,9 +1,8 @@
 import {
-  createTrackedRepo,
-  listFreshKitChecks,
+  createKitFixture,
   listReportedFindings,
-  pointCwdAt,
   runCheck,
+  runEveryCheck,
   runSkip,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
@@ -70,10 +69,9 @@ const EVERY_IDIOM = {
 
 describe('The vitest adoption kit', () => {
   it('reports each idiom under its own check, naming where it is', async () => {
-    using tree = createTrackedRepo(EVERY_IDIOM);
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, EVERY_IDIOM);
 
-    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
+    const outcomes = await runEveryCheck(kit.checks);
 
     // Nine kinds over eight checks: `no-hand-rolled-exit-mock` takes the throwing and the unreadable mock,
     // and `no-hand-rolled-console-capture` takes the full capture and the spy left unclassified.
@@ -96,10 +94,9 @@ describe('The vitest adoption kit', () => {
   });
 
   it('spans all ten sites in the denominator, so the checks share one fraction', async () => {
-    using tree = createTrackedRepo(EVERY_IDIOM);
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, EVERY_IDIOM);
 
-    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
+    const outcomes = await runEveryCheck(kit.checks);
 
     expect(outcomes.map(summarizeFraction)).toStrictEqual(
       Array.from({ length: 8 }, () => ({ adoptedCount: 0, findingCount: 10 })),
@@ -107,10 +104,9 @@ describe('The vitest adoption kit', () => {
   });
 
   it('counts a call into the package as adoption', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/exit.unit.test.ts': ADOPTER });
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/exit.unit.test.ts': ADOPTER });
 
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -119,14 +115,13 @@ describe('The vitest adoption kit', () => {
   // Because the test file beside it keeps the check running, a narrowed filter reports the silence here rather than
   // leaving the check skipped.
   it('leaves a source that is no test alone', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'package.json': MANIFEST,
       'src/config.ts': SILENCE,
       'src/exit.unit.test.ts': ADOPTER,
     });
-    using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck(await findCheck('no-hand-rolled-console-silence'))).resolves.toStrictEqual({
+    await expect(runCheck(findCheck(kit.checks, 'no-hand-rolled-console-silence'))).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -137,27 +132,28 @@ describe('The vitest adoption kit', () => {
   // never matches. So the repository publishing the utility is reported like any other consumer, which is why
   // its own suite shows findings.
   it('reports a silence in the publishing repository, which declares the utility elsewhere', async () => {
-    using tree = createTrackedRepo({ 'package.json': PUBLISHER_MANIFEST, 'src/silence.unit.test.ts': SILENCE });
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, {
+      'package.json': PUBLISHER_MANIFEST,
+      'src/silence.unit.test.ts': SILENCE,
+    });
 
-    expect(listReportedFindings(await runCheck(await findCheck('no-hand-rolled-console-silence')))).toStrictEqual([
-      { line: 1, path: 'src/silence.unit.test.ts', reported: true },
-    ]);
+    expect(listReportedFindings(await runCheck(findCheck(kit.checks, 'no-hand-rolled-console-silence')))).toStrictEqual(
+      [{ line: 1, path: 'src/silence.unit.test.ts', reported: true }],
+    );
   });
 
   it('skips every check when the sweep matches no source', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/config.ts': SILENCE });
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/config.ts': SILENCE });
 
-    await expect(runSkip((await listFreshKitChecks(KIT_URL))[0])).resolves.toBe('the project contains no test files');
+    await expect(runSkip(kit.checks[0])).resolves.toBe('the project contains no test files');
   });
 });
 
 // region | Helpers
 
 /** Finds a check by its id, for the assertions that depend on which of the eight checks reported. */
-async function findCheck(id: string): Promise<RdyCheck | undefined> {
-  return (await listFreshKitChecks(KIT_URL)).find((check) => check.id === id);
+function findCheck(checks: readonly RdyCheck[], id: string): RdyCheck | undefined {
+  return checks.find((check) => check.id === id);
 }
 
 // endregion | Helpers
