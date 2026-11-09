@@ -140,6 +140,30 @@ function readBalancedGroup(source, from, delimiters) {
   return void 0;
 }
 
+// ../adoption/src/portable/readFunctionLiteral.ts
+var BARE_PARAMETER_ARROW = /^(?<parameter>[\w$]+)\s*=>/;
+var FUNCTION_KEYWORD = /^function\b/;
+function readFunctionLiteral(text) {
+  const trimmed = text.trimStart();
+  const bare = BARE_PARAMETER_ARROW.exec(trimmed);
+  if (bare?.groups?.["parameter"] !== void 0) {
+    return { body: trimmed.slice(bare[0].length), parameters: bare.groups["parameter"] };
+  }
+  const isFunctionExpression = FUNCTION_KEYWORD.test(trimmed);
+  const list = readBalancedGroup(trimmed, 0, PARENTHESES);
+  if (list === void 0 || !isFunctionExpression && list.start !== 0) return void 0;
+  const parameters = trimmed.slice(list.start + 1, list.end - 1);
+  const bodyStart = isFunctionExpression ? findBlockStart(trimmed, list.end) : findArrowBodyStart(trimmed, list.end);
+  return bodyStart === void 0 ? void 0 : { body: trimmed.slice(bodyStart), parameters };
+}
+function findArrowBodyStart(text, listEnd) {
+  const arrow = text.indexOf("=>", listEnd);
+  return arrow === -1 ? void 0 : arrow + 2;
+}
+function findBlockStart(text, listEnd) {
+  return readBalancedGroup(text, listEnd, BRACES)?.start;
+}
+
 // ../adoption/src/mod.ts
 import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
 
@@ -156,9 +180,7 @@ var ADOPTED_EXPORTS = [
 // src/readiness/classifyConsoleMock.ts
 var IMPLEMENTATION = /^\s*\.mockImplementation(?:Once)?\(/;
 var BARE_REFERENCE = /^[\w$.]+$/;
-var FUNCTION_HEAD = /^(?:async\s+)?function\b/;
 var LEADING_ASYNC = /^async\s+/;
-var SOLE_PARAMETER = /^([\w$]+)\s*=>/;
 var REST_PARAMETER = /(?:^|,)\s*\.\.\./;
 var EMPTY_EXPRESSION = /^(?:undefined|void 0)$/;
 function classifyConsoleMock(after) {
@@ -167,40 +189,17 @@ function classifyConsoleMock(after) {
   if (group === void 0) return "console-unclassified";
   const implementation = after.slice(group.start + 1, group.end - 1).trim();
   if (BARE_REFERENCE.test(implementation)) return "console-unclassified";
-  const head = readImplementationHead(implementation);
+  const head = readFunctionLiteral(implementation.replace(LEADING_ASYNC, ""));
   if (head === void 0) return "console-unclassified";
   if (isNoOp(head.body)) return "console-silence";
   if (REST_PARAMETER.test(head.parameters)) return "console-capture";
   return head.parameters.trim() === "" ? "console-capture" : "console-capture-lossy";
-}
-function findBodyPastAnnotation(rest) {
-  if (!rest.trimStart().startsWith(":")) return rest;
-  const brace = rest.indexOf("{");
-  return brace === -1 ? void 0 : rest.slice(brace);
-}
-function findBodyPastArrow(rest) {
-  const arrow = rest.indexOf("=>");
-  return arrow === -1 ? void 0 : rest.slice(arrow + 2);
 }
 function isNoOp(body) {
   const trimmed = body.trim();
   const block = trimmed.startsWith("{") ? readBalancedGroup(trimmed, 0, BRACES) : void 0;
   if (block !== void 0 && block.end === trimmed.length) return trimmed.slice(1, -1).trim() === "";
   return EMPTY_EXPRESSION.test(trimmed);
-}
-function readImplementationHead(implementation) {
-  if (FUNCTION_HEAD.test(implementation)) return readParenthesizedHead(implementation, findBodyPastAnnotation);
-  const arrow = implementation.replace(LEADING_ASYNC, "");
-  if (arrow.startsWith("(")) return readParenthesizedHead(arrow, findBodyPastArrow);
-  const sole = SOLE_PARAMETER.exec(arrow);
-  return sole?.[1] === void 0 ? void 0 : { body: arrow.slice(sole[0].length), parameters: sole[1] };
-}
-function readParenthesizedHead(implementation, findBody) {
-  const list = readBalancedGroup(implementation, 0, PARENTHESES);
-  if (list === void 0) return void 0;
-  const body = findBody(implementation.slice(list.end));
-  if (body === void 0) return void 0;
-  return { body, parameters: implementation.slice(list.start + 1, list.end - 1) };
 }
 
 // src/readiness/listConsoleSites.ts

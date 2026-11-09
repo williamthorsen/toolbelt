@@ -34,7 +34,7 @@
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "09840c67",
+          "hash": "05789908",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -69,6 +69,11 @@
           "path": "../../adoption/src/portable/readBalancedGroup.ts"
         },
         {
+          "hash": "d20d533a",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readFunctionLiteral.ts"
+        },
+        {
           "hash": "81846f1a",
           "kind": "module",
           "path": "../../adoption/src/portable/readLiteral.ts"
@@ -99,7 +104,7 @@
           "path": "../src/readiness/listArrayIdioms.ts"
         },
         {
-          "hash": "d5784958",
+          "hash": "1a677266",
           "kind": "module",
           "path": "../src/readiness/listBiasedShuffleLines.ts"
         },
@@ -114,7 +119,7 @@
       "readyupVersion": "0.45.0",
       "source": "kits/default.ts",
       "sourceHash": "af8cda5e",
-      "targetHash": "41676f11"
+      "targetHash": "711fe35a"
     }
   ]
 }
