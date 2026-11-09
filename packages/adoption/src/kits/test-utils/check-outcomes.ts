@@ -46,6 +46,11 @@ export async function runCheck(check: RdyCheck | undefined): Promise<FindingOutc
   return outcome;
 }
 
+/** Runs every check, as `runCheck` does, and returns their reports in the checks' order. */
+export async function runEveryCheck(checks: readonly RdyCheck[]): Promise<FindingOutcome[]> {
+  return Promise.all(checks.map((check) => runCheck(check)));
+}
+
 /** Runs a check's skip, which every adoption check declares. */
 export async function runSkip(check: RdyCheck | undefined): Promise<false | string> {
   if (check?.skip === undefined) throw new Error('the check declares no skip');

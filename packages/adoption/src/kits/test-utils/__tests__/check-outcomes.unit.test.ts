@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url';
 import type { RdyCheck, RdyKit } from 'readyup';
 import { describe, expect, it } from 'vitest';
 
-import { listFreshKitChecks, listKitChecks } from '../check-outcomes.ts';
+import { listFreshKitChecks, listKitChecks, runEveryCheck } from '../check-outcomes.ts';
 import { createTempDir } from '../createTempDir.ts';
 
 const FIRST: RdyCheck = { name: 'first', check: () => true };
@@ -55,5 +55,23 @@ describe(listKitChecks, () => {
     const kit: RdyKit = { checklists: [{ name: 'staged', groups: [[FIRST]] }] };
 
     expect(() => listKitChecks(kit)).toThrow('the kit holds no flat checklist');
+  });
+});
+
+describe(runEveryCheck, () => {
+  it("returns every check's report in the checks' order", async () => {
+    const checks: RdyCheck[] = [
+      { name: 'async', check: () => Promise.resolve({ adoptedCount: 1, findings: [] }) },
+      { name: 'sync', check: () => ({ adoptedCount: 2, findings: [] }) },
+    ];
+
+    await expect(runEveryCheck(checks)).resolves.toStrictEqual([
+      { adoptedCount: 1, findings: [] },
+      { adoptedCount: 2, findings: [] },
+    ]);
+  });
+
+  it('rejects when a check returns no report', async () => {
+    await expect(runEveryCheck([FIRST])).rejects.toThrow('the check returned no report');
   });
 });
