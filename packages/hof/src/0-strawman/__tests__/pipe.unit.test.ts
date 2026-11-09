@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { applyPipe, pipe } from '../pipe.ts';
 
@@ -21,10 +21,12 @@ describe(pipe, () => {
   it('correctly types the returned function', () => {
     const fnPipe = pipe(double, toString);
 
-    // Test will fail if TypeScript compilation fails due to type error.
-    const result: string = fnPipe(5);
+    expectTypeOf(fnPipe).toEqualTypeOf<(n: number) => string>();
+    expect(fnPipe(5)).toBe('10');
+  });
 
-    expect(result).toBe('10');
+  it('types a pipe containing an async function as returning a promise', () => {
+    expectTypeOf(pipe(asyncUpper, enclose)).returns.toEqualTypeOf<Promise<string>>();
   });
 
   it('accepts a first function that requires more than one argument', () => {
@@ -63,6 +65,7 @@ describe(applyPipe, () => {
   it('applies the first argument to the first function in the pipe', () => {
     const result = applyPipe(2, double, toString);
 
+    expectTypeOf(result).toEqualTypeOf<string>();
     expect(result).toBe('4');
   });
 });

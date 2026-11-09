@@ -417,11 +417,7 @@ importers:
         specifier: 'catalog:'
         version: 0.45.0(esbuild@0.28.2)
 
-  packages/hof:
-    devDependencies:
-      '@williamthorsen/toolbelt.arrays':
-        specifier: workspace:*
-        version: link:../arrays
+  packages/hof: {}
 
   packages/nodejs:
     dependencies:
