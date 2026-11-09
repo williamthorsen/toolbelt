@@ -1,5 +1,6 @@
 /**
- * Returns true if `value` looks like a promise. Does not guarantee that `value` is a Promise.
+ * Returns true if `value` is a thenable: a non-null object with a `then` method. A thenable is not necessarily a
+ * `Promise`.
  *
  * @example
  * ```
@@ -13,18 +14,18 @@
  * @experimental
  * @stage strawman
  */
-export function isPromise<T>(value: unknown): value is Promise<T> {
+export function isPromise(value: unknown): value is PromiseLike<unknown> {
   if (value === null || typeof value !== 'object') return false;
   return 'then' in value && typeof value.then === 'function';
 }
 
 /**
- * Returns true if `value` is not a promise.
+ * Returns true if `value` is not a thenable.
  *
  * @category Function
  * @experimental
  * @stage strawman
  */
-export function isNotPromise<T>(value: T): value is Exclude<T, Promise<unknown>> {
+export function isNotPromise<T>(value: T): value is Exclude<T, PromiseLike<unknown>> {
   return !isPromise(value);
 }
