@@ -1,3 +1,4 @@
+import { diffAdoptedExports } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { describe, expect, it } from 'vitest';
 
 import * as proposedExports from '../../1-proposed/index.ts';
@@ -13,22 +14,15 @@ const PUBLISHED_TIERS = [proposedExports, draftExports, candidateExports, releas
 const EXCLUDED_EXPORTS = ['toLowerCase', 'toUpperCase', 'trim', 'trimEnd', 'trimStart'];
 
 describe('ADOPTED_EXPORTS', () => {
-  // Fails when a published tier gains a callable export missing from the list against which adoption
-  // is counted.
-  it('names every export that a consumer calls, but for the prototype wrappers', () => {
-    const callable = PUBLISHED_TIERS.flatMap((tier) =>
-      Object.entries(tier)
-        .filter(([, value]) => typeof value === 'function')
-        .map(([name]) => name),
-    );
+  const diff = diffAdoptedExports(PUBLISHED_TIERS, ADOPTED_EXPORTS);
 
-    expect(callable).not.toHaveLength(0);
-    expect(callable.filter((name) => !ADOPTED_EXPORTS.includes(name))).toStrictEqual(EXCLUDED_EXPORTS);
+  // Fails when a published tier gains a callable export missing from the list against which adoption is counted.
+  it('names every export that a consumer calls, but for the prototype wrappers', () => {
+    expect(diff.callable).not.toHaveLength(0);
+    expect(diff.omitted).toStrictEqual(EXCLUDED_EXPORTS);
   });
 
   it('names nothing a published tier does not export', () => {
-    const exported = new Set(PUBLISHED_TIERS.flatMap((tier) => Object.keys(tier)));
-
-    expect(ADOPTED_EXPORTS.filter((name) => !exported.has(name))).toStrictEqual([]);
+    expect(diff.unexported).toStrictEqual([]);
   });
 });
