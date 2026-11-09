@@ -5,7 +5,7 @@ import { withDefaultItemValue } from '../withDefaultItemValue.ts';
 describe(withDefaultItemValue, () => {
   const sum = (values: ReadonlyArray<number>) => values.reduce((a, b) => a + b, 0);
 
-  it('returns a new function that accepts an array containing undefined items', () => {
+  it('replaces undefined items with the default value', () => {
     const sumWithDefault = withDefaultItemValue(sum, 2);
     const expectedSum = 6;
 
@@ -23,7 +23,7 @@ describe(withDefaultItemValue, () => {
     expect(actualSum).toBe(expectedSum);
   });
 
-  it('handles empty arrays gracefully', () => {
+  it('passes an empty array to the function', () => {
     const sumWithFallback = withDefaultItemValue(sum, 0);
     const expectedSum = 0;
 
@@ -32,7 +32,7 @@ describe(withDefaultItemValue, () => {
     expect(actualSum).toBe(expectedSum);
   });
 
-  it('works with different types and fallback values', () => {
+  it('replaces undefined string items with a string default', () => {
     const concatenate = (values: ReadonlyArray<string>) => values.join('');
     const concatenateWithDefault = withDefaultItemValue(concatenate, 'X');
     const expectedResult = 'aXc';

@@ -36,7 +36,7 @@ describe(map, () => {
     expect(actual).toStrictEqual(expected);
   });
 
-  it('works with various types, not just numbers', () => {
+  it("maps string items, passing each item's index", () => {
     const fn = (x: string, index: number) => `${x}-${index}`;
     const mapper = map(fn);
     const input = ['a', 'b', 'c'];

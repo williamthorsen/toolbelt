@@ -3,7 +3,7 @@ import { describe, expect, expectTypeOf, it } from 'vitest';
 import { withDefaultInput } from '../withDefaultInput.ts';
 
 describe(withDefaultInput, () => {
-  it('returns a new function that accepts an undefined value', () => {
+  it('replaces an undefined input with the default value', () => {
     const double = (value: number) => value * 2;
     const doubleWithDefault = withDefaultInput(double, 1);
     const expectedSum = 2;
