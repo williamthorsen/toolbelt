@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { curry } from '../curry.ts';
 
@@ -24,6 +24,21 @@ describe(curry, () => {
       const partialSum = curriedSum(1);
       expect(partialSum).toBeInstanceOf(Function);
       expect(partialSum(2)(3)).toBe(6);
+    });
+  });
+
+  describe('types', () => {
+    it('types each partial application as taking the next argument', () => {
+      const add = (a: number, b: number) => a + b;
+
+      expectTypeOf(curry(add)(1)).toEqualTypeOf<(arg: number) => number>();
+    });
+
+    it('rejects an argument of the wrong type', () => {
+      const add = (a: number, b: number) => a + b;
+
+      // @ts-expect-error - `add` takes a number as its first argument
+      expect(() => curry(add)('1')).not.toThrow();
     });
   });
 });
