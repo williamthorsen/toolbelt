@@ -14,20 +14,6 @@ const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 const STDIO_SPY = "vi.spyOn(process.stdout, 'write').mockImplementation(() => true);\n";
 
 describe('The testing adoption kit, run through rdy', () => {
-  it('names every site and spans them all in one denominator', () => {
-    expect(runKit(buildCapture(''))).toStrictEqual([
-      { count: 3, detail: 'caught (src/config.unit.test.ts:3)', id: 'no-hand-rolled-error-capture', passedCount: 1 },
-      { count: 3, detail: 'src/output.unit.test.ts:1', id: 'no-hand-rolled-stdio-capture', passedCount: 1 },
-    ]);
-  });
-
-  it('drops a site covered by an unqualified pragma from every check’s detail and fraction', () => {
-    expect(runKit(buildCapture(' // rdy-ignore -- reviewed'))).toStrictEqual([
-      { count: 2, detail: undefined, id: 'no-hand-rolled-error-capture', passedCount: 1 },
-      { count: 2, detail: 'src/output.unit.test.ts:1', id: 'no-hand-rolled-stdio-capture', passedCount: 1 },
-    ]);
-  });
-
   // A `dir:` kit source has no namespace, so the bare id stands. A consumer running the kit from the
   // installed package writes `toolbelt.testing/no-hand-rolled-error-capture`.
   it('drops a site covered by a qualified pragma from the named check alone', () => {

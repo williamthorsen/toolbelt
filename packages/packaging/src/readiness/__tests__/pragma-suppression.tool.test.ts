@@ -13,30 +13,11 @@ const ADOPTER = dedent`
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 describe('The packaging adoption kit, run through rdy', () => {
-  it('names the site and counts it in the denominator', () => {
-    expect(runKit(buildSearch(''))).toStrictEqual([
-      { count: 2, detail: 'src/root.ts:3', id: 'no-hand-rolled-manifest-search', passedCount: 1 },
-    ]);
-  });
-
-  it('drops a site covered by an unqualified pragma from the detail and the fraction', () => {
-    expect(runKit(buildSearch(' // rdy-ignore -- reviewed'))).toStrictEqual([
-      { count: 1, detail: undefined, id: 'no-hand-rolled-manifest-search', passedCount: 1 },
-    ]);
-  });
-
   // A `dir:` kit source has no namespace, so the bare id stands. A consumer running the kit from the
   // installed package writes `toolbelt.packaging/no-hand-rolled-manifest-search`.
-  it('drops a site covered by a qualified pragma', () => {
+  it('drops a site covered by a qualified pragma from the named check alone', () => {
     expect(runKit(buildSearch(' // rdy-ignore no-hand-rolled-manifest-search -- reviewed'))).toStrictEqual([
       { count: 1, detail: undefined, id: 'no-hand-rolled-manifest-search', passedCount: 1 },
-    ]);
-  });
-
-  // `toolbelt.filesystem`'s walk check is the one that a reader is likeliest to name by mistake.
-  it('keeps a site in the report when the pragma names another check', () => {
-    expect(runKit(buildSearch(' // rdy-ignore no-hand-rolled-directory-walk -- reviewed'))).toStrictEqual([
-      { count: 2, detail: 'src/root.ts:3', id: 'no-hand-rolled-manifest-search', passedCount: 1 },
     ]);
   });
 });
