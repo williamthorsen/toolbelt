@@ -33,6 +33,55 @@ export interface FormatDurationOptions {
   maxUnits?: number | undefined;
 }
 
+interface DurationComponent {
+  count: number;
+  unit: TimeUnit;
+}
+
+// region | Helpers
+
+/**
+ * Rejects a duration or a `maxUnits` value that `formatDuration` cannot render.
+ */
+function assertValidArguments(milliseconds: number, maxUnits: number): void | never {
+  if (!Number.isFinite(milliseconds) || milliseconds < 0) {
+    throw new RangeError(`Duration must be a non-negative finite number of milliseconds, but was ${milliseconds}.`);
+  }
+  if (!Number.isSafeInteger(maxUnits) || maxUnits < 1) {
+    throw new RangeError(`maxUnits must be a positive integer, but was ${maxUnits}.`);
+  }
+}
+
+/**
+ * Splits an exact multiple of the finest unit into whole counts. Both operands of every division
+ * are whole numbers of milliseconds, so no quotient or remainder loses precision.
+ */
+function decompose(milliseconds: number, shownUnits: ReadonlyArray<TimeUnit>): DurationComponent[] {
+  const components: DurationComponent[] = [];
+  let remainder = milliseconds;
+
+  for (const [index, unit] of shownUnits.entries()) {
+    const count = Math.floor(remainder / unit.inMillis);
+    remainder -= count * unit.inMillis;
+
+    if (index === 0 || count > 0) {
+      components.push({ count, unit });
+    }
+  }
+
+  return components;
+}
+
+/**
+ * Rounds a duration to a whole number of the finest unit shown, returning the result in
+ * milliseconds. The finest unit is the one spanning the fewest milliseconds.
+ */
+function roundToFinest(milliseconds: number, shownUnits: ReadonlyArray<TimeUnit>): number {
+  const finestInMillis = Math.min(...shownUnits.map((unit) => unit.inMillis));
+
+  return Math.round(milliseconds / finestInMillis) * finestInMillis;
+}
+
 /**
  * Rounds the duration and splits it into the components to render, from the leading unit down.
  * Each attempt rounds the original duration rather than an already-rounded one, so the result is
@@ -65,49 +114,4 @@ function selectLeadingIndex(milliseconds: number): number {
   return index === -1 ? FINEST_INDEX : index;
 }
 
-/**
- * Rounds a duration to a whole number of the finest unit shown, returning the result in
- * milliseconds. The finest unit is the one spanning the fewest milliseconds.
- */
-function roundToFinest(milliseconds: number, shownUnits: ReadonlyArray<TimeUnit>): number {
-  const finestInMillis = Math.min(...shownUnits.map((unit) => unit.inMillis));
-
-  return Math.round(milliseconds / finestInMillis) * finestInMillis;
-}
-
-/**
- * Splits an exact multiple of the finest unit into whole counts. Both operands of every division
- * are whole numbers of milliseconds, so no quotient or remainder loses precision.
- */
-function decompose(milliseconds: number, shownUnits: ReadonlyArray<TimeUnit>): DurationComponent[] {
-  const components: DurationComponent[] = [];
-  let remainder = milliseconds;
-
-  for (const [index, unit] of shownUnits.entries()) {
-    const count = Math.floor(remainder / unit.inMillis);
-    remainder -= count * unit.inMillis;
-
-    if (index === 0 || count > 0) {
-      components.push({ count, unit });
-    }
-  }
-
-  return components;
-}
-
-/**
- * Rejects a duration or a `maxUnits` value that `formatDuration` cannot render.
- */
-function assertValidArguments(milliseconds: number, maxUnits: number): void | never {
-  if (!Number.isFinite(milliseconds) || milliseconds < 0) {
-    throw new RangeError(`Duration must be a non-negative finite number of milliseconds, but was ${milliseconds}.`);
-  }
-  if (!Number.isSafeInteger(maxUnits) || maxUnits < 1) {
-    throw new RangeError(`maxUnits must be a positive integer, but was ${maxUnits}.`);
-  }
-}
-
-interface DurationComponent {
-  count: number;
-  unit: TimeUnit;
-}
+// endregion | Helpers
