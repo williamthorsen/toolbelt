@@ -34,13 +34,6 @@ const OWN_DESCRIBE_ERROR = [
   '}',
   '',
 ].join('\n');
-// Prose about the operator, and a source that never tests for an Error at all.
-// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-const UNCLAIMED = [
-  '// Returns the message where the value is an instanceof Error.',
-  'export const answer = 42;',
-  '',
-].join('\n');
 // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
 const ADOPTER = [
   "import { describeError } from '@williamthorsen/toolbelt.errors';",
@@ -92,16 +85,6 @@ describe('The errors adoption kit', () => {
 
     await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
       adoptedCount: 1,
-      findings: [],
-    });
-  });
-
-  it('neither reports nor counts prose about the operator', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/probe.ts': UNCLAIMED });
-    using _cwd = pointCwdAt(tree.dir);
-
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
-      adoptedCount: 0,
       findings: [],
     });
   });

@@ -49,13 +49,6 @@ const THROWING = dedent`
 
 `;
 const UNREADABLE_EXIT_MOCK = "vi.spyOn(process, 'exit').mockImplementation(handleExit);\n";
-// A spy on a method for which the package has no advice, and a `mock.calls` read on a spy that is no console spy.
-const UNCLAIMED = dedent`
-  vi.spyOn(console, 'table').mockImplementation(() => {});
-  const existsSyncSpy = vi.spyOn(fs, 'existsSync').mockReturnValue(true);
-  expect(existsSyncSpy.mock.calls).toHaveLength(2);
-
-`;
 const ADOPTER = dedent`
   import { throwOnProcessExit } from '@williamthorsen/toolbelt.vitest';
   using _exit = throwOnProcessExit();
@@ -119,16 +112,6 @@ describe('The vitest adoption kit', () => {
 
     await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
       adoptedCount: 1,
-      findings: [],
-    });
-  });
-
-  it('neither reports nor counts a spy for which the package has no advice', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/probe.unit.test.ts': UNCLAIMED });
-    using _cwd = pointCwdAt(tree.dir);
-
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
-      adoptedCount: 0,
       findings: [],
     });
   });

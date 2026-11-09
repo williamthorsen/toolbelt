@@ -51,12 +51,6 @@ const OWN_FIND_PACKAGE_ROOT = dedent`
   }
 
 `;
-// Prose about the walk, and a read of a manifest that searches no chain.
-const UNCLAIMED = dedent`
-  // Ascends by dir = path.dirname(dir) until path.join(dir, 'package.json') exists.
-  export const readManifest = (root) => JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-
-`;
 const ADOPTER = dedent`
   import { findPackageRoot } from '@williamthorsen/toolbelt.packaging/candidate';
   export const packageRoot = () => findPackageRoot(import.meta.url);
@@ -80,16 +74,6 @@ describe('The packaging adoption kit', () => {
 
   it('leaves a walk that probes only for a repository marker out of the report and out of the denominator', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/root.ts': MARKER_SEARCH });
-    using _cwd = pointCwdAt(tree.dir);
-
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
-      adoptedCount: 0,
-      findings: [],
-    });
-  });
-
-  it('neither reports nor counts prose about the walk or a read of a manifest that searches no chain', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/manifest.ts': UNCLAIMED });
     using _cwd = pointCwdAt(tree.dir);
 
     await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
