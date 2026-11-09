@@ -1,19 +1,10 @@
-import { BRACES, PARENTHESES, readBalancedGroup } from '@williamthorsen/toolbelt.adoption';
+import { BRACES, PARENTHESES, readBalancedGroup, readFunctionLiteral } from '@williamthorsen/toolbelt.adoption';
 
 export type ConsoleMockKind = 'console-capture' | 'console-capture-lossy' | 'console-silence' | 'console-unclassified';
 
-interface ImplementationHead {
-  /** Everything past the parameter list, from which the body is read. */
-  body: string;
-  /** The parameter list's interior, without its delimiters. */
-  parameters: string;
-}
-
 const IMPLEMENTATION = /^\s*\.mockImplementation(?:Once)?\(/;
 const BARE_REFERENCE = /^[\w$.]+$/;
-const FUNCTION_HEAD = /^(?:async\s+)?function\b/;
 const LEADING_ASYNC = /^async\s+/;
-const SOLE_PARAMETER = /^([\w$]+)\s*=>/;
 const REST_PARAMETER = /(?:^|,)\s*\.\.\./;
 const EMPTY_EXPRESSION = /^(?:undefined|void 0)$/;
 
@@ -43,7 +34,7 @@ export function classifyConsoleMock(after: string): ConsoleMockKind {
   const implementation = after.slice(group.start + 1, group.end - 1).trim();
   if (BARE_REFERENCE.test(implementation)) return 'console-unclassified';
 
-  const head = readImplementationHead(implementation);
+  const head = readFunctionLiteral(implementation.replace(LEADING_ASYNC, ''));
   if (head === undefined) return 'console-unclassified';
 
   if (isNoOp(head.body)) return 'console-silence';
@@ -52,25 +43,6 @@ export function classifyConsoleMock(after: string): ConsoleMockKind {
 }
 
 // region | Helpers
-
-/**
- * Locates a `function` expression's body past any return-type annotation, whose own braces are not the body's.
- * Telling a type's braces from a block's takes a parser, which this does not use, so an annotation that contains one
- * leaves the body starting inside the type. `isNoOp` then declines that body rather than mistaking it for an empty
- * block.
- */
-function findBodyPastAnnotation(rest: string): string | undefined {
-  if (!rest.trimStart().startsWith(':')) return rest;
-
-  const brace = rest.indexOf('{');
-  return brace === -1 ? undefined : rest.slice(brace);
-}
-
-/** Locates an arrow's body past its `=>`, which a return-type annotation may precede. */
-function findBodyPastArrow(rest: string): string | undefined {
-  const arrow = rest.indexOf('=>');
-  return arrow === -1 ? undefined : rest.slice(arrow + 2);
-}
 
 /** Reports whether a body does nothing, whether written as an empty block or as an expression discarding it. */
 function isNoOp(body: string): boolean {
@@ -82,35 +54,6 @@ function isNoOp(body: string): boolean {
   if (block !== undefined && block.end === trimmed.length) return trimmed.slice(1, -1).trim() === '';
 
   return EMPTY_EXPRESSION.test(trimmed);
-}
-
-/**
- * Splits an implementation into its parameter list and what follows, or returns nothing when none of the
- * three heads that it accepts fits: a parenthesized list, a sole parameter written without parentheses, and a
- * `function` expression.
- */
-function readImplementationHead(implementation: string): ImplementationHead | undefined {
-  if (FUNCTION_HEAD.test(implementation)) return readParenthesizedHead(implementation, findBodyPastAnnotation);
-
-  const arrow = implementation.replace(LEADING_ASYNC, '');
-  if (arrow.startsWith('(')) return readParenthesizedHead(arrow, findBodyPastArrow);
-
-  const sole = SOLE_PARAMETER.exec(arrow);
-  return sole?.[1] === undefined ? undefined : { body: arrow.slice(sole[0].length), parameters: sole[1] };
-}
-
-/** Reads a head whose parameter list is parenthesized, taking the body from what follows the list. */
-function readParenthesizedHead(
-  implementation: string,
-  findBody: (rest: string) => string | undefined,
-): ImplementationHead | undefined {
-  const list = readBalancedGroup(implementation, 0, PARENTHESES);
-  if (list === undefined) return undefined;
-
-  const body = findBody(implementation.slice(list.end));
-  if (body === undefined) return undefined;
-
-  return { body, parameters: implementation.slice(list.start + 1, list.end - 1) };
 }
 
 // endregion | Helpers

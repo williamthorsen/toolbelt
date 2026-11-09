@@ -72,6 +72,13 @@ describe(listBiasedShuffleLines, () => {
     expect(listBiasedShuffleLines(source)).toStrictEqual([1]);
   });
 
+  it('claims an inline function whose parameters contain braces of their own', () => {
+    const source =
+      'const mixed = items.sort(function (a: { n: number }, b: { n: number }) { return Math.random() - 0.5; });\n';
+
+    expect(listBiasedShuffleLines(source)).toStrictEqual([1]);
+  });
+
   // A parenthesis wrapping the whole comparator contains the arrow rather than opening it, and a cast puts its
   // type where the body would otherwise be read from.
   it('claims an arrow wrapped by a redundant parenthesis or a cast', () => {

@@ -39,7 +39,7 @@
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "09840c67",
+          "hash": "05789908",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -74,6 +74,11 @@
           "path": "../../adoption/src/portable/readBalancedGroup.ts"
         },
         {
+          "hash": "d20d533a",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readFunctionLiteral.ts"
+        },
+        {
           "hash": "81846f1a",
           "kind": "module",
           "path": "../../adoption/src/portable/readLiteral.ts"
@@ -94,7 +99,7 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "01ce2639",
+          "hash": "3118ae90",
           "kind": "module",
           "path": "../src/readiness/classifyConsoleMock.ts"
         },
@@ -129,7 +134,7 @@
       "readyupVersion": "0.45.0",
       "source": "kits/default.ts",
       "sourceHash": "fb8be65b",
-      "targetHash": "cb2f1bdd"
+      "targetHash": "816bfe39"
     }
   ]
 }

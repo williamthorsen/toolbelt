@@ -147,6 +147,30 @@ function readBalancedGroup(source, from, delimiters) {
   return void 0;
 }
 
+// ../adoption/src/portable/readFunctionLiteral.ts
+var BARE_PARAMETER_ARROW = /^(?<parameter>[\w$]+)\s*=>/;
+var FUNCTION_KEYWORD = /^function\b/;
+function readFunctionLiteral(text) {
+  const trimmed = text.trimStart();
+  const bare = BARE_PARAMETER_ARROW.exec(trimmed);
+  if (bare?.groups?.["parameter"] !== void 0) {
+    return { body: trimmed.slice(bare[0].length), parameters: bare.groups["parameter"] };
+  }
+  const isFunctionExpression = FUNCTION_KEYWORD.test(trimmed);
+  const list = readBalancedGroup(trimmed, 0, PARENTHESES);
+  if (list === void 0 || !isFunctionExpression && list.start !== 0) return void 0;
+  const parameters = trimmed.slice(list.start + 1, list.end - 1);
+  const bodyStart = isFunctionExpression ? findBlockStart(trimmed, list.end) : findArrowBodyStart(trimmed, list.end);
+  return bodyStart === void 0 ? void 0 : { body: trimmed.slice(bodyStart), parameters };
+}
+function findArrowBodyStart(text, listEnd) {
+  const arrow = text.indexOf("=>", listEnd);
+  return arrow === -1 ? void 0 : arrow + 2;
+}
+function findBlockStart(text, listEnd) {
+  return readBalancedGroup(text, listEnd, BRACES)?.start;
+}
+
 // ../adoption/src/mod.ts
 import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
 
@@ -154,23 +178,13 @@ import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
 var ADOPTED_EXPORTS = ["debounce", "delay", "flushMicrotasks"];
 
 // src/readiness/readExecutor.ts
-var BARE_PARAMETER_ARROW = /^(?<parameter>[\w$]+)\s?=>/;
-var FUNCTION_KEYWORD = /^function\b/;
 var IDENTIFIER = /^[\w$]+$/;
 var PARAMETER_TAIL = /[:=,]/;
 function readExecutor(text) {
-  const trimmed = text.trimStart();
-  const bare = BARE_PARAMETER_ARROW.exec(trimmed);
-  if (bare?.groups?.["parameter"] !== void 0) {
-    return { body: readBody(trimmed.slice(bare[0].length)), parameter: bare.groups["parameter"] };
-  }
-  const isFunctionExpression = FUNCTION_KEYWORD.test(trimmed);
-  const parameters = readBalancedGroup(trimmed, 0, PARENTHESES);
-  if (parameters === void 0 || !isFunctionExpression && parameters.start !== 0) return void 0;
-  const parameter = readFirstParameter(trimmed.slice(parameters.start + 1, parameters.end - 1));
-  if (parameter === void 0) return void 0;
-  const body = readTrailingBody(trimmed, parameters.end);
-  return body === void 0 ? void 0 : { body, parameter };
+  const literal = readFunctionLiteral(text);
+  if (literal === void 0) return void 0;
+  const parameter = readFirstParameter(literal.parameters);
+  return parameter === void 0 ? void 0 : { body: readBody(literal.body), parameter };
 }
 function readBody(text) {
   const trimmed = text.trimStart();
@@ -183,14 +197,6 @@ function readFirstParameter(parameters) {
   if (trimmed === "") return "";
   const name = trimmed.split(PARAMETER_TAIL)[0]?.trim() ?? "";
   return IDENTIFIER.test(name) ? name : void 0;
-}
-function readTrailingBody(text, parametersEnd) {
-  if (FUNCTION_KEYWORD.test(text)) {
-    const block = readBalancedGroup(text, parametersEnd, BRACES);
-    return block === void 0 ? void 0 : text.slice(block.start + 1, block.end - 1);
-  }
-  const arrow = text.indexOf("=>", parametersEnd);
-  return arrow === -1 ? void 0 : readBody(text.slice(arrow + 2));
 }
 
 // src/readiness/listSleepSites.ts

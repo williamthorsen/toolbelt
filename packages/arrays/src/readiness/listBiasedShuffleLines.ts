@@ -4,14 +4,12 @@ import {
   getLineAtOffset,
   PARENTHESES,
   readBalancedGroup,
+  readFunctionLiteral,
 } from '@williamthorsen/toolbelt.adoption';
 
 const SORT_CALL = /\.\s*(?:sort|toSorted)\s*\(/g;
 const RANDOM_CALL = /Math\s*\.\s*random\s*\(\s*\)/g;
 const RETURN_KEYWORD = /\breturn\b/g;
-// The unparenthesized single-parameter arrow. Whitespace is condensed before this pattern is tested, so one
-// space is the most that can be at the joint.
-const BARE_PARAMETER_ARROW = /^[\w$]+\s?=>/;
 const FUNCTION_KEYWORD = /^function\b/;
 // Digits are left out: A body is claimed for holding nothing but the draw and numeric literals. What a
 // subtraction or a ternary leaves behind has to read as empty.
@@ -49,23 +47,6 @@ export function listBiasedShuffleLines(source: string): number[] {
 
 // region | Helpers
 
-/**
- * Returns the offset of the arrow whose body is the argument's own, or nothing when the argument is no arrow.
- *
- * The arrow has to open the argument. A combinator assembling a comparator takes an arrow of its own, and an
- * arrow found anywhere in the text would be that one, whose body belongs to a function that this argument
- * only passes along. Anything between the parameter list and the arrow is a return-type annotation.
- */
-function findArrowOffset(text: string): number | undefined {
-  const parameters = readBalancedGroup(text, 0, PARENTHESES);
-  if (parameters?.start === 0) {
-    const arrow = text.indexOf('=>', parameters.end);
-    return arrow === -1 ? undefined : arrow;
-  }
-
-  return BARE_PARAMETER_ARROW.test(text) ? text.indexOf('=>') : undefined;
-}
-
 /** Reports whether a comparator's body orders on a random draw and nothing else. */
 function isRandomComparator(argument: string): boolean {
   const body = readComparatorBody(argument);
@@ -80,21 +61,19 @@ function isRandomComparator(argument: string): boolean {
 /**
  * Returns a comparator's body, or nothing when the argument is neither an arrow nor an inline function.
  *
- * A block body is returned with its braces, which the residue test ignores: Only an identifier disqualifies
- * a body, and a brace is not one. A named reference passed as the comparator yields nothing, since its body
- * is not here to read.
+ * An arrow's body is returned with any braces and with whatever follows it, which the residue test ignores:
+ * Only an identifier disqualifies a body, and a brace is not one. An inline function's body is its block's
+ * interior, so that a call chained onto the function stays outside the residue. A named reference passed as the
+ * comparator yields nothing, since its body is not here to read.
  */
 function readComparatorBody(argument: string): string | undefined {
   const text = stripWrappingGroup(argument.trimStart());
+  const literal = readFunctionLiteral(text);
+  if (literal === undefined || !FUNCTION_KEYWORD.test(text)) return literal?.body;
 
-  if (FUNCTION_KEYWORD.test(text)) {
-    const block = readBalancedGroup(text, 0, BRACES);
-    return block === undefined ? undefined : text.slice(block.start + 1, block.end - 1);
-  }
+  const block = readBalancedGroup(literal.body, 0, BRACES);
 
-  const arrow = findArrowOffset(text);
-
-  return arrow === undefined ? undefined : text.slice(arrow + 2);
+  return block === undefined ? undefined : literal.body.slice(block.start + 1, block.end - 1);
 }
 
 /**

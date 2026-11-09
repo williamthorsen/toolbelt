@@ -16,6 +16,18 @@ describe(classifyConsoleMock, () => {
       expect(classifyConsoleMock('.mockImplementation(() => {}')).toBe('console-unclassified');
     });
 
+    it('declines a function expression whose body braces never balance or are absent', () => {
+      const sources = [
+        '.mockImplementation(function (message) { lines.push(message); );',
+        '.mockImplementation(function (message) message);',
+      ];
+
+      expect(sources.map((source) => classifyConsoleMock(source))).toStrictEqual([
+        'console-unclassified',
+        'console-unclassified',
+      ]);
+    });
+
     it('declines an implementation given as a bare reference', () => {
       expect(classifyConsoleMock('.mockImplementation(recordLine);')).toBe('console-unclassified');
     });
