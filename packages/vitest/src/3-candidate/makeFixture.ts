@@ -10,7 +10,9 @@
  * @stage candidate
  *
  * @example
- * const it = test.extend('tree', { scope: 'file' }, makeFixture(() => createTempTree({ 'src/main.ts': '' })));
+ * import { it as baseIt } from 'vitest';
+ *
+ * const it = baseIt.extend('tree', { scope: 'file' }, makeFixture(() => createTempTree({ 'src/main.ts': '' })));
  *
  * it('resolves a path within the tree', ({ tree }) => {
  *   expect(tree.resolve('src/main.ts')).toBe(`${tree.dir}/src/main.ts`);

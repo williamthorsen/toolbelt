@@ -168,9 +168,9 @@ Adapts a `Disposable` factory into a Vitest fixture that disposes the value when
 ```ts
 import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
 import { makeFixture } from '@williamthorsen/toolbelt.vitest/candidate';
-import { expect, test } from 'vitest';
+import { expect, it as baseIt } from 'vitest';
 
-const it = test.extend('tree', { scope: 'file' }, makeFixture(() => createTempTree({ 'src/main.ts': 'export {};\n' })));
+const it = baseIt.extend('tree', { scope: 'file' }, makeFixture(() => createTempTree({ 'src/main.ts': 'export {};\n' })));
 
 it('resolves a path within the tree', ({ tree }) => {
   expect(tree.resolve('src/main.ts')).toBe(`${tree.dir}/src/main.ts`);
@@ -224,7 +224,7 @@ A resource that the tests do not name -- one installed around a test rather than
 A resource that a test reads is named by that test. A resource installed around a test is not: A pointed working directory exists to serve code resolving paths through `process.cwd()`, so the tests needing it receive no value and name no fixture, and a lazily built fixture leaves them running against the real working directory. A wrapping hook that requests the fixture builds it:
 
 ```ts
-const it = test.extend('tree', makeFixture(() => createTempTree({ 'tsconfig.json': '{}\n' })));
+const it = baseIt.extend('tree', makeFixture(() => createTempTree({ 'tsconfig.json': '{}\n' })));
 
 it.aroundEach(async (runTest, { tree }) => {
   using _cwd = pointCwdAt(tree.dir);
@@ -253,7 +253,7 @@ Because a project setting `restoreMocks: true` restores every spy before each te
 
 ### Naming the extended test function
 
-Because `vitest/consistent-test-it` resolves an extended function back to the name at which its chain was rooted, that root has to be the name expected by the rule where the tests are written: `test` for tests at file level, `it` for tests inside a `describe`. Rooted at `it` for a `describe` block, a lone `.extend` call is itself reported, and a one-line disable there settles it.
+Because `vitest/consistent-test-it` resolves an extended function back to the name at which its chain was rooted, that root has to be the name that the rule's configuration expects. The examples here import `it as baseIt` and extend that, which satisfies `@williamthorsen/eslint-config-typescript` from 21.0.0 on, since that config requires `it` for every test call.
 
 ### Fixtures that depend on other fixtures
 
