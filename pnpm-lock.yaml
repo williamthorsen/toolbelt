@@ -262,9 +262,6 @@ importers:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
         version: link:../adoption
-      '@williamthorsen/toolbelt.testing':
-        specifier: workspace:*
-        version: link:../testing
       esbuild:
         specifier: 'catalog:'
         version: 0.28.2
@@ -280,9 +277,6 @@ importers:
       '@williamthorsen/toolbelt.strings':
         specifier: workspace:*
         version: link:../strings
-      '@williamthorsen/toolbelt.testing':
-        specifier: workspace:*
-        version: link:../testing
       esbuild:
         specifier: 'catalog:'
         version: 0.28.2
@@ -440,9 +434,6 @@ importers:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
         version: link:../adoption
-      '@williamthorsen/toolbelt.testing':
-        specifier: workspace:*
-        version: link:../testing
       esbuild:
         specifier: 'catalog:'
         version: 0.28.2
@@ -458,9 +449,6 @@ importers:
       '@williamthorsen/toolbelt.strings':
         specifier: workspace:*
         version: link:../strings
-      '@williamthorsen/toolbelt.testing':
-        specifier: workspace:*
-        version: link:../testing
       esbuild:
         specifier: 'catalog:'
         version: 0.28.2
@@ -532,9 +520,6 @@ importers:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
         version: link:../adoption
-      '@williamthorsen/toolbelt.testing':
-        specifier: workspace:*
-        version: link:../testing
       esbuild:
         specifier: 'catalog:'
         version: 0.28.2
