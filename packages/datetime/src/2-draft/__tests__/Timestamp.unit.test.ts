@@ -55,6 +55,23 @@ describe(Timestamp, () => {
 
       expect(result.millis).toBe(1000);
     });
+
+    it('given 0 as the input, represents the epoch', () => {
+      const timestamp = new Timestamp(0);
+
+      expect(timestamp.millis).toBe(0);
+    });
+
+    it.each([
+      { label: 'an empty string', input: '', described: '""' },
+      { label: 'an unparseable string', input: 'not a date', described: '"not a date"' },
+      { label: 'an invalid Date', input: new Date('invalid'), described: 'Invalid Date' },
+      { label: 'NaN', input: NaN, described: 'NaN' },
+    ])('given $label as the input, throws a RangeError naming the input', ({ input, described }) => {
+      expect(() => new Timestamp(input)).toThrow(
+        new RangeError(`Timestamp input must resolve to a valid date, but was ${described}.`),
+      );
+    });
   });
 
   describe('milliseconds properties', () => {
@@ -81,6 +98,12 @@ describe(Timestamp, () => {
 
       expect(clone.millis).toBe(1000);
       expect(clone).not.toBe(original);
+    });
+
+    it('given a timestamp at the epoch, returns a clone at the epoch', () => {
+      const clone = Timestamp.fromMillis(0).clone();
+
+      expect(clone.millis).toBe(0);
     });
 
     it('given a timeUnit, returns a clone that uses that time unit', () => {
