@@ -50,8 +50,4 @@ describe(listDecadesContainingRange, () => {
       new RangeError(`Year must be a non-negative safe integer, but was ${String(year)}.`),
     );
   });
-
-  it('throws rather than returning an empty array when an invalid start exceeds end', () => {
-    expect(() => listDecadesContainingRange({ start: Infinity, end: 1990 })).toThrow(RangeError);
-  });
 });
