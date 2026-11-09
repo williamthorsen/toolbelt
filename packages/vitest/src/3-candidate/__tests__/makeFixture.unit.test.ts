@@ -48,7 +48,6 @@ const it = baseIt
   );
 
 // A second extended API, with none of the fixtures above.
-// eslint-disable-next-line vitest/consistent-test-it -- the lone `.extend` is a declaration; the test that it declares is in a `describe`.
 const otherIt = baseIt.extend(
   'unshared',
   makeFixture(() => makeProbe('unshared')),
