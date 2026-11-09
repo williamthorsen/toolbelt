@@ -33,11 +33,6 @@ export function scaleInt(value: number, toRange: Range, fromRange: Partial<Integ
   return Math.round(scaled);
 }
 
-/** Reports whether a defined value falls outside the safe integers. */
-function isNotSafeInteger(num: number | undefined): boolean {
-  return num !== undefined && !Number.isSafeInteger(num);
-}
-
 interface Range {
   min: number;
   max: number;
@@ -50,3 +45,12 @@ interface IntegerRange {
   min: number;
   max: number;
 }
+
+// region | Helpers
+
+/** Reports whether a defined value falls outside the safe integers. */
+function isNotSafeInteger(value: number | undefined): boolean {
+  return value !== undefined && !Number.isSafeInteger(value);
+}
+
+// endregion | Helpers
