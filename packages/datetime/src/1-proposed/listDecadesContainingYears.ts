@@ -1,7 +1,11 @@
+import { assertValidYear } from './assertValidYear.ts';
+import { buildDecadeContaining, type Decade } from './buildDecadeContaining.ts';
+
 /**
  * Lists the decades that contain the given years, in ascending order, each with its start, end, and label.
  * A decade starts in a year that is a multiple of 10 (e.g., 1990, 2000, etc.).
  * A decade ends 9 years after its start (e.g., 1990-1999, 2000-2009, etc.).
+ * Throws a `RangeError` if any year is not a safe non-negative integer.
  *
  * @category DateTime
  * @experimental
@@ -15,33 +19,19 @@
  *  ]
  */
 export function listDecadesContainingYears(years: number[]): Decade[] {
-  const uniqueYears = [...new Set(years)].toSorted((a, b) => a - b);
-  const decadesMap = new Map<number, { start: number; end: number; label: string }>();
+  for (const year of years) {
+    assertValidYear(year);
+  }
 
-  const [firstYear] = uniqueYears;
-  if (firstYear === undefined) {
-    return [];
-  }
-  if (firstYear < 0) {
-    throw new RangeError(`Negative years are not supported.`);
-  }
+  const uniqueYears = [...new Set(years)].toSorted((a, b) => a - b);
+  const decadesMap = new Map<number, Decade>();
 
   for (const year of uniqueYears) {
-    const start = Math.floor(year / 10) * 10;
-    if (!decadesMap.has(start)) {
-      decadesMap.set(start, {
-        start,
-        end: start + 9,
-        label: `${start}s`,
-      });
+    const decade = buildDecadeContaining(year);
+    if (!decadesMap.has(decade.start)) {
+      decadesMap.set(decade.start, decade);
     }
   }
 
   return decadesMap.values().toArray();
-}
-
-export interface Decade {
-  start: number;
-  end: number;
-  label: string;
 }
