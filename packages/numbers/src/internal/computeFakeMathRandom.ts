@@ -7,11 +7,11 @@
  */
 export function computeFakeMathRandom(seed: number): number {
   // Hash the seed's digits so that every digit, fractional ones included, varies the result
-  const strSeed = seed.toString().replace('.', '');
+  const seedDigits = seed.toString().replace('.', '');
 
   let hash = 0;
 
-  for (const char of strSeed) {
+  for (const char of seedDigits) {
     const code = char.codePointAt(0) ?? 0;
     hash = (hash << 5) - hash + code;
     hash |= 0; // Ensure a 32-bit integer

@@ -19,9 +19,10 @@ export function isNumericString(value: string | null | undefined): value is stri
     return false;
   }
 
-  const num = Number(trimmed);
-  return Number.isFinite(num);
+  const parsed = Number(trimmed);
+  return Number.isFinite(parsed);
 }
+
 /**
  * Attempts to parse a number from a string and returns the parsed number.
  * If the input does not represent a valid number, returns the fallback value or throws the fallback error.
