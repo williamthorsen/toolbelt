@@ -21,7 +21,8 @@ export const IntegerSeed = {
 };
 
 /**
- * Deterministically maps any number to an integer in the range [1, 2147483647].
+ * Deterministically maps any number to an integer in the range [1, 2147483646], the states from which the Lehmer
+ * sequence advances.
  */
 function toIntegerSeed(value: number): number {
   let integer = (() => {
@@ -30,9 +31,12 @@ function toIntegerSeed(value: number): number {
     return Math.floor(computeFakeMathRandom(value) * MAX_INTEGER);
   })();
 
-  // Constrain the integer to the range [1, MAX_INTEGER]
+  // Constrain the integer to the range [1, MAX_INTEGER - 1], since a seed of 0 never advances
   integer %= MAX_INTEGER;
-  if (integer <= 0) {
+  if (integer === 0) {
+    return MAX_INTEGER - 1;
+  }
+  if (integer < 0) {
     integer += MAX_INTEGER;
   }
   return integer;

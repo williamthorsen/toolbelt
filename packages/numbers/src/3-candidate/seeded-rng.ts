@@ -1,7 +1,6 @@
 import { computeFakeMathRandom } from '../internal/computeFakeMathRandom.ts';
 import { checkIsRngLike, evaluateSeed, type Seed, type SeededGenerator } from '../internal/evaluateSeed.ts';
 import { IntegerSeed } from '../internal/IntegerSeed.ts';
-import { wrapSum } from '../internal/wrapSum.ts';
 import { pickInteger } from './pickInteger.ts';
 
 /**
@@ -127,9 +126,9 @@ export class SeededRng implements SeededGenerator {
     return computeFakeMathRandom(this._seed);
   }
 
-  /** Starts the current seed at the given seed, wrapped into the integer-seed range. */
+  /** Starts the current seed at the given seed, converted to an integer seed. */
   protected initializeSeeds(seed?: number): void {
-    this._seed = wrapSum(IntegerSeed.max, IntegerSeed.toInt(seed));
+    this._seed = IntegerSeed.toInt(seed);
   }
 }
 
