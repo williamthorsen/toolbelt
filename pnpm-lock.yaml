@@ -194,8 +194,8 @@ importers:
         specifier: 1.6.28
         version: 1.6.28(@typescript-eslint/eslint-plugin@8.72.1(@typescript-eslint/parser@8.72.1(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3)(vitest@5.1.0)
       '@williamthorsen/eslint-config-typescript':
-        specifier: 20.3.0
-        version: 20.3.0(@typescript-eslint/utils@8.72.1(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(@vitest/eslint-plugin@1.6.28(@typescript-eslint/eslint-plugin@8.72.1(@typescript-eslint/parser@8.72.1(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3)(vitest@5.1.0))(eslint@10.14.0(jiti@2.7.0))(readyup@0.45.0(esbuild@0.28.2))(typescript@6.0.3)
+        specifier: 21.0.0
+        version: 21.0.0(@typescript-eslint/utils@8.72.1(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(@vitest/eslint-plugin@1.6.28(@typescript-eslint/eslint-plugin@8.72.1(@typescript-eslint/parser@8.72.1(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3)(vitest@5.1.0))(eslint@10.14.0(jiti@2.7.0))(readyup@0.45.0(esbuild@0.28.2))(typescript@6.0.3)
       '@williamthorsen/nmr':
         specifier: 1.0.0
         version: 1.0.0(typescript@6.0.3)(vite@8.3.6(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(vitest@5.1.0)
@@ -1333,8 +1333,8 @@ packages:
     resolution: {integrity: sha512-yESinjnw9nAuaisielClADDX6KkktSDGKETApgL/L52AWDISiLAEhNe42gTt43rS6gZSPEdqMCwPtjvOJGgvCA==}
     engines: {node: '>=24.16.0'}
 
-  '@williamthorsen/eslint-config-typescript@20.3.0':
-    resolution: {integrity: sha512-YzEXbNKoQFKx3uvvVai7cDh123+Xy+a4e+dOgk9SmG9FJU+dBRDxG5QIrQvCAo4vRhxFIGV3Z49+HUWwaFRLZQ==}
+  '@williamthorsen/eslint-config-typescript@21.0.0':
+    resolution: {integrity: sha512-gtoRBBDXpwBi+0stZb5jx3QWs3uyfSZjJlE5HnJ49YvHwe3mv5J1UO9+C2DDfuL8RN99EnOeiyJ6o46hcM5bKw==}
     engines: {node: '>=24'}
     peerDependencies:
       '@next/eslint-plugin-next': ^16.3.5
@@ -3337,7 +3337,7 @@ snapshots:
 
   '@williamthorsen/change-grammar@0.4.0': {}
 
-  '@williamthorsen/eslint-config-typescript@20.3.0(@typescript-eslint/utils@8.72.1(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(@vitest/eslint-plugin@1.6.28(@typescript-eslint/eslint-plugin@8.72.1(@typescript-eslint/parser@8.72.1(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3)(vitest@5.1.0))(eslint@10.14.0(jiti@2.7.0))(readyup@0.45.0(esbuild@0.28.2))(typescript@6.0.3)':
+  '@williamthorsen/eslint-config-typescript@21.0.0(@typescript-eslint/utils@8.72.1(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(@vitest/eslint-plugin@1.6.28(@typescript-eslint/eslint-plugin@8.72.1(@typescript-eslint/parser@8.72.1(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3)(vitest@5.1.0))(eslint@10.14.0(jiti@2.7.0))(readyup@0.45.0(esbuild@0.28.2))(typescript@6.0.3)':
     dependencies:
       '@eslint-community/eslint-plugin-eslint-comments': 4.8.1(eslint@10.14.0(jiti@2.7.0))
       '@eslint/js': 10.0.1(eslint@10.14.0(jiti@2.7.0))
