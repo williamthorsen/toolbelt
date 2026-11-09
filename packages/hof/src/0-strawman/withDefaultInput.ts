@@ -7,13 +7,9 @@
  */
 export function withDefaultInput<TInput, TReturn>(
   fn: (value: TInput) => TReturn,
-  defaultValue: TInput,
+  defaultValue: NoInfer<TInput>,
 ): (value: TInput | undefined) => TReturn {
-  if (fn.length === 0) {
-    throw new Error('Invalid input. The function must have one parameter.');
-  }
-
   return function withDefault(value: TInput | undefined): TReturn {
-    return fn(value ?? defaultValue);
+    return fn(value === undefined ? defaultValue : value);
   };
 }
