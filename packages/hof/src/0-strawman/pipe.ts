@@ -1,13 +1,3 @@
-/* eslint @typescript-eslint/ban-ts-comment: off */
-/* eslint @typescript-eslint/consistent-type-assertions: off */
-/* eslint @typescript-eslint/no-explicit-any: off */
-/* eslint @typescript-eslint/no-unsafe-assignment: off */
-/* eslint @typescript-eslint/no-unsafe-call: off */
-/* eslint @typescript-eslint/no-unsafe-return: off */
-// @ts-nocheck - Fix legacy types.
-
-import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
-
 import { isPromise } from './isPromise.ts';
 
 // Adapted from github.com/MathisBullinger/froebel
@@ -22,17 +12,10 @@ import { isPromise } from './isPromise.ts';
  * @experimental
  * @stage strawman
  */
-export function pipe<T extends [Fn, ...Fn[]]>(...fns: PipeReturn<T> extends never ? never : T): PipedFn<T> {
-  return ((...args) => {
-    let nextArgs: unknown[] = args;
-
-    for (let i = 0; i < fns.length; i++) {
-      const [result] = (nextArgs = [getItemAtIndexOrThrow(fns, i)(...nextArgs)]);
-      if (isPromise(result)) return resolveAsync(result, fns.slice(i + 1));
-    }
-
-    return nextArgs[0];
-  }) as PipedFn<T>;
+export function pipe<T extends [Fn, ...Fn[]]>(...fns: PipeReturn<T> extends never ? never : T): PipedFn<T>;
+// TypeScript cannot check a variadic generic return type against a body, so the overload above states the contract.
+export function pipe(...fns: ReadonlyArray<UnknownFn>): UnknownFn {
+  return (...args) => runPipe(fns, args);
 }
 
 /**
@@ -48,11 +31,13 @@ export function pipe<T extends [Fn, ...Fn[]]>(...fns: PipeReturn<T> extends neve
  * @experimental
  * @stage strawman
  */
-export function applyPipe<Fns extends [Fn<[any]>, ...Fn[]]>(
-  Fn: Parameters<Fns[0]>[0],
+export function applyPipe<Fns extends [Fn<[never]>, ...Fn[]]>(
+  input: Parameters<Fns[0]>[0],
   ...fns: PipeReturn<Fns> extends never ? never : Fns
-): PipeReturn<Fns> {
-  return (pipe(...fns) as any)(Fn);
+): PipeReturn<Fns>;
+// TypeScript cannot check a variadic generic return type against a body, so the overload above states the contract.
+export function applyPipe(input: unknown, ...fns: ReadonlyArray<UnknownFn>): unknown {
+  return runPipe(fns, [input]);
 }
 
 // region | Helpers
@@ -61,49 +46,77 @@ export function applyPipe<Fns extends [Fn<[any]>, ...Fn[]]>(
  *
  * @internal
  */
-async function resolveAsync(result: unknown, fns: Fn[]) {
-  let resolvedResult = result;
+async function resolveAsync(result: unknown, fns: ReadonlyArray<UnknownFn>): Promise<unknown> {
+  let resolvedResult = await result;
   for (const fn of fns) {
-    resolvedResult = fn(await resolvedResult);
+    resolvedResult = await fn(resolvedResult);
   }
-  return await resolvedResult;
+  return resolvedResult;
+}
+
+/**
+ * Calls each function with the previous result, switching to `resolveAsync` at the first thenable result.
+ *
+ * @internal
+ */
+function runPipe(fns: ReadonlyArray<UnknownFn>, args: unknown[]): unknown {
+  let result: unknown;
+  let nextArgs = args;
+
+  for (const [index, fn] of fns.entries()) {
+    result = fn(...nextArgs);
+    if (isPromise(result)) return resolveAsync(result, fns.slice(index + 1));
+    nextArgs = [result];
+  }
+
+  return result;
 }
 // endregion | Helpers
 
 // region | Types
-type FnDef = [Return: any, Args: any[]];
+type FnDef = [Return: unknown, Args: unknown[]];
 
-type CheckPipe<F extends Fn[], D extends FnDef[], Async extends boolean = false> = F extends [any, any, ...any[]]
-  ? Resolved<D[0][1]> extends Parameters<F[0]>
+type CheckPipe<F extends Fn[], D extends FnDef[], Async extends boolean = false> = F extends [
+  unknown,
+  unknown,
+  ...unknown[],
+]
+  ? Resolved<D[0][1]> extends Parameters<Head<F>>
     ? CheckPipe<
-        F extends [any, ...infer F_] ? (F_ extends Fn[] ? F_ : never) : never,
-        D extends [any, ...infer D_] ? (D_ extends FnDef[] ? D_ : never) : never,
-        Async extends true ? true : ReturnType<F[0]> extends Promise<unknown> ? true : false
+        F extends [unknown, ...infer F_] ? (F_ extends Fn[] ? F_ : never) : never,
+        D extends [unknown, ...infer D_] ? (D_ extends FnDef[] ? D_ : never) : never,
+        Async extends true ? true : ReturnType<Head<F>> extends PromiseLike<unknown> ? true : false
       >
     : never
-  : Resolved<D[0][1]> extends Parameters<F[0]>
+  : Resolved<D[0][1]> extends Parameters<Head<F>>
     ? Async extends true
-      ? MakePromise<ReturnType<F[0]>>
-      : ReturnType<F[0]>
+      ? MakePromise<ReturnType<Head<F>>>
+      : ReturnType<Head<F>> extends PromiseLike<unknown>
+        ? MakePromise<ReturnType<Head<F>>>
+        : ReturnType<Head<F>>
     : never;
 
-type CarryReturn<Returns extends any[], Args extends any[]> = Returns extends [infer A, ...infer B]
+type CarryReturn<Returns extends unknown[], Args extends unknown[]> = Returns extends [infer A, ...infer B]
   ? [[A, Args], ...CarryReturn<B, [A]>]
   : [];
 
-type Fn<TA extends any[] = any[], TR = any> = (...args: TA) => TR;
+type Fn<TA extends never[] = never[], TR = unknown> = (...args: TA) => TR;
+
+type Head<F extends Fn[]> = F extends [infer H extends Fn, ...Fn[]] ? H : never;
 
 type MakePromise<T> = Promise<T extends PromiseLike<infer I> ? I : T>;
 
-type PipedFn<T extends Fn[]> = PipeReturn<T> extends never ? never : (...args: Parameters<T[0]>) => PipeReturn<T>;
+type PipedFn<T extends Fn[]> = PipeReturn<T> extends never ? never : (...args: Parameters<Head<T>>) => PipeReturn<T>;
 
-type PipeReturn<F extends Fn[]> = CheckPipe<F, CarryReturn<ReturnTypes<F>, Parameters<F[0]>>>;
+type PipeReturn<F extends Fn[]> = CheckPipe<F, CarryReturn<ReturnTypes<F>, Parameters<Head<F>>>>;
 
 type Resolved<T> = {
-  [K in keyof T]: T[K] extends Promise<infer I> ? I : T[K];
+  [K in keyof T]: T[K] extends PromiseLike<infer I> ? I : T[K];
 };
 
 type ReturnTypes<T extends Fn[]> = {
   [K in keyof T]: ReturnType<T[K]>;
 };
+
+type UnknownFn = (...args: unknown[]) => unknown;
 // endregion | Types

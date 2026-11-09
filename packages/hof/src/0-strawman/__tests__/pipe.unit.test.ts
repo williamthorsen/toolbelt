@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { applyPipe, pipe } from '../pipe.ts';
 
@@ -21,10 +21,26 @@ describe(pipe, () => {
   it('correctly types the returned function', () => {
     const fnPipe = pipe(double, toString);
 
-    // Test will fail if TypeScript compilation fails due to type error.
-    const result: string = fnPipe(5);
+    expectTypeOf(fnPipe).toEqualTypeOf<(n: number) => string>();
+    expect(fnPipe(5)).toBe('10');
+  });
 
-    expect(result).toBe('10');
+  it('types a pipe containing an async function as returning a promise', () => {
+    expectTypeOf(pipe(asyncUpper, enclose)).returns.toEqualTypeOf<Promise<string>>();
+  });
+
+  it('passes the resolved value of a non-Promise thenable to the next function', async () => {
+    const fnPipe = pipe(thenableDouble, toString);
+
+    expectTypeOf(fnPipe).returns.toEqualTypeOf<Promise<string>>();
+    await expect(fnPipe(2)).resolves.toBe('4');
+  });
+
+  it('types a pipe ending in a non-Promise thenable as returning a promise', async () => {
+    const fnPipe = pipe(double, thenableDouble);
+
+    expectTypeOf(fnPipe).returns.toEqualTypeOf<Promise<number>>();
+    await expect(fnPipe(2)).resolves.toBe(8);
   });
 
   it('accepts a first function that requires more than one argument', () => {
@@ -63,6 +79,7 @@ describe(applyPipe, () => {
   it('applies the first argument to the first function in the pipe', () => {
     const result = applyPipe(2, double, toString);
 
+    expectTypeOf(result).toEqualTypeOf<string>();
     expect(result).toBe('4');
   });
 });
@@ -86,6 +103,12 @@ function enclose(s: string): string {
 /** Adds two numbers. */
 function sum(addend1: number, addend2: number): number {
   return addend1 + addend2;
+}
+
+/** Doubles a number and returns it through a thenable that is not a Promise. */
+function thenableDouble(n: number): PromiseLike<number> {
+  const promise = Promise.resolve(n * 2);
+  return { then: promise.then.bind(promise) };
 }
 
 /** Converts a number to a string. */

@@ -43,9 +43,6 @@
   "scripts": {
     "prepublishOnly": "nmr build"
   },
-  "devDependencies": {
-    "@williamthorsen/toolbelt.arrays": "workspace:*"
-  },
   "engines": {
     "node": ">=24.0.0"
   },
