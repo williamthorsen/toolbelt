@@ -3,7 +3,7 @@ import { describe, expect, expectTypeOf, it } from 'vitest';
 import { applyPipe, pipe } from '../pipe.ts';
 
 describe(pipe, () => {
-  it('correctly composes multiple functions together', () => {
+  it("passes each function's result to the next function", () => {
     const fnPipe = pipe(double, toString, enclose);
     const expected = '|4|';
 
@@ -12,13 +12,13 @@ describe(pipe, () => {
     expect(actual).toBe(expected);
   });
 
-  it('works with a single function', () => {
+  it('returns the result of a single function', () => {
     const fnPipe = pipe(double);
 
     expect(fnPipe(3)).toBe(6);
   });
 
-  it('correctly types the returned function', () => {
+  it("types the pipe with the first function's input and the last one's output", () => {
     const fnPipe = pipe(double, toString);
 
     expectTypeOf(fnPipe).toEqualTypeOf<(n: number) => string>();
@@ -52,14 +52,14 @@ describe(pipe, () => {
     expect(actual).toBe(expected);
   });
 
-  it('resolves an async function', async () => {
+  it('resolves to the final result when an async function precedes a sync one', async () => {
     const fnPipe = pipe(asyncUpper, enclose);
 
     await expect(fnPipe('hello')).resolves.toBe('|HELLO|');
   });
 
   // TODO: Consider whether to add runtime checks for these cases.
-  it('throws compilation errors', () => {
+  it('rejects invalid calls at compile time without throwing at run time', () => {
     expect(() => {
       // @ts-expect-error - Cannot be called with no arguments
       pipe();
