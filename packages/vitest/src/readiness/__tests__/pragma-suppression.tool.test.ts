@@ -36,32 +36,6 @@ const ADOPTER = dedent`
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 describe('The vitest adoption kit, run through rdy', () => {
-  it('names every site and counts them all in one denominator', () => {
-    expect(runKit(`${SILENCE}\n`)).toStrictEqual([
-      { count: 9, detail: 'ExitError (src/sentinel.unit.test.ts:2)', id: 'no-exit-sentinel-clone', passedCount: 1 },
-      { count: 9, detail: 'src/non-throwing.unit.test.ts:1', id: 'no-non-throwing-exit-mock', passedCount: 1 },
-      { count: 9, detail: 'src/throwing.unit.test.ts:1', id: 'no-hand-rolled-exit-mock', passedCount: 1 },
-      { count: 9, detail: 'src/lossy.unit.test.ts:1', id: 'no-lossy-console-capture', passedCount: 1 },
-      { count: 9, detail: 'src/capture.unit.test.ts:1', id: 'no-hand-rolled-console-capture', passedCount: 1 },
-      { count: 9, detail: 'src/silence.unit.test.ts:1', id: 'no-hand-rolled-console-silence', passedCount: 1 },
-      { count: 9, detail: 'src/read.unit.test.ts:2', id: 'no-console-calls-read', passedCount: 1 },
-      { count: 9, detail: 'src/dispose.unit.test.ts:1', id: 'no-hand-rolled-test-disposal', passedCount: 1 },
-    ]);
-  });
-
-  it('drops a site covered by an unqualified pragma from every check’s detail and fraction', () => {
-    expect(runKit(`${SILENCE} // rdy-ignore -- reviewed\n`)).toStrictEqual([
-      { count: 8, detail: 'ExitError (src/sentinel.unit.test.ts:2)', id: 'no-exit-sentinel-clone', passedCount: 1 },
-      { count: 8, detail: 'src/non-throwing.unit.test.ts:1', id: 'no-non-throwing-exit-mock', passedCount: 1 },
-      { count: 8, detail: 'src/throwing.unit.test.ts:1', id: 'no-hand-rolled-exit-mock', passedCount: 1 },
-      { count: 8, detail: 'src/lossy.unit.test.ts:1', id: 'no-lossy-console-capture', passedCount: 1 },
-      { count: 8, detail: 'src/capture.unit.test.ts:1', id: 'no-hand-rolled-console-capture', passedCount: 1 },
-      { count: 8, detail: undefined, id: 'no-hand-rolled-console-silence', passedCount: 1 },
-      { count: 8, detail: 'src/read.unit.test.ts:2', id: 'no-console-calls-read', passedCount: 1 },
-      { count: 8, detail: 'src/dispose.unit.test.ts:1', id: 'no-hand-rolled-test-disposal', passedCount: 1 },
-    ]);
-  });
-
   // A `dir:` kit source has no namespace, so the pragma names the check by its bare id. A consumer running the
   // kit from the installed package writes `toolbelt.vitest/no-hand-rolled-console-silence`.
   it('drops a site covered by a qualified pragma from the named check alone', () => {

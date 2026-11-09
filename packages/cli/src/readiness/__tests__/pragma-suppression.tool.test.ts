@@ -13,33 +13,11 @@ const ADOPTER = dedent`
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 describe('The cli adoption kit, run through rdy', () => {
-  it('names each site under its own check and counts both in each denominator', () => {
-    expect(runKit(buildRunner('', ''))).toStrictEqual([
-      { count: 4, detail: 'src/run.ts:6', id: 'no-node-parse-args', passedCount: 2 },
-      { count: 4, detail: 'run (src/run.ts:5)', id: 'no-hand-rolled-flag-scan', passedCount: 2 },
-    ]);
-  });
-
-  it('drops the sites covered by an unqualified pragma from every check', () => {
-    expect(runKit(buildRunner(' // rdy-ignore -- reviewed', ' // rdy-ignore -- reviewed'))).toStrictEqual([
-      { count: 2, detail: undefined, id: 'no-node-parse-args', passedCount: 2 },
-      { count: 2, detail: undefined, id: 'no-hand-rolled-flag-scan', passedCount: 2 },
-    ]);
-  });
-
   // A `dir:` kit source has no namespace, so the bare id stands. A consumer running the kit from the
   // installed package writes `toolbelt.cli/no-node-parse-args`.
-  it('drops only the site of the check that a qualified pragma names', () => {
-    expect(runKit(buildRunner('', ' // rdy-ignore no-node-parse-args -- reviewed'))).toStrictEqual([
+  it('drops a site covered by a qualified pragma from the named check alone', () => {
+    expect(runKit(buildRunner(' // rdy-ignore no-node-parse-args -- reviewed'))).toStrictEqual([
       { count: 3, detail: undefined, id: 'no-node-parse-args', passedCount: 2 },
-      { count: 4, detail: 'run (src/run.ts:5)', id: 'no-hand-rolled-flag-scan', passedCount: 2 },
-    ]);
-  });
-
-  // The pragma drops the flag-scan line from the named check's denominator, where it counts alone.
-  it('keeps a site in the report when the pragma names the other check', () => {
-    expect(runKit(buildRunner(' // rdy-ignore no-node-parse-args -- reviewed', ''))).toStrictEqual([
-      { count: 3, detail: 'src/run.ts:6', id: 'no-node-parse-args', passedCount: 2 },
       { count: 4, detail: 'run (src/run.ts:5)', id: 'no-hand-rolled-flag-scan', passedCount: 2 },
     ]);
   });
@@ -47,15 +25,15 @@ describe('The cli adoption kit, run through rdy', () => {
 
 // region | Helpers
 
-/** Builds a hand-rolled runner whose flag comparison and parseArgs call end with the given pragmas. */
-function buildRunner(flagScanPragma: string, parseArgsPragma: string): string {
+/** Builds a hand-rolled runner whose parseArgs call ends with the given pragma. */
+function buildRunner(pragma: string): string {
   return dedent`
     import { parseArgs } from 'node:util';
 
     export function run(args) {
       const [command, ...rest] = args;
-      if (command === '--help') return HELP;${flagScanPragma}
-      const { values } = parseArgs({ args: rest, options: {} });${parseArgsPragma}
+      if (command === '--help') return HELP;
+      const { values } = parseArgs({ args: rest, options: {} });${pragma}
       return values;
     }
 

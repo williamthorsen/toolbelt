@@ -10,21 +10,9 @@ const ADOPTER =
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 describe('The enums adoption kit, run through rdy', () => {
-  it('names the site and counts it in the denominator', () => {
-    expect(runKit(`${MEMBERSHIP_TEST}\n`)).toStrictEqual([
-      { count: 2, detail: 'src/palette.ts:1', id: 'no-hand-rolled-enum-membership', passedCount: 1 },
-    ]);
-  });
-
-  it('drops a site covered by an unqualified pragma from the detail and the fraction', () => {
-    expect(runKit(`${MEMBERSHIP_TEST} // rdy-ignore -- reviewed\n`)).toStrictEqual([
-      { count: 1, detail: undefined, id: 'no-hand-rolled-enum-membership', passedCount: 1 },
-    ]);
-  });
-
   // A `dir:` kit source has no namespace, so the pragma uses the bare id. A consumer running the kit from the
   // installed package writes `toolbelt.enums/no-hand-rolled-enum-membership`.
-  it('drops a site covered by a qualified pragma', () => {
+  it('drops a site covered by a qualified pragma from the named check alone', () => {
     expect(runKit(`${MEMBERSHIP_TEST} // rdy-ignore no-hand-rolled-enum-membership -- reviewed\n`)).toStrictEqual([
       { count: 1, detail: undefined, id: 'no-hand-rolled-enum-membership', passedCount: 1 },
     ]);

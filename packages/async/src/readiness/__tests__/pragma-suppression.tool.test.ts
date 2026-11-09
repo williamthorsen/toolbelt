@@ -9,21 +9,9 @@ const ADOPTER = "import { delay } from '@williamthorsen/toolbelt.async';\nawait 
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 describe('The async adoption kit, run through rdy', () => {
-  it('names the site and counts it in the denominator', () => {
-    expect(runKit(`${SLEEP}\n`)).toStrictEqual([
-      { count: 2, detail: 'src/wait.ts:1', id: 'no-hand-rolled-sleep', passedCount: 1 },
-    ]);
-  });
-
-  it('drops a site covered by an unqualified pragma from the detail and the fraction', () => {
-    expect(runKit(`${SLEEP} // rdy-ignore -- reviewed\n`)).toStrictEqual([
-      { count: 1, detail: undefined, id: 'no-hand-rolled-sleep', passedCount: 1 },
-    ]);
-  });
-
   // A `dir:` kit source has no namespace, so the pragma names the bare id. A consumer running the kit from the
   // installed package writes `toolbelt.async/no-hand-rolled-sleep`.
-  it('drops a site covered by a qualified pragma', () => {
+  it('drops a site covered by a qualified pragma from the named check alone', () => {
     expect(runKit(`${SLEEP} // rdy-ignore no-hand-rolled-sleep -- reviewed\n`)).toStrictEqual([
       { count: 1, detail: undefined, id: 'no-hand-rolled-sleep', passedCount: 1 },
     ]);

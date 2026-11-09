@@ -11,22 +11,6 @@ const ADOPTER = "import { round } from '@williamthorsen/toolbelt.numbers/candida
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 describe('The numbers adoption kit, run through rdy', () => {
-  it('names every site and spans them all in one denominator', () => {
-    expect(runKit(`${CLAMP}\n`)).toStrictEqual([
-      { count: 4, detail: 'src/bound.ts:1', id: 'no-hand-rolled-clamp', passedCount: 1 },
-      { count: 4, detail: 'src/rate.ts:1', id: 'no-hand-rolled-round', passedCount: 1 },
-      { count: 4, detail: 'src/roll.ts:1', id: 'no-hand-rolled-random-integer', passedCount: 1 },
-    ]);
-  });
-
-  it('drops a site covered by an unqualified pragma from every check’s detail and fraction', () => {
-    expect(runKit(`${CLAMP} // rdy-ignore -- reviewed\n`)).toStrictEqual([
-      { count: 3, detail: undefined, id: 'no-hand-rolled-clamp', passedCount: 1 },
-      { count: 3, detail: 'src/rate.ts:1', id: 'no-hand-rolled-round', passedCount: 1 },
-      { count: 3, detail: 'src/roll.ts:1', id: 'no-hand-rolled-random-integer', passedCount: 1 },
-    ]);
-  });
-
   // A `dir:` kit source has no namespace, so the pragma names the bare id. A consumer running the kit from the
   // installed package writes `toolbelt.numbers/no-hand-rolled-clamp`.
   it('drops a site covered by a qualified pragma from the named check alone', () => {

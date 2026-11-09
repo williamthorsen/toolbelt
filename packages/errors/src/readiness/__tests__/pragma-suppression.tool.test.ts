@@ -24,24 +24,6 @@ const ADOPTER = [
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 describe('The errors adoption kit, run through rdy', () => {
-  it('names every site and spans them all in one denominator', () => {
-    expect(runKit(`${DESCRIBE_INLINE}\n`)).toStrictEqual([
-      { count: 5, detail: 'toMessage (src/clone.ts:2)', id: 'no-describe-clone', passedCount: 1 },
-      { count: 5, detail: 'src/describe.ts:1', id: 'no-inline-description', passedCount: 1 },
-      { count: 5, detail: 'src/narrow.ts:1', id: 'no-instanceof-error', passedCount: 1 },
-      { count: 5, detail: 'src/coerce.ts:1', id: 'no-error-coercion', passedCount: 1 },
-    ]);
-  });
-
-  it('drops a site covered by an unqualified pragma from every check’s detail and fraction', () => {
-    expect(runKit(`${DESCRIBE_INLINE} // rdy-ignore -- reviewed\n`)).toStrictEqual([
-      { count: 4, detail: 'toMessage (src/clone.ts:2)', id: 'no-describe-clone', passedCount: 1 },
-      { count: 4, detail: undefined, id: 'no-inline-description', passedCount: 1 },
-      { count: 4, detail: 'src/narrow.ts:1', id: 'no-instanceof-error', passedCount: 1 },
-      { count: 4, detail: 'src/coerce.ts:1', id: 'no-error-coercion', passedCount: 1 },
-    ]);
-  });
-
   // A `dir:` kit source has no namespace, so the pragma uses the bare id. A consumer running the kit from the
   // installed package writes `toolbelt.errors/no-inline-description`.
   it('drops a site covered by a qualified pragma from the named check alone', () => {

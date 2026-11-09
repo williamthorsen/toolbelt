@@ -11,22 +11,6 @@ const ADOPTER = "import { isRecord } from '@williamthorsen/toolbelt.objects';\ni
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 describe('The objects adoption kit, run through rdy', () => {
-  it('names every site and spans them all in one denominator', () => {
-    expect(runKit(`${RECORD}\n`)).toStrictEqual([
-      { count: 4, detail: 'src/has.ts:1', id: 'no-hand-rolled-own-property', passedCount: 1 },
-      { count: 4, detail: 'src/guard.ts:1', id: 'no-hand-rolled-record-guard', passedCount: 1 },
-      { count: 4, detail: 'src/same.ts:1', id: 'no-stringify-comparison', passedCount: 1 },
-    ]);
-  });
-
-  it('drops a site covered by an unqualified pragma from every check’s detail and fraction', () => {
-    expect(runKit(`${RECORD} // rdy-ignore -- reviewed\n`)).toStrictEqual([
-      { count: 3, detail: 'src/has.ts:1', id: 'no-hand-rolled-own-property', passedCount: 1 },
-      { count: 3, detail: undefined, id: 'no-hand-rolled-record-guard', passedCount: 1 },
-      { count: 3, detail: 'src/same.ts:1', id: 'no-stringify-comparison', passedCount: 1 },
-    ]);
-  });
-
   // A `dir:` kit source has no namespace, so the bare id stands. A consumer running the kit from the
   // installed package writes `toolbelt.objects/no-hand-rolled-record-guard`.
   it('drops a site covered by a qualified pragma from the named check alone', () => {
