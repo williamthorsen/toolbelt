@@ -85,13 +85,15 @@ type CheckPipe<F extends Fn[], D extends FnDef[], Async extends boolean = false>
     ? CheckPipe<
         F extends [unknown, ...infer F_] ? (F_ extends Fn[] ? F_ : never) : never,
         D extends [unknown, ...infer D_] ? (D_ extends FnDef[] ? D_ : never) : never,
-        Async extends true ? true : ReturnType<Head<F>> extends Promise<unknown> ? true : false
+        Async extends true ? true : ReturnType<Head<F>> extends PromiseLike<unknown> ? true : false
       >
     : never
   : Resolved<D[0][1]> extends Parameters<Head<F>>
     ? Async extends true
       ? MakePromise<ReturnType<Head<F>>>
-      : ReturnType<Head<F>>
+      : ReturnType<Head<F>> extends PromiseLike<unknown>
+        ? MakePromise<ReturnType<Head<F>>>
+        : ReturnType<Head<F>>
     : never;
 
 type CarryReturn<Returns extends unknown[], Args extends unknown[]> = Returns extends [infer A, ...infer B]
@@ -109,7 +111,7 @@ type PipedFn<T extends Fn[]> = PipeReturn<T> extends never ? never : (...args: P
 type PipeReturn<F extends Fn[]> = CheckPipe<F, CarryReturn<ReturnTypes<F>, Parameters<Head<F>>>>;
 
 type Resolved<T> = {
-  [K in keyof T]: T[K] extends Promise<infer I> ? I : T[K];
+  [K in keyof T]: T[K] extends PromiseLike<infer I> ? I : T[K];
 };
 
 type ReturnTypes<T extends Fn[]> = {
