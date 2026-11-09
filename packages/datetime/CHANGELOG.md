@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.1.2 — 2026-11-09
+
+### 📦 Dependencies
+
+- Bumped `@williamthorsen/toolbelt.numbers` to 7.3.2
+
 ## 4.1.1 — 2026-11-07
 
 ### 📦 Dependencies

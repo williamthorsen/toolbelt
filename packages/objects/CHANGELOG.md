@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.4.1 — 2026-11-09
+
+### 🐛 Bug fixes
+
+- Fixes the issue that `sortKeys` and `sortObjectKeys` omitted symbol-keyed properties from their results, and copies each enumerable one after the sorted string keys in its original order, with `sortObjectKeys` also sorting the keys of its value. (#450)
+
+### ♻️ Refactoring
+
+- Split the path-expression reader out of listDirectoryAscents (#437)
+
+  Moves the path-expression reader out of `packages/adoption/src/portable/listDirectoryAscents.ts` into its own module, `readPathParts.ts`, adds unit tests for it, and changes it to take each template literal from `listTemplateLiterals` instead of walking templates itself. Recompiles the committed kit bundles to match.
+
+- Bring adoption's kit and ascent modules to the declaration-order and naming rules (#438)
+
+  Reorders the declarations in four `packages/adoption` files to follow the declaration-order rule, which puts the exported logic first and the helpers after it, and makes small naming and structure cleanups in the same files.
+
+- Replaces the file-wide opt-outs of `@typescript-eslint/consistent-type-assertions` and `unicorn/no-array-reduce` in `omit-nullish.ts` with one commented assertion per function, by building the results of `omitNullish` and `omitUndefined` with `Object.fromEntries` rather than a `reduce` over a `{} as T` accumulator. (#448)
+- Moves the exported types in `findPredicateClone.ts`, `listObjectIdioms.ts`, and `omit-nullish.ts` so that each module orders its exports by the declaration-order rule, which puts a sole production-consumed export first and otherwise sorts exports alphabetically. (#449)
+- Deletes the empty package-root `types.ts` from `objects` and turns `preciseObjectTypeOf`, which the candidate index never re-exported, into an unexported helper of `preciseTypeOf`. (#451)
+
+### 🧪 Tests
+
+- Replaces each kit test's local copy of the checklist helper with `listKitChecks` from `@williamthorsen/toolbelt.adoption/test-utils`, which throws when the kit's first checklist is missing or staged rather than return an empty list against which an assertion over every check passes. (#434)
+- Replaces the copied `listSweptFiles` helper and `JS_TS_EXTENSION` regex in every `self-sweep.unit.test.ts` with `listJsTsSources` from `@williamthorsen/toolbelt.adoption/test-utils`, which lists the files directly inside each given directory that adoption's `isJsTsSource` accepts. (#435)
+- Adds `listFreshKitChecks` to `@williamthorsen/toolbelt.adoption/test-utils` and moves every kit test onto it from its own copy of `loadChecks`, which reset Vitest's module registry to obtain a kit that had not yet swept a fixture repo. (#452)
+- Deletes the "neither reports nor counts" examples and their `UNCLAIMED` fixtures from the `guards` and `objects` kits' `kit.tool.test.ts`, since the unit tests of `listGuardClones`, `listRecordLines`, and `listStringifyCompareLines` already observe each of those declines. (#453)
+- Adds `diffAdoptedExports` to `@williamthorsen/toolbelt.adoption/test-utils`, which returns a package's callable exports, the callable exports that `ADOPTED_EXPORTS` omits, and the listed names that the package's tiers don't export, and uses it in place of the hand-written comparison in each package's `adoptedExports.unit.test.ts`. (#458)
+- Reduces every adoption kit's `pragma-suppression.tool.test.ts` to its qualified-pragma example, which asserts that the named check drops the site while every other check keeps its count, and deletes the examples that tested readyup's pragma matching rather than the kit. (#459)
+
 ## 4.4.0 — 2026-10-25
 
 ### 🎉 Features

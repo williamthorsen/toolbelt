@@ -1,5 +1,20 @@
 [
   {
+    "version": "0.8.1",
+    "date": "2026-11-09",
+    "sections": [
+      {
+        "title": "📦 Dependencies",
+        "audience": "dev",
+        "items": [
+          { "description": "Bumped `@williamthorsen/toolbelt.errors` to 0.9.1" },
+          { "description": "Bumped `@williamthorsen/toolbelt.objects` to 4.4.1" },
+          { "description": "Bumped `@williamthorsen/toolbelt.secrets` to 0.6.1" }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.8.0",
     "date": "2026-10-25",
     "sections": [
