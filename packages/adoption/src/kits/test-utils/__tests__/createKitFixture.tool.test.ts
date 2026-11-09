@@ -49,6 +49,7 @@ describe(createKitFixture, () => {
       'the module exports no kit',
     );
     expect(process.cwd()).toBe(previousCwd);
+    expect(mkdtempSyncSpy).toHaveBeenCalledTimes(1);
     expect(fs.existsSync(String(mkdtempSyncSpy.mock.results[0]?.value))).toBe(false);
   });
 });
