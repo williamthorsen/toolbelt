@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { withDefaultItemValue } from '../withDefaultItemValue.ts';
 
@@ -9,7 +9,6 @@ describe(withDefaultItemValue, () => {
     const sumWithDefault = withDefaultItemValue(sum, 2);
     const expectedSum = 6;
 
-    // @ts-expect-error - Fix legacy types
     const actualSum = sumWithDefault([1, undefined, 3]);
 
     expect(actualSum).toBe(expectedSum);
@@ -38,9 +37,12 @@ describe(withDefaultItemValue, () => {
     const concatenateWithDefault = withDefaultItemValue(concatenate, 'X');
     const expectedResult = 'aXc';
 
-    // @ts-expect-error - Fix legacy types
     const actualResult = concatenateWithDefault(['a', undefined, 'c']);
 
     expect(actualResult).toBe(expectedResult);
+  });
+
+  it('infers the item type from `fn` rather than from a literal default', () => {
+    expectTypeOf(withDefaultItemValue(sum, 2)).toEqualTypeOf<(values: ReadonlyArray<number | undefined>) => number>();
   });
 });
