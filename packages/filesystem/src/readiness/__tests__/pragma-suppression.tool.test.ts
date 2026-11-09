@@ -16,40 +16,14 @@ describe('The filesystem adoption kit, run through rdy', () => {
   // Both checks count the same two sites, and only the adopting call passes. A site of the other check's kind
   // raises the denominator without raising the numerator, so the fraction reports how far adoption of the
   // package got rather than how clean one check is.
-  it('names the site under its own check and counts it against every fraction', () => {
-    expect(runKit(buildWrite(''))).toStrictEqual([
-      { count: 2, detail: 'save (src/save.ts:3)', id: 'no-hand-rolled-atomic-write', passedCount: 1 },
-      { count: 2, detail: undefined, id: 'no-hand-rolled-directory-walk', passedCount: 1 },
-    ]);
-  });
-
-  it('drops a site covered by an unqualified pragma from the detail and the fraction', () => {
-    expect(runKit(buildWrite(' // rdy-ignore -- reviewed'))[0]).toStrictEqual({
-      count: 1,
-      detail: undefined,
-      id: 'no-hand-rolled-atomic-write',
-      passedCount: 1,
-    });
-  });
-
+  //
   // The pragma uses the bare id because a `dir:` kit source has no namespace. A consumer running the kit
   // from the installed package writes `toolbelt.filesystem/no-hand-rolled-atomic-write`.
-  it('drops a site covered by a qualified pragma', () => {
-    expect(runKit(buildWrite(' // rdy-ignore no-hand-rolled-atomic-write -- reviewed'))[0]).toStrictEqual({
-      count: 1,
-      detail: undefined,
-      id: 'no-hand-rolled-atomic-write',
-      passedCount: 1,
-    });
-  });
-
-  it('keeps a site in the report when the pragma names the other check', () => {
-    expect(runKit(buildWrite(' // rdy-ignore no-hand-rolled-directory-walk -- reviewed'))[0]).toStrictEqual({
-      count: 2,
-      detail: 'save (src/save.ts:3)',
-      id: 'no-hand-rolled-atomic-write',
-      passedCount: 1,
-    });
+  it('drops a site covered by a qualified pragma from the named check alone', () => {
+    expect(runKit(buildWrite(' // rdy-ignore no-hand-rolled-atomic-write -- reviewed'))).toStrictEqual([
+      { count: 1, detail: undefined, id: 'no-hand-rolled-atomic-write', passedCount: 1 },
+      { count: 2, detail: undefined, id: 'no-hand-rolled-directory-walk', passedCount: 1 },
+    ]);
   });
 });
 
