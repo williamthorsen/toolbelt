@@ -20,6 +20,8 @@ export const IntegerSeed = {
   },
 };
 
+// region | Helpers
+
 /**
  * Deterministically maps any number to an integer in the range [1, 2147483646], the states from which the Lehmer
  * sequence advances.
@@ -41,3 +43,5 @@ function toIntegerSeed(value: number): number {
   }
   return integer;
 }
+
+// endregion | Helpers
