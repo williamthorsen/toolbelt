@@ -12,14 +12,20 @@ export class Timestamp {
   private readonly _millis: number;
   private _timeUnit: TimeUnit;
 
+  /**
+   * Creates a timestamp for the input, or for the current time when the input is `undefined`. Throws a `RangeError`
+   * for an input that does not resolve to a valid date.
+   */
   constructor(dateTime?: TimestampInput, options: TimestampOptions = {}) {
     const { format = 'iso', timeUnit = TimeUnit.Millis } = options;
     if (dateTime instanceof Timestamp) {
       this._millis = dateTime._millis;
-    } else if (dateTime) {
-      this._millis = new Date(dateTime).getTime();
-    } else {
+    } else if (dateTime === undefined) {
       this._millis = Date.now();
+    } else {
+      const millis = new Date(dateTime).getTime();
+      assertValidMillis(millis, dateTime);
+      this._millis = millis;
     }
     this._format = format;
     this._timeUnit = timeUnit;
@@ -165,6 +171,18 @@ export class Timestamp {
     return this.toIsoString({ timeUnit });
   }
 }
+
+// region | Helpers
+/**
+ * Rejects milliseconds that do not represent a valid date, naming the input from which they were resolved.
+ */
+function assertValidMillis(millis: number, input: Date | number | string): void | never {
+  if (!Number.isNaN(millis)) return;
+
+  const described = typeof input === 'string' ? JSON.stringify(input) : String(input);
+  throw new RangeError(`Timestamp input must resolve to a valid date, but was ${described}.`);
+}
+// endregion | Helpers
 
 // region | Types
 interface Options {
