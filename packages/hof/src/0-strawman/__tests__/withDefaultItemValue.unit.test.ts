@@ -42,6 +42,15 @@ describe(withDefaultItemValue, () => {
     expect(actualResult).toBe(expectedResult);
   });
 
+  it('passes null items through unchanged', () => {
+    const listItems = (values: ReadonlyArray<number | null>) => values;
+    const listWithDefault = withDefaultItemValue(listItems, 0);
+
+    const actualResult = listWithDefault([null, undefined, 3]);
+
+    expect(actualResult).toStrictEqual([null, 0, 3]);
+  });
+
   it('infers the item type from `fn` rather than from a literal default', () => {
     expectTypeOf(withDefaultItemValue(sum, 2)).toEqualTypeOf<(values: ReadonlyArray<number | undefined>) => number>();
   });

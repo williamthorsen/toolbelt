@@ -10,6 +10,6 @@ export function withDefaultItemValue<TItem, TReturn>(
   defaultValue: NoInfer<TItem>,
 ): (values: ReadonlyArray<TItem | undefined>) => TReturn {
   return function withDefault(values: ReadonlyArray<TItem | undefined>): TReturn {
-    return fn(values.map((value) => value ?? defaultValue));
+    return fn(values.map((value) => (value === undefined ? defaultValue : value)));
   };
 }
