@@ -1,9 +1,8 @@
 import {
-  createTrackedRepo,
-  listFreshKitChecks,
+  createKitFixture,
   listReportedFindings,
-  pointCwdAt,
   runCheck,
+  runEveryCheck,
   runSkip,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
@@ -51,10 +50,9 @@ const EVERY_IDIOM = {
 
 describe('The errors adoption kit', () => {
   it('reports each idiom under its own check, naming where it is', async () => {
-    using tree = createTrackedRepo(EVERY_IDIOM);
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, EVERY_IDIOM);
 
-    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
+    const outcomes = await runEveryCheck(kit.checks);
 
     // `no-instanceof-error` takes both the assert and the narrow kind, so its row contains two sites.
     expect(outcomes.map(listReportedFindings)).toStrictEqual([
@@ -69,10 +67,9 @@ describe('The errors adoption kit', () => {
   });
 
   it('spans all five sites in the one denominator that the checks share', async () => {
-    using tree = createTrackedRepo(EVERY_IDIOM);
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, EVERY_IDIOM);
 
-    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
+    const outcomes = await runEveryCheck(kit.checks);
 
     expect(outcomes.map(summarizeFraction)).toStrictEqual(
       Array.from({ length: 4 }, () => ({ adoptedCount: 0, findingCount: 5 })),
@@ -80,24 +77,22 @@ describe('The errors adoption kit', () => {
   });
 
   it('counts a call into the package as adoption', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/report.ts': ADOPTER });
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/report.ts': ADOPTER });
 
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
   });
 
   it('exempts the package’s own describeError, and reports a hand-roll beside it', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'package.json': PUBLISHER_MANIFEST,
       'src/describeError.ts': OWN_DESCRIBE_ERROR,
       'src/other.ts': DESCRIBE_INLINE,
     });
-    using _cwd = pointCwdAt(tree.dir);
 
-    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
+    const outcomes = await runEveryCheck(kit.checks);
 
     expect(outcomes.flatMap(listReportedFindings)).toStrictEqual([{ line: 1, path: 'src/other.ts', reported: true }]);
   });
@@ -105,29 +100,27 @@ describe('The errors adoption kit', () => {
   // `src/report.ts` keeps the check running, so a widened filter reports these files rather than leaving the
   // check skipped.
   it('leaves a test file and a bootstrap wrapper alone', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'bin/run.js': DESCRIBE_INLINE,
       'package.json': MANIFEST,
       'src/__tests__/config.unit.test.ts': DESCRIBE_INLINE,
       'src/report.ts': ADOPTER,
     });
-    using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
   });
 
   it('skips every check when the sweep matches no source', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'bin/run.js': DESCRIBE_INLINE,
       'package.json': MANIFEST,
       'src/__tests__/config.unit.test.ts': DESCRIBE_INLINE,
     });
-    using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runSkip((await listFreshKitChecks(KIT_URL))[0])).resolves.toBe(
+    await expect(runSkip(kit.checks[0])).resolves.toBe(
       'the project contains no JavaScript or TypeScript sources outside the exempt paths',
     );
   });

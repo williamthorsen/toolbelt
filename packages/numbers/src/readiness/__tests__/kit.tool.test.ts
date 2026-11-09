@@ -1,12 +1,11 @@
 import {
-  createTrackedRepo,
-  listFreshKitChecks,
+  createKitFixture,
   listReportedFindings,
   runCheck,
+  runEveryCheck,
   runSkip,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
-import { pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, it } from 'vitest';
 
 const KIT_URL = new URL('../../../.readyup/kits/default.ts', import.meta.url);
@@ -22,10 +21,9 @@ const ALL_IDIOMS = { 'package.json': MANIFEST, 'src/bound.ts': CLAMP, 'src/rate.
 
 describe('The numbers adoption kit', () => {
   it('reports each idiom under its own check, naming where it is', async () => {
-    using tree = createTrackedRepo(ALL_IDIOMS);
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, ALL_IDIOMS);
 
-    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
+    const outcomes = await runEveryCheck(kit.checks);
 
     expect(outcomes.map(listReportedFindings)).toStrictEqual([
       [{ line: 1, path: 'src/bound.ts', reported: true }],
@@ -35,10 +33,9 @@ describe('The numbers adoption kit', () => {
   });
 
   it('spans every idiom in the denominator, so the three checks share one fraction', async () => {
-    using tree = createTrackedRepo(ALL_IDIOMS);
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, ALL_IDIOMS);
 
-    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
+    const outcomes = await runEveryCheck(kit.checks);
 
     expect(outcomes.map(summarizeFraction)).toStrictEqual(
       Array.from({ length: 3 }, () => ({ adoptedCount: 0, findingCount: 3 })),
@@ -46,10 +43,9 @@ describe('The numbers adoption kit', () => {
   });
 
   it('counts a call into the package as adoption', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/rate.ts': ADOPTER });
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/rate.ts': ADOPTER });
 
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[1])).resolves.toStrictEqual({
+    await expect(runCheck(kit.checks[1])).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -58,24 +54,22 @@ describe('The numbers adoption kit', () => {
   // A subscripted random integer is `toolbelt.arrays`' site. Claiming it would report one line twice across
   // the two kits; counting it would leave a fraction that the checks here could not close.
   it('exempts the package’s own clamp, and reports a hand-roll beside it', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'package.json': PUBLISHER_MANIFEST,
       'src/clamp.ts': OWN_CLAMP,
       'src/other.ts': CLAMP,
     });
-    using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 1, path: 'src/other.ts', reported: true }],
     });
   });
 
   it('skips every check when the sweep matches no source', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/bound.unit.test.ts': CLAMP });
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/bound.unit.test.ts': CLAMP });
 
-    await expect(runSkip((await listFreshKitChecks(KIT_URL))[0])).resolves.toBe(
+    await expect(runSkip(kit.checks[0])).resolves.toBe(
       'the project contains no JavaScript or TypeScript sources outside the exempt paths',
     );
   });

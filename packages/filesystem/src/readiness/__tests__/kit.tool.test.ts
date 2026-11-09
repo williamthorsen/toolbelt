@@ -1,9 +1,8 @@
 import {
-  createTrackedRepo,
-  listFreshKitChecks,
+  createKitFixture,
   listReportedFindings,
-  pointCwdAt,
   runCheck,
+  runEveryCheck,
   runSkip,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
@@ -95,10 +94,9 @@ const EVERY_IDIOM = {
 
 describe('The filesystem adoption kit', () => {
   it('reports each idiom under its own check, naming where it is', async () => {
-    using tree = createTrackedRepo(EVERY_IDIOM);
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, EVERY_IDIOM);
 
-    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
+    const outcomes = await runEveryCheck(kit.checks);
 
     // The write check names the function to change; a loop declares nothing, so the walk check names the location.
     expect(outcomes.map(listReportedFindings)).toStrictEqual([
@@ -111,10 +109,9 @@ describe('The filesystem adoption kit', () => {
   });
 
   it('spans all three sites in the one denominator that the checks share', async () => {
-    using tree = createTrackedRepo(EVERY_IDIOM);
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, EVERY_IDIOM);
 
-    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
+    const outcomes = await runEveryCheck(kit.checks);
 
     expect(outcomes.map(summarizeFraction)).toStrictEqual(
       Array.from({ length: 2 }, () => ({ adoptedCount: 0, findingCount: 3 })),
@@ -122,35 +119,32 @@ describe('The filesystem adoption kit', () => {
   });
 
   it('counts a call into the package as adoption', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/save.ts': ADOPTER });
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/save.ts': ADOPTER });
 
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
   });
 
   it('leaves a walk that probes for a manifest out of the report and out of the denominator', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/root.ts': MANIFEST_PROBE });
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/root.ts': MANIFEST_PROBE });
 
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[1])).resolves.toStrictEqual({
+    await expect(runCheck(kit.checks[1])).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [],
     });
   });
 
   it('exempts the package’s own implementations, and reports a hand-roll beside them', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'package.json': PUBLISHER_MANIFEST,
       'src/listDirectoryChain.ts': OWN_DIRECTORY_CHAIN,
       'src/other.ts': ATOMIC_WRITE,
       'src/writeAtomic.ts': OWN_WRITE_ATOMIC,
     });
-    using _cwd = pointCwdAt(tree.dir);
 
-    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
+    const outcomes = await runEveryCheck(kit.checks);
 
     expect(outcomes.flatMap(listReportedFindings)).toStrictEqual([
       { line: 4, path: 'src/other.ts', reported: true, symbol: 'save' },
@@ -158,28 +152,26 @@ describe('The filesystem adoption kit', () => {
   });
 
   it('leaves a test file and a bootstrap wrapper alone', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'bin/run.js': CHAIN_PROBE,
       'package.json': MANIFEST,
       'src/__tests__/save.unit.test.ts': ATOMIC_WRITE,
       'src/save.ts': ADOPTER,
     });
-    using _cwd = pointCwdAt(tree.dir);
 
-    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
+    const outcomes = await runEveryCheck(kit.checks);
 
     expect(outcomes).toStrictEqual(Array.from({ length: 2 }, () => ({ adoptedCount: 1, findings: [] })));
   });
 
   it('skips every check when the sweep matches no source', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'bin/run.js': CHAIN_PROBE,
       'package.json': MANIFEST,
       'src/__tests__/save.unit.test.ts': ATOMIC_WRITE,
     });
-    using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runSkip((await listFreshKitChecks(KIT_URL))[0])).resolves.toBe(
+    await expect(runSkip(kit.checks[0])).resolves.toBe(
       'the project contains no JavaScript or TypeScript sources outside the exempt paths',
     );
   });

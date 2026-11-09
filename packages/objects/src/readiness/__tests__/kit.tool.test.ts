@@ -1,12 +1,11 @@
 import {
-  createTrackedRepo,
-  listFreshKitChecks,
+  createKitFixture,
   listReportedFindings,
   runCheck,
+  runEveryCheck,
   runSkip,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
-import { pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, it } from 'vitest';
 
 const KIT_URL = new URL('../../../.readyup/kits/default.ts', import.meta.url);
@@ -28,10 +27,9 @@ const EVERY_IDIOM = {
 
 describe('The objects adoption kit', () => {
   it('reports each idiom under its own check, naming where it is', async () => {
-    using tree = createTrackedRepo(EVERY_IDIOM);
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, EVERY_IDIOM);
 
-    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
+    const outcomes = await runEveryCheck(kit.checks);
 
     expect(outcomes.map(listReportedFindings)).toStrictEqual([
       [{ line: 1, path: 'src/has.ts', reported: true }],
@@ -41,10 +39,9 @@ describe('The objects adoption kit', () => {
   });
 
   it('spans all three idioms in the denominator, so the checks share one fraction', async () => {
-    using tree = createTrackedRepo(EVERY_IDIOM);
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, EVERY_IDIOM);
 
-    const outcomes = await Promise.all((await listFreshKitChecks(KIT_URL)).map((check) => runCheck(check)));
+    const outcomes = await runEveryCheck(kit.checks);
 
     expect(outcomes.map(summarizeFraction)).toStrictEqual(
       Array.from({ length: 3 }, () => ({ adoptedCount: 0, findingCount: 3 })),
@@ -52,34 +49,31 @@ describe('The objects adoption kit', () => {
   });
 
   it('counts a call into the package as adoption', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/guard.ts': ADOPTER });
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/guard.ts': ADOPTER });
 
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[0])).resolves.toStrictEqual({
+    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
   });
 
   it('exempts the package’s own isRecord, and reports a hand-roll beside it', async () => {
-    using tree = createTrackedRepo({
+    using kit = await createKitFixture(KIT_URL, {
       'package.json': PUBLISHER_MANIFEST,
       'src/is-record.ts': OWN_RECORD,
       'src/other.ts': RECORD,
     });
-    using _cwd = pointCwdAt(tree.dir);
 
-    await expect(runCheck((await listFreshKitChecks(KIT_URL))[1])).resolves.toStrictEqual({
+    await expect(runCheck(kit.checks[1])).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 1, path: 'src/other.ts', reported: true }],
     });
   });
 
   it('skips every check when the sweep matches no source', async () => {
-    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/guard.unit.test.ts': RECORD });
-    using _cwd = pointCwdAt(tree.dir);
+    using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/guard.unit.test.ts': RECORD });
 
-    await expect(runSkip((await listFreshKitChecks(KIT_URL))[0])).resolves.toBe(
+    await expect(runSkip(kit.checks[0])).resolves.toBe(
       'the project contains no JavaScript or TypeScript sources outside the exempt paths',
     );
   });
