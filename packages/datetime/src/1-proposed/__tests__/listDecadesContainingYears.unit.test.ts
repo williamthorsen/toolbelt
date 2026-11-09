@@ -51,4 +51,10 @@ describe(listDecadesContainingYears, () => {
   it('throws a RangeError when any years are negative', () => {
     expect(() => listDecadesContainingYears([-1, 1980])).toThrow(RangeError);
   });
+
+  it.each([NaN, Infinity, 1e300, -1, 1990.5])('throws a RangeError naming %s that follows a valid year', (year) => {
+    expect(() => listDecadesContainingYears([0, year])).toThrow(
+      new RangeError(`Year must be a non-negative safe integer, but was ${String(year)}.`),
+    );
+  });
 });

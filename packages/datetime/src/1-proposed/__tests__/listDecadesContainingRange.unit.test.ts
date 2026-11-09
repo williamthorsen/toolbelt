@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import { listDecadesContainingRange } from '../listDecadesContainingRange.ts';
 
+const INVALID_YEARS = [NaN, Infinity, 1e300, -1, 1990.5];
+
 describe(listDecadesContainingRange, () => {
   it('returns a single decade when start and end are within the same decade', () => {
     const result = listDecadesContainingRange({ start: 1981, end: 1989 });
@@ -35,5 +37,21 @@ describe(listDecadesContainingRange, () => {
   it('returns only the start decade when end is exactly at the start decade boundary', () => {
     const result = listDecadesContainingRange({ start: 2000, end: 2000 });
     expect(result).toStrictEqual([{ start: 2000, end: 2009, label: '2000s' }]);
+  });
+
+  it.each(INVALID_YEARS)('throws a RangeError naming %s when it is the end', (year) => {
+    expect(() => listDecadesContainingRange({ start: 1990, end: year })).toThrow(
+      new RangeError(`Year must be a non-negative safe integer, but was ${String(year)}.`),
+    );
+  });
+
+  it.each(INVALID_YEARS)('throws a RangeError naming %s when it is the start', (year) => {
+    expect(() => listDecadesContainingRange({ start: year, end: 1990 })).toThrow(
+      new RangeError(`Year must be a non-negative safe integer, but was ${String(year)}.`),
+    );
+  });
+
+  it('throws rather than returning an empty array when an invalid start exceeds end', () => {
+    expect(() => listDecadesContainingRange({ start: Infinity, end: 1990 })).toThrow(RangeError);
   });
 });
