@@ -19,6 +19,8 @@ const CLAIMED = [
   'await new Promise((resolve) => setTimeout(() => { return resolve(); }, 50));',
   // A delay expression with a comma of its own, which the argument split has to read as one argument.
   'await new Promise((resolve) => setTimeout(resolve, Math.min(50, cap)));',
+  // A trailing comma, whose empty tail is not a third argument.
+  'await new Promise((resolve) => setTimeout(resolve, 50,));',
 ];
 
 // Code that legitimately contains the anchor and is no sleep. Each line is declined for a reason of its own, and
