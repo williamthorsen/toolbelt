@@ -1,4 +1,4 @@
-import { TimeUnit } from '../2-draft/index.ts';
+import { TimeUnit } from '../2-draft/TimeUnit.ts';
 
 const FINEST_INDEX = TimeUnit.coarsestFirst.length - 1;
 
