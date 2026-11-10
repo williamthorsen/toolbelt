@@ -14,14 +14,14 @@ export function enumEntries<T extends Record<string, string | number>>(
 }
 
 /**
- * Lists an enum's member names, skipping the numeric keys of the reverse mapping that a numeric enum adds.
+ * Lists an enum's member names, skipping the keys of the reverse mapping that a numeric enum adds.
  *
  * @category Enum
  * @experimental
  * @stage proposed
  */
 export function enumKeys<T extends Record<string, string | number>>(enumObj: T): Extract<keyof T, string>[] {
-  return Object.keys(enumObj).filter((key): key is Extract<keyof T, string> => !isReverseMappingKey(key));
+  return Object.keys(enumObj).filter((key): key is Extract<keyof T, string> => !isReverseMappingKey(enumObj, key));
 }
 
 /**

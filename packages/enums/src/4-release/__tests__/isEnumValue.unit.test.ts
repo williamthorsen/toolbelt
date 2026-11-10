@@ -56,6 +56,16 @@ describe(isEnumValue, () => {
     });
   });
 
+  describe('plain object', () => {
+    it('returns true for the value of a numeric-string key', () => {
+      expect(isEnumValue({ 200: 'OK', 404: 'NotFound' }, 'OK')).toBe(true);
+    });
+
+    it('returns true for the value of an empty-string key', () => {
+      expect(isEnumValue({ '': 'none', a: 'x' }, 'none')).toBe(true);
+    });
+  });
+
   describe('heterogeneous enum', () => {
     it('returns true for a string value that equals the name of a numeric member', () => {
       expect(isEnumValue(HeterogeneousEnum, 'A')).toBe(true);

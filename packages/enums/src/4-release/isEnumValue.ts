@@ -13,7 +13,7 @@ export function isEnumValue<TEnum extends Record<string, TValue>, TValue extends
   value: unknown,
 ): value is Extract<TEnum[keyof TEnum], EnumValueType<TEnum>> {
   const memberValues = Object.entries(enumObject)
-    .filter(([key]) => !isReverseMappingKey(key))
+    .filter(([key]) => !isReverseMappingKey(enumObject, key))
     .map(([, memberValue]) => memberValue);
   return includes(memberValues, value);
 }
