@@ -173,6 +173,28 @@ function readBalancedGroup(source, from, delimiters) {
   return void 0;
 }
 
+// ../adoption/src/portable/listTopLevelArguments.ts
+var CLOSERS = ")]}";
+var OPENERS = "([{";
+function listTopLevelArguments(inner) {
+  const args = [];
+  let depth = 0;
+  let start = 0;
+  for (let index = 0; index < inner.length; index += 1) {
+    const character = inner.charAt(index);
+    if (OPENERS.includes(character)) depth += 1;
+    else if (CLOSERS.includes(character)) depth -= 1;
+    else if (character === "," && depth === 0) {
+      args.push(inner.slice(start, index));
+      start = index + 1;
+    }
+  }
+  args.push(inner.slice(start));
+  const last = args.at(-1);
+  if (args.length > 1 && last !== void 0 && last.trim() === "") args.pop();
+  return args;
+}
+
 // ../adoption/src/mod.ts
 import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
 
@@ -194,8 +216,6 @@ var ADOPTED_EXPORTS = [
 
 // src/readiness/listClampNestLines.ts
 var BOUNDING_CALL = /\bMath\.(?<name>max|min)\s*\(/g;
-var CLOSERS = ")]}";
-var OPENERS = "([{";
 var NESTED_HEAD = { max: /^Math\.max\s*\(/, min: /^Math\.min\s*\(/ };
 var OPPOSITE = { max: "min", min: "max" };
 function listClampNestLines(source) {
@@ -220,25 +240,6 @@ function isBoundingCall(argument, name) {
   const group = readBalancedGroup(text, 0, PARENTHESES);
   if (group === void 0 || group.end !== text.length) return false;
   return listTopLevelArguments(text.slice(group.start + 1, group.end - 1)).length === 2;
-}
-function listTopLevelArguments(inner) {
-  const args = [];
-  let depth = 0;
-  let start = 0;
-  for (let index = 0; index < inner.length; index += 1) {
-    const char = inner[index];
-    if (char === void 0) continue;
-    if (OPENERS.includes(char)) depth += 1;
-    else if (CLOSERS.includes(char)) depth -= 1;
-    else if (char === "," && depth === 0) {
-      args.push(inner.slice(start, index));
-      start = index + 1;
-    }
-  }
-  args.push(inner.slice(start));
-  const last = args.at(-1);
-  if (args.length > 1 && last !== void 0 && last.trim() === "") args.pop();
-  return args;
 }
 function readBoundingName(name) {
   return name === "max" || name === "min" ? name : void 0;
