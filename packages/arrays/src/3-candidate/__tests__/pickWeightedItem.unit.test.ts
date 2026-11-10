@@ -52,13 +52,13 @@ describe(pickWeightedItem, () => {
   ])('if a weight is $label, throws a RangeError when creating the picker', ({ weight }) => {
     const throwingFn = () => pickWeightedItem(['a', 'b'], [1, weight]);
 
-    expect(throwingFn).toThrow(new RangeError('Weights must be finite.'));
+    expect(throwingFn).toThrow(new RangeError('Cumulative weights must be finite.'));
   });
 
   it('if finite weights total more than Number.MAX_VALUE, throws a RangeError', () => {
     const throwingFn = () => pickWeightedItem(['a', 'b'], [Number.MAX_VALUE, Number.MAX_VALUE]);
 
-    expect(throwingFn).toThrow(new RangeError('Weights must be finite.'));
+    expect(throwingFn).toThrow(new RangeError('Cumulative weights must be finite.'));
   });
 
   it('allows a seed in options to produce deterministic results', () => {

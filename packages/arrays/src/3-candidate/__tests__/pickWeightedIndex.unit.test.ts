@@ -111,12 +111,12 @@ describe(assertValidCumulativeWeights, () => {
   ])('if a weight is $label, throws a RangeError', ({ weights }) => {
     const throwingFn = () => assertValidCumulativeWeights(weights);
 
-    expect(throwingFn).toThrow(new RangeError('Weights must be finite.'));
+    expect(throwingFn).toThrow(new RangeError('Cumulative weights must be finite.'));
   });
 
   it('checks finiteness before the number of weights', () => {
     const throwingFn = () => assertValidCumulativeWeights([1, NaN], 3);
 
-    expect(throwingFn).toThrow(new RangeError('Weights must be finite.'));
+    expect(throwingFn).toThrow(new RangeError('Cumulative weights must be finite.'));
   });
 });

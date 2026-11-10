@@ -64,7 +64,7 @@ function assertAscendingWeights(values: ReadonlyArray<number>): void | never {
 /** Throws if any weight is `NaN` or infinite, which includes a running total that overflows. */
 function assertFiniteWeights(weights: ReadonlyArray<number>): void | never {
   if (weights.some((weight) => !Number.isFinite(weight))) {
-    throw new RangeError('Weights must be finite.');
+    throw new RangeError('Cumulative weights must be finite.');
   }
 }
 

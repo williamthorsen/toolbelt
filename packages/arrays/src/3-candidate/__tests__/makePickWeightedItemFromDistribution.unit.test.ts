@@ -109,7 +109,7 @@ describe(makePickWeightedItemFromDistribution, () => {
 
     const throwingFn = () => makePickWeightedItemFromDistribution(items, distribution, options);
 
-    expect(throwingFn).toThrow(new RangeError('Weights must be finite.'));
+    expect(throwingFn).toThrow(new RangeError('Cumulative weights must be finite.'));
   });
 
   it('accepts and uses options when picking an item', () => {
