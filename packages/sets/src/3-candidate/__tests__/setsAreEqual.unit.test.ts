@@ -1,36 +1,40 @@
 import { describe, expect, it } from 'vitest';
 
+import { yieldEach } from '../../test-utils/yieldEach.ts';
 import { setsAreEqual } from '../setsAreEqual.ts';
 
 describe(setsAreEqual, () => {
-  it('returns true if the sets are equal', () => {
-    const aSet = new Set([1, 2]);
-    const bSet = new Set([1, 2]);
-    const expected = true;
-
-    const actual = setsAreEqual(aSet, bSet);
-
-    expect(actual).toBe(expected);
-  });
-
-  it('returns true if both sets are empty', () => {
-    const aSet = new Set();
-    const bSet = new Set();
-    const expected = true;
-
-    const actual = setsAreEqual(aSet, bSet);
-
-    expect(actual).toBe(expected);
-  });
-
   it.each([
-    { label: 'the sets are of different size', aElements: [1], bElements: [1, 2] },
-    { label: 'the sets have no elements in common', aElements: [1, 2], bElements: [3, 4] },
-    { label: 'either of the sets is empty', aElements: [], bElements: [1, 2] },
-  ])('returns false if $label', ({ aElements, bElements }) => {
-    const expected = false;
-
-    const actual = setsAreEqual(new Set(aElements), new Set(bElements));
+    {
+      condition: 'the sets have the same elements',
+      aElements: new Set([1, 2]),
+      bElements: new Set([2, 1]),
+      expected: true,
+    },
+    { condition: 'both sets are empty', aElements: new Set<number>(), bElements: new Set<number>(), expected: true },
+    {
+      condition: 'the sets are of different size',
+      aElements: new Set([1]),
+      bElements: new Set([1, 2]),
+      expected: false,
+    },
+    {
+      condition: 'the sets have no elements in common',
+      aElements: new Set([1, 2]),
+      bElements: new Set([3, 4]),
+      expected: false,
+    },
+    { condition: 'one set is empty', aElements: new Set<number>(), bElements: new Set([1, 2]), expected: false },
+    { condition: 'the arrays have the same elements', aElements: [1, 2, 2], bElements: [2, 1], expected: true },
+    { condition: 'the arrays have different elements', aElements: [1, 2], bElements: [1, 3], expected: false },
+    {
+      condition: 'the iterators yield the same elements',
+      aElements: yieldEach([1, 2]),
+      bElements: yieldEach([2, 1]),
+      expected: true,
+    },
+  ])('returns $expected when $condition', ({ aElements, bElements, expected }) => {
+    const actual = setsAreEqual(aElements, bElements);
 
     expect(actual).toBe(expected);
   });

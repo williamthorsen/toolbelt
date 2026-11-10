@@ -1,3 +1,5 @@
+import { toSet } from './conversions.ts';
+
 /**
  * Returns true if the sets are identical (have the same elements and no others), else false.
  *
@@ -6,18 +8,8 @@
  * @stage candidate
  */
 export function setsAreEqual<T>(aElements: Iterable<T>, bElements: Iterable<T>): boolean {
-  const aSet = new Set(aElements);
-  const bSet = new Set(bElements);
+  const aSet = toSet(aElements);
+  const bSet = toSet(bElements);
 
-  if (aSet.size !== bSet.size) {
-    return false;
-  }
-
-  for (const element of aSet) {
-    if (!bSet.has(element)) {
-      return false;
-    }
-  }
-
-  return true;
+  return aSet.size === bSet.size && aSet.isSubsetOf(bSet);
 }

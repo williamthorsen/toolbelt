@@ -1,3 +1,5 @@
+import { toSet } from './conversions.ts';
+
 /**
  * Returns a set containing all elements from both collections.
  *
@@ -6,11 +8,5 @@
  * @stage candidate
  */
 export function setUnion<T>(aElements: Iterable<T>, bElements: Iterable<T>): Set<T> {
-  const unionSet = new Set<T>(aElements);
-
-  for (const element of bElements) {
-    unionSet.add(element);
-  }
-
-  return unionSet;
+  return toSet(aElements).union(toSet(bElements));
 }
