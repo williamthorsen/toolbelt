@@ -1,5 +1,5 @@
 import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
-import { IntSeededRng, pickInteger, type Seed } from '@williamthorsen/toolbelt.numbers/candidate';
+import { IntSeededRng, pickInteger, type SeedOptions } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { segmentByDelimited } from '../internal/segmentByDelimited.ts';
 import { splitDelimited } from '../internal/splitDelimited.ts';
@@ -124,7 +124,7 @@ export abstract class TextNode {
   }
 
   /** Picks a variant at every choice and returns the text with the indices, seed, and fingerprint that reproduce it. */
-  pickWithFingerprint(options: { seed?: Seed | undefined } = {}): PickSummary {
+  pickWithFingerprint(options: SeedOptions = {}): PickSummary {
     const seededRng = IntSeededRng.cloneOrCreate(options.seed);
     const seed = options.seed ?? seededRng;
     const initialSeed = seededRng.seed;
@@ -142,10 +142,10 @@ export abstract class TextNode {
   }
 
   /** Returns the text with a variant chosen at random at every choice. */
-  abstract pick(options?: { seed?: Seed | undefined }): string;
+  abstract pick(options?: SeedOptions): string;
 
   /** Chooses a variant at random at every choice and returns the indices of the choices. */
-  abstract pickIndices(options?: { indices?: VariantIndices | undefined; seed?: Seed | undefined }): VariantIndices;
+  abstract pickIndices(options?: SeedOptions & { indices?: VariantIndices | undefined }): VariantIndices;
 
   /** Returns the text that the given indices select. */
   abstract selectVariants(indices: string | VariantIndices, options?: { depth?: Integer }): string;
@@ -167,7 +167,7 @@ class TokenNode extends TextNode {
   }
 
   /** Joins the text picked by each child. */
-  pick(options: { seed?: Seed | undefined } = {}): string {
+  pick(options: SeedOptions = {}): string {
     const seed = IntSeededRng.spawn(options.seed);
     if (this.children) {
       return this.children.map((child) => (typeof child === 'string' ? child : child.pick({ seed }))).join('');
@@ -176,7 +176,7 @@ class TokenNode extends TextNode {
   }
 
   /** Collects the indices picked by each variant child. */
-  pickIndices(options: { seed?: Seed | undefined } = {}): VariantIndices {
+  pickIndices(options: SeedOptions = {}): VariantIndices {
     const seed = IntSeededRng.spawn(options.seed);
 
     const children = this.children || [];
@@ -240,7 +240,7 @@ export class VariantNode extends TextNode {
   }
 
   /** Chooses a variant at random and returns its picked text. */
-  pick(options: { seed?: Seed | undefined } = {}): string {
+  pick(options: SeedOptions = {}): string {
     const seed = IntSeededRng.spawn(options.seed);
 
     const index = pickInteger({ max: this.variants.length - 1, seed });
@@ -251,7 +251,7 @@ export class VariantNode extends TextNode {
   }
 
   /** Chooses a variant at random and returns its index, followed by the indices picked within it. */
-  pickIndices(options: { seed?: Seed | undefined } = {}): VariantIndices {
+  pickIndices(options: SeedOptions = {}): VariantIndices {
     const seed = IntSeededRng.spawn(options.seed);
 
     const index = pickInteger({ max: this.variants.length - 1, seed });

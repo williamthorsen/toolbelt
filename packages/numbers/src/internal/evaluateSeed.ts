@@ -34,3 +34,10 @@ export interface SeededGenerator {
 }
 
 export type Seed = number | SeededGenerator | (() => number);
+
+/**
+ * The option that makes a random helper deterministic.
+ */
+export interface SeedOptions {
+  seed?: Seed | undefined;
+}

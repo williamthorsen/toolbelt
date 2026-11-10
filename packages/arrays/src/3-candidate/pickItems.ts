@@ -1,4 +1,4 @@
-import type { Seed } from '@williamthorsen/toolbelt.numbers/candidate';
+import type { SeedOptions } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { shuffle } from './shuffle.ts';
 
@@ -21,7 +21,6 @@ export function pickItems<T>(items: ReadonlyArray<T>, n: number, options: Option
   return tempItems.slice(offset, offset + n);
 }
 
-interface Options {
+interface Options extends SeedOptions {
   offset?: number | undefined;
-  seed?: Seed | undefined;
 }

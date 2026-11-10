@@ -1,5 +1,5 @@
 import { computeFakeMathRandom } from '../internal/computeFakeMathRandom.ts';
-import { evaluateSeed, type Seed } from '../internal/evaluateSeed.ts';
+import { evaluateSeed, type SeedOptions } from '../internal/evaluateSeed.ts';
 import { scale } from './scale.ts';
 
 /**
@@ -18,8 +18,7 @@ export function generateRandom(options: Options = {}): number {
   return scale(randomNumber, { min, max });
 }
 
-interface Options {
+interface Options extends SeedOptions {
   max?: number | undefined;
   min?: number | undefined;
-  seed?: Seed | undefined;
 }

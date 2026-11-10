@@ -1,30 +1,8 @@
 import { assert } from '@williamthorsen/toolbelt.guards';
-import { generateRandom, type Seed } from '@williamthorsen/toolbelt.numbers/candidate';
+import { generateRandom, type SeedOptions } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { findWeightedIndex } from './findWeightedIndex.ts';
 import { getItemAtIndexOrThrow } from './getItemAtIndexOrThrow.ts';
-
-/**
- * Returns a pseudo-random index into the cumulative weights, with odds in proportion to each index's own weight.
- * If the array is empty, throws a `RangeError`.
- *
- * @category Array
- * @experimental
- * @stage candidate
- */
-export function pickWeightedIndex(cumulativeWeights: ReadonlyArray<number>, options: PickRandomOptions = {}): Integer {
-  assertValidCumulativeWeights(cumulativeWeights);
-
-  const cumulativeWeight = getItemAtIndexOrThrow(cumulativeWeights, cumulativeWeights.length - 1);
-  const randomValue = generateRandom(options);
-  const targetWeight = randomValue * cumulativeWeight;
-
-  // Because the array is non-empty, the target weight is guaranteed to be within the range [0, cumulativeWeight).
-  const pickedIndex = findWeightedIndex(cumulativeWeights, targetWeight);
-  assert(pickedIndex !== undefined); // type guard only
-
-  return pickedIndex;
-}
 
 /**
  * Throws a `RangeError` unless the cumulative weights are finite, ascending, non-negative, and non-empty, match
@@ -50,6 +28,29 @@ export function assertValidCumulativeWeights(weights: ReadonlyArray<number>, nIt
   }
 }
 
+/**
+ * Returns a pseudo-random index into the cumulative weights, with odds in proportion to each index's own weight.
+ * If the array is empty, throws a `RangeError`.
+ *
+ * @category Array
+ * @experimental
+ * @stage candidate
+ */
+export function pickWeightedIndex(cumulativeWeights: ReadonlyArray<number>, options: SeedOptions = {}): Integer {
+  assertValidCumulativeWeights(cumulativeWeights);
+
+  const cumulativeWeight = getItemAtIndexOrThrow(cumulativeWeights, cumulativeWeights.length - 1);
+  const randomValue = generateRandom(options);
+  const targetWeight = randomValue * cumulativeWeight;
+
+  // Because the array is non-empty, the target weight is guaranteed to be within the range [0, cumulativeWeight).
+  const pickedIndex = findWeightedIndex(cumulativeWeights, targetWeight);
+  assert(pickedIndex !== undefined); // type guard only
+
+  return pickedIndex;
+}
+
+// region | Helpers
 /**
  * Verifies that the values in the numeric series are in ascending order.
  */
@@ -82,8 +83,5 @@ function assertPositiveWeights(weights: ReadonlyArray<number>): void | never {
   }
 }
 
-export interface PickRandomOptions {
-  seed?: Seed | undefined;
-}
-
 type Integer = number;
+// endregion | Helpers
