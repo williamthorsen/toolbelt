@@ -39,6 +39,8 @@ export function computeNormalIntervalProbabilities(params: Params): IntervalProb
   return { additive, cumulative: toCumulativeSumsFromAddends(additive) };
 }
 
+// region | Helpers
+
 /** Returns the total of the values. */
 function sum(array: number[]): number {
   return array.reduce((a, b) => a + b, 0);
@@ -86,6 +88,8 @@ function toProbabilitiesFromWeights(weights: number[]): number[] {
   const total = sum(weights);
   return weights.map((weight) => weight / total);
 }
+
+// endregion | Helpers
 
 interface Params {
   halfWidth?: number | undefined;

@@ -98,10 +98,14 @@ export function findDistributionByIntervalProbability(params: Params, options: O
   };
 }
 
+// region | Helpers
+
 /** Returns the probability of the first interval. */
 function toFirstProbability(intervalProbabilities: IntervalProbabilities): number {
   return getItemAtIndexOrThrow(intervalProbabilities.additive, 0);
 }
+
+// endregion | Helpers
 
 type IntervalProbabilities = ReturnType<typeof computeNormalIntervalProbabilities>;
 

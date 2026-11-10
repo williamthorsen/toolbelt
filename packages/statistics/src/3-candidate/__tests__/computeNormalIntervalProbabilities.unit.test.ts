@@ -157,6 +157,8 @@ describe(computeNormalIntervalProbabilities, () => {
   });
 });
 
+// region | Helpers
+
 /**
  * Returns a matcher per value, so that an array comparison tolerates the CDF approximation's error.
  */
@@ -168,3 +170,5 @@ function buildCloseMatchers(values: number[]): unknown[] {
 function sum(array: number[]): number {
   return array.reduce((a, b) => a + b, 0);
 }
+
+// endregion | Helpers
