@@ -146,10 +146,10 @@ import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
 
 // src/readiness/adoptedExports.ts
 var ADOPTED_EXPORTS = [
-  "enumEntries",
-  "enumKeys",
-  "enumValues",
   "isEnumValue",
+  "listEnumEntries",
+  "listEnumKeys",
+  "listEnumValues",
   "toEnumValue"
 ];
 
