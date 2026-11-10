@@ -26,17 +26,6 @@ export function assertFrozenArray<TItem>(array: ImmutableArray<TItem>): asserts 
 }
 
 /**
- * Narrows the array's type to `ImmutableArray` or throws an error.
- *
- * @category Array
- * @experimental
- * @stage strawman
- */
-export function assertImmutableArray<TItem>(array: ReadonlyArray<TItem>): asserts array is ImmutableArray<TItem> {
-  if ('push' in array) throw new Error('Invalid input. Array cannot be mutable.');
-}
-
-/**
  * Narrows the array's type to `NonEmptyArray` or throws an error.
  * Because the input must be read-only, the output array is guaranteed to be both non-empty and
  * (within the scope of the calling program) read-only.

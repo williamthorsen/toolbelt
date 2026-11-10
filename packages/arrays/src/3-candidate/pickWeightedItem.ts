@@ -30,6 +30,3 @@ export function pickWeightedItem<T>(
 export interface PickWeightedItemOptions {
   seed?: Seed | undefined;
 }
-
-/** @deprecated Use `pickWeightedItem` instead. */
-export const toPickWeightedItem = pickWeightedItem;
