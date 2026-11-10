@@ -4,9 +4,9 @@
  * @internal
  */
 export const ADOPTED_EXPORTS: readonly string[] = [
-  'enumEntries',
-  'enumKeys',
-  'enumValues',
   'isEnumValue',
+  'listEnumEntries',
+  'listEnumKeys',
+  'listEnumValues',
   'toEnumValue',
 ];

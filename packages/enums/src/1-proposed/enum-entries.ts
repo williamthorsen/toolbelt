@@ -7,10 +7,10 @@ import { isReverseMappingKey } from '../internal/isReverseMappingKey.ts';
  * @experimental
  * @stage proposed
  */
-export function enumEntries<T extends Record<string, string | number>>(
+export function listEnumEntries<T extends Record<string, string | number>>(
   enumObj: T,
 ): [Extract<keyof T, string>, T[Extract<keyof T, string>]][] {
-  return enumKeys(enumObj).map((key) => [key, enumObj[key]]);
+  return listEnumKeys(enumObj).map((key) => [key, enumObj[key]]);
 }
 
 /**
@@ -20,7 +20,7 @@ export function enumEntries<T extends Record<string, string | number>>(
  * @experimental
  * @stage proposed
  */
-export function enumKeys<T extends Record<string, string | number>>(enumObj: T): Extract<keyof T, string>[] {
+export function listEnumKeys<T extends Record<string, string | number>>(enumObj: T): Extract<keyof T, string>[] {
   return Object.keys(enumObj).filter((key): key is Extract<keyof T, string> => !isReverseMappingKey(enumObj, key));
 }
 
@@ -31,6 +31,6 @@ export function enumKeys<T extends Record<string, string | number>>(enumObj: T):
  * @experimental
  * @stage proposed
  */
-export function enumValues<T extends Record<string, string | number>>(enumObj: T): T[Extract<keyof T, string>][] {
-  return enumKeys(enumObj).map((key) => enumObj[key]);
+export function listEnumValues<T extends Record<string, string | number>>(enumObj: T): T[Extract<keyof T, string>][] {
+  return listEnumKeys(enumObj).map((key) => enumObj[key]);
 }

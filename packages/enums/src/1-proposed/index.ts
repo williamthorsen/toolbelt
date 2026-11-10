@@ -1,1 +1,1 @@
-export { enumEntries, enumKeys, enumValues } from './enum-entries.ts';
+export { listEnumEntries, listEnumKeys, listEnumValues } from './enum-entries.ts';

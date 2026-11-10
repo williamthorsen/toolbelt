@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
-import { enumEntries, enumKeys, enumValues } from '../enum-entries.ts';
+import { listEnumEntries, listEnumKeys, listEnumValues } from '../enum-entries.ts';
 
 enum StringEnum {
   Alpha = 'A',
@@ -12,27 +12,27 @@ enum NumericEnum {
   Two = 2,
 }
 
-describe(enumEntries, () => {
+describe(listEnumEntries, () => {
   it('returns entries for a string enum', () => {
-    expect(enumEntries(StringEnum)).toStrictEqual([
+    expect(listEnumEntries(StringEnum)).toStrictEqual([
       ['Alpha', 'A'],
       ['Bravo', 'B'],
     ]);
   });
 
   it('returns entries for a numeric enum', () => {
-    expect(enumEntries(NumericEnum)).toStrictEqual([
+    expect(listEnumEntries(NumericEnum)).toStrictEqual([
       ['One', 1],
       ['Two', 2],
     ]);
   });
 });
 
-describe(enumKeys, () => {
+describe(listEnumKeys, () => {
   it('returns keys for a string enum', () => {
     const expected = ['Alpha', 'Bravo'];
 
-    const actual = enumKeys(StringEnum);
+    const actual = listEnumKeys(StringEnum);
 
     expect(actual).toStrictEqual(expected);
     expectTypeOf(actual).toEqualTypeOf<(keyof typeof StringEnum)[]>();
@@ -41,18 +41,18 @@ describe(enumKeys, () => {
   it('returns keys for a numeric enum', () => {
     const expected = ['One', 'Two'];
 
-    const actual = enumKeys(NumericEnum);
+    const actual = listEnumKeys(NumericEnum);
 
     expect(actual).toStrictEqual(expected);
     expectTypeOf(actual).toEqualTypeOf<(keyof typeof NumericEnum)[]>();
   });
 });
 
-describe(enumValues, () => {
+describe(listEnumValues, () => {
   it('returns values for a string enum', () => {
     const expected = ['A', 'B'];
 
-    const actual = enumValues(StringEnum);
+    const actual = listEnumValues(StringEnum);
 
     expect(actual).toStrictEqual(expected);
     expectTypeOf(actual).toEqualTypeOf<(typeof StringEnum)[keyof typeof StringEnum][]>();
@@ -61,7 +61,7 @@ describe(enumValues, () => {
   it('returns values for a numeric enum', () => {
     const expected = [1, 2];
 
-    const actual = enumValues(NumericEnum);
+    const actual = listEnumValues(NumericEnum);
 
     expect(actual).toStrictEqual(expected);
     expectTypeOf(actual).toEqualTypeOf<(typeof NumericEnum)[keyof typeof NumericEnum][]>();
