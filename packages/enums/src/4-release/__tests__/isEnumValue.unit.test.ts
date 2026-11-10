@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { isEnumValue } from '../isEnumValue.ts';
 
@@ -12,17 +12,19 @@ enum NumericEnum {
   Two = 2,
 }
 
-/* eslint-disable @typescript-eslint/no-mixed-enums -- A consumer's mixed enum is input that the guard must handle. */
-enum HeterogeneousEnum {
-  A = 1,
-  B = 'A',
-}
-/* eslint-enable @typescript-eslint/no-mixed-enums */
+// The compiled form of `enum { A = 1, B = 'A' }`: The reverse mapping adds the key `1`.
+const HeterogeneousEnum = { A: 1, 1: 'A', B: 'A' };
 
 describe(isEnumValue, () => {
   it('returns true for a valid enum member', () => {
     expect(isEnumValue(StringEnum, StringEnum.Alpha)).toBe(true);
     expect(isEnumValue(NumericEnum, NumericEnum.One)).toBe(true);
+  });
+
+  it('narrows an unknown value to the enum type', () => {
+    const values: unknown[] = ['A', 'C'];
+
+    expectTypeOf(values.filter((value) => isEnumValue(StringEnum, value))).branded.toEqualTypeOf<StringEnum[]>();
   });
 
   it.each([null, undefined])('returns false for %s', (value) => {
@@ -50,15 +52,13 @@ describe(isEnumValue, () => {
     });
 
     it('returns false for a member name that the reverse mapping adds to the values', () => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Stands in for untyped input; the signature rejects a member name.
-      expect(isEnumValue(NumericEnum, 'One' as unknown as number)).toBe(false);
+      expect(isEnumValue(NumericEnum, 'One')).toBe(false);
     });
   });
 
   describe('heterogeneous enum', () => {
     it('returns true for a string value that equals the name of a numeric member', () => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- The signature types a mixed enum's values as numbers.
-      expect(isEnumValue(HeterogeneousEnum, 'A' as unknown as number)).toBe(true);
+      expect(isEnumValue(HeterogeneousEnum, 'A')).toBe(true);
     });
   });
 });

@@ -43,8 +43,7 @@ describe(toEnumValue, () => {
     });
 
     it('returns undefined for a member name that the reverse mapping adds to the values', () => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Stands in for untyped input; the signature rejects a member name.
-      expect(toEnumValue(NumericEnum, 'One' as unknown as number)).toBeUndefined();
+      expect(toEnumValue(NumericEnum, 'One')).toBeUndefined();
     });
   });
 });

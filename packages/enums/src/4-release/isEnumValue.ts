@@ -10,7 +10,7 @@ import { isReverseMappingKey } from '../internal/isReverseMappingKey.ts';
  */
 export function isEnumValue<TEnum extends Record<string, TValue>, TValue extends EnumValue>(
   enumObject: TEnum,
-  value: EnumValueType<TEnum> | null | undefined,
+  value: unknown,
 ): value is Extract<TEnum[keyof TEnum], EnumValueType<TEnum>> {
   const memberValues = Object.entries(enumObject)
     .filter(([key]) => !isReverseMappingKey(key))
