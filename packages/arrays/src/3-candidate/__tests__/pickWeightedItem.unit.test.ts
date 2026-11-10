@@ -31,19 +31,34 @@ describe(pickWeightedItem, () => {
     expect(items).toContain(pickItem());
   });
 
-  it('if the array is empty, throws an error', () => {
+  it('if the array is empty, throws a RangeError', () => {
     const throwingFn = () => pickWeightedItem([], []);
 
-    expect(throwingFn).toThrow(new Error('Cannot pick an item from an empty array.'));
+    expect(throwingFn).toThrow(new RangeError('Cannot pick an item from an empty array.'));
   });
 
-  it('throws an error if weights array and items array are of different lengths', () => {
+  it('throws a RangeError if weights array and items array are of different lengths', () => {
     const items = [1, 2, 3, 4];
     const weights = [1, 1];
 
     const throwingFn = () => pickWeightedItem(items, weights);
 
-    expect(throwingFn).toThrow(new Error('The number of weights must match the number of items.'));
+    expect(throwingFn).toThrow(new RangeError('The number of weights must match the number of items.'));
+  });
+
+  it.each([
+    { label: 'NaN', weight: NaN },
+    { label: 'Infinity', weight: Infinity },
+  ])('if a weight is $label, throws a RangeError when creating the picker', ({ weight }) => {
+    const throwingFn = () => pickWeightedItem(['a', 'b'], [1, weight]);
+
+    expect(throwingFn).toThrow(new RangeError('Cumulative weights must be finite.'));
+  });
+
+  it('if finite weights total more than Number.MAX_VALUE, throws a RangeError', () => {
+    const throwingFn = () => pickWeightedItem(['a', 'b'], [Number.MAX_VALUE, Number.MAX_VALUE]);
+
+    expect(throwingFn).toThrow(new RangeError('Cumulative weights must be finite.'));
   });
 
   it('allows a seed in options to produce deterministic results', () => {

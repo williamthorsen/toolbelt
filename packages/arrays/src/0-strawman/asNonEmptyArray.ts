@@ -1,5 +1,5 @@
 /**
- * Returns an immutable version of the array if the array is non-empty; otherwise, throws an error.
+ * Returns an immutable version of the array if the array is non-empty; otherwise, throws a `RangeError`.
  * The output is guaranteed to be both immutable and non-empty.
  *
  * @category Array
@@ -26,7 +26,7 @@ export function assertFrozenArray<TItem>(array: ImmutableArray<TItem>): asserts 
 }
 
 /**
- * Narrows the array's type to `NonEmptyArray` or throws an error.
+ * Narrows the array's type to `NonEmptyArray` or throws a `RangeError`.
  * Because the input must be read-only, the output array is guaranteed to be both non-empty and
  * (within the scope of the calling program) read-only.
  *
@@ -35,7 +35,7 @@ export function assertFrozenArray<TItem>(array: ImmutableArray<TItem>): asserts 
  * @stage strawman
  */
 export function assertNonEmptyArray<TItem>(array: ImmutableArray<TItem>): asserts array is NonEmptyArray<TItem> {
-  if (array.length === 0) throw new Error('Invalid input. Array cannot be empty.');
+  if (array.length === 0) throw new RangeError('Invalid input. Array cannot be empty.');
 }
 
 // region | Types

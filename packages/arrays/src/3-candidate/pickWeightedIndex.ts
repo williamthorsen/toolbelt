@@ -6,7 +6,7 @@ import { getItemAtIndexOrThrow } from './getItemAtIndexOrThrow.ts';
 
 /**
  * Returns a pseudo-random index into the cumulative weights, with odds in proportion to each index's own weight.
- * If the array is empty, throws an error.
+ * If the array is empty, throws a `RangeError`.
  *
  * @category Array
  * @experimental
@@ -27,16 +27,18 @@ export function pickWeightedIndex(cumulativeWeights: ReadonlyArray<number>, opti
 }
 
 /**
- * Throws unless the cumulative weights are ascending, non-negative, and non-empty, match `nItems` in number, and
- * end above 0.
+ * Throws a `RangeError` unless the cumulative weights are finite, ascending, non-negative, and non-empty, match
+ * `nItems` in number, and end above 0.
  *
  * @category Array
  * @experimental
  * @stage candidate
  */
 export function assertValidCumulativeWeights(weights: ReadonlyArray<number>, nItems = weights.length): void | never {
+  assertFiniteWeights(weights);
+
   if (weights.length !== nItems) {
-    throw new Error('The number of weights must match the number of items.');
+    throw new RangeError('The number of weights must match the number of items.');
   }
 
   assertNonEmptyArray(weights);
@@ -44,7 +46,7 @@ export function assertValidCumulativeWeights(weights: ReadonlyArray<number>, nIt
   assertAscendingWeights(weights);
 
   if (weights.at(-1) === 0) {
-    throw new Error('Cannot pick an item from an array with total weight 0.');
+    throw new RangeError('Cannot pick an item from an array with total weight 0.');
   }
 }
 
@@ -54,22 +56,29 @@ export function assertValidCumulativeWeights(weights: ReadonlyArray<number>, nIt
 function assertAscendingWeights(values: ReadonlyArray<number>): void | never {
   for (let i = 1; i < values.length; i++) {
     if (getItemAtIndexOrThrow(values, i) < getItemAtIndexOrThrow(values, i - 1)) {
-      throw new Error('Cumulative weights must be in ascending order.');
+      throw new RangeError('Cumulative weights must be in ascending order.');
     }
+  }
+}
+
+/** Throws if any weight is `NaN` or infinite, which includes a running total that overflows. */
+function assertFiniteWeights(weights: ReadonlyArray<number>): void | never {
+  if (weights.some((weight) => !Number.isFinite(weight))) {
+    throw new RangeError('Cumulative weights must be finite.');
   }
 }
 
 /** Throws if the array is empty. */
 function assertNonEmptyArray(array: ReadonlyArray<unknown>): void | never {
   if (array.length === 0) {
-    throw new Error('Cannot pick an item from an empty array.');
+    throw new RangeError('Cannot pick an item from an empty array.');
   }
 }
 
 /** Throws if any weight is negative. */
 function assertPositiveWeights(weights: ReadonlyArray<number>): void | never {
   if (weights.some((weight) => weight < 0)) {
-    throw new Error('Weights cannot be negative.');
+    throw new RangeError('Weights cannot be negative.');
   }
 }
 

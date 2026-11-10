@@ -37,16 +37,16 @@ describe(pickWeightedIndex, () => {
     expect(index).toBe(2);
   });
 
-  it('if the cumulative weights array is empty, throws an error', () => {
+  it('if the cumulative weights array is empty, throws a RangeError', () => {
     const throwingFn = () => pickWeightedIndex([]);
 
-    expect(throwingFn).toThrow(new Error('Cannot pick an item from an empty array.'));
+    expect(throwingFn).toThrow(new RangeError('Cannot pick an item from an empty array.'));
   });
 
-  it('if the total weight is 0, throws an error', () => {
+  it('if the total weight is 0, throws a RangeError', () => {
     const throwingFn = () => pickWeightedIndex([0, 0]);
 
-    expect(throwingFn).toThrow(new Error('Cannot pick an item from an array with total weight 0.'));
+    expect(throwingFn).toThrow(new RangeError('Cannot pick an item from an array with total weight 0.'));
   });
 
   it('allows a seed in options to produce deterministic results', () => {
@@ -73,34 +73,50 @@ describe(pickWeightedIndex, () => {
 });
 
 describe(assertValidCumulativeWeights, () => {
-  it('if the weights array does not have the same number of elements as the primary array, throws an error', () => {
+  it('if the weights array does not have the same number of elements as the primary array, throws a RangeError', () => {
     const items = [1, 2, 3];
     const weights = [1, 2];
 
     const throwingFn = () => assertValidCumulativeWeights(weights, items.length);
 
-    expect(throwingFn).toThrow(new Error('The number of weights must match the number of items.'));
+    expect(throwingFn).toThrow(new RangeError('The number of weights must match the number of items.'));
   });
 
-  it('if the weights array is empty, throws an error', () => {
+  it('if the weights array is empty, throws a RangeError', () => {
     const throwingFn = () => assertValidCumulativeWeights([]);
 
-    expect(throwingFn).toThrow(new Error('Cannot pick an item from an empty array.'));
+    expect(throwingFn).toThrow(new RangeError('Cannot pick an item from an empty array.'));
   });
 
-  it('if the weights array has a negative weight, throws an error', () => {
+  it('if the weights array has a negative weight, throws a RangeError', () => {
     const badWeights = [1, -1];
 
     const throwingFn = () => assertValidCumulativeWeights(badWeights);
 
-    expect(throwingFn).toThrow(new Error('Weights cannot be negative.'));
+    expect(throwingFn).toThrow(new RangeError('Weights cannot be negative.'));
   });
 
-  it('if the weights are not ascending, throws an error', () => {
+  it('if the weights are not ascending, throws a RangeError', () => {
     const badWeights = [1, 2, 1];
 
     const throwingFn = () => assertValidCumulativeWeights(badWeights);
 
-    expect(throwingFn).toThrow(new Error('Cumulative weights must be in ascending order.'));
+    expect(throwingFn).toThrow(new RangeError('Cumulative weights must be in ascending order.'));
+  });
+
+  it.each([
+    { label: 'NaN', weights: [1, NaN] },
+    { label: 'Infinity', weights: [1, Infinity] },
+    { label: '-Infinity', weights: [-Infinity, 1] },
+  ])('if a weight is $label, throws a RangeError', ({ weights }) => {
+    const throwingFn = () => assertValidCumulativeWeights(weights);
+
+    expect(throwingFn).toThrow(new RangeError('Cumulative weights must be finite.'));
+  });
+
+  it('checks finiteness before the number of weights', () => {
+    const throwingFn = () => assertValidCumulativeWeights([1, NaN], 3);
+
+    expect(throwingFn).toThrow(new RangeError('Cumulative weights must be finite.'));
   });
 });

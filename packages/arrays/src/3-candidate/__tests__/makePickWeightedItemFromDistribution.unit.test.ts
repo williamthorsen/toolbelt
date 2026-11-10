@@ -82,24 +82,34 @@ describe(makePickWeightedItemFromDistribution, () => {
     expect(items).toContain(pickedItem);
   });
 
-  it('throws an error if all weights are zero or negative', () => {
+  it('throws a RangeError if all weights are zero or negative', () => {
     const items = ['a', 'b', 'c'];
     const distribution = { a: 0, b: -1, c: -2 };
     const options = { getCategory: (item: string) => item };
 
     const throwingFn = () => makePickWeightedItemFromDistribution(items, distribution, options);
 
-    expect(throwingFn).toThrow(new Error('Cannot create function with an empty array.'));
+    expect(throwingFn).toThrow(new RangeError('Cannot create function with an empty array.'));
   });
 
-  it('throws an error if the items array is empty', () => {
+  it('throws a RangeError if the items array is empty', () => {
     const items: string[] = [];
     const distribution = { a: 1, b: 2, c: 3 };
     const options = { getCategory: (item: string) => item };
 
     const throwingFn = () => makePickWeightedItemFromDistribution(items, distribution, options);
 
-    expect(throwingFn).toThrow(new Error('Cannot create function with an empty array.'));
+    expect(throwingFn).toThrow(new RangeError('Cannot create function with an empty array.'));
+  });
+
+  it('if a distribution weight is Infinity, throws a RangeError', () => {
+    const items = ['a', 'b'];
+    const distribution = { a: 1, b: Infinity };
+    const options = { getCategory: (item: string) => item };
+
+    const throwingFn = () => makePickWeightedItemFromDistribution(items, distribution, options);
+
+    expect(throwingFn).toThrow(new RangeError('Cumulative weights must be finite.'));
   });
 
   it('accepts and uses options when picking an item', () => {

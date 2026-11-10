@@ -6,7 +6,7 @@ import { toCumulativeValues } from './toCumulativeValues.ts';
 
 /**
  * Returns a function that picks a random item from the array using weighted odds.
- * If the array is empty or the weights are invalid, throws an error.
+ * If the array is empty or the weights are invalid, throws a `RangeError`.
  *
  * @category Array
  * @experimental

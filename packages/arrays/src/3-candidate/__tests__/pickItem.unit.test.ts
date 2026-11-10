@@ -38,10 +38,10 @@ describe(pickItem, () => {
     expect(frozenArray).toContain(item);
   });
 
-  it('if the array is empty, throws an error', () => {
+  it('if the array is empty, throws a RangeError', () => {
     const throwingFn = () => pickItem([]);
 
-    expect(throwingFn).toThrow(new Error('Cannot pick an item from an empty array.'));
+    expect(throwingFn).toThrow(new RangeError('Cannot pick an item from an empty array.'));
   });
 
   it('given the same seed, returns the same item', () => {
