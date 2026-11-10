@@ -202,7 +202,7 @@ describe(Timestamp, () => {
   });
 
   describe('toLocaleDateTimeString()', () => {
-    it('should return a formatted date-time string', () => {
+    it("joins the locale's date string and time string with a space", () => {
       const timestamp = new Timestamp(isoDateTime);
       const locale = 'en-US';
       const expectedDateString = timestamp.toDate().toLocaleDateString(locale);

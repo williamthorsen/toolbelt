@@ -18,13 +18,13 @@ describe(TimeUnit, () => {
   });
 
   describe('convert()', () => {
-    it('should return the same amount if from and to units are the same', () => {
+    it('returns the amount unchanged when the from and to units are the same', () => {
       const result = TimeUnit.convert(10, TimeUnit.Hours, TimeUnit.Hours);
 
       expect(result).toBe(10);
     });
 
-    it('correctly converts seconds to milliseconds', () => {
+    it('converts 1 second to 1000 milliseconds', () => {
       const result = TimeUnit.convert(1, TimeUnit.Seconds, TimeUnit.Millis);
 
       expect(result).toBe(1000);
@@ -185,7 +185,7 @@ describe(TimeUnit, () => {
   });
 
   describe('toString()', () => {
-    it('should return the label of the unit', () => {
+    it("returns the unit's label", () => {
       expect(TimeUnit.Hours.toString()).toBe('hours');
     });
   });
