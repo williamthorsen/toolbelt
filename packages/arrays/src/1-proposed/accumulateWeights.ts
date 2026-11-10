@@ -1,4 +1,5 @@
-import { extractWeights, toCumulativeValues } from '../3-candidate/index.ts';
+import { extractWeights } from '../3-candidate/extractWeights.ts';
+import { toCumulativeValues } from '../3-candidate/toCumulativeValues.ts';
 
 /**
  * Extracts weights from an array of items and returns an array of cumulative weights.

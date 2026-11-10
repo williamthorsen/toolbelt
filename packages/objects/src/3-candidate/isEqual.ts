@@ -1,4 +1,4 @@
-import { sortObjectKeys } from '../2-draft/index.ts';
+import { sortObjectKeys } from '../2-draft/sort-keys.ts';
 import { deepSetsToArrays } from './deepSetsToArrays.ts';
 
 /**
