@@ -1,5 +1,7 @@
 import { includes } from '@williamthorsen/toolbelt.arrays/candidate';
 
+import { isReverseMappingKey } from '../internal/isReverseMappingKey.ts';
+
 /**
  * Returns true if the value is a member of the provided enum. Narrows the type.
  *
@@ -8,9 +10,12 @@ import { includes } from '@williamthorsen/toolbelt.arrays/candidate';
  */
 export function isEnumValue<TEnum extends Record<string, TValue>, TValue extends EnumValue>(
   enumObject: TEnum,
-  value: EnumValueType<TEnum> | null | undefined,
+  value: unknown,
 ): value is Extract<TEnum[keyof TEnum], EnumValueType<TEnum>> {
-  return includes(Object.values(enumObject), value);
+  const memberValues = Object.entries(enumObject)
+    .filter(([key]) => !isReverseMappingKey(enumObject, key))
+    .map(([, memberValue]) => memberValue);
+  return includes(memberValues, value);
 }
 
 export type EnumValue = number | string;

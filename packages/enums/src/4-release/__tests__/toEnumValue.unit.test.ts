@@ -41,5 +41,9 @@ describe(toEnumValue, () => {
     it('returns undefined if the number is not a value in the enum', () => {
       expect(toEnumValue(NumericEnum, 3)).toBeUndefined();
     });
+
+    it('returns undefined for a member name that the reverse mapping adds to the values', () => {
+      expect(toEnumValue(NumericEnum, 'One')).toBeUndefined();
+    });
   });
 });
