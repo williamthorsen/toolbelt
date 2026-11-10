@@ -1,4 +1,4 @@
-import type { Seed } from '@williamthorsen/toolbelt.numbers/candidate';
+import type { SeedOptions } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { TextNode } from './TextNode.ts';
 /**
@@ -8,10 +8,6 @@ import { TextNode } from './TextNode.ts';
  * @experimental
  * @stage draft
  */
-export function pickVariants(text: string, options: Options = {}): string {
+export function pickVariants(text: string, options: SeedOptions = {}): string {
   return TextNode.create(text).pick(options);
-}
-
-interface Options {
-  seed?: Seed | undefined;
 }
