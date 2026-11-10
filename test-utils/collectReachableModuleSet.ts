@@ -3,8 +3,8 @@ import path from 'node:path';
 
 import { resolveSpecifier } from './resolveSpecifier.ts';
 
-/** Matches a specifier naming a sibling file rather than a package. A bare side-effect import contains no `from`. */
-export const RELATIVE_SPECIFIER_PATTERN = /from\s+'(\.[^']*)'/g;
+/** Matches the relative specifier of a static `from` clause, a side-effect import, or a dynamic import. */
+export const RELATIVE_SPECIFIER_PATTERN = /\b(?:from|import)\s*\(?\s*['"](\.\.?\/[^'"]*)['"]/gu;
 
 /**
  * Walks an entry file's relative imports transitively, collecting every module that they reach, the entry itself

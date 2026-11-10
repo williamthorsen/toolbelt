@@ -4,13 +4,12 @@ import path from 'node:path';
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
+import { RELATIVE_SPECIFIER_PATTERN } from '../test-utils/collectReachableModuleSet.ts';
 import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
 import { NON_SOURCE_DIRS } from '../test-utils/non-source-dirs.ts';
 import { resolveSpecifier } from '../test-utils/resolveSpecifier.ts';
 import { isScaffolding } from '../test-utils/scaffolding-dirs.ts';
 
-/** Matches the relative specifier of a static `from` clause, a side-effect import, or a dynamic import. */
-const RELATIVE_SPECIFIER_PATTERN = /\b(?:from|import)\s*\(?\s*['"](\.\.?\/[^'"]*)['"]/gu;
 const TIER_DIRECTORY_PATTERN = /^\d-[a-z]+$/u;
 
 describe('Barrel imports', () => {
