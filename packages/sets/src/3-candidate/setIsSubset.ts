@@ -8,15 +8,7 @@ import { toSet } from './conversions.ts';
  * @stage candidate
  */
 export function setIsSubset<T>(childElements: Iterable<T>, parentElements: Iterable<T>): boolean {
-  const parentSet = toSet(parentElements);
-
-  for (const element of childElements) {
-    if (!parentSet.has(element)) {
-      return false;
-    }
-  }
-
-  return true;
+  return toSet(childElements).isSubsetOf(toSet(parentElements));
 }
 
 /**
