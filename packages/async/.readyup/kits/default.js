@@ -147,6 +147,28 @@ function readBalancedGroup(source, from, delimiters) {
   return void 0;
 }
 
+// ../adoption/src/portable/listTopLevelArguments.ts
+var CLOSERS = ")]}";
+var OPENERS = "([{";
+function listTopLevelArguments(inner) {
+  const args = [];
+  let depth = 0;
+  let start = 0;
+  for (let index = 0; index < inner.length; index += 1) {
+    const character = inner.charAt(index);
+    if (OPENERS.includes(character)) depth += 1;
+    else if (CLOSERS.includes(character)) depth -= 1;
+    else if (character === "," && depth === 0) {
+      args.push(inner.slice(start, index));
+      start = index + 1;
+    }
+  }
+  args.push(inner.slice(start));
+  const last = args.at(-1);
+  if (args.length > 1 && last !== void 0 && last.trim() === "") args.pop();
+  return args;
+}
+
 // ../adoption/src/portable/readFunctionLiteral.ts
 var BARE_PARAMETER_ARROW = /^(?<parameter>[\w$]+)\s*=>/;
 var FUNCTION_KEYWORD = /^function\b/;
@@ -200,8 +222,6 @@ function readFirstParameter(parameters) {
 }
 
 // src/readiness/listSleepSites.ts
-var CLOSERS = ")]}";
-var OPENERS = "([{";
 var IDENTIFIER_CHARACTER = /[A-Za-z_$]/;
 var PROMISE_CONSTRUCTION = /\bnew\s+Promise\s*(?:<[^<>()]*>\s*)?\(/g;
 var RETURN_KEYWORD = /\breturn\b/g;
@@ -219,7 +239,7 @@ function listSleepSites(source) {
   return sites;
 }
 function isSleepArguments(argumentsText, parameter) {
-  const args = splitTopLevelArguments(argumentsText);
+  const args = listTopLevelArguments(argumentsText);
   if (args.length !== 2) return false;
   return resolvesParameter(args[0] ?? "", parameter);
 }
@@ -241,22 +261,6 @@ function resolvesParameter(text, parameter) {
   if (callback === void 0 || callback.parameter !== "") return false;
   const body = callback.body.replaceAll(/[\s;]/g, "");
   return body === `${parameter}()` || body === `return${parameter}()`;
-}
-function splitTopLevelArguments(text) {
-  const parts = [];
-  let depth = 0;
-  let start = 0;
-  for (let index = 0; index < text.length; index += 1) {
-    const character = text.charAt(index);
-    if (OPENERS.includes(character)) depth += 1;
-    else if (CLOSERS.includes(character)) depth -= 1;
-    else if (character === "," && depth === 0) {
-      parts.push(text.slice(start, index));
-      start = index + 1;
-    }
-  }
-  parts.push(text.slice(start));
-  return parts;
 }
 
 // .readyup/kits/default.ts

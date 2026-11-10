@@ -3,6 +3,7 @@ import {
   blankNonCode,
   condenseWhitespace,
   getLineAtOffset,
+  listTopLevelArguments,
   PARENTHESES,
   readBalancedGroup,
 } from '@williamthorsen/toolbelt.adoption';
@@ -11,8 +12,6 @@ import { readExecutor } from './readExecutor.ts';
 
 export type AsyncIdiomKind = 'hand-rolled-sleep';
 
-const CLOSERS = ')]}';
-const OPENERS = '([{';
 // Digits are left out: A body is claimed for holding nothing but the timer call, so what remains beside it has
 // to read as empty, and a literal delay is inside that call rather than beside it.
 const IDENTIFIER_CHARACTER = /[A-Za-z_$]/;
@@ -53,7 +52,7 @@ export function listSleepSites(source: string): Array<AdoptionSite<AsyncIdiomKin
 
 /** Reports whether a timer call's arguments are a bare delay that settles the executor's promise. */
 function isSleepArguments(argumentsText: string, parameter: string): boolean {
-  const args = splitTopLevelArguments(argumentsText);
+  const args = listTopLevelArguments(argumentsText);
   // A third argument settles the promise with a value, whereas `delay` settles with none.
   if (args.length !== 2) return false;
 
@@ -101,27 +100,6 @@ function resolvesParameter(text: string, parameter: string): boolean {
   const body = callback.body.replaceAll(/[\s;]/g, '');
 
   return body === `${parameter}()` || body === `return${parameter}()`;
-}
-
-/** Splits a call's arguments at the commas that sit outside every bracket. */
-function splitTopLevelArguments(text: string): string[] {
-  const parts: string[] = [];
-  let depth = 0;
-  let start = 0;
-
-  for (let index = 0; index < text.length; index += 1) {
-    const character = text.charAt(index);
-
-    if (OPENERS.includes(character)) depth += 1;
-    else if (CLOSERS.includes(character)) depth -= 1;
-    else if (character === ',' && depth === 0) {
-      parts.push(text.slice(start, index));
-      start = index + 1;
-    }
-  }
-  parts.push(text.slice(start));
-
-  return parts;
 }
 
 // endregion | Helpers

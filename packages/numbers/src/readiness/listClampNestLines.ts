@@ -1,10 +1,13 @@
-import { getLineAtOffset, PARENTHESES, readBalancedGroup } from '@williamthorsen/toolbelt.adoption';
+import {
+  getLineAtOffset,
+  listTopLevelArguments,
+  PARENTHESES,
+  readBalancedGroup,
+} from '@williamthorsen/toolbelt.adoption';
 
 type BoundingName = 'max' | 'min';
 
 const BOUNDING_CALL = /\bMath\.(?<name>max|min)\s*\(/g;
-const CLOSERS = ')]}';
-const OPENERS = '([{';
 const NESTED_HEAD: Record<BoundingName, RegExp> = { max: /^Math\.max\s*\(/, min: /^Math\.min\s*\(/ };
 const OPPOSITE: Record<BoundingName, BoundingName> = { max: 'min', min: 'max' };
 
@@ -57,36 +60,6 @@ function isBoundingCall(argument: string, name: BoundingName): boolean {
   if (group === undefined || group.end !== text.length) return false;
 
   return listTopLevelArguments(text.slice(group.start + 1, group.end - 1)).length === 2;
-}
-
-/**
- * Splits a call's argument text on its top-level commas, discarding the empty tail left by a trailing comma.
- *
- * A spread or an empty argument list yields a count of one, which matches no clamp shape, so neither needs a case
- * of its own.
- */
-function listTopLevelArguments(inner: string): string[] {
-  const args: string[] = [];
-  let depth = 0;
-  let start = 0;
-
-  for (let index = 0; index < inner.length; index += 1) {
-    const char = inner[index];
-    if (char === undefined) continue;
-
-    if (OPENERS.includes(char)) depth += 1;
-    else if (CLOSERS.includes(char)) depth -= 1;
-    else if (char === ',' && depth === 0) {
-      args.push(inner.slice(start, index));
-      start = index + 1;
-    }
-  }
-  args.push(inner.slice(start));
-
-  const last = args.at(-1);
-  if (args.length > 1 && last !== undefined && last.trim() === '') args.pop();
-
-  return args;
 }
 
 /** Narrows a captured name to the two that the pattern can produce. */

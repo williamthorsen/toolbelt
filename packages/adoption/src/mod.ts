@@ -22,6 +22,7 @@ export {
   type TemplateInterpolation,
   type TemplateLiteral,
 } from './portable/listTemplateLiterals.ts';
+export { listTopLevelArguments } from './portable/listTopLevelArguments.ts';
 export { type AnchoredWindow, readAnchoredWindow, type WindowLengths } from './portable/readAnchoredWindow.ts';
 export {
   BRACES,
