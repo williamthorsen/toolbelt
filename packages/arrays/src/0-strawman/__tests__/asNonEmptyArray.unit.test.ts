@@ -138,7 +138,9 @@ describe(assertNonEmptyArray, () => {
   });
 });
 
+// region | Helpers
 /** Returns its arguments as a non-empty tuple, for testing TypeScript's narrowing to a non-empty array. */
 function expectNonEmpty<T>(firstItem: T, ...otherItems: T[]): Readonly<[T, ...T[]]> {
   return [firstItem, ...otherItems];
 }
+// endregion | Helpers

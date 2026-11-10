@@ -1,4 +1,4 @@
-import { pickInteger, type Seed } from '@williamthorsen/toolbelt.numbers/candidate';
+import { pickInteger, type SeedOptions } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { getItemAtIndexOrThrow } from './getItemAtIndexOrThrow.ts';
 
@@ -11,13 +11,9 @@ import { getItemAtIndexOrThrow } from './getItemAtIndexOrThrow.ts';
  * @experimental
  * @stage candidate
  */
-export function pickItem<T>(items: ReadonlyArray<T>, options: Options = {}): T {
+export function pickItem<T>(items: ReadonlyArray<T>, options: SeedOptions = {}): T {
   if (items.length === 0) {
     throw new RangeError('Cannot pick an item from an empty array.');
   }
   return getItemAtIndexOrThrow(items, pickInteger({ max: items.length - 1, seed: options.seed }));
-}
-
-interface Options {
-  seed?: Seed | undefined;
 }

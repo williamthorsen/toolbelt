@@ -1,4 +1,4 @@
-import type { Seed } from '@williamthorsen/toolbelt.numbers/candidate';
+import type { SeedOptions } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { getItemAtIndexOrThrow } from './getItemAtIndexOrThrow.ts';
 import { assertValidCumulativeWeights, pickWeightedIndex } from './pickWeightedIndex.ts';
@@ -15,18 +15,14 @@ import { toCumulativeValues } from './toCumulativeValues.ts';
 export function pickWeightedItem<T>(
   items: ReadonlyArray<T>,
   weights: ReadonlyArray<number>,
-): (options?: PickWeightedItemOptions) => T {
+): (options?: SeedOptions) => T {
   const cumulativeWeights = toCumulativeValues(weights);
 
   // Validate here so that every call of the returned function finds an item.
   assertValidCumulativeWeights(cumulativeWeights, items.length);
 
-  return function pickItem(options: PickWeightedItemOptions = {}): T {
+  return function pickItem(options: SeedOptions = {}): T {
     const index = pickWeightedIndex(cumulativeWeights, options);
     return getItemAtIndexOrThrow(items, index);
   };
-}
-
-export interface PickWeightedItemOptions {
-  seed?: Seed | undefined;
 }

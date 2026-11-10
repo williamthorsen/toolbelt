@@ -1,4 +1,4 @@
-import { pickInteger, type Seed, SeededRng } from '@williamthorsen/toolbelt.numbers/candidate';
+import { pickInteger, SeededRng, type SeedOptions } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { getItemAtIndexOrThrow } from './getItemAtIndexOrThrow.ts';
 
@@ -9,7 +9,7 @@ import { getItemAtIndexOrThrow } from './getItemAtIndexOrThrow.ts';
  * @experimental
  * @stage candidate
  */
-export function shuffle<T>(items: ReadonlyArray<T>, options: Options = {}): T[] {
+export function shuffle<T>(items: ReadonlyArray<T>, options: SeedOptions = {}): T[] {
   const shuffled = [...items];
   shuffleInPlace(shuffled, options);
   return shuffled;
@@ -22,7 +22,7 @@ export function shuffle<T>(items: ReadonlyArray<T>, options: Options = {}): T[] 
  * @experimental
  * @stage candidate
  */
-export function shuffleInPlace(items: unknown[], options: Options = {}): void {
+export function shuffleInPlace(items: unknown[], options: SeedOptions = {}): void {
   const seed = SeededRng.spawn(options.seed);
 
   // Fisher-Yates: Walk backward, swapping each item with a randomly chosen item at or before it.
@@ -32,8 +32,4 @@ export function shuffleInPlace(items: unknown[], options: Options = {}): void {
     items[i] = getItemAtIndexOrThrow(items, j);
     items[j] = swapped;
   }
-}
-
-interface Options {
-  seed?: Seed | undefined;
 }
