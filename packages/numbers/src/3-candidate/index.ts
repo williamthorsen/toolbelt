@@ -1,4 +1,4 @@
-export type { Seed } from '../internal/evaluateSeed.ts';
+export type { Seed, SeedOptions } from '../internal/evaluateSeed.ts';
 export { clamp, type ClampBounds } from './clamp.ts';
 export { generateRandom } from './generateRandom.ts';
 export { isIntegerString, safeParseInteger } from './integer-string.ts';

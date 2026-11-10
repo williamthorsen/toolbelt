@@ -1,5 +1,11 @@
 import { computeFakeMathRandom } from '../internal/computeFakeMathRandom.ts';
-import { checkIsRngLike, evaluateSeed, type Seed, type SeededGenerator } from '../internal/evaluateSeed.ts';
+import {
+  checkIsRngLike,
+  evaluateSeed,
+  type Seed,
+  type SeededGenerator,
+  type SeedOptions,
+} from '../internal/evaluateSeed.ts';
 import { IntegerSeed } from '../internal/IntegerSeed.ts';
 import { pickInteger } from './pickInteger.ts';
 
@@ -162,7 +168,7 @@ export class Int32SeededRng extends SeededRng {
 // region | Types
 type EmptyObject = Record<string, never> | Record<number, never>;
 
-type OptionsWithSeed<O> = O & { seed?: Seed | undefined };
+type OptionsWithSeed<O> = O & SeedOptions;
 
 type ThisConstructor<T extends { prototype: unknown } = { prototype: unknown }> = T;
 

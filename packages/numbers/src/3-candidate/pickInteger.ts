@@ -1,4 +1,4 @@
-import type { Seed } from '../internal/evaluateSeed.ts';
+import type { SeedOptions } from '../internal/evaluateSeed.ts';
 import { generateRandom } from './generateRandom.ts';
 
 /**
@@ -29,8 +29,7 @@ export function pickInteger(params: Params = {}): number {
   return start + Math.floor(generateRandom({ seed }) * range);
 }
 
-interface Params {
+interface Params extends SeedOptions {
   max?: number | undefined;
   min?: number | undefined;
-  seed?: Seed | undefined;
 }
