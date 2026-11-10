@@ -29,7 +29,7 @@ export function makePickWeightedItemFromDistribution<TItem, TCategory extends st
   }
 
   if (filteredItems.length === 0) {
-    throw new Error('Cannot create function with an empty array.');
+    throw new RangeError('Cannot create function with an empty array.');
   }
 
   return pickWeightedItem(filteredItems, filteredWeights);
