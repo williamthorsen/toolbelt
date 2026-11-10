@@ -12,6 +12,13 @@ enum NumericEnum {
   Two = 2,
 }
 
+/* eslint-disable @typescript-eslint/no-mixed-enums -- A consumer's mixed enum is input that the guard must handle. */
+enum HeterogeneousEnum {
+  A = 1,
+  B = 'A',
+}
+/* eslint-enable @typescript-eslint/no-mixed-enums */
+
 describe(isEnumValue, () => {
   it('returns true for a valid enum member', () => {
     expect(isEnumValue(StringEnum, StringEnum.Alpha)).toBe(true);
@@ -40,6 +47,18 @@ describe(isEnumValue, () => {
 
     it('returns false if the number is not a value in the enum', () => {
       expect(isEnumValue(NumericEnum, 3)).toBe(false);
+    });
+
+    it('returns false for a member name that the reverse mapping adds to the values', () => {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Stands in for untyped input; the signature rejects a member name.
+      expect(isEnumValue(NumericEnum, 'One' as unknown as number)).toBe(false);
+    });
+  });
+
+  describe('heterogeneous enum', () => {
+    it('returns true for a string value that equals the name of a numeric member', () => {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- The signature types a mixed enum's values as numbers.
+      expect(isEnumValue(HeterogeneousEnum, 'A' as unknown as number)).toBe(true);
     });
   });
 });
