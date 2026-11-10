@@ -1,3 +1,4 @@
+import { assertFinite } from '../internal/assertFinite.ts';
 import { computeCdf } from './computeCdf.ts';
 
 /**
@@ -11,8 +12,15 @@ import { computeCdf } from './computeCdf.ts';
 export function computeCdfInverse(probability: number, options: Options): number {
   const { mean = 0, standardDeviation = 1 } = options;
 
+  assertFinite(probability, 'probability');
+  assertFinite(mean, 'mean');
+  assertFinite(standardDeviation, 'standardDeviation');
+
+  if (probability < 0 || probability > 1) {
+    throw new RangeError('probability must be in the range [0, 1].');
+  }
   if (standardDeviation <= 0) {
-    throw new Error('Standard deviation must be greater than zero.');
+    throw new RangeError('Standard deviation must be greater than zero.');
   }
 
   return mean + standardDeviation * computeStandardNormalInverse(probability);

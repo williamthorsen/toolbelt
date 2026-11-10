@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { buildNotFiniteError } from '../../test-utils/buildNotFiniteError.ts';
 import { computeCdf } from '../computeCdf.ts';
 import { computeCdfInverse } from '../computeCdfInverse.ts';
 
@@ -67,9 +68,76 @@ describe(computeCdfInverse, () => {
     expect(Math.abs(quantile / 7.034_486_910_047_835_6 - 1)).toBeLessThan(1e-15);
   });
 
-  it('throws an error if given an invalid standard deviation', () => {
-    const throwingFn = () => computeCdfInverse(0.5, { mean: 0, standardDeviation: 0 });
-
-    expect(throwingFn).toThrow('Standard deviation must be greater than zero.');
+  it.each([
+    {
+      label: 'the probability is Infinity',
+      probability: Infinity,
+      options: {},
+      error: buildNotFiniteError('probability'),
+    },
+    {
+      label: 'the probability is -Infinity',
+      probability: -Infinity,
+      options: {},
+      error: buildNotFiniteError('probability'),
+    },
+    { label: 'the probability is NaN', probability: NaN, options: {}, error: buildNotFiniteError('probability') },
+    {
+      label: 'the probability is below 0',
+      probability: -0.5,
+      options: {},
+      error: new RangeError('probability must be in the range [0, 1].'),
+    },
+    {
+      label: 'the probability is above 1',
+      probability: 1.5,
+      options: {},
+      error: new RangeError('probability must be in the range [0, 1].'),
+    },
+    {
+      label: 'the mean is Infinity',
+      probability: 0.5,
+      options: { mean: Infinity },
+      error: buildNotFiniteError('mean'),
+    },
+    {
+      label: 'the mean is -Infinity',
+      probability: 0.5,
+      options: { mean: -Infinity },
+      error: buildNotFiniteError('mean'),
+    },
+    { label: 'the mean is NaN', probability: 0.5, options: { mean: NaN }, error: buildNotFiniteError('mean') },
+    {
+      label: 'the standard deviation is Infinity',
+      probability: 0.5,
+      options: { standardDeviation: Infinity },
+      error: buildNotFiniteError('standardDeviation'),
+    },
+    {
+      label: 'the standard deviation is -Infinity',
+      probability: 0.5,
+      options: { standardDeviation: -Infinity },
+      error: buildNotFiniteError('standardDeviation'),
+    },
+    {
+      label: 'the standard deviation is NaN',
+      probability: 0.5,
+      options: { standardDeviation: NaN },
+      error: buildNotFiniteError('standardDeviation'),
+    },
+    {
+      label: 'the standard deviation is 0',
+      probability: 0.5,
+      options: { standardDeviation: 0 },
+      error: new RangeError('Standard deviation must be greater than zero.'),
+    },
+    {
+      label: 'the standard deviation is negative',
+      probability: 0.5,
+      options: { standardDeviation: -1 },
+      error: new RangeError('Standard deviation must be greater than zero.'),
+    },
+  ])('throws if $label', ({ error, options, probability }) => {
+    expect(() => computeCdfInverse(probability, options)).toThrow(error);
   });
 });
