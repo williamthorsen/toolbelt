@@ -8,6 +8,6 @@ export function assertPositiveInteger(value: number, label: string): void {
     throw new TypeError(`${label} must be a safe integer.`);
   }
   if (value < 1) {
-    throw new Error(`${label} must be greater than 0.`);
+    throw new RangeError(`${label} must be greater than 0.`);
   }
 }

@@ -1,6 +1,7 @@
 import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 import { describe, expect, it } from 'vitest';
 
+import { buildNotFiniteError } from '../../test-utils/buildNotFiniteError.ts';
 import { computeNormalIntervalProbabilities } from '../computeNormalIntervalProbabilities.ts';
 import { findDistributionByIntervalProbability } from '../findDistributionByIntervalProbability.ts';
 
@@ -71,68 +72,89 @@ describe(findDistributionByIntervalProbability, () => {
     expect(intervalProbabilities.additive).toStrictEqual([1]);
   });
 
-  it('throws an error if the target exceeds the probability reachable at the top of the range', () => {
-    const throwingFn = () => findDistributionByIntervalProbability({ nIntervals: 5, probability: 0.1995 });
-
-    expect(throwingFn).toThrow('is above the maximum reachable');
-    expect(throwingFn).toThrow('standard deviation in range [0.01, 20]');
-  });
-
-  it('throws an error if the target falls below the probability reachable at the bottom of the range', () => {
-    const throwingFn = () => findDistributionByIntervalProbability({ nIntervals: 5, probability: 0.01 }, { sdMin: 2 });
-
-    expect(throwingFn).toThrow('is below the minimum reachable');
-    expect(throwingFn).toThrow('standard deviation in range [2, 20]');
-  });
-
-  it('throws an error if the target is unreachable because the interval count fixes the probability', () => {
-    const throwingFn = () => findDistributionByIntervalProbability({ nIntervals: 2, probability: 0.4 });
-
-    expect(throwingFn).toThrow('is below the minimum reachable');
-  });
-
-  it('throws an error if given a bad standard-deviation range', () => {
-    const throwingFn = () =>
-      findDistributionByIntervalProbability({ nIntervals: 5, probability: 0.1 }, { sdMin: 1, sdMax: 0.5 });
-
-    expect(throwingFn).toThrow('Maximum standard deviation (sdMax) must be greater than minimum (sdMin).');
-  });
-
-  it('throws an error if the minimum standard deviation is not greater than 0', () => {
-    const throwingFn = () => findDistributionByIntervalProbability({ nIntervals: 5, probability: 0.1 }, { sdMin: 0 });
-
-    expect(throwingFn).toThrow('Minimum standard deviation (sdMin) must be greater than 0.');
-  });
-
-  it('throws an error if the probability is not greater than 0', () => {
-    const throwingFn = () => findDistributionByIntervalProbability({ nIntervals: 5, probability: 0 });
-
-    expect(throwingFn).toThrow('Probability must be greater than 0.');
-  });
-
-  it.each([Infinity, -Infinity, NaN])('throws an error if the probability is %p', (probability) => {
-    const throwingFn = () => findDistributionByIntervalProbability({ nIntervals: 5, probability });
-
-    expect(throwingFn).toThrow('probability must be a finite number.');
-  });
-
-  it.each([Infinity, -Infinity, NaN])('throws an error if sdMin is %p', (sdMin) => {
-    const throwingFn = () => findDistributionByIntervalProbability({ nIntervals: 5, probability: 0.05 }, { sdMin });
-
-    expect(throwingFn).toThrow('sdMin must be a finite number.');
-  });
-
-  it.each([Infinity, -Infinity, NaN])('throws an error if sdMax is %p', (sdMax) => {
-    const throwingFn = () => findDistributionByIntervalProbability({ nIntervals: 5, probability: 0.05 }, { sdMax });
-
-    expect(throwingFn).toThrow('sdMax must be a finite number.');
-  });
-
-  it('throws an error if the tolerance is not a finite number', () => {
-    const throwingFn = () =>
-      findDistributionByIntervalProbability({ nIntervals: 5, probability: 0.05 }, { tolerance: NaN });
-
-    expect(throwingFn).toThrow('tolerance must be a finite number.');
+  it.each([
+    {
+      label: 'the target exceeds the probability reachable at the top of the range',
+      params: { nIntervals: 5, probability: 0.1995 },
+      options: {},
+      error: new RangeError(
+        'Probability 0.1995 is above the maximum reachable (0.1992806) with standard deviation in range [0.01, 20].',
+      ),
+    },
+    {
+      label: 'the target falls below the probability reachable at the bottom of the range',
+      params: { nIntervals: 5, probability: 0.01 },
+      options: { sdMin: 2 },
+      error: new RangeError(
+        'Probability 0.01 is below the minimum reachable (0.1353357) with standard deviation in range [2, 20].',
+      ),
+    },
+    {
+      label: 'the target is unreachable because the interval count fixes the probability',
+      params: { nIntervals: 2, probability: 0.4 },
+      options: {},
+      error: new RangeError(
+        'Probability 0.4 is below the minimum reachable (0.5) with standard deviation in range [0.01, 20].',
+      ),
+    },
+    {
+      label: 'sdMax is not greater than sdMin',
+      params: { nIntervals: 5, probability: 0.1 },
+      options: { sdMin: 1, sdMax: 0.5 },
+      error: new RangeError('Maximum standard deviation (sdMax) must be greater than minimum (sdMin).'),
+    },
+    {
+      label: 'sdMin is 0',
+      params: { nIntervals: 5, probability: 0.1 },
+      options: { sdMin: 0 },
+      error: new RangeError('Minimum standard deviation (sdMin) must be greater than 0.'),
+    },
+    {
+      label: 'the probability is 0',
+      params: { nIntervals: 5, probability: 0 },
+      options: {},
+      error: new RangeError('Probability must be greater than 0.'),
+    },
+    {
+      label: 'the tolerance is 0',
+      params: { nIntervals: 5, probability: 0.05 },
+      options: { tolerance: 0 },
+      error: new RangeError('tolerance must be greater than 0.'),
+    },
+    {
+      label: 'the tolerance is negative',
+      params: { nIntervals: 5, probability: 0.05 },
+      options: { tolerance: -0.001 },
+      error: new RangeError('tolerance must be greater than 0.'),
+    },
+    {
+      label: 'the tolerance is NaN',
+      params: { nIntervals: 5, probability: 0.05 },
+      options: { tolerance: NaN },
+      error: buildNotFiniteError('tolerance'),
+    },
+    ...[Infinity, -Infinity, NaN].flatMap((nonFinite) => [
+      {
+        label: `the probability is ${nonFinite}`,
+        params: { nIntervals: 5, probability: nonFinite },
+        options: {},
+        error: buildNotFiniteError('probability'),
+      },
+      {
+        label: `sdMin is ${nonFinite}`,
+        params: { nIntervals: 5, probability: 0.05 },
+        options: { sdMin: nonFinite },
+        error: buildNotFiniteError('sdMin'),
+      },
+      {
+        label: `sdMax is ${nonFinite}`,
+        params: { nIntervals: 5, probability: 0.05 },
+        options: { sdMax: nonFinite },
+        error: buildNotFiniteError('sdMax'),
+      },
+    ]),
+  ])('throws if $label', ({ error, options, params }) => {
+    expect(() => findDistributionByIntervalProbability(params, options)).toThrow(error);
   });
 
   it('evaluates the returned distribution once, so it matches the reported divergence', () => {

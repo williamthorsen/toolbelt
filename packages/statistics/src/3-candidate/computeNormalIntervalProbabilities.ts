@@ -25,10 +25,10 @@ export function computeNormalIntervalProbabilities(params: Params): IntervalProb
   assertFinite(standardDeviation, 'standardDeviation');
 
   if (halfWidth <= 0) {
-    throw new Error('halfWidth must be greater than 0.');
+    throw new RangeError('halfWidth must be greater than 0.');
   }
   if (standardDeviation < 0) {
-    throw new Error('Standard deviation cannot be negative.');
+    throw new RangeError('Standard deviation cannot be negative.');
   }
 
   const additive =

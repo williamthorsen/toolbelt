@@ -1,6 +1,7 @@
 import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 import { describe, expect, it } from 'vitest';
 
+import { buildNotFiniteError } from '../../test-utils/buildNotFiniteError.ts';
 import { computeNormalIntervalProbabilities } from '../computeNormalIntervalProbabilities.ts';
 
 // Expectations computed from exact normal-distribution math, independent of the CDF approximation
@@ -108,53 +109,51 @@ describe(computeNormalIntervalProbabilities, () => {
     expect(additive).toStrictEqual([1]);
   });
 
-  it('throws an error if nIntervals is not an integer', () => {
-    const throwingFn = () => computeNormalIntervalProbabilities({ mean: 0, standardDeviation: 1, nIntervals: 1.5 });
-
-    expect(throwingFn).toThrow('nIntervals must be a safe integer.');
-  });
-
-  it('throws an error if nIntervals exceeds safe-integer precision', () => {
-    const throwingFn = () =>
-      computeNormalIntervalProbabilities({ mean: 0, standardDeviation: 1, nIntervals: 2 ** 53 + 2 });
-
-    expect(throwingFn).toThrow('nIntervals must be a safe integer.');
-  });
-
-  it('throws an error if nIntervals is less than 1', () => {
-    const throwingFn = () => computeNormalIntervalProbabilities({ mean: 0, standardDeviation: 1, nIntervals: 0 });
-
-    expect(throwingFn).toThrow('nIntervals must be greater than 0.');
-  });
-
-  it('throws an error if halfWidth is not greater than 0', () => {
-    const throwingFn = () => computeNormalIntervalProbabilities({ halfWidth: 0, nIntervals: 5 });
-
-    expect(throwingFn).toThrow('halfWidth must be greater than 0.');
-  });
-
-  it('throws an error if the standard deviation is negative', () => {
-    const throwingFn = () => computeNormalIntervalProbabilities({ nIntervals: 5, standardDeviation: -1 });
-
-    expect(throwingFn).toThrow('Standard deviation cannot be negative.');
-  });
-
-  it.each([Infinity, -Infinity, NaN])('throws an error if the standard deviation is %p', (standardDeviation) => {
-    const throwingFn = () => computeNormalIntervalProbabilities({ nIntervals: 5, standardDeviation });
-
-    expect(throwingFn).toThrow('standardDeviation must be a finite number.');
-  });
-
-  it.each([Infinity, -Infinity, NaN])('throws an error if halfWidth is %p', (halfWidth) => {
-    const throwingFn = () => computeNormalIntervalProbabilities({ halfWidth, nIntervals: 5 });
-
-    expect(throwingFn).toThrow('halfWidth must be a finite number.');
-  });
-
-  it.each([Infinity, -Infinity, NaN])('throws an error if the mean is %p', (mean) => {
-    const throwingFn = () => computeNormalIntervalProbabilities({ mean, nIntervals: 5 });
-
-    expect(throwingFn).toThrow('mean must be a finite number.');
+  it.each([
+    {
+      label: 'nIntervals is not an integer',
+      params: { nIntervals: 1.5 },
+      error: new TypeError('nIntervals must be a safe integer.'),
+    },
+    {
+      label: 'nIntervals exceeds safe-integer precision',
+      params: { nIntervals: 2 ** 53 + 2 },
+      error: new TypeError('nIntervals must be a safe integer.'),
+    },
+    {
+      label: 'nIntervals is 0',
+      params: { nIntervals: 0 },
+      error: new RangeError('nIntervals must be greater than 0.'),
+    },
+    {
+      label: 'halfWidth is 0',
+      params: { halfWidth: 0, nIntervals: 5 },
+      error: new RangeError('halfWidth must be greater than 0.'),
+    },
+    {
+      label: 'the standard deviation is negative',
+      params: { nIntervals: 5, standardDeviation: -1 },
+      error: new RangeError('Standard deviation cannot be negative.'),
+    },
+    ...[Infinity, -Infinity, NaN].flatMap((nonFinite) => [
+      {
+        label: `the standard deviation is ${nonFinite}`,
+        params: { nIntervals: 5, standardDeviation: nonFinite },
+        error: buildNotFiniteError('standardDeviation'),
+      },
+      {
+        label: `halfWidth is ${nonFinite}`,
+        params: { halfWidth: nonFinite, nIntervals: 5 },
+        error: buildNotFiniteError('halfWidth'),
+      },
+      {
+        label: `the mean is ${nonFinite}`,
+        params: { mean: nonFinite, nIntervals: 5 },
+        error: buildNotFiniteError('mean'),
+      },
+    ]),
+  ])('throws if $label', ({ error, params }) => {
+    expect(() => computeNormalIntervalProbabilities(params)).toThrow(error);
   });
 });
 
