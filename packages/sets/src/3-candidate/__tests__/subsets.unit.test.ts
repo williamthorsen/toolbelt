@@ -1,78 +1,66 @@
 import { describe, expect, it } from 'vitest';
 
+import { yieldEach } from '../../test-utils/yieldEach.ts';
 import { setIsSubset, setIsSuperset } from '../setIsSubset.ts';
 
 describe(setIsSubset, () => {
-  it('returns true if all elements in set A are in set B', () => {
-    const aSet = new Set([1, 2]);
-    const bSet = new Set([3, 2, 1]);
-    const expected = true;
+  it.each([
+    {
+      condition: 'every element of the child is in the parent',
+      child: () => new Set([1, 2]),
+      parent: () => new Set([3, 2, 1]),
+      expected: true,
+    },
+    {
+      condition: 'the sets are identical',
+      child: () => new Set([0]),
+      parent: () => new Set([0]),
+      expected: true,
+    },
+    {
+      condition: 'the child is empty',
+      child: () => new Set<number>(),
+      parent: () => new Set([1]),
+      expected: true,
+    },
+    {
+      condition: 'both sets are empty',
+      child: () => new Set<number>(),
+      parent: () => new Set<number>(),
+      expected: true,
+    },
+    {
+      condition: 'the parent is empty and the child is not',
+      child: () => new Set([0]),
+      parent: () => new Set<number>(),
+      expected: false,
+    },
+    {
+      condition: 'the inputs are arrays and the child is contained in the parent',
+      child: () => [1, 2],
+      parent: () => [3, 2, 1],
+      expected: true,
+    },
+    {
+      condition: 'the inputs are iterators and the child is contained in the parent',
+      child: () => yieldEach([1, 2]),
+      parent: () => yieldEach([3, 2, 1]),
+      expected: true,
+    },
+    {
+      condition: 'the inputs are iterators and the child has an element absent from the parent',
+      child: () => yieldEach([1, 4]),
+      parent: () => yieldEach([3, 2, 1]),
+      expected: false,
+    },
+  ])(
+    'returns $expected when $condition, as does setIsSuperset with the arguments swapped',
+    ({ child, parent, expected }) => {
+      const actual = setIsSubset(child(), parent());
+      const reverse = setIsSuperset(parent(), child());
 
-    const actual = setIsSubset(aSet, bSet);
-    const reverse = setIsSuperset(bSet, aSet);
-
-    expect(actual).toBe(expected);
-    expect(reverse).toBe(expected);
-  });
-
-  it('returns true if the sets are identical', () => {
-    const aSet = new Set(['']);
-    const bSet = new Set(['']);
-    const expected = true;
-
-    const actual = setIsSubset(aSet, bSet);
-    const reverse = setIsSuperset(bSet, aSet);
-
-    expect(actual).toBe(expected);
-    expect(reverse).toBe(expected);
-  });
-
-  it('returns true if set A is empty', () => {
-    const aSet = new Set();
-    const bSet = new Set([1]);
-    const expected = true;
-
-    const actual = setIsSubset(aSet, bSet);
-    const reverse = setIsSuperset(bSet, aSet);
-
-    expect(actual).toBe(expected);
-    expect(reverse).toBe(expected);
-  });
-
-  it('returns true if both sets are empty', () => {
-    const aSet = new Set();
-    const bSet = new Set();
-    const expected = true;
-
-    const actual = setIsSubset(aSet, bSet);
-    const reverse = setIsSuperset(bSet, aSet);
-
-    expect(actual).toBe(expected);
-    expect(reverse).toBe(expected);
-  });
-
-  it('returns false if set B is empty and set A is not', () => {
-    const aSet = new Set([0]);
-    const bSet = new Set();
-
-    const expected = false;
-
-    const actual = setIsSubset(aSet, bSet);
-    const reverse = setIsSuperset(bSet, aSet);
-
-    expect(actual).toBe(expected);
-    expect(reverse).toBe(expected);
-  });
-
-  it('works with arrays', () => {
-    const aSet = [1, 2];
-    const bSet = [3, 2, 1];
-    const expected = true;
-
-    const actual = setIsSubset(aSet, bSet);
-    const reverse = setIsSuperset(bSet, aSet);
-
-    expect(actual).toBe(expected);
-    expect(reverse).toBe(expected);
-  });
+      expect(actual).toBe(expected);
+      expect(reverse).toBe(expected);
+    },
+  );
 });

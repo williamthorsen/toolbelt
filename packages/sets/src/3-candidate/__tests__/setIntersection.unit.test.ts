@@ -1,44 +1,42 @@
 import { describe, expect, it } from 'vitest';
 
+import { yieldEach } from '../../test-utils/yieldEach.ts';
 import { setIntersection } from '../setIntersection.ts';
 
 describe(setIntersection, () => {
-  it('returns a Set containing the common elements of sets A and B', () => {
-    const aSet = new Set([1, 2]);
-    const bSet = new Set([2, 3]);
-    const expected = new Set([2]);
-
-    const actual = setIntersection(aSet, bSet);
-
-    expect(actual).toStrictEqual(expected);
-  });
-
-  it('if there are no common elements, returns the empty set', () => {
-    const aSet = new Set([1]);
-    const bSet = new Set([2]);
-    const expected = new Set();
-
-    const actual = setIntersection(aSet, bSet);
-
-    expect(actual).toStrictEqual(expected);
-  });
-
-  it('if both sets are empty, returns the empty set', () => {
-    const aSet = new Set();
-    const bSet = new Set();
-    const expected = new Set();
-
-    const actual = setIntersection(aSet, bSet);
-
-    expect(actual).toStrictEqual(expected);
-  });
-
-  it('works with arrays', () => {
-    const aSet = [1, 2];
-    const bSet = [2, 3];
-    const expected = new Set([2]);
-
-    const actual = setIntersection(aSet, bSet);
+  it.each([
+    {
+      label: 'returns only the shared elements when the sets overlap',
+      aElements: new Set([1, 2]),
+      bElements: new Set([2, 3]),
+      expected: new Set([2]),
+    },
+    {
+      label: 'returns an empty set when the sets have no elements in common',
+      aElements: new Set([1]),
+      bElements: new Set([2]),
+      expected: new Set<number>(),
+    },
+    {
+      label: 'returns an empty set when both sets are empty',
+      aElements: new Set<number>(),
+      bElements: new Set<number>(),
+      expected: new Set<number>(),
+    },
+    {
+      label: 'returns only the shared elements when the inputs are arrays',
+      aElements: [1, 2],
+      bElements: [2, 3],
+      expected: new Set([2]),
+    },
+    {
+      label: 'returns only the shared elements when the inputs are iterators',
+      aElements: yieldEach([1, 2]),
+      bElements: yieldEach([2, 3]),
+      expected: new Set([2]),
+    },
+  ])('$label', ({ aElements, bElements, expected }) => {
+    const actual = setIntersection(aElements, bElements);
 
     expect(actual).toStrictEqual(expected);
   });
