@@ -1,81 +1,53 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { Range } from '../Range.ts';
 
 describe(Range, () => {
-  describe('ascending ranges', () => {
-    const range = new Range(1, 5);
+  describe.each([
+    { label: 'an ascending range', start: 1, end: 5, values: [1, 2, 3, 4, 5], outside: [0, 6] },
+    { label: 'a descending range', start: 5, end: 1, values: [5, 4, 3, 2, 1], outside: [6, 0] },
+    { label: 'a single-value range', start: 7, end: 7, values: [7], outside: [6, 8] },
+  ])('given $label', ({ start, end, values, outside }) => {
+    const range = new Range(start, end);
 
-    it('has correct length', () => {
-      expect(range).toHaveLength(5);
+    it('has one value per step', () => {
+      expect(range).toHaveLength(values.length);
     });
 
-    it('includes values within range', () => {
-      expect(range).toContain(1);
-      expect(range).toContain(3);
-      expect(range).toContain(5);
+    it('iterates its values in order', () => {
+      expect([...range]).toStrictEqual(values);
     });
 
-    it('excludes values outside range', () => {
-      expect(range).not.toContain(0);
-      expect(range).not.toContain(6);
+    it('contains each of its values and neither neighbouring value', () => {
+      for (const value of values) expect(range).toContain(value);
+      for (const value of outside) expect(range).not.toContain(value);
     });
 
-    it('toArray returns expected values', () => {
-      expect(range.toArray()).toStrictEqual([1, 2, 3, 4, 5]);
+    it('returns its values in order from toArray', () => {
+      expect(range.toArray()).toStrictEqual(values);
     });
 
-    it('is iterable with correct order', () => {
-      expect([...range]).toStrictEqual([1, 2, 3, 4, 5]);
-    });
-  });
-
-  describe('descending ranges', () => {
-    const range = new Range(5, 1);
-
-    it('has correct length', () => {
-      expect(range).toHaveLength(5);
+    it('reports each of its values as included', () => {
+      expect(values.map((value) => range.includes(value))).toStrictEqual(values.map(() => true));
     });
 
-    it('includes values within range', () => {
-      expect(range).toContain(5);
-      expect(range).toContain(3);
-      expect(range).toContain(1);
+    it('reports the value beyond each bound as excluded', () => {
+      expect(outside.map((value) => range.includes(value))).toStrictEqual([false, false]);
     });
 
-    it('excludes values outside range', () => {
-      expect(range).not.toContain(0);
-      expect(range).not.toContain(6);
+    it('passes each value, its index, and the values to the map callback, in order', () => {
+      const callback = vi.fn((value: number) => value * 10);
+
+      expect(range.map(callback)).toStrictEqual(values.map((value) => value * 10));
+      expect(callback.mock.calls).toStrictEqual(values.map((value, index) => [value, index, values]));
     });
 
-    it('toArray returns expected values', () => {
-      expect(range.toArray()).toStrictEqual([5, 4, 3, 2, 1]);
-    });
+    it('passes each value, its index, and the values to the forEach callback, in order', () => {
+      const callback = vi.fn();
 
-    it('is iterable with correct order', () => {
-      expect([...range]).toStrictEqual([5, 4, 3, 2, 1]);
-    });
-  });
+      range.forEach(callback);
 
-  describe('single-value ranges', () => {
-    const range = new Range(7, 7);
-
-    it('has length 1', () => {
-      expect(range).toHaveLength(1);
-    });
-
-    it('includes only that value', () => {
-      expect(range).toContain(7);
-      expect(range).not.toContain(6);
-      expect(range).not.toContain(8);
-    });
-
-    it('toArray returns that single value', () => {
-      expect(range.toArray()).toStrictEqual([7]);
-    });
-
-    it('is iterable with that value', () => {
-      expect([...range]).toStrictEqual([7]);
+      expect(callback.mock.calls).toStrictEqual(values.map((value, index) => [value, index, values]));
     });
   });
 });
