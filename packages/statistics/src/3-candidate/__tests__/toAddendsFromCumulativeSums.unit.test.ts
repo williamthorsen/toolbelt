@@ -8,21 +8,21 @@ describe(toAddendsFromCumulativeSums, () => {
   });
 
   it('returns a new empty array if given an empty array', () => {
-    const expectedAddends: number[] = [];
+    const cumulativeSums: number[] = [];
 
-    const addends = toAddendsFromCumulativeSums([]);
+    const addends = toAddendsFromCumulativeSums(cumulativeSums);
 
-    expect(addends).toStrictEqual(expectedAddends);
-    expect(addends).not.toBe(expectedAddends);
+    expect(addends).toStrictEqual([]);
+    expect(addends).not.toBe(cumulativeSums);
   });
 
   it('returns a new array with the same single element if given a single-element array', () => {
-    const expectedAddends = [1];
+    const cumulativeSums = [1];
 
-    const addends = toAddendsFromCumulativeSums([1]);
+    const addends = toAddendsFromCumulativeSums(cumulativeSums);
 
-    expect(addends).toStrictEqual(expectedAddends);
-    expect(addends).not.toBe(expectedAddends);
+    expect(addends).toStrictEqual([1]);
+    expect(addends).not.toBe(cumulativeSums);
   });
 
   it('accepts negative cumulative sums and can return negative addends', () => {
