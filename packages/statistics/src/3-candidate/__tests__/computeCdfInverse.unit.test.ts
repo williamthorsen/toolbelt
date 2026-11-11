@@ -133,13 +133,13 @@ describe(computeCdfInverse, () => {
       label: 'the standard deviation is 0',
       probability: 0.5,
       options: { standardDeviation: 0 },
-      error: new RangeError('Standard deviation must be greater than zero.'),
+      error: new RangeError('standardDeviation must be greater than 0.'),
     },
     {
       label: 'the standard deviation is negative',
       probability: 0.5,
       options: { standardDeviation: -1 },
-      error: new RangeError('Standard deviation must be greater than zero.'),
+      error: new RangeError('standardDeviation must be greater than 0.'),
     },
   ])('throws if $label', ({ error, options, probability }) => {
     expect(() => computeCdfInverse(probability, options)).toThrow(error);

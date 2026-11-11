@@ -20,7 +20,7 @@ export function computeCdfInverse(probability: number, options: NormalDistributi
     throw new RangeError('probability must be in the range [0, 1].');
   }
   if (standardDeviation <= 0) {
-    throw new RangeError('Standard deviation must be greater than zero.');
+    throw new RangeError('standardDeviation must be greater than 0.');
   }
 
   return mean + standardDeviation * computeStandardNormalInverse(probability);

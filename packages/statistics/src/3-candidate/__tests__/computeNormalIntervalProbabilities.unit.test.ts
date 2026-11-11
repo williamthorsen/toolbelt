@@ -133,7 +133,7 @@ describe(computeNormalIntervalProbabilities, () => {
     {
       label: 'the standard deviation is negative',
       params: { nIntervals: 5, standardDeviation: -1 },
-      error: new RangeError('Standard deviation cannot be negative.'),
+      error: new RangeError('standardDeviation must not be negative.'),
     },
     ...[Infinity, -Infinity, NaN].flatMap((nonFinite) => [
       {

@@ -29,7 +29,7 @@ export function computeNormalIntervalProbabilities(
     throw new RangeError('halfWidth must be greater than 0.');
   }
   if (standardDeviation < 0) {
-    throw new RangeError('Standard deviation cannot be negative.');
+    throw new RangeError('standardDeviation must not be negative.');
   }
 
   const additive =

@@ -18,7 +18,7 @@ export function computeCdf(params: ComputeCdfParams): number {
     throw new TypeError('value must not be NaN.');
   }
   if (standardDeviation <= 0) {
-    throw new RangeError('Standard deviation must be greater than zero.');
+    throw new RangeError('standardDeviation must be greater than 0.');
   }
 
   return 0.5 * computeErfc(-(value - mean) / (standardDeviation * Math.SQRT2));

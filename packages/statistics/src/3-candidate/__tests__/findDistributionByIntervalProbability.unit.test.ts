@@ -112,7 +112,7 @@ describe(findDistributionByIntervalProbability, () => {
       label: 'the probability is 0',
       params: { nIntervals: 5, probability: 0 },
       options: {},
-      error: new RangeError('Probability must be greater than 0.'),
+      error: new RangeError('probability must be greater than 0.'),
     },
     {
       label: 'the tolerance is 0',

@@ -67,12 +67,12 @@ describe(computeCdf, () => {
     {
       label: 'the standard deviation is 0',
       params: { standardDeviation: 0, value: 0 },
-      error: new RangeError('Standard deviation must be greater than zero.'),
+      error: new RangeError('standardDeviation must be greater than 0.'),
     },
     {
       label: 'the standard deviation is negative',
       params: { standardDeviation: -1, value: 0 },
-      error: new RangeError('Standard deviation must be greater than zero.'),
+      error: new RangeError('standardDeviation must be greater than 0.'),
     },
     { label: 'the value is NaN', params: { value: NaN }, error: new TypeError('value must not be NaN.') },
   ])('throws if $label', ({ error, params }) => {
