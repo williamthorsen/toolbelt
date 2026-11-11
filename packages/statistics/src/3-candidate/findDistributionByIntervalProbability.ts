@@ -41,7 +41,7 @@ export function findDistributionByIntervalProbability(
   assertFinite(tolerance, 'tolerance');
 
   if (target <= 0) {
-    throw new RangeError('Probability must be greater than 0.');
+    throw new RangeError('probability must be greater than 0.');
   }
   if (minStandardDeviation <= 0) {
     throw new RangeError('minStandardDeviation must be greater than 0.');

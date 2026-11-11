@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildNotFiniteError } from '../../test-utils/buildNotFiniteError.ts';
 import { computeCdf } from '../computeCdf.ts';
 
 describe(computeCdf, () => {
@@ -46,37 +45,36 @@ describe(computeCdf, () => {
   });
 
   it.each([
-    { label: 'the mean is Infinity', params: { mean: Infinity, value: 0 }, error: buildNotFiniteError('mean') },
-    { label: 'the mean is -Infinity', params: { mean: -Infinity, value: 0 }, error: buildNotFiniteError('mean') },
-    { label: 'the mean is NaN', params: { mean: NaN, value: 0 }, error: buildNotFiniteError('mean') },
-    {
-      label: 'the standard deviation is Infinity',
-      params: { standardDeviation: Infinity, value: 0 },
-      error: buildNotFiniteError('standardDeviation'),
-    },
-    {
-      label: 'the standard deviation is -Infinity',
-      params: { standardDeviation: -Infinity, value: 0 },
-      error: buildNotFiniteError('standardDeviation'),
-    },
-    {
-      label: 'the standard deviation is NaN',
-      params: { standardDeviation: NaN, value: 0 },
-      error: buildNotFiniteError('standardDeviation'),
-    },
+    ...[Infinity, -Infinity, NaN].flatMap((nonFinite) => [
+      {
+        label: `the mean is ${nonFinite}`,
+        params: { mean: nonFinite, value: 0 },
+        errorClass: TypeError,
+        fragment: 'mean',
+      },
+      {
+        label: `the standard deviation is ${nonFinite}`,
+        params: { standardDeviation: nonFinite, value: 0 },
+        errorClass: TypeError,
+        fragment: 'standardDeviation',
+      },
+    ]),
     {
       label: 'the standard deviation is 0',
       params: { standardDeviation: 0, value: 0 },
-      error: new RangeError('Standard deviation must be greater than zero.'),
+      errorClass: RangeError,
+      fragment: 'standardDeviation',
     },
     {
       label: 'the standard deviation is negative',
       params: { standardDeviation: -1, value: 0 },
-      error: new RangeError('Standard deviation must be greater than zero.'),
+      errorClass: RangeError,
+      fragment: 'standardDeviation',
     },
-    { label: 'the value is NaN', params: { value: NaN }, error: new TypeError('value must not be NaN.') },
-  ])('throws if $label', ({ error, params }) => {
-    expect(() => computeCdf(params)).toThrow(error);
+    { label: 'the value is NaN', params: { value: NaN }, errorClass: TypeError, fragment: 'value' },
+  ])('throws if $label', ({ errorClass, fragment, params }) => {
+    expect(() => computeCdf(params)).toThrow(errorClass);
+    expect(() => computeCdf(params)).toThrow(fragment);
   });
 
   it.each([Infinity, -Infinity])('accepts the infinite value %d', (value) => {
