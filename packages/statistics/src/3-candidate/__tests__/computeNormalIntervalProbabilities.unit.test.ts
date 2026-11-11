@@ -4,23 +4,23 @@ import { describe, expect, it } from 'vitest';
 import { buildNotFiniteError } from '../../test-utils/buildNotFiniteError.ts';
 import { computeNormalIntervalProbabilities } from '../computeNormalIntervalProbabilities.ts';
 
-// Expectations computed from exact normal-distribution math, independent of the CDF approximation
-// under test, which has ~7.5e-8 of absolute error.
-const PRECISION = 6;
+// The listed expectations are exact normal-distribution values rounded to 10 decimal places; 9 digits of tolerance
+// (an absolute error below 5e-10) covers that rounding.
+const PRECISION = 9;
 
 describe(computeNormalIntervalProbabilities, () => {
   it('returns a symmetrical array of probabilities when nIntervals is odd', () => {
     const { additive } = computeNormalIntervalProbabilities({ mean: 0, standardDeviation: 1, nIntervals: 5 });
 
-    expect(getItemAtIndexOrThrow(additive, 0)).toBeCloseTo(getItemAtIndexOrThrow(additive, 4), 4);
-    expect(getItemAtIndexOrThrow(additive, 1)).toBeCloseTo(getItemAtIndexOrThrow(additive, 3), 4);
+    expect(getItemAtIndexOrThrow(additive, 0)).toBeCloseTo(getItemAtIndexOrThrow(additive, 4), PRECISION);
+    expect(getItemAtIndexOrThrow(additive, 1)).toBeCloseTo(getItemAtIndexOrThrow(additive, 3), PRECISION);
   });
 
   it('returns a symmetrical array of probabilities when nIntervals is even', () => {
     const { additive } = computeNormalIntervalProbabilities({ mean: 0, standardDeviation: 1, nIntervals: 4 });
 
-    expect(getItemAtIndexOrThrow(additive, 0)).toBeCloseTo(getItemAtIndexOrThrow(additive, 3), 4);
-    expect(getItemAtIndexOrThrow(additive, 1)).toBeCloseTo(getItemAtIndexOrThrow(additive, 2), 4);
+    expect(getItemAtIndexOrThrow(additive, 0)).toBeCloseTo(getItemAtIndexOrThrow(additive, 3), PRECISION);
+    expect(getItemAtIndexOrThrow(additive, 1)).toBeCloseTo(getItemAtIndexOrThrow(additive, 2), PRECISION);
   });
 
   it('returns a cumulative probability of approximately 1', () => {
@@ -31,8 +31,8 @@ describe(computeNormalIntervalProbabilities, () => {
       nIntervals,
     });
 
-    expect(getItemAtIndexOrThrow(cumulative, nIntervals - 1)).toBeCloseTo(1, 4);
-    expect(sum(additive)).toBeCloseTo(1, 4);
+    expect(getItemAtIndexOrThrow(cumulative, nIntervals - 1)).toBeCloseTo(1, PRECISION);
+    expect(sum(additive)).toBeCloseTo(1, PRECISION);
   });
 
   it('returns additive & cumulative probabilities of [1] when nIntervals is 1', () => {
@@ -42,8 +42,8 @@ describe(computeNormalIntervalProbabilities, () => {
       nIntervals: 1,
     });
 
-    expect(getItemAtIndexOrThrow(additive, 0)).toBeCloseTo(1, 4);
-    expect(getItemAtIndexOrThrow(cumulative, 0)).toBeCloseTo(1, 4);
+    expect(getItemAtIndexOrThrow(additive, 0)).toBeCloseTo(1, PRECISION);
+    expect(getItemAtIndexOrThrow(cumulative, 0)).toBeCloseTo(1, PRECISION);
   });
 
   it('returns the expected probabilities for a unit standard deviation', () => {
@@ -160,7 +160,7 @@ describe(computeNormalIntervalProbabilities, () => {
 // region | Helpers
 
 /**
- * Returns a matcher per value, so that an array comparison tolerates the CDF approximation's error.
+ * Returns a matcher per value, so that an array comparison tolerates rounding.
  */
 function buildCloseMatchers(values: number[]): unknown[] {
   return values.map((value): unknown => expect.closeTo(value, PRECISION));

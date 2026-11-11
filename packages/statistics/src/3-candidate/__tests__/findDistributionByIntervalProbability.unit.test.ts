@@ -8,8 +8,7 @@ import { findDistributionByIntervalProbability } from '../findDistributionByInte
 describe(findDistributionByIntervalProbability, () => {
   const tolerance = 0.001;
 
-  // Expected standard deviations computed from exact normal-distribution math, independent of the
-  // CDF approximation under test.
+  // Expected standard deviations computed from exact normal-distribution math.
   const useCases = [
     { nIntervals: 3, probability: 0.05, expectedSd: 0.607_958_1 },
     { nIntervals: 5, probability: 0.001, expectedSd: 0.582_487_7 },
