@@ -1,5 +1,5 @@
 import { assertFinite } from '../internal/assertFinite.ts';
-import { computeCdf } from './computeCdf.ts';
+import { computeCdf, type NormalDistributionParams } from './computeCdf.ts';
 
 /**
  * Returns the inverse of the cumulative distribution function (CDF) for a normal distribution. A round
@@ -9,7 +9,7 @@ import { computeCdf } from './computeCdf.ts';
  * @category Statistics
  * @stage candidate
  */
-export function computeCdfInverse(probability: number, options: Options): number {
+export function computeCdfInverse(probability: number, options: NormalDistributionParams = {}): number {
   const { mean = 0, standardDeviation = 1 } = options;
 
   assertFinite(probability, 'probability');
@@ -85,8 +85,3 @@ function estimateStandardNormalInverse(p: number): number {
 }
 
 // endregion | Helpers
-
-interface Options {
-  mean?: number | undefined;
-  standardDeviation?: number | undefined;
-}

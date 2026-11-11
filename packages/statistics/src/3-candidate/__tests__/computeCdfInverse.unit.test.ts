@@ -28,6 +28,10 @@ describe(computeCdfInverse, () => {
     expect(computeCdfInverse(0.999, { mean: 0, standardDeviation: 1 })).toBeCloseTo(3.090_232, 4);
   });
 
+  it('uses the standard normal distribution when called without options', () => {
+    expect(computeCdfInverse(0.9)).toBeCloseTo(lastDecile, 4);
+  });
+
   it('returns -Infinity for a probability of 0 and Infinity for a probability of 1', () => {
     expect(computeCdfInverse(0, { mean: 0, standardDeviation: 1 })).toBe(-Infinity);
     expect(computeCdfInverse(1, { mean: 0, standardDeviation: 1 })).toBe(Infinity);
