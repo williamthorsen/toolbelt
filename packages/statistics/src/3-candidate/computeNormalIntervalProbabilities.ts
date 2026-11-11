@@ -1,6 +1,6 @@
 import { assertFinite } from '../internal/assertFinite.ts';
 import { assertPositiveInteger } from '../internal/assertPositiveInteger.ts';
-import { computeCdf } from './computeCdf.ts';
+import { computeCdf, type NormalDistributionParams } from './computeCdf.ts';
 import { toAddendsFromCumulativeSums } from './toAddendsFromCumulativeSums.ts';
 import { toCumulativeSumsFromAddends } from './toCumulativeSumsFromAddends.ts';
 
@@ -15,7 +15,9 @@ import { toCumulativeSumsFromAddends } from './toCumulativeSumsFromAddends.ts';
  * @category Statistics
  * @stage candidate
  */
-export function computeNormalIntervalProbabilities(params: Params): IntervalProbabilities {
+export function computeNormalIntervalProbabilities(
+  params: ComputeNormalIntervalProbabilitiesParams,
+): IntervalProbabilities {
   const { halfWidth = 3, mean = 0, nIntervals, standardDeviation = 1 } = params;
 
   assertPositiveInteger(nIntervals, 'nIntervals');
@@ -88,11 +90,16 @@ function toProbabilitiesFromWeights(weights: number[]): number[] {
 
 // endregion | Helpers
 
-interface Params {
+/** Parameters of `computeNormalIntervalProbabilities`: the distribution, the window's half-width, and the intervals. */
+export interface ComputeNormalIntervalProbabilitiesParams extends NormalDistributionParams {
   halfWidth?: number | undefined;
-  mean?: number | undefined;
   nIntervals: number;
-  standardDeviation?: number | undefined;
+}
+
+/** The probability of each interval, and the running total of those probabilities. */
+export interface IntervalProbabilities {
+  additive: number[];
+  cumulative: number[];
 }
 
 interface WindowParams {
@@ -100,9 +107,4 @@ interface WindowParams {
   mean: number;
   nIntervals: number;
   standardDeviation: number;
-}
-
-interface IntervalProbabilities {
-  additive: number[];
-  cumulative: number[];
 }

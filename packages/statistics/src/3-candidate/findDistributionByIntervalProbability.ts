@@ -3,11 +3,14 @@ import { round } from '@williamthorsen/toolbelt.numbers/candidate';
 
 import { assertFinite } from '../internal/assertFinite.ts';
 import { assertPositiveInteger } from '../internal/assertPositiveInteger.ts';
-import { computeNormalIntervalProbabilities } from './computeNormalIntervalProbabilities.ts';
+import {
+  computeNormalIntervalProbabilities,
+  type IntervalProbabilities,
+} from './computeNormalIntervalProbabilities.ts';
 
 const MAX_ITERATIONS = 50;
-const SD_MAX = 20;
-const SD_MIN = 0.01;
+const MAX_STANDARD_DEVIATION = 20;
+const MIN_STANDARD_DEVIATION = 0.01;
 const TOLERANCE = 0.0001; // probability is accepted when it diverges from the target by no more than this fraction
 
 /**
@@ -18,25 +21,33 @@ const TOLERANCE = 0.0001; // probability is accepted when it diverges from the t
  * @category Statistics
  * @stage candidate
  */
-export function findDistributionByIntervalProbability(params: Params, options: Options = {}): NormalDistribution {
+export function findDistributionByIntervalProbability(
+  params: FindDistributionByIntervalProbabilityParams,
+  options: FindDistributionByIntervalProbabilityOptions = {},
+): NormalDistributionFit {
   const { halfWidth, nIntervals, probability: target } = params;
-  const { maxIterations = MAX_ITERATIONS, sdMax = SD_MAX, sdMin = SD_MIN, tolerance = TOLERANCE } = options;
+  const {
+    maxIterations = MAX_ITERATIONS,
+    maxStandardDeviation = MAX_STANDARD_DEVIATION,
+    minStandardDeviation = MIN_STANDARD_DEVIATION,
+    tolerance = TOLERANCE,
+  } = options;
 
   assertPositiveInteger(nIntervals, 'nIntervals');
   assertPositiveInteger(maxIterations, 'maxIterations');
   assertFinite(target, 'probability');
-  assertFinite(sdMax, 'sdMax');
-  assertFinite(sdMin, 'sdMin');
+  assertFinite(maxStandardDeviation, 'maxStandardDeviation');
+  assertFinite(minStandardDeviation, 'minStandardDeviation');
   assertFinite(tolerance, 'tolerance');
 
   if (target <= 0) {
     throw new RangeError('Probability must be greater than 0.');
   }
-  if (sdMin <= 0) {
-    throw new RangeError('Minimum standard deviation (sdMin) must be greater than 0.');
+  if (minStandardDeviation <= 0) {
+    throw new RangeError('minStandardDeviation must be greater than 0.');
   }
-  if (sdMin >= sdMax) {
-    throw new RangeError('Maximum standard deviation (sdMax) must be greater than minimum (sdMin).');
+  if (minStandardDeviation >= maxStandardDeviation) {
+    throw new RangeError('maxStandardDeviation must be greater than minStandardDeviation.');
   }
   if (tolerance <= 0) {
     throw new RangeError('tolerance must be greater than 0.');
@@ -48,10 +59,10 @@ export function findDistributionByIntervalProbability(params: Params, options: O
   }
 
   // Confirm the target lies between the probabilities that the range's endpoints can produce.
-  let intervalProbabilities = computeIntervalProbabilities(sdMin);
+  let intervalProbabilities = computeIntervalProbabilities(minStandardDeviation);
   const minProbability = toFirstProbability(intervalProbabilities);
-  const maxProbability = toFirstProbability(computeIntervalProbabilities(sdMax));
-  const range = `standard deviation in range [${sdMin}, ${sdMax}]`;
+  const maxProbability = toFirstProbability(computeIntervalProbabilities(maxStandardDeviation));
+  const range = `standard deviation in range [${minStandardDeviation}, ${maxStandardDeviation}]`;
 
   if (target < minProbability) {
     throw new RangeError(
@@ -64,9 +75,9 @@ export function findDistributionByIntervalProbability(params: Params, options: O
     );
   }
 
-  let low = sdMin;
-  let high = sdMax;
-  let standardDeviation = sdMin;
+  let low = minStandardDeviation;
+  let high = maxStandardDeviation;
+  let standardDeviation = minStandardDeviation;
   let probability = minProbability;
   let converged = false;
   let iterations = 0;
@@ -107,25 +118,26 @@ function toFirstProbability(intervalProbabilities: IntervalProbabilities): numbe
 
 // endregion | Helpers
 
-type IntervalProbabilities = ReturnType<typeof computeNormalIntervalProbabilities>;
+/** Bounds and stopping rules of the search. */
+export interface FindDistributionByIntervalProbabilityOptions {
+  maxIterations?: number | undefined;
+  maxStandardDeviation?: number | undefined;
+  minStandardDeviation?: number | undefined;
+  tolerance?: number | undefined;
+}
 
-interface NormalDistribution {
+/** The window's half-width, the interval count, and the probability sought in each outer interval. */
+export interface FindDistributionByIntervalProbabilityParams {
+  halfWidth?: number | undefined;
+  nIntervals: number;
+  probability: number;
+}
+
+/** The standard deviation that the search settled on, its interval probabilities, and how the search ended. */
+export interface NormalDistributionFit {
   converged: boolean;
   divergenceFromTarget: number;
   intervalProbabilities: IntervalProbabilities;
   iterations: number;
   standardDeviation: number;
-}
-
-interface Options {
-  maxIterations?: number | undefined;
-  sdMax?: number | undefined;
-  sdMin?: number | undefined;
-  tolerance?: number | undefined;
-}
-
-interface Params {
-  halfWidth?: number | undefined;
-  nIntervals: number;
-  probability: number;
 }

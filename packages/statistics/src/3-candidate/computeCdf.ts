@@ -8,7 +8,7 @@ import { computeErfc } from '../internal/computeErfc.ts';
  * @category Statistics
  * @stage candidate
  */
-export function computeCdf(params: Params): number {
+export function computeCdf(params: ComputeCdfParams): number {
   const { mean = 0, standardDeviation = 1, value } = params;
 
   assertFinite(mean, 'mean');
@@ -24,8 +24,13 @@ export function computeCdf(params: Params): number {
   return 0.5 * computeErfc(-(value - mean) / (standardDeviation * Math.SQRT2));
 }
 
-interface Params {
+/** Parameters of `computeCdf`: the distribution and the value at which to evaluate it. */
+export interface ComputeCdfParams extends NormalDistributionParams {
+  value: number;
+}
+
+/** The mean and standard deviation of a normal distribution, defaulting to the standard normal's 0 and 1. */
+export interface NormalDistributionParams {
   mean?: number | undefined;
   standardDeviation?: number | undefined;
-  value: number;
 }
