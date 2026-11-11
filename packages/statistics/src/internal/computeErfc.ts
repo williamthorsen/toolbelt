@@ -9,6 +9,8 @@
  * ====================================================
  */
 
+import { evaluateRatio } from './polynomials.ts';
+
 // Ported from FreeBSD msun's `s_erf.c`. Each table lists a polynomial's coefficients in ascending order, and
 // its comment names the fdlibm constants that it contains.
 
@@ -116,16 +118,6 @@ function computeTail(magnitude: number): number {
       Math.exp((truncated - magnitude) * (truncated + magnitude) + correction)) /
     magnitude
   );
-}
-
-/** Evaluates a polynomial, given its coefficients in ascending order, by Horner's method. */
-function evaluatePolynomial(coefficients: readonly number[], x: number): number {
-  return coefficients.reduceRight((accumulator, coefficient) => accumulator * x + coefficient, 0);
-}
-
-/** Returns the quotient of two polynomials evaluated at the same point. */
-function evaluateRatio(numerator: readonly number[], denominator: readonly number[], x: number): number {
-  return evaluatePolynomial(numerator, x) / evaluatePolynomial(denominator, x);
 }
 
 // endregion | Helpers
