@@ -1,7 +1,6 @@
 import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 import { describe, expect, it } from 'vitest';
 
-import { buildNotFiniteError } from '../../test-utils/buildNotFiniteError.ts';
 import { computeNormalIntervalProbabilities } from '../computeNormalIntervalProbabilities.ts';
 
 // The listed expectations are exact normal-distribution values rounded to 10 decimal places; 9 digits of tolerance
@@ -113,47 +112,56 @@ describe(computeNormalIntervalProbabilities, () => {
     {
       label: 'nIntervals is not an integer',
       params: { nIntervals: 1.5 },
-      error: new TypeError('nIntervals must be a safe integer.'),
+      errorClass: TypeError,
+      fragment: 'nIntervals',
     },
     {
       label: 'nIntervals exceeds safe-integer precision',
       params: { nIntervals: 2 ** 53 + 2 },
-      error: new TypeError('nIntervals must be a safe integer.'),
+      errorClass: TypeError,
+      fragment: 'nIntervals',
     },
     {
       label: 'nIntervals is 0',
       params: { nIntervals: 0 },
-      error: new RangeError('nIntervals must be greater than 0.'),
+      errorClass: RangeError,
+      fragment: 'nIntervals',
     },
     {
       label: 'halfWidth is 0',
       params: { halfWidth: 0, nIntervals: 5 },
-      error: new RangeError('halfWidth must be greater than 0.'),
+      errorClass: RangeError,
+      fragment: 'halfWidth',
     },
     {
       label: 'the standard deviation is negative',
       params: { nIntervals: 5, standardDeviation: -1 },
-      error: new RangeError('standardDeviation must not be negative.'),
+      errorClass: RangeError,
+      fragment: 'standardDeviation',
     },
     ...[Infinity, -Infinity, NaN].flatMap((nonFinite) => [
       {
         label: `the standard deviation is ${nonFinite}`,
         params: { nIntervals: 5, standardDeviation: nonFinite },
-        error: buildNotFiniteError('standardDeviation'),
+        errorClass: TypeError,
+        fragment: 'standardDeviation',
       },
       {
         label: `halfWidth is ${nonFinite}`,
         params: { halfWidth: nonFinite, nIntervals: 5 },
-        error: buildNotFiniteError('halfWidth'),
+        errorClass: TypeError,
+        fragment: 'halfWidth',
       },
       {
         label: `the mean is ${nonFinite}`,
         params: { mean: nonFinite, nIntervals: 5 },
-        error: buildNotFiniteError('mean'),
+        errorClass: TypeError,
+        fragment: 'mean',
       },
     ]),
-  ])('throws if $label', ({ error, params }) => {
-    expect(() => computeNormalIntervalProbabilities(params)).toThrow(error);
+  ])('throws if $label', ({ errorClass, fragment, params }) => {
+    expect(() => computeNormalIntervalProbabilities(params)).toThrow(errorClass);
+    expect(() => computeNormalIntervalProbabilities(params)).toThrow(fragment);
   });
 });
 
