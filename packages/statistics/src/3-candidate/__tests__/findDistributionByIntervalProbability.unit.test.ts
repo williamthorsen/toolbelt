@@ -83,7 +83,7 @@ describe(findDistributionByIntervalProbability, () => {
     {
       label: 'the target falls below the probability reachable at the bottom of the range',
       params: { nIntervals: 5, probability: 0.01 },
-      options: { sdMin: 2 },
+      options: { minStandardDeviation: 2 },
       error: new RangeError(
         'Probability 0.01 is below the minimum reachable (0.1353357) with standard deviation in range [2, 20].',
       ),
@@ -97,16 +97,16 @@ describe(findDistributionByIntervalProbability, () => {
       ),
     },
     {
-      label: 'sdMax is not greater than sdMin',
+      label: 'maxStandardDeviation is not greater than minStandardDeviation',
       params: { nIntervals: 5, probability: 0.1 },
-      options: { sdMin: 1, sdMax: 0.5 },
-      error: new RangeError('Maximum standard deviation (sdMax) must be greater than minimum (sdMin).'),
+      options: { minStandardDeviation: 1, maxStandardDeviation: 0.5 },
+      error: new RangeError('maxStandardDeviation must be greater than minStandardDeviation.'),
     },
     {
-      label: 'sdMin is 0',
+      label: 'minStandardDeviation is 0',
       params: { nIntervals: 5, probability: 0.1 },
-      options: { sdMin: 0 },
-      error: new RangeError('Minimum standard deviation (sdMin) must be greater than 0.'),
+      options: { minStandardDeviation: 0 },
+      error: new RangeError('minStandardDeviation must be greater than 0.'),
     },
     {
       label: 'the probability is 0',
@@ -140,16 +140,16 @@ describe(findDistributionByIntervalProbability, () => {
         error: buildNotFiniteError('probability'),
       },
       {
-        label: `sdMin is ${nonFinite}`,
+        label: `minStandardDeviation is ${nonFinite}`,
         params: { nIntervals: 5, probability: 0.05 },
-        options: { sdMin: nonFinite },
-        error: buildNotFiniteError('sdMin'),
+        options: { minStandardDeviation: nonFinite },
+        error: buildNotFiniteError('minStandardDeviation'),
       },
       {
-        label: `sdMax is ${nonFinite}`,
+        label: `maxStandardDeviation is ${nonFinite}`,
         params: { nIntervals: 5, probability: 0.05 },
-        options: { sdMax: nonFinite },
-        error: buildNotFiniteError('sdMax'),
+        options: { maxStandardDeviation: nonFinite },
+        error: buildNotFiniteError('maxStandardDeviation'),
       },
     ]),
   ])('throws if $label', ({ error, options, params }) => {
