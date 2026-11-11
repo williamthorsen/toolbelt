@@ -1,8 +1,7 @@
-import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
-
 import { assertFinite } from '../internal/assertFinite.ts';
 import { assertPositiveInteger } from '../internal/assertPositiveInteger.ts';
 import { computeCdf } from './computeCdf.ts';
+import { toAddendsFromCumulativeSums } from './toAddendsFromCumulativeSums.ts';
 import { toCumulativeSumsFromAddends } from './toCumulativeSumsFromAddends.ts';
 
 /**
@@ -60,10 +59,8 @@ function toNormalProbabilities(params: WindowParams): number[] {
 
   const cumulativeWeights = boundaries.map((value) => computeCdf({ mean, standardDeviation, value }));
 
-  const weights: number[] = [];
-  for (let i = 1; i < cumulativeWeights.length; i++) {
-    weights.push(getItemAtIndexOrThrow(cumulativeWeights, i) - getItemAtIndexOrThrow(cumulativeWeights, i - 1));
-  }
+  // Drop the first addend, which is the CDF at the window's lower boundary.
+  const weights = toAddendsFromCumulativeSums(cumulativeWeights).slice(1);
 
   return toProbabilitiesFromWeights(weights);
 }
