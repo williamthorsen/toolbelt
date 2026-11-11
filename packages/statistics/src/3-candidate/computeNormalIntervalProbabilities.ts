@@ -25,10 +25,10 @@ export function computeNormalIntervalProbabilities(params: Params): IntervalProb
   assertFinite(standardDeviation, 'standardDeviation');
 
   if (halfWidth <= 0) {
-    throw new Error('halfWidth must be greater than 0.');
+    throw new RangeError('halfWidth must be greater than 0.');
   }
   if (standardDeviation < 0) {
-    throw new Error('Standard deviation cannot be negative.');
+    throw new RangeError('Standard deviation cannot be negative.');
   }
 
   const additive =
@@ -38,6 +38,8 @@ export function computeNormalIntervalProbabilities(params: Params): IntervalProb
 
   return { additive, cumulative: toCumulativeSumsFromAddends(additive) };
 }
+
+// region | Helpers
 
 /** Returns the total of the values. */
 function sum(array: number[]): number {
@@ -86,6 +88,8 @@ function toProbabilitiesFromWeights(weights: number[]): number[] {
   const total = sum(weights);
   return weights.map((weight) => weight / total);
 }
+
+// endregion | Helpers
 
 interface Params {
   halfWidth?: number | undefined;

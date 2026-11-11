@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { buildNotFiniteError } from '../../test-utils/buildNotFiniteError.ts';
 import { computeCdf } from '../computeCdf.ts';
 
 describe(computeCdf, () => {
@@ -44,9 +45,41 @@ describe(computeCdf, () => {
     expect(computeCdf({ value: -38 })).toBeGreaterThan(0);
   });
 
-  it('throws an error if given an invalid standard deviation', () => {
-    const throwingFn = () => computeCdf({ mean: 0, standardDeviation: 0, value: 0 });
+  it.each([
+    { label: 'the mean is Infinity', params: { mean: Infinity, value: 0 }, error: buildNotFiniteError('mean') },
+    { label: 'the mean is -Infinity', params: { mean: -Infinity, value: 0 }, error: buildNotFiniteError('mean') },
+    { label: 'the mean is NaN', params: { mean: NaN, value: 0 }, error: buildNotFiniteError('mean') },
+    {
+      label: 'the standard deviation is Infinity',
+      params: { standardDeviation: Infinity, value: 0 },
+      error: buildNotFiniteError('standardDeviation'),
+    },
+    {
+      label: 'the standard deviation is -Infinity',
+      params: { standardDeviation: -Infinity, value: 0 },
+      error: buildNotFiniteError('standardDeviation'),
+    },
+    {
+      label: 'the standard deviation is NaN',
+      params: { standardDeviation: NaN, value: 0 },
+      error: buildNotFiniteError('standardDeviation'),
+    },
+    {
+      label: 'the standard deviation is 0',
+      params: { standardDeviation: 0, value: 0 },
+      error: new RangeError('Standard deviation must be greater than zero.'),
+    },
+    {
+      label: 'the standard deviation is negative',
+      params: { standardDeviation: -1, value: 0 },
+      error: new RangeError('Standard deviation must be greater than zero.'),
+    },
+    { label: 'the value is NaN', params: { value: NaN }, error: new TypeError('value must not be NaN.') },
+  ])('throws if $label', ({ error, params }) => {
+    expect(() => computeCdf(params)).toThrow(error);
+  });
 
-    expect(throwingFn).toThrow('Standard deviation must be greater than zero.');
+  it.each([Infinity, -Infinity])('accepts the infinite value %d', (value) => {
+    expect(computeCdf({ value })).toBe(value > 0 ? 1 : 0);
   });
 });

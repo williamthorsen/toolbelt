@@ -30,13 +30,16 @@ export function findDistributionByIntervalProbability(params: Params, options: O
   assertFinite(tolerance, 'tolerance');
 
   if (target <= 0) {
-    throw new Error('Probability must be greater than 0.');
+    throw new RangeError('Probability must be greater than 0.');
   }
   if (sdMin <= 0) {
-    throw new Error('Minimum standard deviation (sdMin) must be greater than 0.');
+    throw new RangeError('Minimum standard deviation (sdMin) must be greater than 0.');
   }
   if (sdMin >= sdMax) {
-    throw new Error('Maximum standard deviation (sdMax) must be greater than minimum (sdMin).');
+    throw new RangeError('Maximum standard deviation (sdMax) must be greater than minimum (sdMin).');
+  }
+  if (tolerance <= 0) {
+    throw new RangeError('tolerance must be greater than 0.');
   }
 
   /** Returns the interval probabilities at a standard deviation, with the window and interval count held fixed. */
@@ -95,10 +98,14 @@ export function findDistributionByIntervalProbability(params: Params, options: O
   };
 }
 
+// region | Helpers
+
 /** Returns the probability of the first interval. */
 function toFirstProbability(intervalProbabilities: IntervalProbabilities): number {
   return getItemAtIndexOrThrow(intervalProbabilities.additive, 0);
 }
+
+// endregion | Helpers
 
 type IntervalProbabilities = ReturnType<typeof computeNormalIntervalProbabilities>;
 
