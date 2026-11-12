@@ -23,6 +23,7 @@ export {
   type TemplateLiteral,
 } from './portable/listTemplateLiterals.ts';
 export { listTopLevelArguments } from './portable/listTopLevelArguments.ts';
+export { listTopLevelSpans, type TextSpan } from './portable/listTopLevelSpans.ts';
 export { type AnchoredWindow, readAnchoredWindow, type WindowLengths } from './portable/readAnchoredWindow.ts';
 export {
   BRACES,
