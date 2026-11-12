@@ -53,6 +53,14 @@ alpha
     expect(() => dedent`not empty`).toThrow(/first line/);
   });
 
+  it('throws when the template contains an invalid escape sequence', () => {
+    expect(
+      () => dedent`
+        \unicode
+      `,
+    ).toThrow(/invalid escape sequence/);
+  });
+
   it('given an opening line of only whitespace, drops it', () => {
     // Built by hand because `.editorconfig` and the formatter strip trailing whitespace from source,
     // so this case cannot be written as a template literal.
