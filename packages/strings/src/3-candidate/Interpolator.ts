@@ -102,14 +102,9 @@ export class Interpolator {
 
   /** Replaces each placeholder with its mapped value, handling an unmatched one as `ifMissing` directs. */
   interpolate<T>(options: InterpolateOptions<T> = {}): string {
-    const mergedOptions = {
-      noAdaptCase: this.noAdaptCase,
-      ifMissing: this.ifMissing,
-      ...options,
-    };
-    const mapping = mergedOptions.mapping ? this.stringMappingToMap(mergedOptions.mapping) : this.mapping;
-
-    const { ifMissing = 'IGNORE', noAdaptCase } = options;
+    const mapping = options.mapping ? this.stringMappingToMap(options.mapping) : this.mapping;
+    const ifMissing = options.ifMissing ?? this.ifMissing ?? 'IGNORE';
+    const noAdaptCase = options.noAdaptCase ?? this.noAdaptCase;
 
     let newText = this.template;
     for (const [key, value] of mapping) {
@@ -128,8 +123,12 @@ export class Interpolator {
 
         const isInsensitiveMatch = typeof key === 'string' && placeholder.toLowerCase() === key;
 
+        if (noAdaptCase && isInsensitiveMatch) {
+          return value;
+        }
+
         // Adapt the case only when the placeholder differs from the key in case alone.
-        if (!noAdaptCase && typeof key === 'string' && isInsensitiveMatch) {
+        if (typeof key === 'string' && isInsensitiveMatch) {
           // Apply to the value the transformation that recases the key to match the placeholder.
           const transform = deriveCaseTransformer(key, placeholder);
           if (transform !== undefined) {
