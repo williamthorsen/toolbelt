@@ -193,6 +193,7 @@ var ADOPTED_EXPORTS = [
   "createCli",
   "defineCommand",
   "defineGroup",
+  "installCrashHandler",
   "ParseError",
   "parseArgs",
   "readStreamText",
