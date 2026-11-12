@@ -157,75 +157,6 @@ export abstract class TextNode {
   abstract toString(): string;
 }
 
-/** A run of text whose segments are static strings and nested variant nodes. */
-class TokenNode extends TextNode {
-  children?: (TextNode | string)[];
-
-  /** Segments the content into static strings and child nodes. */
-  constructor(content: string) {
-    super(content);
-    if (TextNode.hasDelimited(content)) {
-      this.children = segmentByDelimited(content, DELIMIT).map((segment) => TextNode.fromContent(segment));
-    }
-  }
-
-  /** Joins the text picked by each child. */
-  pick(options: SeedOptions = {}): string {
-    const seed = IntSeededRng.spawn(options.seed);
-    if (this.children) {
-      return this.children.map((child) => (typeof child === 'string' ? child : child.pick({ seed }))).join('');
-    }
-    return this.content;
-  }
-
-  /** Collects the indices picked by each variant child. */
-  pickIndices(options: SeedOptions = {}): VariantIndices {
-    const seed = IntSeededRng.spawn(options.seed);
-
-    const children = this.children || [];
-    const indices: VariantIndices = [];
-
-    for (const child of children) {
-      if (!(child instanceof VariantNode)) continue;
-
-      const childIndices = child.pickIndices({ seed });
-      indices.push(childIndices.length === 1 ? getItemAtIndexOrThrow(childIndices, 0) : childIndices);
-    }
-
-    // Avoid unnecessary nesting
-    return indices.length === 1 && Array.isArray(indices[0]) ? indices[0] : indices;
-  }
-
-  /** Joins the text that the indices select from each child. */
-  selectVariants(indices: string | VariantIndices, options: { depth?: Integer } = {}): string {
-    const { depth = 0 } = options;
-
-    const decodedIndices = this.decodeIndices(indices, depth);
-    const resolvedContent = (() => {
-      if (!this.children) {
-        return '';
-      }
-
-      const childContents = this.children.map((child) => {
-        if (typeof child === 'string') return child;
-        return child.selectVariants(decodedIndices, { depth: depth + 1 });
-      });
-      return childContents.join('');
-    })();
-
-    this.assertAllIndicesConsumed(decodedIndices, depth);
-    return resolvedContent;
-  }
-
-  /** Joins the delimited text of each child. */
-  toString(): string {
-    if (this.children) {
-      return this.children.map((child) => child.toString()).join('');
-    }
-    return this.content;
-  }
-}
-
 /**
  * A delimited set of alternatives, one of which is chosen when the text is picked.
  *
@@ -300,6 +231,8 @@ export class VariantNode extends TextNode {
   }
 }
 
+// region | Helpers
+
 /** Encloses content in the opening and closing delimiters. */
 function enclose(content: string, options: { opening: string; closing: string }): string {
   const { opening, closing } = options;
@@ -319,12 +252,12 @@ function flatten(indices: VariantIndices): number[] {
   return flatIndices;
 }
 
+type Integer = number;
+
 /** Reports whether every item is a number. */
 function isNumberArray(items: unknown[]): items is number[] {
   return Array.isArray(items) && items.every((item) => typeof item === 'number');
 }
-
-type Integer = number;
 
 interface PickSummary {
   content: string;
@@ -334,4 +267,75 @@ interface PickSummary {
   seed: Integer;
 }
 
+/** A run of text whose segments are static strings and nested variant nodes. */
+class TokenNode extends TextNode {
+  children?: (TextNode | string)[];
+
+  /** Segments the content into static strings and child nodes. */
+  constructor(content: string) {
+    super(content);
+    if (TextNode.hasDelimited(content)) {
+      this.children = segmentByDelimited(content, DELIMIT).map((segment) => TextNode.fromContent(segment));
+    }
+  }
+
+  /** Joins the text picked by each child. */
+  pick(options: SeedOptions = {}): string {
+    const seed = IntSeededRng.spawn(options.seed);
+    if (this.children) {
+      return this.children.map((child) => (typeof child === 'string' ? child : child.pick({ seed }))).join('');
+    }
+    return this.content;
+  }
+
+  /** Collects the indices picked by each variant child. */
+  pickIndices(options: SeedOptions = {}): VariantIndices {
+    const seed = IntSeededRng.spawn(options.seed);
+
+    const children = this.children || [];
+    const indices: VariantIndices = [];
+
+    for (const child of children) {
+      if (!(child instanceof VariantNode)) continue;
+
+      const childIndices = child.pickIndices({ seed });
+      indices.push(childIndices.length === 1 ? getItemAtIndexOrThrow(childIndices, 0) : childIndices);
+    }
+
+    // Avoid unnecessary nesting
+    return indices.length === 1 && Array.isArray(indices[0]) ? indices[0] : indices;
+  }
+
+  /** Joins the text that the indices select from each child. */
+  selectVariants(indices: string | VariantIndices, options: { depth?: Integer } = {}): string {
+    const { depth = 0 } = options;
+
+    const decodedIndices = this.decodeIndices(indices, depth);
+    const resolvedContent = (() => {
+      if (!this.children) {
+        return '';
+      }
+
+      const childContents = this.children.map((child) => {
+        if (typeof child === 'string') return child;
+        return child.selectVariants(decodedIndices, { depth: depth + 1 });
+      });
+      return childContents.join('');
+    })();
+
+    this.assertAllIndicesConsumed(decodedIndices, depth);
+    return resolvedContent;
+  }
+
+  /** Joins the delimited text of each child. */
+  toString(): string {
+    if (this.children) {
+      return this.children.map((child) => child.toString()).join('');
+    }
+    return this.content;
+  }
+}
+
 type VariantIndices = (Integer | VariantIndices)[];
+
+// endregion | Helpers
