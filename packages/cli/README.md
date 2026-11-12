@@ -19,7 +19,9 @@ Requires Node.js 24 or later.
 ```ts
 import process from 'node:process';
 
-import { defineCommand, defineGroup, runCli } from '@williamthorsen/toolbelt.cli/candidate';
+import { defineCommand, defineGroup, installCrashHandler, runCli } from '@williamthorsen/toolbelt.cli/candidate';
+
+installCrashHandler('demo');
 
 const greet = defineCommand({
   summary: 'Print a greeting',
@@ -99,6 +101,10 @@ import { readStreamText } from '@williamthorsen/toolbelt.cli/candidate';
 
 const input = process.stdin.isTTY ? undefined : await readStreamText(process.stdin);
 ```
+
+## Reporting crashes
+
+`runCli` rethrows every error that is not a `UsageError`. `installCrashHandler(name)` registers a process `uncaughtException` listener that reports such an error, whether thrown from a command, a top-level await, or an event listener, as `<name>: internal error: <message>` with its stack frames and its `cause` chain, then exits with code 1 once stderr has flushed. Call it once, before `runCli`, as the usage example above does.
 
 ## Compared with alternatives
 
