@@ -115,14 +115,14 @@
           "path": "../src/readiness/listCapitalizeLines.ts"
         },
         {
-          "hash": "09cea371",
+          "hash": "394b3715",
           "kind": "module",
-          "path": "../src/readiness/listJoinedLineArrays.ts"
+          "path": "../src/readiness/listJoinedLineArrayLines.ts"
         },
         {
-          "hash": "20474977",
+          "hash": "a73baa16",
           "kind": "module",
-          "path": "../src/readiness/listLayoutBreakingTemplates.ts"
+          "path": "../src/readiness/listLayoutBreakingTemplateLines.ts"
         },
         {
           "hash": "34ba7637",
@@ -130,7 +130,7 @@
           "path": "../src/readiness/listPluralizeLines.ts"
         },
         {
-          "hash": "56b4b5c2",
+          "hash": "5cc4cf4a",
           "kind": "module",
           "path": "../src/readiness/listStringIdioms.ts"
         }
@@ -140,7 +140,7 @@
       "readyupVersion": "0.46.1",
       "source": "kits/default.ts",
       "sourceHash": "86b64892",
-      "targetHash": "c983ba7b"
+      "targetHash": "27ed1b40"
     }
   ]
 }
