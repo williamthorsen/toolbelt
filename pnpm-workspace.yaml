@@ -7,7 +7,7 @@ allowBuilds:
 catalog:
   '@sindresorhus/is': 8.1.0
   esbuild: 0.28.2
-  readyup: 0.46.0
+  readyup: 0.46.1
   vitest: 5.1.0
 
 # Keep pnpm 11's 24h minimumReleaseAge soak (supply-chain protection), set explicitly to pin
