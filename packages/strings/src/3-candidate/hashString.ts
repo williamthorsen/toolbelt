@@ -15,7 +15,7 @@ const UINT32_SIZE = 2 ** 32;
  * @experimental
  * @stage candidate
  */
-export function hashString(str: string, options: HashStringOptions = {}): number {
+export function hashString(text: string, options: HashStringOptions = {}): number {
   const { max = MAX_UINT32, min = 0, offset = 0 } = options;
 
   // Validate the bounds and the offset
@@ -38,7 +38,7 @@ export function hashString(str: string, options: HashStringOptions = {}): number
   // Reduce the offset before adding it, so that the sum stays within the exactly-representable integers.
   const shift = ((offset % size) + size) % size;
 
-  return min + ((computeDigest(str) + shift) % size);
+  return min + ((computeDigest(text) + shift) % size);
 }
 
 export interface HashStringOptions {
@@ -54,12 +54,12 @@ export interface HashStringOptions {
  * Each code unit contributes its low and high byte separately, so the digest is not byte-identical to FNV-1a over
  * the same text encoded as UTF-8.
  */
-function computeDigest(str: string): number {
+function computeDigest(text: string): number {
   let hash = FNV_OFFSET_BASIS;
 
-  for (let i = 0; i < str.length; i++) {
+  for (let i = 0; i < text.length; i++) {
     // eslint-disable-next-line unicorn/prefer-code-point -- the digest is defined over UTF-16 code units.
-    const unit = str.charCodeAt(i);
+    const unit = text.charCodeAt(i);
     hash = Math.imul(hash ^ (unit & 0xff), FNV_PRIME);
     hash = Math.imul(hash ^ (unit >>> 8), FNV_PRIME);
   }

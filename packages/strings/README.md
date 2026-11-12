@@ -212,7 +212,7 @@ The two lenient edge rules are deliberate. Requiring a bare opening line would r
 ## `hashString`
 
 ```ts
-hashString(str: string, options?: { max?: number; min?: number; offset?: number }): number;
+hashString(text: string, options?: { max?: number; min?: number; offset?: number }): number;
 ```
 
 Deterministically derives an integer from a string, for a stable bucket, index, or slot that survives restarts and processes.
@@ -229,7 +229,7 @@ hashString('user-4821', { max: 999 });
 
 The default range is the full 32-bit width, `[0, 4294967295]`. Bounding is opt-in through `min` and `max`, which are inclusive, because a narrow range imposes a collision floor that the caller should choose knowingly: At `{ max: 999 }`, two of roughly forty inputs collide more often than not.
 
-`offset` rotates the result rather than salting the digest, so every input shifts by the same amount and `hashString(str, { offset })` stays derivable from `hashString(str)`. It wraps at both bounds: A negative offset and one larger than the range are both fine.
+`offset` rotates the result rather than salting the digest, so every input shifts by the same amount and `hashString(text, { offset })` stays derivable from `hashString(text)`. It wraps at both bounds: A negative offset and one larger than the range are both fine.
 
 ```ts
 hashString('user-4821', { max: 999, offset: 300 });

@@ -5,18 +5,18 @@ import { isPatternMatch } from '../isPatternMatch.ts';
 describe(isPatternMatch, () => {
   it('returns true for an exact match with a string pattern', () => {
     const pattern = 'hello world';
-    const str = 'hello world';
+    const text = 'hello world';
 
-    const result = isPatternMatch(pattern, str);
+    const result = isPatternMatch(pattern, text);
 
     expect(result).toBe(true);
   });
 
   it('if match to string patterns is only partial, returns false', () => {
     const pattern = 'hello';
-    const str = 'hello world';
+    const text = 'hello world';
 
-    const result = isPatternMatch(pattern, str);
+    const result = isPatternMatch(pattern, text);
 
     expect(result).toBe(false);
   });
@@ -41,36 +41,36 @@ describe(isPatternMatch, () => {
 
   it('returns true if any of the array patterns match', () => {
     const patterns = ['goodbye', 'world', /hello/];
-    const str = 'hello world';
+    const text = 'hello world';
 
-    const result = isPatternMatch(patterns, str);
+    const result = isPatternMatch(patterns, text);
 
     expect(result).toBe(true);
   });
 
   it('returns false if none of the array patterns match', () => {
     const patterns = ['goodbye', 'planet', /^world/];
-    const str = 'hello world';
+    const text = 'hello world';
 
-    const result = isPatternMatch(patterns, str);
+    const result = isPatternMatch(patterns, text);
 
     expect(result).toBe(false);
   });
 
   it('given an array of string and RegExp patterns, returns true if a RegExp matches', () => {
     const patterns = ['goodbye', /^hello/, 'planet'];
-    const str = 'hello world';
+    const text = 'hello world';
 
-    const result = isPatternMatch(patterns, str);
+    const result = isPatternMatch(patterns, text);
 
     expect(result).toBe(true);
   });
 
   it('returns false for empty string even if pattern exists', () => {
     const pattern = 'hello';
-    const str = '';
+    const text = '';
 
-    const result = isPatternMatch(pattern, str);
+    const result = isPatternMatch(pattern, text);
 
     expect(result).toBe(false);
   });

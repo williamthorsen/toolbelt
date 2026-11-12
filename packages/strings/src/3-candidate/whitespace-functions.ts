@@ -5,8 +5,8 @@
  * @experimental
  * @stage candidate
  */
-export function condenseWhitespace(str: string): string {
-  return str.split('\n').map(condenseWhitespaceSingleLine).join('\n');
+export function condenseWhitespace(text: string): string {
+  return text.split('\n').map(condenseWhitespaceSingleLine).join('\n');
 }
 
 /**
@@ -16,8 +16,8 @@ export function condenseWhitespace(str: string): string {
  * @experimental
  * @stage candidate
  */
-export function removeWhitespace(str: string): string {
-  return str.replaceAll(/\s+/g, '');
+export function removeWhitespace(text: string): string {
+  return text.replaceAll(/\s+/g, '');
 }
 
 /**
@@ -27,8 +27,8 @@ export function removeWhitespace(str: string): string {
  * @experimental
  * @stage candidate
  */
-export function trimWhitespace(str: string): string {
-  return str
+export function trimWhitespace(text: string): string {
+  return text
     .split('\n')
     .map(condenseWhitespaceSingleLine)
     .map((line) => line.trim())
@@ -39,7 +39,7 @@ export function trimWhitespace(str: string): string {
 /**
  * Collapses each run of whitespace to a single space.
  */
-function condenseWhitespaceSingleLine(str: string): string {
-  return str.replaceAll(/\s+/g, ' ');
+function condenseWhitespaceSingleLine(text: string): string {
+  return text.replaceAll(/\s+/g, ' ');
 }
 // endregion | Helpers

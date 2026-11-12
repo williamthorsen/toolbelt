@@ -4,137 +4,137 @@ import { obfuscate } from '../obfuscate.ts';
 
 describe(obfuscate, () => {
   it('replaces all characters with asterisks', () => {
-    const str = '1234';
+    const text = '1234';
     const expected = '****';
 
-    const actual = obfuscate(str);
+    const actual = obfuscate(text);
 
     expect(actual).toBe(expected);
   });
 
   it('if bookendSize > 0, reveals {bookendSize} characters at beginning and end', () => {
     const options = { bookendSize: 4 };
-    const str = '123456789012';
+    const text = '123456789012';
     const expected = '1234****9012';
 
-    const actual = obfuscate(str, options);
+    const actual = obfuscate(text, options);
 
     expect(actual).toBe(expected);
   });
 
   it('hides at least {bookendSize} characters', () => {
     const options = { bookendSize: 4 };
-    const str = '123456';
+    const text = '123456';
     const expected = '1****6';
 
-    const actual = obfuscate(str, options);
+    const actual = obfuscate(text, options);
 
     expect(actual).toBe(expected);
   });
 
   it('hides at least {bookendSize} characters, revealing a whole number at each end', () => {
     const options = { bookendSize: 4 };
-    const str = '123456789';
+    const text = '123456789';
     const expected = '12*****89';
 
-    const actual = obfuscate(str, options);
+    const actual = obfuscate(text, options);
 
     expect(actual).toBe(expected);
   });
 
   it('if bookendSize >= string length, obfuscates all characters', () => {
     const options = { bookendSize: 6 };
-    const str = '1234';
+    const text = '1234';
     const expected = '****';
 
-    const actual = obfuscate(str, options);
+    const actual = obfuscate(text, options);
 
     expect(actual).toBe(expected);
   });
 
   it('if bookendSize is fractional, ignores its decimal part', () => {
     const options = { bookendSize: 2.5 };
-    const str = '1234567890';
+    const text = '1234567890';
     const expected = '12******90';
 
-    const actual = obfuscate(str, options);
+    const actual = obfuscate(text, options);
 
     expect(actual).toBe(expected);
   });
 
   it('if bookendSize < 0, throws a RangeError', () => {
     const options = { bookendSize: -1 };
-    const str = '1234';
+    const text = '1234';
 
-    expect(() => obfuscate(str, options)).toThrow(RangeError);
-    expect(() => obfuscate(str, options)).toThrow('bookendSize');
+    expect(() => obfuscate(text, options)).toThrow(RangeError);
+    expect(() => obfuscate(text, options)).toThrow('bookendSize');
   });
 
   it('if bookendSize is NaN, throws a TypeError', () => {
     const options = { bookendSize: NaN };
-    const str = '1234';
+    const text = '1234';
 
-    expect(() => obfuscate(str, options)).toThrow(TypeError);
-    expect(() => obfuscate(str, options)).toThrow('bookendSize');
+    expect(() => obfuscate(text, options)).toThrow(TypeError);
+    expect(() => obfuscate(text, options)).toThrow('bookendSize');
   });
 
   it('if fillChar is given, uses it as the replacement character', () => {
     const options = { fillChar: '@' };
-    const str = '1234';
+    const text = '1234';
     const expected = '@@@@';
 
-    const actual = obfuscate(str, options);
+    const actual = obfuscate(text, options);
 
     expect(actual).toBe(expected);
   });
 
   it('if fillChar is an empty string, throws a TypeError', () => {
     const options = { bookendSize: 2, fillChar: '' };
-    const str = '1234';
+    const text = '1234';
 
-    expect(() => obfuscate(str, options)).toThrow(TypeError);
-    expect(() => obfuscate(str, options)).toThrow('fillChar');
+    expect(() => obfuscate(text, options)).toThrow(TypeError);
+    expect(() => obfuscate(text, options)).toThrow('fillChar');
   });
 
   it('if fillChar is longer than one character, throws a TypeError', () => {
     const options = { fillChar: '**' };
-    const str = '1234';
+    const text = '1234';
 
-    expect(() => obfuscate(str, options)).toThrow(TypeError);
-    expect(() => obfuscate(str, options)).toThrow('fillChar');
+    expect(() => obfuscate(text, options)).toThrow(TypeError);
+    expect(() => obfuscate(text, options)).toThrow('fillChar');
   });
 
   it('if fillSize is given, displays at most {fillSize} fill characters', () => {
     const options = { bookendSize: 2, fillSize: 3 };
-    const str = '123456789';
+    const text = '123456789';
     const expected = '12***89';
 
-    const actual = obfuscate(str, options);
+    const actual = obfuscate(text, options);
 
     expect(actual).toBe(expected);
   });
 
   it('if fillSize < bookendSize, throws a RangeError', () => {
     const options = { bookendSize: 4, fillSize: 2 };
-    const str = '1234';
+    const text = '1234';
 
-    expect(() => obfuscate(str, options)).toThrow(RangeError);
-    expect(() => obfuscate(str, options)).toThrow('less than bookendSize');
+    expect(() => obfuscate(text, options)).toThrow(RangeError);
+    expect(() => obfuscate(text, options)).toThrow('less than bookendSize');
   });
 
   it('if fillSize < 1, throws a RangeError', () => {
     const options = { fillSize: 0 };
-    const str = '1234';
+    const text = '1234';
 
-    expect(() => obfuscate(str, options)).toThrow(RangeError);
-    expect(() => obfuscate(str, options)).toThrow('fillSize is 1');
+    expect(() => obfuscate(text, options)).toThrow(RangeError);
+    expect(() => obfuscate(text, options)).toThrow('fillSize is 1');
   });
 
   it('if fillSize is NaN, throws a TypeError', () => {
     const options = { fillSize: NaN };
-    const str = '1234';
+    const text = '1234';
 
-    expect(() => obfuscate(str, options)).toThrow(TypeError);
-    expect(() => obfuscate(str, options)).toThrow('fillSize');
+    expect(() => obfuscate(text, options)).toThrow(TypeError);
+    expect(() => obfuscate(text, options)).toThrow('fillSize');
   });
 });
