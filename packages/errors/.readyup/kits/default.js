@@ -199,7 +199,13 @@ function readParameterText(source, head) {
 import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
 
 // src/readiness/adoptedExports.ts
-var ADOPTED_EXPORTS = ["assertIsError", "chainError", "describeError", "isError"];
+var ADOPTED_EXPORTS = [
+  "assertIsError",
+  "chainError",
+  "describeError",
+  "isError",
+  "isMissingPathError"
+];
 
 // src/readiness/classifySite.ts
 var DESCRIBE_TERNARY = /^instanceof Error \? [\w.]+\.message :/;
