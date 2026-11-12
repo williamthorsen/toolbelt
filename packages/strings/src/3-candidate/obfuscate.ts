@@ -8,7 +8,7 @@ import { clamp } from '@williamthorsen/toolbelt.numbers/candidate';
  * @experimental
  * @stage candidate
  */
-export function obfuscate(str: string, options: Options = {}): string {
+export function obfuscate(text: string, options: Options = {}): string {
   const { bookendSize = 0, fillChar = '*', fillSize } = options;
 
   // Validate the options
@@ -28,11 +28,11 @@ export function obfuscate(str: string, options: Options = {}): string {
   }
 
   // Reveal at most `bookendSize` whole characters per end, and only while at least `bookendSize` stay hidden.
-  const nBookendChars = clamp(Math.floor((str.length - bookendSize) / 2), { max: Math.floor(bookendSize), min: 0 });
+  const nBookendChars = clamp(Math.floor((text.length - bookendSize) / 2), { max: Math.floor(bookendSize), min: 0 });
 
-  const start = str.slice(0, nBookendChars);
-  const end = str.slice(Math.max(start.length, str.length - nBookendChars));
-  const fill = fillChar.repeat(Math.max(0, str.length - nBookendChars * 2));
+  const start = text.slice(0, nBookendChars);
+  const end = text.slice(Math.max(start.length, text.length - nBookendChars));
+  const fill = fillChar.repeat(Math.max(0, text.length - nBookendChars * 2));
 
   const constrainedFill = fillSize === undefined ? fill : fill.slice(0, fillSize);
 

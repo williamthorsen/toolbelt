@@ -4,8 +4,8 @@
  * @experimental
  * @stage candidate
  */
-export function toLowerCase(str: string): string {
-  return str.toLowerCase();
+export function toLowerCase(text: string): string {
+  return text.toLowerCase();
 }
 
 /**
@@ -14,8 +14,8 @@ export function toLowerCase(str: string): string {
  * @experimental
  * @stage candidate
  */
-export function toUpperCase(str: string): string {
-  return str.toUpperCase();
+export function toUpperCase(text: string): string {
+  return text.toUpperCase();
 }
 
 /**
@@ -24,8 +24,8 @@ export function toUpperCase(str: string): string {
  * @experimental
  * @stage candidate
  */
-export function trim(str: string): string {
-  return str.trim();
+export function trim(text: string): string {
+  return text.trim();
 }
 
 /**
@@ -34,8 +34,8 @@ export function trim(str: string): string {
  * @experimental
  * @stage candidate
  */
-export function trimEnd(str: string): string {
-  return str.trimEnd();
+export function trimEnd(text: string): string {
+  return text.trimEnd();
 }
 
 /**
@@ -44,6 +44,6 @@ export function trimEnd(str: string): string {
  * @experimental
  * @stage candidate
  */
-export function trimStart(str: string): string {
-  return str.trimStart();
+export function trimStart(text: string): string {
+  return text.trimStart();
 }

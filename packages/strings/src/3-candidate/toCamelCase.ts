@@ -6,11 +6,9 @@ import { capitalize } from './capitalize.ts';
  * @category String
  * @experimental
  * @stage candidate
- * @param inputStr - The string to be converted.
- * @returns The input string converted to camelCase.
  */
-export function toCamelCase(inputStr: string): string {
-  const words = inputStr.trim().split(/[\s-_]+/);
+export function toCamelCase(text: string): string {
+  const words = text.trim().split(/[\s-_]+/);
 
   // Convert all substrings to lowercase, then capitalize every word after the first
   return words
