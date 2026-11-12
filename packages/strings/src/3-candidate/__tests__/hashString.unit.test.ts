@@ -9,18 +9,18 @@ const BUCKETED: HashStringOptions = { max: N_BUCKETS - 1 };
 
 describe(hashString, () => {
   // The digest is a published contract, so a change to the algorithm is a breaking change.
-  const digestCases: ReadonlyArray<{ expected: number; scenario: string; str: string }> = [
-    { scenario: 'an empty string', str: '', expected: 2_872_998_923 },
-    { scenario: 'a single character', str: 'a', expected: 2_448_022_055 },
-    { scenario: 'two characters', str: 'ab', expected: 4_121_897_818 },
-    { scenario: 'a sentence', str: 'The quick brown fox jumps over the lazy dog', expected: 112_255_153 },
-    { scenario: 'an astral character', str: '\u{1D11E}', expected: 763_714_609 },
-    { scenario: 'a lone high surrogate', str: '\u{D800}', expected: 1_077_169_969 },
-    { scenario: 'a lone low surrogate', str: '\u{DFFF}', expected: 1_709_237_870 },
+  const digestCases: ReadonlyArray<{ expected: number; scenario: string; text: string }> = [
+    { scenario: 'an empty string', text: '', expected: 2_872_998_923 },
+    { scenario: 'a single character', text: 'a', expected: 2_448_022_055 },
+    { scenario: 'two characters', text: 'ab', expected: 4_121_897_818 },
+    { scenario: 'a sentence', text: 'The quick brown fox jumps over the lazy dog', expected: 112_255_153 },
+    { scenario: 'an astral character', text: '\u{1D11E}', expected: 763_714_609 },
+    { scenario: 'a lone high surrogate', text: '\u{D800}', expected: 1_077_169_969 },
+    { scenario: 'a lone low surrogate', text: '\u{DFFF}', expected: 1_709_237_870 },
   ];
 
-  it.each(digestCases)('returns the locked digest for $scenario', ({ expected, str }) => {
-    expect(hashString(str)).toBe(expected);
+  it.each(digestCases)('returns the locked digest for $scenario', ({ expected, text }) => {
+    expect(hashString(text)).toBe(expected);
   });
 
   it('distinguishes lone surrogates, which a UTF-8 encoding would conflate', () => {
