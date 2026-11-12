@@ -7,6 +7,8 @@ import {
   type TemplateLiteral,
 } from '@williamthorsen/toolbelt.adoption';
 
+import { findCommonIndent, isBlankText } from '../internal/indent-rules.ts';
+
 interface ElementSpan {
   end: number;
   start: number;
@@ -21,9 +23,7 @@ interface LeadingText {
 // The array's closing bracket joined by one quoted separator. The separator is blanked in the code, so its text is
 // read from the source.
 const JOIN_TAIL = /\]\s*\.join\(\s*(?<separator>'[^'\n]*'|"[^"\n]*")\s*\)/dg;
-const BLANK_TEXT = /^[\t ]*$/;
 const CLOSING_DELIMITERS = new Set([')', ']', '}']);
-const INDENT = /^[\t ]*/;
 const QUOTED_ELEMENT = /^(?:'[^'\n]*'|"[^"\n]*")$/;
 const NEWLINE_ESCAPE = String.raw`\n`;
 const OPENING_DELIMITERS = new Set(['(', '[', '{']);
@@ -68,7 +68,10 @@ export function listJoinedLineArrays(code: string, source: string): number[] {
       if (leadingText === undefined) break;
       leadingTexts.push(leadingText);
     }
-    if (leadingTexts.length < elements.length || findSharedIndent(leadingTexts) !== '') continue;
+    if (leadingTexts.length < elements.length) continue;
+
+    const contentTexts = leadingTexts.filter((leadingText) => leadingText.hasContent).map(({ text }) => text);
+    if (findCommonIndent(contentTexts) !== '') continue;
 
     lines.push(getLineAtOffset(code, open));
   }
@@ -91,20 +94,6 @@ function findOpeningBracket(code: string, close: number): number | undefined {
     if (depth === 0) return index;
   }
   return undefined;
-}
-
-/** Returns the indent shared by every element with content, or an empty string when they share none. */
-function findSharedIndent(leadingTexts: readonly LeadingText[]): string {
-  const indents = leadingTexts
-    .filter((leadingText) => leadingText.hasContent)
-    .map((leadingText) => INDENT.exec(leadingText.text)?.[0] ?? '');
-  const [first = ''] = indents;
-
-  let length = first.length;
-  for (const indent of indents) {
-    while (length > 0 && !indent.startsWith(first.slice(0, length))) length -= 1;
-  }
-  return first.slice(0, length);
 }
 
 /**
@@ -143,14 +132,14 @@ function readLeadingText(
 ): LeadingText | undefined {
   if (QUOTED_ELEMENT.test(code.slice(element.start, element.end))) {
     const text = readLiteral(source, [element.start, element.end]) ?? '';
-    return { hasContent: !BLANK_TEXT.test(text), text };
+    return { hasContent: !isBlankText(text), text };
   }
 
   const template = templates.find((candidate) => candidate.start === element.start && candidate.end === element.end);
   if (template === undefined || template.isTagged) return undefined;
 
   const text = source.slice(template.start + 1, template.interpolations[0]?.start ?? template.end - 1);
-  return { hasContent: template.interpolations.length > 0 || !BLANK_TEXT.test(text), text };
+  return { hasContent: template.interpolations.length > 0 || !isBlankText(text), text };
 }
 
 /** Narrows a span to exclude the whitespace at either end. */

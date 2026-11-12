@@ -1,7 +1,8 @@
 import { getLineAtOffset, listTemplateLiterals, type TemplateLiteral } from '@williamthorsen/toolbelt.adoption';
 
+import { findCommonIndent, findLineIndent } from '../internal/indent-rules.ts';
+
 const BLANK_LINE = /^[\t ]*\r?$/;
-const INDENT = /^[\t ]*/;
 // Vitest writes and re-indents an inline snapshot itself, so its layout is not the author's to fix.
 const INLINE_SNAPSHOT_CALL = /InlineSnapshot\(\s*$/;
 // Long enough to include the matcher's name ahead of the backtick.
@@ -28,11 +29,11 @@ export function listLayoutBreakingTemplates(code: string, source: string): numbe
   for (const template of listTemplateLiterals(code)) {
     if (template.isTagged || isInlineSnapshotArgument(code, template.start)) continue;
 
-    const openingIndent = INDENT.exec(source.slice(findLineStart(source, template.start)))?.[0] ?? '';
+    const openingIndent = findLineIndent(source.slice(findLineStart(source, template.start)));
     if (openingIndent === '') continue;
 
-    const laterIndents = listLaterLineIndents(source, template);
-    if (laterIndents.length === 0 || findCommonIndent(laterIndents).startsWith(openingIndent)) continue;
+    const laterLines = listLaterContentLines(source, template);
+    if (laterLines.length === 0 || findCommonIndent(laterLines).startsWith(openingIndent)) continue;
 
     lines.push(getLineAtOffset(code, template.start));
   }
@@ -41,16 +42,6 @@ export function listLayoutBreakingTemplates(code: string, source: string): numbe
 }
 
 // region | Helpers
-
-/** Returns the longest indent with which every indent begins. */
-function findCommonIndent(indents: readonly string[]): string {
-  const [first = ''] = indents;
-  let length = first.length;
-  for (const indent of indents) {
-    while (length > 0 && !indent.startsWith(first.slice(0, length))) length -= 1;
-  }
-  return first.slice(0, length);
-}
 
 /** Returns the offset at which the line containing an offset begins. */
 function findLineStart(source: string, offset: number): number {
@@ -63,11 +54,11 @@ function isInlineSnapshotArgument(code: string, start: number): boolean {
 }
 
 /**
- * Lists the indent of each line after a template's opening line that contains template text with content, skipping a
- * line that begins inside an interpolation.
+ * Lists each line after a template's opening line that contains template text with content, skipping a line that
+ * begins inside an interpolation.
  */
-function listLaterLineIndents(source: string, template: TemplateLiteral): string[] {
-  const indents: string[] = [];
+function listLaterContentLines(source: string, template: TemplateLiteral): string[] {
+  const lines: string[] = [];
   const textEnd = template.end - 1;
 
   let newline = source.indexOf('\n', template.start);
@@ -79,11 +70,11 @@ function listLaterLineIndents(source: string, template: TemplateLiteral): string
       (interpolation) => interpolation.start < lineStart && lineStart < interpolation.end,
     );
 
-    if (!isInsideInterpolation && !BLANK_LINE.test(lineText)) indents.push(INDENT.exec(lineText)?.[0] ?? '');
+    if (!isInsideInterpolation && !BLANK_LINE.test(lineText)) lines.push(lineText);
     newline = nextNewline;
   }
 
-  return indents;
+  return lines;
 }
 
 // endregion | Helpers
