@@ -45,7 +45,7 @@ describe(joinTruthy, () => {
     expect(result).toBe('hello');
   });
 
-  it('handles an array with only null or undefined values', () => {
+  it('given only null or undefined values, returns an empty string', () => {
     const strings = [null, undefined];
     const result = joinTruthy(strings);
     expect(result).toBe('');

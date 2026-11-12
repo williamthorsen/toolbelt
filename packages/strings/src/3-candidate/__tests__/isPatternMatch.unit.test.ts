@@ -21,7 +21,7 @@ describe(isPatternMatch, () => {
     expect(result).toBe(false);
   });
 
-  it('accepts RegExp patterns', () => {
+  it('given a RegExp pattern, returns whether it matches the string', () => {
     const input = 'hello world';
     const matchingPattern = /world$/;
     const nonmatchingPattern = /^world/;
@@ -30,7 +30,7 @@ describe(isPatternMatch, () => {
     expect(isPatternMatch(nonmatchingPattern, input)).toBe(false);
   });
 
-  it('accepts a function that takes a string and returns a boolean', () => {
+  it('given a predicate, returns its result for the string', () => {
     const input = 'hello world';
     const matchingPattern = (s: string) => s.endsWith('world');
     const nonmatchingPattern = (s: string) => s.startsWith('world');
@@ -57,7 +57,7 @@ describe(isPatternMatch, () => {
     expect(result).toBe(false);
   });
 
-  it('handles mixed arrays of string and RegExp patterns', () => {
+  it('given an array of string and RegExp patterns, returns true if a RegExp matches', () => {
     const patterns = ['goodbye', /^hello/, 'planet'];
     const str = 'hello world';
 

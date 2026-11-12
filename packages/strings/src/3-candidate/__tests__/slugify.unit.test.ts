@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { slugify } from '../slugify.ts';
 
 describe(slugify, () => {
-  it('converts simple strings correctly', () => {
+  it('lowercases the words and joins them with a hyphen', () => {
     const input = 'Hello, World';
     const expected = 'hello-world';
 
@@ -12,7 +12,7 @@ describe(slugify, () => {
     expect(actual).toBe(expected);
   });
 
-  it('handles diacritics and accented characters', () => {
+  it('strips diacritics from accented characters', () => {
     const input = 'jalapeño';
     const expected = 'jalapeno';
 
@@ -49,7 +49,7 @@ describe(slugify, () => {
     expect(actual).toBe(expected);
   });
 
-  it('handles numbers in input', () => {
+  it('keeps digits as a word of the slug', () => {
     const input = 'Hello 2023, World';
     const expected = 'hello-2023-world';
 
@@ -58,7 +58,7 @@ describe(slugify, () => {
     expect(actual).toBe(expected);
   });
 
-  it('correctly processes array input', () => {
+  it('given an array, joins its elements as words of the slug', () => {
     const input = ['Hello', 2023, 'World'];
     const expected = 'hello-2023-world';
 

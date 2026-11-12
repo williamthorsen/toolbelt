@@ -47,7 +47,7 @@ describe(toOrdinal, () => {
     expect(toOrdinal(100)).toBe('100th');
   });
 
-  it('handles negative numbers correctly', () => {
+  it('keeps the minus sign and takes the suffix of the absolute value', () => {
     expect(toOrdinal(-1)).toBe('-1st');
     expect(toOrdinal(-2)).toBe('-2nd');
     expect(toOrdinal(-3)).toBe('-3rd');
@@ -57,7 +57,7 @@ describe(toOrdinal, () => {
     expect(toOrdinal(-13)).toBe('-13th');
   });
 
-  it('handles zero correctly', () => {
+  it('gives zero the suffix "th"', () => {
     expect(toOrdinal(0)).toBe('0th');
   });
 });

@@ -66,7 +66,7 @@ describe(TextNode, () => {
       expect(actual).toMatchObject(expected);
     });
 
-    it('can handle nested delimiters', () => {
+    it('given nested delimiters, builds nested variant nodes', () => {
       const input = '1:[A[1[a|b]|2[c|d]]|B] 2:[C|D]';
       const expected = nestedTextNodeAst;
 
@@ -229,7 +229,7 @@ describe(TextNode, () => {
       expect(actualFromEncoding).toBe(testCase.output);
     });
 
-    it('works when top-level node is a VariantNode', () => {
+    it('given a top-level VariantNode, resolves the selected variant and its nested variant', () => {
       const input = '[A|B[1|2]|C]';
       const indices = '1[0]';
       const ast = TextNode.create(input);

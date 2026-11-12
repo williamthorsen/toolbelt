@@ -30,7 +30,7 @@ describe(toCamelCase, () => {
     expect(actual).toBe(expected);
   });
 
-  it('works correctly with mixed case strings', () => {
+  it('given mixed-case words, lowercases them before capitalizing each word after the first', () => {
     const input = 'hELLo WoRLd';
     const expected = 'helloWorld';
 
