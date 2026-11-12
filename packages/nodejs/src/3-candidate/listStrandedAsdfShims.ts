@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { isMissingPathError } from '@williamthorsen/toolbelt.errors/candidate';
+
 import { findExecutableOnPath } from './findExecutableOnPath.ts';
 import { type AsdfShimProvider, parseAsdfShim } from './parseAsdfShim.ts';
 import { resolveNpmPackageOfBin } from './resolveNpmPackageOfBin.ts';
@@ -12,8 +14,8 @@ import { resolveNpmPackageOfBin } from './resolveNpmPackageOfBin.ts';
  * asdf may resolve the command through that plugin, which depends on version selection that the filesystem
  * does not record. Each entry names the versions that do provide the command, the first other
  * provider on `pathDirs` outside the shims directory if there is one, and the npm package that installed
- * the command under the first providing version whose bin symlink resolves to one. A missing shims directory
- * yields an empty array, and the result is sorted by name.
+ * the command under the first providing version whose bin symlink resolves to one. A shims directory that is
+ * missing, or whose path lies below a regular file, yields an empty array, and the result is sorted by name.
  *
  * @category asdf
  * @experimental
@@ -100,11 +102,6 @@ function listShimNames(shimsDir: string): string[] {
     if (isMissingPathError(error)) return [];
     throw error;
   }
-}
-
-/** Reports whether an error is node's report of a path that does not exist. */
-function isMissingPathError(error: unknown): boolean {
-  return typeof error === 'object' && error !== null && 'code' in error && error.code === 'ENOENT';
 }
 
 // endregion | Helpers
