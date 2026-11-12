@@ -1,9 +1,9 @@
 import { blankNonCode } from '@williamthorsen/toolbelt.adoption';
 import { describe, expect, it } from 'vitest';
 
-import { listLayoutBreakingTemplates } from '../listLayoutBreakingTemplates.ts';
+import { listLayoutBreakingTemplateLines } from '../listLayoutBreakingTemplateLines.ts';
 
-describe(listLayoutBreakingTemplates, () => {
+describe(listLayoutBreakingTemplateLines, () => {
   it('claims usage text that drops to column 0 inside a call, at the line on which it opens', () => {
     const source = 'function help() {\n  console.info(`Usage: tool <command>\nCommands:\n  init  Set up\n`);\n}\n';
 
@@ -74,7 +74,7 @@ describe(listLayoutBreakingTemplates, () => {
 
 /** Runs the detector over a source and the blanked code that its caller would pass it. */
 function listLines(source: string): number[] {
-  return listLayoutBreakingTemplates(blankNonCode(source), source);
+  return listLayoutBreakingTemplateLines(blankNonCode(source), source);
 }
 
 // endregion | Helpers

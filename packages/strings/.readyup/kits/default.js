@@ -347,12 +347,12 @@ function findCommonPrefix(a, b) {
   return a.slice(0, length);
 }
 
-// src/readiness/listJoinedLineArrays.ts
+// src/readiness/listJoinedLineArrayLines.ts
 var JOIN_TAIL = /\]\s*\.join\(\s*(?<separator>'[^'\n]*'|"[^"\n]*")\s*\)/dg;
 var QUOTED_ELEMENT = /^(?:'[^'\n]*'|"[^"\n]*")$/;
 var NEWLINE_ESCAPE = String.raw`\n`;
 var SUBSCRIPT_LOOKBEHIND = 32;
-function listJoinedLineArrays(code, source) {
+function listJoinedLineArrayLines(code, source) {
   const templates = listTemplateLiterals(code);
   const lines = [];
   for (const match of code.matchAll(JOIN_TAIL)) {
@@ -412,11 +412,11 @@ function trimSpan(code, start, end) {
   return { end: trimmedEnd, start: trimmedStart };
 }
 
-// src/readiness/listLayoutBreakingTemplates.ts
+// src/readiness/listLayoutBreakingTemplateLines.ts
 var BLANK_LINE = /^[\t ]*\r?$/;
 var INLINE_SNAPSHOT_CALL = /InlineSnapshot\(\s*$/;
 var INLINE_SNAPSHOT_LOOKBEHIND = 64;
-function listLayoutBreakingTemplates(code, source) {
+function listLayoutBreakingTemplateLines(code, source) {
   const lines = [];
   for (const template of listTemplateLiterals(code)) {
     if (template.isTagged || isInlineSnapshotArgument(code, template.start)) continue;
@@ -477,8 +477,8 @@ function listStringIdioms(source) {
   const code = blankNonCode(source);
   const sites = [
     ...toSites("capitalize-inline", listCapitalizeLines(code)),
-    ...toSites("joined-line-array", listJoinedLineArrays(code, source)),
-    ...toSites("layout-breaking-template", listLayoutBreakingTemplates(code, source)),
+    ...toSites("joined-line-array", listJoinedLineArrayLines(code, source)),
+    ...toSites("layout-breaking-template", listLayoutBreakingTemplateLines(code, source)),
     ...toSites("pluralize-inline", listPluralizeLines(code, source))
   ];
   return sites.toSorted((a, b) => a.line - b.line);

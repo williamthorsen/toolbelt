@@ -1,9 +1,9 @@
 import { blankNonCode } from '@williamthorsen/toolbelt.adoption';
 import { describe, expect, it } from 'vitest';
 
-import { listJoinedLineArrays } from '../listJoinedLineArrays.ts';
+import { listJoinedLineArrayLines } from '../listJoinedLineArrayLines.ts';
 
-describe(listJoinedLineArrays, () => {
+describe(listJoinedLineArrayLines, () => {
   it('claims an array of string literals laid out one per line, at the line of its opening bracket', () => {
     expect(listLines("const text = [\n  'first',\n  '  second',\n].join('\\n');\n")).toStrictEqual([1]);
   });
@@ -91,7 +91,7 @@ describe(listJoinedLineArrays, () => {
 
 /** Runs the detector over a source and the blanked code that its caller would pass it. */
 function listLines(source: string): number[] {
-  return listJoinedLineArrays(blankNonCode(source), source);
+  return listJoinedLineArrayLines(blankNonCode(source), source);
 }
 
 // endregion | Helpers

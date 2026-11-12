@@ -1,8 +1,8 @@
 import { type AdoptionSite, blankNonCode } from '@williamthorsen/toolbelt.adoption';
 
 import { listCapitalizeLines } from './listCapitalizeLines.ts';
-import { listJoinedLineArrays } from './listJoinedLineArrays.ts';
-import { listLayoutBreakingTemplates } from './listLayoutBreakingTemplates.ts';
+import { listJoinedLineArrayLines } from './listJoinedLineArrayLines.ts';
+import { listLayoutBreakingTemplateLines } from './listLayoutBreakingTemplateLines.ts';
 import { listPluralizeLines } from './listPluralizeLines.ts';
 
 export type StringIdiomKind =
@@ -24,8 +24,8 @@ export function listStringIdioms(source: string): Array<AdoptionSite<StringIdiom
   const code = blankNonCode(source);
   const sites = [
     ...toSites('capitalize-inline', listCapitalizeLines(code)),
-    ...toSites('joined-line-array', listJoinedLineArrays(code, source)),
-    ...toSites('layout-breaking-template', listLayoutBreakingTemplates(code, source)),
+    ...toSites('joined-line-array', listJoinedLineArrayLines(code, source)),
+    ...toSites('layout-breaking-template', listLayoutBreakingTemplateLines(code, source)),
     ...toSites('pluralize-inline', listPluralizeLines(code, source)),
   ];
 

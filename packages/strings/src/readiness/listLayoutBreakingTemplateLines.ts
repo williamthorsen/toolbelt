@@ -23,7 +23,7 @@ const INLINE_SNAPSHOT_LOOKBEHIND = 64;
  *
  * @internal
  */
-export function listLayoutBreakingTemplates(code: string, source: string): number[] {
+export function listLayoutBreakingTemplateLines(code: string, source: string): number[] {
   const lines: number[] = [];
 
   for (const template of listTemplateLiterals(code)) {

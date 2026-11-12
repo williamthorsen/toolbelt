@@ -38,7 +38,7 @@ const SUBSCRIPT_LOOKBEHIND = 32;
  *
  * @internal
  */
-export function listJoinedLineArrays(code: string, source: string): number[] {
+export function listJoinedLineArrayLines(code: string, source: string): number[] {
   const templates = listTemplateLiterals(code);
   const lines: number[] = [];
 
