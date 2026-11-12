@@ -95,6 +95,11 @@
           "path": "kits/default.ts"
         },
         {
+          "hash": "98c485ad",
+          "kind": "module",
+          "path": "../src/internal/indent-rules.ts"
+        },
+        {
           "hash": "476634a2",
           "kind": "module",
           "path": "../src/readiness/adoptedExports.ts"
@@ -105,12 +110,12 @@
           "path": "../src/readiness/listCapitalizeLines.ts"
         },
         {
-          "hash": "8b2ec215",
+          "hash": "330e23ea",
           "kind": "module",
           "path": "../src/readiness/listJoinedLineArrays.ts"
         },
         {
-          "hash": "3cb1a340",
+          "hash": "20474977",
           "kind": "module",
           "path": "../src/readiness/listLayoutBreakingTemplates.ts"
         },
@@ -130,7 +135,7 @@
       "readyupVersion": "0.46.1",
       "source": "kits/default.ts",
       "sourceHash": "86b64892",
-      "targetHash": "dbc8ac78"
+      "targetHash": "178d9915"
     }
   ]
 }
