@@ -197,11 +197,11 @@ importers:
         specifier: 21.0.0
         version: 21.0.0(@typescript-eslint/utils@8.72.1(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(@vitest/eslint-plugin@1.6.28(@typescript-eslint/eslint-plugin@8.72.1(@typescript-eslint/parser@8.72.1(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3)(vitest@5.1.0))(eslint@10.14.0(jiti@2.7.0))(readyup@0.45.1(esbuild@0.28.2))(typescript@6.0.3)
       '@williamthorsen/nmr':
-        specifier: 2.0.0
-        version: 2.0.0(typescript@6.0.3)(vite@8.3.6(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(vitest@5.1.0)
+        specifier: 2.0.1
+        version: 2.0.1(typescript@6.0.3)(vite@8.3.6(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(vitest@5.1.0)
       '@williamthorsen/release-kit':
-        specifier: 18.0.0
-        version: 18.0.0
+        specifier: 18.1.0
+        version: 18.1.0
       '@williamthorsen/strict-lint':
         specifier: 14.2.1
         version: 14.2.1(eslint@10.14.0(jiti@2.7.0))
@@ -1355,8 +1355,8 @@ packages:
     resolution: {integrity: sha512-pOh6W+vibevPAPVWNLiAJPHD9chDmJe8yskEbn0b0i/Gtiy4WNAaTNTMYABuGC7VTI2S1dV5r3opbBvgzLLaJQ==}
     engines: {node: '>=24.16.0'}
 
-  '@williamthorsen/nmr@2.0.0':
-    resolution: {integrity: sha512-yrXGGWNA/IfDND1lrOisajbzVJblXYlwPDBXGVgLvPy3DmgnWT2X/K8J3IkzK6HjXNBm4nedbfLbD4Xcbm+IbA==}
+  '@williamthorsen/nmr@2.0.1':
+    resolution: {integrity: sha512-nyaWP9cNTd3s4NBnSj3B/t89TvCwU+XGD+CVVB+u00XDay4UzkE12Lzjv7USc5KD2XSPMpAsIsj9ATTmEioGag==}
     engines: {node: '>=24.16.0', pnpm: '>=11'}
     hasBin: true
     peerDependencies:
@@ -1371,8 +1371,8 @@ packages:
       vitest:
         optional: true
 
-  '@williamthorsen/release-kit@18.0.0':
-    resolution: {integrity: sha512-zdeb3j8sEIgzkIyX/pcQFrFBGTWkAUeyATvgJ4aKKDZdh7/td2E8ffMnvPP3IprYo/t6hAfXzsowCzzufwcQFw==}
+  '@williamthorsen/release-kit@18.1.0':
+    resolution: {integrity: sha512-5RYj8q8w78XCPez29KdppKvNo1DXmmMPE8VOEfAMRbLvxOv+MIO4IyxdyEmRa0W+oK59P5Xxe+XeE0Ey5trrbQ==}
     engines: {node: '>=24.16.0'}
     hasBin: true
 
@@ -1407,8 +1407,16 @@ packages:
     resolution: {integrity: sha512-wRPBT6fexJ/meXel9jVVRGgvYojQwrC5sq6/fJ55X96Dw3eoxTQVsAdvOuK9Fh46flivyHss5mudJz+FaJnxFQ==}
     engines: {node: '>=24.0.0'}
 
+  '@williamthorsen/toolbelt.errors@0.9.1':
+    resolution: {integrity: sha512-LxWnTFhxBlM97ZJZ9uCIGP7jdtPxluKjJDAp8CkSCccVMVKY+V5zF2UsXqHwC98w/epoQDX3UZHKpd17u9+v3A==}
+    engines: {node: '>=24.0.0'}
+
   '@williamthorsen/toolbelt.filesystem@0.10.0':
     resolution: {integrity: sha512-xkJr9kYVxQd8OANLpjGEDhYrc+OLzUneUOHVDzb1JLVWbGQAte9NwS2HpC7F4MorkAVaaTw0O/5k1pW3pmcOxw==}
+    engines: {node: '>=24.0.0'}
+
+  '@williamthorsen/toolbelt.filesystem@0.10.1':
+    resolution: {integrity: sha512-yLCU0s7bmYJWyaKhRxHIjOMZe5lO51k7nfi82zGLva0aN2g2xoG4YrAbrOp0PK0/luwYhX2Yqw272E3mprI8Tg==}
     engines: {node: '>=24.0.0'}
 
   '@williamthorsen/toolbelt.filesystem@0.9.3':
@@ -3364,11 +3372,11 @@ snapshots:
       diff: 9.0.0
       yaml: 2.9.1
 
-  '@williamthorsen/nmr@2.0.0(typescript@6.0.3)(vite@8.3.6(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(vitest@5.1.0)':
+  '@williamthorsen/nmr@2.0.1(typescript@6.0.3)(vite@8.3.6(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(vitest@5.1.0)':
     dependencies:
       '@williamthorsen/nmr-core': 0.16.1
-      '@williamthorsen/toolbelt.errors': 0.9.0
-      '@williamthorsen/toolbelt.filesystem': 0.10.0
+      '@williamthorsen/toolbelt.errors': 0.9.1
+      '@williamthorsen/toolbelt.filesystem': 0.10.1
       glob: 14.0.4
       prettier: 3.9.10
       prettier-plugin-sh: 0.20.2(prettier@3.9.10)
@@ -3379,11 +3387,11 @@ snapshots:
       vite: 8.3.6(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)
       vitest: 5.1.0(@types/node@24.19.2)(@vitest/coverage-v8@5.1.0)(vite@8.3.6(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
-  '@williamthorsen/release-kit@18.0.0':
+  '@williamthorsen/release-kit@18.1.0':
     dependencies:
       '@williamthorsen/change-grammar': 0.4.0
       '@williamthorsen/nmr-core': 0.16.1
-      '@williamthorsen/toolbelt.errors': 0.9.0
+      '@williamthorsen/toolbelt.errors': 0.9.1
       json-stringify-pretty-compact: 4.0.0
       semver: 7.8.6
       yaml: 2.9.1
@@ -3417,9 +3425,15 @@ snapshots:
 
   '@williamthorsen/toolbelt.errors@0.9.0': {}
 
+  '@williamthorsen/toolbelt.errors@0.9.1': {}
+
   '@williamthorsen/toolbelt.filesystem@0.10.0':
     dependencies:
       '@williamthorsen/toolbelt.errors': 0.9.0
+
+  '@williamthorsen/toolbelt.filesystem@0.10.1':
+    dependencies:
+      '@williamthorsen/toolbelt.errors': 0.9.1
 
   '@williamthorsen/toolbelt.filesystem@0.9.3':
     dependencies:
