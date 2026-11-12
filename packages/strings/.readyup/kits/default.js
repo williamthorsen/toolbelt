@@ -298,11 +298,36 @@ function listCapitalizeLines(source) {
   return source.matchAll(CAPITALIZE_INLINE).map((match) => getLineAtOffset(source, match.index)).toArray();
 }
 
+// src/internal/indent-rules.ts
+var INDENT_PATTERN = /^[\t ]*/;
+var BLANK_TEXT_PATTERN = /^[\t ]*$/;
+function findCommonIndent(lines) {
+  let commonIndent;
+  for (const line of lines) {
+    const indent = findLineIndent(line);
+    commonIndent = commonIndent === void 0 ? indent : findCommonPrefix(commonIndent, indent);
+    if (commonIndent === "") return "";
+  }
+  return commonIndent ?? "";
+}
+function findLineIndent(line) {
+  return INDENT_PATTERN.exec(line)?.[0] ?? "";
+}
+function isBlankText(text) {
+  return BLANK_TEXT_PATTERN.test(text);
+}
+function findCommonPrefix(a, b) {
+  const limit = Math.min(a.length, b.length);
+  let length = 0;
+  while (length < limit && a[length] === b[length]) {
+    length++;
+  }
+  return a.slice(0, length);
+}
+
 // src/readiness/listJoinedLineArrays.ts
 var JOIN_TAIL = /\]\s*\.join\(\s*(?<separator>'[^'\n]*'|"[^"\n]*")\s*\)/dg;
-var BLANK_TEXT = /^[\t ]*$/;
 var CLOSING_DELIMITERS = /* @__PURE__ */ new Set([")", "]", "}"]);
-var INDENT = /^[\t ]*/;
 var QUOTED_ELEMENT = /^(?:'[^'\n]*'|"[^"\n]*")$/;
 var NEWLINE_ESCAPE = String.raw`\n`;
 var OPENING_DELIMITERS = /* @__PURE__ */ new Set(["(", "[", "{"]);
@@ -326,7 +351,9 @@ function listJoinedLineArrays(code, source) {
       if (leadingText === void 0) break;
       leadingTexts.push(leadingText);
     }
-    if (leadingTexts.length < elements.length || findSharedIndent(leadingTexts) !== "") continue;
+    if (leadingTexts.length < elements.length) continue;
+    const contentTexts = leadingTexts.filter((leadingText) => leadingText.hasContent).map(({ text }) => text);
+    if (findCommonIndent(contentTexts) !== "") continue;
     lines.push(getLineAtOffset(code, open));
   }
   return lines;
@@ -342,15 +369,6 @@ function findOpeningBracket(code, close) {
     if (depth === 0) return index;
   }
   return void 0;
-}
-function findSharedIndent(leadingTexts) {
-  const indents = leadingTexts.filter((leadingText) => leadingText.hasContent).map((leadingText) => INDENT.exec(leadingText.text)?.[0] ?? "");
-  const [first = ""] = indents;
-  let length = first.length;
-  for (const indent of indents) {
-    while (length > 0 && !indent.startsWith(first.slice(0, length))) length -= 1;
-  }
-  return first.slice(0, length);
 }
 function listElementSpans(code, open, close) {
   const spans = [];
@@ -372,12 +390,12 @@ function listElementSpans(code, open, close) {
 function readLeadingText(code, source, element, templates) {
   if (QUOTED_ELEMENT.test(code.slice(element.start, element.end))) {
     const text2 = readLiteral(source, [element.start, element.end]) ?? "";
-    return { hasContent: !BLANK_TEXT.test(text2), text: text2 };
+    return { hasContent: !isBlankText(text2), text: text2 };
   }
   const template = templates.find((candidate) => candidate.start === element.start && candidate.end === element.end);
   if (template === void 0 || template.isTagged) return void 0;
   const text = source.slice(template.start + 1, template.interpolations[0]?.start ?? template.end - 1);
-  return { hasContent: template.interpolations.length > 0 || !BLANK_TEXT.test(text), text };
+  return { hasContent: template.interpolations.length > 0 || !isBlankText(text), text };
 }
 function trimSpan(code, start, end) {
   let trimmedStart = start;
@@ -389,28 +407,19 @@ function trimSpan(code, start, end) {
 
 // src/readiness/listLayoutBreakingTemplates.ts
 var BLANK_LINE = /^[\t ]*\r?$/;
-var INDENT2 = /^[\t ]*/;
 var INLINE_SNAPSHOT_CALL = /InlineSnapshot\(\s*$/;
 var INLINE_SNAPSHOT_LOOKBEHIND = 64;
 function listLayoutBreakingTemplates(code, source) {
   const lines = [];
   for (const template of listTemplateLiterals(code)) {
     if (template.isTagged || isInlineSnapshotArgument(code, template.start)) continue;
-    const openingIndent = INDENT2.exec(source.slice(findLineStart(source, template.start)))?.[0] ?? "";
+    const openingIndent = findLineIndent(source.slice(findLineStart(source, template.start)));
     if (openingIndent === "") continue;
-    const laterIndents = listLaterLineIndents(source, template);
-    if (laterIndents.length === 0 || findCommonIndent(laterIndents).startsWith(openingIndent)) continue;
+    const laterLines = listLaterContentLines(source, template);
+    if (laterLines.length === 0 || findCommonIndent(laterLines).startsWith(openingIndent)) continue;
     lines.push(getLineAtOffset(code, template.start));
   }
   return lines;
-}
-function findCommonIndent(indents) {
-  const [first = ""] = indents;
-  let length = first.length;
-  for (const indent of indents) {
-    while (length > 0 && !indent.startsWith(first.slice(0, length))) length -= 1;
-  }
-  return first.slice(0, length);
 }
 function findLineStart(source, offset) {
   return source.lastIndexOf("\n", offset - 1) + 1;
@@ -418,8 +427,8 @@ function findLineStart(source, offset) {
 function isInlineSnapshotArgument(code, start) {
   return INLINE_SNAPSHOT_CALL.test(code.slice(Math.max(0, start - INLINE_SNAPSHOT_LOOKBEHIND), start));
 }
-function listLaterLineIndents(source, template) {
-  const indents = [];
+function listLaterContentLines(source, template) {
+  const lines = [];
   const textEnd = template.end - 1;
   let newline = source.indexOf("\n", template.start);
   while (newline !== -1 && newline < textEnd) {
@@ -429,10 +438,10 @@ function listLaterLineIndents(source, template) {
     const isInsideInterpolation = template.interpolations.some(
       (interpolation) => interpolation.start < lineStart && lineStart < interpolation.end
     );
-    if (!isInsideInterpolation && !BLANK_LINE.test(lineText)) indents.push(INDENT2.exec(lineText)?.[0] ?? "");
+    if (!isInsideInterpolation && !BLANK_LINE.test(lineText)) lines.push(lineText);
     newline = nextNewline;
   }
-  return indents;
+  return lines;
 }
 
 // src/readiness/listPluralizeLines.ts
