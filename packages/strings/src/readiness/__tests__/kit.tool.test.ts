@@ -4,6 +4,7 @@ import {
   runCheck,
   runEveryCheck,
   runSkip,
+  selectCheck,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { describe, expect, it } from 'vitest';
@@ -60,13 +61,11 @@ describe('The strings adoption kit', () => {
       'src/__tests__/text.unit.test.ts': JOINED_ARRAY,
     });
 
-    const checks = kit.checks;
-
-    await expect(runCheck(checks[0])).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, 'no-hand-rolled-capitalize'))).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 1, path: 'src/__tests__/text.unit.test.ts', reported: false }],
     });
-    expect(listReportedFindings(await runCheck(checks[2]))).toStrictEqual([
+    expect(listReportedFindings(await runCheck(selectCheck(kit.checks, 'no-joined-line-array')))).toStrictEqual([
       { line: 1, path: 'src/__tests__/text.unit.test.ts', reported: true },
     ]);
   });
@@ -74,7 +73,7 @@ describe('The strings adoption kit', () => {
   it('counts a call into the package as adoption', async () => {
     using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/label.ts': ADOPTER });
 
-    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, 'no-hand-rolled-capitalize'))).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -87,7 +86,7 @@ describe('The strings adoption kit', () => {
       'src/other.ts': CAPITALIZE,
     });
 
-    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, 'no-hand-rolled-capitalize'))).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 1, path: 'src/other.ts', reported: true }],
     });
