@@ -4,6 +4,7 @@ import {
   runCheck,
   runEveryCheck,
   runSkip,
+  selectCheck,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { describe, expect, it } from 'vitest';
@@ -81,7 +82,7 @@ describe('The guards adoption kit', () => {
   it('counts a call into the package as adoption', async () => {
     using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/report.ts': ADOPTER });
 
-    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, 'no-assertion-clone'))).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -109,7 +110,7 @@ describe('The guards adoption kit', () => {
       'src/report.ts': ADOPTER,
     });
 
-    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, 'no-assertion-clone'))).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -122,8 +123,11 @@ describe('The guards adoption kit', () => {
       'src/__tests__/config.unit.test.ts': ASSERTION,
     });
 
-    await expect(runSkip(kit.checks[0])).resolves.toBe(
-      'the project contains no JavaScript or TypeScript sources outside the exempt paths',
+    await expect(Promise.all(kit.checks.map((check) => runSkip(check)))).resolves.toStrictEqual(
+      Array.from(
+        { length: 3 },
+        () => 'the project contains no JavaScript or TypeScript sources outside the exempt paths',
+      ),
     );
   });
 });

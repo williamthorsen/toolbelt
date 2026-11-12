@@ -3,9 +3,9 @@ import {
   listReportedFindings,
   runCheck,
   runSkip,
+  selectCheck,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
-import type { RdyCheck } from 'readyup';
 import { describe, expect, it } from 'vitest';
 
 const KIT_URL = new URL('../../../.readyup/kits/default.ts', import.meta.url);
@@ -42,7 +42,7 @@ describe('The testing adoption kit', () => {
   it('reports an error capture, naming where it is', async () => {
     using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/config.unit.test.ts': CAPTURE });
 
-    await expect(runCheck(mapChecksById(kit.checks).get(ERROR_CAPTURE_CHECK))).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, ERROR_CAPTURE_CHECK))).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 3, path: 'src/config.unit.test.ts', reported: true, symbol: 'caught' }],
     });
@@ -51,7 +51,7 @@ describe('The testing adoption kit', () => {
   it('reports a stdio spy, naming where it is', async () => {
     using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/output.unit.test.ts': STDIO_SPY });
 
-    await expect(runCheck(mapChecksById(kit.checks).get(STDIO_CAPTURE_CHECK))).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, STDIO_CAPTURE_CHECK))).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 1, path: 'src/output.unit.test.ts', reported: true }],
     });
@@ -67,7 +67,7 @@ describe('The testing adoption kit', () => {
       'src/config.ts': CAPTURE,
     });
 
-    await expect(runCheck(mapChecksById(kit.checks).get(ERROR_CAPTURE_CHECK))).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, ERROR_CAPTURE_CHECK))).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -81,9 +81,8 @@ describe('The testing adoption kit', () => {
       'src/second.unit.test.ts': CAPTURE,
     });
 
-    const checks = mapChecksById(kit.checks);
-    const errorCaptureOutcome = await runCheck(checks.get(ERROR_CAPTURE_CHECK));
-    const stdioCaptureOutcome = await runCheck(checks.get(STDIO_CAPTURE_CHECK));
+    const errorCaptureOutcome = await runCheck(selectCheck(kit.checks, ERROR_CAPTURE_CHECK));
+    const stdioCaptureOutcome = await runCheck(selectCheck(kit.checks, STDIO_CAPTURE_CHECK));
 
     expect(summarizeFraction(errorCaptureOutcome)).toStrictEqual({ adoptedCount: 0, findingCount: 3 });
     expect(summarizeFraction(stdioCaptureOutcome)).toStrictEqual({ adoptedCount: 0, findingCount: 3 });
@@ -95,7 +94,7 @@ describe('The testing adoption kit', () => {
   it('counts a call into the package as adoption', async () => {
     using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/config.unit.test.ts': ADOPTER });
 
-    await expect(runCheck(mapChecksById(kit.checks).get(ERROR_CAPTURE_CHECK))).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, ERROR_CAPTURE_CHECK))).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -104,7 +103,7 @@ describe('The testing adoption kit', () => {
   it('counts a call to captureStdio as adoption', async () => {
     using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/output.unit.test.ts': STDIO_ADOPTER });
 
-    await expect(runCheck(mapChecksById(kit.checks).get(STDIO_CAPTURE_CHECK))).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, STDIO_CAPTURE_CHECK))).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -116,7 +115,7 @@ describe('The testing adoption kit', () => {
       'src/config.unit.test.ts': CAPTURE + CAPTURE,
     });
 
-    expect(listReportedFindings(await runCheck(mapChecksById(kit.checks).get(ERROR_CAPTURE_CHECK)))).toStrictEqual([
+    expect(listReportedFindings(await runCheck(selectCheck(kit.checks, ERROR_CAPTURE_CHECK)))).toStrictEqual([
       { line: 3, path: 'src/config.unit.test.ts', reported: true, symbol: 'caught' },
       { line: 10, path: 'src/config.unit.test.ts', reported: true, symbol: 'caught' },
     ]);
@@ -131,25 +130,16 @@ describe('The testing adoption kit', () => {
       'src/config.unit.test.ts': CAPTURE,
     });
 
-    expect(listReportedFindings(await runCheck(mapChecksById(kit.checks).get(ERROR_CAPTURE_CHECK)))).toStrictEqual([
+    expect(listReportedFindings(await runCheck(selectCheck(kit.checks, ERROR_CAPTURE_CHECK)))).toStrictEqual([
       { line: 3, path: 'src/config.unit.test.ts', reported: true, symbol: 'caught' },
     ]);
   });
 
-  it('skips the check when the sweep matches no source', async () => {
+  it('skips every check when the sweep matches no source', async () => {
     using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/config.ts': CAPTURE });
 
-    await expect(runSkip(mapChecksById(kit.checks).get(ERROR_CAPTURE_CHECK))).resolves.toBe(
-      'the project contains no test files',
+    await expect(Promise.all(kit.checks.map((check) => runSkip(check)))).resolves.toStrictEqual(
+      Array.from({ length: 2 }, () => 'the project contains no test files'),
     );
   });
 });
-
-// region | Helpers
-
-/** Maps a kit's checks by id, falling back to the name for a check that declares none. */
-function mapChecksById(checks: readonly RdyCheck[]): Map<string, RdyCheck> {
-  return new Map(checks.map((check) => [check.id ?? check.name, check]));
-}
-
-// endregion | Helpers

@@ -1,4 +1,4 @@
-import { createKitFixture, runCheck, runSkip } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { createKitFixture, runCheck, runSkip, selectCheck } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
@@ -39,7 +39,8 @@ describe('The cli adoption kit', () => {
       'src/adopter.ts': ADOPTER,
       'src/run.ts': RUNNER,
     });
-    const [parseArgsCheck, flagScanCheck] = kit.checks;
+    const parseArgsCheck = selectCheck(kit.checks, 'no-node-parse-args');
+    const flagScanCheck = selectCheck(kit.checks, 'no-hand-rolled-flag-scan');
 
     await expect(runCheck(parseArgsCheck)).resolves.toStrictEqual({
       adoptedCount: 2,
@@ -64,7 +65,7 @@ describe('The cli adoption kit', () => {
       'src/bin/__tests__/run.unit.test.ts': RUNNER,
       'src/bin/run.ts': RUNNER,
     });
-    const [parseArgsCheck] = kit.checks;
+    const parseArgsCheck = selectCheck(kit.checks, 'no-node-parse-args');
 
     await expect(runCheck(parseArgsCheck)).resolves.toMatchObject({
       findings: [
@@ -82,7 +83,7 @@ describe('The cli adoption kit', () => {
       'src/run.ts': RUNNER,
       'src/runCli.ts': OWN_RUN_CLI,
     });
-    const [, flagScanCheck] = kit.checks;
+    const flagScanCheck = selectCheck(kit.checks, 'no-hand-rolled-flag-scan');
 
     await expect(runCheck(flagScanCheck)).resolves.toStrictEqual({
       adoptedCount: 0,
