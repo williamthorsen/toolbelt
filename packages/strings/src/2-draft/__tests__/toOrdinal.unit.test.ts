@@ -3,48 +3,20 @@ import { describe, expect, it } from 'vitest';
 import { toOrdinal } from '../toOrdinal.ts';
 
 describe(toOrdinal, () => {
-  it('returns "1st" for 1', () => {
-    expect(toOrdinal(1)).toBe('1st');
-  });
-
-  it('returns "2nd" for 2', () => {
-    expect(toOrdinal(2)).toBe('2nd');
-  });
-
-  it('returns "3rd" for 3', () => {
-    expect(toOrdinal(3)).toBe('3rd');
-  });
-
-  it('returns "4th" for 4', () => {
-    expect(toOrdinal(4)).toBe('4th');
-  });
-
-  it('returns "11th" for 11', () => {
-    expect(toOrdinal(11)).toBe('11th');
-  });
-
-  it('returns "12th" for 12', () => {
-    expect(toOrdinal(12)).toBe('12th');
-  });
-
-  it('returns "13th" for 13', () => {
-    expect(toOrdinal(13)).toBe('13th');
-  });
-
-  it('returns "21st" for 21', () => {
-    expect(toOrdinal(21)).toBe('21st');
-  });
-
-  it('returns "22nd" for 22', () => {
-    expect(toOrdinal(22)).toBe('22nd');
-  });
-
-  it('returns "23rd" for 23', () => {
-    expect(toOrdinal(23)).toBe('23rd');
-  });
-
-  it('returns "100th" for 100', () => {
-    expect(toOrdinal(100)).toBe('100th');
+  it.each([
+    { input: 1, expected: '1st' },
+    { input: 2, expected: '2nd' },
+    { input: 3, expected: '3rd' },
+    { input: 4, expected: '4th' },
+    { input: 11, expected: '11th' },
+    { input: 12, expected: '12th' },
+    { input: 13, expected: '13th' },
+    { input: 21, expected: '21st' },
+    { input: 22, expected: '22nd' },
+    { input: 23, expected: '23rd' },
+    { input: 100, expected: '100th' },
+  ])('returns $expected for $input', ({ input, expected }) => {
+    expect(toOrdinal(input)).toBe(expected);
   });
 
   it('keeps the minus sign and takes the suffix of the absolute value', () => {
