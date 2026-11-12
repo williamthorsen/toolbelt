@@ -21,7 +21,7 @@ describe(condenseWhitespace, () => {
     expect(actual).toBe(expected);
   });
 
-  it('works across newlines, preserving up to one space on a blank line', () => {
+  it('keeps newlines and at most one space on a blank line', () => {
     const input = 'string with \n\n \t \n newlines';
     const expected = 'string with \n\n \n newlines';
 
@@ -52,7 +52,7 @@ describe(trimWhitespace, () => {
     expect(actual).toBe(expected);
   });
 
-  it('works across newlines', () => {
+  it('keeps newlines and removes the whitespace around them', () => {
     const input = ' \t string with \n  \n \t \n newlines  ';
     const expected = 'string with\n\n\nnewlines';
 

@@ -5,7 +5,7 @@ import { interpolate, Interpolator, type InterpolatorOptions } from '../Interpol
 
 describe(Interpolator, () => {
   describe('static interpolate() & standalone interpolate()', () => {
-    it('can be called without creating an instance', () => {
+    it('without an instance, interpolates the template as an instance does', () => {
       const template = '{Salutation} {TITLE} {unmatched} {}';
       const mapping = { salutation: 'dear', title: 'sir' };
       const expected = 'Dear SIR {unmatched} {}';
@@ -65,7 +65,7 @@ describe(Interpolator, () => {
   });
 
   describe('partitionKeysAndPlaceholders()', () => {
-    it('correctly identifies matched & unmatched keys and placeholders', () => {
+    it('partitions keys and placeholders into matches, unmatched keys, and unmatched placeholders', () => {
       const template = '{match1}{templateOnly}{match2}';
       const interpolable = new Interpolator(template);
       const mapping = { mappingOnly: 'value', match1: 'value', match2: 'value' };
@@ -142,7 +142,7 @@ describe(Interpolator, () => {
       expect(actual).toBe(expected);
     });
 
-    it('accepts placeholders containing underscores', () => {
+    it('replaces a placeholder that contains an underscore', () => {
       const template = 'Hello, {name_1}!';
       const mapping = { name_1: 'World' };
       const expected = 'Hello, World!';
@@ -152,7 +152,7 @@ describe(Interpolator, () => {
       expect(actual).toBe(expected);
     });
 
-    it('allows placeholders that start with a number', () => {
+    it('replaces a placeholder that starts with a number', () => {
       const template = 'Hello, {1name}!';
       const mapping = { '1name': 'World' };
       const expected = 'Hello, World!';
@@ -162,7 +162,7 @@ describe(Interpolator, () => {
       expect(actual).toBe(expected);
     });
 
-    it('allows placeholders that include a space', () => {
+    it('replaces a placeholder that includes a space', () => {
       const template = 'Hello, {name with space}!';
       const mapping = { 'name with space': 'World' };
       const expected = 'Hello, World!';
@@ -172,7 +172,7 @@ describe(Interpolator, () => {
       expect(actual).toBe(expected);
     });
 
-    it('works with a typed object not having a string index', () => {
+    it('given a typed mapping without a string index, replaces its placeholders', () => {
       interface Mapping {
         name: string;
       }
@@ -185,7 +185,7 @@ describe(Interpolator, () => {
       expect(actual).toBe(expected);
     });
 
-    it('works with a mapping that is missing keys that are optional in its type', () => {
+    it('given a mapping that omits an optional key of its type, replaces the placeholders that it has', () => {
       interface Mapping {
         required: string;
         notRequired?: string;
@@ -210,7 +210,7 @@ describe(Interpolator, () => {
       expect(throwingFn).toThrow(fragment);
     });
 
-    it('accepts a Map as mapping', () => {
+    it('given a Map as mapping, replaces each placeholder with the value of its key', () => {
       const template = '{greeting}, {planet}!';
       const mapping = new Map().set('greeting', 'Hello').set('planet', 'World');
       const expected = 'Hello, World!';
@@ -220,7 +220,7 @@ describe(Interpolator, () => {
       expect(actual).toBe(expected);
     });
 
-    it('accepts a string array as mapping', () => {
+    it('given a string array as mapping, replaces each index placeholder with the element at that index', () => {
       const template = '{0}, {1}!';
       const mapping = ['Hello', 'World'];
       const expected = 'Hello, World!';
@@ -230,7 +230,7 @@ describe(Interpolator, () => {
       expect(actual).toBe(expected);
     });
 
-    it('accepts a regular expression', () => {
+    it('given a regular-expression key, replaces every placeholder that it matches', () => {
       const template = '{hullo}, {hallo}!';
       const mapping = new Map().set(/h.llo/, 'hello');
       const expected = 'hello, hello!';
@@ -260,7 +260,7 @@ describe(Interpolator, () => {
       expect(actual).toBe(expected);
     });
 
-    it('can use a catch-all to replace unmatched delimiters', () => {
+    it('given a catch-all regular-expression key, replaces each placeholder that no other key matches', () => {
       const template = '{Key1} {key2} {key3}';
       const mapping = new Map<RegExp | string, string>()
         .set('key1', 'value1')

@@ -32,7 +32,7 @@ describe(segmentByDelimited, () => {
     expect(output).toStrictEqual(expected);
   });
 
-  it('allows empty delimiters', () => {
+  it('keeps an empty delimited pair as a segment of its own', () => {
     const input = 'Hello, []world!';
     const expected = ['Hello, ', '[]', 'world!'];
 
