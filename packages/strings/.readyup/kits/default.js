@@ -262,6 +262,28 @@ function isTagPosition(code, offset) {
   return isMemberName || !EXPRESSION_KEYWORDS2.has(code.slice(wordStart, end));
 }
 
+// ../adoption/src/portable/listTopLevelSpans.ts
+var CLOSERS = ")]}";
+var OPENERS = "([{";
+function listTopLevelSpans(text, start = 0, end = text.length) {
+  const spans = [];
+  let depth = 0;
+  let itemStart = start;
+  for (let index = start; index < end; index += 1) {
+    const character = text.charAt(index);
+    if (OPENERS.includes(character)) depth += 1;
+    else if (CLOSERS.includes(character)) depth -= 1;
+    else if (character === "," && depth === 0) {
+      spans.push({ end: index, start: itemStart });
+      itemStart = index + 1;
+    }
+  }
+  spans.push({ end, start: itemStart });
+  const last = spans.at(-1);
+  if (spans.length > 1 && last !== void 0 && text.slice(last.start, last.end).trim() === "") spans.pop();
+  return spans;
+}
+
 // ../adoption/src/mod.ts
 import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
 
@@ -327,10 +349,8 @@ function findCommonPrefix(a, b) {
 
 // src/readiness/listJoinedLineArrays.ts
 var JOIN_TAIL = /\]\s*\.join\(\s*(?<separator>'[^'\n]*'|"[^"\n]*")\s*\)/dg;
-var CLOSING_DELIMITERS = /* @__PURE__ */ new Set([")", "]", "}"]);
 var QUOTED_ELEMENT = /^(?:'[^'\n]*'|"[^"\n]*")$/;
 var NEWLINE_ESCAPE = String.raw`\n`;
-var OPENING_DELIMITERS = /* @__PURE__ */ new Set(["(", "[", "{"]);
 var SUBSCRIPT_LOOKBEHIND = 32;
 function listJoinedLineArrays(code, source) {
   const templates = listTemplateLiterals(code);
@@ -371,20 +391,7 @@ function findOpeningBracket(code, close) {
   return void 0;
 }
 function listElementSpans(code, open, close) {
-  const spans = [];
-  let depth = 0;
-  let start = open + 1;
-  for (let index = open + 1; index <= close; index += 1) {
-    const character = code.charAt(index);
-    if (OPENING_DELIMITERS.has(character)) depth += 1;
-    else if (index < close && CLOSING_DELIMITERS.has(character)) depth -= 1;
-    else if (character === "," && depth === 0 || index === close) {
-      spans.push(trimSpan(code, start, index));
-      start = index + 1;
-    }
-  }
-  const last = spans.at(-1);
-  if (last !== void 0 && last.start === last.end) spans.pop();
+  const spans = listTopLevelSpans(code, open + 1, close).map(({ end, start }) => trimSpan(code, start, end));
   return spans.some((span) => span.start === span.end) ? void 0 : spans;
 }
 function readLeadingText(code, source, element, templates) {

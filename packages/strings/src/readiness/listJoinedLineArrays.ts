@@ -2,17 +2,14 @@ import {
   getLineAtOffset,
   isArraySubscript,
   listTemplateLiterals,
+  listTopLevelSpans,
   readAnchoredWindow,
   readLiteral,
   type TemplateLiteral,
+  type TextSpan,
 } from '@williamthorsen/toolbelt.adoption';
 
 import { findCommonIndent, isBlankText } from '../internal/indent-rules.ts';
-
-interface ElementSpan {
-  end: number;
-  start: number;
-}
 
 interface LeadingText {
   /** Whether the element contains anything but indentation. One containing an interpolation always does. */
@@ -23,10 +20,8 @@ interface LeadingText {
 // The array's closing bracket joined by one quoted separator. The separator is blanked in the code, so its text is
 // read from the source.
 const JOIN_TAIL = /\]\s*\.join\(\s*(?<separator>'[^'\n]*'|"[^"\n]*")\s*\)/dg;
-const CLOSING_DELIMITERS = new Set([')', ']', '}']);
 const QUOTED_ELEMENT = /^(?:'[^'\n]*'|"[^"\n]*")$/;
 const NEWLINE_ESCAPE = String.raw`\n`;
-const OPENING_DELIMITERS = new Set(['(', '[', '{']);
 // Long enough to include the token before a bracket that a formatter has separated from it.
 const SUBSCRIPT_LOOKBEHIND = 32;
 
@@ -100,23 +95,8 @@ function findOpeningBracket(code: string, close: number): number | undefined {
  * Lists the trimmed span of each element between an array's brackets, ignoring the empty span after a trailing
  * comma. Returns nothing if an element is empty, as in a sparse array.
  */
-function listElementSpans(code: string, open: number, close: number): ElementSpan[] | undefined {
-  const spans: ElementSpan[] = [];
-  let depth = 0;
-  let start = open + 1;
-
-  for (let index = open + 1; index <= close; index += 1) {
-    const character = code.charAt(index);
-    if (OPENING_DELIMITERS.has(character)) depth += 1;
-    else if (index < close && CLOSING_DELIMITERS.has(character)) depth -= 1;
-    else if ((character === ',' && depth === 0) || index === close) {
-      spans.push(trimSpan(code, start, index));
-      start = index + 1;
-    }
-  }
-
-  const last = spans.at(-1);
-  if (last !== undefined && last.start === last.end) spans.pop();
+function listElementSpans(code: string, open: number, close: number): TextSpan[] | undefined {
+  const spans = listTopLevelSpans(code, open + 1, close).map(({ end, start }) => trimSpan(code, start, end));
   return spans.some((span) => span.start === span.end) ? undefined : spans;
 }
 
@@ -127,7 +107,7 @@ function listElementSpans(code: string, open: number, close: number): ElementSpa
 function readLeadingText(
   code: string,
   source: string,
-  element: ElementSpan,
+  element: TextSpan,
   templates: readonly TemplateLiteral[],
 ): LeadingText | undefined {
   if (QUOTED_ELEMENT.test(code.slice(element.start, element.end))) {
@@ -143,7 +123,7 @@ function readLeadingText(
 }
 
 /** Narrows a span to exclude the whitespace at either end. */
-function trimSpan(code: string, start: number, end: number): ElementSpan {
+function trimSpan(code: string, start: number, end: number): TextSpan {
   let trimmedStart = start;
   let trimmedEnd = end;
   while (trimmedStart < trimmedEnd && /\s/.test(code[trimmedStart] ?? '')) trimmedStart += 1;
