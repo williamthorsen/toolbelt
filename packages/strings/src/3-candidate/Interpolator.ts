@@ -2,7 +2,7 @@ import { setDifference, setIntersection } from '@williamthorsen/toolbelt.sets/ca
 
 import { deriveCaseTransformer } from '../internal/deriveCaseTransformer.ts';
 import { validateDelimiters } from '../internal/validateDelimiters.ts';
-import type { ValidationResult } from '../types/common.types.ts';
+import type { ValidationError, ValidationResult } from '../types/common.types.ts';
 
 /**
  * A template whose brace-delimited placeholders are replaced with mapped values, each adapted to the case of its
@@ -35,14 +35,10 @@ export class Interpolator {
     if (validationResult.isValid) {
       return validationResult;
     }
+    const [firstError, ...otherErrors] = validationResult.errors;
     return {
       isValid: false,
-      errors: validationResult.errors.map((error) => ({
-        ...error,
-        message: error.message
-          .replace('opening delimiter "{"', 'opening brace')
-          .replace('closing delimiter "}"', 'closing brace'),
-      })),
+      errors: [describeInBraces(firstError), ...otherErrors.map(describeInBraces)],
     };
   }
 
@@ -196,14 +192,14 @@ export class Interpolator {
   /** Throws the mapping's first validation error, if it has one. */
   private assertIsValidMapping<T>(options: { mapping?: StringMapping<T> | undefined }): void | never {
     const { mapping = this.mapping } = options;
-    const [validationError] = this.validateMapping({ mapping }).errors;
-    if (validationError) throw new Error(validationError.message);
+    const validationResult = this.validateMapping({ mapping });
+    if (!validationResult.isValid) throw new Error(validationResult.errors[0].message);
   }
 
   /** Throws the template's first validation error, if it has one. */
   private assertIsValidTemplate(): void | never {
-    const [validationError] = Interpolator.validateTemplate(this.template).errors;
-    if (validationError) throw new Error(validationError.message);
+    const validationResult = Interpolator.validateTemplate(this.template);
+    if (!validationResult.isValid) throw new Error(validationResult.errors[0].message);
   }
 
   /** Converts a mapping to a `Map`, validating it unless `noValidation` is set. */
@@ -263,6 +259,16 @@ type StringMapping<T> = Map<RegExp | string, string> | StringIndexedMapping | St
 // endregion | Types
 
 // region | Helpers
+
+/** Restates a delimiter validation error in terms of the template's braces. */
+function describeInBraces(error: ValidationError): ValidationError {
+  return {
+    ...error,
+    message: error.message
+      .replace('opening delimiter "{"', 'opening brace')
+      .replace('closing delimiter "}"', 'closing brace'),
+  };
+}
 
 /** Encloses a matcher in braces, so that only delimited placeholders are matched. */
 function createDelimitedMatcher(matcher: RegExp | string, options: DelimitedMatcherOptions = {}): RegExp {
