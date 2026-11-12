@@ -343,7 +343,7 @@ describe(Interpolator, () => {
     const entryPoints: Array<[string, Interpolate]> = [
       [
         'constructor',
-        (template, mapping, options) => new Interpolator(template, options).setMapping(mapping).interpolate(),
+        (template, mapping, options) => new Interpolator(template, { ...options, mapping }).interpolate(),
       ],
       [
         'setOptions()',
@@ -366,7 +366,7 @@ describe(Interpolator, () => {
     });
 
     it('if interpolate() is passed ifMissing, uses it in place of the stored one', () => {
-      const interpolable = new Interpolator('{a} {b}', { ifMissing: 'THROW' }).setMapping({ a: 'x' });
+      const interpolable = new Interpolator('{a} {b}', { mapping: { a: 'x' }, ifMissing: 'THROW' });
 
       const actual = interpolable.interpolate({ ifMissing: 'USE_KEY' });
 
@@ -374,7 +374,7 @@ describe(Interpolator, () => {
     });
 
     it('if interpolate() is passed noAdaptCase, uses it in place of the stored one', () => {
-      const interpolable = new Interpolator('{Name}', { noAdaptCase: true }).setMapping({ name: 'bob' });
+      const interpolable = new Interpolator('{Name}', { mapping: { name: 'bob' }, noAdaptCase: true });
 
       const actual = interpolable.interpolate({ noAdaptCase: false });
 
@@ -382,8 +382,8 @@ describe(Interpolator, () => {
     });
 
     it('if interpolate() is passed undefined options, keeps the stored ones', () => {
-      const throwing = new Interpolator('{a} {b}', { ifMissing: 'THROW' }).setMapping({ a: 'x' });
-      const preserving = new Interpolator('{Name}', { noAdaptCase: true }).setMapping({ name: 'bob' });
+      const throwing = new Interpolator('{a} {b}', { mapping: { a: 'x' }, ifMissing: 'THROW' });
+      const preserving = new Interpolator('{Name}', { mapping: { name: 'bob' }, noAdaptCase: true });
 
       const throwingFn = () => throwing.interpolate({ ifMissing: undefined });
       const actual = preserving.interpolate({ noAdaptCase: undefined });

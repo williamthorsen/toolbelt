@@ -18,7 +18,7 @@ export class Interpolator {
   template: string;
 
   /** Validates the template and applies the options. */
-  constructor(template: string, options: InterpolatorOptions = {}) {
+  constructor(template: string, options: InterpolateOptions<unknown> = {}) {
     this.template = template;
     this.assertIsValidTemplate();
     this.setOptions(options);
