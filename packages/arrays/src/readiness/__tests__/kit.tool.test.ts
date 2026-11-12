@@ -4,6 +4,7 @@ import {
   runCheck,
   runEveryCheck,
   runSkip,
+  selectCheck,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { describe, expect, it } from 'vitest';
@@ -50,7 +51,7 @@ describe('The arrays adoption kit', () => {
   it('counts a call into the package as adoption', async () => {
     using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/pick.ts': ADOPTER });
 
-    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, 'no-biased-shuffle'))).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -63,7 +64,7 @@ describe('The arrays adoption kit', () => {
       'src/other.ts': ARRAIFY,
     });
 
-    await expect(runCheck(kit.checks[2])).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, 'no-hand-rolled-arraify'))).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 1, path: 'src/other.ts', reported: true }],
     });
@@ -72,8 +73,11 @@ describe('The arrays adoption kit', () => {
   it('skips every check when the sweep matches no source', async () => {
     using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/wrap.unit.test.ts': ARRAIFY });
 
-    await expect(runSkip(kit.checks[0])).resolves.toBe(
-      'the project contains no JavaScript or TypeScript sources outside the exempt paths',
+    await expect(Promise.all(kit.checks.map((check) => runSkip(check)))).resolves.toStrictEqual(
+      Array.from(
+        { length: 3 },
+        () => 'the project contains no JavaScript or TypeScript sources outside the exempt paths',
+      ),
     );
   });
 });

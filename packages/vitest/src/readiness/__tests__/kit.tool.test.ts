@@ -4,10 +4,10 @@ import {
   runCheck,
   runEveryCheck,
   runSkip,
+  selectCheck,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
-import type { RdyCheck } from 'readyup';
 import { describe, expect, it } from 'vitest';
 
 const KIT_URL = new URL('../../../.readyup/kits/default.ts', import.meta.url);
@@ -106,7 +106,7 @@ describe('The vitest adoption kit', () => {
   it('counts a call into the package as adoption', async () => {
     using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/exit.unit.test.ts': ADOPTER });
 
-    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, 'no-exit-sentinel-clone'))).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -121,7 +121,7 @@ describe('The vitest adoption kit', () => {
       'src/exit.unit.test.ts': ADOPTER,
     });
 
-    await expect(runCheck(findCheck(kit.checks, 'no-hand-rolled-console-silence'))).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, 'no-hand-rolled-console-silence'))).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -137,23 +137,16 @@ describe('The vitest adoption kit', () => {
       'src/silence.unit.test.ts': SILENCE,
     });
 
-    expect(listReportedFindings(await runCheck(findCheck(kit.checks, 'no-hand-rolled-console-silence')))).toStrictEqual(
-      [{ line: 1, path: 'src/silence.unit.test.ts', reported: true }],
-    );
+    expect(
+      listReportedFindings(await runCheck(selectCheck(kit.checks, 'no-hand-rolled-console-silence'))),
+    ).toStrictEqual([{ line: 1, path: 'src/silence.unit.test.ts', reported: true }]);
   });
 
   it('skips every check when the sweep matches no source', async () => {
     using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/config.ts': SILENCE });
 
-    await expect(runSkip(kit.checks[0])).resolves.toBe('the project contains no test files');
+    await expect(Promise.all(kit.checks.map((check) => runSkip(check)))).resolves.toStrictEqual(
+      Array.from({ length: 8 }, () => 'the project contains no test files'),
+    );
   });
 });
-
-// region | Helpers
-
-/** Finds a check by its id, for the assertions that depend on which of the eight checks reported. */
-function findCheck(checks: readonly RdyCheck[], id: string): RdyCheck | undefined {
-  return checks.find((check) => check.id === id);
-}
-
-// endregion | Helpers

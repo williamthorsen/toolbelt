@@ -4,6 +4,7 @@ import {
   runCheck,
   runEveryCheck,
   runSkip,
+  selectCheck,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
@@ -121,7 +122,7 @@ describe('The filesystem adoption kit', () => {
   it('counts a call into the package as adoption', async () => {
     using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/save.ts': ADOPTER });
 
-    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, 'no-hand-rolled-atomic-write'))).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -130,7 +131,7 @@ describe('The filesystem adoption kit', () => {
   it('leaves a walk that probes for a manifest out of the report and out of the denominator', async () => {
     using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/root.ts': MANIFEST_PROBE });
 
-    await expect(runCheck(kit.checks[1])).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, 'no-hand-rolled-directory-walk'))).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [],
     });
@@ -171,8 +172,11 @@ describe('The filesystem adoption kit', () => {
       'src/__tests__/save.unit.test.ts': ATOMIC_WRITE,
     });
 
-    await expect(runSkip(kit.checks[0])).resolves.toBe(
-      'the project contains no JavaScript or TypeScript sources outside the exempt paths',
+    await expect(Promise.all(kit.checks.map((check) => runSkip(check)))).resolves.toStrictEqual(
+      Array.from(
+        { length: 2 },
+        () => 'the project contains no JavaScript or TypeScript sources outside the exempt paths',
+      ),
     );
   });
 });
