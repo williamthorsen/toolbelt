@@ -36,14 +36,12 @@ export function splitDelimited(text: string, params: Params): string[] {
       i += closing.length - 1;
     } else if (depth === 0 && undelimitedText.startsWith(separator, i)) {
       result.push(undelimitedText.slice(lastSplit, i));
-      i += separator.length;
-      lastSplit = i;
+      i += separator.length - 1;
+      lastSplit = i + 1;
     }
   }
 
-  if (lastSplit < undelimitedText.length) {
-    result.push(undelimitedText.slice(lastSplit));
-  }
+  result.push(undelimitedText.slice(lastSplit));
 
   return result;
 }

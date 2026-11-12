@@ -20,6 +20,15 @@ describe(pickVariants, () => {
     expect(output).toMatch(expected);
   });
 
+  it('given a nested group after a separator, picks from the nested variants', () => {
+    const input = '[a|[b|c]]';
+    const expected = /^(a|b|c)$/;
+
+    const output = pickVariants(input);
+
+    expect(output).toMatch(expected);
+  });
+
   it('if an empty variant is picked, replaces the variants with an empty string', () => {
     const input = 'Hello, Mr.[|] Doe';
     const expected = 'Hello, Mr. Doe';
