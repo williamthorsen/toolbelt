@@ -113,14 +113,17 @@ export abstract class TextNode {
     }
   }
 
-  /** Decodes indices as the static `decodeIndices` does, recording their count at the top level. */
+  /**
+   * Decodes indices as the static `decodeIndices` does. At the top level, records their count and returns a copy, which
+   * the node tree consumes without changing the caller's array.
+   */
   decodeIndices(encodedIndices: string | VariantIndices, depth: Integer = 0): Integer[] {
     const decodedIndices = TextNode.decodeIndices(encodedIndices);
+    if (depth > 0) return decodedIndices;
 
     // Store the initial length of the indices array for later use in an error message
-    if (depth === 0) this.variantIndexCount = decodedIndices.length;
-
-    return decodedIndices;
+    this.variantIndexCount = decodedIndices.length;
+    return [...decodedIndices];
   }
 
   /** Picks a variant at every choice and returns the text with the indices, seed, and fingerprint that reproduce it. */

@@ -180,6 +180,18 @@ describe(TextNode, () => {
       expect(actual).toStrictEqual(expected);
     });
 
+    it('given a text whose picked indices are flat, returns the indices and their encoding', () => {
+      const textNode = TextNode.create('[A|B|C]');
+
+      const { content, encodedIndices, fingerprint, indices, seed } = textNode.pickWithFingerprint({ seed: 1 });
+
+      expect(indices).toHaveLength(1);
+      expect(encodedIndices).toBe(TextNode.encodeIndices(indices));
+      expect(encodedIndices).not.toBe('');
+      expect(fingerprint).toBe(`${encodedIndices}:${seed}`);
+      expect(textNode.selectVariants(encodedIndices)).toBe(content);
+    });
+
     it('given no seed, generates an integer seed and returns a new one', () => {
       const textNode = TextNode.create(testCase.input);
 
@@ -239,13 +251,25 @@ describe(TextNode, () => {
 
     it('given an invalid index, throws an error', () => {
       const input = '[A|B|C]';
+      const indices = [3];
       const ast = TextNode.create(input);
 
-      // `selectVariants` consumes the array that it is given, so each call needs its own.
-      const throwingFn = vi.fn<() => string>(() => ast.selectVariants([3]));
+      const throwingFn = vi.fn<() => string>(() => ast.selectVariants(indices));
 
       expect(throwingFn).toThrow(RangeError);
       expect(throwingFn).toThrow('exceeds maximum');
+      expect(indices).toStrictEqual([3]);
+    });
+
+    it.each(['[A|B[1|2]|C]', 'x [A|B] [C|D]'])('given flat indices, leaves the array unchanged (%s)', (input) => {
+      const indices = [1, 0];
+      const ast = TextNode.create(input);
+
+      const first = ast.selectVariants(indices);
+      const second = ast.selectVariants(indices);
+
+      expect(second).toBe(first);
+      expect(indices).toStrictEqual([1, 0]);
     });
 
     it('given too few indices to resolve all variants, throws an error', () => {
