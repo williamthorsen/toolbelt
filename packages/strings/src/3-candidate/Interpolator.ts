@@ -233,34 +233,7 @@ export function interpolate<T>(
   return Interpolator.interpolate(template, substitutionMap, options);
 }
 
-/**
- * Encloses a matcher in braces, so that only delimited placeholders are matched.
- *
- * @category String
- * @experimental
- * @stage candidate
- */
-export function createDelimitedMatcher(matcher: RegExp | string, options: DelimitedMatcherOptions = {}): RegExp {
-  const { caseInsensitive } = options;
-
-  const matcherSource = typeof matcher === 'string' ? matcher : matcher.source;
-  const matcherFlagsSet = new Set(typeof matcher === 'string' ? [] : matcher.flags.split(''));
-
-  matcherFlagsSet.add('g');
-
-  if (caseInsensitive) {
-    matcherFlagsSet.add('i');
-  }
-  const matcherFlags = [...matcherFlagsSet].join('');
-
-  return new RegExp(String.raw`\{${matcherSource}\}`, matcherFlags);
-}
-
 // region | Types
-interface DelimitedMatcherOptions {
-  caseInsensitive?: boolean | undefined;
-}
-
 export interface InterpolatorOptions {
   /** Determines how a placeholder that the mapping lacks is handled. */
   ifMissing?: 'IGNORE' | 'THROW' | 'USE_KEY' | ((placeholder: string) => string) | undefined;
@@ -288,3 +261,28 @@ type StringInterfaceMapping<O> = O extends { [K in keyof O]: string } ? O : neve
 
 type StringMapping<T> = Map<RegExp | string, string> | StringIndexedMapping | StringInterfaceMapping<T>;
 // endregion | Types
+
+// region | Helpers
+
+/** Encloses a matcher in braces, so that only delimited placeholders are matched. */
+function createDelimitedMatcher(matcher: RegExp | string, options: DelimitedMatcherOptions = {}): RegExp {
+  const { caseInsensitive } = options;
+
+  const matcherSource = typeof matcher === 'string' ? matcher : matcher.source;
+  const matcherFlagsSet = new Set(typeof matcher === 'string' ? [] : matcher.flags.split(''));
+
+  matcherFlagsSet.add('g');
+
+  if (caseInsensitive) {
+    matcherFlagsSet.add('i');
+  }
+  const matcherFlags = [...matcherFlagsSet].join('');
+
+  return new RegExp(String.raw`\{${matcherSource}\}`, matcherFlags);
+}
+
+interface DelimitedMatcherOptions {
+  caseInsensitive?: boolean | undefined;
+}
+
+// endregion | Helpers
