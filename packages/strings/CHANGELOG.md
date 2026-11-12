@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## 8.2.4 — 2026-11-12
+
+### ♻️ Refactoring
+
+- Renames the `str` and `inputStr` parameters in the `toolbelt.strings` candidate tier to `text`, the name used by the package's newer modules, without changing the behavior of any function. (#546)
+- Moves the module-private helpers of `toolbelt.strings` source and test files, including the non-exported `TokenNode` class in `TextNode.ts`, into a trailing `// region | Helpers` fold, as the declaration-order rule requires. (#547)
+- Removes the export and the tier tags from `createDelimitedMatcher` and its `DelimitedMatcherOptions` type, and moves both into a Helpers region at the end of `Interpolator.ts`, because only `Interpolator` uses them and the `3-candidate` index does not re-export them. (#548)
+- Retypes `ValidationResult` as a union discriminated on `isValid` whose invalid branch declares `errors` as a non-empty tuple, which lets `validateDelimiters` and `Interpolator` read the first error after narrowing rather than through `getItemAtIndexOrThrow` or a truthiness check. (#549)
+- Replaces the local indent helpers in the `strings` kit detectors `listJoinedLineArrays` and `listLayoutBreakingTemplates` with `findCommonIndent`, `findLineIndent`, and `isBlankText` from `src/internal/indent-rules.ts`, and recompiles the kit bundle to match. (#550)
+- Moves the top-level comma splitting that `listTopLevelArguments` and the `strings` kit's `listElementSpans` each implemented into `listTopLevelSpans` in `packages/adoption`, which returns offset spans as the shared `TextSpan` type, and recompiles the kit bundles that inline it. (#551)
+- Renames the strings kit's detectors `listJoinedLineArrays` and `listLayoutBreakingTemplates` to `listJoinedLineArrayLines` and `listLayoutBreakingTemplateLines`, which name the line numbers that each returns, and recompiles the kit bundle. (#562)
+
+### 🧪 Tests
+
+- Adds a `dedent` test for a template that contains an invalid escape sequence, which checks that `dedent` throws an error matching `/invalid escape sequence/`. (#560)
+- Replaces the single-assertion `it` blocks for the positive examples in `packages/strings/src/2-draft/__tests__/toOrdinal.unit.test.ts` with one `it.each` table of input and expected-output pairs. (#561)
+- Adds `selectCheck` to `@williamthorsen/toolbelt.adoption/test-utils` and uses it in the kit tool tests in place of selection by position or by a file-local helper, which keeps a reordered or added check from moving an assertion onto a different check and makes a renamed id fail the test. (#564)
+
 ## 8.2.3 — 2026-11-12
 
 ### 🐛 Bug fixes

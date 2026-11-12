@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.8.3 — 2026-11-12
+
+### ♻️ Refactoring
+
+- Move the top-level comma splitter into adoption (#551)
+
+  Adds `listTopLevelSpans` to `packages/adoption`, which splits a range of text at its top-level commas and returns each item as a `TextSpan` of offsets into the text, and builds `listTopLevelArguments` and the `strings` kit's `listElementSpans` on it in place of the bracket-depth loop that each kept.
+
+### 🧪 Tests
+
+- Adds `selectCheck` to `@williamthorsen/toolbelt.adoption/test-utils` and uses it in the kit tool tests in place of selection by position or by a file-local helper, which keeps a reordered or added check from moving an assertion onto a different check and makes a renamed id fail the test. (#564)
+- Changes the skip test in eight kit tool test files to assert that every check in the kit skips, rather than only the first one. (#564)
+
 ## 0.8.2 — 2026-11-12
 
 ### 🐛 Bug fixes

@@ -1,5 +1,22 @@
 [
   {
+    "version": "4.0.1",
+    "date": "2026-11-12",
+    "sections": [
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Move the top-level comma splitter into adoption (#551)",
+            "body": "Adds `listTopLevelSpans` to `packages/adoption`, which splits a range of text at its top-level commas and returns each item as a `TextSpan` of offsets into the text, and builds `listTopLevelArguments` and the `strings` kit's `listElementSpans` on it in place of the bracket-depth loop that each kept.",
+            "hash": "c71219c67120d52411552a0262858f7dcb332145"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "4.0.0",
     "date": "2026-11-12",
     "sections": [

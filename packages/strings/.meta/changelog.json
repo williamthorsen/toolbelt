@@ -1,5 +1,73 @@
 [
   {
+    "version": "8.2.4",
+    "date": "2026-11-12",
+    "sections": [
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Renames the `str` and `inputStr` parameters in the `toolbelt.strings` candidate tier to `text`, the name used by the package's newer modules, without changing the behavior of any function. (#546)",
+            "hash": "2919d367af5d9a6bf5b506c2ad4d86e4d532db6d",
+            "entry": 1
+          },
+          {
+            "description": "Moves the module-private helpers of `toolbelt.strings` source and test files, including the non-exported `TokenNode` class in `TextNode.ts`, into a trailing `// region | Helpers` fold, as the declaration-order rule requires. (#547)",
+            "hash": "b09b94ae54ca0bc6fd91a6427b0aa04a8fe01d49",
+            "entry": 1
+          },
+          {
+            "description": "Removes the export and the tier tags from `createDelimitedMatcher` and its `DelimitedMatcherOptions` type, and moves both into a Helpers region at the end of `Interpolator.ts`, because only `Interpolator` uses them and the `3-candidate` index does not re-export them. (#548)",
+            "hash": "b47ad44c0c28384d2abc863bf555d37b7568c281",
+            "entry": 1
+          },
+          {
+            "description": "Retypes `ValidationResult` as a union discriminated on `isValid` whose invalid branch declares `errors` as a non-empty tuple, which lets `validateDelimiters` and `Interpolator` read the first error after narrowing rather than through `getItemAtIndexOrThrow` or a truthiness check. (#549)",
+            "hash": "caae2f96baa301183860a0af11816677dbec72fb",
+            "entry": 1
+          },
+          {
+            "description": "Replaces the local indent helpers in the `strings` kit detectors `listJoinedLineArrays` and `listLayoutBreakingTemplates` with `findCommonIndent`, `findLineIndent`, and `isBlankText` from `src/internal/indent-rules.ts`, and recompiles the kit bundle to match. (#550)",
+            "hash": "37e5436568ef0e1db37cfe619ef870159df5b847",
+            "entry": 1
+          },
+          {
+            "description": "Moves the top-level comma splitting that `listTopLevelArguments` and the `strings` kit's `listElementSpans` each implemented into `listTopLevelSpans` in `packages/adoption`, which returns offset spans as the shared `TextSpan` type, and recompiles the kit bundles that inline it. (#551)",
+            "hash": "c71219c67120d52411552a0262858f7dcb332145",
+            "entry": 1
+          },
+          {
+            "description": "Renames the strings kit's detectors `listJoinedLineArrays` and `listLayoutBreakingTemplates` to `listJoinedLineArrayLines` and `listLayoutBreakingTemplateLines`, which name the line numbers that each returns, and recompiles the kit bundle. (#562)",
+            "hash": "90a817b7d8d66d9490f42c93af3f05040c7d700b",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Adds a `dedent` test for a template that contains an invalid escape sequence, which checks that `dedent` throws an error matching `/invalid escape sequence/`. (#560)",
+            "hash": "d1aa67b64adacbc25ec6e99ddfd4505fde15124e",
+            "entry": 1
+          },
+          {
+            "description": "Replaces the single-assertion `it` blocks for the positive examples in `packages/strings/src/2-draft/__tests__/toOrdinal.unit.test.ts` with one `it.each` table of input and expected-output pairs. (#561)",
+            "hash": "4e5d13d3eea7dc814efea547e3a6a30afe43626d",
+            "entry": 1
+          },
+          {
+            "description": "Adds `selectCheck` to `@williamthorsen/toolbelt.adoption/test-utils` and uses it in the kit tool tests in place of selection by position or by a file-local helper, which keeps a reordered or added check from moving an assertion onto a different check and makes a renamed id fail the test. (#564)",
+            "hash": "6153be137931e97c82ffce796be5e7e328c723f7",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "8.2.3",
     "date": "2026-11-12",
     "sections": [

@@ -1,5 +1,44 @@
 [
   {
+    "version": "0.9.0",
+    "date": "2026-11-12",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds `installCrashHandler(name)` to `@williamthorsen/toolbelt.cli/candidate`, which registers an `uncaughtException` listener that writes `<name>: internal error: <message>` to stderr with the stack frames of the error and of each error in its `cause` chain, and exits with code 1 once stderr has flushed. (#567)",
+            "hash": "601ba07d06f41e5a272bbac9680d822e51ecdc42",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Move the top-level comma splitter into adoption (#551)",
+            "body": "Adds `listTopLevelSpans` to `packages/adoption`, which splits a range of text at its top-level commas and returns each item as a `TextSpan` of offsets into the text, and builds `listTopLevelArguments` and the `strings` kit's `listElementSpans` on it in place of the bracket-depth loop that each kept.",
+            "hash": "c71219c67120d52411552a0262858f7dcb332145"
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Adds `selectCheck` to `@williamthorsen/toolbelt.adoption/test-utils` and uses it in the kit tool tests in place of selection by position or by a file-local helper, which keeps a reordered or added check from moving an assertion onto a different check and makes a renamed id fail the test. (#564)",
+            "hash": "6153be137931e97c82ffce796be5e7e328c723f7",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.8.2",
     "date": "2026-11-12",
     "sections": [

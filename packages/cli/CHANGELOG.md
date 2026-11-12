@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.9.0 — 2026-11-12
+
+### 🎉 Features
+
+- Adds `installCrashHandler(name)` to `@williamthorsen/toolbelt.cli/candidate`, which registers an `uncaughtException` listener that writes `<name>: internal error: <message>` to stderr with the stack frames of the error and of each error in its `cause` chain, and exits with code 1 once stderr has flushed. (#567)
+
+### ♻️ Refactoring
+
+- Move the top-level comma splitter into adoption (#551)
+
+  Adds `listTopLevelSpans` to `packages/adoption`, which splits a range of text at its top-level commas and returns each item as a `TextSpan` of offsets into the text, and builds `listTopLevelArguments` and the `strings` kit's `listElementSpans` on it in place of the bracket-depth loop that each kept.
+
+### 🧪 Tests
+
+- Adds `selectCheck` to `@williamthorsen/toolbelt.adoption/test-utils` and uses it in the kit tool tests in place of selection by position or by a file-local helper, which keeps a reordered or added check from moving an assertion onto a different check and makes a renamed id fail the test. (#564)
+
 ## 0.8.2 — 2026-11-12
 
 ### 🐛 Bug fixes

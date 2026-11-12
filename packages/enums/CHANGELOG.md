@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.0.1 — 2026-11-12
+
+### ♻️ Refactoring
+
+- Move the top-level comma splitter into adoption (#551)
+
+  Adds `listTopLevelSpans` to `packages/adoption`, which splits a range of text at its top-level commas and returns each item as a `TextSpan` of offsets into the text, and builds `listTopLevelArguments` and the `strings` kit's `listElementSpans` on it in place of the bracket-depth loop that each kept.
+
 ## 4.0.0 — 2026-11-12
 
 ### 🎉 Features
