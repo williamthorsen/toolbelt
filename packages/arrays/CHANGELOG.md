@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## 6.5.0 — 2026-11-12
+
+### 🎉 Features
+
+- Makes `pickItem`, `pickWeightedItem`, `pickWeightedIndex`, and `makePickWeightedItemFromDistribution` throw `RangeError` rather than a plain `Error` for an argument outside their domain (an empty array, a weight count that does not match the item count, a negative weight, weights out of ascending order, or a total weight of 0), so that a caller can tell an invalid argument from another failure by its class, as it already can with `getItemAtIndexOrThrow`. (#499)
+
+### 🐛 Bug fixes
+
+- Fixes the issue that the `toolbelt.arrays` kit's check "No source shuffles through a comparator" missed an inline `function` comparator whose parameter list contains braces, such as an object-type annotation. (#470)
+- Claim a trailing-comma setTimeout as a hand-rolled sleep (#487)
+
+  Fixes the issue that the `@williamthorsen/toolbelt.async` ReadyUp kit did not report a hand-rolled sleep whose `setTimeout` call ends in a trailing comma, such as `setTimeout(resolve, 50,)`, as a candidate for `delay`. Replaces the two private copies of the argument splitter, which disagreed on the trailing comma, with one splitter in `packages/adoption` that the async and numbers kits both import.
+
+- Fixes the issue that `pickWeightedItem` and `makePickWeightedItemFromDistribution` accepted a `NaN` or infinite weight, or finite weights whose total overflows, and returned a picker that threw a bare `Assertion failed` or picked the same item on every call; they now throw a `RangeError` with the message "Cumulative weights must be finite." (#499)
+
+### ♻️ Refactoring
+
+- Replaces the separate function-literal parsers in the `arrays`, `async`, and `vitest` readiness kits with one shared `readFunctionLiteral` in `adoption`. (#470)
+- Removes two unused functions from `packages/arrays`: `toPickWeightedItem`, a deprecated alias of `pickWeightedItem` that the candidate tier index did not re-export, and the strawman `assertImmutableArray`, which threw on every array because it tested `'push' in array`. (#498)
+- Changes `accumulateWeights`, `formatDuration`, and `isEqual` to import their dependencies from the modules that define them rather than through a neighbouring tier's `index.ts` barrel, which loads every module of that tier. (#502)
+- Replaces the seed-option types declared separately by each random helper in `arrays`, `numbers`, and `strings` with the shared `SeedOptions`. (#503)
+
+### 🧪 Tests
+
+- Adds `createKitFixture`, which creates a tracked repo, points `process.cwd()` at it, and lists a kit's checks imported afresh, and `runEveryCheck`, which returns every check's report in order, to `@williamthorsen/toolbelt.adoption/test-utils`, and rewrites the kit tests in `src/readiness/__tests__/kit.tool.test.ts` to replace the repeated `createTrackedRepo`, `pointCwdAt`, and `listFreshKitChecks` calls with them. (#469)
+- Adds tests that call `Range.includes` on each value of a range and on the value beyond each bound, and that assert the value, index, and values passed to each `map` and `forEach` callback, in order; the earlier `toContain` assertions iterated the range and never called `includes`. (#501)
+- Replaces the three near-identical `describe` blocks in `Range.unit.test.ts` with one `describe.each` table over ascending, descending, and single-value ranges. (#501)
+
+### 📦 Dependencies
+
+- Drops the `@williamthorsen/toolbelt.testing` devDependency from the packages whose kit tests imported `pointCwdAt` from it. (#469)
+- Upgrades the catalog's `readyup` from 0.45.1 to 0.46.0 and recompiles each package's `.readyup/kits/default.js` and `.readyup/manifest.json`, because the bundled check utilities changed: `readFile` no longer throws `EISDIR` for a directory path. (#537)
+
 ## 6.4.2 — 2026-11-09
 
 ### ♻️ Refactoring

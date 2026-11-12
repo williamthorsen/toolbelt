@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.10.0 — 2026-11-12
+
+### 🎉 Features
+
+- Exports from `@williamthorsen/toolbelt.statistics/candidate` the parameter, option, and result types of the normal-distribution functions, such as `ComputeCdfParams`, `IntervalProbabilities`, and `NormalDistributionFit`, together with `NormalDistributionParams`, which declares the optional `mean` and `standardDeviation` of a normal distribution. (#514)
+- Makes the `options` argument of `computeCdfInverse` optional, so that a call with a probability alone evaluates the standard normal distribution (mean 0, standard deviation 1). (#514)
+- 🚨 **Breaking:** Renames the `sdMin` and `sdMax` options of `findDistributionByIntervalProbability` to `minStandardDeviation` and `maxStandardDeviation`, matching the form of its `maxIterations` option. (#514)
+- Changes three validation messages of `computeCdf`, `computeCdfInverse`, `computeNormalIntervalProbabilities`, and `findDistributionByIntervalProbability` to name the argument that they reject, such as `standardDeviation must be greater than 0.` in place of `Standard deviation must be greater than zero.`, which matches the package's other validation messages. (#520)
+
+### 🐛 Bug fixes
+
+- Fixes the issue that `computeCdf` returned `NaN` for a `NaN` mean, standard deviation, or value, and makes it throw a `TypeError` for a non-finite mean or standard deviation or a `NaN` value. (#511)
+- Fixes the issue that `computeCdfInverse` returned `NaN` for a `NaN` standard deviation and an infinite value for a probability outside [0, 1], and makes it throw a `TypeError` for a non-finite argument and a `RangeError` for such a probability. (#511)
+- Fixes the issue that `findDistributionByIntervalProbability` accepted a `tolerance` at or below 0, which the search can never meet, and returned `converged: false` after running every iteration, and makes it throw a `RangeError` for such a tolerance. (#511)
+- Fixes the issue that the bound checks of `@williamthorsen/toolbelt.statistics`, such as those rejecting a non-positive `standardDeviation` or `nIntervals`, threw a plain `Error` rather than a `RangeError`, and keeps each check's message. (#511)
+- Fixes the issue that `toCumulativeSumsFromAddends` returned the input array itself, rather than a new array, when the input was empty. (#513)
+- Fixes the issue that `toAddendsFromCumulativeSums` returned the input array itself for an empty input, so a caller that mutated the result also mutated the input. (#519)
+
+### ♻️ Refactoring
+
+- Wraps the module-level helpers of `computeNormalIntervalProbabilities` and `findDistributionByIntervalProbability` in `region | Helpers` blocks. (#511)
+- Replaces the loop in `computeNormalIntervalProbabilities` that repeated `toAddendsFromCumulativeSums` with a call to that function. (#513)
+- Moves `evaluatePolynomial` and `evaluateRatio` from `computeErfc.ts` into `internal/polynomials.ts` and evaluates the Acklam coefficient tables of `computeCdfInverse`, now stored in ascending order, through them rather than through inline Horner expressions. (#521)
+
+### 🧪 Tests
+
+- Tightens every tolerance in the `computeNormalIntervalProbabilities` tests to 9 decimal digits, which covers only the rounding of the listed expectations, and removes the references to a CDF approximation from the statistics test comments. (#512)
+- Changes the rejection tables in the tests of the four functions to check each error's class and a message fragment instead of the whole message, and adds rows for the `nIntervals` and `maxIterations` checks of `findDistributionByIntervalProbability`. (#520)
+
 ## 0.9.2 — 2026-11-09
 
 ### 📦 Dependencies

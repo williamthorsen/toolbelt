@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.10.0 — 2026-11-12
+
+### 🎉 Features
+
+- Adds `isMissingPathError` to `@williamthorsen/toolbelt.errors/candidate`, a type guard that returns true for a thrown value whose `code` is `ENOENT` or `ENOTDIR` and false for every other code, `EACCES` included, so that a caller can treat an absent path as a result and rethrow any other failure. (#545)
+
+### 🐛 Bug fixes
+
+- Share one function-literal reader across the readiness kits (#470)
+
+  Fixes the issue that the biased-shuffle check in the `@williamthorsen/toolbelt.arrays` ReadyUp kit missed an inline `function` comparator whose parameter list contains braces, such as `function (a: { n: number }, b: { n: number }) { return Math.random() - 0.5; }`. The change moves the function-literal parsing of the `arrays`, `async`, and `vitest` kits into one shared reader in `adoption`, which finds a `function` expression's body past the braces in its parameter list.
+
+- Claim a trailing-comma setTimeout as a hand-rolled sleep (#487)
+
+  Fixes the issue that the `@williamthorsen/toolbelt.async` ReadyUp kit did not report a hand-rolled sleep whose `setTimeout` call ends in a trailing comma, such as `setTimeout(resolve, 50,)`, as a candidate for `delay`. Replaces the two private copies of the argument splitter, which disagreed on the trailing comma, with one splitter in `packages/adoption` that the async and numbers kits both import.
+
+### 🧪 Tests
+
+- Adds `createKitFixture`, which creates a tracked repo, points `process.cwd()` at it, and lists a kit's checks imported afresh, and `runEveryCheck`, which returns every check's report in order, to `@williamthorsen/toolbelt.adoption/test-utils`, and rewrites the kit tests in `src/readiness/__tests__/kit.tool.test.ts` to replace the repeated `createTrackedRepo`, `pointCwdAt`, and `listFreshKitChecks` calls with them. (#469)
+
+### 📦 Dependencies
+
+- Upgrades the catalog's `readyup` from 0.45.1 to 0.46.0 and recompiles each package's `.readyup/kits/default.js` and `.readyup/manifest.json`, because the bundled check utilities changed: `readFile` no longer throws `EISDIR` for a directory path. (#537)
+
 ## 0.9.1 — 2026-11-09
 
 ### ♻️ Refactoring

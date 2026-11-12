@@ -1,5 +1,74 @@
 [
   {
+    "version": "4.2.1",
+    "date": "2026-11-12",
+    "sections": [
+      {
+        "title": "🏗️ Internal features",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Types `pipe`, `applyPipe`, and `curry` as generic overloads over `unknown`-typed implementations, which removes the `@ts-nocheck`, file-wide lint disables, type assertions, and `any` from `pipe.ts` and `curry.ts` and lets the type checker check both files. (#466)",
+            "hash": "c192492cd225a88338bb21128bbdf2c957434516",
+            "entry": 1
+          },
+          {
+            "description": "Types a `pipe` or `applyPipe` call as async when one of its functions returns any thenable rather than only a `Promise`, which matches the runtime, which already awaited every thenable. (#466)",
+            "hash": "c192492cd225a88338bb21128bbdf2c957434516",
+            "entry": 2
+          },
+          {
+            "description": "Narrows `isPromise` to `PromiseLike<unknown>` without a caller-chosen type parameter and makes `isNotPromise` exclude every thenable, matching the `then`-method check that both guards perform. (#466)",
+            "hash": "c192492cd225a88338bb21128bbdf2c957434516",
+            "entry": 3
+          },
+          {
+            "description": "Types the default of `withDefaultItemValue` as `NoInfer<TItem>`, so a literal default such as `2` no longer fixes `TItem` and a wrapped function taking `number[]` accepts `undefined` items without a type error. (#466)",
+            "hash": "c192492cd225a88338bb21128bbdf2c957434516",
+            "entry": 4
+          },
+          {
+            "description": "Removes the `fn.length` check from `withDefaultInput`, which threw on a function whose first parameter has a default or is a rest parameter, although such a function takes the input. (#467)",
+            "hash": "4a5ccf885f2400674025c1495f96d56ac181f784",
+            "entry": 1
+          },
+          {
+            "description": "Makes `withDefaultInput` and `withDefaultItemValue` replace an input or item with the default only when it is `undefined`, and pass a `null` input or item to `fn` unchanged. (#467)",
+            "hash": "4a5ccf885f2400674025c1495f96d56ac181f784",
+            "entry": 2
+          },
+          {
+            "description": "Wraps the type of the default in `NoInfer` in `withDefaultInput`, so that TypeScript infers `TInput` from `fn` rather than from the default value, as `withDefaultItemValue` already did. (#467)",
+            "hash": "4a5ccf885f2400674025c1495f96d56ac181f784",
+            "entry": 3
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Renames the test titles in the `evaluate`, `map`, `pipe`, `withDefaultInput`, and `withDefaultItemValue` strawman suites to state each test's condition and outcome, and corrects the `pipe` title \"throws compilation errors\" to \"rejects invalid calls at compile time without throwing at run time\", which matches its assertions. (#468)",
+            "hash": "7991c999c67ad2702576934682d8f2ab1bd7cd14",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "📦 Dependencies",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Removes the `@williamthorsen/toolbelt.arrays` devDependency from `toolbelt.hof`, since `pipe` was the only module in the package that imported it. (#466)",
+            "hash": "c192492cd225a88338bb21128bbdf2c957434516",
+            "entry": 5
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "4.2.0",
     "date": "2026-10-25",
     "sections": [

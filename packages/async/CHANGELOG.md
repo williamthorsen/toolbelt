@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.4.2 — 2026-11-12
+
+### 🐛 Bug fixes
+
+- Fixes the issue that the `@williamthorsen/toolbelt.async` ReadyUp kit counted the empty tail of a trailing comma as a third argument, which meant that it did not report `new Promise((resolve) => setTimeout(resolve, 50,))` as a hand-rolled sleep to replace with `delay`. (#487)
+
+### ♻️ Refactoring
+
+- Replaces the separate function-literal parsers in the `arrays`, `async`, and `vitest` readiness kits with one shared `readFunctionLiteral` in `adoption`. (#470)
+
+### 🧪 Tests
+
+- Adds `createKitFixture`, which creates a tracked repo, points `process.cwd()` at it, and lists a kit's checks imported afresh, and `runEveryCheck`, which returns every check's report in order, to `@williamthorsen/toolbelt.adoption/test-utils`, and rewrites the kit tests in `src/readiness/__tests__/kit.tool.test.ts` to replace the repeated `createTrackedRepo`, `pointCwdAt`, and `listFreshKitChecks` calls with them. (#469)
+
+### 📦 Dependencies
+
+- Drops the `@williamthorsen/toolbelt.testing` devDependency from the packages whose kit tests imported `pointCwdAt` from it. (#469)
+- Upgrades the catalog's `readyup` from 0.45.1 to 0.46.0 and recompiles each package's `.readyup/kits/default.js` and `.readyup/manifest.json`, because the bundled check utilities changed: `readFile` no longer throws `EISDIR` for a directory path. (#537)
+
 ## 3.4.1 — 2026-11-09
 
 ### ♻️ Refactoring

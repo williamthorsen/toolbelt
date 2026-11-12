@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.13.4 — 2026-11-12
+
+### 🐛 Bug fixes
+
+- Claim a trailing-comma setTimeout as a hand-rolled sleep (#487)
+
+  Fixes the issue that the `@williamthorsen/toolbelt.async` ReadyUp kit did not report a hand-rolled sleep whose `setTimeout` call ends in a trailing comma, such as `setTimeout(resolve, 50,)`, as a candidate for `delay`. Replaces the two private copies of the argument splitter, which disagreed on the trailing comma, with one splitter in `packages/adoption` that the async and numbers kits both import.
+
+### ♻️ Refactoring
+
+- Replaces the separate function-literal parsers in the `arrays`, `async`, and `vitest` readiness kits with one shared `readFunctionLiteral` in `adoption`. (#470)
+
+### 🧪 Tests
+
+- Adds `createKitFixture`, which creates a tracked repo, points `process.cwd()` at it, and lists a kit's checks imported afresh, and `runEveryCheck`, which returns every check's report in order, to `@williamthorsen/toolbelt.adoption/test-utils`, and rewrites the kit tests in `src/readiness/__tests__/kit.tool.test.ts` to replace the repeated `createTrackedRepo`, `pointCwdAt`, and `listFreshKitChecks` calls with them. (#469)
+
+### 📦 Dependencies
+
+- Upgrades the catalog's `readyup` from 0.45.1 to 0.46.0 and recompiles each package's `.readyup/kits/default.js` and `.readyup/manifest.json`, because the bundled check utilities changed: `readFile` no longer throws `EISDIR` for a directory path. (#537)
+
 ## 0.13.3 — 2026-11-09
 
 ### ♻️ Refactoring

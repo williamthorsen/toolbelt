@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.vitest",
-  "version": "0.13.3",
+  "version": "0.13.4",
   "description": "Utilities for testing with Vitest",
   "keywords": [
     "esm",

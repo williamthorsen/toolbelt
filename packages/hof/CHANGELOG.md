@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.2.1 — 2026-11-12
+
+### 🏗️ Internal features
+
+- Types `pipe`, `applyPipe`, and `curry` as generic overloads over `unknown`-typed implementations, which removes the `@ts-nocheck`, file-wide lint disables, type assertions, and `any` from `pipe.ts` and `curry.ts` and lets the type checker check both files. (#466)
+- Types a `pipe` or `applyPipe` call as async when one of its functions returns any thenable rather than only a `Promise`, which matches the runtime, which already awaited every thenable. (#466)
+- Narrows `isPromise` to `PromiseLike<unknown>` without a caller-chosen type parameter and makes `isNotPromise` exclude every thenable, matching the `then`-method check that both guards perform. (#466)
+- Types the default of `withDefaultItemValue` as `NoInfer<TItem>`, so a literal default such as `2` no longer fixes `TItem` and a wrapped function taking `number[]` accepts `undefined` items without a type error. (#466)
+- Removes the `fn.length` check from `withDefaultInput`, which threw on a function whose first parameter has a default or is a rest parameter, although such a function takes the input. (#467)
+- Makes `withDefaultInput` and `withDefaultItemValue` replace an input or item with the default only when it is `undefined`, and pass a `null` input or item to `fn` unchanged. (#467)
+- Wraps the type of the default in `NoInfer` in `withDefaultInput`, so that TypeScript infers `TInput` from `fn` rather than from the default value, as `withDefaultItemValue` already did. (#467)
+
+### 🧪 Tests
+
+- Renames the test titles in the `evaluate`, `map`, `pipe`, `withDefaultInput`, and `withDefaultItemValue` strawman suites to state each test's condition and outcome, and corrects the `pipe` title "throws compilation errors" to "rejects invalid calls at compile time without throwing at run time", which matches its assertions. (#468)
+
+### 📦 Dependencies
+
+- Removes the `@williamthorsen/toolbelt.arrays` devDependency from `toolbelt.hof`, since `pipe` was the only module in the package that imported it. (#466)
+
 ## 4.2.0 — 2026-10-25
 
 ### 🎉 Features

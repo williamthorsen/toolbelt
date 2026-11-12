@@ -1,5 +1,100 @@
 [
   {
+    "version": "8.2.3",
+    "date": "2026-11-12",
+    "sections": [
+      {
+        "title": "🐛 Bug fixes",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Share one function-literal reader across the readiness kits (#470)",
+            "body": "Fixes the issue that the biased-shuffle check in the `@williamthorsen/toolbelt.arrays` ReadyUp kit missed an inline `function` comparator whose parameter list contains braces, such as `function (a: { n: number }, b: { n: number }) { return Math.random() - 0.5; }`. The change moves the function-literal parsing of the `arrays`, `async`, and `vitest` kits into one shared reader in `adoption`, which finds a `function` expression's body past the braces in its parameter list.",
+            "hash": "4a68ebf4d8baeac202267ac3c245a1b0d9e4dc51"
+          },
+          {
+            "description": "Claim a trailing-comma setTimeout as a hand-rolled sleep (#487)",
+            "body": "Fixes the issue that the `@williamthorsen/toolbelt.async` ReadyUp kit did not report a hand-rolled sleep whose `setTimeout` call ends in a trailing comma, such as `setTimeout(resolve, 50,)`, as a candidate for `delay`. Replaces the two private copies of the argument splitter, which disagreed on the trailing comma, with one splitter in `packages/adoption` that the async and numbers kits both import.",
+            "hash": "db112149e3d49fc681053081af06e391f87ef1f1"
+          },
+          {
+            "description": "Fixes the issue that `pickVariants` and `TextNode.create` from `@williamthorsen/toolbelt.strings/draft` overflowed the stack on a group nested directly after a separator, such as `[a|[b|c]]`, and dropped an empty variant between adjacent separators (`[a||b]`) or after a trailing one (`[a|]`). (#538)",
+            "hash": "2a92aa0726dc72ca843b517ccbc4e4ad693e2d22",
+            "entry": 1
+          },
+          {
+            "description": "Fixes the issue that the exported `interpolate`, the static `Interpolator.interpolate`, and an `Interpolator` configured through its constructor or `setOptions` disregarded the `ifMissing` and `noAdaptCase` options: `interpolate('{a} {b}', { a: 'x' }, { ifMissing: 'THROW' })` returned `\"x {b}\"` instead of throwing. (#539)",
+            "hash": "4cd73ade62870685de72944e4a36882c86d4d059",
+            "entry": 1
+          },
+          {
+            "description": "Fixes the issue that `noAdaptCase` left a placeholder unreplaced when the placeholder differed from its key only in case, rather than replacing it with the value as given. (#539)",
+            "hash": "4cd73ade62870685de72944e4a36882c86d4d059",
+            "entry": 2
+          },
+          {
+            "description": "Fixes the issue that the `Interpolator` constructor's options type rejected a `mapping`, although the constructor already applied one at runtime. (#539)",
+            "hash": "4cd73ade62870685de72944e4a36882c86d4d059",
+            "entry": 3
+          },
+          {
+            "description": "Fixes the issue that `TextNode#selectVariants` emptied a flat `indices` array passed by the caller, which also made `pickWithFingerprint` return empty `indices` and `encodedIndices` and a fingerprint that did not reproduce the pick. (#542)",
+            "hash": "d54f00a81008481aa83622eb5748b600bdae544a",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Replaces the seed-option types declared separately by each random helper in `arrays`, `numbers`, and `strings` with the shared `SeedOptions`. (#503)",
+            "hash": "9ac2f6e8f97c33595b894ffa9fbfeb83dbd5522b",
+            "entry": 2
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Adds `createKitFixture`, which creates a tracked repo, points `process.cwd()` at it, and lists a kit's checks imported afresh, and `runEveryCheck`, which returns every check's report in order, to `@williamthorsen/toolbelt.adoption/test-utils`, and rewrites the kit tests in `src/readiness/__tests__/kit.tool.test.ts` to replace the repeated `createTrackedRepo`, `pointCwdAt`, and `listFreshKitChecks` calls with them. (#469)",
+            "hash": "5f71996e7e3137192e24c5936de1bfa1595af760",
+            "entry": 1
+          },
+          {
+            "description": "Asserts each thrown error in the `strings` tests by its class, when the code throws a specific one, and a durable fragment of its message instead of the full text, and pairs each malformed template in the `Interpolator` delimiter tests with the fragment that names its own failure. (#540)",
+            "hash": "dcce3119b3cc61778d5b52b24f56c2cd03bc5dd6",
+            "entry": 1
+          },
+          {
+            "description": "Renames the vague test titles in the `strings` package, such as \"handles negative numbers correctly\" and \"accepts a Map as mapping\", to titles that state the condition and the expected outcome, without changing any test body. (#543)",
+            "hash": "d6fb613a32a43707f22239319552efdda31f7c1a",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "📦 Dependencies",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Drops the `@williamthorsen/toolbelt.testing` devDependency from the packages whose kit tests imported `pointCwdAt` from it. (#469)",
+            "hash": "5f71996e7e3137192e24c5936de1bfa1595af760",
+            "entry": 2
+          },
+          {
+            "description": "Upgrades the catalog's `readyup` from 0.45.1 to 0.46.0 and recompiles each package's `.readyup/kits/default.js` and `.readyup/manifest.json`, because the bundled check utilities changed: `readFile` no longer throws `EISDIR` for a directory path. (#537)",
+            "hash": "14d6595f23ea08f7218fc9a4f127039a1a4e6c16",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "8.2.2",
     "date": "2026-11-09",
     "sections": [

@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
+## 8.0.0 — 2026-11-12
+
+### 🎉 Features
+
+- Exports the `SeedOptions` type from `@williamthorsen/toolbelt.numbers/candidate`, which declares the optional `seed` property that the seeded random helpers accept, so that a consumer can type the options of its own seeded helper. (#503)
+
+### 🪦 Removed
+
+- 🚨 **Breaking:** Removes the `maxBase`, `scaleUpSeed`, and `scaleDownSeed` members from `SeededRng`, `IntSeededRng`, and `Int32SeededRng` in `@williamthorsen/toolbelt.numbers/candidate`, without changing the values that a given seed produces. (#482)
+
+### 🐛 Bug fixes
+
+- Share one function-literal reader across the readiness kits (#470)
+
+  Fixes the issue that the biased-shuffle check in the `@williamthorsen/toolbelt.arrays` ReadyUp kit missed an inline `function` comparator whose parameter list contains braces, such as `function (a: { n: number }, b: { n: number }) { return Math.random() - 0.5; }`. The change moves the function-literal parsing of the `arrays`, `async`, and `vitest` kits into one shared reader in `adoption`, which finds a `function` expression's body past the braces in its parameter list.
+
+- Fixes the issue that `SeededRng` and its subclasses returned the same value on every call to `next()` when the seed was 0 or another multiple of 2147483647, and leaves the sequence for every other seed unchanged. (#483)
+
+### ♻️ Refactoring
+
+- Moves the helper functions in `formatDuration.ts`, `scale.ts`, and `IntegerSeed.ts` to the end of each module in an alphabetized `// region | Helpers` block, and renames the abbreviated locals `num` and `strSeed` to full names. (#485)
+- Moves the top-level argument splitter into `packages/adoption` as `listTopLevelArguments`, which the async and numbers readiness detectors now import in place of their private copies. (#487)
+- Replaces the seed-option types declared separately by each random helper in `arrays`, `numbers`, and `strings` with the shared `SeedOptions`. (#503)
+
+### 🧪 Tests
+
+- Adds `createKitFixture`, which creates a tracked repo, points `process.cwd()` at it, and lists a kit's checks imported afresh, and `runEveryCheck`, which returns every check's report in order, to `@williamthorsen/toolbelt.adoption/test-utils`, and rewrites the kit tests in `src/readiness/__tests__/kit.tool.test.ts` to replace the repeated `createTrackedRepo`, `pointCwdAt`, and `listFreshKitChecks` calls with them. (#469)
+- Replaces the `for` loops that generate tests in `seeded-rng.unit.test.ts` with `it.each` and `describe.each` tables, which gives the two `produces consistent results` tests distinct names, and removes the file-wide `vitest/prefer-each` suppression. (#484)
+
+### 📦 Dependencies
+
+- Drops the `@williamthorsen/toolbelt.testing` devDependency from the packages whose kit tests imported `pointCwdAt` from it. (#469)
+- Upgrades the catalog's `readyup` from 0.45.1 to 0.46.0 and recompiles each package's `.readyup/kits/default.js` and `.readyup/manifest.json`, because the bundled check utilities changed: `readFile` no longer throws `EISDIR` for a directory path. (#537)
+
 ## 7.3.2 — 2026-11-09
 
 ### ♻️ Refactoring

@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.1.1 — 2026-11-12
+
+### ♻️ Refactoring
+
+- Reimplements the set operations in `@williamthorsen/toolbelt.sets` on `Set.prototype.union`, `intersection`, `difference`, `symmetricDifference`, and `isSubsetOf` in place of hand-written loops, and documents that the iteration order of `setIntersection`'s result is now unspecified, because the native method may iterate either operand first. (#500)
+
+### 🧪 Tests
+
+- Replaces the repeated per-case tests of the set operations with `it.each` tables whose rows are named by condition and outcome, and adds array and iterator input rows for every operation through a new `yieldEach` test helper. (#500)
+
 ## 3.1.0 — 2026-10-25
 
 ### 🎉 Features

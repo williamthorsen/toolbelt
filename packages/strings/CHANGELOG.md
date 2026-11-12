@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## 8.2.3 — 2026-11-12
+
+### 🐛 Bug fixes
+
+- Share one function-literal reader across the readiness kits (#470)
+
+  Fixes the issue that the biased-shuffle check in the `@williamthorsen/toolbelt.arrays` ReadyUp kit missed an inline `function` comparator whose parameter list contains braces, such as `function (a: { n: number }, b: { n: number }) { return Math.random() - 0.5; }`. The change moves the function-literal parsing of the `arrays`, `async`, and `vitest` kits into one shared reader in `adoption`, which finds a `function` expression's body past the braces in its parameter list.
+
+- Claim a trailing-comma setTimeout as a hand-rolled sleep (#487)
+
+  Fixes the issue that the `@williamthorsen/toolbelt.async` ReadyUp kit did not report a hand-rolled sleep whose `setTimeout` call ends in a trailing comma, such as `setTimeout(resolve, 50,)`, as a candidate for `delay`. Replaces the two private copies of the argument splitter, which disagreed on the trailing comma, with one splitter in `packages/adoption` that the async and numbers kits both import.
+
+- Fixes the issue that `pickVariants` and `TextNode.create` from `@williamthorsen/toolbelt.strings/draft` overflowed the stack on a group nested directly after a separator, such as `[a|[b|c]]`, and dropped an empty variant between adjacent separators (`[a||b]`) or after a trailing one (`[a|]`). (#538)
+- Fixes the issue that the exported `interpolate`, the static `Interpolator.interpolate`, and an `Interpolator` configured through its constructor or `setOptions` disregarded the `ifMissing` and `noAdaptCase` options: `interpolate('{a} {b}', { a: 'x' }, { ifMissing: 'THROW' })` returned `"x {b}"` instead of throwing. (#539)
+- Fixes the issue that `noAdaptCase` left a placeholder unreplaced when the placeholder differed from its key only in case, rather than replacing it with the value as given. (#539)
+- Fixes the issue that the `Interpolator` constructor's options type rejected a `mapping`, although the constructor already applied one at runtime. (#539)
+- Fixes the issue that `TextNode#selectVariants` emptied a flat `indices` array passed by the caller, which also made `pickWithFingerprint` return empty `indices` and `encodedIndices` and a fingerprint that did not reproduce the pick. (#542)
+
+### ♻️ Refactoring
+
+- Replaces the seed-option types declared separately by each random helper in `arrays`, `numbers`, and `strings` with the shared `SeedOptions`. (#503)
+
+### 🧪 Tests
+
+- Adds `createKitFixture`, which creates a tracked repo, points `process.cwd()` at it, and lists a kit's checks imported afresh, and `runEveryCheck`, which returns every check's report in order, to `@williamthorsen/toolbelt.adoption/test-utils`, and rewrites the kit tests in `src/readiness/__tests__/kit.tool.test.ts` to replace the repeated `createTrackedRepo`, `pointCwdAt`, and `listFreshKitChecks` calls with them. (#469)
+- Asserts each thrown error in the `strings` tests by its class, when the code throws a specific one, and a durable fragment of its message instead of the full text, and pairs each malformed template in the `Interpolator` delimiter tests with the fragment that names its own failure. (#540)
+- Renames the vague test titles in the `strings` package, such as "handles negative numbers correctly" and "accepts a Map as mapping", to titles that state the condition and the expected outcome, without changing any test body. (#543)
+
+### 📦 Dependencies
+
+- Drops the `@williamthorsen/toolbelt.testing` devDependency from the packages whose kit tests imported `pointCwdAt` from it. (#469)
+- Upgrades the catalog's `readyup` from 0.45.1 to 0.46.0 and recompiles each package's `.readyup/kits/default.js` and `.readyup/manifest.json`, because the bundled check utilities changed: `readFile` no longer throws `EISDIR` for a directory path. (#537)
+
 ## 8.2.2 — 2026-11-09
 
 ### ♻️ Refactoring

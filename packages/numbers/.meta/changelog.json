@@ -1,5 +1,104 @@
 [
   {
+    "version": "8.0.0",
+    "date": "2026-11-12",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Exports the `SeedOptions` type from `@williamthorsen/toolbelt.numbers/candidate`, which declares the optional `seed` property that the seeded random helpers accept, so that a consumer can type the options of its own seeded helper. (#503)",
+            "hash": "9ac2f6e8f97c33595b894ffa9fbfeb83dbd5522b",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "🪦 Removed",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Removes the `maxBase`, `scaleUpSeed`, and `scaleDownSeed` members from `SeededRng`, `IntSeededRng`, and `Int32SeededRng` in `@williamthorsen/toolbelt.numbers/candidate`, without changing the values that a given seed produces. (#482)",
+            "breaking": true,
+            "migration": "Delete each call to `scaleUpSeed` or `scaleDownSeed`, both of which returned the seed unchanged, and delete any `maxBase` override in a subclass, because `SeededRng` no longer reads it and a subclass declared without `override` still compiles while the override has no effect.",
+            "hash": "56d57bf82c93929abfeca8ebb5f321d4f5e6aa71",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "🐛 Bug fixes",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Share one function-literal reader across the readiness kits (#470)",
+            "body": "Fixes the issue that the biased-shuffle check in the `@williamthorsen/toolbelt.arrays` ReadyUp kit missed an inline `function` comparator whose parameter list contains braces, such as `function (a: { n: number }, b: { n: number }) { return Math.random() - 0.5; }`. The change moves the function-literal parsing of the `arrays`, `async`, and `vitest` kits into one shared reader in `adoption`, which finds a `function` expression's body past the braces in its parameter list.",
+            "hash": "4a68ebf4d8baeac202267ac3c245a1b0d9e4dc51"
+          },
+          {
+            "description": "Fixes the issue that `SeededRng` and its subclasses returned the same value on every call to `next()` when the seed was 0 or another multiple of 2147483647, and leaves the sequence for every other seed unchanged. (#483)",
+            "hash": "b07fbae166227592e8c9172ff1435f5e61f2b176",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Moves the helper functions in `formatDuration.ts`, `scale.ts`, and `IntegerSeed.ts` to the end of each module in an alphabetized `// region | Helpers` block, and renames the abbreviated locals `num` and `strSeed` to full names. (#485)",
+            "hash": "21bfe613b972f6887e2917d99e7df69b1803ed6f",
+            "entry": 1
+          },
+          {
+            "description": "Moves the top-level argument splitter into `packages/adoption` as `listTopLevelArguments`, which the async and numbers readiness detectors now import in place of their private copies. (#487)",
+            "hash": "db112149e3d49fc681053081af06e391f87ef1f1",
+            "entry": 2
+          },
+          {
+            "description": "Replaces the seed-option types declared separately by each random helper in `arrays`, `numbers`, and `strings` with the shared `SeedOptions`. (#503)",
+            "hash": "9ac2f6e8f97c33595b894ffa9fbfeb83dbd5522b",
+            "entry": 2
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Adds `createKitFixture`, which creates a tracked repo, points `process.cwd()` at it, and lists a kit's checks imported afresh, and `runEveryCheck`, which returns every check's report in order, to `@williamthorsen/toolbelt.adoption/test-utils`, and rewrites the kit tests in `src/readiness/__tests__/kit.tool.test.ts` to replace the repeated `createTrackedRepo`, `pointCwdAt`, and `listFreshKitChecks` calls with them. (#469)",
+            "hash": "5f71996e7e3137192e24c5936de1bfa1595af760",
+            "entry": 1
+          },
+          {
+            "description": "Replaces the `for` loops that generate tests in `seeded-rng.unit.test.ts` with `it.each` and `describe.each` tables, which gives the two `produces consistent results` tests distinct names, and removes the file-wide `vitest/prefer-each` suppression. (#484)",
+            "hash": "e458cfd424b3be3d6326f6c5d3d1b3b0a177d994",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "📦 Dependencies",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Drops the `@williamthorsen/toolbelt.testing` devDependency from the packages whose kit tests imported `pointCwdAt` from it. (#469)",
+            "hash": "5f71996e7e3137192e24c5936de1bfa1595af760",
+            "entry": 2
+          },
+          {
+            "description": "Upgrades the catalog's `readyup` from 0.45.1 to 0.46.0 and recompiles each package's `.readyup/kits/default.js` and `.readyup/manifest.json`, because the bundled check utilities changed: `readFile` no longer throws `EISDIR` for a directory path. (#537)",
+            "hash": "14d6595f23ea08f7218fc9a4f127039a1a4e6c16",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "7.3.2",
     "date": "2026-11-09",
     "sections": [

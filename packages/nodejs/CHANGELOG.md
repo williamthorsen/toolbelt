@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.1.2 — 2026-11-12
+
+### 🐛 Bug fixes
+
+- Fixes the issue that `listStrandedAsdfShims` in `@williamthorsen/toolbelt.nodejs` threw `ENOTDIR` when the shims directory's path lay below a regular file, and it now returns an empty array in that case, as it already did for a missing shims directory. (#545)
+
 ## 4.1.1 — 2026-11-09
 
 ### 📦 Dependencies

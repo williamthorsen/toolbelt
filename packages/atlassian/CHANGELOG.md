@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.8.2 — 2026-11-12
+
+### Notes
+
+- Forced version bump.
+
 ## 0.8.1 — 2026-11-09
 
 ### 📦 Dependencies

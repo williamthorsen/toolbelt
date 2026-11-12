@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.1.3 — 2026-11-12
+
+### 🐛 Bug fixes
+
+- Fixes the issue that `new Timestamp(0)` and `Timestamp.fromMillis(0).clone()` returned the current time instead of the epoch. (#479)
+- Fixes the issue that `Timestamp` accepted an input that does not resolve to a valid date, such as an unparseable string, an invalid `Date`, or `NaN`, and stored `NaN` milliseconds that made `toISOString()` fail later; the constructor now throws a `RangeError` that names the input. (#479)
+- Fixes the issue that `listDecadesContainingRange` looped without end on an `Infinity` or very large bound and `listDecadesContainingYears` returned a `{ start: NaN, end: NaN, label: 'NaNs' }` decade for a `NaN` year, by making both throw a `RangeError` for any year that is not a non-negative integer no larger than `Number.MAX_SAFE_INTEGER`. (#480)
+
+### ♻️ Refactoring
+
+- Moves the helper functions in `formatDuration.ts`, `scale.ts`, and `IntegerSeed.ts` to the end of each module in an alphabetized `// region | Helpers` block, and renames the abbreviated locals `num` and `strSeed` to full names. (#485)
+- Changes `accumulateWeights`, `formatDuration`, and `isEqual` to import their dependencies from the modules that define them rather than through a neighbouring tier's `index.ts` barrel, which loads every module of that tier. (#502)
+
+### 🧪 Tests
+
+- Renames the `TimeUnit` tests for `convert()` and `toString()` and the `Timestamp` test for `toLocaleDateTimeString()` so that each name states the condition and the expected outcome rather than using "should" or "correctly". (#486)
+
 ## 4.1.2 — 2026-11-09
 
 ### 📦 Dependencies
