@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 
-import type { ValidationResult } from '../../types/common.types.ts';
+import type { ValidationError, ValidationResult } from '../../types/common.types.ts';
 import { validateDelimiters } from '../validateDelimiters.ts';
 
 describe(validateDelimiters, () => {
@@ -121,5 +121,14 @@ describe(validateDelimiters, () => {
 
       expect(actual).toStrictEqual(expected);
     });
+  });
+
+  it('types a valid result as having no errors and an invalid result as having at least one', () => {
+    type Result = ReturnType<typeof validateDelimiters>;
+
+    expectTypeOf<Extract<Result, { isValid: true }>['errors']>().toEqualTypeOf<[]>();
+    expectTypeOf<Extract<Result, { isValid: false }>['errors']>().toEqualTypeOf<
+      [ValidationError, ...ValidationError[]]
+    >();
   });
 });

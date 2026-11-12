@@ -1,5 +1,3 @@
-import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
-
 import type { ValidationResult } from '../types/common.types.ts';
 
 /**
@@ -15,7 +13,7 @@ export function validateDelimiters(text: string, params: Params): ValidationResu
     throw new Error('Opening and closing delimiters must be different.');
   }
 
-  const validationResult = (() => {
+  const validationResult = ((): ValidationResult => {
     let openedCount = 0;
     for (const char of text) {
       if (char === opening) {
@@ -66,7 +64,7 @@ export function validateDelimiters(text: string, params: Params): ValidationResu
   })();
 
   if (!validationResult.isValid && params.throwOnError) {
-    throw new Error(getItemAtIndexOrThrow(validationResult.errors, 0).message);
+    throw new Error(validationResult.errors[0].message);
   }
 
   return validationResult;

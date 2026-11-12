@@ -1,6 +1,7 @@
 import is from '@sindresorhus/is';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
+import type { ValidationError } from '../../types/common.types.ts';
 import { interpolate, Interpolator, type InterpolatorOptions } from '../Interpolator.ts';
 
 describe(Interpolator, () => {
@@ -451,6 +452,15 @@ describe(Interpolator, () => {
       const actual = Interpolator.validateTemplate(template);
 
       expect(toObjectLiteral(actual)).toStrictEqual(expected);
+    });
+
+    it('types a valid result as having no errors and an invalid result as having at least one', () => {
+      type Result = ReturnType<typeof Interpolator.validateTemplate>;
+
+      expectTypeOf<Extract<Result, { isValid: true }>['errors']>().toEqualTypeOf<[]>();
+      expectTypeOf<Extract<Result, { isValid: false }>['errors']>().toEqualTypeOf<
+        [ValidationError, ...ValidationError[]]
+      >();
     });
   });
 });
