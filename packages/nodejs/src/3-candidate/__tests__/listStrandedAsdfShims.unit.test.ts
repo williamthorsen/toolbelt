@@ -109,6 +109,12 @@ describe(listStrandedAsdfShims, () => {
 
     expect(listStrandedAsdfShims(buildOptions(tree))).toStrictEqual([]);
   });
+
+  it('yields nothing when the shims directory lies below a regular file', () => {
+    using tree = createTempTree({ data: 'not a directory' });
+
+    expect(listStrandedAsdfShims({ ...buildOptions(tree), dataDir: tree.resolve('data') })).toStrictEqual([]);
+  });
 });
 
 // region | Helpers

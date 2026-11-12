@@ -1,3 +1,5 @@
+<!-- readme-type: library -->
+
 # @williamthorsen/toolbelt.errors
 
 Utilities for working with errors: describing what was thrown, and adding context to it.
@@ -14,7 +16,7 @@ pnpm add @williamthorsen/toolbelt.errors
 
 No export depends on a `node:` builtin or any other host API, so every export runs under Node.js 24 or later, Bun, Deno, browsers, and edge runtimes alike.
 
-`describeError` and `isError` are release tier, imported from the package root. `chainError` and `assertIsError` are candidate tier: imported from `@williamthorsen/toolbelt.errors/candidate` rather than the package root, and subject to change.
+`describeError` and `isError` are release tier, imported from the package root. `chainError`, `assertIsError`, and `isMissingPathError` are candidate tier: imported from `@williamthorsen/toolbelt.errors/candidate` rather than the package root, and subject to change.
 
 ## `describeError`
 
@@ -90,6 +92,25 @@ try {
 ```
 
 `assertIsError` rethrows the value itself rather than a diagnostic of its own, so an outer handler receives a thrown string as that string, still available to a handler that knows what to do with it.
+
+## `isMissingPathError`
+
+```ts
+isMissingPathError(error: unknown): error is { readonly code: 'ENOENT' | 'ENOTDIR' };
+```
+
+Reports whether a caught value means that a path is not there, so that a probe can treat absence as a result and still surface every other failure. It accepts `ENOTDIR` as well as `ENOENT`, which a probe below a regular file raises; a caller that tests `ENOENT` alone today treats that case as absent once it adopts the predicate.
+
+```ts
+import { isMissingPathError } from '@williamthorsen/toolbelt.errors/candidate';
+
+try {
+  return fs.readFileSync(configPath, 'utf8');
+} catch (error) {
+  if (isMissingPathError(error)) return undefined;
+  throw error;
+}
+```
 
 ## Adoption checks
 
