@@ -32,9 +32,13 @@ export function deriveCaseTransformer(source: string, target: string): Transform
   return undefined;
 }
 
+// region | Helpers
+
 /** Returns the value unchanged. */
 function identity<T>(value: T): T {
   return value;
 }
 
 type Transform = (text: string) => string;
+
+// endregion | Helpers
