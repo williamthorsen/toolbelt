@@ -32,7 +32,7 @@
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "5f17b6f3",
+          "hash": "a8c9ffb5",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -57,9 +57,14 @@
           "path": "../../adoption/src/portable/listTemplateLiterals.ts"
         },
         {
-          "hash": "46a142a5",
+          "hash": "7964ec20",
           "kind": "module",
           "path": "../../adoption/src/portable/listTopLevelArguments.ts"
+        },
+        {
+          "hash": "d4160914",
+          "kind": "module",
+          "path": "../../adoption/src/portable/listTopLevelSpans.ts"
         },
         {
           "hash": "a5dc0993",
@@ -112,7 +117,7 @@
       "readyupVersion": "0.46.1",
       "source": "kits/default.ts",
       "sourceHash": "4f631650",
-      "targetHash": "8f93be6a"
+      "targetHash": "f46e4f5d"
     }
   ]
 }

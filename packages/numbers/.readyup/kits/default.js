@@ -173,26 +173,31 @@ function readBalancedGroup(source, from, delimiters) {
   return void 0;
 }
 
-// ../adoption/src/portable/listTopLevelArguments.ts
+// ../adoption/src/portable/listTopLevelSpans.ts
 var CLOSERS = ")]}";
 var OPENERS = "([{";
-function listTopLevelArguments(inner) {
-  const args = [];
+function listTopLevelSpans(text, start = 0, end = text.length) {
+  const spans = [];
   let depth = 0;
-  let start = 0;
-  for (let index = 0; index < inner.length; index += 1) {
-    const character = inner.charAt(index);
+  let itemStart = start;
+  for (let index = start; index < end; index += 1) {
+    const character = text.charAt(index);
     if (OPENERS.includes(character)) depth += 1;
     else if (CLOSERS.includes(character)) depth -= 1;
     else if (character === "," && depth === 0) {
-      args.push(inner.slice(start, index));
-      start = index + 1;
+      spans.push({ end: index, start: itemStart });
+      itemStart = index + 1;
     }
   }
-  args.push(inner.slice(start));
-  const last = args.at(-1);
-  if (args.length > 1 && last !== void 0 && last.trim() === "") args.pop();
-  return args;
+  spans.push({ end, start: itemStart });
+  const last = spans.at(-1);
+  if (spans.length > 1 && last !== void 0 && text.slice(last.start, last.end).trim() === "") spans.pop();
+  return spans;
+}
+
+// ../adoption/src/portable/listTopLevelArguments.ts
+function listTopLevelArguments(inner) {
+  return listTopLevelSpans(inner).map(({ end, start }) => inner.slice(start, end));
 }
 
 // ../adoption/src/mod.ts
