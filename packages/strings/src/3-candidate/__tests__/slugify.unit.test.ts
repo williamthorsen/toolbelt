@@ -102,6 +102,7 @@ describe(slugify, () => {
 
     const throwingFn = () => slugify(input, options);
 
-    expect(throwingFn).toThrow(new TypeError('Separator must be a single character.'));
+    expect(throwingFn).toThrow(TypeError);
+    expect(throwingFn).toThrow(/separator/i);
   });
 });

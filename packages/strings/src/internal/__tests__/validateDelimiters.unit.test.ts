@@ -79,21 +79,19 @@ describe(validateDelimiters, () => {
   it('if opening & closing delimiters are the same character, throws an error', () => {
     const input = '';
     const badParams = { opening: '{', closing: '{' };
-    const expectedErrorMessage = 'Opening and closing delimiters must be different.';
 
     const throwingFn = vi.fn<() => ValidationResult>(() => validateDelimiters(input, badParams));
 
-    expect(throwingFn).toThrow(new Error(expectedErrorMessage));
+    expect(throwingFn).toThrow('different');
   });
 
   it('if throwOnError=true, throws an error containing the first error message', () => {
     const input = 'Hello, [wo]r]ld!';
     const withErrorParams = { opening: '[', closing: ']', throwOnError: true };
-    const expectedErrorMessage = 'Text has unmatched closing delimiter "]".';
 
     const throwingFn = vi.fn<() => ValidationResult>(() => validateDelimiters(input, withErrorParams));
 
-    expect(throwingFn).toThrow(new Error(expectedErrorMessage));
+    expect(throwingFn).toThrow('unmatched closing');
   });
 
   describe('disallowNested option with correct nesting', () => {

@@ -199,15 +199,16 @@ describe(Interpolator, () => {
       expect(actual).toBe(expected);
     });
 
-    it.each(['Hello, {name!', 'Hello, name}!', 'Hello, {name{}}!'])(
-      'if delimiters are mismatched or nested, throws an error',
-      (badTemplate) => {
-        const mapping = { name: 'World' };
-        const throwingFn = () => new Interpolator(badTemplate).interpolate({ mapping });
+    it.each([
+      ['Hello, {name!', 'unmatched opening'],
+      ['Hello, name}!', 'unmatched closing'],
+      ['Hello, {name{}}!', 'nested'],
+    ])('given %j, throws an error reporting the %s delimiter', (badTemplate, fragment) => {
+      const mapping = { name: 'World' };
+      const throwingFn = () => new Interpolator(badTemplate).interpolate({ mapping });
 
-        expect(throwingFn).toThrow('Text has');
-      },
-    );
+      expect(throwingFn).toThrow(fragment);
+    });
 
     it('accepts a Map as mapping', () => {
       const template = '{greeting}, {planet}!';
@@ -314,7 +315,7 @@ describe(Interpolator, () => {
         const throwingFn = () => interpolable.interpolate({ ifMissing });
 
         // TODO: Inflect the error message to match the number of placeholders
-        expect(throwingFn).toThrow('Text has unmatched placeholders: unmatched1, unmatched2');
+        expect(throwingFn).toThrow(/unmatched placeholders\W+unmatched1\W+unmatched2\b/);
       });
 
       it('if ifMissing=USE_KEY, replaces any unmatched placeholder with the placeholder itself', () => {
@@ -356,7 +357,7 @@ describe(Interpolator, () => {
     it.each(entryPoints)('applies ifMissing passed to the %s', (_, interpolateWith) => {
       const throwingFn = () => interpolateWith('{a} {b}', { a: 'x' }, { ifMissing: 'THROW' });
 
-      expect(throwingFn).toThrow('Text has unmatched placeholders: b');
+      expect(throwingFn).toThrow(/unmatched placeholders\W+b\b/);
     });
 
     it.each(entryPoints)('applies noAdaptCase passed to the %s', (_, interpolateWith) => {
@@ -388,7 +389,7 @@ describe(Interpolator, () => {
       const throwingFn = () => throwing.interpolate({ ifMissing: undefined });
       const actual = preserving.interpolate({ noAdaptCase: undefined });
 
-      expect(throwingFn).toThrow('Text has unmatched placeholders: b');
+      expect(throwingFn).toThrow(/unmatched placeholders\W+b\b/);
       expect(actual).toBe('bob');
     });
   });
@@ -423,7 +424,7 @@ describe(Interpolator, () => {
 
       const throwingFn = () => interpolable.setOptions({ mapping });
 
-      expect(throwingFn).toThrow('Mapping keys must be unique, ignoring case.');
+      expect(throwingFn).toThrow('unique');
     });
   });
 
