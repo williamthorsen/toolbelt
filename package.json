@@ -22,7 +22,7 @@
   "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
   "type": "module",
   "scripts": {
-    "postinstall": "nmr report-overrides --quiet && codeassembly sync --warn-only",
+    "postinstall": "nmr --quiet report-overrides && codeassembly sync --warn-only",
     "prepare": "lefthook check-install || lefthook install"
   },
   "devDependencies": {
@@ -31,8 +31,8 @@
     "@vitest/coverage-v8": "5.1.0",
     "@vitest/eslint-plugin": "1.6.28",
     "@williamthorsen/eslint-config-typescript": "21.0.0",
-    "@williamthorsen/nmr": "2.0.0",
-    "@williamthorsen/release-kit": "18.0.0",
+    "@williamthorsen/nmr": "2.0.1",
+    "@williamthorsen/release-kit": "18.1.0",
     "@williamthorsen/strict-lint": "14.2.1",
     "@williamthorsen/tsconfig": "0.12.1",
     "codeassembly": "0.20.1",
