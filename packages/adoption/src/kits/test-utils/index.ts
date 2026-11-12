@@ -5,6 +5,7 @@ export {
   runCheck,
   runEveryCheck,
   runSkip,
+  selectCheck,
   summarizeFraction,
 } from './check-outcomes.ts';
 export { createKitFixture, type KitFixture } from './createKitFixture.ts';

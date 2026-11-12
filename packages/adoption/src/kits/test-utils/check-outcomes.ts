@@ -57,6 +57,13 @@ export async function runSkip(check: RdyCheck | undefined): Promise<false | stri
   return check.skip();
 }
 
+/** Selects the check with the given id. Throws when no check has it, so that a renamed id cannot pass unnoticed. */
+export function selectCheck(checks: readonly RdyCheck[], id: string): RdyCheck {
+  const check = checks.find((candidate) => candidate.id === id);
+  if (check === undefined) throw new Error(`the kit holds no check with id '${id}'`);
+  return check;
+}
+
 /** Reduces a report to the two numbers from which the runner derives its fraction. */
 export function summarizeFraction(outcome: FindingOutcome): {
   adoptedCount: number | undefined;

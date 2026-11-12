@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url';
 import type { RdyCheck, RdyKit } from 'readyup';
 import { describe, expect, it } from 'vitest';
 
-import { listFreshKitChecks, listKitChecks, runEveryCheck } from '../check-outcomes.ts';
+import { listFreshKitChecks, listKitChecks, runEveryCheck, selectCheck } from '../check-outcomes.ts';
 import { createTempDir } from '../createTempDir.ts';
 
 const FIRST: RdyCheck = { name: 'first', check: () => true };
@@ -73,5 +73,20 @@ describe(runEveryCheck, () => {
 
   it('rejects when a check returns no report', async () => {
     await expect(runEveryCheck([FIRST])).rejects.toThrow('the check returned no report');
+  });
+});
+
+describe(selectCheck, () => {
+  const checks: RdyCheck[] = [
+    { id: 'first-id', name: 'first', check: () => true },
+    { id: 'second-id', name: 'second', check: () => true },
+  ];
+
+  it('returns the check with the given id', () => {
+    expect(selectCheck(checks, 'second-id')).toBe(checks[1]);
+  });
+
+  it('throws, naming the id, when no check has it', () => {
+    expect(() => selectCheck(checks, 'missing-id')).toThrow("the kit holds no check with id 'missing-id'");
   });
 });
