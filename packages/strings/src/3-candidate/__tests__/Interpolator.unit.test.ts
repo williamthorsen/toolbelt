@@ -1,7 +1,7 @@
 import is from '@sindresorhus/is';
 import { describe, expect, it } from 'vitest';
 
-import { interpolate, Interpolator } from '../Interpolator.ts';
+import { interpolate, Interpolator, type InterpolatorOptions } from '../Interpolator.ts';
 
 describe(Interpolator, () => {
   describe('static interpolate() & standalone interpolate()', () => {
@@ -334,6 +334,62 @@ describe(Interpolator, () => {
 
         expect(actual).toBe(expected);
       });
+    });
+  });
+
+  describe('stored options', () => {
+    type Interpolate = (template: string, mapping: Record<string, string>, options: InterpolatorOptions) => string;
+
+    const entryPoints: Array<[string, Interpolate]> = [
+      [
+        'constructor',
+        (template, mapping, options) => new Interpolator(template, options).setMapping(mapping).interpolate(),
+      ],
+      [
+        'setOptions()',
+        (template, mapping, options) => new Interpolator(template).setOptions({ ...options, mapping }).interpolate(),
+      ],
+      ['static interpolate()', (template, mapping, options) => Interpolator.interpolate(template, mapping, options)],
+      ['standalone interpolate()', (template, mapping, options) => interpolate(template, mapping, options)],
+    ];
+
+    it.each(entryPoints)('applies ifMissing passed to the %s', (_, interpolateWith) => {
+      const throwingFn = () => interpolateWith('{a} {b}', { a: 'x' }, { ifMissing: 'THROW' });
+
+      expect(throwingFn).toThrow('Text has unmatched placeholders: b');
+    });
+
+    it.each(entryPoints)('applies noAdaptCase passed to the %s', (_, interpolateWith) => {
+      const actual = interpolateWith('{Name}', { name: 'bob' }, { noAdaptCase: true });
+
+      expect(actual).toBe('bob');
+    });
+
+    it('if interpolate() is passed ifMissing, uses it in place of the stored one', () => {
+      const interpolable = new Interpolator('{a} {b}', { ifMissing: 'THROW' }).setMapping({ a: 'x' });
+
+      const actual = interpolable.interpolate({ ifMissing: 'USE_KEY' });
+
+      expect(actual).toBe('x b');
+    });
+
+    it('if interpolate() is passed noAdaptCase, uses it in place of the stored one', () => {
+      const interpolable = new Interpolator('{Name}', { noAdaptCase: true }).setMapping({ name: 'bob' });
+
+      const actual = interpolable.interpolate({ noAdaptCase: false });
+
+      expect(actual).toBe('Bob');
+    });
+
+    it('if interpolate() is passed undefined options, keeps the stored ones', () => {
+      const throwing = new Interpolator('{a} {b}', { ifMissing: 'THROW' }).setMapping({ a: 'x' });
+      const preserving = new Interpolator('{Name}', { noAdaptCase: true }).setMapping({ name: 'bob' });
+
+      const throwingFn = () => throwing.interpolate({ ifMissing: undefined });
+      const actual = preserving.interpolate({ noAdaptCase: undefined });
+
+      expect(throwingFn).toThrow('Text has unmatched placeholders: b');
+      expect(actual).toBe('bob');
     });
   });
 
