@@ -44,33 +44,4 @@ describe(resolveOwningManifest, () => {
 
     expect(resolve).toThrow(/No package\.json declaring a name was found/);
   });
-
-  it('throws naming a manifest that is unreadable as JSON', () => {
-    using tree = createTempTree({ 'package.json': '{ not json' });
-
-    const resolve = () => resolveOwningManifest(renderModuleUrl(tree.resolve('main.js')));
-
-    expect(resolve).toThrow(/is not readable as JSON/);
-    expect(resolve).toThrow(tree.resolve('package.json'));
-  });
-
-  it('throws naming a manifest that parses to something other than an object', () => {
-    using tree = createTempTree({ 'package.json': '"a string"' });
-
-    const resolve = () => resolveOwningManifest(renderModuleUrl(tree.resolve('main.js')));
-
-    expect(resolve).toThrow(/is not a JSON object/);
-    expect(resolve).toThrow(tree.resolve('package.json'));
-  });
-
-  it('throws on an array manifest rather than ascending past it', () => {
-    // The ancestor is named and versioned, so a skipped array would resolve here instead of raising.
-    using tree = createTempTree({ 'inner/package.json': '[]' });
-    tree.writeJson('package.json', { name: 'outer', version: '1.0.0' });
-
-    const resolve = () => resolveOwningManifest(renderModuleUrl(tree.resolve('inner/main.js')));
-
-    expect(resolve).toThrow(/is not a JSON object/);
-    expect(resolve).toThrow(tree.resolve('inner/package.json'));
-  });
 });

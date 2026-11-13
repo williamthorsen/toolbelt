@@ -1,9 +1,7 @@
-import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { listDirectoryChain } from '@williamthorsen/toolbelt.filesystem';
-import { isRecord } from '@williamthorsen/toolbelt.objects';
+import { findNearestManifest, type NearestManifest, type PackageManifest } from '../3-candidate/findNearestManifest.ts';
 
 /**
  * Returns the manifest of the package that owns the module at `fromUrl`, together with where it was found.
@@ -15,61 +13,21 @@ import { isRecord } from '@williamthorsen/toolbelt.objects';
  *
  * @internal
  */
-export function resolveOwningManifest(fromUrl: string): OwningManifest {
-  const startDir = path.dirname(fileURLToPath(fromUrl));
+export function resolveOwningManifest(fromUrl: string): NearestManifest<NamedManifest> {
+  const owning = findNearestManifest(path.dirname(fileURLToPath(fromUrl)), isNamedManifest);
 
-  for (const dir of listDirectoryChain(startDir)) {
-    const manifestPath = path.join(dir, 'package.json');
-
-    if (!fs.existsSync(manifestPath)) continue;
-
-    const manifest = readManifest(manifestPath);
-
-    if (typeof manifest.name === 'string') {
-      return { manifest, manifestPath, packageDir: dir };
-    }
+  if (owning === undefined) {
+    throw new Error(`No package.json declaring a name was found at or above: ${fromUrl}`);
   }
 
-  throw new Error(`No package.json declaring a name was found at or above: ${fromUrl}`);
+  return owning;
 }
 
-export interface OwningManifest {
-  manifest: PackageManifest;
-  manifestPath: string;
-  packageDir: string;
-}
-
-/** Only the fields read by this package are declared, and each as `unknown`, since a manifest is untrusted JSON. */
-export interface PackageManifest {
-  name?: unknown;
-  version?: unknown;
-}
+export type NamedManifest = PackageManifest & { readonly name: string };
 
 // region | Helpers
-/**
- * Narrows parsed JSON to a manifest shape, which is any JSON object: Every declared field is optional.
- *
- * Arrays are excluded: An array admitted here would be passed over as nameless, making a malformed manifest
- * resolve to an ancestor instead of raising.
- */
-function isPackageManifest(value: unknown): value is PackageManifest {
-  return isRecord(value);
-}
-
-/** Reads and parses a manifest, rejecting one that is unreadable as JSON or is not a JSON object. */
-function readManifest(manifestPath: string): PackageManifest {
-  let parsed: unknown;
-
-  try {
-    parsed = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  } catch (error) {
-    throw new Error(`Package manifest is not readable as JSON: ${manifestPath}`, { cause: error });
-  }
-
-  if (!isPackageManifest(parsed)) {
-    throw new Error(`Package manifest is not a JSON object: ${manifestPath}`);
-  }
-
-  return parsed;
+/** Accepts a manifest whose `name` is a string. */
+function isNamedManifest(manifest: PackageManifest): manifest is NamedManifest {
+  return typeof manifest['name'] === 'string';
 }
 // endregion | Helpers
