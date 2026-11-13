@@ -37,15 +37,7 @@ export function findDirectoryChainMatch(
 ): DirectoryChainMatch | undefined {
   assertLevelRelativeNames(names);
 
-  for (const dir of listDirectoryChain(startDir, options)) {
-    const entryName = findMatchingName(dir, names);
-
-    if (entryName !== undefined) {
-      return { dir, entryName, entryPath: path.join(dir, entryName) };
-    }
-  }
-
-  return undefined;
+  return iterateDirectoryChainMatches(startDir, names, options).next().value;
 }
 
 /**
@@ -75,17 +67,7 @@ export function listDirectoryChainMatches(
 ): DirectoryChainMatch[] {
   assertLevelRelativeNames(names);
 
-  const matches: DirectoryChainMatch[] = [];
-
-  for (const dir of listDirectoryChain(startDir, options)) {
-    const entryName = findMatchingName(dir, names);
-
-    if (entryName !== undefined) {
-      matches.push({ dir, entryName, entryPath: path.join(dir, entryName) });
-    }
-  }
-
-  return matches;
+  return iterateDirectoryChainMatches(startDir, names, options).toArray();
 }
 
 // region | Helpers
@@ -119,5 +101,20 @@ function findMatchingName(dir: string, names: ReadonlyArray<string>): string | u
   }
 
   return undefined;
+}
+
+/** Yields a match for each level of the chain, nearest first, that contains one of `names`. */
+function* iterateDirectoryChainMatches(
+  startDir: string,
+  names: ReadonlyArray<string>,
+  options: DirectoryChainMatchOptions,
+): Generator<DirectoryChainMatch, undefined> {
+  for (const dir of listDirectoryChain(startDir, options)) {
+    const entryName = findMatchingName(dir, names);
+
+    if (entryName !== undefined) {
+      yield { dir, entryName, entryPath: path.join(dir, entryName) };
+    }
+  }
 }
 // endregion | Helpers
