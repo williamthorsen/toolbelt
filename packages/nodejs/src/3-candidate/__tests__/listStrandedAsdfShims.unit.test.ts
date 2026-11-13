@@ -115,6 +115,14 @@ describe(listStrandedAsdfShims, () => {
 
     expect(listStrandedAsdfShims({ ...buildOptions(tree), dataDir: tree.resolve('data') })).toStrictEqual([]);
   });
+
+  it('rethrows a shims-directory read error other than a missing path', () => {
+    using tree = createTempTree({});
+    // A symlink to itself fails to read with ELOOP, whatever the process's privileges.
+    fs.symlinkSync(tree.resolve('shims'), tree.resolve('shims'));
+
+    expect(() => listStrandedAsdfShims(buildOptions(tree))).toThrow(expect.objectContaining({ code: 'ELOOP' }));
+  });
 });
 
 // region | Helpers
