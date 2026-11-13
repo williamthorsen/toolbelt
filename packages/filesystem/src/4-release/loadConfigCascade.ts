@@ -5,17 +5,21 @@ import { listDirectoryChainMatches } from './directory-chain-matches.ts';
 /**
  * Loads every config file between a starting directory and `stopAtDir`, nearest first.
  *
- * At each level from `startDir` up to and including `stopAtDir`, the first of `fileNames` that exists
- * is taken as that level's config; levels with none contribute nothing. The matched files are then
- * imported one at a time, nearest first; each default export passes through `parseConfig`, and
- * `shouldStopAscent` is consulted on the parsed config: Once it returns true, the ascent halts and no
- * farther file is imported. Nothing above `stopAtDir` is ever read: Each name must stay within the level
- * against which it is probed, so one that escapes is rejected up front.
+ * At each level from `startDir` up to and including `stopAtDir`, the first of `fileNames` that exists is taken as that
+ * level's config; levels with none contribute nothing. The matched files are then imported one at a time, nearest
+ * first; each default export passes through `parseConfig`, and `shouldStopAscent` is consulted on the parsed config:
+ * Once it returns true, the ascent halts before the next import, so a farther file is never imported and then
+ * discarded. Nothing above `stopAtDir` is ever read: Each name must stay within the level against which it is probed,
+ * so one that escapes is rejected up front.
  *
- * The boundary is the caller's to choose, which keeps this function free of any notion of what
- * marks a project. `findProjectRoot` from `@williamthorsen/toolbelt.packaging` resolves one from markers.
+ * The boundary is required, and the caller chooses it, which keeps this function free of any notion of what marks
+ * a project: It never asks whether a directory contains a lockfile or a workspace manifest. When the boundary should
+ * be a project root, `findProjectRoot` from `@williamthorsen/toolbelt.packaging` resolves one from markers.
  *
- * Each config is the module's default export as returned by `parseConfig`, which decides the entries' type.
+ * Each config is the module's default export as returned by `parseConfig`, which decides the entries' type. The
+ * parser is the caller's, so one mechanism serves schemas that share no fields: Any validator adapts to it in one
+ * line, such as `(value) => schema.parse(value)`. A matched module that declares no default export is rejected by
+ * name before the parser runs.
  *
  * @example
  * const { entries } = await loadConfigCascade({
@@ -60,6 +64,10 @@ export type CascadeStopReason = 'predicate' | 'stop-dir';
 export interface ConfigCascade<TConfig> {
   /** Ordered nearest first, starting at `startDir`. */
   entries: ConfigEntry<TConfig>[];
+  /**
+   * Whether the predicate ended the cascade or the cascade reached `stopAtDir`, for the caller to report to a user.
+   * The bounding directory is the `stopAtDir` that the caller passed.
+   */
   stopReason: CascadeStopReason;
 }
 
@@ -85,7 +93,11 @@ export interface LoadConfigCascadeOptions<TConfig> {
    * type. `(value) => value` keeps the raw export, typed `unknown`.
    */
   parseConfig: (value: unknown, filePath: string) => TConfig;
-  /** Called after each config is parsed; returning true halts the ascent before the next import. */
+  /**
+   * Called after each config is parsed; returning true halts the ascent before the next import. Any field of the
+   * config can decide it. By convention, a config declares a boolean `shouldStopAscent`, which the predicate reads
+   * directly: `(config) => config.shouldStopAscent === true`.
+   */
   shouldStopAscent?: ((config: TConfig) => boolean) | undefined;
   startDir: string;
   /** Bounds the ascent, inclusive. Must be the start directory or one of its ancestors. */
