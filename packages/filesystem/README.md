@@ -142,6 +142,7 @@ Probing stops at the first level that matches, so no level beyond it is touched 
 ```ts
 loadConfigCascade<TConfig>(options: {
   fileNames: ReadonlyArray<string>;
+  parseConfig: (value: unknown, filePath: string) => TConfig;
   shouldStopAscent?: (config: TConfig) => boolean;
   startDir: string;
   stopAtDir: string;
@@ -154,7 +155,7 @@ Discovery is [`listDirectoryChainMatches`](#listdirectorychainmatches) bounded a
 
 The boundary is required, and it is the caller's to choose. That keeps this function free of any notion of what marks a project: It never asks whether a directory contains a lockfile or a workspace manifest. When the boundary should be a project root, [`findProjectRoot`](https://github.com/williamthorsen/toolbelt/tree/main/packages/packaging#findprojectroot) in `@williamthorsen/toolbelt.packaging` resolves one from markers.
 
-The matched files are then imported one at a time, and `shouldStopAscent` is consulted after each. Once it returns true, the ascent halts and no farther file is imported at all, rather than being loaded and discarded:
+The matched files are then imported one at a time, each default export passes through `parseConfig`, and `shouldStopAscent` is consulted on the result. Once it returns true, the ascent halts and no farther file is imported at all, rather than being loaded and discarded:
 
 ```ts
 interface ConfigCascade<TConfig> {
@@ -167,7 +168,7 @@ interface ConfigCascade<TConfig> {
 }
 ```
 
-A config is the module's default export. A matched module declaring none is rejected by name; the caller validates what a config contains, which lets one mechanism serve schemas sharing no fields.
+A config is the module's default export as returned by `parseConfig`, whose return type is the entries' type. The parser is the caller's, which lets one mechanism serve schemas sharing no fields: Any validator adapts to it in one line, such as `(value) => schema.parse(value)`, and `(value) => value` keeps the raw export, typed `unknown`. A matched module declaring no default export is rejected by name before the parser runs.
 
 ### The `shouldStopAscent` convention
 
@@ -178,14 +179,21 @@ import { loadConfigCascade } from '@williamthorsen/toolbelt.filesystem';
 import { findProjectRoot } from '@williamthorsen/toolbelt.packaging';
 
 interface StackConfig {
-  rules?: Record<string, string>;
   shouldStopAscent?: boolean;
+}
+
+function parseStackConfig(value: unknown, filePath: string): StackConfig {
+  if (typeof value !== 'object' || value === null) {
+    throw new TypeError(`Config is not an object: ${filePath}`);
+  }
+  return 'shouldStopAscent' in value && value.shouldStopAscent === true ? { shouldStopAscent: true } : {};
 }
 
 const { rootDir } = findProjectRoot(process.cwd());
 
-const { entries, stopReason } = await loadConfigCascade<StackConfig>({
+const { entries, stopReason } = await loadConfigCascade({
   fileNames: ['stack.config.mjs', 'stack.config.js'],
+  parseConfig: parseStackConfig,
   shouldStopAscent: (config) => config.shouldStopAscent === true,
   startDir: process.cwd(),
   stopAtDir: rootDir,
