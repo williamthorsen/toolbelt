@@ -36,7 +36,7 @@ describe(deriveBranchNumber, () => {
   });
 
   it('wraps a ticket number beyond the safe integers exactly', () => {
-    // 2^53 is exact, and so is its sum with the reduced offset.
+    // 2^53 + 1 is not representable, so the result is 1 only if the index is reduced before the offset is added.
     expect(deriveBranchNumber(String(2 ** 53), { offset: 1 })).toBe(1);
   });
 
