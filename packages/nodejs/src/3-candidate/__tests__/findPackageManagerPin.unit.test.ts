@@ -7,10 +7,9 @@ import { findPackageManagerPin } from '../findPackageManagerPin.ts';
 
 describe(findPackageManagerPin, () => {
   it('returns the pin of the nearest manifest declaring one, with its location', () => {
-    using tree = createTempTree({
-      'package.json': renderManifest({ packageManager: 'pnpm@11.0.0' }),
-      'packages/lib/package.json': renderManifest({ packageManager: 'pnpm@12.4.0' }),
-    });
+    using tree = createTempTree({});
+    tree.writeJson('package.json', { packageManager: 'pnpm@11.0.0' });
+    tree.writeJson('packages/lib/package.json', { packageManager: 'pnpm@12.4.0' });
 
     expect(findPackageManagerPin(tree.resolve('packages/lib'))).toStrictEqual({
       dir: tree.resolve('packages/lib'),
@@ -20,17 +19,16 @@ describe(findPackageManagerPin, () => {
   });
 
   it('passes over a nearer manifest that declares no pin', () => {
-    using tree = createTempTree({
-      'package.json': renderManifest({ packageManager: 'pnpm@12.4.0' }),
-      'packages/lib/package.json': renderManifest({ name: 'lib' }),
-      'packages/lib/src/index.ts': '',
-    });
+    using tree = createTempTree({ 'packages/lib/src/index.ts': '' });
+    tree.writeJson('package.json', { packageManager: 'pnpm@12.4.0' });
+    tree.writeJson('packages/lib/package.json', { name: 'lib' });
 
     expect(findPackageManagerPin(tree.resolve('packages/lib/src'))?.manifestPath).toBe(tree.resolve('package.json'));
   });
 
   it('returns undefined when no manifest in reach declares a pin', () => {
-    using tree = createTempTree({ 'package.json': renderManifest({ name: 'unpinned' }) });
+    using tree = createTempTree({});
+    tree.writeJson('package.json', { name: 'unpinned' });
 
     expect(findPackageManagerPin(tree.dir)).toBeUndefined();
   });
@@ -42,17 +40,9 @@ describe(findPackageManagerPin, () => {
   });
 
   it('resolves a relative start directory before ascending', () => {
-    using tree = createTempTree({ 'package.json': renderManifest({ packageManager: 'pnpm@12.4.0' }) });
+    using tree = createTempTree({});
+    tree.writeJson('package.json', { packageManager: 'pnpm@12.4.0' });
 
     expect(findPackageManagerPin(path.relative(process.cwd(), tree.dir))?.dir).toBe(tree.dir);
   });
 });
-
-// region | Helpers
-
-/** Renders a `package.json` body. */
-function renderManifest(fields: Record<string, unknown>): string {
-  return `${JSON.stringify(fields, undefined, 2)}\n`;
-}
-
-// endregion | Helpers
