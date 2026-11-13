@@ -3,7 +3,8 @@ import { throwOnProcessExit } from '@williamthorsen/toolbelt.vitest/candidate';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createCli, defineCommand, defineGroup } from '../createCli.ts';
-import type { CommandNode, Writer } from '../nodes.ts';
+import { createTextBuffer } from '../createTextBuffer.ts';
+import type { CommandNode } from '../nodes.ts';
 import { runCli } from '../runCli.ts';
 import { UsageError } from '../UsageError.ts';
 
@@ -390,10 +391,10 @@ describe(runCli, () => {
   });
 
   it('runs a context-free root without a context', async () => {
-    const stdout = makeWriter();
+    const stdout = createTextBuffer();
     const root = defineCommand({ summary: 'S', run: () => 0 });
 
-    await expect(runCli([], root, { name: 'tool', stdout, stderr: makeWriter() })).resolves.toBe(0);
+    await expect(runCli([], root, { name: 'tool', stdout, stderr: createTextBuffer() })).resolves.toBe(0);
   });
 });
 
@@ -405,30 +406,14 @@ function log(): void {
   return hidden();
 }
 
-/** A writer that records what it is given. */
-interface RecordingWriter extends Writer {
-  text: string;
-}
-
-function makeWriter(): RecordingWriter {
-  const writer = {
-    text: '',
-    write: (chunk: string) => {
-      writer.text += chunk;
-      return true;
-    },
-  };
-  return writer;
-}
-
 /** Runs a tree whose root context is `RootContext`, recording both streams. */
 async function run(
   argv: string[],
   root: CommandNode<RootContext>,
   options: { version?: () => string } = {},
 ): Promise<{ code: number; stdout: string; stderr: string }> {
-  const stdout = makeWriter();
-  const stderr = makeWriter();
+  const stdout = createTextBuffer();
+  const stderr = createTextBuffer();
   const code = await runCli(argv, root, { name: 'tool', context: { env: 'test' }, stdout, stderr, ...options });
   return { code, stdout: stdout.text, stderr: stderr.text };
 }
