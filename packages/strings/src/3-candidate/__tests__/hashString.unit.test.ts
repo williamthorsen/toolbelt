@@ -65,28 +65,58 @@ describe(hashString, () => {
     expect(hashString('sample', { offset })).toBe(expected);
   });
 
-  const throwCases: ReadonlyArray<{ options: HashStringOptions; scenario: string }> = [
-    { scenario: 'a non-integer min', options: { min: 1.5 } },
-    { scenario: 'a non-integer max', options: { max: 1.5 } },
-    { scenario: 'a NaN min', options: { min: NaN } },
-    { scenario: 'an infinite max', options: { max: Infinity } },
-    { scenario: 'a min beyond the safe integers', options: { min: 2 ** 53 } },
-    { scenario: 'a reversed range', options: { min: 10, max: 0 } },
-    { scenario: 'a non-integer offset', options: { offset: 1.5 } },
-    { scenario: 'a NaN offset', options: { offset: NaN } },
-    { scenario: 'a range wider than the digest', options: { min: 0, max: UINT32_SIZE } },
+  const throwCases: ReadonlyArray<{ message: string; options: HashStringOptions; scenario: string }> = [
+    {
+      scenario: 'a non-integer min',
+      options: { min: 1.5 },
+      message: 'Invalid range: min and max must be safe integers. Received min=1.5, max=4294967295.',
+    },
+    {
+      scenario: 'a non-integer max',
+      options: { max: 1.5 },
+      message: 'Invalid range: min and max must be safe integers. Received min=0, max=1.5.',
+    },
+    {
+      scenario: 'a NaN min',
+      options: { min: NaN },
+      message: 'Invalid range: min and max must be safe integers. Received min=NaN, max=4294967295.',
+    },
+    {
+      scenario: 'an infinite max',
+      options: { max: Infinity },
+      message: 'Invalid range: min and max must be safe integers. Received min=0, max=Infinity.',
+    },
+    {
+      scenario: 'a min beyond the safe integers',
+      options: { min: 2 ** 53 },
+      message: `Invalid range: min and max must be safe integers. Received min=${2 ** 53}, max=4294967295.`,
+    },
+    {
+      scenario: 'a reversed range',
+      options: { min: 10, max: 0 },
+      message: 'Invalid range: min must be less than or equal to max. Received min=10, max=0.',
+    },
+    {
+      scenario: 'a non-integer offset',
+      options: { offset: 1.5 },
+      message: 'Invalid offset: offset must be a safe integer. Received 1.5.',
+    },
+    {
+      scenario: 'a NaN offset',
+      options: { offset: NaN },
+      message: 'Invalid offset: offset must be a safe integer. Received NaN.',
+    },
+    {
+      scenario: 'a range wider than the digest',
+      options: { min: 0, max: UINT32_SIZE },
+      message: `Invalid range: The range cannot span more than ${UINT32_SIZE} values. Received min=0, max=${UINT32_SIZE}.`,
+    },
   ];
 
-  it.each(throwCases)('throws a RangeError for $scenario', ({ options }) => {
+  it.each(throwCases)('throws a RangeError for $scenario', ({ message, options }) => {
     const throwingFn = () => hashString('sample', options);
 
-    expect(throwingFn).toThrow(RangeError);
-  });
-
-  it('names the width that the range may not exceed', () => {
-    const throwingFn = () => hashString('sample', { max: UINT32_SIZE });
-
-    expect(throwingFn).toThrow(`cannot span more than ${UINT32_SIZE} values`);
+    expect(throwingFn).toThrow(new RangeError(message));
   });
 
   it('spreads a bounded range evenly enough to pass a chi-square test', () => {
