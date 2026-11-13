@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { TextNode, VariantNode } from '../TextNode.ts';
 import { nestedTextNodeAst } from './fixtures/TextNode.fixture.ts';
@@ -261,7 +261,7 @@ describe(TextNode, () => {
       const indices = [3];
       const ast = TextNode.create(input);
 
-      const throwingFn = vi.fn<() => string>(() => ast.selectVariants(indices));
+      const throwingFn = () => ast.selectVariants(indices);
 
       expect(throwingFn).toThrow(RangeError);
       expect(throwingFn).toThrow('exceeds maximum');
@@ -284,7 +284,7 @@ describe(TextNode, () => {
       const indices = [0];
       const ast = TextNode.create(input);
 
-      const throwingFn = vi.fn<() => string>(() => ast.selectVariants(indices));
+      const throwingFn = () => ast.selectVariants(indices);
 
       expect(throwingFn).toThrow('Not enough indices');
     });
@@ -294,7 +294,7 @@ describe(TextNode, () => {
       const indices = [1, 1];
       const ast = TextNode.create(input);
 
-      const throwingFn = vi.fn<() => string>(() => ast.selectVariants(indices));
+      const throwingFn = () => ast.selectVariants(indices);
 
       expect(throwingFn).toThrow('Unused variant indices. Received 2, leaving 1 unused.');
     });
