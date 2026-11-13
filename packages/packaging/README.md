@@ -25,11 +25,9 @@ findProjectRoot(startDir: string, options?: { markers?: ReadonlyArray<string> })
 Resolves `startDir` to an absolute path, ascends from it, and returns the first directory that contains a root marker, along with the evidence that identified it:
 
 ```ts
-interface ProjectRoot {
-  marker: string | null; // the marker that matched, or null when a fallback identified the root
-  rootDir: string;
-  source: 'marker' | 'package-json' | 'start-dir';
-}
+type ProjectRoot =
+  | { marker: string; rootDir: string; source: 'marker' } // marker: the marker that matched
+  | { rootDir: string; source: 'package-json' | 'start-dir' };
 ```
 
 `DEFAULT_ROOT_MARKERS` is consulted in order, so the earliest entry wins when one directory contains several:
@@ -51,7 +49,7 @@ findProjectRoot(process.cwd(), { markers: [...DEFAULT_ROOT_MARKERS, 'deno.json']
 
 Each marker is a path relative to the level against which it is probed, on the terms set out by [`listDirectoryChainMatches`](https://github.com/williamthorsen/toolbelt/tree/main/packages/filesystem#listdirectorychainmatches): One that is absolute, or whose `..` segments escape its level, is rejected before any directory is probed.
 
-When no directory up to and including the filesystem root contains a marker, the result falls back in this order, reporting a `null` marker either way:
+When no directory up to and including the filesystem root contains a marker, the result falls back in this order, and a fallback result does not have a `marker` property:
 
 1. the nearest ancestor containing a `package.json`, reported as `source: 'package-json'`;
 2. `startDir` itself, reported as `source: 'start-dir'`.

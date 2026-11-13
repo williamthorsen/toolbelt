@@ -2,9 +2,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { createTempTree, pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 
-import { findProjectRoot } from '../findProjectRoot.ts';
+import { findProjectRoot, type ProjectRoot } from '../findProjectRoot.ts';
 
 describe(findProjectRoot, () => {
   const existsSyncSpy = vi.spyOn(fs, 'existsSync');
@@ -42,7 +42,7 @@ describe(findProjectRoot, () => {
 
     const result = findProjectRoot(tree.dir);
 
-    expect(result.marker).toBe('pnpm-workspace.yaml');
+    expect(result).toStrictEqual({ marker: 'pnpm-workspace.yaml', rootDir: tree.dir, source: 'marker' });
   });
 
   it('resolves a relative start directory against the working directory', () => {
@@ -67,7 +67,7 @@ describe(findProjectRoot, () => {
 
     const result = findProjectRoot(tree.resolve('app/src'));
 
-    expect(result).toStrictEqual({ marker: null, rootDir: tree.resolve('app'), source: 'package-json' });
+    expect(result).toStrictEqual({ rootDir: tree.resolve('app'), source: 'package-json' });
   });
 
   it('if no marker or package.json is found, falls back to the start directory', () => {
@@ -75,7 +75,12 @@ describe(findProjectRoot, () => {
 
     const result = findProjectRoot(tree.resolve('app/src'));
 
-    expect(result).toStrictEqual({ marker: null, rootDir: tree.resolve('app/src'), source: 'start-dir' });
+    expect(result).toStrictEqual({ rootDir: tree.resolve('app/src'), source: 'start-dir' });
+  });
+
+  it('types the marker as present only on a marker match', () => {
+    expectTypeOf<Extract<ProjectRoot, { source: 'marker' }>['marker']>().toEqualTypeOf<string>();
+    expectTypeOf<Exclude<ProjectRoot, { source: 'marker' }>>().not.toHaveProperty('marker');
   });
 
   it('probes no directory above the marker that it finds', () => {
