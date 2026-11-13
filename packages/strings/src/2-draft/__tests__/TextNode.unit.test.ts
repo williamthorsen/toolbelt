@@ -320,7 +320,3 @@ describe(TextNode, () => {
     });
   });
 });
-
-describe(VariantNode, () => {
-  it.todo('implement tests for VariantNode');
-});
