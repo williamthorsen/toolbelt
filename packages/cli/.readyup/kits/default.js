@@ -191,6 +191,7 @@ import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
 // src/readiness/adoptedExports.ts
 var ADOPTED_EXPORTS = [
   "createCli",
+  "createTextBuffer",
   "defineCommand",
   "defineGroup",
   "installCrashHandler",
