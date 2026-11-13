@@ -7,18 +7,20 @@ import { listDirectoryChainMatches } from './directory-chain-matches.ts';
  *
  * At each level from `startDir` up to and including `stopAtDir`, the first of `fileNames` that exists
  * is taken as that level's config; levels with none contribute nothing. The matched files are then
- * imported one at a time, nearest first, and `shouldStopAscent` is consulted after each: Once it returns
- * true, the ascent halts and no farther file is imported. Nothing above `stopAtDir` is ever read:
- * Each name must stay within the level against which it is probed, so one that escapes is rejected up front.
+ * imported one at a time, nearest first; each default export passes through `parseConfig`, and
+ * `shouldStopAscent` is consulted on the parsed config: Once it returns true, the ascent halts and no
+ * farther file is imported. Nothing above `stopAtDir` is ever read: Each name must stay within the level
+ * against which it is probed, so one that escapes is rejected up front.
  *
  * The boundary is the caller's to choose, which keeps this function free of any notion of what
  * marks a project. `findProjectRoot` from `@williamthorsen/toolbelt.packaging` resolves one from markers.
  *
- * Each config is the module's default export; validating its contents is the caller's job.
+ * Each config is the module's default export as returned by `parseConfig`, which decides the entries' type.
  *
  * @example
  * const { entries } = await loadConfigCascade({
  *   fileNames: ['stack.config.mjs'],
+ *   parseConfig: (value) => StackConfigSchema.parse(value),
  *   shouldStopAscent: (config) => config.shouldStopAscent === true,
  *   startDir: process.cwd(),
  *   stopAtDir: findProjectRoot(process.cwd()).rootDir,
@@ -27,12 +29,12 @@ import { listDirectoryChainMatches } from './directory-chain-matches.ts';
  * @category Filesystem
  * @stage release
  * @throws If a file name is absolute or escapes its level, if `stopAtDir` is off the chain, or if a matched
- * file has no default export.
+ * file has no default export. Rethrows whatever `parseConfig` throws, after which no farther file is imported.
  */
-export async function loadConfigCascade<TConfig = unknown>(
+export async function loadConfigCascade<TConfig>(
   options: LoadConfigCascadeOptions<TConfig>,
 ): Promise<ConfigCascade<TConfig>> {
-  const { fileNames, shouldStopAscent, startDir, stopAtDir } = options;
+  const { fileNames, parseConfig, shouldStopAscent, startDir, stopAtDir } = options;
 
   const matches = listDirectoryChainMatches(startDir, fileNames, { stopAtDir });
 
@@ -41,7 +43,7 @@ export async function loadConfigCascade<TConfig = unknown>(
 
   for (const { dir, entryPath } of matches) {
     // Import sequentially: The predicate decides whether the next file is imported at all.
-    const config = await importDefaultExport<TConfig>(entryPath);
+    const config = parseConfig(await importDefaultExport(entryPath), entryPath);
     entries.push({ config, dir, filePath: entryPath });
 
     if (shouldStopAscent?.(config) === true) {
@@ -78,7 +80,12 @@ export interface LoadConfigCascadeOptions<TConfig> {
    * it would read outside the bounds that the cascade exists to enforce.
    */
   fileNames: ReadonlyArray<string>;
-  /** Called after each config is loaded; returning true halts the ascent before the next import. */
+  /**
+   * Converts a module's default export into a config, throwing if it is invalid; its return type is the entries'
+   * type. `(value) => value` keeps the raw export, typed `unknown`.
+   */
+  parseConfig: (value: unknown, filePath: string) => TConfig;
+  /** Called after each config is parsed; returning true halts the ascent before the next import. */
   shouldStopAscent?: ((config: TConfig) => boolean) | undefined;
   startDir: string;
   /** Bounds the ascent, inclusive. Must be the start directory or one of its ancestors. */
@@ -89,22 +96,13 @@ export interface LoadConfigCascadeOptions<TConfig> {
 /**
  * Imports a config module and returns its default export, rejecting a module that declares none.
  */
-async function importDefaultExport<TConfig>(filePath: string): Promise<TConfig> {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- a dynamic import is typed `any`
-  const configModule: ConfigModule<TConfig> = await import(pathToFileURL(filePath).href);
+async function importDefaultExport(filePath: string): Promise<unknown> {
+  const configModule: unknown = await import(pathToFileURL(filePath).href);
 
-  if (!('default' in configModule)) {
+  if (typeof configModule !== 'object' || configModule === null || !('default' in configModule)) {
     throw new Error(`Config file has no default export: ${filePath}`);
   }
 
   return configModule.default;
-}
-
-interface ConfigModule<TConfig> {
-  /**
-   * Optional because a module is free to declare no default export, which is the case rejected by the guard above.
-   * No runtime check can confirm the declared type; validating the config's contents stays with the caller.
-   */
-  default?: TConfig;
 }
 // endregion | Helpers

@@ -1,13 +1,14 @@
 import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
-import { loadConfigCascade } from '../loadConfigCascade.ts';
+import { type ConfigEntry, loadConfigCascade, type LoadConfigCascadeOptions } from '../loadConfigCascade.ts';
 
 /** A module that fails loudly if it is ever imported, proving the loader skipped it rather than discarded it. */
 const POISONED_MODULE = "throw new Error('imported a config that the cascade should have skipped');\n";
 
 interface LabelledConfig {
   level: string;
+  shouldStopAscent?: boolean;
 }
 
 describe(loadConfigCascade, () => {
@@ -17,8 +18,9 @@ describe(loadConfigCascade, () => {
       'stack.config.mjs': exportDefault({ level: 'root' }),
     });
 
-    const result = await loadConfigCascade<LabelledConfig>({
+    const result = await loadConfigCascade({
       fileNames: ['stack.config.mjs'],
+      parseConfig: parseLabelledConfig,
       startDir: tree.resolve('packages/app'),
       stopAtDir: tree.dir,
     });
@@ -34,8 +36,9 @@ describe(loadConfigCascade, () => {
       'stack.config.mjs': POISONED_MODULE,
     });
 
-    const result = await loadConfigCascade<LabelledConfig>({
+    const result = await loadConfigCascade({
       fileNames: ['stack.config.mjs'],
+      parseConfig: parseLabelledConfig,
       startDir: tree.resolve('project'),
       stopAtDir: tree.resolve('project'),
     });
@@ -50,8 +53,9 @@ describe(loadConfigCascade, () => {
       'stack.config.mjs': POISONED_MODULE,
     });
 
-    const result = await loadConfigCascade<LabelledConfig>({
+    const result = await loadConfigCascade({
       fileNames: ['stack.config.mjs'],
+      parseConfig: parseLabelledConfig,
       startDir: tree.resolve('app/nested'),
       stopAtDir: tree.resolve('app'),
     });
@@ -66,8 +70,9 @@ describe(loadConfigCascade, () => {
       'stack.config.mjs': POISONED_MODULE,
     });
 
-    const result = await loadConfigCascade<LabelledConfig & { shouldStopAscent?: boolean }>({
+    const result = await loadConfigCascade({
       fileNames: ['stack.config.mjs'],
+      parseConfig: parseLabelledConfig,
       shouldStopAscent: (config) => config.shouldStopAscent === true,
       startDir: tree.resolve('app'),
       stopAtDir: tree.dir,
@@ -83,8 +88,9 @@ describe(loadConfigCascade, () => {
       'stack.config.mjs': exportDefault({ level: 'root' }),
     });
 
-    const result = await loadConfigCascade<LabelledConfig>({
+    const result = await loadConfigCascade({
       fileNames: ['stack.config.mjs'],
+      parseConfig: parseLabelledConfig,
       shouldStopAscent: () => false,
       startDir: tree.resolve('app'),
       stopAtDir: tree.dir,
@@ -101,8 +107,9 @@ describe(loadConfigCascade, () => {
       'secondary.config.mjs': exportDefault({ level: 'root-secondary' }),
     });
 
-    const result = await loadConfigCascade<LabelledConfig>({
+    const result = await loadConfigCascade({
       fileNames: ['primary.config.mjs', 'secondary.config.mjs'],
+      parseConfig: parseLabelledConfig,
       startDir: tree.resolve('app'),
       stopAtDir: tree.dir,
     });
@@ -115,8 +122,9 @@ describe(loadConfigCascade, () => {
       'app/.config/stack.config.mjs': exportDefault({ level: 'app' }),
     });
 
-    const result = await loadConfigCascade<LabelledConfig>({
+    const result = await loadConfigCascade({
       fileNames: ['.config/stack.config.mjs'],
+      parseConfig: parseLabelledConfig,
       startDir: tree.resolve('app'),
       stopAtDir: tree.dir,
     });
@@ -128,8 +136,9 @@ describe(loadConfigCascade, () => {
   it('if no level contains a config, returns no entries', async () => {
     using tree = createTempTree({ 'app/': '' });
 
-    const result = await loadConfigCascade<LabelledConfig>({
+    const result = await loadConfigCascade({
       fileNames: ['stack.config.mjs'],
+      parseConfig: parseLabelledConfig,
       startDir: tree.resolve('app'),
       stopAtDir: tree.dir,
     });
@@ -141,8 +150,9 @@ describe(loadConfigCascade, () => {
   it('rejects a boundary that is neither the start directory nor one of its ancestors', async () => {
     using tree = createTempTree({ 'app/': '', 'sibling/': '' });
 
-    const resultPromise = loadConfigCascade<LabelledConfig>({
+    const resultPromise = loadConfigCascade({
       fileNames: ['stack.config.mjs'],
+      parseConfig: parseLabelledConfig,
       startDir: tree.resolve('app'),
       stopAtDir: tree.resolve('sibling'),
     });
@@ -155,8 +165,9 @@ describe(loadConfigCascade, () => {
       'stack.config.mjs': 'export const config = { level: "root" };\n',
     });
 
-    const resultPromise = loadConfigCascade<LabelledConfig>({
+    const resultPromise = loadConfigCascade({
       fileNames: ['stack.config.mjs'],
+      parseConfig: parseLabelledConfig,
       startDir: tree.dir,
       stopAtDir: tree.dir,
     });
@@ -170,8 +181,9 @@ describe(loadConfigCascade, () => {
       'shared.config.mjs': POISONED_MODULE,
     });
 
-    const resultPromise = loadConfigCascade<LabelledConfig>({
+    const resultPromise = loadConfigCascade({
       fileNames: ['../shared.config.mjs'],
+      parseConfig: parseLabelledConfig,
       startDir: tree.resolve('project'),
       stopAtDir: tree.resolve('project'),
     });
@@ -184,8 +196,9 @@ describe(loadConfigCascade, () => {
       'stack.config.mjs': exportDefault({ level: 'root' }),
     });
 
-    const resultPromise = loadConfigCascade<LabelledConfig>({
+    const resultPromise = loadConfigCascade({
       fileNames: [tree.resolve('stack.config.mjs')],
+      parseConfig: parseLabelledConfig,
       startDir: tree.dir,
       stopAtDir: tree.dir,
     });
@@ -198,8 +211,9 @@ describe(loadConfigCascade, () => {
       'stack.config.mjs': exportDefault({ level: 'root' }),
     });
 
-    const result = await loadConfigCascade<LabelledConfig>({
+    const result = await loadConfigCascade({
       fileNames: ['nested/../stack.config.mjs'],
+      parseConfig: parseLabelledConfig,
       startDir: tree.dir,
       stopAtDir: tree.dir,
     });
@@ -212,17 +226,98 @@ describe(loadConfigCascade, () => {
       'stack.config.ts': 'const config: { level: string } = { level: "root" };\nexport default config;\n',
     });
 
-    const result = await loadConfigCascade<LabelledConfig>({
+    const result = await loadConfigCascade({
       fileNames: ['stack.config.ts'],
+      parseConfig: parseLabelledConfig,
       startDir: tree.dir,
       stopAtDir: tree.dir,
     });
 
     expect(result.entries.map((entry) => entry.config.level)).toStrictEqual(['root']);
   });
+
+  it('records the value returned by the parser and passes it to the stop predicate', async () => {
+    using tree = createTempTree({
+      'stack.config.mjs': exportDefault({ name: 'root' }),
+    });
+    const seenByPredicate: unknown[] = [];
+
+    const result = await loadConfigCascade({
+      fileNames: ['stack.config.mjs'],
+      parseConfig: (value, filePath) => ({ filePath, raw: value }),
+      shouldStopAscent: (config) => {
+        seenByPredicate.push(config);
+        return false;
+      },
+      startDir: tree.dir,
+      stopAtDir: tree.dir,
+    });
+
+    const expected = { filePath: tree.resolve('stack.config.mjs'), raw: { name: 'root' } };
+    expect(result.entries.map((entry) => entry.config)).toStrictEqual([expected]);
+    expect(seenByPredicate).toStrictEqual([expected]);
+  });
+
+  it('if the parser throws, propagates its error and imports no farther config', async () => {
+    using tree = createTempTree({
+      'app/stack.config.mjs': exportDefault({ level: 42 }),
+      'stack.config.mjs': POISONED_MODULE,
+    });
+
+    const resultPromise = loadConfigCascade({
+      fileNames: ['stack.config.mjs'],
+      parseConfig: parseLabelledConfig,
+      startDir: tree.resolve('app'),
+      stopAtDir: tree.dir,
+    });
+
+    await expect(resultPromise).rejects.toThrow(/Invalid config in .*app\/stack\.config\.mjs/);
+  });
+
+  it("infers the entries' config type from the parser", async () => {
+    using tree = createTempTree({ 'app/': '' });
+
+    const result = await loadConfigCascade({
+      fileNames: ['stack.config.mjs'],
+      parseConfig: parseLabelledConfig,
+      startDir: tree.resolve('app'),
+      stopAtDir: tree.dir,
+    });
+
+    expectTypeOf(result.entries).toEqualTypeOf<Array<ConfigEntry<LabelledConfig>>>();
+  });
+
+  it('given an identity parser, types each config as unknown', async () => {
+    using tree = createTempTree({ 'app/': '' });
+
+    const result = await loadConfigCascade({
+      fileNames: ['stack.config.mjs'],
+      parseConfig: (value) => value,
+      startDir: tree.resolve('app'),
+      stopAtDir: tree.dir,
+    });
+
+    expectTypeOf(result.entries).toEqualTypeOf<Array<ConfigEntry<unknown>>>();
+  });
+
+  it('requires a parser to declare a config type', () => {
+    const optionsWithoutParser = { fileNames: ['stack.config.mjs'], startDir: '/app', stopAtDir: '/' };
+
+    // @ts-expect-error -- a config type can come only from a parser
+    expectTypeOf(optionsWithoutParser).toExtend<LoadConfigCascadeOptions<LabelledConfig>>();
+  });
 });
 
 /** Renders a module whose default export is the given value. */
 function exportDefault(value: unknown): string {
   return `export default ${JSON.stringify(value)};\n`;
+}
+
+/** Accepts a config whose `level` is a string, naming the file in the error otherwise. */
+function parseLabelledConfig(value: unknown, filePath: string): LabelledConfig {
+  if (typeof value !== 'object' || value === null || !('level' in value) || typeof value.level !== 'string') {
+    throw new TypeError(`Invalid config in ${filePath}`);
+  }
+  const shouldStopAscent = 'shouldStopAscent' in value ? value.shouldStopAscent : undefined;
+  return typeof shouldStopAscent === 'boolean' ? { level: value.level, shouldStopAscent } : { level: value.level };
 }
