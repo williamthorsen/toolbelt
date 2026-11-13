@@ -100,6 +100,8 @@ findNearestManifest(
   startDir: string,
   predicate: (manifest: PackageManifest) => boolean,
 ): { manifest: PackageManifest; manifestPath: string; packageDir: string } | undefined;
+
+type PackageManifest = Readonly<Record<string, unknown>>;
 ```
 
 Returns the nearest `package.json` at or above a directory that a predicate accepts, parsed and with its location, or `undefined` when none is accepted.
