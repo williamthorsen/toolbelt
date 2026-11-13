@@ -5,11 +5,13 @@ import path from 'node:path';
  *
  * The extension is the substring beginning at the final period in the file name, which must come at the very end
  * of the path. A multi-part extension is indivisible to `path.extname` (it reports `.d.ts` as `.ts`), so declare
- * one through `oldExtension` to replace it whole.
+ * one through `oldExtension` to replace it whole. The caller declares it because the function cannot know whether
+ * `archive.tar.gz` ends in `.gz` or in `.tar.gz`.
  *
  * Either extension may be written with or without its leading period: `'js'` and `'.js'` are equivalent. An
- * empty `newExtension` removes the extension. Throws when `filePath` ends with a separator, and when `filePath`
- * does not end with a declared `oldExtension`.
+ * empty `newExtension` removes the extension. Throws when `filePath` ends with a separator, which names a directory
+ * rather than a file, and when `filePath` does not end with a declared `oldExtension`, rather than return a path
+ * that would quietly be wrong.
  *
  * @example
  * replaceFileExtension('src/main.ts', '.js');                              // 'src/main.js'

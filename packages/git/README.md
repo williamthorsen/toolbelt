@@ -1,3 +1,5 @@
+<!-- readme-type: library -->
+
 # @williamthorsen/toolbelt.git
 
 Utilities for working with git.

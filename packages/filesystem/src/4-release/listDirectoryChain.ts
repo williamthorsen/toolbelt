@@ -3,8 +3,10 @@ import path from 'node:path';
 /**
  * Returns `startDir` resolved to an absolute path, followed by each of its ancestors, nearest first.
  *
- * The chain runs to the filesystem root unless `stopAtDir` bounds it, and always contains at least the start
- * directory, which the return type records. Paths are manipulated as strings; nothing is read from disk.
+ * The chain runs to the filesystem root unless `stopAtDir` bounds it. The ascent ends at the root on every platform,
+ * so a Windows drive root or a UNC share is as safe a start as a POSIX path. The chain always contains at least the
+ * start directory, which the return type records, so a caller reads the nearest directory without an `undefined`
+ * check. Paths are manipulated as strings, and the function does not read anything from disk.
  *
  * @example
  * listDirectoryChain('/home/dev/app/src', { stopAtDir: '/home/dev' });
@@ -12,7 +14,7 @@ import path from 'node:path';
  *
  * @category Filesystem
  * @stage release
- * @throws If `stopAtDir` is neither the start directory nor one of its ancestors.
+ * @throws If `stopAtDir` is neither the start directory nor one of its ancestors, naming both paths.
  */
 export function listDirectoryChain(startDir: string, options: ListDirectoryChainOptions = {}): [string, ...string[]] {
   const { stopAtDir } = options;
@@ -53,6 +55,10 @@ export function listDirectoryChain(startDir: string, options: ListDirectoryChain
 }
 
 export interface ListDirectoryChainOptions {
-  /** Bounds the ascent, inclusive. Must be the start directory or one of its ancestors. */
+  /**
+   * Bounds the ascent, inclusive. Must be the start directory or one of its ancestors. It is resolved as `startDir`
+   * is, so a relative ceiling works like a relative start. The comparison is exact: A `stopAtDir` that differs from
+   * a chain directory only in case is off the chain, even on a case-insensitive volume.
+   */
   stopAtDir?: string | undefined;
 }
