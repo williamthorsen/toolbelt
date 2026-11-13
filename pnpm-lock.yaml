@@ -295,10 +295,6 @@ importers:
       '@williamthorsen/toolbelt.secrets':
         specifier: workspace:*
         version: link:../secrets
-    devDependencies:
-      '@williamthorsen/toolbelt.testing':
-        specifier: workspace:*
-        version: link:../testing
 
   packages/cli:
     dependencies:
@@ -394,10 +390,6 @@ importers:
       '@williamthorsen/toolbelt.strings':
         specifier: workspace:*
         version: link:../strings
-    devDependencies:
-      '@williamthorsen/toolbelt.testing':
-        specifier: workspace:*
-        version: link:../testing
 
   packages/guards:
     devDependencies:
