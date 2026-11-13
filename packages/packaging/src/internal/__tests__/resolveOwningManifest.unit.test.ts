@@ -1,18 +1,16 @@
-import { pathToFileURL } from 'node:url';
-
 import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, it } from 'vitest';
 
+import { renderModuleUrl } from '../../test-utils/renderModuleUrl.ts';
 import { resolveOwningManifest } from '../resolveOwningManifest.ts';
 
 describe(resolveOwningManifest, () => {
   it('returns the nearest manifest declaring a name', () => {
-    using tree = createTempTree({
-      'package.json': manifest({ name: 'outer', version: '1.0.0' }),
-      'packages/app/package.json': manifest({ name: 'app', version: '2.0.0' }),
-    });
+    using tree = createTempTree({});
+    tree.writeJson('package.json', { name: 'outer', version: '1.0.0' });
+    tree.writeJson('packages/app/package.json', { name: 'app', version: '2.0.0' });
 
-    const result = resolveOwningManifest(moduleUrl(tree.resolve('packages/app/src/main.ts')));
+    const result = resolveOwningManifest(renderModuleUrl(tree.resolve('packages/app/src/main.ts')));
 
     expect(result.packageDir).toBe(tree.resolve('packages/app'));
     expect(result.manifestPath).toBe(tree.resolve('packages/app/package.json'));
@@ -20,23 +18,21 @@ describe(resolveOwningManifest, () => {
   });
 
   it('passes over a manifest that declares no name', () => {
-    using tree = createTempTree({
-      'dist/cjs/package.json': manifest({ type: 'commonjs' }),
-      'package.json': manifest({ name: 'demo', version: '1.0.0' }),
-    });
+    using tree = createTempTree({});
+    tree.writeJson('dist/cjs/package.json', { type: 'commonjs' });
+    tree.writeJson('package.json', { name: 'demo', version: '1.0.0' });
 
-    const result = resolveOwningManifest(moduleUrl(tree.resolve('dist/cjs/main.js')));
+    const result = resolveOwningManifest(renderModuleUrl(tree.resolve('dist/cjs/main.js')));
 
     expect(result.packageDir).toBe(tree.dir);
   });
 
   it('rejects a manifest whose name is not a string', () => {
-    using tree = createTempTree({
-      'inner/package.json': manifest({ name: 42, version: '2.0.0' }),
-      'package.json': manifest({ name: 'outer', version: '1.0.0' }),
-    });
+    using tree = createTempTree({});
+    tree.writeJson('inner/package.json', { name: 42, version: '2.0.0' });
+    tree.writeJson('package.json', { name: 'outer', version: '1.0.0' });
 
-    const result = resolveOwningManifest(moduleUrl(tree.resolve('inner/main.js')));
+    const result = resolveOwningManifest(renderModuleUrl(tree.resolve('inner/main.js')));
 
     expect(result.packageDir).toBe(tree.dir);
   });
@@ -44,7 +40,7 @@ describe(resolveOwningManifest, () => {
   it('throws when no ancestor manifest declares a name', () => {
     using tree = createTempTree({ 'app/': '' });
 
-    const resolve = () => resolveOwningManifest(moduleUrl(tree.resolve('app/main.js')));
+    const resolve = () => resolveOwningManifest(renderModuleUrl(tree.resolve('app/main.js')));
 
     expect(resolve).toThrow(/No package\.json declaring a name was found/);
   });
@@ -52,7 +48,7 @@ describe(resolveOwningManifest, () => {
   it('throws naming a manifest that is unreadable as JSON', () => {
     using tree = createTempTree({ 'package.json': '{ not json' });
 
-    const resolve = () => resolveOwningManifest(moduleUrl(tree.resolve('main.js')));
+    const resolve = () => resolveOwningManifest(renderModuleUrl(tree.resolve('main.js')));
 
     expect(resolve).toThrow(/is not readable as JSON/);
     expect(resolve).toThrow(tree.resolve('package.json'));
@@ -61,7 +57,7 @@ describe(resolveOwningManifest, () => {
   it('throws naming a manifest that parses to something other than an object', () => {
     using tree = createTempTree({ 'package.json': '"a string"' });
 
-    const resolve = () => resolveOwningManifest(moduleUrl(tree.resolve('main.js')));
+    const resolve = () => resolveOwningManifest(renderModuleUrl(tree.resolve('main.js')));
 
     expect(resolve).toThrow(/is not a JSON object/);
     expect(resolve).toThrow(tree.resolve('package.json'));
@@ -69,27 +65,12 @@ describe(resolveOwningManifest, () => {
 
   it('throws on an array manifest rather than ascending past it', () => {
     // The ancestor is named and versioned, so a skipped array would resolve here instead of raising.
-    using tree = createTempTree({
-      'inner/package.json': '[]',
-      'package.json': manifest({ name: 'outer', version: '1.0.0' }),
-    });
+    using tree = createTempTree({ 'inner/package.json': '[]' });
+    tree.writeJson('package.json', { name: 'outer', version: '1.0.0' });
 
-    const resolve = () => resolveOwningManifest(moduleUrl(tree.resolve('inner/main.js')));
+    const resolve = () => resolveOwningManifest(renderModuleUrl(tree.resolve('inner/main.js')));
 
     expect(resolve).toThrow(/is not a JSON object/);
     expect(resolve).toThrow(tree.resolve('inner/package.json'));
   });
 });
-
-/** Renders a `package.json` body. */
-function manifest(fields: Record<string, unknown>): string {
-  return `${JSON.stringify(fields, undefined, 2)}\n`;
-}
-
-/**
- * Renders the `import.meta.url` that a module at `filePath` would have. The file need not exist: The ascent
- * reads manifests alone, which lets a compiled layout be described without compiling one.
- */
-function moduleUrl(filePath: string): string {
-  return pathToFileURL(filePath).href;
-}
