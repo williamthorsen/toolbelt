@@ -4,12 +4,15 @@ import { IntSeededRng, pickInteger, type SeedOptions } from '@williamthorsen/too
 import { segmentByDelimited } from '../internal/segmentByDelimited.ts';
 import { splitDelimited } from '../internal/splitDelimited.ts';
 import { validateDelimiters } from '../internal/validateDelimiters.ts';
+import { enclose } from './enclose.ts';
 
 const DELIMIT = {
   opening: '[',
   closing: ']',
   separator: '|',
 };
+
+const encloseInDelimiters = enclose(DELIMIT.opening, DELIMIT.closing);
 
 /**
  * A node in an abstract syntax tree (AST) of static text nodes (tokens) and variants.
@@ -56,7 +59,7 @@ export abstract class TextNode {
 
   /** Encloses content in the variant delimiters. */
   static delimit(content: string): string {
-    return enclose(content, DELIMIT);
+    return encloseInDelimiters(content);
   }
 
   /**
@@ -232,12 +235,6 @@ export class VariantNode extends TextNode {
 }
 
 // region | Helpers
-
-/** Encloses content in the opening and closing delimiters. */
-function enclose(content: string, options: { opening: string; closing: string }): string {
-  const { opening, closing } = options;
-  return opening + content + closing;
-}
 
 /** Flattens nested indices into a single list. */
 function flatten(indices: VariantIndices): number[] {
