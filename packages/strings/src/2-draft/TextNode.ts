@@ -163,9 +163,7 @@ export abstract class TextNode {
 /**
  * A delimited set of alternatives, one of which is chosen when the text is picked.
  *
- * @category String
- * @experimental
- * @stage draft
+ * @internal
  */
 export class VariantNode extends TextNode {
   variants: (TextNode | string)[] = [];
