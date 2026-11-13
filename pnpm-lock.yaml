@@ -421,6 +421,9 @@ importers:
       '@williamthorsen/toolbelt.filesystem':
         specifier: workspace:*
         version: link:../filesystem
+      '@williamthorsen/toolbelt.packaging':
+        specifier: workspace:*
+        version: link:../packaging
     devDependencies:
       '@williamthorsen/toolbelt.strings':
         specifier: workspace:*

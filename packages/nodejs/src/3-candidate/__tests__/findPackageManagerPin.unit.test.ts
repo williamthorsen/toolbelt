@@ -36,7 +36,18 @@ describe(findPackageManagerPin, () => {
   it('throws an error naming a manifest that is not valid JSON', () => {
     using tree = createTempTree({ 'package.json': '{' });
 
-    expect(() => findPackageManagerPin(tree.dir)).toThrow(`${tree.resolve('package.json')} is not valid JSON`);
+    expect(() => findPackageManagerPin(tree.dir)).toThrow(
+      `Package manifest is not readable as JSON: ${tree.resolve('package.json')}`,
+    );
+  });
+
+  it('throws on an array manifest rather than ascending to an ancestor pin', () => {
+    using tree = createTempTree({ 'packages/lib/package.json': '[]' });
+    tree.writeJson('package.json', { packageManager: 'pnpm@12.4.0' });
+
+    expect(() => findPackageManagerPin(tree.resolve('packages/lib'))).toThrow(
+      `Package manifest is not a JSON object: ${tree.resolve('packages/lib/package.json')}`,
+    );
   });
 
   it('resolves a relative start directory before ascending', () => {
