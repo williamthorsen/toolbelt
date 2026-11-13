@@ -5,6 +5,7 @@
  */
 export const ADOPTED_EXPORTS: readonly string[] = [
   'createCli',
+  'createTextBuffer',
   'defineCommand',
   'defineGroup',
   'installCrashHandler',

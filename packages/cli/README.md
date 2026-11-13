@@ -92,6 +92,18 @@ process.exitCode = await runCli(process.argv.slice(2), root, {
 
 A command whose context its group does not supply fails to typecheck. The context-free `defineCommand` and `defineGroup` exports nest under any group.
 
+## Capturing output
+
+`createTextBuffer` returns a writer that accumulates what is written to it, so that a test or a wrapper can run a CLI in process and read its output afterwards. With the `root` from the usage example above:
+
+```ts
+import { createTextBuffer, runCli } from '@williamthorsen/toolbelt.cli/candidate';
+
+const stdout = createTextBuffer();
+const code = await runCli(['greet', 'Ada'], root, { name: 'demo', stdout, stderr: createTextBuffer() });
+// stdout.text === 'Hello, Ada\n'
+```
+
 ## Reading piped input
 
 `readStreamText` reads a stream to its end as text and waits for a producer that has not yet written, such as one that reaches a keychain or a network before it writes to the pipe:
