@@ -48,7 +48,8 @@
   },
   "dependencies": {
     "@williamthorsen/toolbelt.errors": "workspace:*",
-    "@williamthorsen/toolbelt.filesystem": "workspace:*"
+    "@williamthorsen/toolbelt.filesystem": "workspace:*",
+    "@williamthorsen/toolbelt.packaging": "workspace:*"
   },
   "devDependencies": {
     "@williamthorsen/toolbelt.strings": "workspace:*",

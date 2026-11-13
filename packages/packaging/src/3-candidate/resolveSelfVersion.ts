@@ -19,9 +19,9 @@ import { resolveOwningManifest } from '../internal/resolveOwningManifest.ts';
 export function resolveSelfVersion(fromUrl: string): string {
   const { manifest, manifestPath } = resolveOwningManifest(fromUrl);
 
-  if (typeof manifest.version !== 'string') {
+  if (typeof manifest['version'] !== 'string') {
     throw new TypeError(`Package manifest declares no string version: ${manifestPath}`);
   }
 
-  return manifest.version;
+  return manifest['version'];
 }

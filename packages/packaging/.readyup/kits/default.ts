@@ -8,7 +8,7 @@
  * code that a published function expresses better, so it reports at `recommend`. Nothing here is `warn`, because
  * none of it is a defect.
  *
- * Three functions replace such a search, and one check covers them all. The scan reads which names a walk probes,
+ * Four functions replace such a search, and one check covers them all. The scan reads which names a walk probes,
  * but not where the walk starts or what it does with the manifest, and those decide the function, so the fix text
  * lets the reader choose by purpose.
  *
@@ -25,7 +25,6 @@ import { defineAdoptionKit, isAdoptableSource } from '@williamthorsen/toolbelt.a
 import { ADOPTED_EXPORTS } from '../../src/readiness/adoptedExports.ts';
 import { listManifestSearchSites } from '../../src/readiness/listManifestSearchSites.ts';
 
-const FILESYSTEM_PACKAGE_NAME = '@williamthorsen/toolbelt.filesystem';
 const PACKAGE_NAME = '@williamthorsen/toolbelt.packaging';
 const README_URL = 'https://github.com/williamthorsen/toolbelt/tree/main/packages/packaging#readme';
 
@@ -44,7 +43,7 @@ export default defineAdoptionKit({
       id: 'no-hand-rolled-manifest-search',
       kinds: ['manifest-search'],
       severity: 'recommend',
-      fix: `Replace the loop named above with the function that matches what the loop looks for. Where it finds the package that owns the running module, call findPackageRoot(import.meta.url) from ${PACKAGE_NAME}/candidate, or resolveSelfVersion(import.meta.url) from the same subpath where the loop goes on to read the manifest's version. Both pass over a manifest that declares no name, such as the one that a dual-format build leaves in dist/, and both throw where no ancestor declares one. Where it finds the project that holds a directory, call findProjectRoot(dir) from ${PACKAGE_NAME}. It prefers .git and lockfiles to package.json, so in a monorepo it returns the repository root rather than the nearest package, and it returns the start directory rather than throwing where it finds neither. Where it needs the nearest manifest whatever that manifest declares, call findDirectoryChainMatch(dir, ['package.json']) from ${FILESYSTEM_PACKAGE_NAME}, since no function in this package returns it. Reference: ${README_URL}`,
+      fix: `Replace the loop named above with the function that matches what the loop looks for. Where it finds the package that owns the running module, call findPackageRoot(import.meta.url) from ${PACKAGE_NAME}/candidate, or resolveSelfVersion(import.meta.url) from the same subpath where the loop goes on to read the manifest's version. Both pass over a manifest that declares no name, such as the one that a dual-format build leaves in dist/, and both throw where no ancestor declares one. Where it finds the project that holds a directory, call findProjectRoot(dir) from ${PACKAGE_NAME}. It prefers .git and lockfiles to package.json, so in a monorepo it returns the repository root rather than the nearest package, and it returns the start directory rather than throwing where it finds neither. Where it needs the nearest manifest that declares something else, call findNearestManifest(dir, predicate) from ${PACKAGE_NAME}/candidate, which returns the first manifest that the predicate accepts with its location, or undefined where none is accepted; a predicate of () => true returns the nearest manifest whatever it declares. Reference: ${README_URL}`,
     },
   ],
 });

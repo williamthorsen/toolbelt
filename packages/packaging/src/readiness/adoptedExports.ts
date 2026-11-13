@@ -3,4 +3,9 @@
  *
  * @internal
  */
-export const ADOPTED_EXPORTS: readonly string[] = ['findPackageRoot', 'findProjectRoot', 'resolveSelfVersion'];
+export const ADOPTED_EXPORTS: readonly string[] = [
+  'findNearestManifest',
+  'findPackageRoot',
+  'findProjectRoot',
+  'resolveSelfVersion',
+];

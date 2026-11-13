@@ -177,11 +177,9 @@ const LONE_MANIFEST_READ = dedent`
 
 `;
 
-// A search of the chain listed by `listDirectoryChain`, as this package's own `resolveOwningManifest` makes it.
+// A search of the chain listed by `listDirectoryChain`, as this package's own `findNearestManifest` makes it.
 const CHAIN_LOOP = dedent`
-  export function resolveOwningManifest(fromUrl: string): OwningManifest {
-    const startDir = path.dirname(fileURLToPath(fromUrl));
-
+  export function findNearestManifest(startDir: string, predicate: ManifestPredicate): NearestManifest | undefined {
     for (const dir of listDirectoryChain(startDir)) {
       const manifestPath = path.join(dir, 'package.json');
 
@@ -189,12 +187,12 @@ const CHAIN_LOOP = dedent`
 
       const manifest = readManifest(manifestPath);
 
-      if (typeof manifest.name === 'string') {
+      if (predicate(manifest)) {
         return { manifest, manifestPath, packageDir: dir };
       }
     }
 
-    throw new Error(\`No package.json declaring a name was found at or above: \${fromUrl}\`);
+    return undefined;
   }
 
 `;
