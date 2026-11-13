@@ -94,7 +94,7 @@ A command whose context its group does not supply fails to typecheck. The contex
 
 ## Capturing output
 
-`createTextBuffer` returns a writer that accumulates what is written to it, so that a test or a wrapper can run a CLI in process and read its output afterwards:
+`createTextBuffer` returns a writer that accumulates what is written to it, so that a test or a wrapper can run a CLI in process and read its output afterwards. With the `root` from the usage example above:
 
 ```ts
 import { createTextBuffer, runCli } from '@williamthorsen/toolbelt.cli/candidate';
