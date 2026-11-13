@@ -1,75 +1,66 @@
-import { pathToFileURL } from 'node:url';
-
 import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, it } from 'vitest';
 
+import { renderModuleUrl } from '../../test-utils/renderModuleUrl.ts';
 import { resolveSelfVersion } from '../resolveSelfVersion.ts';
 
 describe(resolveSelfVersion, () => {
   it('returns the version declared by the owning package', () => {
-    using tree = createTempTree({ 'package.json': manifest({ name: 'demo', version: '1.4.2' }) });
+    using tree = createTempTree({});
+    tree.writeJson('package.json', { name: 'demo', version: '1.4.2' });
 
-    expect(resolveSelfVersion(moduleUrl(tree.resolve('src/main.ts')))).toBe('1.4.2');
+    expect(resolveSelfVersion(renderModuleUrl(tree.resolve('src/main.ts')))).toBe('1.4.2');
   });
 
   it('reports the same version from source and compiled layouts at differing depths', () => {
-    using tree = createTempTree({ 'package.json': manifest({ name: 'demo', version: '1.4.2' }) });
+    using tree = createTempTree({});
+    tree.writeJson('package.json', { name: 'demo', version: '1.4.2' });
 
     const fromUrls = [
       tree.resolve('src/main.ts'),
       tree.resolve('src/3-candidate/deep/nested/helper.ts'),
       tree.resolve('dist/esm/4-release/index.js'),
-    ].map(moduleUrl);
+    ].map(renderModuleUrl);
 
     expect(fromUrls.map(resolveSelfVersion)).toStrictEqual(['1.4.2', '1.4.2', '1.4.2']);
   });
 
   it('skips the marker manifest left in `dist` by a dual-format build', () => {
-    using tree = createTempTree({
-      'dist/cjs/package.json': manifest({ type: 'commonjs' }),
-      'package.json': manifest({ name: 'demo', version: '1.4.2' }),
-    });
+    using tree = createTempTree({});
+    tree.writeJson('dist/cjs/package.json', { type: 'commonjs' });
+    tree.writeJson('package.json', { name: 'demo', version: '1.4.2' });
 
-    expect(resolveSelfVersion(moduleUrl(tree.resolve('dist/cjs/deep/main.js')))).toBe('1.4.2');
+    expect(resolveSelfVersion(renderModuleUrl(tree.resolve('dist/cjs/deep/main.js')))).toBe('1.4.2');
   });
 
   it('throws naming the manifest when it declares no version', () => {
-    using tree = createTempTree({ 'package.json': manifest({ name: 'demo' }) });
+    using tree = createTempTree({});
+    tree.writeJson('package.json', { name: 'demo' });
 
-    const read = () => resolveSelfVersion(moduleUrl(tree.resolve('src/main.ts')));
+    const read = () => resolveSelfVersion(renderModuleUrl(tree.resolve('src/main.ts')));
 
     expect(read).toThrow(/declares no string version/);
     expect(read).toThrow(tree.resolve('package.json'));
   });
 
   it('throws naming the manifest when the version is not a string', () => {
-    using tree = createTempTree({ 'package.json': manifest({ name: 'demo', version: 2 }) });
+    using tree = createTempTree({});
+    tree.writeJson('package.json', { name: 'demo', version: 2 });
 
-    const read = () => resolveSelfVersion(moduleUrl(tree.resolve('src/main.ts')));
+    const read = () => resolveSelfVersion(renderModuleUrl(tree.resolve('src/main.ts')));
 
     expect(read).toThrow(/declares no string version/);
     expect(read).toThrow(tree.resolve('package.json'));
   });
 
   it('never reports an ancestor’s version for a named package that declares none', () => {
-    using tree = createTempTree({
-      'package.json': manifest({ name: 'outer', version: '9.9.9' }),
-      'packages/app/package.json': manifest({ name: 'app' }),
-    });
+    using tree = createTempTree({});
+    tree.writeJson('package.json', { name: 'outer', version: '9.9.9' });
+    tree.writeJson('packages/app/package.json', { name: 'app' });
 
-    const read = () => resolveSelfVersion(moduleUrl(tree.resolve('packages/app/src/main.ts')));
+    const read = () => resolveSelfVersion(renderModuleUrl(tree.resolve('packages/app/src/main.ts')));
 
     expect(read).toThrow(/declares no string version/);
     expect(read).toThrow(tree.resolve('packages/app/package.json'));
   });
 });
-
-/** Renders a `package.json` body. */
-function manifest(fields: Record<string, unknown>): string {
-  return `${JSON.stringify(fields, undefined, 2)}\n`;
-}
-
-/** Renders the `import.meta.url` that a module at `filePath` would have. The file need not exist. */
-function moduleUrl(filePath: string): string {
-  return pathToFileURL(filePath).href;
-}
