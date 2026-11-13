@@ -25,7 +25,7 @@ export const DEFAULT_ROOT_MARKERS: ReadonlyArray<string> = [
  *
  * Ascends from `startDir` (resolved to an absolute path) and returns the first directory that contains one of
  * `markers`. If no directory up to and including the filesystem root contains one, falls back to the nearest
- * ancestor containing a `package.json`, then to `startDir` itself; both fallbacks report a `null` marker.
+ * ancestor containing a `package.json`, then to `startDir` itself; a fallback result does not have a `marker`.
  *
  * @example
  * findProjectRoot(import.meta.dirname);  // { marker: '.git', rootDir: '/home/dev/my-app', source: 'marker' }
@@ -46,10 +46,10 @@ export function findProjectRoot(startDir: string, options: FindProjectRootOption
   const manifestMatch = findDirectoryChainMatch(startDir, ['package.json']);
 
   if (manifestMatch !== undefined) {
-    return { marker: null, rootDir: manifestMatch.dir, source: 'package-json' };
+    return { rootDir: manifestMatch.dir, source: 'package-json' };
   }
 
-  return { marker: null, rootDir: path.resolve(startDir), source: 'start-dir' };
+  return { rootDir: path.resolve(startDir), source: 'start-dir' };
 }
 
 export interface FindProjectRootOptions {
@@ -57,11 +57,16 @@ export interface FindProjectRootOptions {
   markers?: ReadonlyArray<string> | undefined;
 }
 
-export interface ProjectRoot {
-  /** The marker that identified the root, or `null` when a fallback did. */
-  marker: string | null;
-  rootDir: string;
-  source: ProjectRootSource;
-}
+export type ProjectRoot =
+  | {
+      /** The marker that identified the root. */
+      marker: string;
+      rootDir: string;
+      source: 'marker';
+    }
+  | {
+      rootDir: string;
+      source: Exclude<ProjectRootSource, 'marker'>;
+    };
 
 export type ProjectRootSource = 'marker' | 'package-json' | 'start-dir';
