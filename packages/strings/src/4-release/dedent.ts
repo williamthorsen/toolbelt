@@ -19,10 +19,10 @@ import { joinLines, splitLines } from '../internal/text-lines.ts';
  * removed.
  *
  * The tag reads the cooked strings, so an escaped backtick or `\t` behaves as it does in an ordinary template
- * literal. An escaped line terminator (`\n`, `\r`, `\u2028`) or a backslash-newline line continuation changes
- * how many lines the literal spans, and the line that it adds would count as content at column zero and
- * silently flatten the whole template, so the tag throws rather than guessing. Interpolate such text as a
- * value instead.
+ * literal. An escaped line terminator (`\n`, `\r`, `\u2028`, `\u2029`) or a backslash-newline line continuation
+ * changes how many lines the literal spans, and the line that it adds would count as content at column zero and
+ * silently flatten the whole template, so the tag throws rather than guessing. Interpolate such text as a value
+ * instead.
  *
  * @example
  * dedent`
@@ -33,8 +33,17 @@ import { joinLines, splitLines } from '../internal/text-lines.ts';
  * // 'before\nx\ny\nafter'
  *
  * @example
- * // A tab-indented line beside a space-indented one throws:
- * // 'Every line of the template is indented, but they share no common indentation.'
+ * dedent`
+ * \ttab-indented
+ *     space-indented
+ * `;
+ * // Error: Every line of the template is indented, but they share no common indentation.
+ *
+ * @example
+ * dedent`
+ *   Error: bad input\nDetails: see log
+ * `;
+ * // Error: The template contains an escaped line terminator or a line continuation...
  *
  * @category String
  * @stage release
