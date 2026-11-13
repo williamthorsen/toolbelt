@@ -22,7 +22,6 @@ const encloseInDelimiters = enclose(DELIMIT.opening, DELIMIT.closing);
  */
 export abstract class TextNode {
   content: string;
-  variantIndexCount = 0;
 
   protected constructor(content: string) {
     this.content = content;
@@ -109,24 +108,9 @@ export abstract class TextNode {
     return text.startsWith(DELIMIT.opening) && text.endsWith(DELIMIT.closing);
   }
 
-  /** Throws if indices remain once the top-level node has resolved its variants. */
-  assertAllIndicesConsumed(indices: number[], depth: number): void | never {
-    if (depth === 0 && indices.length > 0) {
-      throw new Error(`Unused variant indices. Received ${this.variantIndexCount}, leaving ${indices.length} unused.`);
-    }
-  }
-
-  /**
-   * Decodes indices as the static `decodeIndices` does. At the top level, records their count and returns a copy, which
-   * the node tree consumes without changing the caller's array.
-   */
-  decodeIndices(encodedIndices: string | VariantIndices, depth: Integer = 0): Integer[] {
-    const decodedIndices = TextNode.decodeIndices(encodedIndices);
-    if (depth > 0) return decodedIndices;
-
-    // Store the initial length of the indices array for later use in an error message
-    this.variantIndexCount = decodedIndices.length;
-    return [...decodedIndices];
+  /** Returns a string child as is, or the text that a node child selects from the queue. */
+  protected static consumeChildIndices(child: TextNode | string, queue: Integer[]): string {
+    return typeof child === 'string' ? child : child.consumeIndices(queue);
   }
 
   /** Picks a variant at every choice and returns the text with the indices, seed, and fingerprint that reproduce it. */
@@ -147,17 +131,33 @@ export abstract class TextNode {
     };
   }
 
+  /**
+   * Returns the text that the given indices select, consuming them depth-first. Throws if indices are too few to
+   * resolve every variant or remain once all are resolved. The caller's array is not changed.
+   */
+  selectVariants(indices: string | VariantIndices): string {
+    const decodedIndices = TextNode.decodeIndices(indices);
+    const queue = [...decodedIndices];
+
+    const content = this.consumeIndices(queue);
+
+    if (queue.length > 0) {
+      throw new Error(`Unused variant indices. Received ${decodedIndices.length}, leaving ${queue.length} unused.`);
+    }
+    return content;
+  }
+
   /** Returns the text with a variant chosen at random at every choice. */
   abstract pick(options?: SeedOptions): string;
 
   /** Chooses a variant at random at every choice and returns the indices of the choices. */
   abstract pickIndices(options?: SeedOptions & { indices?: VariantIndices | undefined }): VariantIndices;
 
-  /** Returns the text that the given indices select. */
-  abstract selectVariants(indices: string | VariantIndices, options?: { depth?: Integer }): string;
-
   /** Returns the delimited text that the node represents. */
   abstract toString(): string;
+
+  /** Returns the text that the given indices select, shifting from the queue each index that the node consumes. */
+  protected abstract consumeIndices(queue: Integer[]): string;
 }
 
 /**
@@ -204,11 +204,14 @@ export class VariantNode extends TextNode {
     return indices;
   }
 
-  /** Resolves the variant named by the first index, passing the remaining indices to it. */
-  selectVariants(indices: VariantIndices, options: { depth?: Integer } = {}): string {
-    const { depth = 0 } = options;
-    const decodedIndices = this.decodeIndices(indices, depth);
-    const variantIndex = decodedIndices.shift();
+  /** Joins the variants with the separator and encloses them in the delimiters. */
+  toString(): string {
+    return TextNode.delimit(this.variants.map((variant) => variant.toString()).join(DELIMIT.separator));
+  }
+
+  /** Resolves the variant named by the next index, passing the remaining indices to it. */
+  protected consumeIndices(queue: Integer[]): string {
+    const variantIndex = queue.shift();
 
     if (variantIndex === undefined) throw new Error('Not enough indices to resolve all variants.');
 
@@ -219,18 +222,7 @@ export class VariantNode extends TextNode {
       );
     }
 
-    const resolvedContent = (() => {
-      if (typeof selectedVariant === 'string') return selectedVariant;
-      return selectedVariant.selectVariants(decodedIndices, { depth: depth + 1 });
-    })();
-
-    this.assertAllIndicesConsumed(decodedIndices, depth);
-    return resolvedContent;
-  }
-
-  /** Joins the variants with the separator and encloses them in the delimiters. */
-  toString(): string {
-    return TextNode.delimit(this.variants.map((variant) => variant.toString()).join(DELIMIT.separator));
+    return TextNode.consumeChildIndices(selectedVariant, queue);
   }
 }
 
@@ -303,33 +295,19 @@ class TokenNode extends TextNode {
     return indices.length === 1 && Array.isArray(indices[0]) ? indices[0] : indices;
   }
 
-  /** Joins the text that the indices select from each child. */
-  selectVariants(indices: string | VariantIndices, options: { depth?: Integer } = {}): string {
-    const { depth = 0 } = options;
-
-    const decodedIndices = this.decodeIndices(indices, depth);
-    const resolvedContent = (() => {
-      if (!this.children) {
-        return '';
-      }
-
-      const childContents = this.children.map((child) => {
-        if (typeof child === 'string') return child;
-        return child.selectVariants(decodedIndices, { depth: depth + 1 });
-      });
-      return childContents.join('');
-    })();
-
-    this.assertAllIndicesConsumed(decodedIndices, depth);
-    return resolvedContent;
-  }
-
   /** Joins the delimited text of each child. */
   toString(): string {
     if (this.children) {
       return this.children.map((child) => child.toString()).join('');
     }
     return this.content;
+  }
+
+  /** Joins the text that the indices select from each child. */
+  protected consumeIndices(queue: Integer[]): string {
+    if (!this.children) return '';
+
+    return this.children.map((child) => TextNode.consumeChildIndices(child, queue)).join('');
   }
 }
 
