@@ -1,6 +1,6 @@
-import { describe, expect, expectTypeOf, it, vi } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
-import type { ValidationError, ValidationResult } from '../../types/common.types.ts';
+import type { ValidationError } from '../../types/common.types.ts';
 import { validateDelimiters } from '../validateDelimiters.ts';
 
 describe(validateDelimiters, () => {
@@ -80,7 +80,7 @@ describe(validateDelimiters, () => {
     const input = '';
     const badParams = { opening: '{', closing: '{' };
 
-    const throwingFn = vi.fn<() => ValidationResult>(() => validateDelimiters(input, badParams));
+    const throwingFn = () => validateDelimiters(input, badParams);
 
     expect(throwingFn).toThrow('different');
   });
@@ -89,7 +89,7 @@ describe(validateDelimiters, () => {
     const input = 'Hello, [wo]r]ld!';
     const withErrorParams = { opening: '[', closing: ']', throwOnError: true };
 
-    const throwingFn = vi.fn<() => ValidationResult>(() => validateDelimiters(input, withErrorParams));
+    const throwingFn = () => validateDelimiters(input, withErrorParams);
 
     expect(throwingFn).toThrow('unmatched closing');
   });

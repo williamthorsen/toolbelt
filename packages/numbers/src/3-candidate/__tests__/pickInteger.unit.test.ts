@@ -57,7 +57,7 @@ describe(pickInteger, () => {
     const min = 0;
     const max = -50;
 
-    const throwingFn = vi.fn<() => number>(() => pickInteger({ min, max }));
+    const throwingFn = () => pickInteger({ min, max });
 
     expect(throwingFn).toThrow(new RangeError('Invalid range: min must be less than or equal to max.'));
   });
@@ -117,7 +117,7 @@ describe(pickInteger, () => {
     const min = -Infinity;
     const max = 10;
 
-    const throwingFn = vi.fn<() => number>(() => pickInteger({ min, max }));
+    const throwingFn = () => pickInteger({ min, max });
 
     expect(throwingFn).toThrow(new RangeError('Invalid range: min and max must be finite.'));
   });
@@ -126,7 +126,7 @@ describe(pickInteger, () => {
     const min = 0;
     const max = Infinity;
 
-    const throwingFn = vi.fn<() => number>(() => pickInteger({ min, max }));
+    const throwingFn = () => pickInteger({ min, max });
 
     expect(throwingFn).toThrow(new RangeError('Invalid range: min and max must be finite.'));
   });
