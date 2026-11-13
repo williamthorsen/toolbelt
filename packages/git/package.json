@@ -45,6 +45,7 @@
     "prepublishOnly": "nmr build"
   },
   "dependencies": {
+    "@williamthorsen/toolbelt.numbers": "workspace:*",
     "@williamthorsen/toolbelt.strings": "workspace:*"
   },
   "engines": {

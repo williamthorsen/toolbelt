@@ -5,6 +5,7 @@ import { deriveBranchNumber, type DeriveBranchNumberOptions } from '../deriveBra
 
 const BUCKETED: DeriveBranchNumberOptions = { max: 999 };
 const TICKETLESS = 'main';
+const UINT32_SIZE = 2 ** 32;
 
 describe(deriveBranchNumber, () => {
   it('returns the ticket number when the branch encodes one', () => {
@@ -34,6 +35,15 @@ describe(deriveBranchNumber, () => {
     expect(deriveBranchNumber(String(hashString(TICKETLESS)), options)).toBe(hashString(TICKETLESS, options));
   });
 
+  it('wraps a ticket number beyond the safe integers exactly', () => {
+    // 2^53 + 1 is not representable, so the result is 1 only if the index is reduced before the offset is added.
+    expect(deriveBranchNumber(String(2 ** 53), { offset: 1 })).toBe(1);
+  });
+
+  it.each(['232', TICKETLESS])('accepts a range that spans exactly 2^32 values for the branch %o', (branch) => {
+    expect(() => deriveBranchNumber(branch, { min: 1, max: UINT32_SIZE })).not.toThrow();
+  });
+
   it('honours a declared key and then matches no other key', () => {
     expect(deriveBranchNumber('mac-22/feat/x', { key: 'mac' })).toBe(22);
     expect(deriveBranchNumber('mac-22/feat/x')).toBe(hashString('mac-22/feat/x'));
@@ -54,7 +64,7 @@ describe(deriveBranchNumber, () => {
   });
 
   describe('given a bad option', () => {
-    // The ref path discards the digest but still runs hashString's option validation, which these cases pin.
+    // Both paths validate the options, so each case runs for a ticket branch and a ticketless one.
     it.each(['232', TICKETLESS])('rejects an inverted range for the branch %o', (branch) => {
       expect(() => deriveBranchNumber(branch, { min: 5, max: 1 })).toThrow(RangeError);
     });
@@ -65,6 +75,14 @@ describe(deriveBranchNumber, () => {
 
     it.each(['232', TICKETLESS])('rejects a fractional offset for the branch %o', (branch) => {
       expect(() => deriveBranchNumber(branch, { offset: 1.5 })).toThrow(RangeError);
+    });
+
+    it.each(['232', TICKETLESS])('rejects a range that spans more than 2^32 values for the branch %o', (branch) => {
+      expect(() => deriveBranchNumber(branch, { max: UINT32_SIZE })).toThrow(RangeError);
+    });
+
+    it('rejects a ticket number too large to be finite', () => {
+      expect(() => deriveBranchNumber('9'.repeat(309))).toThrow(RangeError);
     });
 
     it('rejects a malformed key', () => {

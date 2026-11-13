@@ -1,3 +1,5 @@
+import { indexIntoRange } from '@williamthorsen/toolbelt.numbers/candidate';
+
 const FNV_OFFSET_BASIS = 0x811c_9dc5;
 const FNV_PRIME = 0x0100_0193;
 const MAX_UINT32 = 0xffff_ffff;
@@ -18,27 +20,7 @@ const UINT32_SIZE = 2 ** 32;
 export function hashString(text: string, options: HashStringOptions = {}): number {
   const { max = MAX_UINT32, min = 0, offset = 0 } = options;
 
-  // Validate the bounds and the offset
-  if (!Number.isSafeInteger(min) || !Number.isSafeInteger(max)) {
-    throw new RangeError(`Invalid range: min and max must be safe integers. Received min=${min}, max=${max}.`);
-  }
-  if (min > max) {
-    throw new RangeError(`Invalid range: min must be less than or equal to max. Received min=${min}, max=${max}.`);
-  }
-  if (!Number.isSafeInteger(offset)) {
-    throw new RangeError(`Invalid offset: offset must be a safe integer. Received ${offset}.`);
-  }
-
-  const size = max - min + 1;
-  if (size > UINT32_SIZE) {
-    const received = `Received min=${min}, max=${max}.`;
-    throw new RangeError(`Invalid range: The range cannot span more than ${UINT32_SIZE} values. ${received}`);
-  }
-
-  // Reduce the offset before adding it, so that the sum stays within the exactly-representable integers.
-  const shift = ((offset % size) + size) % size;
-
-  return min + ((computeDigest(text) + shift) % size);
+  return indexIntoRange(computeDigest(text), { max, maxSpan: UINT32_SIZE, min, offset });
 }
 
 export interface HashStringOptions {
