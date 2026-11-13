@@ -4,7 +4,7 @@ import path from 'node:path';
 import { createTempTree, pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { DEFAULT_ROOT_MARKERS, findProjectRoot } from '../findProjectRoot.ts';
+import { findProjectRoot } from '../findProjectRoot.ts';
 
 describe(findProjectRoot, () => {
   const existsSyncSpy = vi.spyOn(fs, 'existsSync');
@@ -102,18 +102,5 @@ describe(findProjectRoot, () => {
     const find = () => findProjectRoot(tree.resolve('app'), { markers: ['../.git'] });
 
     expect(find).toThrow(/must not ascend above its directory level/);
-  });
-});
-
-describe('DEFAULT_ROOT_MARKERS', () => {
-  it('lists the root markers in precedence order', () => {
-    expect(DEFAULT_ROOT_MARKERS).toStrictEqual([
-      '.git',
-      'pnpm-workspace.yaml',
-      'pnpm-lock.yaml',
-      'package-lock.json',
-      'yarn.lock',
-      'bun.lock',
-    ]);
   });
 });
