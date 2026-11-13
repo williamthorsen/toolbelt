@@ -124,7 +124,7 @@ resolveNpmPackageOfBin('/Users/me/.asdf/installs/nodejs/24.18.1/bin/pn');
 findPackageManagerPin(startDir: string): { dir: string; manifestPath: string; spec: string } | undefined;
 ```
 
-Finds the `packageManager` pin that governs a directory: the nearest `package.json` at or above it whose `packageManager` is a string, passing over a manifest without the field, or `undefined` when no ancestor declares one. The value is returned raw, for `parsePackageManagerSpec`.
+Finds the `packageManager` pin that governs a directory: the nearest `package.json` at or above it whose `packageManager` is a string, passing over a manifest without the field, or `undefined` when no ancestor declares one. The value is returned raw, for `parsePackageManagerSpec`. A manifest that is unreadable as JSON, or that is not a JSON object, throws an error naming it rather than being passed over.
 
 ```ts
 import { findPackageManagerPin } from '@williamthorsen/toolbelt.nodejs/candidate';

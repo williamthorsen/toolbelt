@@ -91,6 +91,27 @@ A dual-format build leaves that file so that the runtime parses `dist/cjs/` as C
 
 The function throws for a module belonging to no named package, rather than falling back to a directory that merely looks plausible, which is why the return is a bare string with no evidence to interpret. It throws on a manifest that is unreadable as JSON, or that parses to something other than an object, naming the manifest rather than skipping it: Corruption is a defect, not an absence.
 
+## `findNearestManifest`
+
+Candidate tier: Imported from `@williamthorsen/toolbelt.packaging/candidate` rather than the package root, and subject to change.
+
+```ts
+findNearestManifest(
+  startDir: string,
+  predicate: (manifest: PackageManifest) => boolean,
+): { manifest: PackageManifest; manifestPath: string; packageDir: string } | undefined;
+```
+
+Returns the nearest `package.json` at or above a directory that a predicate accepts, parsed and with its location, or `undefined` when none is accepted.
+
+```ts
+import { findNearestManifest } from '@williamthorsen/toolbelt.packaging/candidate';
+
+const workspaceRoot = findNearestManifest(process.cwd(), (manifest) => manifest['workspaces'] !== undefined);
+```
+
+A manifest that the predicate rejects is passed over, and the ascent continues. A type-guard predicate narrows the returned manifest to the type that it asserts. A corrupt manifest throws whatever the predicate would have said, by the rule stated for [`findPackageRoot`](#findpackageroot).
+
 ## `resolveSelfVersion`
 
 Candidate tier: Imported from `@williamthorsen/toolbelt.packaging/candidate` rather than the package root, and subject to change.
@@ -121,7 +142,7 @@ rdy run --sources
 
 The kit reads the project's tracked sources and reports one idiom, counted against the calls that the project already makes into this package. It reports at `recommend`: A hand-rolled search is correct code that a published function expresses better, not a defect.
 
-`no-hand-rolled-manifest-search` reports a loop that ascends by `dirname` and probes each level for `package.json`, naming the line on which the loop opens. The scan reads which names a loop probes, but not where the loop starts or what it does with the manifest, so the fix text sets out the choice by purpose. The package that owns the running module takes [`findPackageRoot`](#findpackageroot), or [`resolveSelfVersion`](#resolveselfversion) when the loop goes on to read the manifest's version; both pass over a manifest that declares no name. The project that contains a directory takes [`findProjectRoot`](#findprojectroot), which prefers `.git` and lockfiles to a manifest, returning the repository root in a monorepo. The nearest manifest, whatever it declares, takes `findDirectoryChainMatch` from `@williamthorsen/toolbelt.filesystem`.
+`no-hand-rolled-manifest-search` reports a loop that ascends by `dirname` and probes each level for `package.json`, naming the line on which the loop opens. The scan reads which names a loop probes, but not where the loop starts or what it does with the manifest, so the fix text sets out the choice by purpose. The package that owns the running module takes [`findPackageRoot`](#findpackageroot), or [`resolveSelfVersion`](#resolveselfversion) when the loop goes on to read the manifest's version; both pass over a manifest that declares no name. The project that contains a directory takes [`findProjectRoot`](#findprojectroot), which prefers `.git` and lockfiles to a manifest, returning the repository root in a monorepo. The nearest manifest that declares something else, or the nearest whatever it declares, takes [`findNearestManifest`](#findnearestmanifest).
 
 Every other walk up the directory chain belongs to [`@williamthorsen/toolbelt.filesystem`](https://github.com/williamthorsen/toolbelt/tree/main/packages/filesystem#adoption-checks), whose own kit reports it: a loop probing for root markers alone, such as `.git`; a loop probing for a manifest below the level, such as `node_modules/x/package.json`; and a loop that probes nothing. Reporting one here as well would show one loop twice under conflicting advice. A read of `package.json` outside any loop, and a loop over the directories listed by `listDirectoryChain`, ascend nothing by hand, and neither kit reports them.
 
