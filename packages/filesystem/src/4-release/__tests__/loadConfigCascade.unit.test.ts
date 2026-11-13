@@ -308,6 +308,7 @@ describe(loadConfigCascade, () => {
   });
 });
 
+// region | Helpers
 /** Renders a module whose default export is the given value. */
 function exportDefault(value: unknown): string {
   return `export default ${JSON.stringify(value)};\n`;
@@ -321,3 +322,4 @@ function parseLabelledConfig(value: unknown, filePath: string): LabelledConfig {
   const shouldStopAscent = 'shouldStopAscent' in value ? value.shouldStopAscent : undefined;
   return typeof shouldStopAscent === 'boolean' ? { level: value.level, shouldStopAscent } : { level: value.level };
 }
+// endregion | Helpers

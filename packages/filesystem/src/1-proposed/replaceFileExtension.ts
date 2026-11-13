@@ -51,6 +51,7 @@ export interface ReplaceFileExtensionOptions {
   oldExtension?: string | undefined;
 }
 
+// region | Helpers
 /**
  * Reports whether the path ends with a separator. `/` counts on every platform; the platform separator counts
  * additionally, so a backslash terminates a path on Windows but stays a legal filename character on POSIX.
@@ -67,3 +68,4 @@ function toDotPrefixed(extension: string): string {
 
   return `.${extension}`;
 }
+// endregion | Helpers
