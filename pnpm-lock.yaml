@@ -387,6 +387,9 @@ importers:
 
   packages/git:
     dependencies:
+      '@williamthorsen/toolbelt.numbers':
+        specifier: workspace:*
+        version: link:../numbers
       '@williamthorsen/toolbelt.strings':
         specifier: workspace:*
         version: link:../strings
