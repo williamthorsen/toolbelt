@@ -207,6 +207,7 @@ import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
 var ADOPTED_EXPORTS = [
   "clamp",
   "generateRandom",
+  "indexIntoRange",
   "IntSeededRng",
   "isIntegerString",
   "isNumericString",
