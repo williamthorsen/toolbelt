@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.11.0 — 2026-11-13
+
+### 🎉 Features
+
+- 🚨 **Breaking:** Adds a required `parseConfig` option to `loadConfigCascade`, which converts each config file's default export into a config and whose return type replaces the unchecked `TConfig` type parameter as the entries' config type. (#587)
+
 ## 0.10.3 — 2026-11-12
 
 ### ♻️ Refactoring

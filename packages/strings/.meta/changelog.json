@@ -1,5 +1,78 @@
 [
   {
+    "version": "9.0.0",
+    "date": "2026-11-13",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Lets `VariantNode.selectVariants` accept an encoded index string such as `'1[0]'`, which it previously rejected, so that every node accepts the same input as `TextNode.selectVariants`. (#569)",
+            "hash": "ae81699cc617ec6e7d1f5d19d517bf58308f4720",
+            "entry": 2
+          }
+        ]
+      },
+      {
+        "title": "🪦 Removed",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Removes the `variantIndexCount` field, the instance method `decodeIndices`, the method `assertAllIndicesConsumed`, and the `depth` option of `selectVariants` from `TextNode` in `@williamthorsen/toolbelt.strings/draft`, which existed only to pass state between recursive calls. (#569)",
+            "breaking": true,
+            "migration": "Call the static `TextNode.decodeIndices` in place of the instance method, drop any `depth` argument to `selectVariants`, take the received index count from the decoded indices rather than from `variantIndexCount`, and remove calls to `assertAllIndicesConsumed`, because `selectVariants` itself throws when indices remain unused.",
+            "hash": "ae81699cc617ec6e7d1f5d19d517bf58308f4720",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Replaces the private `enclose` helper in `TextNode.ts` with the exported `enclose` from the same tier. (#569)",
+            "hash": "ae81699cc617ec6e7d1f5d19d517bf58308f4720",
+            "entry": 3
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Removes the `describe(VariantNode)` block from `TextNode.unit.test.ts`, which contained only an `it.todo`, because the `describe(TextNode)` block already tests `VariantNode`. (#573)",
+            "hash": "26bf8e0f766f0d468882ede7d405a046b97903c4",
+            "entry": 2
+          },
+          {
+            "description": "Passes plain closures to `toThrow` in the `numbers` and `strings` tests in place of `vi.fn` wrappers, which the tests never asserted on as mocks. (#574)",
+            "hash": "993464c4382edf41f7f1bf6b9fe7ea7318873203",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Moves the edge cases, failure modes, and reasons behind the rules of `dedent` and `stripCommonIndent` from `packages/strings/README.md` into their doc comments, where a caller reads them while using the function, and leaves a short summary of each in the README. (#568)",
+            "hash": "ea20d22166f1f7cab11093f9ea2ae25201440f8d",
+            "entry": 1
+          },
+          {
+            "description": "Replaces the `@category`, `@experimental`, and `@stage draft` tags on `VariantNode` with `@internal`, because the draft tier's `index.ts` does not export the class. (#573)",
+            "hash": "26bf8e0f766f0d468882ede7d405a046b97903c4",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "8.2.4",
     "date": "2026-11-12",
     "sections": [

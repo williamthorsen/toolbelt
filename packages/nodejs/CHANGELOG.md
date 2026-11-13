@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.2.0 — 2026-11-13
+
+### 🎉 Features
+
+- Makes `findPackageManagerPin` from `@williamthorsen/toolbelt.nodejs/candidate` throw an error naming a `package.json` that is not a JSON object, rather than pass over that manifest and return an ancestor's pin as it did before, and changes its error for invalid JSON to `Package manifest is not readable as JSON: <path>`. (#590)
+
+### 🐛 Bug fixes
+
+- Fixes the issue that `findToolVersionsEntry` skipped a nearer `.tool-versions` file that could not be read, such as one that failed with `EACCES` or `EISDIR`, and returned a version from a farther file, and makes it throw the read error instead. (#586)
+
+### 🧪 Tests
+
+- Replaces the per-file `package.json` renderers in four `nodejs` and `packaging` test files with the `writeJson` method of `createTempTree`, and replaces the `moduleUrl` helper defined in three `packaging` test files with one shared `renderModuleUrl` helper in `packages/packaging/src/test-utils/`. (#588)
+
 ## 4.1.3 — 2026-11-12
 
 ### 📦 Dependencies

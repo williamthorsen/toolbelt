@@ -1,5 +1,24 @@
 [
   {
+    "version": "0.11.0",
+    "date": "2026-11-13",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds a required `parseConfig` option to `loadConfigCascade`, which converts each config file's default export into a config and whose return type replaces the unchecked `TConfig` type parameter as the entries' config type. (#587)",
+            "breaking": true,
+            "migration": "Pass `parseConfig` to each `loadConfigCascade` call and drop the explicit type argument, or pass `(value) => value` to keep the raw export typed `unknown`; an error thrown by the parser rejects the whole call and stops the ascent rather than skipping that file.",
+            "hash": "8646b4c80b17383c285cfb7a6398158279667a54",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.10.3",
     "date": "2026-11-12",
     "sections": [

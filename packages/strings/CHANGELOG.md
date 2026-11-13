@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## 9.0.0 — 2026-11-13
+
+### 🎉 Features
+
+- Lets `VariantNode.selectVariants` accept an encoded index string such as `'1[0]'`, which it previously rejected, so that every node accepts the same input as `TextNode.selectVariants`. (#569)
+
+### 🪦 Removed
+
+- 🚨 **Breaking:** Removes the `variantIndexCount` field, the instance method `decodeIndices`, the method `assertAllIndicesConsumed`, and the `depth` option of `selectVariants` from `TextNode` in `@williamthorsen/toolbelt.strings/draft`, which existed only to pass state between recursive calls. (#569)
+
+### ♻️ Refactoring
+
+- Replaces the private `enclose` helper in `TextNode.ts` with the exported `enclose` from the same tier. (#569)
+
+### 🧪 Tests
+
+- Removes the `describe(VariantNode)` block from `TextNode.unit.test.ts`, which contained only an `it.todo`, because the `describe(TextNode)` block already tests `VariantNode`. (#573)
+- Passes plain closures to `toThrow` in the `numbers` and `strings` tests in place of `vi.fn` wrappers, which the tests never asserted on as mocks. (#574)
+
+### 📚 Documentation
+
+- Moves the edge cases, failure modes, and reasons behind the rules of `dedent` and `stripCommonIndent` from `packages/strings/README.md` into their doc comments, where a caller reads them while using the function, and leaves a short summary of each in the README. (#568)
+- Replaces the `@category`, `@experimental`, and `@stage draft` tags on `VariantNode` with `@internal`, because the draft tier's `index.ts` does not export the class. (#573)
+
 ## 8.2.4 — 2026-11-12
 
 ### ♻️ Refactoring

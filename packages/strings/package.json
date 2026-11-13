@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.strings",
-  "version": "8.2.4",
+  "version": "9.0.0",
   "description": "String-handling utilities",
   "keywords": [
     "case-conversion",

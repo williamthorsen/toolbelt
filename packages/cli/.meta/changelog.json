@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.10.0",
+    "date": "2026-11-13",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds `createTextBuffer` and its `TextBuffer` type to `@williamthorsen/toolbelt.cli/candidate`, which returns a `Writer` that keeps everything written to it in `text`, so that a caller can capture what `runCli` writes to `stdout` or `stderr` without defining its own writer. (#591)",
+            "hash": "c75ef89314ec4f7e2ef04954f986aca635dbd9f1",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.9.0",
     "date": "2026-11-12",
     "sections": [

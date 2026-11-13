@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.10.0 — 2026-11-13
+
+### 🎉 Features
+
+- Adds `createTextBuffer` and its `TextBuffer` type to `@williamthorsen/toolbelt.cli/candidate`, which returns a `Writer` that keeps everything written to it in `text`, so that a caller can capture what `runCli` writes to `stdout` or `stderr` without defining its own writer. (#591)
+
 ## 0.9.0 — 2026-11-12
 
 ### 🎉 Features

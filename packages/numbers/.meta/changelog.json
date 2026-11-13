@@ -1,5 +1,22 @@
 [
   {
+    "version": "8.0.2",
+    "date": "2026-11-13",
+    "sections": [
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Passes plain closures to `toThrow` in the `numbers` and `strings` tests in place of `vi.fn` wrappers, which the tests never asserted on as mocks. (#574)",
+            "hash": "993464c4382edf41f7f1bf6b9fe7ea7318873203",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "8.0.1",
     "date": "2026-11-12",
     "sections": [

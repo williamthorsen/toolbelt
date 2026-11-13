@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 8.0.2 — 2026-11-13
+
+### 🧪 Tests
+
+- Passes plain closures to `toThrow` in the `numbers` and `strings` tests in place of `vi.fn` wrappers, which the tests never asserted on as mocks. (#574)
+
 ## 8.0.1 — 2026-11-12
 
 ### ♻️ Refactoring

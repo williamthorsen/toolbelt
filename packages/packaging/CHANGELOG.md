@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.8.0 — 2026-11-13
+
+### 🎉 Features
+
+- Adds `findNearestManifest` to `@williamthorsen/toolbelt.packaging/candidate`, which returns the nearest `package.json` at or above a directory that a caller's predicate accepts, together with its path and directory, and throws on a manifest that is unreadable as JSON or is not a JSON object. (#590)
+- Changes the fix text of the `no-hand-rolled-manifest-search` adoption check to recommend `findNearestManifest` for a loop that looks for the nearest manifest declaring some other field, or the nearest manifest whatever it declares, in place of `findDirectoryChainMatch` from `@williamthorsen/toolbelt.filesystem`. (#590)
+
+### 🧪 Tests
+
+- Replaces the per-file `package.json` renderers in four `nodejs` and `packaging` test files with the `writeJson` method of `createTempTree`, and replaces the `moduleUrl` helper defined in three `packaging` test files with one shared `renderModuleUrl` helper in `packages/packaging/src/test-utils/`. (#588)
+
 ## 0.7.3 — 2026-11-12
 
 ### ♻️ Refactoring
