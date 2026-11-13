@@ -41,6 +41,17 @@ describe(findToolVersionsEntry, () => {
     expect(findToolVersionsEntry('pnpm', buildOptions(tree.resolve('home/repo'), tree))?.version).toBe('9.0.0');
   });
 
+  it('throws when a nearer file cannot be read, rather than falling through to a farther one', () => {
+    using tree = createTempTree({
+      'home/repo/.tool-versions': 'pnpm 9.0.0\n',
+      'home/repo/sub/.tool-versions/.keep': '',
+    });
+
+    expect(() => findToolVersionsEntry('pnpm', buildOptions(tree.resolve('home/repo/sub'), tree))).toThrow(
+      expect.objectContaining({ code: 'EISDIR' }),
+    );
+  });
+
   it('returns undefined when no file in reach names the plugin', () => {
     using tree = createTempTree({ 'home/repo/.tool-versions': 'nodejs 24.20.0\n' });
 
