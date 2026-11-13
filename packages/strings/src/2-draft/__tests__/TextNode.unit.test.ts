@@ -23,7 +23,6 @@ describe(TextNode, () => {
       const expected = {
         content: 'Hello',
         children: undefined,
-        variantIndexCount: 0,
       };
 
       const actual = TextNode.create(input);
@@ -240,6 +239,14 @@ describe(TextNode, () => {
       expect(actual).toBe(expected);
     });
 
+    it('given a VariantNode, resolves encoded indices', () => {
+      const node = new VariantNode('[A|B[1|2]|C]');
+
+      const actual = node.selectVariants('1[0]');
+
+      expect(actual).toBe('B1');
+    });
+
     it('given a text without children, returns an empty string', () => {
       const input = '';
       const expected = '';
@@ -289,7 +296,7 @@ describe(TextNode, () => {
 
       const throwingFn = vi.fn<() => string>(() => ast.selectVariants(indices));
 
-      expect(throwingFn).toThrow('Unused variant indices');
+      expect(throwingFn).toThrow('Unused variant indices. Received 2, leaving 1 unused.');
     });
   });
 
