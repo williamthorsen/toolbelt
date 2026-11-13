@@ -3,12 +3,14 @@ import {
   listReportedFindings,
   runCheck,
   runSkip,
+  selectCheck,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 const KIT_URL = new URL('../../../.readyup/kits/default.ts', import.meta.url);
+const ENUM_MEMBERSHIP_CHECK = 'no-hand-rolled-enum-membership';
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.enums', version: '1.0.0' });
 
@@ -40,7 +42,7 @@ describe('The enums adoption kit', () => {
   it('reports every form of the test, naming where it is', async () => {
     using kit = await createKitFixture(KIT_URL, EVERY_FORM);
 
-    expect(listReportedFindings(await runCheck(kit.checks[0]))).toStrictEqual([
+    expect(listReportedFindings(await runCheck(selectCheck(kit.checks, ENUM_MEMBERSHIP_CHECK)))).toStrictEqual([
       { line: 1, path: 'src/argument-cast.ts', reported: true },
       { line: 1, path: 'src/asserted.ts', reported: true },
       { line: 1, path: 'src/direct.ts', reported: true },
@@ -51,7 +53,7 @@ describe('The enums adoption kit', () => {
   it('spans every site in the denominator', async () => {
     using kit = await createKitFixture(KIT_URL, EVERY_FORM);
 
-    expect(summarizeFraction(await runCheck(kit.checks[0]))).toStrictEqual({
+    expect(summarizeFraction(await runCheck(selectCheck(kit.checks, ENUM_MEMBERSHIP_CHECK)))).toStrictEqual({
       adoptedCount: 0,
       findingCount: 4,
     });
@@ -60,7 +62,7 @@ describe('The enums adoption kit', () => {
   it('counts a call into the package as adoption', async () => {
     using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/known.ts': ADOPTER });
 
-    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, ENUM_MEMBERSHIP_CHECK))).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -73,7 +75,7 @@ describe('The enums adoption kit', () => {
       'src/other.ts': DIRECT,
     });
 
-    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, ENUM_MEMBERSHIP_CHECK))).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 1, path: 'src/other.ts', reported: true }],
     });
@@ -87,7 +89,7 @@ describe('The enums adoption kit', () => {
       'src/known.ts': ADOPTER,
     });
 
-    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, ENUM_MEMBERSHIP_CHECK))).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -100,7 +102,7 @@ describe('The enums adoption kit', () => {
       'src/__tests__/palette.unit.test.ts': DIRECT,
     });
 
-    await expect(runSkip(kit.checks[0])).resolves.toBe(
+    await expect(runSkip(selectCheck(kit.checks, ENUM_MEMBERSHIP_CHECK))).resolves.toBe(
       'the project contains no JavaScript or TypeScript sources outside the exempt paths',
     );
   });

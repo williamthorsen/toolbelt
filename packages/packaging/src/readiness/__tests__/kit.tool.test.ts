@@ -1,8 +1,9 @@
-import { createKitFixture, runCheck, runSkip } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { createKitFixture, runCheck, runSkip, selectCheck } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 const KIT_URL = new URL('../../../.readyup/kits/default.ts', import.meta.url);
+const MANIFEST_SEARCH_CHECK = 'no-hand-rolled-manifest-search';
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.packaging', version: '1.0.0' });
 
@@ -59,7 +60,7 @@ describe('The packaging adoption kit', () => {
       'src/root.ts': MANIFEST_SEARCH,
     });
 
-    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, MANIFEST_SEARCH_CHECK))).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [{ line: 3, path: 'src/root.ts', reported: true }],
     });
@@ -68,7 +69,7 @@ describe('The packaging adoption kit', () => {
   it('leaves a walk that probes only for a repository marker out of the report and out of the denominator', async () => {
     using kit = await createKitFixture(KIT_URL, { 'package.json': MANIFEST, 'src/root.ts': MARKER_SEARCH });
 
-    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, MANIFEST_SEARCH_CHECK))).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [],
     });
@@ -81,7 +82,7 @@ describe('The packaging adoption kit', () => {
       'src/other.ts': MANIFEST_SEARCH,
     });
 
-    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, MANIFEST_SEARCH_CHECK))).resolves.toStrictEqual({
       adoptedCount: 0,
       findings: [{ line: 3, path: 'src/other.ts', reported: true }],
     });
@@ -95,7 +96,7 @@ describe('The packaging adoption kit', () => {
       'src/adopter.ts': ADOPTER,
     });
 
-    await expect(runCheck(kit.checks[0])).resolves.toStrictEqual({
+    await expect(runCheck(selectCheck(kit.checks, MANIFEST_SEARCH_CHECK))).resolves.toStrictEqual({
       adoptedCount: 1,
       findings: [],
     });
@@ -108,7 +109,7 @@ describe('The packaging adoption kit', () => {
       'src/__tests__/root.unit.test.ts': MANIFEST_SEARCH,
     });
 
-    await expect(runSkip(kit.checks[0])).resolves.toBe(
+    await expect(runSkip(selectCheck(kit.checks, MANIFEST_SEARCH_CHECK))).resolves.toBe(
       'the project contains no JavaScript or TypeScript sources outside the exempt paths',
     );
   });
