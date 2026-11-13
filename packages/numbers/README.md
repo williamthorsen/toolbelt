@@ -14,7 +14,7 @@ pnpm add @williamthorsen/toolbelt.numbers
 
 Requires Node.js 24 or later.
 
-`clamp`, `round`, and `pickInteger` are candidate tier: imported from `@williamthorsen/toolbelt.numbers/candidate` rather than the package root, and subject to change.
+`clamp`, `round`, `pickInteger`, and `indexIntoRange` are candidate tier: imported from `@williamthorsen/toolbelt.numbers/candidate` rather than the package root, and subject to change.
 
 ## `clamp`
 
@@ -59,6 +59,22 @@ Mind the bound when replacing `Math.floor(Math.random() * n)`: That idiom stops 
 import { pickInteger } from '@williamthorsen/toolbelt.numbers/candidate';
 
 pickInteger({ min: 1, max: 6 }); // 1 through 6
+```
+
+## `indexIntoRange`
+
+```ts
+indexIntoRange(index: number, range: { max: number; min?: number; offset?: number; maxSpan?: number }): number;
+```
+
+Returns the value at the given position of the inclusive range, counting from `min` and cycling past `max`, after rotating the position by `offset`. A negative index or offset counts back from the top of the range, which JavaScript's `%` does only through the `((x % n) + n) % n` idiom.
+
+```ts
+import { indexIntoRange } from '@williamthorsen/toolbelt.numbers/candidate';
+
+indexIntoRange(1232, { max: 999 }); // 232
+indexIntoRange(-1, { max: 6 }); // 6
+indexIntoRange(5, { min: 1, max: 7, offset: 4 }); // 3
 ```
 
 ## Adoption checks
