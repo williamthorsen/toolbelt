@@ -4,12 +4,18 @@ import { joinLines, splitLines } from '../internal/text-lines.ts';
 const BYTE_ORDER_MARK = '\u{FEFF}';
 
 /**
- * Removes the indentation shared by every non-blank line, preserving each line's relative depth and
- * its own line terminator. Blank lines are emptied and no line is discarded, so the result has the
- * same line count as the input.
+ * Removes the indentation shared by every non-blank line, preserving each line's relative depth and its own line
+ * terminator. Blank lines are emptied and no line is discarded, so the result has the same line count as the input.
  *
- * A leading byte-order mark is set aside while the indent is measured, so that a file read with
- * one still dedents.
+ * Indentation is tabs and spaces only, compared as characters rather than as widths, and blank lines are ignored
+ * when it is measured. Line terminators are recognized as `\r\n`, `\n`, `\r`, `\u2028`, and `\u2029`, and each
+ * is re-emitted unchanged, so CRLF text does not come back with mixed endings.
+ *
+ * A leading byte-order mark is set aside while the indent is measured and restored afterwards. Otherwise a file
+ * read with one would have a first line that starts with neither a tab nor a space, the common indent would be
+ * nothing, and the call would silently do nothing.
+ *
+ * The function never throws.
  *
  * @category String
  * @stage release
