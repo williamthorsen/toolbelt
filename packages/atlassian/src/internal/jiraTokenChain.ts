@@ -1,4 +1,4 @@
-import { firstFilled } from './firstFilled.ts';
+import { findFirstFilled } from './findFirstFilled.ts';
 import { runTokenCommand, type TokenCommandRunner } from './runTokenCommand.ts';
 
 export const TOKEN_VARIABLE = 'JIRA_API_TOKEN';
@@ -27,7 +27,7 @@ export function walkJiraTokenChain(
   };
 
   for (const source of TOKEN_SOURCES) {
-    const value = firstFilled(readers[source]());
+    const value = findFirstFilled(readers[source]());
     if (value !== undefined) return { source, value };
   }
 

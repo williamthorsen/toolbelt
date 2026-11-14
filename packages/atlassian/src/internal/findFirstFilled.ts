@@ -4,7 +4,7 @@
  *
  * @internal
  */
-export function firstFilled(...values: ReadonlyArray<string | undefined>): string | undefined {
+export function findFirstFilled(...values: ReadonlyArray<string | undefined>): string | undefined {
   for (const value of values) {
     const trimmed = value?.trim();
     if (trimmed !== undefined && trimmed !== '') return trimmed;
