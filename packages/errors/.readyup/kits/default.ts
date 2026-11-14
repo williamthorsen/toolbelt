@@ -5,10 +5,10 @@
  * that the consumer has. Installing the package is the consent on which these checks rest: A lint rule applied to
  * every repository would impose the same opinion on projects that never asked for it.
  *
- * The checks take inventory rather than banning a pattern. Every `instanceof Error` in the project is
- * accounted for and named, and severity reports the judgment: a hand-rolled description is a `warn`, a
- * narrowing that a guard would express better is a `recommend`. Nothing here is `error`, because none of it
- * breaks the package: It reports how far adoption got.
+ * The checks take inventory rather than banning a pattern. Every `instanceof Error` in the project, and every
+ * test of an error's `code` against `ENOENT` or `ENOTDIR`, is accounted for and named, and severity reports the
+ * judgment: a hand-rolled helper or description is a `warn`, a narrowing that a guard would express better is a
+ * `recommend`. Nothing here is `error`, because none of it breaks the package: It reports how far adoption got.
  *
  * The kit declares what to look for and what to advise. What it reports lives in `src/readiness/`, where the
  * package's own suite covers it, and how the looking is done lives in `packages/adoption`.
@@ -56,6 +56,26 @@ export default defineAdoptionKit({
       kinds: ['coerce'],
       severity: 'recommend',
       fix: `${PACKAGE_NAME} publishes no coercer, so this reports an unmet need rather than a substitution. Raise it at ${README_URL} if the sites above are worth one.`,
+    },
+    {
+      name: 'No source defines its own missing-path predicate',
+      id: 'no-missing-path-clone',
+      kinds: ['missing-path-clone'],
+      fix: `Delete the function named above and import isMissingPathError from ${PACKAGE_NAME}/candidate. One import replaces the whole helper.`,
+    },
+    {
+      name: 'No source tests for a missing path by hand',
+      id: 'no-missing-path-test',
+      kinds: ['missing-path-test'],
+      severity: 'recommend',
+      fix: `Replace each test named above with isMissingPathError, imported from ${PACKAGE_NAME}/candidate.`,
+    },
+    {
+      name: 'No source tests for ENOENT or ENOTDIR alone',
+      id: 'no-partial-missing-path-test',
+      kinds: ['missing-path-partial'],
+      severity: 'recommend',
+      fix: `isMissingPathError, from ${PACKAGE_NAME}/candidate, treats ENOENT and ENOTDIR alike, so adopting it at a site named above also treats the other code as a missing path. Adopt it where that is the intent, and silence a site that tests one code on purpose with a pragma naming this check.`,
     },
   ],
 });

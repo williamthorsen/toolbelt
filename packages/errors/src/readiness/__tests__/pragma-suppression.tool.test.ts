@@ -32,6 +32,21 @@ describe('The errors adoption kit, run through rdy', () => {
       { count: 4, detail: undefined, id: 'no-inline-description', passedCount: 1 },
       { count: 5, detail: 'src/narrow.ts:1', id: 'no-instanceof-error', passedCount: 1 },
       { count: 5, detail: 'src/coerce.ts:1', id: 'no-error-coercion', passedCount: 1 },
+      { count: 5, detail: undefined, id: 'no-missing-path-clone', passedCount: 1 },
+      { count: 5, detail: undefined, id: 'no-missing-path-test', passedCount: 1 },
+      { count: 5, detail: undefined, id: 'no-partial-missing-path-test', passedCount: 1 },
+    ]);
+  });
+
+  it('drops a single-code missing-path site covered by a pragma naming the partial check', () => {
+    const partial =
+      "export const absent = error.code === 'ENOENT'; // rdy-ignore no-partial-missing-path-test -- reviewed\n";
+
+    const reports = runKit(DESCRIBE_INLINE, { 'src/partial.ts': partial });
+
+    expect(reports.filter((report) => report.id.includes('missing-path-test'))).toStrictEqual([
+      { count: 6, detail: undefined, id: 'no-missing-path-test', passedCount: 1 },
+      { count: 5, detail: undefined, id: 'no-partial-missing-path-test', passedCount: 1 },
     ]);
   });
 });
@@ -45,7 +60,7 @@ describe('The errors adoption kit, run through rdy', () => {
  * A pragma is honored by the runner rather than by the kit, so only a run can show that a kit's report is delivered
  * to the layer that acts on one.
  */
-function runKit(describeSource: string): KitCheckReport[] {
+function runKit(describeSource: string, extraFiles: Record<string, string> = {}): KitCheckReport[] {
   return listKitCheckReports(PACKAGE_DIR, {
     'package.json': MANIFEST,
     'src/clone.ts': CLONE,
@@ -53,6 +68,7 @@ function runKit(describeSource: string): KitCheckReport[] {
     'src/describe.ts': describeSource,
     'src/narrow.ts': NARROW,
     'src/report.ts': ADOPTER,
+    ...extraFiles,
   });
 }
 

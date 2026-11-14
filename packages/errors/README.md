@@ -120,9 +120,11 @@ The package includes a ReadyUp kit. A project that installs it can ask how far i
 rdy run --sources
 ```
 
-The kit reads the project's tracked sources and reports every `instanceof Error` in them, each named by what it is doing and counted against the calls that the project already makes into this package. The kit reports a hand-rolled description at `warn` and a narrowing or a hand-rolled coercion at `recommend`; it reports nothing at `error`, because none of it breaks the package.
+The kit reads the project's tracked sources and reports every `instanceof Error` in them, and every test of an error's `code` against `ENOENT` or `ENOTDIR`, each named by what it is doing and counted against the calls that the project already makes into this package. The kit reports a hand-rolled description or missing-path predicate at `warn`, and a narrowing, a hand-rolled coercion, or an inline missing-path test at `recommend`; it reports nothing at `error`, because none of it breaks the package.
 
-The kit reports a function whose whole body re-implements `describeError` once, naming the function, since one import replaces the whole helper rather than a single expression.
+The kit reports a function whose whole body re-implements `describeError` or `isMissingPathError` once, naming the function, since one import replaces the whole helper rather than a single expression.
+
+A test of one code alone is reported under `no-partial-missing-path-test`, apart from a test of both: `isMissingPathError` treats `ENOENT` and `ENOTDIR` alike, so adopting it there also treats the other code as a missing path. A site that tests one code on purpose takes a pragma naming that check.
 
 Bootstrap wrappers under `bin/` are exempt: Such a wrapper imports only builtins so that its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they construct error shapes deliberately. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: The sweep drops it before the kit sees it, so committed bundler output yields no advice that anyone could act on. Because the sweep is readyup's, this holds on readyup 0.35.0 or later.
 

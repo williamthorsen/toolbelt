@@ -126,6 +126,79 @@ describe(listErrorSites, () => {
     expect(listKinds(source)).toStrictEqual(['describe-inline', 'coerce', 'narrow']);
   });
 
+  it('names a missing-path test alongside the instanceof sites, in source order', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
+    const source = [
+      "const isErrno = error instanceof Error && 'code' in error;",
+      "if (error.code === 'ENOENT') return;",
+    ].join('\n');
+
+    expect(listErrorSites(source)).toStrictEqual([
+      { kind: 'narrow', line: 1 },
+      { kind: 'missing-path-partial', line: 2 },
+    ]);
+  });
+
+  it('leaves an instanceof Error guarding a missing-path test to the missing-path site', () => {
+    const source = "if (error instanceof Error && 'code' in error && error.code === 'ENOENT') return;";
+
+    expect(listKinds(source)).toStrictEqual(['missing-path-partial']);
+  });
+
+  it('leaves a parenthesized guard to the missing-path site across a long chain', () => {
+    const source = `if ((error instanceof Error) && ${"'code' in error && ".repeat(20)}error.code === 'ENOENT') return;`;
+
+    expect(listKinds(source)).toStrictEqual(['missing-path-partial']);
+  });
+
+  it('leaves an instanceof Error inside a missing-path clone to the clone', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
+    const source = [
+      'function isAbsent(error: unknown): boolean {',
+      "  return error instanceof Error && 'code' in error && (error.code === 'ENOENT' || error.code === 'ENOTDIR');",
+      '}',
+    ].join('\n');
+
+    expect(listErrorSites(source)).toStrictEqual([{ kind: 'missing-path-clone', line: 1, symbol: 'isAbsent' }]);
+  });
+
+  it('keeps an instanceof Error that a statement ended by a line break separates from the missing-path test', () => {
+    const source = "const isErr = error instanceof Error\nif (error.code === 'ENOENT') return";
+
+    expect(listKinds(source)).toStrictEqual(['narrow', 'missing-path-partial']);
+  });
+
+  it('leaves an instanceof Error to the missing-path test that && continues across a line break', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
+    const source = [
+      'if (',
+      '  error instanceof Error &&',
+      "  'code' in error",
+      "  && error.code === 'ENOENT'",
+      ') return;',
+    ].join('\n');
+
+    expect(listKinds(source)).toStrictEqual(['missing-path-partial']);
+  });
+
+  it('keeps an instanceof Error that a block, a ternary, or || separates from the missing-path test', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
+    const source = [
+      "if (error instanceof Error) { if ('code' in error && error.code === 'ENOENT') return; }",
+      "const absent = error instanceof Error ? error.code === 'ENOENT' : false;",
+      "const either = error instanceof Error || error.code === 'ENOENT';",
+    ].join('\n');
+
+    expect(listKinds(source)).toStrictEqual([
+      'narrow',
+      'missing-path-partial',
+      'narrow',
+      'missing-path-partial',
+      'narrow',
+      'missing-path-partial',
+    ]);
+  });
+
   it('finds no site in a source that never tests for an Error', () => {
     expect(listErrorSites('export const answer = 42;')).toStrictEqual([]);
   });

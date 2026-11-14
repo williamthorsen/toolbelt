@@ -9,7 +9,10 @@
             "No source defines its own description helper",
             "No source describes a thrown value inline",
             "No source narrows a thrown value by hand",
-            "No source coerces a thrown value to an Error by hand"
+            "No source coerces a thrown value to an Error by hand",
+            "No source defines its own missing-path predicate",
+            "No source tests for a missing path by hand",
+            "No source tests for ENOENT or ENOTDIR alone"
           ]
         }
       ],
@@ -95,7 +98,7 @@
           "path": "../../adoption/src/portable/readPathParts.ts"
         },
         {
-          "hash": "36f96c10",
+          "hash": "fb5d5a88",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -115,17 +118,22 @@
           "path": "../src/readiness/listDescribeClones.ts"
         },
         {
-          "hash": "59bdc6fa",
+          "hash": "853ff8ef",
           "kind": "module",
           "path": "../src/readiness/listErrorSites.ts"
+        },
+        {
+          "hash": "cbdb9540",
+          "kind": "module",
+          "path": "../src/readiness/listMissingPathSites.ts"
         }
       ],
       "name": "default",
       "path": "kits/default.js",
       "readyupVersion": "0.46.2",
       "source": "kits/default.ts",
-      "sourceHash": "36f96c10",
-      "targetHash": "5362592a"
+      "sourceHash": "fb5d5a88",
+      "targetHash": "7fcef11c"
     }
   ]
 }

@@ -155,6 +155,13 @@ function readBalancedGroup(source, from, delimiters) {
   return void 0;
 }
 
+// ../adoption/src/portable/readLiteral.ts
+function readLiteral(source, span) {
+  const start = span?.[0];
+  const end = span?.[1];
+  return start === void 0 || end === void 0 ? void 0 : source.slice(start + 1, end - 1);
+}
+
 // ../adoption/src/portable/listFunctionBodies.ts
 var FUNCTION_HEAD = /(?:function\s+(?<declared>\w+)\s*(?:<[^<>]*>\s*)?\(|(?:const|let|var)\s+(?<bound>\w+)[^=;]*=\s*(?:async\s+)?(?:function\s*)?(?:<[^<>]*>\s*)?\((?<arrowParameters>[^)]*)\)[^=;{]*=>)/g;
 var PLAIN_PARAMETER = /^\s*(?<name>[A-Za-z_$][\w$]*)\s*(?=[,:=?]|$)/;
@@ -230,26 +237,216 @@ function isDescribeBody(body) {
   return statements.length > 0 && statements.every((statement) => statement.startsWith("return"));
 }
 
+// src/readiness/listMissingPathSites.ts
+var MISSING_PATH_CODES = ["ENOENT", "ENOTDIR"];
+var BLANKED_LITERAL = /(['"`]) *\1/dg;
+var OPERATOR_BEFORE = /(?:===|==|!==|!=)\s*$/;
+var OPERATOR_AFTER = /\s*(?:===|==|!==|!=)\s*/y;
+var CHAINED_CODE_AFTER = /(?:[\w$]+\??\.)*code(?![\w$])/y;
+var MEMBER_CODE_AFTER = /\??\.code(?![\w$])/y;
+var MERGE_SEPARATOR = /^[\s()]*(?:\|\||&&)[\s()]*$/;
+var IF_HEAD = /\bif\s*\(/;
+var BOOLEAN_RETURN = /^return (?:true|false)$/;
+var POSITIVE_COMPARISON = /(?<![!=<>])==/;
+function listMissingPathSites(source, code) {
+  const comparisons = listComparisons(source, code);
+  const clones = listClones(code, comparisons);
+  const inlineComparisons = comparisons.filter(
+    (comparison) => clones.every((clone) => comparison.start < clone.start || comparison.end > clone.end)
+  );
+  const inlineSites = groupComparisons(code, inlineComparisons).map((group) => toInlineSite(code, group));
+  return [...clones, ...inlineSites].toSorted((first, second) => first.start - second.start);
+}
+function coversBothCodes(comparisons) {
+  return new Set(comparisons.map((comparison) => comparison.code)).size === MISSING_PATH_CODES.length;
+}
+function groupComparisons(code, comparisons) {
+  const groups = [];
+  for (const comparison of comparisons) {
+    const group = groups.at(-1);
+    const previous = group?.at(-1);
+    const joins = previous !== void 0 && previous.operand === comparison.operand && MERGE_SEPARATOR.test(code.slice(previous.end, comparison.start));
+    if (group !== void 0 && joins) group.push(comparison);
+    else groups.push([comparison]);
+  }
+  return groups;
+}
+function isGuardedBooleanBody(body) {
+  let text = body;
+  for (let index = text.search(IF_HEAD); index !== -1; index = text.search(IF_HEAD)) {
+    const condition = readBalancedGroup(text, index, PARENTHESES);
+    if (condition === void 0) return false;
+    text = `${text.slice(0, index)} ${text.slice(condition.end)}`;
+  }
+  const statements = condenseWhitespace(text).replaceAll(/\belse\b/g, " ").replaceAll(/[{}]/g, " ").split(";").map((statement) => statement.trim()).filter((statement) => statement !== "");
+  return statements.length > 0 && statements.every(
+    (statement) => BOOLEAN_RETURN.test(statement) || /^return\b/.test(statement) && POSITIVE_COMPARISON.test(statement)
+  );
+}
+function isMissingPathCode(text) {
+  return MISSING_PATH_CODES.some((code) => code === text);
+}
+function isParameterCode(operand, parameter) {
+  const escaped = parameter.replaceAll("$", String.raw`\$`);
+  return operand === `${parameter}.code` || new RegExp(String.raw`^\(\s*${escaped}(?![\w$])`).test(operand);
+}
+function listClones(code, comparisons) {
+  return listFunctionBodies(code).flatMap((fn) => {
+    const parameter = fn.firstParameter;
+    if (parameter === void 0) return [];
+    const inBody = comparisons.filter((comparison) => comparison.start >= fn.bodyStart && comparison.end <= fn.bodyEnd);
+    const isClone = coversBothCodes(inBody) && inBody.every((comparison) => !comparison.isNegated && isParameterCode(comparison.operand, parameter)) && isGuardedBooleanBody(code.slice(fn.bodyStart, fn.bodyEnd));
+    return isClone ? [
+      {
+        end: fn.bodyEnd,
+        kind: "missing-path-clone",
+        line: getLineAtOffset(code, fn.headStart),
+        start: fn.headStart,
+        symbol: fn.name
+      }
+    ] : [];
+  });
+}
+function listComparisons(source, code) {
+  const comparisons = [];
+  for (const match of code.matchAll(BLANKED_LITERAL)) {
+    const literal = readLiteral(source, match.indices?.[0]);
+    if (!isMissingPathCode(literal)) continue;
+    const literalStart = match.index;
+    const literalEnd = literalStart + match[0].length;
+    const comparison = readComparisonBefore(code, literalStart, literalEnd) ?? readComparisonAfter(code, literalStart, literalEnd);
+    if (comparison !== void 0) comparisons.push({ ...comparison, code: literal });
+  }
+  return comparisons;
+}
+function normalizeOperand(text) {
+  return condenseWhitespace(text).replaceAll("?.", ".");
+}
+function readComparisonAfter(code, literalStart, literalEnd) {
+  OPERATOR_AFTER.lastIndex = literalEnd;
+  const operator = OPERATOR_AFTER.exec(code);
+  if (operator === null) return void 0;
+  const operandStart = OPERATOR_AFTER.lastIndex;
+  let operandEnd;
+  if (code[operandStart] === "(") {
+    const group = readBalancedGroup(code, operandStart, PARENTHESES);
+    if (group === void 0) return void 0;
+    MEMBER_CODE_AFTER.lastIndex = group.end;
+    if (MEMBER_CODE_AFTER.test(code)) operandEnd = MEMBER_CODE_AFTER.lastIndex;
+  } else {
+    CHAINED_CODE_AFTER.lastIndex = operandStart;
+    if (CHAINED_CODE_AFTER.test(code)) operandEnd = CHAINED_CODE_AFTER.lastIndex;
+  }
+  if (operandEnd === void 0) return void 0;
+  return {
+    end: operandEnd,
+    isNegated: operator[0].includes("!"),
+    operand: normalizeOperand(code.slice(operandStart, operandEnd)),
+    start: literalStart
+  };
+}
+function readComparisonBefore(code, literalStart, literalEnd) {
+  const operator = OPERATOR_BEFORE.exec(code.slice(0, literalStart));
+  if (operator === null) return void 0;
+  const operandEnd = code.slice(0, operator.index).trimEnd().length;
+  const operandStart = readOperandStart(code, operandEnd);
+  if (operandStart === void 0) return void 0;
+  return {
+    end: literalEnd,
+    isNegated: operator[0].includes("!"),
+    operand: normalizeOperand(code.slice(operandStart, operandEnd)),
+    start: operandStart
+  };
+}
+function readOpeningParenthesis(code, close) {
+  let depth = 0;
+  for (let index = close; index >= 0; index -= 1) {
+    if (code[index] === ")") depth += 1;
+    else if (code[index] === "(") {
+      depth -= 1;
+      if (depth === 0) return index;
+    }
+  }
+  return void 0;
+}
+function readOperandStart(code, end) {
+  const nameStart = end - "code".length;
+  if (code.slice(nameStart, end) !== "code") return void 0;
+  let start = nameStart;
+  if (code[start - 1] !== ".") return /[\w$.]/.test(code[start - 1] ?? "") ? void 0 : start;
+  start -= code[start - 2] === "?" ? 2 : 1;
+  if (code[start - 1] === ")") return readOpeningParenthesis(code, start - 1);
+  while (/[\w$.?]/.test(code[start - 1] ?? "")) start -= 1;
+  while (code[start] === "." || code[start] === "?") start += 1;
+  return start < nameStart - 1 ? start : void 0;
+}
+function toInlineSite(code, group) {
+  const start = group[0]?.start ?? 0;
+  const end = group.at(-1)?.end ?? start;
+  const kind = coversBothCodes(group) ? "missing-path-test" : "missing-path-partial";
+  return { end, kind, line: getLineAtOffset(code, start), start };
+}
+
 // src/readiness/listErrorSites.ts
 var OPERATOR = /\binstanceof\s+Error\b/g;
 var WINDOW = { lookahead: 240, lookbehind: 80 };
+var AND_AHEAD = /\s*&&/y;
 function listErrorSites(source) {
   const code = blankNonCode(source);
   const clones = listDescribeClones(code);
-  const sites = [];
+  const missingPathSites = listMissingPathSites(source, code);
+  const sites = missingPathSites.map(({ end: _end, start, ...site }) => ({
+    ...site,
+    offset: start
+  }));
   const claimed = /* @__PURE__ */ new Set();
   for (const match of code.matchAll(OPERATOR)) {
+    if (isClaimedByMissingPathSite(code, match.index + match[0].length, missingPathSites)) continue;
     const clone = clones.find((candidate) => match.index > candidate.start && match.index < candidate.end);
     const line = getLineAtOffset(code, match.index);
     if (clone === void 0) {
       const { after, before } = readAnchoredWindow(code, match.index, WINDOW);
-      sites.push({ kind: classifySite(before, after), line });
+      sites.push({ kind: classifySite(before, after), line, offset: match.index });
     } else if (!claimed.has(clone.name)) {
       claimed.add(clone.name);
-      sites.push({ kind: "describe-clone", line, symbol: clone.name });
+      sites.push({ kind: "describe-clone", line, offset: match.index, symbol: clone.name });
     }
   }
-  return sites;
+  return sites.toSorted((first, second) => first.offset - second.offset).map(({ offset: _offset, ...site }) => site);
+}
+function findChainEnd(code, from) {
+  let depth = 0;
+  for (let index = from; index < code.length; index += 1) {
+    const character = code[index];
+    if (character === "(" || character === "[") depth += 1;
+    else if (character === ")" || character === "]") {
+      AND_AHEAD.lastIndex = index + 1;
+      if (depth === 0 && !AND_AHEAD.test(code)) return index;
+      depth = Math.max(0, depth - 1);
+    } else if (depth === 0 && isChainBoundary(code, index)) return index;
+  }
+  return code.length;
+}
+function isAfterAnd(code, index) {
+  let last = index - 1;
+  while (last >= 0 && /\s/.test(code[last] ?? "")) last -= 1;
+  return code[last] === "&" && code[last - 1] === "&";
+}
+function isChainBoundary(code, index) {
+  const character = code[index];
+  if (character === "?") return code[index + 1] !== ".";
+  if (character === "\n") {
+    AND_AHEAD.lastIndex = index;
+    return !AND_AHEAD.test(code) && !isAfterAnd(code, index);
+  }
+  return character === ";" || character === "{" || character === "}" || character === "," || code.startsWith("||", index);
+}
+function isClaimedByMissingPathSite(code, anchorEnd, sites) {
+  if (sites.some((site) => site.kind === "missing-path-clone" && anchorEnd > site.start && anchorEnd <= site.end)) {
+    return true;
+  }
+  const chainEnd = findChainEnd(code, anchorEnd);
+  return sites.some((site) => site.kind !== "missing-path-clone" && site.start >= anchorEnd && site.start < chainEnd);
 }
 
 // .readyup/kits/default.ts
@@ -290,6 +487,26 @@ var default_default = defineAdoptionKit({
       kinds: ["coerce"],
       severity: "recommend",
       fix: `${PACKAGE_NAME} publishes no coercer, so this reports an unmet need rather than a substitution. Raise it at ${README_URL} if the sites above are worth one.`
+    },
+    {
+      name: "No source defines its own missing-path predicate",
+      id: "no-missing-path-clone",
+      kinds: ["missing-path-clone"],
+      fix: `Delete the function named above and import isMissingPathError from ${PACKAGE_NAME}/candidate. One import replaces the whole helper.`
+    },
+    {
+      name: "No source tests for a missing path by hand",
+      id: "no-missing-path-test",
+      kinds: ["missing-path-test"],
+      severity: "recommend",
+      fix: `Replace each test named above with isMissingPathError, imported from ${PACKAGE_NAME}/candidate.`
+    },
+    {
+      name: "No source tests for ENOENT or ENOTDIR alone",
+      id: "no-partial-missing-path-test",
+      kinds: ["missing-path-partial"],
+      severity: "recommend",
+      fix: `isMissingPathError, from ${PACKAGE_NAME}/candidate, treats ENOENT and ENOTDIR alike, so adopting it at a site named above also treats the other code as a missing path. Adopt it where that is the intent, and silence a site that tests one code on purpose with a pragma naming this check.`
     }
   ]
 });

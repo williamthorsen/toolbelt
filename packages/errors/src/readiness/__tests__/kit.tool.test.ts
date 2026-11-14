@@ -25,6 +25,23 @@ const CLONE = [
 const COERCE = 'export const wrapped = value instanceof Error ? value : new Error(String(value));\n';
 const DESCRIBE_INLINE = 'export const message = error instanceof Error ? error.message : String(error);\n';
 const NARROW = "export const isErrno = error instanceof Error && 'code' in error;\n";
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
+const MISSING_PATH_CLONE = [
+  'export function isAbsent(error) {',
+  "  return error instanceof Error && 'code' in error && (error.code === 'ENOENT' || error.code === 'ENOTDIR');",
+  '}',
+  '',
+].join('\n');
+const MISSING_PATH_TEST = "export const absent = error.code === 'ENOENT' || error.code === 'ENOTDIR';\n";
+const MISSING_PATH_PARTIAL = "export const absent = error.code === 'ENOENT';\n";
+// The package's own isMissingPathError, containing the idiom that its missing-path clone check reports.
+// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
+const OWN_IS_MISSING_PATH_ERROR = [
+  'export function isMissingPathError(error) {',
+  "  return typeof error === 'object' && error !== null && 'code' in error && (error.code === 'ENOENT' || error.code === 'ENOTDIR');",
+  '}',
+  '',
+].join('\n');
 // The package's own describeError, containing the idiom that its first check reports.
 // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
 const OWN_DESCRIBE_ERROR = [
@@ -46,6 +63,9 @@ const EVERY_IDIOM = {
   'src/clone.ts': CLONE,
   'src/coerce.ts': COERCE,
   'src/describe.ts': DESCRIBE_INLINE,
+  'src/missing-path-clone.ts': MISSING_PATH_CLONE,
+  'src/missing-path-partial.ts': MISSING_PATH_PARTIAL,
+  'src/missing-path-test.ts': MISSING_PATH_TEST,
   'src/narrow.ts': NARROW,
 };
 
@@ -64,16 +84,19 @@ describe('The errors adoption kit', () => {
         { line: 1, path: 'src/narrow.ts', reported: true },
       ],
       [{ line: 1, path: 'src/coerce.ts', reported: true }],
+      [{ line: 1, path: 'src/missing-path-clone.ts', reported: true, symbol: 'isAbsent' }],
+      [{ line: 1, path: 'src/missing-path-test.ts', reported: true }],
+      [{ line: 1, path: 'src/missing-path-partial.ts', reported: true }],
     ]);
   });
 
-  it('spans all five sites in the one denominator that the checks share', async () => {
+  it('spans all eight sites in the one denominator that the checks share', async () => {
     using kit = await createKitFixture(KIT_URL, EVERY_IDIOM);
 
     const outcomes = await runEveryCheck(kit.checks);
 
     expect(outcomes.map(summarizeFraction)).toStrictEqual(
-      Array.from({ length: 4 }, () => ({ adoptedCount: 0, findingCount: 5 })),
+      Array.from({ length: 7 }, () => ({ adoptedCount: 0, findingCount: 8 })),
     );
   });
 
@@ -91,6 +114,18 @@ describe('The errors adoption kit', () => {
       'package.json': PUBLISHER_MANIFEST,
       'src/describeError.ts': OWN_DESCRIBE_ERROR,
       'src/other.ts': DESCRIBE_INLINE,
+    });
+
+    const outcomes = await runEveryCheck(kit.checks);
+
+    expect(outcomes.flatMap(listReportedFindings)).toStrictEqual([{ line: 1, path: 'src/other.ts', reported: true }]);
+  });
+
+  it('exempts the package’s own isMissingPathError, and reports a hand-roll beside it', async () => {
+    using kit = await createKitFixture(KIT_URL, {
+      'package.json': PUBLISHER_MANIFEST,
+      'src/isMissingPathError.ts': OWN_IS_MISSING_PATH_ERROR,
+      'src/other.ts': MISSING_PATH_PARTIAL,
     });
 
     const outcomes = await runEveryCheck(kit.checks);
@@ -123,7 +158,7 @@ describe('The errors adoption kit', () => {
 
     await expect(Promise.all(kit.checks.map((check) => runSkip(check)))).resolves.toStrictEqual(
       Array.from(
-        { length: 4 },
+        { length: 7 },
         () => 'the project contains no JavaScript or TypeScript sources outside the exempt paths',
       ),
     );
