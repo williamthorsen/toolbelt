@@ -36,15 +36,6 @@ export function buildStatus(overrides: Partial<WorkflowStatus> & Pick<WorkflowSt
   };
 }
 
-/** Builds the `To Do`, `In Progress`, and `Done` statuses with which a team-managed project starts. */
-export function buildStatuses(): WorkflowStatus[] {
-  return [
-    buildStatus({ name: 'To Do', statusCategory: 'TODO' }),
-    buildStatus({ name: 'In Progress', statusCategory: 'IN_PROGRESS' }),
-    buildStatus({ name: 'Done', statusCategory: 'DONE' }),
-  ];
-}
-
 /**
  * Builds one transition, with a `conditions` field that this package does not model. The workflow write replaces
  * the graph wholesale, so a transition sent without such a field loses it.
@@ -59,8 +50,19 @@ export function buildTransition(
   };
 }
 
+// region | Helpers
+
+/** Builds the `To Do`, `In Progress`, and `Done` statuses with which a team-managed project starts. */
+function buildStatuses(): WorkflowStatus[] {
+  return [
+    buildStatus({ name: 'To Do', statusCategory: 'TODO' }),
+    buildStatus({ name: 'In Progress', statusCategory: 'IN_PROGRESS' }),
+    buildStatus({ name: 'Done', statusCategory: 'DONE' }),
+  ];
+}
+
 /** Builds the workflow graph reaching each status through a global transition named for it. */
-export function buildWorkflow(statuses: readonly WorkflowStatus[]): Workflow {
+function buildWorkflow(statuses: readonly WorkflowStatus[]): Workflow {
   return {
     description: 'The project workflow.',
     id: 'workflow-1',
@@ -77,3 +79,5 @@ export function buildWorkflow(statuses: readonly WorkflowStatus[]): Workflow {
     version: { id: 'version-1', versionNumber: 1 },
   };
 }
+
+// endregion | Helpers
