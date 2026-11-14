@@ -42,7 +42,7 @@ const response = await request('GET', '/rest/api/3/myself');
 
 ### The base URL
 
-`resolveJiraBaseUrl` returns `https://api.atlassian.com/ex/jira/<cloudId>`, the gateway against which a scoped API token authenticates. When no `cloudId` is given, it is read from the site's `_edge/tenant_info` endpoint, which responds without authentication.
+`resolveJiraBaseUrl` returns `https://api.atlassian.com/ex/jira/<cloudId>`, the gateway against which a scoped API token authenticates. When no `cloudId` is given, it is read from the site's `_edge/tenant_info` endpoint, which responds without authentication. A 2xx tenant-info response that is not JSON or that lacks a `cloudId` throws `JiraResponseError`, described under ["Errors"](#errors).
 
 Requests against the site URL (`https://acme.atlassian.net`) are not offered as a fallback. Atlassian ignores a scoped token sent there rather than rejecting it, so the request would return an anonymous response instead of failing.
 

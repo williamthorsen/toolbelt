@@ -1,6 +1,8 @@
 import { JiraRequestError } from '../3-candidate/JiraRequestError.ts';
+import { JiraResponseError } from '../3-candidate/JiraResponseError.ts';
 import { fetchOrRaise } from './fetchOrRaise.ts';
 import { readFilledStringField } from './readFilledStringField.ts';
+import { readResponse } from './readResponse.ts';
 
 const SERVER_ERROR_STATUS = 500;
 const TENANT_INFO_PATH = '/_edge/tenant_info';
@@ -14,29 +16,34 @@ const TENANT_INFO_PATH = '/_edge/tenant_info';
 export async function findCloudId(host: string, fetchImpl: typeof globalThis.fetch): Promise<string> {
   const url = `https://${host}${TENANT_INFO_PATH}`;
 
-  const response = await fetchOrRaise(url, fetchImpl, { headers: { Accept: 'application/json' } });
+  const raw = await fetchOrRaise(url, fetchImpl, { headers: { Accept: 'application/json' } });
+  const response = await readResponse(raw, url);
   // A gateway incident is retryable and a 4xx is not: Below 500 the host is no Atlassian site, which is a
   // usage error fixed by correcting the site.
   if (response.status >= SERVER_ERROR_STATUS) {
-    // `JiraResponse.text` contains a body only when there is one, which every other site gets from
-    // `readResponse`; an empty string here would end the error's message at its colon.
-    const body = await response.text();
-
     throw new JiraRequestError({
       label: `read the cloudId of '${host}'`,
       method: 'GET',
       path: TENANT_INFO_PATH,
-      response: { json: undefined, status: response.status, text: body === '' ? undefined : body, url },
+      response,
     });
   }
-  if (!response.ok) {
+  if (!raw.ok) {
     throw new Error(`Could not read the cloudId of '${host}'. ${url} returned ${response.status}.`);
   }
+  if (response.json === undefined) {
+    throw new JiraResponseError({
+      message: `Could not read the cloudId of '${host}': the tenant-info response is not JSON.`,
+      url,
+    });
+  }
 
-  const payload: unknown = await response.json();
-  const cloudId = readFilledStringField(payload, 'cloudId');
+  const cloudId = readFilledStringField(response.json, 'cloudId');
   if (cloudId === undefined) {
-    throw new Error(`Could not read the cloudId of '${host}'. ${url} returned no 'cloudId' field.`);
+    throw new JiraResponseError({
+      message: `Could not read the cloudId of '${host}': the tenant-info response has no 'cloudId' field.`,
+      url,
+    });
   }
 
   return cloudId;

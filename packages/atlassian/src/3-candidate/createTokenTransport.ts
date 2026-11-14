@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer';
 
 import { fetchOrRaise } from '../internal/fetchOrRaise.ts';
+import { readResponse } from '../internal/readResponse.ts';
 
 /**
  * Builds a request function that authenticates over Basic auth with an email and an API token. The caller supplies
@@ -56,22 +57,3 @@ export interface TokenTransportOptions {
   readonly fetch?: typeof globalThis.fetch | undefined;
   readonly token: string;
 }
-
-// region | Helpers
-
-/**
- * Reads a response into the shape on which callers branch, keeping a body that is not JSON as text. The URL is
- * supplied by the caller: A `Response` built by its constructor has an empty `url`.
- */
-async function readResponse(response: Response, url: string): Promise<JiraResponse> {
-  const text = await response.text();
-  if (text === '') return { json: undefined, status: response.status, text: undefined, url };
-
-  try {
-    return { json: JSON.parse(text), status: response.status, text: undefined, url };
-  } catch {
-    return { json: undefined, status: response.status, text, url };
-  }
-}
-
-// endregion | Helpers
