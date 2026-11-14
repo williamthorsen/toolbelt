@@ -1,13 +1,7 @@
 import { isRecord } from '@williamthorsen/toolbelt.objects';
 
-import { readArrayField } from '../internal/readArrayField.ts';
-import { readNextPageToken } from '../internal/readNextPageToken.ts';
+import { listSearchMatches } from '../internal/listSearchMatches.ts';
 import type { JiraRequest } from './createTokenTransport.ts';
-import { JiraResponseError } from './JiraResponseError.ts';
-import { requestOk } from './requestOk.ts';
-
-/** The most that the search returns in one page when fields beyond the key are requested. */
-const SEARCH_PAGE_SIZE = 100;
 
 /**
  * Collects up to `limit` work items matched by a JQL query, in the query's order, following the search's page
@@ -23,42 +17,7 @@ export async function listIssueSummaries(request: JiraRequest, options: IssueSum
   if (!Number.isSafeInteger(limit) || limit < 1)
     throw new RangeError(`A limit is a positive integer. Received ${limit}.`);
 
-  const summaries: IssueSummary[] = [];
-  let nextPageToken: string | undefined;
-
-  do {
-    const response = await requestOk(request, {
-      body: {
-        fields: ['status', 'summary'],
-        jql,
-        maxResults: Math.min(limit - summaries.length, SEARCH_PAGE_SIZE),
-        ...(nextPageToken !== undefined && { nextPageToken }),
-      },
-      label: `search '${jql}'`,
-      method: 'POST',
-      path: '/rest/api/3/search/jql',
-    });
-
-    const issues = readArrayField(response.json, 'issues');
-    if (issues === undefined) {
-      throw new JiraResponseError({ message: `Search '${jql}' returned no 'issues' array.`, url: response.url });
-    }
-    const page = issues.flatMap((issue) => {
-      const summary = readIssueSummary(issue);
-      return summary === undefined ? [] : [summary];
-    });
-    if (page.length !== issues.length) {
-      throw new JiraResponseError({
-        message: `Search '${jql}' returned work items that this cannot read.`,
-        url: response.url,
-      });
-    }
-    summaries.push(...page.slice(0, limit - summaries.length));
-
-    nextPageToken = readNextPageToken(response.json);
-  } while (nextPageToken !== undefined && summaries.length < limit);
-
-  return summaries;
+  return listSearchMatches(request, { fields: ['status', 'summary'], jql, limit, readIssue: readIssueSummary });
 }
 
 /** One work item as a listing shows it. */

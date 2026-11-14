@@ -1,12 +1,7 @@
 import { isRecord } from '@williamthorsen/toolbelt.objects';
 
-import { readArrayField } from '../internal/readArrayField.ts';
-import { readNextPageToken } from '../internal/readNextPageToken.ts';
+import { listSearchMatches } from '../internal/listSearchMatches.ts';
 import type { JiraRequest } from './createTokenTransport.ts';
-import { JiraResponseError } from './JiraResponseError.ts';
-import { requestOk } from './requestOk.ts';
-
-const SEARCH_PAGE_SIZE = 100;
 
 /**
  * Collects every work-item key matched by a JQL query, following the search's page token to the end. The caller
@@ -17,38 +12,14 @@ const SEARCH_PAGE_SIZE = 100;
  * @stage candidate
  */
 export async function listIssueKeys(request: JiraRequest, jql: string): Promise<string[]> {
-  const keys: string[] = [];
-  let nextPageToken: string | undefined;
-
-  do {
-    const response = await requestOk(request, {
-      body: {
-        fields: ['key'],
-        jql,
-        maxResults: SEARCH_PAGE_SIZE,
-        ...(nextPageToken !== undefined && { nextPageToken }),
-      },
-      label: `search '${jql}'`,
-      method: 'POST',
-      path: '/rest/api/3/search/jql',
-    });
-
-    // A key dropped here is a work item on which the caller never acts, so one unreadable entry fails the whole walk.
-    const issues = readArrayField(response.json, 'issues');
-    if (issues === undefined) {
-      throw new JiraResponseError({ message: `Search '${jql}' returned no 'issues' array.`, url: response.url });
-    }
-    const page = issues.flatMap((issue) => (isRecord(issue) && typeof issue['key'] === 'string' ? issue['key'] : []));
-    if (page.length !== issues.length) {
-      throw new JiraResponseError({
-        message: `Search '${jql}' returned work items that this cannot read.`,
-        url: response.url,
-      });
-    }
-    keys.push(...page);
-
-    nextPageToken = readNextPageToken(response.json);
-  } while (nextPageToken !== undefined);
-
-  return keys;
+  return listSearchMatches(request, { fields: ['key'], jql, readIssue: readIssueKey });
 }
+
+// region | Helpers
+
+/** Narrows one search result to its key. */
+function readIssueKey(issue: unknown): string | undefined {
+  return isRecord(issue) && typeof issue['key'] === 'string' ? issue['key'] : undefined;
+}
+
+// endregion | Helpers

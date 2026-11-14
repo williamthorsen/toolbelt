@@ -1,6 +1,7 @@
 import { isRecord } from '@williamthorsen/toolbelt.objects';
 
 import { readArrayField } from '../internal/readArrayField.ts';
+import { readEvery } from '../internal/readEvery.ts';
 import type { JiraRequest } from './createTokenTransport.ts';
 import { JiraResponseError } from './JiraResponseError.ts';
 import type {
@@ -71,12 +72,8 @@ async function readBoard(
     throw new Error(`Project ${projectKey} has no board.`);
   }
 
-  const boards = values.flatMap((value) => {
-    const board = readBoardEntry(value);
-
-    return board === undefined ? [] : [board];
-  });
-  if (boards.length !== values.length) {
+  const boards = readEvery(values, readBoardEntry);
+  if (boards === undefined) {
     throw new JiraResponseError({
       message: `Project ${projectKey} returned boards that this cannot read.`,
       url: response.url,
@@ -120,6 +117,24 @@ interface BoardEntry {
   readonly locationProjectId: string | undefined;
 }
 
+/** Narrows one board feature to its name, its state, and whether Jira has locked it. */
+function readFeatureEntry(value: unknown): FeatureEntry | undefined {
+  if (!isRecord(value)) return undefined;
+
+  const { feature, state, toggleLocked } = value;
+  if (typeof feature !== 'string' || typeof state !== 'string') return undefined;
+
+  // Jira omits the flag on features that it has never locked, so this counts a feature as locked only on an
+  // explicit `true`.
+  return { feature, locked: toggleLocked === true, state };
+}
+
+interface FeatureEntry {
+  readonly feature: string;
+  readonly locked: boolean;
+  readonly state: string;
+}
+
 /**
  * Reads the board's live feature states, against which the plan's toggles are resolved, alongside the features
  * locked by Jira. A locked feature is reported rather than refused: The write against one returns 200 and
@@ -137,34 +152,28 @@ async function readFeatures(request: JiraRequest, boardId: number): Promise<Boar
     throw new JiraResponseError({ message: `Board ${boardId} returned no 'features' array.`, url: response.url });
   }
 
-  const entries: [string, string][] = [];
-  const locked = new Set<string>();
-
-  for (const value of values) {
-    if (!isRecord(value)) continue;
-
-    const { feature, state, toggleLocked } = value;
-    if (typeof feature !== 'string' || typeof state !== 'string') continue;
-
-    entries.push([feature, state]);
-    // Jira omits the flag on features that it has never locked, so this counts a feature as locked only on an
-    // explicit `true`.
-    if (toggleLocked === true) locked.add(feature);
-  }
-
-  if (entries.length !== values.length) {
+  const entries = readEvery(values, readFeatureEntry);
+  if (entries === undefined) {
     throw new JiraResponseError({
       message: `Board ${boardId} returned features that this cannot read.`,
       url: response.url,
     });
   }
 
-  return { features: new Map(entries), lockedFeatures: locked };
+  return {
+    features: new Map(entries.map(({ feature, state }) => [feature, state])),
+    lockedFeatures: new Set(entries.flatMap(({ feature, locked }) => (locked ? feature : []))),
+  };
 }
 
 interface BoardFeatures {
   readonly features: ReadonlyMap<string, string>;
   readonly lockedFeatures: ReadonlySet<string>;
+}
+
+/** Narrows one issue type to its id. */
+function readIssueTypeId(value: unknown): string | undefined {
+  return isRecord(value) && typeof value['id'] === 'string' ? value['id'] : undefined;
 }
 
 /** Reads every issue-type id of the project, from which the workflow read resolves its workflows. */
@@ -181,9 +190,9 @@ async function readIssueTypeIds(request: JiraRequest, projectKey: string, key: s
   }
 
   // An issue type dropped here is never passed to the workflow read, so a project on several workflows could pass
-  // the exactly-one refusal. The count check keeps that refusal effective.
-  const ids = values.flatMap((value) => (isRecord(value) && typeof value['id'] === 'string' ? value['id'] : []));
-  if (ids.length !== values.length) {
+  // the exactly-one refusal. Refusing an unreadable one keeps that refusal effective.
+  const ids = readEvery(values, readIssueTypeId);
+  if (ids === undefined) {
     throw new JiraResponseError({
       message: `Project ${projectKey} returned issue types that this cannot read.`,
       url: response.url,
@@ -228,6 +237,13 @@ async function readProject(request: JiraRequest, projectKey: string, key: string
   }
 
   return { id };
+}
+
+/** Narrows one status entry of a workflow's graph to its reference and diagram coordinate. */
+function readStatusLayout(value: unknown): WorkflowStatusLayout | undefined {
+  if (!isRecord(value) || typeof value['statusReference'] !== 'string') return undefined;
+
+  return { layout: readLayout(value['layout']), statusReference: value['statusReference'] };
 }
 
 /** Narrows one transition, passing through every field that this package does not model. */
@@ -282,12 +298,8 @@ async function readWorkflow(
   if (values === undefined) {
     throw new JiraResponseError({ message: `Project ${projectKey} returned no 'statuses' array.`, url: response.url });
   }
-  const statuses = values.flatMap((value) => {
-    const status = readWorkflowStatus(value);
-
-    return status === undefined ? [] : [status];
-  });
-  if (statuses.length !== values.length || statuses.length === 0) {
+  const statuses = readEvery(values, readWorkflowStatus);
+  if (statuses === undefined || statuses.length === 0) {
     throw new JiraResponseError({
       message: `Project ${projectKey} returned statuses that this cannot read.`,
       url: response.url,
@@ -304,18 +316,9 @@ function readWorkflowGraph(value: unknown): Workflow | undefined {
   const { description, id, name, startPointLayout, statuses, transitions, version } = value;
   if (typeof id !== 'string' || !Array.isArray(statuses) || !Array.isArray(transitions)) return undefined;
 
-  const layouts: WorkflowStatusLayout[] = [];
-  for (const entry of statuses) {
-    if (!isRecord(entry) || typeof entry['statusReference'] !== 'string') return undefined;
-    layouts.push({ layout: readLayout(entry['layout']), statusReference: entry['statusReference'] });
-  }
-
-  const moves: WorkflowTransition[] = [];
-  for (const entry of transitions) {
-    const transition = readTransition(entry);
-    if (transition === undefined) return undefined;
-    moves.push(transition);
-  }
+  const layouts = readEvery(statuses, readStatusLayout);
+  const moves = readEvery(transitions, readTransition);
+  if (layouts === undefined || moves === undefined) return undefined;
 
   return {
     description: typeof description === 'string' ? description : undefined,

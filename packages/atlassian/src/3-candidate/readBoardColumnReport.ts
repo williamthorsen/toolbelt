@@ -2,6 +2,7 @@ import { isRecord } from '@williamthorsen/toolbelt.objects';
 
 import { normalizeStatusName } from '../internal/normalizeStatusName.ts';
 import { readArrayField } from '../internal/readArrayField.ts';
+import { readEvery } from '../internal/readEvery.ts';
 import type { BoardColumnReport } from './BoardColumnReport.ts';
 import type { JiraRequest, JiraResponse } from './createTokenTransport.ts';
 import { JiraResponseError } from './JiraResponseError.ts';
@@ -56,6 +57,17 @@ function findOrderMismatch(columnNames: readonly string[], spec: ProjectSpec): B
   return expected.join(' ') === actual.join(' ') ? undefined : { actual, expected };
 }
 
+/** Narrows one column to its name and the ids of its statuses, returning `undefined` when any is unreadable. */
+function readColumn(value: unknown): ReadColumn | undefined {
+  if (!isRecord(value) || typeof value['name'] !== 'string') return undefined;
+
+  const mapped = readArrayField(value, 'statuses');
+  const statusIds = mapped === undefined ? undefined : readEvery(mapped, readStatusId);
+  if (statusIds === undefined) return undefined;
+
+  return { name: value['name'], statusIds };
+}
+
 /**
  * Narrows the board configuration to each column's name and the ids of the statuses mapped to it. This refuses the
  * report when it cannot read a column or a status id: Dropping either would report a covered status as uncovered.
@@ -68,19 +80,8 @@ function readColumns(boardId: number, response: JiraResponse): readonly ReadColu
     throw new JiraResponseError({ message: `Board ${boardId} returned no 'columns' array.`, url });
   }
 
-  const columns = values.flatMap((column) => {
-    if (!isRecord(column) || typeof column['name'] !== 'string') return [];
-
-    const mapped = readArrayField(column, 'statuses');
-    if (mapped === undefined) return [];
-    const statusIds = mapped.flatMap((status) =>
-      isRecord(status) && typeof status['id'] === 'string' ? status['id'] : [],
-    );
-    if (statusIds.length !== mapped.length) return [];
-
-    return { name: column['name'], statusIds };
-  });
-  if (columns.length !== values.length) {
+  const columns = readEvery(values, readColumn);
+  if (columns === undefined) {
     throw new JiraResponseError({ message: `Board ${boardId} returned columns that this cannot read.`, url });
   }
 
@@ -90,6 +91,11 @@ function readColumns(boardId: number, response: JiraResponse): readonly ReadColu
 interface ReadColumn {
   readonly name: string;
   readonly statusIds: readonly string[];
+}
+
+/** Narrows one status mapped to a column to its id. */
+function readStatusId(value: unknown): string | undefined {
+  return isRecord(value) && typeof value['id'] === 'string' ? value['id'] : undefined;
 }
 
 // endregion | Helpers
