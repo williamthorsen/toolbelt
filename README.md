@@ -4,19 +4,13 @@
 
 ## Getting started
 
-This project uses [pnpm](https://github.com/pnpm/pnpm) and Node.js. The Node.js version is pinned in `.tool-versions`; the pnpm version is pinned by the `packageManager` field in `package.json` and activated by [corepack](https://nodejs.org/api/corepack.html) (bundled with Node.js).
+Prerequisites: The Node.js version pinned in `.tool-versions`, and a [standalone pnpm](https://pnpm.io/installation), which runs the version that `packageManager` in `package.json` pins.
 
 Install the pinned Node.js version, for example with the [asdf](https://asdf-vm.com/) runtime manager, which reads `.tool-versions`:
 
 ```shell
 asdf plugin add nodejs
 asdf install nodejs
-```
-
-Then enable corepack so that `pnpm` resolves to the version pinned in `package.json`:
-
-```shell
-corepack enable
 ```
 
 ## Scripts
