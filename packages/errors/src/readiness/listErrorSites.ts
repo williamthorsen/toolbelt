@@ -63,10 +63,11 @@ export function listErrorSites(source: string): ErrorSite[] {
 // region | Helpers
 
 /**
- * Returns where the operand chain that continues from an offset ends: at the first `;`, `{`, `}`, `,`, `?`, or
- * `||` outside any group opened after the offset, or at a closing parenthesis or bracket that ends the group
- * enclosing it. A group closed and followed by `&&` wraps the guard alone, as in `(error instanceof Error) &&`,
- * and the chain continues past it. Optional chaining does not end the chain.
+ * Returns where the operand chain that continues from an offset ends: at the first `;`, `{`, `}`, `,`, `?`, `||`,
+ * or line break that `&&` does not continue, outside any group opened after the offset, or at a closing
+ * parenthesis or bracket that ends the group enclosing it. A group closed and followed by `&&` wraps the guard
+ * alone, as in `(error instanceof Error) &&`, and the chain continues past it. Optional chaining does not end the
+ * chain.
  */
 function findChainEnd(code: string, from: number): number {
   let depth = 0;
@@ -82,10 +83,24 @@ function findChainEnd(code: string, from: number): number {
   return code.length;
 }
 
-/** Reports whether the character at an offset ends an `&&` chain at the depth that it is read at. */
+/** Reports whether the last non-whitespace text before an offset is `&&`. */
+function isAfterAnd(code: string, index: number): boolean {
+  let last = index - 1;
+  while (last >= 0 && /\s/.test(code[last] ?? '')) last -= 1;
+  return code[last] === '&' && code[last - 1] === '&';
+}
+
+/**
+ * Reports whether the character at an offset ends an `&&` chain at the depth that it is read at. A line break ends
+ * it unless `&&` ends the line or starts the next, since a source without semicolons ends a statement there.
+ */
 function isChainBoundary(code: string, index: number): boolean {
   const character = code[index];
   if (character === '?') return code[index + 1] !== '.';
+  if (character === '\n') {
+    AND_AHEAD.lastIndex = index;
+    return !AND_AHEAD.test(code) && !isAfterAnd(code, index);
+  }
   return (
     character === ';' || character === '{' || character === '}' || character === ',' || code.startsWith('||', index)
   );

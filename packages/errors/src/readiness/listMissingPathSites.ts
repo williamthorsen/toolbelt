@@ -25,6 +25,8 @@ type MissingPathCode = 'ENOENT' | 'ENOTDIR';
 interface Comparison {
   code: MissingPathCode;
   end: number;
+  /** Whether the comparison tests for a different code, with `!==` or `!=`. */
+  isNegated: boolean;
   /** The operand's text, condensed, with optional chaining read as plain member access. */
   operand: string;
   start: number;
@@ -40,6 +42,8 @@ const CHAINED_CODE_AFTER = /(?:[\w$]+\??\.)*code(?![\w$])/y;
 const MEMBER_CODE_AFTER = /\??\.code(?![\w$])/y;
 const MERGE_SEPARATOR = /^[\s()]*(?:\|\||&&)[\s()]*$/;
 const IF_HEAD = /\bif\s*\(/;
+const BOOLEAN_RETURN = /^return (?:true|false)$/;
+const POSITIVE_COMPARISON = /(?<![!=<>])==/;
 
 /**
  * Lists the tests in a source of an error's `code` against `ENOENT` or `ENOTDIR`, the codes that
@@ -53,7 +57,8 @@ const IF_HEAD = /\bif\s*\(/;
  * both codes and a `missing-path-partial` when it covers one: Adopting the predicate at a partial site widens
  * what the site treats as absent. A function whose whole body tests its own parameter against both codes is one
  * `missing-path-clone`, named by the function, in place of the comparisons inside it. A function testing one
- * code is not a clone, because replacing it with the predicate would widen every caller.
+ * code is not a clone, because replacing it with the predicate would widen every caller, and neither is one that
+ * negates the test or returns anything but the test's verdict.
  *
  * @internal
  */
@@ -97,9 +102,10 @@ function groupComparisons(code: string, comparisons: readonly Comparison[]): Com
 
 /**
  * Reports whether a function body consists of `return` statements and the `if` guards around them, and nothing
- * else. A guard's condition may nest parentheses.
+ * else, and whether each `return` yields a boolean: `true`, `false`, or a positive comparison. A guard's condition
+ * may nest parentheses.
  */
-function isGuardedReturnBody(body: string): boolean {
+function isGuardedBooleanBody(body: string): boolean {
   let text = body;
   for (let index = text.search(IF_HEAD); index !== -1; index = text.search(IF_HEAD)) {
     const condition = readBalancedGroup(text, index, PARENTHESES);
@@ -114,7 +120,13 @@ function isGuardedReturnBody(body: string): boolean {
     .map((statement) => statement.trim())
     .filter((statement) => statement !== '');
 
-  return statements.length > 0 && statements.every((statement) => /^return\b/.test(statement));
+  return (
+    statements.length > 0 &&
+    statements.every(
+      (statement) =>
+        BOOLEAN_RETURN.test(statement) || (/^return\b/.test(statement) && POSITIVE_COMPARISON.test(statement)),
+    )
+  );
 }
 
 /** Reports whether a literal's text is one of the missing-path codes. */
@@ -137,8 +149,8 @@ function listClones(code: string, comparisons: readonly Comparison[]): MissingPa
     const inBody = comparisons.filter((comparison) => comparison.start >= fn.bodyStart && comparison.end <= fn.bodyEnd);
     const isClone =
       coversBothCodes(inBody) &&
-      inBody.every((comparison) => isParameterCode(comparison.operand, parameter)) &&
-      isGuardedReturnBody(code.slice(fn.bodyStart, fn.bodyEnd));
+      inBody.every((comparison) => !comparison.isNegated && isParameterCode(comparison.operand, parameter)) &&
+      isGuardedBooleanBody(code.slice(fn.bodyStart, fn.bodyEnd));
 
     return isClone
       ? [
@@ -182,7 +194,8 @@ function readComparisonAfter(
   literalEnd: number,
 ): Omit<Comparison, 'code'> | undefined {
   OPERATOR_AFTER.lastIndex = literalEnd;
-  if (!OPERATOR_AFTER.test(code)) return undefined;
+  const operator = OPERATOR_AFTER.exec(code);
+  if (operator === null) return undefined;
   const operandStart = OPERATOR_AFTER.lastIndex;
 
   let operandEnd: number | undefined;
@@ -197,7 +210,12 @@ function readComparisonAfter(
   }
 
   if (operandEnd === undefined) return undefined;
-  return { end: operandEnd, operand: normalizeOperand(code.slice(operandStart, operandEnd)), start: literalStart };
+  return {
+    end: operandEnd,
+    isNegated: operator[0].includes('!'),
+    operand: normalizeOperand(code.slice(operandStart, operandEnd)),
+    start: literalStart,
+  };
 }
 
 /** Reads a comparison whose `code` operand precedes the literal, as in `error.code === 'ENOENT'`. */
@@ -213,7 +231,12 @@ function readComparisonBefore(
   const operandStart = readOperandStart(code, operandEnd);
   if (operandStart === undefined) return undefined;
 
-  return { end: literalEnd, operand: normalizeOperand(code.slice(operandStart, operandEnd)), start: operandStart };
+  return {
+    end: literalEnd,
+    isNegated: operator[0].includes('!'),
+    operand: normalizeOperand(code.slice(operandStart, operandEnd)),
+    start: operandStart,
+  };
 }
 
 /** Returns the offset of the parenthesis that opens the group closed at an offset, scanning backward. */

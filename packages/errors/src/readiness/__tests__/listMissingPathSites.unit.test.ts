@@ -116,6 +116,30 @@ describe(listMissingPathSites, () => {
     expect(listSites(source)).toStrictEqual([{ kind: 'missing-path-partial', line: 2 }]);
   });
 
+  it('leaves a helper that maps the codes to other values to the per-site report', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
+    const source = [
+      'function label(error: NodeJS.ErrnoException): string {',
+      "  if (error.code === 'ENOENT') return 'missing';",
+      "  if (error.code === 'ENOTDIR') return 'not a directory';",
+      "  return 'other';",
+      '}',
+    ].join('\n');
+
+    expect(listKinds(source)).toStrictEqual(['missing-path-partial', 'missing-path-partial']);
+  });
+
+  it('leaves a helper that negates the test to the per-site report', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
+    const source = [
+      'function isPresent(error: NodeJS.ErrnoException): boolean {',
+      "  return error.code !== 'ENOENT' && error.code !== 'ENOTDIR';",
+      '}',
+    ].join('\n');
+
+    expect(listKinds(source)).toStrictEqual(['missing-path-test']);
+  });
+
   it('leaves a helper that does more than test, or tests another value, to the per-site report', () => {
     // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
     const source = [

@@ -246,6 +246,8 @@ var CHAINED_CODE_AFTER = /(?:[\w$]+\??\.)*code(?![\w$])/y;
 var MEMBER_CODE_AFTER = /\??\.code(?![\w$])/y;
 var MERGE_SEPARATOR = /^[\s()]*(?:\|\||&&)[\s()]*$/;
 var IF_HEAD = /\bif\s*\(/;
+var BOOLEAN_RETURN = /^return (?:true|false)$/;
+var POSITIVE_COMPARISON = /(?<![!=<>])==/;
 function listMissingPathSites(source, code) {
   const comparisons = listComparisons(source, code);
   const clones = listClones(code, comparisons);
@@ -269,7 +271,7 @@ function groupComparisons(code, comparisons) {
   }
   return groups;
 }
-function isGuardedReturnBody(body) {
+function isGuardedBooleanBody(body) {
   let text = body;
   for (let index = text.search(IF_HEAD); index !== -1; index = text.search(IF_HEAD)) {
     const condition = readBalancedGroup(text, index, PARENTHESES);
@@ -277,7 +279,9 @@ function isGuardedReturnBody(body) {
     text = `${text.slice(0, index)} ${text.slice(condition.end)}`;
   }
   const statements = condenseWhitespace(text).replaceAll(/\belse\b/g, " ").replaceAll(/[{}]/g, " ").split(";").map((statement) => statement.trim()).filter((statement) => statement !== "");
-  return statements.length > 0 && statements.every((statement) => /^return\b/.test(statement));
+  return statements.length > 0 && statements.every(
+    (statement) => BOOLEAN_RETURN.test(statement) || /^return\b/.test(statement) && POSITIVE_COMPARISON.test(statement)
+  );
 }
 function isMissingPathCode(text) {
   return MISSING_PATH_CODES.some((code) => code === text);
@@ -291,7 +295,7 @@ function listClones(code, comparisons) {
     const parameter = fn.firstParameter;
     if (parameter === void 0) return [];
     const inBody = comparisons.filter((comparison) => comparison.start >= fn.bodyStart && comparison.end <= fn.bodyEnd);
-    const isClone = coversBothCodes(inBody) && inBody.every((comparison) => isParameterCode(comparison.operand, parameter)) && isGuardedReturnBody(code.slice(fn.bodyStart, fn.bodyEnd));
+    const isClone = coversBothCodes(inBody) && inBody.every((comparison) => !comparison.isNegated && isParameterCode(comparison.operand, parameter)) && isGuardedBooleanBody(code.slice(fn.bodyStart, fn.bodyEnd));
     return isClone ? [
       {
         end: fn.bodyEnd,
@@ -320,7 +324,8 @@ function normalizeOperand(text) {
 }
 function readComparisonAfter(code, literalStart, literalEnd) {
   OPERATOR_AFTER.lastIndex = literalEnd;
-  if (!OPERATOR_AFTER.test(code)) return void 0;
+  const operator = OPERATOR_AFTER.exec(code);
+  if (operator === null) return void 0;
   const operandStart = OPERATOR_AFTER.lastIndex;
   let operandEnd;
   if (code[operandStart] === "(") {
@@ -333,7 +338,12 @@ function readComparisonAfter(code, literalStart, literalEnd) {
     if (CHAINED_CODE_AFTER.test(code)) operandEnd = CHAINED_CODE_AFTER.lastIndex;
   }
   if (operandEnd === void 0) return void 0;
-  return { end: operandEnd, operand: normalizeOperand(code.slice(operandStart, operandEnd)), start: literalStart };
+  return {
+    end: operandEnd,
+    isNegated: operator[0].includes("!"),
+    operand: normalizeOperand(code.slice(operandStart, operandEnd)),
+    start: literalStart
+  };
 }
 function readComparisonBefore(code, literalStart, literalEnd) {
   const operator = OPERATOR_BEFORE.exec(code.slice(0, literalStart));
@@ -341,7 +351,12 @@ function readComparisonBefore(code, literalStart, literalEnd) {
   const operandEnd = code.slice(0, operator.index).trimEnd().length;
   const operandStart = readOperandStart(code, operandEnd);
   if (operandStart === void 0) return void 0;
-  return { end: literalEnd, operand: normalizeOperand(code.slice(operandStart, operandEnd)), start: operandStart };
+  return {
+    end: literalEnd,
+    isNegated: operator[0].includes("!"),
+    operand: normalizeOperand(code.slice(operandStart, operandEnd)),
+    start: operandStart
+  };
 }
 function readOpeningParenthesis(code, close) {
   let depth = 0;
@@ -412,9 +427,18 @@ function findChainEnd(code, from) {
   }
   return code.length;
 }
+function isAfterAnd(code, index) {
+  let last = index - 1;
+  while (last >= 0 && /\s/.test(code[last] ?? "")) last -= 1;
+  return code[last] === "&" && code[last - 1] === "&";
+}
 function isChainBoundary(code, index) {
   const character = code[index];
   if (character === "?") return code[index + 1] !== ".";
+  if (character === "\n") {
+    AND_AHEAD.lastIndex = index;
+    return !AND_AHEAD.test(code) && !isAfterAnd(code, index);
+  }
   return character === ";" || character === "{" || character === "}" || character === "," || code.startsWith("||", index);
 }
 function isClaimedByMissingPathSite(code, anchorEnd, sites) {

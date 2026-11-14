@@ -8,8 +8,7 @@
  * The checks take inventory rather than banning a pattern. Every `instanceof Error` in the project, and every
  * test of an error's `code` against `ENOENT` or `ENOTDIR`, is accounted for and named, and severity reports the
  * judgment: a hand-rolled helper or description is a `warn`, a narrowing that a guard would express better is a
- * `recommend`. Nothing here is `error`, because none of it
- * breaks the package: It reports how far adoption got.
+ * `recommend`. Nothing here is `error`, because none of it breaks the package: It reports how far adoption got.
  *
  * The kit declares what to look for and what to advise. What it reports lives in `src/readiness/`, where the
  * package's own suite covers it, and how the looking is done lives in `packages/adoption`.

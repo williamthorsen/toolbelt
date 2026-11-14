@@ -162,6 +162,25 @@ describe(listErrorSites, () => {
     expect(listErrorSites(source)).toStrictEqual([{ kind: 'missing-path-clone', line: 1, symbol: 'isAbsent' }]);
   });
 
+  it('keeps an instanceof Error that a statement ended by a line break separates from the missing-path test', () => {
+    const source = "const isErr = error instanceof Error\nif (error.code === 'ENOENT') return";
+
+    expect(listKinds(source)).toStrictEqual(['narrow', 'missing-path-partial']);
+  });
+
+  it('leaves an instanceof Error to the missing-path test that && continues across a line break', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
+    const source = [
+      'if (',
+      '  error instanceof Error &&',
+      "  'code' in error",
+      "  && error.code === 'ENOENT'",
+      ') return;',
+    ].join('\n');
+
+    expect(listKinds(source)).toStrictEqual(['missing-path-partial']);
+  });
+
   it('keeps an instanceof Error that a block, a ternary, or || separates from the missing-path test', () => {
     // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
     const source = [
