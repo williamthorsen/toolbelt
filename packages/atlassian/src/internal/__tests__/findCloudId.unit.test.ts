@@ -61,24 +61,50 @@ describe(findCloudId, () => {
     });
   });
 
-  it('throws when the payload contains no cloudId', async () => {
-    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ tenant: 'acme' }));
+  it('reports the parsed body of a gateway incident that answers in JSON', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ message: 'upstream down' }, 503));
 
-    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toThrow("returned no 'cloudId' field");
+    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toMatchObject({
+      body: { message: 'upstream down' },
+      name: 'JiraRequestError',
+    });
   });
 
-  it('throws when the cloudId is empty', async () => {
+  it('raises a response error naming the host and URL when the body is not JSON', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(new Response('<html>maintenance</html>', { status: 200 }));
+
+    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toMatchObject({
+      message: expect.stringContaining("'acme.atlassian.net': the tenant-info response is not JSON"),
+      name: 'JiraResponseError',
+      url: 'https://acme.atlassian.net/_edge/tenant_info',
+    });
+  });
+
+  it('raises a response error when the payload contains no cloudId', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ tenant: 'acme' }));
+
+    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toMatchObject({
+      message: expect.stringContaining("returned no 'cloudId' field"),
+      name: 'JiraResponseError',
+      url: 'https://acme.atlassian.net/_edge/tenant_info',
+    });
+  });
+
+  it('raises a response error when the cloudId is empty', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ cloudId: '' }));
 
-    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toThrow("returned no 'cloudId' field");
+    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toMatchObject({
+      message: expect.stringContaining("returned no 'cloudId' field"),
+      name: 'JiraResponseError',
+    });
   });
 });
 
 // region | Helpers
 
 /** Builds a JSON response over a payload. */
-function jsonResponse(payload: unknown): Response {
-  return Response.json(payload, { headers: { 'Content-Type': 'application/json' } });
+function jsonResponse(payload: unknown, status = 200): Response {
+  return Response.json(payload, { headers: { 'Content-Type': 'application/json' }, status });
 }
 
 // endregion | Helpers
