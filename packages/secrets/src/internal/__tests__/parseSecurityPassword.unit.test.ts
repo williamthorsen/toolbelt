@@ -1,3 +1,4 @@
+import { captureError } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, it } from 'vitest';
 
 import { parseSecurityPassword } from '../parseSecurityPassword.ts';
@@ -40,12 +41,27 @@ describe(parseSecurityPassword, () => {
     expect(() => parse('password: 0x61096  "a"')).toThrow(/Malformed hexadecimal password/);
   });
 
+  it('keeps a malformed hex value out of the error message', async () => {
+    const { message } = await captureError(() => parse('password: 0x733363726  "s3cre"'));
+
+    expect(message).toMatch(/Malformed hexadecimal password/);
+    expect(message).not.toContain('733363726');
+    expect(message).not.toContain('s3cre');
+  });
+
   it('throws when the hex run is not valid UTF-8', () => {
     expect(() => parse(String.raw`password: 0xFF  "\377"`)).toThrow(/not valid for encoding utf-8/);
   });
 
   it('throws on a value that is neither form', () => {
     expect(() => parse('password: unquoted')).toThrow(/Unquoted password/);
+  });
+
+  it('keeps an unquoted value out of the error message', async () => {
+    const { message } = await captureError(() => parse('password: unquoted-s3cret'));
+
+    expect(message).toMatch(/Unquoted password/);
+    expect(message).not.toContain('s3cret');
   });
 });
 
