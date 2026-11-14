@@ -41,7 +41,7 @@ export async function findCloudId(host: string, fetchImpl: typeof globalThis.fet
   const cloudId = readFilledStringField(response.json, 'cloudId');
   if (cloudId === undefined) {
     throw new JiraResponseError({
-      message: `Could not read the cloudId of '${host}': the tenant-info response returned no 'cloudId' field.`,
+      message: `Could not read the cloudId of '${host}': the tenant-info response has no 'cloudId' field.`,
       url,
     });
   }

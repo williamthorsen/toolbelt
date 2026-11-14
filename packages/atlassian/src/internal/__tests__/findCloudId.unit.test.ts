@@ -84,7 +84,7 @@ describe(findCloudId, () => {
     const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ tenant: 'acme' }));
 
     await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toMatchObject({
-      message: expect.stringContaining("returned no 'cloudId' field"),
+      message: expect.stringContaining("has no 'cloudId' field"),
       name: 'JiraResponseError',
       url: 'https://acme.atlassian.net/_edge/tenant_info',
     });
@@ -94,7 +94,7 @@ describe(findCloudId, () => {
     const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ cloudId: '' }));
 
     await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toMatchObject({
-      message: expect.stringContaining("returned no 'cloudId' field"),
+      message: expect.stringContaining("has no 'cloudId' field"),
       name: 'JiraResponseError',
     });
   });
