@@ -17,11 +17,22 @@ import { requestOk } from './requestOk.ts';
 const TEAM_MANAGED_STYLE = 'next-gen';
 
 /**
- * Reads the project, board, workflow, and board features against which a reconciliation is planned. Refuses a
- * project to which this reconciler cannot safely write: one that is not team-managed, one that does not resolve
- * to a single board of its own, and one whose issue types resolve to other than a single workflow. Each refusal
- * fails closed, so a response that it cannot read is a refusal rather than a pass: That refusal throws
- * `JiraResponseError`, and one of the project's state throws a plain `Error`.
+ * Reads the project, board, workflow, and board features against which a reconciliation is planned. Fails closed
+ * on a project to which this reconciler cannot safely write, throwing rather than reconciling part of it:
+ *
+ * - A project that is not team-managed. A status renamed in a company-managed project is renamed in every project
+ *   on the site that uses it. A project reporting no style, or one that this does not recognize, is refused
+ *   alongside a company-managed one: A project that it cannot classify is not one to write to.
+ * - A project that does not resolve to a single board of its own. The board-feature, column, and backlog calls are
+ *   board-scoped. The board query returns every board whose filter references the project, so a board owned by
+ *   another project can come back alongside it; the project's own board is the one whose location names the
+ *   project, and an ambiguous set is refused.
+ * - A project whose issue types resolve to other than exactly one workflow. Every issue type is passed into the
+ *   workflow read, so a project running its issue types on several workflows is refused rather than having one of
+ *   them reconciled and reported green.
+ * - A response that it cannot read. A missing field is a refusal, not a default.
+ *
+ * A refusal of the project's state throws a plain `Error`, and an unreadable response throws `JiraResponseError`.
  *
  * @category Jira
  * @experimental
