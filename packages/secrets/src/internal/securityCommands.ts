@@ -13,7 +13,7 @@ const LINE_BREAK_PATTERN = /[\n\r]/;
  * @internal
  */
 export function buildDeleteArgs(query: SecretQuery, keychain?: string): string[] {
-  return ['delete-generic-password', ...itemArgs(query), ...keychainArgs(keychain)];
+  return ['delete-generic-password', ...buildItemArgs(query), ...buildKeychainArgs(keychain)];
 }
 
 /**
@@ -22,7 +22,7 @@ export function buildDeleteArgs(query: SecretQuery, keychain?: string): string[]
  * @internal
  */
 export function buildFindArgs(query: SecretQuery, keychain?: string): string[] {
-  return ['find-generic-password', ...itemArgs(query), '-g', ...keychainArgs(keychain)];
+  return ['find-generic-password', ...buildItemArgs(query), '-g', ...buildKeychainArgs(keychain)];
 }
 
 /**
@@ -32,7 +32,7 @@ export function buildFindArgs(query: SecretQuery, keychain?: string): string[] {
  * @internal
  */
 export function buildHasArgs(query: SecretQuery, keychain?: string): string[] {
-  return ['find-generic-password', ...itemArgs(query), ...keychainArgs(keychain)];
+  return ['find-generic-password', ...buildItemArgs(query), ...buildKeychainArgs(keychain)];
 }
 
 /**
@@ -86,22 +86,25 @@ function assertOneLine(value: string, field: string): void {
   );
 }
 
-/** Encodes the secret as the lowercase hexadecimal that `-X` takes. */
-function encodeHex(secret: string): string {
-  return Buffer.from(secret, 'utf8').toString('hex');
-}
-
 /**
- * Names the item to act on. The account is always passed, as the empty string when the caller gave none,
- * since a match on the service alone returns an arbitrary one of the items with that service.
+ * Builds the arguments that name the item to act on. The account is always passed, as the empty string when the
+ * caller gave none, since a match on the service alone returns an arbitrary one of the items with that service.
  */
-function itemArgs({ account = '', service }: SecretQuery): string[] {
+function buildItemArgs({ account = '', service }: SecretQuery): string[] {
   return ['-a', account, '-s', service];
 }
 
-/** Names the keychain to act on, or nothing, which leaves `security` to use the default search list. */
-function keychainArgs(keychain: string | undefined): string[] {
+/**
+ * Builds the arguments that name the keychain to act on, or none, which leaves `security` to use the default search
+ * list.
+ */
+function buildKeychainArgs(keychain: string | undefined): string[] {
   return keychain === undefined ? [] : [keychain];
+}
+
+/** Encodes the secret as the lowercase hexadecimal that `-X` takes. */
+function encodeHex(secret: string): string {
+  return Buffer.from(secret, 'utf8').toString('hex');
 }
 
 /** Wraps a value for the interactive parser, which ends a token at a space and reads `\` as an escape. */
