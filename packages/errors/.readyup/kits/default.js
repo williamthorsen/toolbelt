@@ -463,6 +463,26 @@ var default_default = defineAdoptionKit({
       kinds: ["coerce"],
       severity: "recommend",
       fix: `${PACKAGE_NAME} publishes no coercer, so this reports an unmet need rather than a substitution. Raise it at ${README_URL} if the sites above are worth one.`
+    },
+    {
+      name: "No source defines its own missing-path predicate",
+      id: "no-missing-path-clone",
+      kinds: ["missing-path-clone"],
+      fix: `Delete the function named above and import isMissingPathError from ${PACKAGE_NAME}/candidate. One import replaces the whole helper.`
+    },
+    {
+      name: "No source tests for a missing path by hand",
+      id: "no-missing-path-test",
+      kinds: ["missing-path-test"],
+      severity: "recommend",
+      fix: `Replace each test named above with isMissingPathError, imported from ${PACKAGE_NAME}/candidate.`
+    },
+    {
+      name: "No source tests for ENOENT or ENOTDIR alone",
+      id: "no-partial-missing-path-test",
+      kinds: ["missing-path-partial"],
+      severity: "recommend",
+      fix: `isMissingPathError, from ${PACKAGE_NAME}/candidate, treats ENOENT and ENOTDIR alike, so adopting it at a site named above also treats the other code as a missing path. Adopt it where that is the intent, and silence a site that tests one code on purpose with a pragma naming this check.`
     }
   ]
 });
