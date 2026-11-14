@@ -22,7 +22,6 @@ describe(listMissingPathSites, () => {
   });
 
   it('names a test wrapped across lines by a formatter', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
     const source = ['if (', "  error.code === 'ENOENT' ||", "  error.code === 'ENOTDIR'", ') {', '  return;', '}'].join(
       '\n',
     );
