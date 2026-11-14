@@ -1,4 +1,4 @@
-import { firstFilled } from '../internal/firstFilled.ts';
+import { findFirstFilled } from '../internal/findFirstFilled.ts';
 
 const SITE_VARIABLE = 'JIRA_SITE';
 
@@ -13,7 +13,7 @@ const SITE_VARIABLE = 'JIRA_SITE';
 export function resolveJiraSite(options: JiraSiteOptions = {}): string {
   const { env = process.env, fallback, site } = options;
 
-  const resolved = firstFilled(site, env[SITE_VARIABLE], fallback);
+  const resolved = findFirstFilled(site, env[SITE_VARIABLE], fallback);
   if (resolved === undefined) {
     throw new Error(`No Jira site was given. Supply one, set ${SITE_VARIABLE}, or declare one in the spec.`);
   }

@@ -1,4 +1,4 @@
-import { firstFilled } from '../internal/firstFilled.ts';
+import { findFirstFilled } from '../internal/findFirstFilled.ts';
 
 const EMAIL_VARIABLE = 'JIRA_EMAIL';
 
@@ -14,7 +14,7 @@ const EMAIL_VARIABLE = 'JIRA_EMAIL';
 export function resolveJiraEmail(options: JiraEmailOptions = {}): string {
   const { email, env = process.env, fallback } = options;
 
-  const resolved = firstFilled(email, env[EMAIL_VARIABLE], fallback);
+  const resolved = findFirstFilled(email, env[EMAIL_VARIABLE], fallback);
   if (resolved === undefined) {
     throw new Error(
       `No Atlassian account email was given. Supply one, set ${EMAIL_VARIABLE}, or declare one in the spec.`,
