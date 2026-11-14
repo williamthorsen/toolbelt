@@ -27,7 +27,11 @@ export function parseSecurityPassword(stderr: string): string {
 /** Decodes the hex form, whose bytes are the secret exactly. */
 function decodeHexForm(value: string): string {
   const hex = HEX_FORM_PATTERN.exec(value)?.groups?.['hex'];
-  if (hex === undefined) throw new Error(`Malformed hexadecimal password in the output of \`security\`: ${value}`);
+  if (hex === undefined) {
+    throw new Error(
+      `Malformed hexadecimal password in the output of \`security\`: a value of ${value.length} characters that does not continue 0x with pairs of hex digits`,
+    );
+  }
 
   return new TextDecoder('utf-8', { fatal: true }).decode(Buffer.from(hex, 'hex'));
 }
@@ -40,7 +44,9 @@ function decodeHexForm(value: string): string {
 function readQuotedForm(value: string): string {
   const end = value.lastIndexOf(QUOTE);
   if (!value.startsWith(QUOTE) || end === 0) {
-    throw new Error(`Unquoted password in the output of \`security\`: ${value}`);
+    throw new Error(
+      `Unquoted password in the output of \`security\`: a value of ${value.length} characters that is not enclosed in double quotes`,
+    );
   }
 
   return value.slice(QUOTE.length, end);
