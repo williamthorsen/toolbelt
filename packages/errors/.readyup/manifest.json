@@ -115,9 +115,14 @@
           "path": "../src/readiness/listDescribeClones.ts"
         },
         {
-          "hash": "59bdc6fa",
+          "hash": "e35d18fc",
           "kind": "module",
           "path": "../src/readiness/listErrorSites.ts"
+        },
+        {
+          "hash": "354f7e06",
+          "kind": "module",
+          "path": "../src/readiness/listMissingPathSites.ts"
         }
       ],
       "name": "default",
@@ -125,7 +130,7 @@
       "readyupVersion": "0.46.2",
       "source": "kits/default.ts",
       "sourceHash": "36f96c10",
-      "targetHash": "5362592a"
+      "targetHash": "318ddbf3"
     }
   ]
 }
