@@ -115,24 +115,9 @@ The acting user still needs the Jira permissions that the calls demand, which th
 
 ### Errors
 
-Three error types separate a Jira that answered from a Jira that did not, and an answer that this package can read from one that it cannot. `JiraRequestError` reports a status outside 2xx and has `body`, `label`, `method`, `path`, `reason`, `status`, and `url`, so that a caller branches on those rather than parsing the message; `reason` is the classification that ["Diagnosing a rejected request"](#diagnosing-a-rejected-request) tabulates. `JiraTransportError` reports a request that never arrived and has the `url` at which it was aimed, with the fault that the runtime raised as its `cause`. `JiraResponseError` reports a 2xx response that does not have the shape that its reader reads, a missing list field included, and has the `url` that returned it.
+Three error types separate a Jira that answered from a Jira that did not, and an answer that this package can read from one that it cannot. `JiraRequestError` reports a status outside 2xx and has `body`, `label`, `method`, `path`, `reason`, `status`, and `url`, so that a caller branches on those rather than parsing the message; `reason` is the classification that ["Diagnosing a rejected request"](https://github.com/williamthorsen/toolbelt/blob/main/packages/atlassian/docs/diagnosing-rejected-requests.md) tabulates. `JiraTransportError` reports a request that never arrived and has the `url` at which it was aimed, with the fault that the runtime raised as its `cause`. `JiraResponseError` reports a 2xx response that does not have the shape that its reader reads, a missing list field included, and has the `url` that returned it.
 
 The split matters because node's `fetch` reports every transport failure as `TypeError: fetch failed` and names the reason on `cause` alone. Reading the chain turns that into `getaddrinfo ENOTFOUND acme.atlassian.net`, and a retry is worth attempting for the second type and never for the first.
-
-### Diagnosing a rejected request
-
-Four failures look similar and mean different things. The gateway checks the token's scopes before Jira validates anything, so a scope shortfall is reported before any permission or payload error.
-
-| Response                                                            | `reason`     | Meaning                                                                                           |
-| ------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------- |
-| `401` `{"code":401,"message":"Unauthorized; scope does not match"}` | `scope`      | The credential is good and the token lacks a scope required by the endpoint                       |
-| `401` `{"code":401,"message":"Unauthorized"}`                       | `credential` | The credential itself was rejected                                                                |
-| `403`                                                               | `permission` | The acting user lacks a Jira permission required by the call                                      |
-| `404` naming the project as not found                               | `not-found`  | The resource does not exist, or no credential reached the gateway and the request ran anonymously |
-
-The `403` comes from Jira rather than the gateway, and reports a permission that the acting user lacks rather than a scope that the token lacks.
-
-`JiraRequestError` has the matching row as `reason` and states it, with the remedy, in its message. A status outside the table, a 5xx included, leaves `reason` undefined and the message without a remedy.
 
 ### The project spec
 
