@@ -203,15 +203,6 @@ await applyBoardFeatures(request, configuration, plan);
 const report = buildVerificationReport(await readProjectConfiguration(request, 'PROJ'), spec);
 ```
 
-### What the read refuses
-
-`readProjectConfiguration` fails closed. Each of these throws rather than reconciling part of a project, a refusal of the project as a plain `Error` and an unreadable response as `JiraResponseError`:
-
-- **A project that is not team-managed.** A status renamed in a company-managed project is renamed in every project on the site that uses it. A project reporting no style, or one that this does not recognize, is refused alongside a company-managed one: A project that it cannot classify is not one to write to.
-- **A project that does not resolve to a single board of its own.** The board-feature, column, and backlog calls are board-scoped. The board query returns every board whose filter references the project, so a board owned by another project can come back alongside it; when several come back, the project's own board is the one whose location names the project, and an ambiguous set is refused.
-- **A project whose issue types resolve to other than exactly one workflow.** Because every issue type is passed into the workflow read, a project running its issue types on several workflows is refused rather than having one of them reconciled and reported green.
-- **A response that it cannot read.** A missing field is a refusal, not a default.
-
 ### Board columns
 
 `readProjectConfiguration` returns the `toggleLocked` flag that Jira reports per feature, which lets `buildReconciliationPlan` leave a locked toggle unplanned rather than issuing a write that silently does nothing.
