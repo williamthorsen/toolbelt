@@ -1,5 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
+import { chainError } from '@williamthorsen/toolbelt.errors/candidate';
+
 const SECURITY_PATH = '/usr/bin/security';
 const TIMEOUT_MS = 30_000;
 
@@ -17,7 +19,7 @@ export function runSecurity(args: string[], input?: string): SecurityResult {
     timeout: TIMEOUT_MS,
   });
 
-  if (error !== undefined) throw new Error(`Could not run ${SECURITY_PATH}: ${error.message}`);
+  if (error !== undefined) throw chainError(`Could not run ${SECURITY_PATH}`, error);
   if (status === null) {
     throw new Error(`${SECURITY_PATH} was killed before it exited. It may have been waiting on a prompt.`);
   }
