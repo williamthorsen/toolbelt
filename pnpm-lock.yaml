@@ -488,6 +488,9 @@ importers:
       '@williamthorsen/toolbelt.testing':
         specifier: workspace:*
         version: link:../testing
+      '@williamthorsen/toolbelt.vitest':
+        specifier: workspace:*
+        version: link:../vitest
 
   packages/sets: {}
 
