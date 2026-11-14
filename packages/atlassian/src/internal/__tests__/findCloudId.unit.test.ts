@@ -4,14 +4,14 @@ import { findCloudId } from '../findCloudId.ts';
 
 describe(findCloudId, () => {
   it('reads the cloudId from the tenant-info endpoint', async () => {
-    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ cloudId: 'abc-123' }));
+    const fetchImpl = vi.fn().mockResolvedValue(buildJsonResponse({ cloudId: 'abc-123' }));
 
     await expect(findCloudId('acme.atlassian.net', fetchImpl)).resolves.toBe('abc-123');
     expect(fetchImpl).toHaveBeenCalledWith('https://acme.atlassian.net/_edge/tenant_info', expect.anything());
   });
 
   it('sends no credential', async () => {
-    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ cloudId: 'abc-123' }));
+    const fetchImpl = vi.fn().mockResolvedValue(buildJsonResponse({ cloudId: 'abc-123' }));
 
     await findCloudId('acme.atlassian.net', fetchImpl);
 
@@ -62,7 +62,7 @@ describe(findCloudId, () => {
   });
 
   it('reports the parsed body of a gateway incident that answers in JSON', async () => {
-    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ message: 'upstream down' }, 503));
+    const fetchImpl = vi.fn().mockResolvedValue(buildJsonResponse({ message: 'upstream down' }, 503));
 
     await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toMatchObject({
       body: { message: 'upstream down' },
@@ -81,7 +81,7 @@ describe(findCloudId, () => {
   });
 
   it('raises a response error when the payload contains no cloudId', async () => {
-    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ tenant: 'acme' }));
+    const fetchImpl = vi.fn().mockResolvedValue(buildJsonResponse({ tenant: 'acme' }));
 
     await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toMatchObject({
       message: expect.stringContaining("has no 'cloudId' field"),
@@ -91,7 +91,7 @@ describe(findCloudId, () => {
   });
 
   it('raises a response error when the cloudId is empty', async () => {
-    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ cloudId: '' }));
+    const fetchImpl = vi.fn().mockResolvedValue(buildJsonResponse({ cloudId: '' }));
 
     await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toMatchObject({
       message: expect.stringContaining("has no 'cloudId' field"),
@@ -103,7 +103,7 @@ describe(findCloudId, () => {
 // region | Helpers
 
 /** Builds a JSON response over a payload. */
-function jsonResponse(payload: unknown, status = 200): Response {
+function buildJsonResponse(payload: unknown, status = 200): Response {
   return Response.json(payload, { headers: { 'Content-Type': 'application/json' }, status });
 }
 

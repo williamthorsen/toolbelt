@@ -4,8 +4,6 @@ import { buildProjectConfiguration, buildStatus } from '../../test-utils/project
 import { buildReconciliationPlan } from '../buildReconciliationPlan.ts';
 import type { ProjectSpec, SpecStatus } from '../ProjectSpec.ts';
 
-const newStatusReference = (): string => 'ref-minted';
-
 describe(buildReconciliationPlan, () => {
   it('amends nothing when every spec status matches a live one', () => {
     const plan = buildReconciliationPlan(buildSpec(), buildProjectConfiguration(), { newStatusReference });
@@ -167,6 +165,11 @@ function buildSpec(statuses?: readonly SpecStatus[]): ProjectSpec {
       { category: 'DONE', name: 'Done' },
     ],
   };
+}
+
+/** Mints a fixed status reference, so that a plan's creations are predictable. */
+function newStatusReference(): string {
+  return 'ref-minted';
 }
 
 // endregion | Helpers
