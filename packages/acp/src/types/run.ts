@@ -37,8 +37,8 @@ export interface PermissionPolicyContext {
 /**
  * Decides one of the agent's permission requests. `'allow'` grants the request once, and any other result
  * refuses it once; the client never selects an option that makes the harness stop asking. A request whose
- * options cannot express the decision is answered as cancelled, which refuses it. A policy that throws fails
- * the run.
+ * options cannot express the decision is answered as cancelled, which refuses it. A policy that throws cancels
+ * the turn and fails the run.
  */
 export type PermissionPolicy = (
   request: RequestPermissionRequest,
