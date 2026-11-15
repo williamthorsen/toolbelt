@@ -77,7 +77,11 @@ export async function runMcpStdioBridge(options: McpStdioBridgeOptions): Promise
       try {
         await forwardMessage(line, requestId, cancelling.signal, session, options);
       } catch (error) {
-        if (!cancelling.signal.aborted) failure ??= { error };
+        if (!cancelling.signal.aborted) {
+          failure ??= { error };
+          // Stop reading now, since the agent may send nothing more while it waits for this answer
+          lines.close();
+        }
       } finally {
         if (requestId !== undefined) cancellers.delete(requestId);
         inFlight.delete(forwardingKey);
@@ -109,6 +113,7 @@ function findCancelledRequestId(message: unknown): string | number | undefined {
   const requestId = message['params']['requestId'];
   return typeof requestId === 'string' || typeof requestId === 'number' ? requestId : undefined;
 }
+
 /** Returns the protocol version of an `initialize` result, when the message is one. */
 function findNegotiatedVersion(message: unknown): string | undefined {
   if (!isRecord(message) || !isRecord(message['result'])) return undefined;

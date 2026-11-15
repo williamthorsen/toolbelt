@@ -77,6 +77,18 @@ describe(runMcpStdioBridge, () => {
 
     await expect(runBridge(endpoint, [LEGACY_INITIALIZE])).rejects.toThrow('fetch failed');
   });
+
+  it('rejects when the endpoint cannot be reached, without waiting for its input to end', async () => {
+    const endpoint = await startMcpHttpEndpoint(createGreetingToolServer());
+    await endpoint[Symbol.asyncDispose]();
+    const input = new PassThrough();
+
+    const running = runMcpStdioBridge({ input, output: new PassThrough(), url: endpoint.url, token: endpoint.token });
+    input.write(`${JSON.stringify(LEGACY_INITIALIZE)}\n`);
+
+    await expect(running).rejects.toThrow('fetch failed');
+    input.destroy();
+  });
 });
 
 // region | Helpers
