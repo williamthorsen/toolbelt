@@ -116,7 +116,7 @@ const input = process.stdin.isTTY ? undefined : await readStreamText(process.std
 
 ## Reporting crashes
 
-`runCli` rethrows every error that is not a `UsageError`. `installCrashHandler(name)` registers a process `uncaughtException` listener that reports such an error, whether thrown from a command, a top-level await, or an event listener, as `<name>: internal error: <message>` with its stack frames and its `cause` chain, then exits with code 1 once stderr has flushed. Call it once, before `runCli`, as the usage example above does.
+`runCli` rethrows every error that is not a `UsageError`. `installCrashHandler(name)` registers a process `uncaughtException` listener that reports such an error, whether thrown from a command, a top-level await, or an event listener, as `<name>: internal error: <message>` with its stack frames, its `cause` chain, and the errors that it wraps, then exits with code 1 once stderr has flushed. A `SuppressedError` reports its `error` and `suppressed` and an `AggregateError` its `errors`, each labelled by property name. Call it once, before `runCli`, as the usage example above does.
 
 ## Compared with alternatives
 
