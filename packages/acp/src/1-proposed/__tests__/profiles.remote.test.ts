@@ -3,7 +3,7 @@ import { access, mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import {
   createGreetingToolServer,
@@ -32,12 +32,15 @@ const CLAUDE_TOKEN_CEILING = 15_000;
 const CLAUDE_ADAPTER_ARGS = ['--yes', '@agentclientprotocol/claude-agent-acp@0.107.0'];
 
 describe.skipIf(!(await isOnPath('claude')))(claudeCodeProfile, () => {
-  const cwd = useScratchDirectory();
-
   it(
     "calls the app's tool, and only the app's tools, within the isolated token budget",
     async () => {
-      const events = await runGreeting({ ...claudeCodeProfile(), command: 'npx', args: CLAUDE_ADAPTER_ARGS }, cwd());
+      await using scratch = await createScratchDirectory();
+
+      const events = await runGreeting(
+        { ...claudeCodeProfile(), command: 'npx', args: CLAUDE_ADAPTER_ARGS },
+        scratch.path,
+      );
 
       expect(readReply(events)).toContain(GREETING_TEXT);
       const toolNames = listToolCalls(events).map((update) => readClaudeToolName(update));
@@ -51,16 +54,16 @@ describe.skipIf(!(await isOnPath('claude')))(claudeCodeProfile, () => {
 });
 
 describe.skipIf(!(await isOnPath('agy')))(antigravityProfile, () => {
-  const cwd = useScratchDirectory();
-
   it(
-    "calls the app's tool with its configuration read from a directory of its own",
+    "completes a call to the app's tool with its configuration read from a directory of its own",
     async () => {
-      const geminiDir = path.join(cwd(), 'gemini');
+      await using scratch = await createScratchDirectory();
+      const geminiDir = path.join(scratch.path, 'gemini');
 
-      const events = await runGreeting(antigravityProfile({ geminiDir }), cwd());
+      const events = await runGreeting(antigravityProfile({ geminiDir }), scratch.path);
 
-      expect(readReply(events)).toContain(GREETING_TEXT);
+      // The model does not always repeat the tool's result, so the completed call is the evidence.
+      expect(listCompletedToolTitles(events)).toContain(`Run mcp_${TOOL_SERVER_NAME}_${GREETING_TOOL_NAME}`);
       // The CLI creates the directory and reads its configuration from there.
       await expect(access(path.join(geminiDir, 'config'))).resolves.toBeUndefined();
     },
@@ -69,6 +72,17 @@ describe.skipIf(!(await isOnPath('agy')))(antigravityProfile, () => {
 });
 
 // region | Helpers
+/** Creates a scratch directory, removed when the returned handle is disposed. */
+async function createScratchDirectory(): Promise<AsyncDisposable & { readonly path: string }> {
+  const directory = await mkdtemp(path.join(tmpdir(), 'toolbelt-acp-remote-'));
+  return {
+    path: directory,
+    async [Symbol.asyncDispose]() {
+      await rm(directory, { recursive: true, force: true });
+    },
+  };
+}
+
 /** Reports whether an executable named `command` is in a directory on `PATH`. */
 async function isOnPath(command: string): Promise<boolean> {
   const directories = (process.env['PATH'] ?? '').split(path.delimiter).filter((directory) => directory !== '');
@@ -81,6 +95,20 @@ async function isOnPath(command: string): Promise<boolean> {
     }
   }
   return false;
+}
+
+/** Lists the titles of the turn's tool calls that completed. */
+function listCompletedToolTitles(events: readonly RunEvent[]): string[] {
+  const titles = new Map<string, string>();
+  const completed: string[] = [];
+  for (const event of events) {
+    if (event.type !== 'update') continue;
+    const { update } = event;
+    if (update.sessionUpdate !== 'tool_call' && update.sessionUpdate !== 'tool_call_update') continue;
+    if (typeof update.title === 'string') titles.set(update.toolCallId, update.title);
+    if (update.status === 'completed') completed.push(titles.get(update.toolCallId) ?? '');
+  }
+  return completed;
 }
 
 /** Lists the turn's tool-call updates. */
@@ -128,18 +156,4 @@ async function runGreeting(agent: AgentProfile, cwd: string): Promise<RunEvent[]
   );
 }
 
-/** Creates a scratch directory before each test and removes it after, returning a getter for its path. */
-function useScratchDirectory(): () => string {
-  let directory: string | undefined;
-  beforeEach(async () => {
-    directory = await mkdtemp(path.join(tmpdir(), 'toolbelt-acp-remote-'));
-  });
-  afterEach(async () => {
-    if (directory !== undefined) await rm(directory, { recursive: true, force: true });
-  });
-  return () => {
-    if (directory === undefined) throw new Error('The scratch directory is created before each test.');
-    return directory;
-  };
-}
 // endregion | Helpers
