@@ -1,6 +1,7 @@
 import { describeError } from '@williamthorsen/toolbelt.errors';
 
 import type { SecretQuery, WritableSecretStore } from '../3-candidate/SecretStore.ts';
+import { SecretStoreError } from '../3-candidate/SecretStoreError.ts';
 import { assertStorableSecret } from './assertStorableSecret.ts';
 import { parseSecurityPassword } from './parseSecurityPassword.ts';
 import type { SecurityResult, SecurityRunner } from './runSecurity.ts';
@@ -36,7 +37,9 @@ export function buildKeychainStore(run: SecurityRunner, keychain?: string): Writ
     } catch (error) {
       const detail = describeError(error);
 
-      throw new Error(`The secret was written but could not be read back to verify it. ${detail}`, { cause: error });
+      throw new SecretStoreError(`The secret was written but could not be read back to verify it. ${detail}`, {
+        cause: error,
+      });
     }
   }
 
@@ -84,7 +87,9 @@ function assertStoredIntact(stored: string | undefined, secret: string): void {
 
   const found = stored === undefined ? 'nothing was stored' : `${stored.length} characters came back`;
 
-  throw new Error(`The secret was written but not stored intact: ${secret.length} characters went in and ${found}.`);
+  throw new SecretStoreError(
+    `The secret was written but not stored intact: ${secret.length} characters went in and ${found}.`,
+  );
 }
 
 /** Raises what a failed run wrote, so that a keystore that could not be reached is distinct from an absent item. */
@@ -93,7 +98,9 @@ function assertSucceeded(result: SecurityResult, action: string): void {
 
   const detail = result.stderr.trim();
 
-  throw new Error(`Could not ${action}. \`security\` exited ${result.exitCode}${detail === '' ? '' : `: ${detail}`}`);
+  throw new SecretStoreError(
+    `Could not ${action}. \`security\` exited ${result.exitCode}${detail === '' ? '' : `: ${detail}`}`,
+  );
 }
 
 // endregion | Helpers

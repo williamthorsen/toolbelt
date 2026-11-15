@@ -1,7 +1,9 @@
 import { spawnSync, type SpawnSyncReturns } from 'node:child_process';
 
+import { captureError } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, it, vi } from 'vitest';
 
+import { SecretStoreError } from '../../3-candidate/SecretStoreError.ts';
 import { runSecurity } from '../runSecurity.ts';
 
 vi.mock(import('node:child_process'), async (importOriginal) => ({ ...(await importOriginal()), spawnSync: vi.fn() }));
@@ -13,11 +15,11 @@ describe(runSecurity, () => {
     expect(runSecurity(['find-generic-password'])).toStrictEqual({ exitCode: 44, stderr: 'not found', stdout: 'out' });
   });
 
-  it('keeps the launch error as the cause when the binary cannot be run', () => {
+  it('keeps the launch error as the cause when the binary cannot be run', async () => {
     const launchError = Object.assign(new Error('spawnSync /usr/bin/security ENOENT'), { code: 'ENOENT' });
     mockSpawnResult({ error: launchError, status: null });
 
-    expect(() => runSecurity([])).toThrow(
+    await expect(captureError(SecretStoreError, () => runSecurity([]))).resolves.toStrictEqual(
       expect.objectContaining({
         cause: launchError,
         message: 'Could not run /usr/bin/security: spawnSync /usr/bin/security ENOENT',
@@ -25,10 +27,10 @@ describe(runSecurity, () => {
     );
   });
 
-  it('throws when the run was killed before it exited', () => {
+  it('throws when the run was killed before it exited', async () => {
     mockSpawnResult({ signal: 'SIGKILL', status: null });
 
-    expect(() => runSecurity([])).toThrow(/killed before it exited/);
+    expect((await captureError(SecretStoreError, () => runSecurity([]))).message).toMatch(/killed before it exited/);
   });
 });
 

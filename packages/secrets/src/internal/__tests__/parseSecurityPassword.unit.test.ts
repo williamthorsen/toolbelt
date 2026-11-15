@@ -1,6 +1,7 @@
 import { captureError } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, it } from 'vitest';
 
+import { SecretStoreError } from '../../3-candidate/SecretStoreError.ts';
 import { parseSecurityPassword } from '../parseSecurityPassword.ts';
 
 const TRAILER = 'keychain: "/Users/someone/Library/Keychains/login.keychain-db"\nversion: 512\nclass: "genp"\n';
@@ -31,34 +32,43 @@ describe(parseSecurityPassword, () => {
     expect(parse('password: "610962"')).toBe('610962');
   });
 
-  it('throws when the output contains no password line', () => {
-    expect(() =>
+  it('throws when the output contains no password line', async () => {
+    const { message } = await captureError(SecretStoreError, () =>
       parseSecurityPassword('security: SecKeychainSearchCopyNext: The specified item could not be found'),
-    ).toThrow(/No password line/);
+    );
+
+    expect(message).toMatch(/No password line/);
   });
 
-  it('throws on a malformed hex run rather than returning the bytes that it could read', () => {
-    expect(() => parse('password: 0x61096  "a"')).toThrow(/Malformed hexadecimal password/);
+  it('throws on a malformed hex run rather than returning the bytes that it could read', async () => {
+    expect((await captureError(SecretStoreError, () => parse('password: 0x61096  "a"'))).message).toMatch(
+      /Malformed hexadecimal password/,
+    );
   });
 
   it('keeps a malformed hex value out of the error message', async () => {
-    const { message } = await captureError(() => parse('password: 0x733363726  "s3cre"'));
+    const { message } = await captureError(SecretStoreError, () => parse('password: 0x733363726  "s3cre"'));
 
     expect(message).toMatch(/Malformed hexadecimal password/);
     expect(message).not.toContain('733363726');
     expect(message).not.toContain('s3cre');
   });
 
-  it('throws when the hex run is not valid UTF-8', () => {
-    expect(() => parse(String.raw`password: 0xFF  "\377"`)).toThrow(/not valid for encoding utf-8/);
+  it('throws when the hex run is not valid UTF-8', async () => {
+    const error = await captureError(SecretStoreError, () => parse(String.raw`password: 0xFF  "\377"`));
+
+    expect(error.message).toMatch(/^Undecodable password in the output of `security`: .*not valid for encoding utf-8/);
+    expect(error.cause).toBeInstanceOf(TypeError);
   });
 
-  it('throws on a value that is neither form', () => {
-    expect(() => parse('password: unquoted')).toThrow(/Unquoted password/);
+  it('throws on a value that is neither form', async () => {
+    expect((await captureError(SecretStoreError, () => parse('password: unquoted'))).message).toMatch(
+      /Unquoted password/,
+    );
   });
 
   it('keeps an unquoted value out of the error message', async () => {
-    const { message } = await captureError(() => parse('password: unquoted-s3cret'));
+    const { message } = await captureError(SecretStoreError, () => parse('password: unquoted-s3cret'));
 
     expect(message).toMatch(/Unquoted password/);
     expect(message).not.toContain('s3cret');

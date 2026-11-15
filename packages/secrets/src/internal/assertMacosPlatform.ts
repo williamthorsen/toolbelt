@@ -1,3 +1,5 @@
+import { SecretStoreError } from '../3-candidate/SecretStoreError.ts';
+
 const MACOS = 'darwin';
 
 /**
@@ -9,5 +11,7 @@ const MACOS = 'darwin';
 export function assertMacosPlatform(platform: string = process.platform): void {
   if (platform === MACOS) return;
 
-  throw new Error(`A keychain store needs macOS, which supplies /usr/bin/security. This platform is ${platform}.`);
+  throw new SecretStoreError(
+    `A keychain store needs macOS, which supplies /usr/bin/security. This platform is ${platform}.`,
+  );
 }

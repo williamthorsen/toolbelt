@@ -1,6 +1,8 @@
 import { spawnSync } from 'node:child_process';
 
-import { chainError } from '@williamthorsen/toolbelt.errors/candidate';
+import { describeError } from '@williamthorsen/toolbelt.errors';
+
+import { SecretStoreError } from '../3-candidate/SecretStoreError.ts';
 
 const SECURITY_PATH = '/usr/bin/security';
 const TIMEOUT_MS = 30_000;
@@ -19,9 +21,11 @@ export function runSecurity(args: string[], input?: string): SecurityResult {
     timeout: TIMEOUT_MS,
   });
 
-  if (error !== undefined) throw chainError(`Could not run ${SECURITY_PATH}`, error);
+  if (error !== undefined) {
+    throw new SecretStoreError(`Could not run ${SECURITY_PATH}: ${describeError(error)}`, { cause: error });
+  }
   if (status === null) {
-    throw new Error(`${SECURITY_PATH} was killed before it exited. It may have been waiting on a prompt.`);
+    throw new SecretStoreError(`${SECURITY_PATH} was killed before it exited. It may have been waiting on a prompt.`);
   }
 
   return { exitCode: status, stderr, stdout };
