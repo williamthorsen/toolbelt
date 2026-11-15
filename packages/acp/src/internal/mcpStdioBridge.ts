@@ -31,11 +31,13 @@ const PARSE_ERROR = -32_700;
 const INTERNAL_ERROR = -32_603;
 
 /**
- * Posts each line of `input` to the endpoint, one at a time, and writes each JSON-RPC message of the answer to
- * `output` as a line: the body of a JSON answer, or each event of an event-stream answer. A line that is not JSON
- * is answered with a parse error, and a request that the endpoint fails without a JSON-RPC body is answered with
- * an internal error. Resolves when `input` ends and the last answer is written, and rejects when the endpoint
- * cannot be reached.
+ * Posts each line of `input` to the endpoint and writes each JSON-RPC message of the answer to `output` as a line:
+ * the body of a JSON answer, or each event of an event-stream answer. `initialize` is forwarded alone, and every
+ * later message as soon as it is read, so that answers arrive in the order in which the endpoint gives them. A
+ * `notifications/cancelled` aborts the post of the request that it names, which the endpoint serves as a request
+ * of its own, and the cancelled request gets no answer. A line that is not JSON is answered with a parse error,
+ * and a request that the endpoint fails without a JSON-RPC body is answered with an internal error. Resolves when
+ * `input` ends and every answer is written, and rejects when the endpoint cannot be reached.
  *
  * Once the endpoint has answered `initialize` or set a session, later posts send back the negotiated
  * `MCP-Protocol-Version` and the `Mcp-Session-Id`, which a 2025-era MCP client cannot send over stdio.
@@ -43,55 +45,108 @@ const INTERNAL_ERROR = -32_603;
  * @internal
  */
 export async function runMcpStdioBridge(options: McpStdioBridgeOptions): Promise<void> {
-  const { output, url, token } = options;
-  let protocolVersion: string | undefined;
-  let sessionId: string | undefined;
+  const session: SessionHeaders = { protocolVersion: undefined, sessionId: undefined };
+  const inFlight = new Map<number, Promise<void>>();
+  let nextForwardingKey = 0;
+  const cancellers = new Map<string | number, AbortController>();
+  let failure: { readonly error: unknown } | undefined;
 
   const lines = createInterface({ input: options.input, crlfDelay: Infinity });
   for await (const line of lines) {
+    if (failure !== undefined) break;
     if (line.trim() === '') continue;
     let message: unknown;
     try {
       message = JSON.parse(line);
     } catch {
-      writeMessage(output, { jsonrpc: '2.0', id: null, error: { code: PARSE_ERROR, message: 'Parse error' } });
+      writeMessage(options.output, { jsonrpc: '2.0', id: null, error: { code: PARSE_ERROR, message: 'Parse error' } });
       continue;
     }
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json, text/event-stream',
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        ...(protocolVersion !== undefined && { 'MCP-Protocol-Version': protocolVersion }),
-        ...(sessionId !== undefined && { 'Mcp-Session-Id': sessionId }),
-      },
-      body: line,
-    });
-    sessionId = response.headers.get('mcp-session-id') ?? sessionId;
-
-    let wroteAnswer = false;
-    for await (const answer of readMessages(response)) {
-      protocolVersion = findNegotiatedVersion(answer) ?? protocolVersion;
-      writeMessage(output, answer);
-      wroteAnswer = true;
+    const cancelledId = findCancelledRequestId(message);
+    if (cancelledId !== undefined) {
+      cancellers.get(cancelledId)?.abort();
+      continue;
     }
+
     const requestId = findRequestId(message);
-    if (response.ok || wroteAnswer || requestId === undefined) continue;
-    const error = { code: INTERNAL_ERROR, message: `The MCP endpoint answered HTTP ${response.status}.` };
-    writeMessage(output, { jsonrpc: '2.0', id: requestId, error });
+    const cancelling = new AbortController();
+    if (requestId !== undefined) cancellers.set(requestId, cancelling);
+    const forwardingKey = nextForwardingKey++;
+    const forwarding = (async () => {
+      try {
+        await forwardMessage(line, requestId, cancelling.signal, session, options);
+      } catch (error) {
+        if (!cancelling.signal.aborted) failure ??= { error };
+      } finally {
+        if (requestId !== undefined) cancellers.delete(requestId);
+        inFlight.delete(forwardingKey);
+      }
+    })();
+    inFlight.set(forwardingKey, forwarding);
+    if (isRecord(message) && message['method'] === 'initialize') await forwarding;
   }
+  lines.close();
+
+  await Promise.all(inFlight.values());
+  if (failure !== undefined) throw failure.error;
 }
 
 if (isEntryModule()) await runAsProcess();
 
 // region | Helpers
+/** The headers that the endpoint negotiated, which the bridge sends back on every later post. */
+interface SessionHeaders {
+  protocolVersion: string | undefined;
+  sessionId: string | undefined;
+}
+
+/** Returns the id of the request that a `notifications/cancelled` names, and nothing for any other message. */
+function findCancelledRequestId(message: unknown): string | number | undefined {
+  if (!isRecord(message) || message['method'] !== 'notifications/cancelled' || !isRecord(message['params'])) {
+    return undefined;
+  }
+  const requestId = message['params']['requestId'];
+  return typeof requestId === 'string' || typeof requestId === 'number' ? requestId : undefined;
+}
 /** Returns the protocol version of an `initialize` result, when the message is one. */
 function findNegotiatedVersion(message: unknown): string | undefined {
   if (!isRecord(message) || !isRecord(message['result'])) return undefined;
   const version = message['result']['protocolVersion'];
   return typeof version === 'string' ? version : undefined;
+}
+
+/** Posts one message to the endpoint and writes its answers, recording the headers that the endpoint negotiates. */
+async function forwardMessage(
+  line: string,
+  requestId: string | number | undefined,
+  signal: AbortSignal,
+  session: SessionHeaders,
+  options: McpStdioBridgeOptions,
+): Promise<void> {
+  const response = await fetch(options.url, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json, text/event-stream',
+      Authorization: `Bearer ${options.token}`,
+      'Content-Type': 'application/json',
+      ...(session.protocolVersion !== undefined && { 'MCP-Protocol-Version': session.protocolVersion }),
+      ...(session.sessionId !== undefined && { 'Mcp-Session-Id': session.sessionId }),
+    },
+    body: line,
+    signal,
+  });
+  session.sessionId = response.headers.get('mcp-session-id') ?? session.sessionId;
+
+  let wroteAnswer = false;
+  for await (const answer of readMessages(response)) {
+    session.protocolVersion = findNegotiatedVersion(answer) ?? session.protocolVersion;
+    writeMessage(options.output, answer);
+    wroteAnswer = true;
+  }
+  if (response.ok || wroteAnswer || requestId === undefined) return;
+  const error = { code: INTERNAL_ERROR, message: `The MCP endpoint answered HTTP ${response.status}.` };
+  writeMessage(options.output, { jsonrpc: '2.0', id: requestId, error });
 }
 
 /** Returns the id of a JSON-RPC request, and nothing for a notification or a response. */
