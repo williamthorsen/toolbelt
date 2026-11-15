@@ -8,8 +8,8 @@ import type {
 import type { McpServerFactory } from '@modelcontextprotocol/server';
 
 /**
- * The command that starts an agent harness as an ACP agent, the sign-in method that it is given, and the
- * permission mode in which its session runs.
+ * The command that starts an agent harness as an ACP agent, the sign-in method that it is given, the permission
+ * mode in which its session runs, and the harness-specific options of its session.
  */
 export interface AgentProfile {
   readonly command: string;
@@ -24,6 +24,11 @@ export interface AgentProfile {
    * can be a mode of the user's own settings that runs tools without asking.
    */
   readonly permissionModeId?: string;
+  /**
+   * Sent as `_meta` on `session/new`, through which a harness takes options that ACP does not standardize, such as
+   * the settings that isolate the session from the user's own configuration.
+   */
+  readonly sessionMeta?: Readonly<Record<string, unknown>>;
 }
 
 /** What a policy decides about one permission request. */

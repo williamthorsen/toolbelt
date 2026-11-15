@@ -16,7 +16,9 @@ export interface AgentRunErrorDetails {
  * the run. `cause` holds the underlying error: a spawn error whose `code` names the system error, such as
  * `ENOENT` for a command that is not installed; the SDK's `RequestError`, whose `code` is the JSON-RPC error
  * code that the agent answered with; or an `Error` without a `code`, for an agent that answered another protocol
- * version or whose connection closed. An agent that exited is recognized by `exitCode` or `signal`.
+ * version or whose connection closed. An agent that exited is recognized by `exitCode` or `signal`, and a harness
+ * that is not signed in by a `RequestError` whose `code` is `-32000`, ACP's authentication-required error, which
+ * Claude's adapter answers to the prompt.
  *
  * @category ACP
  * @stage proposed
