@@ -12,8 +12,11 @@ export {
   type TokenTransportOptions,
 } from './createTokenTransport.ts';
 export { findJiraTokenSource, type JiraTokenSource } from './findJiraTokenSource.ts';
+export { JiraRefusalError } from './JiraRefusalError.ts';
 export { type JiraRejectionReason, JiraRequestError, type JiraRequestErrorOptions } from './JiraRequestError.ts';
 export { JiraResponseError, type JiraResponseErrorOptions } from './JiraResponseError.ts';
+export { JiraSettingError } from './JiraSettingError.ts';
+export { JiraTokenCommandError } from './JiraTokenCommandError.ts';
 export { JiraTransportError, type JiraTransportErrorOptions } from './JiraTransportError.ts';
 export { listIssueKeys } from './listIssueKeys.ts';
 export { type IssueSummary, type IssueSummaryQuery, listIssueSummaries } from './listIssueSummaries.ts';
@@ -28,6 +31,7 @@ export type {
   WorkflowTransition,
 } from './ProjectConfiguration.ts';
 export type { BoardFeatureRequest, ProjectSpec, SpecStatus, StatusCategory } from './ProjectSpec.ts';
+export { ProjectSpecError } from './ProjectSpecError.ts';
 export { readBoardColumnReport } from './readBoardColumnReport.ts';
 export { readProjectConfiguration } from './readProjectConfiguration.ts';
 export type {
