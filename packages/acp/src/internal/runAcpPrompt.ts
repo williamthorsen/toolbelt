@@ -7,11 +7,12 @@ import {
   PROTOCOL_VERSION,
   type RequestPermissionRequest,
   type RequestPermissionResponse,
+  type SessionModeState,
   type Stream,
 } from '@agentclientprotocol/sdk/unstable';
 import { isNonNullable } from '@williamthorsen/toolbelt.guards';
 
-import type { RunEvent, RunPromptOptions } from '../types/run.ts';
+import type { PermissionPolicy, RunEvent, RunPromptOptions } from '../types/run.ts';
 import { createEventQueue, type EventQueue } from './createEventQueue.ts';
 
 /** Timing that a test shortens. */
@@ -22,10 +23,13 @@ export interface AcpRunSettings {
 
 const DEFAULT_SETTINGS: AcpRunSettings = { cancelGraceMs: 10_000 };
 
+const CANCELLED: RequestPermissionResponse = { outcome: { outcome: 'cancelled' } };
+
 /**
  * Runs one prompt over an ACP connection to `target`, yielding the turn's updates and then its stop. The
  * connection closes when the turn stops, when the consumer stops iterating, or on a failure, which rejects the
  * iteration. An abort before the prompt is sent rejects with the signal's reason; one after it cancels the turn.
+ * A permission policy that throws cancels the turn too, and the iteration then rejects with the policy's error.
  *
  * @internal
  */
@@ -40,9 +44,10 @@ export async function* runAcpPrompt(
   const queue = createEventQueue<RunEvent>();
   const halt = new AbortController();
   let lastCost: Cost | undefined;
-  let isCancelling = false;
+  const cancelling = new AbortController();
   let cancelTimer: NodeJS.Timeout | undefined;
-  let onAbort: (() => void) | undefined;
+  let onAbort: ((reason: unknown) => void) | undefined;
+  let policyFailure: { readonly error: unknown } | undefined;
 
   const app = client({ name: '@williamthorsen/toolbelt.acp' })
     .onNotification(methods.client.session.update, ({ params: { update } }) => {
@@ -51,7 +56,12 @@ export async function* runAcpPrompt(
       }
       queue.push({ type: 'update', update });
     })
-    .onRequest(methods.client.session.requestPermission, ({ params }) => refusePermission(params, isCancelling));
+    .onRequest(methods.client.session.requestPermission, ({ params }) =>
+      answerPermission(params, options.permissionPolicy, cancelling.signal, (error) => {
+        policyFailure ??= { error };
+        onAbort?.(error);
+      }),
+    );
 
   const run = app.connectWith(target, async (context) => {
     /** Runs the handshake, opens the session, and sends the prompt, pushing the stop when the turn ends. */
@@ -80,18 +90,8 @@ export async function* runAcpPrompt(
           hasSystemPrompt && { systemPrompt: { mode: 'append', content: [toTextBlock(instructions)] } }),
       });
 
-      const { permissionModeId } = options.agent;
-      if (permissionModeId !== undefined) {
-        const listedModeIds = (modes?.availableModes ?? []).map(({ id }) => id);
-        if (!listedModeIds.includes(permissionModeId)) {
-          throw new Error(
-            `The session does not list the permission mode "${permissionModeId}"; it lists ${formatModeIds(listedModeIds)}.`,
-          );
-        }
-        if (modes?.currentModeId !== permissionModeId) {
-          await context.request(methods.agent.session.setMode, { sessionId, modeId: permissionModeId });
-        }
-      }
+      const modeId = findModeToSet(modes, options.agent.permissionModeId);
+      if (modeId !== undefined) await context.request(methods.agent.session.setMode, { sessionId, modeId });
 
       signal?.throwIfAborted();
       const prompt =
@@ -100,16 +100,18 @@ export async function* runAcpPrompt(
           : [toTextBlock(options.prompt)];
       const responding = context.request(methods.agent.session.prompt, { sessionId, prompt });
 
-      onAbort = () => {
-        isCancelling = true;
+      onAbort = (reason) => {
+        if (cancelling.signal.aborted) return;
+        cancelling.abort(reason);
         void context.notify(methods.agent.session.cancel, { sessionId });
         cancelTimer = setTimeout(() => {
-          halt.abort(signal?.reason);
+          halt.abort(reason);
         }, settings.cancelGraceMs);
       };
-      if (signal?.aborted === true) onAbort();
+      if (signal?.aborted === true) onAbort(signal.reason);
 
       const { stopReason, usage } = await responding;
+      if (policyFailure !== undefined) throw policyFailure.error;
       queue.push({
         type: 'stopped',
         stopReason,
@@ -124,7 +126,7 @@ export async function* runAcpPrompt(
   /** Abandons the run before the prompt is sent, and cancels the turn after. */
   function abort(): void {
     if (onAbort === undefined) halt.abort(signal?.reason);
-    else onAbort();
+    else onAbort(signal?.reason);
   }
   signal?.addEventListener('abort', abort, { once: true });
 
@@ -135,12 +137,65 @@ export async function* runAcpPrompt(
   } finally {
     signal?.removeEventListener('abort', abort);
     clearTimeout(cancelTimer);
+    cancelling.abort();
     halt.abort(new Error('The run was ended by its consumer.'));
     await settled;
   }
 }
 
 // region | Helpers
+/**
+ * Answers a permission request with the policy's decision, selecting only options that apply once. Answers
+ * cancelled once `cancelling` aborts, when the request does not offer the option that the decision needs, and
+ * when the policy throws, which is also reported to `failRun`.
+ */
+async function answerPermission(
+  request: RequestPermissionRequest,
+  policy: PermissionPolicy | undefined,
+  cancelling: AbortSignal,
+  failRun: (error: unknown) => void,
+): Promise<RequestPermissionResponse> {
+  if (cancelling.aborted) return CANCELLED;
+
+  let verdict: unknown;
+  if (policy !== undefined) {
+    const settled = new AbortController();
+    const { promise: cancelled, resolve } = Promise.withResolvers<'cancelled'>();
+    cancelling.addEventListener(
+      'abort',
+      () => {
+        resolve('cancelled');
+      },
+      { once: true, signal: settled.signal },
+    );
+    const outcome = await Promise.race([cancelled, callPolicy(policy, request, cancelling)]);
+    settled.abort();
+    if (outcome === 'cancelled') return CANCELLED;
+    if ('error' in outcome) {
+      failRun(outcome.error);
+      return CANCELLED;
+    }
+    verdict = outcome.verdict;
+  }
+
+  const wantedKind = verdict === 'allow' ? 'allow_once' : 'reject_once';
+  const option = request.options.find(({ kind }) => kind === wantedKind);
+  return option === undefined ? CANCELLED : { outcome: { outcome: 'selected', optionId: option.optionId } };
+}
+
+/** Calls the policy and returns its verdict, or the error that it threw, so that an abandoned call cannot reject. */
+async function callPolicy(
+  policy: PermissionPolicy,
+  request: RequestPermissionRequest,
+  signal: AbortSignal,
+): Promise<{ readonly verdict: unknown } | { readonly error: unknown }> {
+  try {
+    return { verdict: await policy(request, { signal }) };
+  } catch (error) {
+    return { error };
+  }
+}
+
 /** Closes the queue when the run resolves, and fails it with the run's error when the run rejects. */
 async function endQueueWith(run: Promise<void>, queue: EventQueue<RunEvent>): Promise<void> {
   try {
@@ -149,6 +204,24 @@ async function endQueueWith(run: Promise<void>, queue: EventQueue<RunEvent>): Pr
   } catch (error) {
     queue.fail(error);
   }
+}
+
+/**
+ * Returns the profile's permission mode when the session must be switched to it, and nothing when the profile
+ * names none or the session is already in it. Throws when the session does not list the mode.
+ */
+function findModeToSet(
+  modes: SessionModeState | null | undefined,
+  permissionModeId: string | undefined,
+): string | undefined {
+  if (permissionModeId === undefined) return undefined;
+  const listedModeIds = (modes?.availableModes ?? []).map(({ id }) => id);
+  if (!listedModeIds.includes(permissionModeId)) {
+    throw new Error(
+      `The session does not list the permission mode "${permissionModeId}"; it lists ${formatModeIds(listedModeIds)}.`,
+    );
+  }
+  return modes?.currentModeId === permissionModeId ? undefined : permissionModeId;
 }
 
 /** Formats mode ids for an error message. */
@@ -168,13 +241,6 @@ function rejectOnAbort(signal: AbortSignal): Promise<never> {
     { once: true },
   );
   return promise;
-}
-
-/** Refuses a request once, or reports the turn as cancelled while a cancellation is under way. */
-function refusePermission(request: RequestPermissionRequest, isCancelling: boolean): RequestPermissionResponse {
-  const rejection = request.options.find(({ kind }) => kind === 'reject_once');
-  if (isCancelling || rejection === undefined) return { outcome: { outcome: 'cancelled' } };
-  return { outcome: { outcome: 'selected', optionId: rejection.optionId } };
 }
 
 /** Wraps text as an ACP text content block. */
