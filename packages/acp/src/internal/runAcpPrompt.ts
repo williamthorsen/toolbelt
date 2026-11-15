@@ -73,12 +73,25 @@ export async function* runAcpPrompt(
 
       const instructions = options.instructions ?? '';
       const hasSystemPrompt = isNonNullable(initialized.agentCapabilities?.sessionCapabilities?.systemPrompt);
-      const { sessionId } = await context.request(methods.agent.session.new, {
+      const { sessionId, modes } = await context.request(methods.agent.session.new, {
         cwd: options.cwd,
         mcpServers: [],
         ...(instructions !== '' &&
           hasSystemPrompt && { systemPrompt: { mode: 'append', content: [toTextBlock(instructions)] } }),
       });
+
+      const { permissionModeId } = options.agent;
+      if (permissionModeId !== undefined) {
+        const listedModeIds = (modes?.availableModes ?? []).map(({ id }) => id);
+        if (!listedModeIds.includes(permissionModeId)) {
+          throw new Error(
+            `The session does not list the permission mode "${permissionModeId}"; it lists ${formatModeIds(listedModeIds)}.`,
+          );
+        }
+        if (modes?.currentModeId !== permissionModeId) {
+          await context.request(methods.agent.session.setMode, { sessionId, modeId: permissionModeId });
+        }
+      }
 
       signal?.throwIfAborted();
       const prompt =
@@ -136,6 +149,11 @@ async function endQueueWith(run: Promise<void>, queue: EventQueue<RunEvent>): Pr
   } catch (error) {
     queue.fail(error);
   }
+}
+
+/** Formats mode ids for an error message. */
+function formatModeIds(modeIds: readonly string[]): string {
+  return modeIds.length === 0 ? 'no modes' : modeIds.map((id) => `"${id}"`).join(', ');
 }
 
 /** Returns a promise that rejects with the signal's reason once it aborts. */

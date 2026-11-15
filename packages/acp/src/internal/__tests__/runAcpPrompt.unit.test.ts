@@ -127,6 +127,67 @@ describe(runAcpPrompt, () => {
     });
   });
 
+  describe('permission mode', () => {
+    const modes = {
+      currentModeId: 'auto',
+      availableModes: [
+        { id: 'auto', name: 'Auto' },
+        { id: 'default', name: 'Default' },
+      ],
+    };
+    const options = { ...OPTIONS, agent: { command: 'x', permissionModeId: 'default' } };
+
+    it("sets the profile's mode when the session is in another", async () => {
+      const { agent, received } = createFakeAgent({ modes });
+
+      await Array.fromAsync(runAcpPrompt(agent, options));
+
+      expect(received.map(({ method }) => method)).toStrictEqual([
+        'initialize',
+        'session/new',
+        'session/set_mode',
+        'session/prompt',
+      ]);
+      expect(findParams(received, 'session/set_mode')).toStrictEqual({
+        sessionId: 'fake-session',
+        modeId: 'default',
+      });
+    });
+
+    it("leaves the mode alone when the session is already in the profile's mode", async () => {
+      const { agent, received } = createFakeAgent({ modes: { ...modes, currentModeId: 'default' } });
+
+      await Array.fromAsync(runAcpPrompt(agent, options));
+
+      expect(findParams(received, 'session/set_mode')).toBeUndefined();
+    });
+
+    it('leaves the mode alone when the profile names none', async () => {
+      const { agent, received } = createFakeAgent({ modes });
+
+      await Array.fromAsync(runAcpPrompt(agent, OPTIONS));
+
+      expect(findParams(received, 'session/set_mode')).toBeUndefined();
+    });
+
+    it("rejects, without prompting, when the session does not list the profile's mode", async () => {
+      const { agent, received } = createFakeAgent({ modes });
+      const unlisted = { ...OPTIONS, agent: { command: 'x', permissionModeId: 'ask' } };
+
+      await expect(Array.fromAsync(runAcpPrompt(agent, unlisted))).rejects.toThrow(
+        'The session does not list the permission mode "ask"; it lists "auto", "default".',
+      );
+      expect(findParams(received, 'session/prompt')).toBeUndefined();
+    });
+
+    it('rejects, without prompting, when the agent reports no modes', async () => {
+      const { agent, received } = createFakeAgent();
+
+      await expect(Array.fromAsync(runAcpPrompt(agent, options))).rejects.toThrow('it lists no modes');
+      expect(findParams(received, 'session/prompt')).toBeUndefined();
+    });
+  });
+
   describe('permission requests', () => {
     it('refuses a request with its reject-once option', async () => {
       const { agent, received } = createFakeAgent({ permissionRequest: PERMISSION_REQUEST });

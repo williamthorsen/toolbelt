@@ -6,6 +6,7 @@ import {
   PROTOCOL_VERSION,
   type RequestPermissionRequest,
   type RequestPermissionResponse,
+  type SessionModeState,
   type SessionUpdate,
   type StopReason,
   type Usage,
@@ -20,6 +21,8 @@ export interface FakeAgentConfig {
   readonly authMethods?: readonly AuthMethod[];
   readonly failAuthenticate?: boolean;
   readonly advertiseSystemPrompt?: boolean;
+  /** Returned from `session/new` as given; a later `session/set_mode` is recorded and does not change it. */
+  readonly modes?: SessionModeState;
   /** Sent in order once the prompt arrives. */
   readonly updates?: readonly SessionUpdate[];
   /** Raised after the updates, or, with `holdUntilCancel`, after `session/cancel` arrives. */
@@ -64,7 +67,11 @@ export function createFakeAgent(config: FakeAgentConfig = {}): { agent: AgentApp
     })
     .onRequest(methods.agent.session.new, ({ params }) => {
       received.push({ method: methods.agent.session.new, params });
-      return { sessionId: 'fake-session' };
+      return { sessionId: 'fake-session', ...(config.modes !== undefined && { modes: config.modes }) };
+    })
+    .onRequest(methods.agent.session.setMode, ({ params }) => {
+      received.push({ method: methods.agent.session.setMode, params });
+      return {};
     })
     .onNotification(methods.agent.session.cancel, ({ params }) => {
       received.push({ method: methods.agent.session.cancel, params });
