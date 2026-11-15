@@ -39,7 +39,8 @@ export interface RunCliOptions<C> {
  *
  * A `UsageError`, whether from parsing, from an unknown or missing command, or thrown by a `deriveContext` or a
  * `run`, is written to `stderr` as `<name>: <message>`, followed by a pointer to help for the scope reached so
- * far, and returns 2; an unknown command near a known one adds a `Did you mean` line. Any other error propagates.
+ * far, and returns 2; a usage error that has a `suggestion`, such as an unknown command or long option near a
+ * known one, adds a `Did you mean` line between the two. Any other error propagates.
  * A `run` result that is not a number maps to 0, and a number other than an integer from 0 to 255 throws a plain
  * `Error`. It writes only to the writers that it is given and never calls `process.exit`.
  * @category CLI
@@ -72,7 +73,7 @@ export async function runCli<C>(
   } catch (error: unknown) {
     if (!(error instanceof UsageError)) throw error;
     stderr.write(`${name}: ${error.message}\n`);
-    if (error instanceof UnknownCommandError && error.suggestion !== undefined) {
+    if (error.suggestion !== undefined) {
       stderr.write(`Did you mean '${error.suggestion}'?\n`);
     }
     stderr.write(`Try '${walk.scope.join(' ')} --help'.\n`);
@@ -144,12 +145,9 @@ export async function runCli<C>(
 
 /** Reports an unknown command token, with the closest command when one is near enough to suggest. */
 class UnknownCommandError extends UsageError {
-  readonly suggestion: string | undefined;
-
   constructor(token: string, names: readonly string[]) {
-    super(`Unknown command: ${token}`);
+    super(`Unknown command: ${token}`, { suggestion: findCloseMatch(token, names.toSorted()) });
     this.name = 'UnknownCommandError';
-    this.suggestion = findCloseMatch(token, names.toSorted());
   }
 }
 

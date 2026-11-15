@@ -56,6 +56,12 @@ const tool = rootCli.defineGroup({
         throw new UsageError('Bad input');
       },
     }),
+    hint: defineCommand({
+      summary: 'Fail with a suggestion',
+      run: () => {
+        throw new UsageError('Unknown format: jsno', { suggestion: 'json' });
+      },
+    }),
     crash: defineCommand({
       summary: 'Crash',
       run: () => {
@@ -327,6 +333,14 @@ describe(runCli, () => {
         code: 2,
         stdout: '',
         stderr: "tool: Unknown command: isue\nDid you mean 'issue'?\nTry 'tool --help'.\n",
+      });
+    });
+
+    it('writes the suggestion of a UsageError thrown by run', async () => {
+      await expect(run(['hint'], tool)).resolves.toStrictEqual({
+        code: 2,
+        stdout: '',
+        stderr: "tool: Unknown format: jsno\nDid you mean 'json'?\nTry 'tool hint --help'.\n",
       });
     });
 

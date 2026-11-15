@@ -17,4 +17,4 @@ export type {
   ParseResult,
   ParseSpec,
 } from './types.ts';
-export { UsageError } from './UsageError.ts';
+export { UsageError, type UsageErrorOptions } from './UsageError.ts';
