@@ -43,8 +43,11 @@ export interface BoundCommand {
 /** A group whose context is supplied. */
 export interface BoundGroup {
   readonly node: Group<never>;
-  /** Parses the group's flags and derives its commands' context; `rest` begins where the group's flags end. */
-  readonly enter: (args: readonly string[], baseDir: string) => GroupEntry;
+  /**
+   * Parses the group's flags and derives its commands' context; `rest` begins where the group's flags end. An
+   * unknown option may be suggested as one of `reservedLongNames`, which `runCli` intercepts before the parse.
+   */
+  readonly enter: (args: readonly string[], baseDir: string, reservedLongNames: readonly string[]) => GroupEntry;
 }
 
 /** The outcome of entering a group. */
@@ -59,6 +62,8 @@ export interface Invocation {
   readonly stdout: Writer;
   readonly stderr: Writer;
   readonly baseDir: string;
+  /** The long names that `runCli` intercepts in the command's scope, which an unknown option may be suggested as. */
+  readonly reservedLongNames: readonly string[];
 }
 
 // region | Helpers

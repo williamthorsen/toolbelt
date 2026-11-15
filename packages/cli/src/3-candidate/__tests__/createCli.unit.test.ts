@@ -133,7 +133,7 @@ describe(defineGroup, () => {
 // region | Helpers
 
 function enter(bound: BoundGroup, args: string[]) {
-  return bound.enter(args, '/base');
+  return bound.enter(args, '/base', []);
 }
 
 function asCommand(bound: BoundCommand | BoundGroup | undefined): BoundCommand {
@@ -142,7 +142,7 @@ function asCommand(bound: BoundCommand | BoundGroup | undefined): BoundCommand {
 }
 
 async function invoke(bound: BoundCommand, args: string[]): Promise<unknown> {
-  return bound.invoke({ args, stdout: silent, stderr: silent, baseDir: '/base' });
+  return bound.invoke({ args, stdout: silent, stderr: silent, baseDir: '/base', reservedLongNames: [] });
 }
 
 // endregion | Helpers

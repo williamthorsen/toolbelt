@@ -3,9 +3,6 @@ import { parseValidatedArgs } from './parseArgs.ts';
 import type { CheckedFlags, FlagSchema, OperandDefinition, ParsedFlags, ParsedOperands, ParseSpec } from './types.ts';
 import { validateSpec } from './validateSpec.ts';
 
-/** The long names that `runCli` intercepts before every parse, which an unknown option may be suggested as. */
-const RESERVED_LONG_NAMES = ['help'];
-
 /** The input of a command's `run`. */
 export interface CommandInput<S extends FlagSchema, O extends readonly OperandDefinition[], C> {
   flags: ParsedFlags<S>;
@@ -186,12 +183,8 @@ function buildCommand<C>(
     passthrough: false,
     bind: (context): BoundCommand => ({
       node: command,
-      invoke: ({ args, stdout, stderr, baseDir }) => {
-        const parsed = parseValidatedArgs(
-          args,
-          { flags, operands },
-          { baseDir, reservedLongNames: RESERVED_LONG_NAMES },
-        );
+      invoke: ({ args, stdout, stderr, baseDir, reservedLongNames }) => {
+        const parsed = parseValidatedArgs(args, { flags, operands }, { baseDir, reservedLongNames });
         return run({ flags: parsed.flags, operands: parsed.operands, context, stdout, stderr });
       },
     }),
@@ -224,10 +217,10 @@ function buildGroup<S extends FlagSchema, C, C2>(
     defaultCommand,
     bind: (context): BoundGroup => ({
       node: group,
-      enter: (args, baseDir) => {
+      enter: (args, baseDir, reservedLongNames) => {
         const parsed = parseValidatedArgs(args, definition, {
           baseDir,
-          reservedLongNames: RESERVED_LONG_NAMES,
+          reservedLongNames,
           stopAtPositional: true,
           stopAtUnclaimedFlag: defaultCommand !== undefined,
         });

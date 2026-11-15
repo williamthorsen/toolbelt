@@ -4,6 +4,7 @@ import { findCloseMatch } from '@williamthorsen/toolbelt.strings/candidate';
 
 import type { BoundCommand, BoundGroup, CommandNode, RunResult, Writer } from './nodes.ts';
 import { renderHelp } from './renderHelp.ts';
+import { HELP_FLAG, listReservedFlags, VERSION_FLAG } from './reserved-flags.ts';
 import { resolveLongName } from './resolveLongName.ts';
 import { findFlagEntry, tokenizeArgs } from './tokenizeArgs.ts';
 import type { FlagSchema } from './types.ts';
@@ -11,9 +12,6 @@ import { UsageError } from './UsageError.ts';
 
 /** The exit code that `runCli` returns on a usage error. */
 const USAGE_EXIT_CODE = 2;
-
-const HELP_FLAG = { long: 'help', short: 'h' };
-const VERSION_FLAG = { long: 'version', short: 'V' };
 
 /** Options of `runCli`. */
 export interface RunCliOptions<C> {
@@ -92,15 +90,11 @@ export async function runCli<C>(
 
     while ('enter' in current) {
       const { node } = current;
-      const requested = scanGroupScope(
-        remaining,
-        node.flags,
-        node.defaultCommand !== undefined,
-        isRoot && state.hasVersion,
-      );
+      const withVersion = isRoot && state.hasVersion;
+      const requested = scanGroupScope(remaining, node.flags, node.defaultCommand !== undefined, withVersion);
       if (requested !== undefined) return writeRequested(requested, node, isRoot, state);
 
-      const entry = current.enter(remaining, state.baseDir);
+      const entry = current.enter(remaining, state.baseDir, listReservedLongNames(withVersion));
       const [token] = entry.rest;
       if (token !== undefined && isCommandToken(token)) {
         const child = entry.bindCommand(token);
@@ -121,12 +115,19 @@ export async function runCli<C>(
     }
 
     const { node } = current;
+    const withVersion = isRoot && state.hasVersion;
     if (!node.passthrough) {
-      const requested = scanCommandScope(remaining, node.flags, isRoot && state.hasVersion);
+      const requested = scanCommandScope(remaining, node.flags, withVersion);
       if (requested !== undefined) return writeRequested(requested, node, isRoot, state);
     }
 
-    const result = await current.invoke({ args: remaining, stdout, stderr, baseDir: state.baseDir });
+    const result = await current.invoke({
+      args: remaining,
+      stdout,
+      stderr,
+      baseDir: state.baseDir,
+      reservedLongNames: listReservedLongNames(withVersion),
+    });
     return validateExitCode(result);
   }
 
@@ -174,6 +175,11 @@ function isCommandToken(token: string): boolean {
   return token === '-' || !token.startsWith('-');
 }
 
+/** Returns the long names that `runCli` intercepts in a scope. */
+function listReservedLongNames(withVersion: boolean): string[] {
+  return listReservedFlags(withVersion).map((flag) => flag.long);
+}
+
 /** Finds a help or version request among the arguments before `--`. */
 function scanCommandScope(args: readonly string[], flags: FlagSchema, withVersion: boolean): Requested | undefined {
   return scanScope(args, flags, withVersion, (token) => token.kind === 'option-terminator');
@@ -205,7 +211,7 @@ function scanScope(
   withVersion: boolean,
   endsScope: (token: { kind: string }, isClaimed: boolean) => boolean,
 ): Requested | undefined {
-  const reserved = withVersion ? [HELP_FLAG, VERSION_FLAG] : [HELP_FLAG];
+  const reserved = listReservedFlags(withVersion);
   const { tokens, flagsByName } = tokenizeArgs(args, flags, reserved);
 
   const names = new Set<string>();

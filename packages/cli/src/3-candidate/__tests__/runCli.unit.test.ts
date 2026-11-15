@@ -192,6 +192,25 @@ describe(runCli, () => {
       });
     });
 
+    it('is suggested for a misspelling at a versioned root alone', async () => {
+      await expect(run(['--versio'], tool, { version })).resolves.toStrictEqual({
+        code: 2,
+        stdout: '',
+        stderr: "tool: Unknown option: --versio\nDid you mean '--version'?\nTry 'tool --help'.\n",
+      });
+      expect((await run(['--versio'], tool)).stderr).not.toContain('Did you mean');
+      expect((await run(['issue', 'list', '--versio'], tool, { version })).stderr).not.toContain('Did you mean');
+    });
+
+    it('is suggested for a misspelling on a versioned root command', async () => {
+      const command = defineCommand({ summary: 'S', run: () => 0 });
+
+      await expect(run(['--versio'], command, { version })).resolves.toMatchObject({
+        code: 2,
+        stderr: expect.stringContaining("Did you mean '--version'?\n"),
+      });
+    });
+
     it('works on a root command', async () => {
       const command = defineCommand({ summary: 'S', run: () => 0 });
 
