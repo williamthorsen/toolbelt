@@ -1,8 +1,10 @@
 import { PassThrough } from 'node:stream';
 
+import { captureError } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, it } from 'vitest';
 
 import { promptSecret } from '../promptSecret.ts';
+import { SecretPromptError } from '../SecretPromptError.ts';
 
 const CTRL_C = Buffer.from([0x03]);
 const CTRL_D = Buffer.from([0x04]);
@@ -34,7 +36,9 @@ describe(promptSecret, () => {
   it('rejects two entries that differ', async () => {
     const session = startSession('s3cret', 'mistyped');
 
-    await expect(session.secret).rejects.toThrow(/differ/);
+    const { message } = await captureError(SecretPromptError, () => session.secret);
+
+    expect(message).toMatch(/differ/);
   });
 
   it('rejects when the input ends before anything is typed', async () => {
@@ -42,13 +46,17 @@ describe(promptSecret, () => {
 
     session.endInput();
 
-    await expect(session.secret).rejects.toThrow(/ended before a secret was entered/);
+    const { message } = await captureError(SecretPromptError, () => session.secret);
+
+    expect(message).toMatch(/ended before a secret was entered/);
   });
 
   it('rejects when the input ends between the two entries', async () => {
     const session = startSession('s3cret');
 
-    await expect(session.secret).rejects.toThrow(/ended before a secret was entered/);
+    const { message } = await captureError(SecretPromptError, () => session.secret);
+
+    expect(message).toMatch(/ended before a secret was entered/);
   });
 
   it.each([
@@ -59,7 +67,9 @@ describe(promptSecret, () => {
 
     session.type(key);
 
-    await expect(session.secret).rejects.toThrow(/ended before a secret was entered/);
+    const { message } = await captureError(SecretPromptError, () => session.secret);
+
+    expect(message).toMatch(/ended before a secret was entered/);
   });
 
   it('reads a secret past the 128 bytes that `security` would have taken', async () => {
