@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.9.0 — 2026-11-15
+
+### 🎉 Features
+
+- 🚨 **Breaking:** Makes `ProjectRoot`, the result of `findProjectRoot`, a union discriminated by `source`, in which only a `source: 'marker'` result has a `marker` property, typed `string`, and a fallback result omits `marker` rather than setting it to `null`. (#593)
+
+### 🧪 Tests
+
+- Deletes the `DEFAULT_ROOT_MARKERS` block from `findProjectRoot.unit.test.ts`, whose one test compared the exported list against a copy of its own value and therefore checked a value rather than any behavior of `findProjectRoot`. (#592)
+- Changes the kit tool tests of `async`, `enums`, and `packaging` to select the check under test by id through `selectCheck` rather than as `kit.checks[0]`, which would run the wrong check without any report once a kit declared another check ahead of it. (#605)
+
 ## 0.8.0 — 2026-11-13
 
 ### 🎉 Features

@@ -1,5 +1,40 @@
 [
   {
+    "version": "0.9.0",
+    "date": "2026-11-15",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Makes `ProjectRoot`, the result of `findProjectRoot`, a union discriminated by `source`, in which only a `source: 'marker'` result has a `marker` property, typed `string`, and a fallback result omits `marker` rather than setting it to `null`. (#593)",
+            "breaking": true,
+            "migration": "Replace a check of `result.marker === null` with `result.source !== 'marker'`, and check `source` before reading `marker`: TypeScript rejects `result.marker` on the un-narrowed union, and in untyped code `result.marker === null` is now always `false`, because a fallback result's `marker` is `undefined`.",
+            "hash": "cb849ee2916e74c1afd7f1e18fe4cc2c872ec9c8",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Deletes the `DEFAULT_ROOT_MARKERS` block from `findProjectRoot.unit.test.ts`, whose one test compared the exported list against a copy of its own value and therefore checked a value rather than any behavior of `findProjectRoot`. (#592)",
+            "hash": "06ec984c5734607afb590d1b48777c433786a0de",
+            "entry": 1
+          },
+          {
+            "description": "Changes the kit tool tests of `async`, `enums`, and `packaging` to select the check under test by id through `selectCheck` rather than as `kit.checks[0]`, which would run the wrong check without any report once a kit declared another check ahead of it. (#605)",
+            "hash": "f06e0f299b3816ef383fe03072f224c53597680a",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.8.0",
     "date": "2026-11-13",
     "sections": [

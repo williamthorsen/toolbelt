@@ -1,5 +1,22 @@
 [
   {
+    "version": "9.0.1",
+    "date": "2026-11-15",
+    "sections": [
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Moves the range validation and bounding of `hashString` into `indexIntoRange`, keeping its `RangeError` messages unchanged. (#603)",
+            "hash": "45891e9363c9149ca5cce2a7df94bed0cf67d749",
+            "entry": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "9.0.0",
     "date": "2026-11-13",
     "sections": [

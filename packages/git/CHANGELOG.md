@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.7.7 — 2026-11-15
+
+### 🐛 Bug fixes
+
+- Fixes the issue that `deriveBranchNumber` returned an inexact result for a ticket number beyond 2^53 and `NaN` for an infinite one, which now throws a `RangeError`. (#603)
+
+### 📦 Dependencies
+
+- Removes the `@williamthorsen/toolbelt.testing` devDependency, which neither package imports, from `atlassian` and `git`, along with the matching importer entries in `pnpm-lock.yaml`. (#602)
+
+### 📚 Documentation
+
+- Adds the `<!-- readme-type: library -->` marker to the top of `packages/git/README.md`, which declares it a library README as the `filesystem` README already is. (#595)
+
 ## 0.7.6 — 2026-11-13
 
 ### 📦 Dependencies

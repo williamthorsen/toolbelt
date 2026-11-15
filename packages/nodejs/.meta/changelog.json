@@ -1,5 +1,36 @@
 [
   {
+    "version": "4.2.1",
+    "date": "2026-11-15",
+    "sections": [
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Adds a test that makes the shims directory a symlink to itself and asserts that `listStrandedAsdfShims` rethrows the resulting `ELOOP` error rather than treating it as a missing path. (#604)",
+            "hash": "d7ec9d59b46f8ef2e2973c5f3bcc05bc58f0d707",
+            "entry": 1
+          },
+          {
+            "description": "Rewrites the link-target tests of `resolveNpmPackageOfBin` as two `it.each` tables, one per outcome, and adds rows for a target that ends at `node_modules/` and for a scope without a package name, as `@scope` and as `@scope/`. (#604)",
+            "hash": "d7ec9d59b46f8ef2e2973c5f3bcc05bc58f0d707",
+            "entry": 2
+          }
+        ]
+      },
+      {
+        "title": "📦 Dependencies",
+        "audience": "dev",
+        "items": [
+          { "description": "Bumped `@williamthorsen/toolbelt.errors` to 0.11.0" },
+          { "description": "Bumped `@williamthorsen/toolbelt.filesystem` to 0.11.1" },
+          { "description": "Bumped `@williamthorsen/toolbelt.packaging` to 0.9.0" }
+        ]
+      }
+    ]
+  },
+  {
     "version": "4.2.0",
     "date": "2026-11-13",
     "sections": [

@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.0.3 — 2026-11-15
+
+### 🧪 Tests
+
+- Changes the kit tool tests of `async`, `enums`, and `packaging` to select the check under test by id through `selectCheck` rather than as `kit.checks[0]`, which would run the wrong check without any report once a kit declared another check ahead of it. (#605)
+
+### 📦 Dependencies
+
+- Bumped `@williamthorsen/toolbelt.arrays` to 6.5.3
+
 ## 4.0.2 — 2026-11-13
 
 ### 📦 Dependencies

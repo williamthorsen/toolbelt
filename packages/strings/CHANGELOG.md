@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 9.0.1 — 2026-11-15
+
+### ♻️ Refactoring
+
+- Moves the range validation and bounding of `hashString` into `indexIntoRange`, keeping its `RangeError` messages unchanged. (#603)
+
 ## 9.0.0 — 2026-11-13
 
 ### 🎉 Features

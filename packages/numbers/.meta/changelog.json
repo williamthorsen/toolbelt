@@ -1,5 +1,22 @@
 [
   {
+    "version": "8.1.0",
+    "date": "2026-11-15",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds `indexIntoRange` to `@williamthorsen/toolbelt.numbers/candidate`, which returns the value at a given position of an inclusive range, counting from `min` and cycling past `max` after rotating the position by `offset`, and which handles a negative index or offset as a floored modulo does. (#603)",
+            "hash": "45891e9363c9149ca5cce2a7df94bed0cf67d749",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "8.0.2",
     "date": "2026-11-13",
     "sections": [

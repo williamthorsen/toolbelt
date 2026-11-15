@@ -1,5 +1,44 @@
 [
   {
+    "version": "0.7.7",
+    "date": "2026-11-15",
+    "sections": [
+      {
+        "title": "🐛 Bug fixes",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Fixes the issue that `deriveBranchNumber` returned an inexact result for a ticket number beyond 2^53 and `NaN` for an infinite one, which now throws a `RangeError`. (#603)",
+            "hash": "45891e9363c9149ca5cce2a7df94bed0cf67d749",
+            "entry": 2
+          }
+        ]
+      },
+      {
+        "title": "📦 Dependencies",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Removes the `@williamthorsen/toolbelt.testing` devDependency, which neither package imports, from `atlassian` and `git`, along with the matching importer entries in `pnpm-lock.yaml`. (#602)",
+            "hash": "323db000fd15065be58d8f1d912350bce8dcbb89",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Adds the `<!-- readme-type: library -->` marker to the top of `packages/git/README.md`, which declares it a library README as the `filesystem` README already is. (#595)",
+            "hash": "b4ad58db439ff0f88e871ea4db29c3cf4e489592",
+            "entry": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.7.6",
     "date": "2026-11-13",
     "sections": [

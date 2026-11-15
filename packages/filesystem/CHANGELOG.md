@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.11.1 — 2026-11-15
+
+### ♻️ Refactoring
+
+- Derives `findDirectoryChainMatch` and `listDirectoryChainMatches` from one private generator, `iterateDirectoryChainMatches`, which replaces the loop over the directory chain that each function contained. (#594)
+- Wraps the trailing helpers of `replaceFileExtension.ts` and `loadConfigCascade.unit.test.ts` in `// region | Helpers` folds, as the declaration-order rule requires. (#596)
+
+### 📚 Documentation
+
+- Moves the edge cases and rationale for the eight symbols documented in `packages/filesystem/README.md`, from `listDirectoryChain` through `writeAtomic`, into their doc comments, and reduces each README section to its signature, a one-sentence description, and one example. (#595)
+
 ## 0.11.0 — 2026-11-13
 
 ### 🎉 Features

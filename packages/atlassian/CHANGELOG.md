@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.8.4 — 2026-11-15
+
+### 🐛 Bug fixes
+
+- Fixes the issue that `resolveJiraToken` copied only the message of the error raised when the token command could not be launched, and keeps that error as the `cause` of the thrown error, so that a caller can read its `code`, such as `ENOENT`. (#616)
+- Fixes the issue that `resolveJiraBaseUrl` threw a bare `SyntaxError` for a 2xx tenant-info response that was not JSON and a plain `Error` for one that lacked a `cloudId`, rather than the `JiraResponseError` that the README documents for a 2xx response without the expected shape. (#618)
+
+### ♻️ Refactoring
+
+- Replaces the duplicated fail-closed array narrowing, paginated JQL search, and non-empty string field reads in `atlassian`'s Jira functions with the internal helpers `readEvery`, `listSearchMatches`, and `readFilledStringField`. (#617)
+- Renames the internal helper `firstFilled` in `packages/atlassian/src/internal/` to `findFirstFilled`, following the `find*` convention for a function that returns one result or none. (#620)
+
+### 🧪 Tests
+
+- Applies the naming and declaration conventions to the `atlassian` test helpers: It renames `jsonResponse` to `buildJsonResponse`, stops exporting `buildStatuses` and `buildWorkflow` from `src/test-utils/projectConfiguration.ts` because only that module uses them, and declares `newStatusReference` as a function instead of an arrow-function `const`. (#630)
+
+### 📦 Dependencies
+
+- Removes the `@williamthorsen/toolbelt.testing` devDependency, which neither package imports, from `atlassian` and `git`, along with the matching importer entries in `pnpm-lock.yaml`. (#602)
+
+### 📚 Documentation
+
+- Moves the "Diagnosing a rejected request" table from `packages/atlassian/README.md` to `packages/atlassian/docs/diagnosing-rejected-requests.md`, which the README's "Errors" section now links to. (#621)
+- Moves the README's "What the read refuses" list into the doc comment of `readProjectConfiguration`, which now states each refusal with its reason and the error that it throws. (#621)
+
 ## 0.8.3 — 2026-11-12
 
 ### 📦 Dependencies

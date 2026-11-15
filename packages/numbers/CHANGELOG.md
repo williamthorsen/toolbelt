@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 8.1.0 — 2026-11-15
+
+### 🎉 Features
+
+- Adds `indexIntoRange` to `@williamthorsen/toolbelt.numbers/candidate`, which returns the value at a given position of an inclusive range, counting from `min` and cycling past `max` after rotating the position by `offset`, and which handles a negative index or offset as a floored modulo does. (#603)
+
 ## 8.0.2 — 2026-11-13
 
 ### 🧪 Tests

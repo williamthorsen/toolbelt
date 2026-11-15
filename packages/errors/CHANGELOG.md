@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.11.0 — 2026-11-15
+
+### 🎉 Features
+
+- Adds three checks to the `@williamthorsen/toolbelt.errors` ReadyUp kit that point to `isMissingPathError`: `no-missing-path-clone` (`warn`) reports a function that re-implements it, `no-missing-path-test` (`recommend`) reports an inline test of both `ENOENT` and `ENOTDIR`, and `no-partial-missing-path-test` (`recommend`) reports a test of one code alone, which a pragma can exempt when the narrower test is intended. (#628)
+
 ## 0.10.1 — 2026-11-12
 
 ### ♻️ Refactoring

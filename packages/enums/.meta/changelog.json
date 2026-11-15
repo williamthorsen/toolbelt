@@ -1,5 +1,27 @@
 [
   {
+    "version": "4.0.3",
+    "date": "2026-11-15",
+    "sections": [
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Changes the kit tool tests of `async`, `enums`, and `packaging` to select the check under test by id through `selectCheck` rather than as `kit.checks[0]`, which would run the wrong check without any report once a kit declared another check ahead of it. (#605)",
+            "hash": "f06e0f299b3816ef383fe03072f224c53597680a",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "📦 Dependencies",
+        "audience": "dev",
+        "items": [{ "description": "Bumped `@williamthorsen/toolbelt.arrays` to 6.5.3" }]
+      }
+    ]
+  },
+  {
     "version": "4.0.2",
     "date": "2026-11-13",
     "sections": [

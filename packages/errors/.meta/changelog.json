@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.11.0",
+    "date": "2026-11-15",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds three checks to the `@williamthorsen/toolbelt.errors` ReadyUp kit that point to `isMissingPathError`: `no-missing-path-clone` (`warn`) reports a function that re-implements it, `no-missing-path-test` (`recommend`) reports an inline test of both `ENOENT` and `ENOTDIR`, and `no-partial-missing-path-test` (`recommend`) reports a test of one code alone, which a pragma can exempt when the narrower test is intended. (#628)",
+            "hash": "c6bb40aa3fe5eafb52fb5c8852650332140ce451",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.10.1",
     "date": "2026-11-12",
     "sections": [

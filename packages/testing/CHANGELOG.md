@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.8.4 — 2026-11-15
+
+### 📦 Dependencies
+
+- Bumped `@williamthorsen/toolbelt.errors` to 0.11.0
+
 ## 0.8.3 — 2026-11-12
 
 ### ♻️ Refactoring

@@ -1,5 +1,38 @@
 [
   {
+    "version": "0.11.1",
+    "date": "2026-11-15",
+    "sections": [
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Derives `findDirectoryChainMatch` and `listDirectoryChainMatches` from one private generator, `iterateDirectoryChainMatches`, which replaces the loop over the directory chain that each function contained. (#594)",
+            "hash": "ae749b4dde72604548ce359285c0b18b53eb09dc",
+            "entry": 1
+          },
+          {
+            "description": "Wraps the trailing helpers of `replaceFileExtension.ts` and `loadConfigCascade.unit.test.ts` in `// region | Helpers` folds, as the declaration-order rule requires. (#596)",
+            "hash": "d8035e69ce0657c818a7e56c0ae5a481d7da68c3",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Moves the edge cases and rationale for the eight symbols documented in `packages/filesystem/README.md`, from `listDirectoryChain` through `writeAtomic`, into their doc comments, and reduces each README section to its signature, a one-sentence description, and one example. (#595)",
+            "hash": "b4ad58db439ff0f88e871ea4db29c3cf4e489592",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.11.0",
     "date": "2026-11-13",
     "sections": [

@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.2.1 — 2026-11-15
+
+### 🧪 Tests
+
+- Adds a test that makes the shims directory a symlink to itself and asserts that `listStrandedAsdfShims` rethrows the resulting `ELOOP` error rather than treating it as a missing path. (#604)
+- Rewrites the link-target tests of `resolveNpmPackageOfBin` as two `it.each` tables, one per outcome, and adds rows for a target that ends at `node_modules/` and for a scope without a package name, as `@scope` and as `@scope/`. (#604)
+
+### 📦 Dependencies
+
+- Bumped `@williamthorsen/toolbelt.errors` to 0.11.0
+- Bumped `@williamthorsen/toolbelt.filesystem` to 0.11.1
+- Bumped `@williamthorsen/toolbelt.packaging` to 0.9.0
+
 ## 4.2.0 — 2026-11-13
 
 ### 🎉 Features

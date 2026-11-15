@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.6.4 — 2026-11-15
+
+### 🐛 Bug fixes
+
+- Fixes the issue that the store returned by `createKeychainStore` copied only the message of the error raised when `/usr/bin/security` could not be launched, and keeps that error as the `cause` of the thrown error, so that a caller can read its `code`, such as `ENOENT`. (#616)
+
+### 🔒 Security
+
+- Removes the password from the error that a `createKeychainStore` store's `findSecret` or `setSecret` throws when `security` prints the password as a malformed hexadecimal value or without double quotes, which exposed the secret to any log or output that recorded the error. (#615)
+
+### ♻️ Refactoring
+
+- Renames the private helpers `itemArgs` and `keychainArgs` in `packages/secrets/src/internal/securityCommands.ts` to `buildItemArgs` and `buildKeychainArgs`, which matches the neighboring `buildDeleteArgs`, `buildFindArgs`, and `buildHasArgs`. (#630)
+
+### 🧪 Tests
+
+- Makes the read-only examples in `createKeychainStore.tool.test.ts` share one seeded keychain per file and gives each example that writes or deletes a keychain of its own that contains only the items that the example needs. (#619)
+
 ## 0.6.3 — 2026-11-12
 
 ### 📦 Dependencies
