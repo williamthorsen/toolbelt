@@ -3,6 +3,7 @@ import {
   client,
   type ContentBlock,
   type Cost,
+  McpOverAcpProvider,
   methods,
   PROTOCOL_VERSION,
   type RequestPermissionRequest,
@@ -14,6 +15,7 @@ import { isNonNullable } from '@williamthorsen/toolbelt.guards';
 
 import type { PermissionPolicy, RunEvent, RunPromptOptions } from '../types/run.ts';
 import { createEventQueue, type EventQueue } from './createEventQueue.ts';
+import { startToolServing } from './startToolServing.ts';
 
 /** Timing that a test shortens. */
 export interface AcpRunSettings {
@@ -30,6 +32,7 @@ const CANCELLED: RequestPermissionResponse = { outcome: { outcome: 'cancelled' }
  * connection closes when the turn stops, when the consumer stops iterating, or on a failure, which rejects the
  * iteration. An abort before the prompt is sent rejects with the signal's reason; one after it cancels the turn.
  * A permission policy that throws cancels the turn too, and the iteration then rejects with the policy's error.
+ * The app's tools are served for the turn and stop being served when the connection closes.
  *
  * @internal
  */
@@ -48,6 +51,7 @@ export async function* runAcpPrompt(
   let cancelTimer: NodeJS.Timeout | undefined;
   let onAbort: ((reason: unknown) => void) | undefined;
   let policyFailure: { readonly error: unknown } | undefined;
+  const mcpProvider = new McpOverAcpProvider();
 
   const app = client({ name: '@williamthorsen/toolbelt.acp' })
     .onNotification(methods.client.session.update, ({ params: { update } }) => {
@@ -61,7 +65,8 @@ export async function* runAcpPrompt(
         policyFailure ??= { error };
         onAbort?.(error);
       }),
-    );
+    )
+    .onRequest(methods.client.mcp.message, mcpProvider.handleRequest);
 
   const run = app.connectWith(target, async (context) => {
     /** Runs the handshake, opens the session, and sends the prompt, pushing the stop when the turn ends. */
@@ -81,11 +86,16 @@ export async function* runAcpPrompt(
         await context.request(methods.agent.authenticate, { methodId: authMethodId });
       }
 
+      await using toolServing = await startToolServing(options.tools, initialized.agentCapabilities?.mcpCapabilities, {
+        context,
+        provider: mcpProvider,
+      });
+
       const instructions = options.instructions ?? '';
       const hasSystemPrompt = isNonNullable(initialized.agentCapabilities?.sessionCapabilities?.systemPrompt);
       const { sessionId, modes } = await context.request(methods.agent.session.new, {
         cwd: options.cwd,
-        mcpServers: [],
+        mcpServers: toolServing.mcpServers,
         ...(instructions !== '' &&
           hasSystemPrompt && { systemPrompt: { mode: 'append', content: [toTextBlock(instructions)] } }),
       });
