@@ -3,14 +3,16 @@ import { isRecord } from '@williamthorsen/toolbelt.objects';
 
 import { normalizeStatusName } from '../internal/normalizeStatusName.ts';
 import type { BoardFeatureRequest, ProjectSpec, SpecStatus, StatusCategory } from './ProjectSpec.ts';
+import { ProjectSpecError } from './ProjectSpecError.ts';
 
 const BOARD_FEATURE_REQUESTS: readonly string[] = ['DISABLED', 'ENABLED'];
 const STATUS_CATEGORIES: readonly string[] = ['DONE', 'IN_PROGRESS', 'TODO'];
 
 /**
- * Validates a project spec written as JSON, throwing on the first fault that it finds. It takes text rather than a
- * parsed value, so that one function handles both a malformed file and a malformed schema and the file read stays
- * with the caller. Faults name what is wrong and not where it was read from, which the caller knows and this does not.
+ * Validates a project spec written as JSON, throwing `ProjectSpecError` on the first fault that it finds. It takes
+ * text rather than a parsed value, so that one function handles both a malformed file and a malformed schema and the
+ * file read stays with the caller. Faults name what is wrong and not where it was read from, which the caller knows
+ * and this does not.
  *
  * @category Jira
  * @experimental
@@ -18,7 +20,7 @@ const STATUS_CATEGORIES: readonly string[] = ['DONE', 'IN_PROGRESS', 'TODO'];
  */
 export function parseProjectSpec(text: string): ProjectSpec {
   const document = parseJson(text);
-  if (!isRecord(document)) throw new Error('A spec is a JSON object.');
+  if (!isRecord(document)) throw new ProjectSpecError('A spec is a JSON object.');
 
   return {
     boardFeatures: readBoardFeatures(document['boardFeatures']),
@@ -47,19 +49,19 @@ function parseJson(text: string): unknown {
     const document: unknown = JSON.parse(text);
     return document;
   } catch (error) {
-    throw new Error(`A spec is JSON: ${describeError(error)}`, { cause: error });
+    throw new ProjectSpecError(`A spec is JSON: ${describeError(error)}`, { cause: error });
   }
 }
 
 /** Reads the live names also claimed by an entry, which are optional and each a non-empty name. */
 function readAliases(value: unknown, name: string): readonly string[] | undefined {
   if (value === undefined) return undefined;
-  if (!Array.isArray(value)) throw new TypeError(`The aliases of status '${name}' are a list of names.`);
+  if (!Array.isArray(value)) throw new ProjectSpecError(`The aliases of status '${name}' are a list of names.`);
 
   const aliases: string[] = [];
   for (const alias of value) {
     if (typeof alias !== 'string' || alias.trim() === '') {
-      throw new Error(`The aliases of status '${name}' are a list of names.`);
+      throw new ProjectSpecError(`The aliases of status '${name}' are a list of names.`);
     }
     aliases.push(alias);
   }
@@ -70,12 +72,13 @@ function readAliases(value: unknown, name: string): readonly string[] | undefine
 /** Reads the requested board-feature states, refusing one that a spec may not request. */
 function readBoardFeatures(value: unknown): Readonly<Record<string, BoardFeatureRequest>> | undefined {
   if (value === undefined) return undefined;
-  if (!isRecord(value)) throw new Error('`boardFeatures` maps a feature key to the state in which it is requested.');
+  if (!isRecord(value))
+    throw new ProjectSpecError('`boardFeatures` maps a feature key to the state in which it is requested.');
 
   const features: Record<string, BoardFeatureRequest> = {};
   for (const [feature, state] of Object.entries(value)) {
     if (!isBoardFeatureRequest(state)) {
-      throw new Error(`Board feature '${feature}' is requested as ${BOARD_FEATURE_REQUESTS.join(' or ')}.`);
+      throw new ProjectSpecError(`Board feature '${feature}' is requested as ${BOARD_FEATURE_REQUESTS.join(' or ')}.`);
     }
     features[feature] = state;
   }
@@ -86,7 +89,7 @@ function readBoardFeatures(value: unknown): Readonly<Record<string, BoardFeature
 /** Reads an optional top-level string, refusing one present but empty. */
 function readOptionalString(value: unknown, key: string): string | undefined {
   if (value === undefined) return undefined;
-  if (typeof value !== 'string' || value.trim() === '') throw new Error(`\`${key}\` is a non-empty string.`);
+  if (typeof value !== 'string' || value.trim() === '') throw new ProjectSpecError(`\`${key}\` is a non-empty string.`);
 
   return value;
 }
@@ -96,27 +99,28 @@ function readOptionalString(value: unknown, key: string): string | undefined {
  * status, and the write would set the first and drop the second silently.
  */
 function readStatuses(value: unknown): readonly SpecStatus[] {
-  if (!Array.isArray(value) || value.length === 0) throw new Error('A spec needs a non-empty `statuses` array.');
+  if (!Array.isArray(value) || value.length === 0)
+    throw new ProjectSpecError('A spec needs a non-empty `statuses` array.');
 
   const claimants = new Map<string, string>();
   const statuses: SpecStatus[] = [];
 
   for (const entry of value) {
-    if (!isRecord(entry)) throw new Error('Each status is an object with a name and a category.');
+    if (!isRecord(entry)) throw new ProjectSpecError('Each status is an object with a name and a category.');
 
     const name = entry['name'];
-    if (typeof name !== 'string' || name.trim() === '') throw new Error('Each status needs a name.');
+    if (typeof name !== 'string' || name.trim() === '') throw new ProjectSpecError('Each status needs a name.');
 
     const category = entry['category'];
     if (!isStatusCategory(category)) {
-      throw new Error(`Status '${name}' needs a category of ${STATUS_CATEGORIES.join(', ')}.`);
+      throw new ProjectSpecError(`Status '${name}' needs a category of ${STATUS_CATEGORIES.join(', ')}.`);
     }
 
     const aliases = readAliases(entry['aliases'], name);
     for (const claimed of [name, ...(aliases ?? [])]) {
       const claimant = claimants.get(normalizeStatusName(claimed));
       if (claimant !== undefined) {
-        throw new Error(`'${claimed}' is claimed by both '${claimant}' and '${name}'.`);
+        throw new ProjectSpecError(`'${claimed}' is claimed by both '${claimant}' and '${name}'.`);
       }
       claimants.set(normalizeStatusName(claimed), name);
     }
