@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { JiraTokenCommandError } from '../../3-candidate/JiraTokenCommandError.ts';
 import { runTokenCommand } from '../runTokenCommand.ts';
 
 describe(runTokenCommand, () => {
@@ -12,6 +13,7 @@ describe(runTokenCommand, () => {
   });
 
   it('throws naming the command and its stderr on a non-zero exit', () => {
+    expect(() => runTokenCommand('printf "denied" >&2; exit 3')).toThrow(JiraTokenCommandError);
     expect(() => runTokenCommand('printf "denied" >&2; exit 3')).toThrow(/exited 3: denied/);
   });
 

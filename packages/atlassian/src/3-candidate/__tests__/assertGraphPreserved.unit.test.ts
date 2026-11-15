@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { buildProjectConfiguration, buildTransition } from '../../test-utils/projectConfiguration.ts';
 import { assertGraphPreserved } from '../assertGraphPreserved.ts';
+import { JiraRefusalError } from '../JiraRefusalError.ts';
 import type { Workflow } from '../ProjectConfiguration.ts';
 import type { WorkflowUpdatePayload } from '../WorkflowUpdatePayload.ts';
 
@@ -17,6 +18,7 @@ describe(assertGraphPreserved, () => {
       statuses: workflow.statuses.filter((status) => status.statusReference !== 'ref-done'),
     });
 
+    expect(() => assertGraphPreserved(workflow, payload)).toThrow(JiraRefusalError);
     expect(() => assertGraphPreserved(workflow, payload)).toThrow('Status ref-done would be dropped');
   });
 
@@ -25,6 +27,7 @@ describe(assertGraphPreserved, () => {
       transitions: workflow.transitions.filter((transition) => transition.id !== '30'),
     });
 
+    expect(() => assertGraphPreserved(workflow, payload)).toThrow(JiraRefusalError);
     expect(() => assertGraphPreserved(workflow, payload)).toThrow('Transition 30 (Done) would be dropped');
   });
 
@@ -35,6 +38,7 @@ describe(assertGraphPreserved, () => {
       ),
     });
 
+    expect(() => assertGraphPreserved(workflow, payload)).toThrow(JiraRefusalError);
     expect(() => assertGraphPreserved(workflow, payload)).toThrow('Status ref-done would be left with no transition');
   });
 
@@ -58,6 +62,7 @@ describe(assertGraphPreserved, () => {
       ),
     });
 
+    expect(() => assertGraphPreserved(stranded, payload)).toThrow(JiraRefusalError);
     expect(() => assertGraphPreserved(stranded, payload)).toThrow(
       'Status ref-in-progress would be left with no transition',
     );

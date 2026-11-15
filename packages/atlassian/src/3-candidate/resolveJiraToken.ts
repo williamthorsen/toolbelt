@@ -1,6 +1,7 @@
 import { createKeychainStore, type SecretStore } from '@williamthorsen/toolbelt.secrets/candidate';
 
 import { type JiraTokenChainOptions, TOKEN_VARIABLE, walkJiraTokenChain } from '../internal/jiraTokenChain.ts';
+import { JiraSettingError } from './JiraSettingError.ts';
 
 /**
  * The keychain service under which the Jira API token is stored when a caller names none. A command that writes the
@@ -15,7 +16,8 @@ export const DEFAULT_TOKEN_SERVICE = 'toolbelt.atlassian.jira';
 /**
  * Resolves the Jira API token from a supplied value, then the environment, then a configured command, then the
  * keychain. A token is stored per account, so `account` is the email with which Basic auth pairs it. Throws
- * when every source misses, naming the command that stores one.
+ * `JiraSettingError` when every source misses, naming the command that stores one, and `JiraTokenCommandError`
+ * when the configured command cannot run, is killed, or exits non-zero.
  *
  * @category Jira
  * @experimental
@@ -29,7 +31,7 @@ export function resolveJiraToken(options: JiraTokenOptions): string {
   const answer = walkJiraTokenChain(options, () => (store ?? createKeychainStore()).findSecret({ account, service }));
 
   if (answer === undefined) {
-    throw new Error(
+    throw new JiraSettingError(
       `No Jira API token was found for '${account}'. Supply one, set ${TOKEN_VARIABLE}, or store one: thor-secret set ${service} --account ${account}`,
     );
   }

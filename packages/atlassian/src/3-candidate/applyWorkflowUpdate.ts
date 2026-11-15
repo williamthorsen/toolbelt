@@ -14,7 +14,7 @@ const STATUS_PAGE_SIZE = 100;
 /**
  * Writes the reconciled status and transition graph in one call, then reads the statuses back and writes again,
  * through the status API, any status that the workflow write did not take. A plan with no workflow change issues
- * no call.
+ * no call. Throws `JiraRefusalError`, before any call, for a plan whose payload the graph guards reject.
  *
  * @category Jira
  * @experimental

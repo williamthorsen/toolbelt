@@ -2,6 +2,7 @@ import type { SecretQuery, SecretStore } from '@williamthorsen/toolbelt.secrets/
 import { describe, expect, it, vi } from 'vitest';
 
 import { DEFAULT_TOKEN_SERVICE } from '../index.ts';
+import { JiraSettingError } from '../JiraSettingError.ts';
 import { resolveJiraToken } from '../resolveJiraToken.ts';
 
 const ACCOUNT = 'someone@example.com';
@@ -92,6 +93,7 @@ describe(resolveJiraToken, () => {
   it('names the storing command when every source misses', () => {
     const store = createStore(undefined);
 
+    expect(() => resolveJiraToken({ account: ACCOUNT, env: {}, store })).toThrow(JiraSettingError);
     expect(() => resolveJiraToken({ account: ACCOUNT, env: {}, store })).toThrow(
       `thor-secret set toolbelt.atlassian.jira --account ${ACCOUNT}`,
     );

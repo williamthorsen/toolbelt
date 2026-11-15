@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { JiraSettingError } from '../JiraSettingError.ts';
 import { resolveJiraSite } from '../resolveJiraSite.ts';
 
 const SITE = 'acme.atlassian.net';
@@ -28,6 +29,7 @@ describe(resolveJiraSite, () => {
   });
 
   it('throws naming the environment variable when every source misses', () => {
+    expect(() => resolveJiraSite({ env: {} })).toThrow(JiraSettingError);
     expect(() => resolveJiraSite({ env: {} })).toThrow('JIRA_SITE');
   });
 });

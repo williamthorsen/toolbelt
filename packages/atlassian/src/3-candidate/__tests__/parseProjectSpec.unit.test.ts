@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { parseProjectSpec } from '../parseProjectSpec.ts';
+import { ProjectSpecError } from '../ProjectSpecError.ts';
 
 describe(parseProjectSpec, () => {
   it('reads the statuses, their aliases, and the requested board features', () => {
@@ -49,6 +50,38 @@ describe(parseProjectSpec, () => {
 
   it('throws when the text is not JSON', () => {
     expect(() => parseProjectSpec('{ "statuses": [')).toThrow('A spec is JSON');
+  });
+
+  it('keeps the parser error as the cause when the text is not JSON', () => {
+    expect(() => parseProjectSpec('{ "statuses": [')).toThrow(
+      expect.objectContaining({ cause: expect.any(SyntaxError), name: 'ProjectSpecError' }),
+    );
+  });
+
+  it.each([
+    ['text that is not JSON', '{ "statuses": ['],
+    ['a document that is not an object', '["To Do"]'],
+    ['a blank optional string', '{ "site": "", "statuses": [{ "name": "To Do", "category": "TODO" }] }'],
+    ['an absent statuses array', '{}'],
+    ['a status that is not an object', '{ "statuses": ["To Do"] }'],
+    ['a status without a name', '{ "statuses": [{ "category": "TODO" }] }'],
+    ['an unknown category', '{ "statuses": [{ "name": "To Do", "category": "BACKLOG" }] }'],
+    ['aliases that are not a list', '{ "statuses": [{ "name": "Done", "category": "DONE", "aliases": "Resolved" }] }'],
+    ['an alias that is not a name', '{ "statuses": [{ "name": "Done", "category": "DONE", "aliases": [7] }] }'],
+    [
+      'a name claimed twice',
+      '{ "statuses": [{ "name": "Done", "category": "DONE" }, { "name": "done", "category": "DONE" }] }',
+    ],
+    [
+      'board features that are not an object',
+      '{ "boardFeatures": [], "statuses": [{ "name": "To Do", "category": "TODO" }] }',
+    ],
+    [
+      'a board feature in an unsupported state',
+      '{ "boardFeatures": { "jsw.agility.backlog": "SOON" }, "statuses": [{ "name": "To Do", "category": "TODO" }] }',
+    ],
+  ])('throws ProjectSpecError for %s', (_fault, text) => {
+    expect(() => parseProjectSpec(text)).toThrow(ProjectSpecError);
   });
 
   it('throws when the document is not an object', () => {

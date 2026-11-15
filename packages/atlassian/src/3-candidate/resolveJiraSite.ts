@@ -1,10 +1,11 @@
 import { findFirstFilled } from '../internal/findFirstFilled.ts';
+import { JiraSettingError } from './JiraSettingError.ts';
 
 const SITE_VARIABLE = 'JIRA_SITE';
 
 /**
  * Resolves the Jira site from which the gateway base URL is derived, from a supplied value, then the environment,
- * then the fallback. Throws when every source misses.
+ * then the fallback. Throws `JiraSettingError` when every source misses.
  *
  * @category Jira
  * @experimental
@@ -15,7 +16,7 @@ export function resolveJiraSite(options: JiraSiteOptions = {}): string {
 
   const resolved = findFirstFilled(site, env[SITE_VARIABLE], fallback);
   if (resolved === undefined) {
-    throw new Error(`No Jira site was given. Supply one, set ${SITE_VARIABLE}, or declare one in the spec.`);
+    throw new JiraSettingError(`No Jira site was given. Supply one, set ${SITE_VARIABLE}, or declare one in the spec.`);
   }
 
   return resolved;

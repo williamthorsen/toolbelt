@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { JiraSettingError } from '../../3-candidate/JiraSettingError.ts';
 import { findCloudId } from '../findCloudId.ts';
 
 describe(findCloudId, () => {
@@ -53,12 +54,10 @@ describe(findCloudId, () => {
     );
   });
 
-  it('leaves a 4xx as a plain error, which names the site that the caller corrects', async () => {
+  it('reports a 4xx as a setting error, which names the site that the caller corrects', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response('', { status: 404 }));
 
-    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.not.toMatchObject({
-      name: 'JiraRequestError',
-    });
+    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toBeInstanceOf(JiraSettingError);
   });
 
   it('reports the parsed body of a gateway incident that answers in JSON', async () => {

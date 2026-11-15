@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { createFakeRequest, type FakeRoutes } from '../../test-utils/createFakeRequest.ts';
+import { JiraRefusalError } from '../JiraRefusalError.ts';
 import { JiraResponseError } from '../JiraResponseError.ts';
 import { readProjectConfiguration } from '../readProjectConfiguration.ts';
 
@@ -72,19 +73,28 @@ describe(readProjectConfiguration, () => {
   it('refuses a company-managed project', async () => {
     const { request } = createFakeRequest(buildRoutesForProject({ id: PROJECT_ID, style: 'classic' }));
 
-    await expect(readProjectConfiguration(request, KEY)).rejects.toThrow(/not team-managed \(style: classic\)/);
+    const reading = readProjectConfiguration(request, KEY);
+
+    await expect(reading).rejects.toThrow(JiraRefusalError);
+    await expect(reading).rejects.toThrow(/not team-managed \(style: classic\)/);
   });
 
   it('refuses a project reporting no style, rather than passing it', async () => {
     const { request } = createFakeRequest(buildRoutesForProject({ id: PROJECT_ID }));
 
-    await expect(readProjectConfiguration(request, KEY)).rejects.toThrow(/not team-managed \(style: absent\)/);
+    const reading = readProjectConfiguration(request, KEY);
+
+    await expect(reading).rejects.toThrow(JiraRefusalError);
+    await expect(reading).rejects.toThrow(/not team-managed \(style: absent\)/);
   });
 
   it('refuses a project reporting a style that it does not recognize', async () => {
     const { request } = createFakeRequest(buildRoutesForProject({ id: PROJECT_ID, style: 'something-new' }));
 
-    await expect(readProjectConfiguration(request, KEY)).rejects.toThrow(/not team-managed \(style: something-new\)/);
+    const reading = readProjectConfiguration(request, KEY);
+
+    await expect(reading).rejects.toThrow(JiraRefusalError);
+    await expect(reading).rejects.toThrow(/not team-managed \(style: something-new\)/);
   });
 
   it('takes the sole board without consulting its location', async () => {
@@ -122,9 +132,10 @@ describe(readProjectConfiguration, () => {
       'GET /rest/agile/1.0/board': { json: { values: [{ id: 99, location: { projectId: 20_000 } }] } },
     };
 
-    await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'resolves to no board of its own (the query returned 1)',
-    );
+    const reading = readProjectConfiguration(createFakeRequest(routes).request, KEY);
+
+    await expect(reading).rejects.toThrow(JiraRefusalError);
+    await expect(reading).rejects.toThrow('resolves to no board of its own (the query returned 1)');
   });
 
   it('refuses a project owning several of the boards returned', async () => {
@@ -140,9 +151,10 @@ describe(readProjectConfiguration, () => {
       },
     };
 
-    await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'resolves to 2 boards of its own',
-    );
+    const reading = readProjectConfiguration(createFakeRequest(routes).request, KEY);
+
+    await expect(reading).rejects.toThrow(JiraRefusalError);
+    await expect(reading).rejects.toThrow('resolves to 2 boards of its own');
   });
 
   it('refuses a project resolving to several boards none of which is its own', async () => {
@@ -158,9 +170,10 @@ describe(readProjectConfiguration, () => {
       },
     };
 
-    await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'resolves to no board of its own (the query returned 2)',
-    );
+    const reading = readProjectConfiguration(createFakeRequest(routes).request, KEY);
+
+    await expect(reading).rejects.toThrow(JiraRefusalError);
+    await expect(reading).rejects.toThrow('resolves to no board of its own (the query returned 2)');
   });
 
   it('reads a feature reported twice rather than refusing over the repeat', async () => {
@@ -224,6 +237,7 @@ describe(readProjectConfiguration, () => {
 
     const reading = readProjectConfiguration(createFakeRequest(routes).request, KEY);
 
+    await expect(reading).rejects.toThrow(JiraRefusalError);
     await expect(reading).rejects.toThrow('Project PROJ has no board.');
     await expect(reading).rejects.not.toBeInstanceOf(JiraResponseError);
   });
@@ -251,17 +265,19 @@ describe(readProjectConfiguration, () => {
       'POST /rest/api/3/workflows': { json: { statuses: [], workflows: [buildWorkflow(), buildWorkflow()] } },
     };
 
-    await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'resolves its 2 issue types to 2 workflows',
-    );
+    const reading = readProjectConfiguration(createFakeRequest(routes).request, KEY);
+
+    await expect(reading).rejects.toThrow(JiraRefusalError);
+    await expect(reading).rejects.toThrow('resolves its 2 issue types to 2 workflows');
   });
 
   it('refuses a project whose issue types resolve to no workflow', async () => {
     const routes = { ...buildRoutes(), 'POST /rest/api/3/workflows': { json: { statuses: [], workflows: [] } } };
 
-    await expect(readProjectConfiguration(createFakeRequest(routes).request, KEY)).rejects.toThrow(
-      'resolves its 2 issue types to 0 workflows',
-    );
+    const reading = readProjectConfiguration(createFakeRequest(routes).request, KEY);
+
+    await expect(reading).rejects.toThrow(JiraRefusalError);
+    await expect(reading).rejects.toThrow('resolves its 2 issue types to 0 workflows');
   });
 
   it('refuses a status that it cannot read rather than dropping it', async () => {

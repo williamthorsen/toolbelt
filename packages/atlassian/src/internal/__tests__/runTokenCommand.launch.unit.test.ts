@@ -2,6 +2,7 @@ import { spawnSync, type SpawnSyncReturns } from 'node:child_process';
 
 import { describe, expect, it, vi } from 'vitest';
 
+import { JiraTokenCommandError } from '../../3-candidate/JiraTokenCommandError.ts';
 import { runTokenCommand } from '../runTokenCommand.ts';
 
 vi.mock(import('node:child_process'), async (importOriginal) => ({ ...(await importOriginal()), spawnSync: vi.fn() }));
@@ -11,6 +12,7 @@ describe(runTokenCommand, () => {
     const launchError = Object.assign(new Error('spawnSync /bin/sh ETIMEDOUT'), { code: 'ETIMEDOUT' });
     mockSpawnResult({ error: launchError, status: null });
 
+    expect(() => runTokenCommand('op read token')).toThrow(JiraTokenCommandError);
     expect(() => runTokenCommand('op read token')).toThrow(
       expect.objectContaining({
         cause: launchError,
@@ -22,6 +24,7 @@ describe(runTokenCommand, () => {
   it('throws when the command was killed before it exited', () => {
     mockSpawnResult({ signal: 'SIGKILL', status: null });
 
+    expect(() => runTokenCommand('op read token')).toThrow(JiraTokenCommandError);
     expect(() => runTokenCommand('op read token')).toThrow(/killed before it exited/);
   });
 });
