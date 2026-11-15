@@ -17,8 +17,8 @@ export interface AntigravityProfileOptions {
 /**
  * Returns the profile for Google's Antigravity CLI, which signs in with the CLI's cached personal Google login.
  * The session reads its configuration from a directory of its own, so none of the user's hooks, plugins, or MCP
- * servers load, and runs in the `default` mode, in which every tool call asks. The CLI's built-in tools and
- * commands cannot be turned off.
+ * servers load, and runs in the `default` mode, in which a command asks and a file read does not. The CLI's
+ * built-in tools and commands cannot be turned off.
  *
  * @category ACP
  * @stage proposed

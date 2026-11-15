@@ -30,11 +30,11 @@ for await (const event of runPrompt({ agent: claudeCodeProfile(), cwd: process.c
 
 A profile names the command that starts a harness, how it signs in, the mode in which its session asks before running a tool, and the options that keep the user's own configuration out of the session:
 
-| Profile              | Harness         | Command on `PATH`                                                                     | Signs in with                   | Cannot isolate                           |
-| -------------------- | --------------- | ------------------------------------------------------------------------------------- | ------------------------------- | ---------------------------------------- |
-| `claudeCodeProfile`  | Claude Code     | `claude-agent-acp`, from `npm install --global @agentclientprotocol/claude-agent-acp` | The `claude` CLI's login        | The account's own slash commands         |
-| `antigravityProfile` | Antigravity CLI | `agy`                                                                                 | The CLI's personal Google login | Its built-in tools and commands          |
-| `codexProfile`       | Codex           | `codex-acp`, from `npm install --global @agentclientprotocol/codex-acp`               | A ChatGPT login or API key      | Unverified: The profile has not been run |
+| Profile              | Harness         | Command on `PATH`                                                                     | Signs in with                   | Cannot isolate                                               |
+| -------------------- | --------------- | ------------------------------------------------------------------------------------- | ------------------------------- | ------------------------------------------------------------ |
+| `claudeCodeProfile`  | Claude Code     | `claude-agent-acp`, from `npm install --global @agentclientprotocol/claude-agent-acp` | The `claude` CLI's login        | The account's own slash commands                             |
+| `antigravityProfile` | Antigravity CLI | `agy`                                                                                 | The CLI's personal Google login | Its built-in tools and commands, whose file reads do not ask |
+| `codexProfile`       | Codex           | `codex-acp`, from `npm install --global @agentclientprotocol/codex-acp`               | A ChatGPT login or API key      | Unverified: The profile has not been run                     |
 
 Each factory takes an optional `command`, for a harness installed elsewhere; the doc comment of each states its other options and what its session loads. A profile is a plain `AgentProfile`, so an app can also write its own. On Windows, an npm-installed harness is a `.cmd` shim, which `runPrompt` cannot start, because it spawns the command without a shell; name the executable that the shim runs instead.
 
