@@ -50,6 +50,13 @@
     "@williamthorsen/toolbelt.errors": "workspace:*",
     "@williamthorsen/toolbelt.guards": "workspace:*"
   },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.4.0",
+    "@modelcontextprotocol/server": "2.4.0"
+  },
+  "peerDependencies": {
+    "@modelcontextprotocol/server": "^2.4.0"
+  },
   "engines": {
     "node": ">=24.0.0"
   },
