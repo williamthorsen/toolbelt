@@ -67,6 +67,6 @@ runPrompt({
 - **HTTP**: from an endpoint on `127.0.0.1` in the client's process, which answers only the run's bearer token.
 - **stdio**, which every agent accepts: through a bridge module that the agent runs with the client's Node, which forwards to that endpoint.
 
-The doc comment of `runPrompt` states the rest.
+The agent runs the bridge from the package's own files, so an app that bundles its server code leaves `@williamthorsen/toolbelt.acp` external to the bundle; with a bundled copy, a run that needs the bridge fails before its session opens. The doc comment of `runPrompt` states the rest.
 
 For now the client leaves the command for each harness to the caller ([#635](https://github.com/williamthorsen/toolbelt/issues/635)).

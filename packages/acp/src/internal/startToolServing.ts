@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { fromMcpServer } from '@agentclientprotocol/sdk/experimental/mcp-server';
@@ -56,9 +57,10 @@ export async function startToolServing(
     };
   }
 
+  const bridgePath = transport === 'stdio' ? resolveBridgePath(bridgeModuleUrl) : undefined;
   const endpoint = await startMcpHttpEndpoint(tools.createServer);
   const declaration: McpServerDeclaration =
-    transport === 'http'
+    bridgePath === undefined
       ? {
           type: 'http',
           name: tools.name,
@@ -68,11 +70,27 @@ export async function startToolServing(
       : {
           name: tools.name,
           command: process.execPath,
-          args: [fileURLToPath(bridgeModuleUrl)],
+          args: [bridgePath],
           env: [
             { name: BRIDGE_URL_VARIABLE, value: endpoint.url },
             { name: BRIDGE_TOKEN_VARIABLE, value: endpoint.token },
           ],
         };
   return { mcpServers: [declaration], [Symbol.asyncDispose]: () => endpoint[Symbol.asyncDispose]() };
+}
+
+/**
+ * Returns the path of the stdio bridge module that `moduleUrl` names. Throws when the URL names another module,
+ * as it does when a bundler has inlined the package into an app, since the agent could not run the bridge then.
+ *
+ * @internal
+ */
+export function resolveBridgePath(moduleUrl: string): string {
+  const bridgePath = fileURLToPath(moduleUrl);
+  if (!/^mcpStdioBridge\.[cm]?[jt]s$/.test(path.basename(bridgePath))) {
+    throw new Error(
+      `The MCP stdio bridge resolves to ${bridgePath}, which is not the bridge module. Leave @williamthorsen/toolbelt.acp external to the app's bundle.`,
+    );
+  }
+  return bridgePath;
 }
