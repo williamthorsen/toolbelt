@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { JiraSettingError } from '../JiraSettingError.ts';
 import { resolveJiraBaseUrl } from '../resolveJiraBaseUrl.ts';
 
 describe(resolveJiraBaseUrl, () => {
@@ -29,7 +30,10 @@ describe(resolveJiraBaseUrl, () => {
   });
 
   it('throws when the site is blank', async () => {
-    await expect(resolveJiraBaseUrl({ cloudId: 'abc-123', site: ' '.repeat(3) })).rejects.toThrow('A site is required');
+    const resolving = resolveJiraBaseUrl({ cloudId: 'abc-123', site: ' '.repeat(3) });
+
+    await expect(resolving).rejects.toThrow(JiraSettingError);
+    await expect(resolving).rejects.toThrow('A site is required');
   });
 
   it('uses only the host of a URL copied from a browser', async () => {
@@ -49,12 +53,18 @@ describe(resolveJiraBaseUrl, () => {
   });
 
   it('throws on a site that names no host', async () => {
-    await expect(resolveJiraBaseUrl({ cloudId: 'abc-123', site: 'not a host' })).rejects.toThrow('is not a site host');
+    const resolving = resolveJiraBaseUrl({ cloudId: 'abc-123', site: 'not a host' });
+
+    await expect(resolving).rejects.toThrow(JiraSettingError);
+    await expect(resolving).rejects.toThrow('is not a site host');
   });
 
   it('throws on a failed tenant-info read', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response('', { status: 404 }));
 
-    await expect(resolveJiraBaseUrl({ fetch: fetchImpl, site: 'acme.atlassian.net' })).rejects.toThrow('returned 404');
+    const resolving = resolveJiraBaseUrl({ fetch: fetchImpl, site: 'acme.atlassian.net' });
+
+    await expect(resolving).rejects.toThrow(JiraSettingError);
+    await expect(resolving).rejects.toThrow('returned 404');
   });
 });

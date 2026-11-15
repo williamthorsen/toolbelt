@@ -1,4 +1,5 @@
 import { findCloudId } from '../internal/findCloudId.ts';
+import { JiraSettingError } from './JiraSettingError.ts';
 
 const GATEWAY_ORIGIN = 'https://api.atlassian.com';
 
@@ -7,6 +8,9 @@ const GATEWAY_ORIGIN = 'https://api.atlassian.com';
  * site when the caller does not supply one. A site is accepted bare (`acme.atlassian.net`), with a scheme, or
  * as a URL copied from a browser, of which only the host is used. Requests against the site itself are not a
  * fallback that this offers: A scoped token sent there is ignored rather than rejected.
+ *
+ * Throws `JiraSettingError` for a blank site, a site that is not a host, and a host whose tenant-info endpoint
+ * answers 4xx. A tenant-info 5xx throws `JiraRequestError`, and a 2xx that it cannot read throws `JiraResponseError`.
  *
  * @category Jira
  * @experimental
@@ -33,11 +37,11 @@ export interface JiraBaseUrlOptions {
 /** Reduces a site to the host from which tenant-info is read. */
 function readHost(site: string): string {
   const trimmed = site.trim();
-  if (trimmed === '') throw new Error('A site is required to resolve the base URL.');
+  if (trimmed === '') throw new JiraSettingError('A site is required to resolve the base URL.');
 
   const host = URL.parse(trimmed.includes('://') ? trimmed : `https://${trimmed}`)?.host;
   if (host === undefined || host === '') {
-    throw new Error(`'${site}' is not a site host, such as 'acme.atlassian.net'.`);
+    throw new JiraSettingError(`'${site}' is not a site host, such as 'acme.atlassian.net'.`);
   }
 
   return host;

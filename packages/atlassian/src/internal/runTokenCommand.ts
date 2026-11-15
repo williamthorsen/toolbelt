@@ -1,6 +1,8 @@
 import { spawnSync } from 'node:child_process';
 
-import { chainError } from '@williamthorsen/toolbelt.errors/candidate';
+import { describeError } from '@williamthorsen/toolbelt.errors';
+
+import { JiraTokenCommandError } from '../3-candidate/JiraTokenCommandError.ts';
 
 const TIMEOUT_MS = 30_000;
 
@@ -17,14 +19,22 @@ export function runTokenCommand(command: string): string {
     timeout: TIMEOUT_MS,
   });
 
-  if (error !== undefined) throw chainError(`Could not run the token command \`${command}\``, error);
+  if (error !== undefined) {
+    throw new JiraTokenCommandError(`Could not run the token command \`${command}\`: ${describeError(error)}`, {
+      cause: error,
+    });
+  }
   if (status === null) {
-    throw new Error(`The token command \`${command}\` was killed before it exited. It may have been waiting on input.`);
+    throw new JiraTokenCommandError(
+      `The token command \`${command}\` was killed before it exited. It may have been waiting on input.`,
+    );
   }
   if (status !== 0) {
     const detail = stderr.trim();
 
-    throw new Error(`The token command \`${command}\` exited ${status}${detail === '' ? '' : `: ${detail}`}`);
+    throw new JiraTokenCommandError(
+      `The token command \`${command}\` exited ${status}${detail === '' ? '' : `: ${detail}`}`,
+    );
   }
 
   return stdout.replace(/\n$/, '');

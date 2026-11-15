@@ -1,11 +1,12 @@
 import { findFirstFilled } from '../internal/findFirstFilled.ts';
+import { JiraSettingError } from './JiraSettingError.ts';
 
 const EMAIL_VARIABLE = 'JIRA_EMAIL';
 
 /**
  * Resolves the email that Basic auth pairs with the API token, from a supplied value, then the environment,
  * then the fallback. The email is not a secret, which is why it is resolved separately from the token, and it
- * names the keychain account under which the token is stored.
+ * names the keychain account under which the token is stored. Throws `JiraSettingError` when every source misses.
  *
  * @category Jira
  * @experimental
@@ -16,7 +17,7 @@ export function resolveJiraEmail(options: JiraEmailOptions = {}): string {
 
   const resolved = findFirstFilled(email, env[EMAIL_VARIABLE], fallback);
   if (resolved === undefined) {
-    throw new Error(
+    throw new JiraSettingError(
       `No Atlassian account email was given. Supply one, set ${EMAIL_VARIABLE}, or declare one in the spec.`,
     );
   }

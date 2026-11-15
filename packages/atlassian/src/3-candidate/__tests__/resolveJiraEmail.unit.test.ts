@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { JiraSettingError } from '../JiraSettingError.ts';
 import { resolveJiraEmail } from '../resolveJiraEmail.ts';
 
 const EMAIL = 'someone@example.com';
@@ -28,6 +29,7 @@ describe(resolveJiraEmail, () => {
   });
 
   it('throws naming the environment variable when every source misses', () => {
+    expect(() => resolveJiraEmail({ env: {} })).toThrow(JiraSettingError);
     expect(() => resolveJiraEmail({ env: {} })).toThrow('No Atlassian account email was given');
   });
 });

@@ -1,5 +1,6 @@
 import { JiraRequestError } from '../3-candidate/JiraRequestError.ts';
 import { JiraResponseError } from '../3-candidate/JiraResponseError.ts';
+import { JiraSettingError } from '../3-candidate/JiraSettingError.ts';
 import { fetchOrRaise } from './fetchOrRaise.ts';
 import { readFilledStringField } from './readFilledStringField.ts';
 import { readResponse } from './readResponse.ts';
@@ -29,7 +30,7 @@ export async function findCloudId(host: string, fetchImpl: typeof globalThis.fet
     });
   }
   if (!raw.ok) {
-    throw new Error(`Could not read the cloudId of '${host}'. ${url} returned ${response.status}.`);
+    throw new JiraSettingError(`Could not read the cloudId of '${host}'. ${url} returned ${response.status}.`);
   }
   if (response.json === undefined) {
     throw new JiraResponseError({
