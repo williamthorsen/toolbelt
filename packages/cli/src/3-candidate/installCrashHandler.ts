@@ -8,6 +8,10 @@ import { isError } from '@williamthorsen/toolbelt.errors';
  * and a `caused by:` line with frames for each error in its `cause` chain, and exits with code 1 once the
  * report is flushed. It is the counterpart to `runCli`, which rethrows every error that is not a `UsageError`.
  *
+ * The errors that a `SuppressedError` or an `AggregateError` wraps are reported under it, indented one level
+ * deeper and labelled `error:` and `suppressed:`, or `errors[0]:` and onward, each with its own frames and
+ * cause chain. A value that the report has already shown is not reported again.
+ *
  * Under Node's default `--unhandled-rejections=throw`, a rejected top-level await reaches the handler too;
  * a process `unhandledRejection` listener or `--unhandled-rejections=warn` keeps a rejection from it. A value
  * that is not an `Error` is reported by its `util.inspect` form, without frames. Only the first crash is
