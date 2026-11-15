@@ -283,6 +283,7 @@ describe(runAcpPrompt, () => {
         'policy failed',
       );
       expect(findParams(received, 'session/request_permission')).toStrictEqual({ outcome: { outcome: 'cancelled' } });
+      expect(findParams(received, 'session/cancel')).toBeDefined();
     });
   });
 
