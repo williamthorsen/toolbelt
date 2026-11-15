@@ -1,3 +1,5 @@
+<!-- readme-type: library -->
+
 # @williamthorsen/toolbelt.enums
 
 Functions for working with TypeScript enums.

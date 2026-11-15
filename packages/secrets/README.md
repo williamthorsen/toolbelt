@@ -1,3 +1,5 @@
+<!-- readme-type: library -->
+
 # @williamthorsen/toolbelt.secrets
 
 Utilities for storing and retrieving secrets in the OS credential store.
