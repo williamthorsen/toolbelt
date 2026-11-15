@@ -38,7 +38,7 @@ A profile names the command that starts a harness, how it signs in, the mode in 
 
 Each factory takes an optional `command`, for a harness installed elsewhere; the doc comment of each states its other options and what its session loads. A profile is a plain `AgentProfile`, so an app can also write its own. On Windows, an npm-installed harness is a `.cmd` shim, which `runPrompt` cannot start, because it spawns the command without a shell; name the executable that the shim runs instead.
 
-A harness that is not signed in fails the run with an `AgentRunError` whose `cause` has code `-32000`, as the doc comment of `AgentRunError` states.
+Claude's adapter fails the run of a harness that is not signed in with an `AgentRunError` whose `cause` has code `-32000`, as the doc comment of `AgentRunError` states. How Antigravity and Codex fail when not signed in has not been observed.
 
 ### Permissions
 
