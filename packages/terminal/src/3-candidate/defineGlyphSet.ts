@@ -52,6 +52,21 @@ export function defineGlyphSet<Name extends string>(variants: Readonly<Record<Na
   };
 }
 
+/** Text to print, and the terminal cells that it occupies. */
+export interface Glyph {
+  readonly text: string;
+  readonly width: number;
+}
+
+/** Every name's glyph in each style, read as `set[style][name]`. */
+export type GlyphSet<Name extends string> = Readonly<Record<OutputStyle, Readonly<Record<Name, Glyph>>>>;
+
+/** The two renderings of one name. `defineGlyphSet` derives each width; neither is declared here. */
+export interface GlyphVariants {
+  readonly plain: string;
+  readonly rich: string;
+}
+
 /**
  * Reports the cells taken by the widest glyph in a record, which is the column width that aligns every one of them.
  *
@@ -66,21 +81,6 @@ export function measureGlyphColumn(glyphs: Readonly<Record<string, Glyph>>): num
   const widths = Object.values(glyphs).map((glyph) => glyph.width);
 
   return widths.length === 0 ? 0 : Math.max(...widths);
-}
-
-/** Text to print, and the terminal cells that it occupies. */
-export interface Glyph {
-  readonly text: string;
-  readonly width: number;
-}
-
-/** Every name's glyph in each style, read as `set[style][name]`. */
-export type GlyphSet<Name extends string> = Readonly<Record<OutputStyle, Readonly<Record<Name, Glyph>>>>;
-
-/** The two renderings of one name. `defineGlyphSet` derives each width; neither is declared here. */
-export interface GlyphVariants {
-  readonly plain: string;
-  readonly rich: string;
 }
 
 // region | Helpers

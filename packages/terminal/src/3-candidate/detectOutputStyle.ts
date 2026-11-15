@@ -1,8 +1,3 @@
-export const OUTPUT_STYLES = ['plain', 'rich'] as const;
-
-/** A style that output can actually be rendered in. */
-export type OutputStyle = (typeof OUTPUT_STYLES)[number];
-
 // The Linux virtual console, whose kernel font contains a few hundred glyphs and no emoji among them.
 const CONSOLE_TERM = 'linux';
 
@@ -35,6 +30,11 @@ export interface DetectOutputStyleOptions {
   /** Whether the stream that receives the output is a terminal, read by the caller from that stream. */
   readonly isTty: boolean;
 }
+
+export const OUTPUT_STYLES = ['plain', 'rich'] as const;
+
+/** A style that output can actually be rendered in. */
+export type OutputStyle = (typeof OUTPUT_STYLES)[number];
 
 // region | Helpers
 
