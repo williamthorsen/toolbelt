@@ -8,6 +8,7 @@ const config = defineConfig({
     extends: ['common'],
     labels: {
       'scope:root': { color: '00ff96' },
+      'scope:acp': { color: '00ff96' },
       'scope:adoption': { color: '00ff96' },
       'scope:arrays': { color: '00ff96' },
       'scope:async': { color: '00ff96' },

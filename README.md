@@ -91,7 +91,7 @@ Each pushed release tag (`{package}-v{version}`) triggers:
 
 Tags must be pushed from a developer machine, not by the dispatch `release.yaml` workflow: GitHub does not trigger workflows for tags pushed with the built-in `GITHUB_TOKEN`, so a bot-pushed tag would publish nothing.
 
-**One-time setup (per published package):** Two steps, in order. Both require account-level 2FA, and the second requires npm ≥ 11.15.0.
+**One-time setup (per published package):** Two steps, in order, from a shell signed in to npm through `npm login`. Both require account-level 2FA, and the second requires npm ≥ 11.15.0.
 
 First, claim the name with a placeholder version. npm accepts `npm trust` only for a package that the registry already holds, so a package's first publish cannot come from CI. Publish a bare manifest from a scratch directory. Never publish from `packages/{domain}`: That manifest declares the version from which release-kit bumps, and its build would publish an empty `dist/`.
 
@@ -99,7 +99,7 @@ First, claim the name with a placeholder version. npm accepts `npm trust` only f
 placeholder_dir=$(mktemp -d) && printf '{ "name": "%s", "version": "0.0.0", "description": "Placeholder awaiting first release" }\n' @williamthorsen/toolbelt.{domain} > "$placeholder_dir/package.json" && npm publish "$placeholder_dir" --access public
 ```
 
-Then register the package as a trusted publisher, bound to `publish.yaml`:
+Then register the package as a trusted publisher, bound to `publish.yaml`. The registry takes a few minutes to show a new package, and `npm trust` fails until it does, so wait until `npm view @williamthorsen/toolbelt.{domain} version` reports `0.0.0`:
 
 ```shell
 npm trust github @williamthorsen/toolbelt.{domain} --file publish.yaml --repo williamthorsen/toolbelt --allow-publish
