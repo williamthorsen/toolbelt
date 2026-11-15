@@ -17,7 +17,8 @@ export const DEFAULT_TOKEN_SERVICE = 'toolbelt.atlassian.jira';
  * Resolves the Jira API token from a supplied value, then the environment, then a configured command, then the
  * keychain. A token is stored per account, so `account` is the email with which Basic auth pairs it. Throws
  * `JiraSettingError` when every source misses, naming the command that stores one, and `JiraTokenCommandError`
- * when the configured command cannot run, is killed, or exits non-zero.
+ * when the configured command cannot run, is killed, or exits non-zero. A keychain that cannot be read throws
+ * `SecretStoreError` from `toolbelt.secrets`.
  *
  * @category Jira
  * @experimental

@@ -9,7 +9,8 @@ const SECRET_PROMPT = 'Secret: ';
 /**
  * Reads a secret from a terminal without echoing it, asking twice and comparing, since nothing on screen shows
  * what was typed. `security` has a prompt of its own, but it fills a 128-byte buffer and returns nothing to
- * verify, so the secret is read here instead.
+ * verify, so the secret is read here instead. Rejects with `SecretPromptError` when the entries differ or the
+ * input ends before a secret is entered.
  *
  * @category Secrets
  * @experimental

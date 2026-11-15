@@ -10,7 +10,8 @@ const STORED = 'stored';
  * Reports which source would supply the Jira API token, walking the same chain that `resolveJiraToken` walks and
  * returning `undefined` when every source misses. The token itself is never read: The keychain is probed for
  * presence, which raises no keychain access prompt. A configured token command does run, and its output is
- * discarded; a command that cannot run, is killed, or exits non-zero throws `JiraTokenCommandError`.
+ * discarded; a command that cannot run, is killed, or exits non-zero throws `JiraTokenCommandError`. A keychain
+ * that cannot be probed throws `SecretStoreError` from `toolbelt.secrets`.
  *
  * Presence is not contents. A keychain item containing only whitespace is reported here and dropped by
  * `resolveJiraToken`, which reads the value and treats a blank one as a miss.

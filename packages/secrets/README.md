@@ -61,11 +61,11 @@ store.findSecret({ account: 'me@example.com', service: 'atlassian-api-token' });
 // the token
 ```
 
-`findSecret` returns `undefined` when no item is stored, and throws when the keychain could not be reached, so absence is never confused with a failure. `deleteSecret` reports whether an item was there to remove.
+`findSecret` returns `undefined` when no item is stored, and throws `SecretStoreError` when the keychain could not be reached or its answer could not be read, so absence is never confused with a failure. Every method throws `SecretStoreError` for such a failure, as `createKeychainStore` does off macOS. `deleteSecret` reports whether an item was there to remove.
 
 `hasSecret` reads the item's attributes rather than its data. That is the difference worth knowing: Retrieving a secret can raise a keychain access prompt when the item was created by another program, and an attribute lookup cannot.
 
-`setSecret` rejects an empty secret, which the keychain would store as an item indistinguishable from a stray one, and one too long for the command line that contains it. Both are `UnstorableSecretError`, which is exported: Nothing was attempted, so a caller can tell a value that the keychain cannot store from a keychain that it could not reach. Every other secret is stored and returned byte for byte, whatever it contains. Each write is read back and compared: A secret that did not survive the round trip fails at the write rather than at a later caller. Because that readback retrieves the secret, replacing an item created by another program can raise the keychain access prompt described above, and a write whose readback is refused is reported as unverified rather than as stored.
+`setSecret` rejects an empty secret, which the keychain would store as an item indistinguishable from a stray one, and one too long for the command line that contains it. Both are `UnstorableSecretError`, which is exported: Nothing was attempted, so a caller can tell a value that the keychain cannot store from a keychain that it could not reach. Every other secret is stored and returned byte for byte, whatever it contains. Each write is read back and compared: A secret that did not survive the round trip fails at the write rather than at a later caller. Because that readback retrieves the secret, replacing an item created by another program can raise the keychain access prompt described above, and a write whose readback is refused is reported as unverified rather than as stored. Both a secret that did not survive and an unverified write are `SecretStoreError`.
 
 ```ts
 const projectStore = createKeychainStore({ keychain: '/Users/me/Library/Keychains/project.keychain-db' });
@@ -81,7 +81,7 @@ A named keychain accepts a write like the default search list does. `SecretStore
 promptSecret(input: NodeJS.ReadableStream, output: NodeJS.WritableStream): Promise<string>;
 ```
 
-Reads a secret from a terminal without echoing it, asking twice and comparing, since nothing on screen shows what was typed. It rejects when the two entries differ, and when the input ends before a secret is entered, which is the one event that `Ctrl-C`, `Ctrl-D`, and a closed stream all share.
+Reads a secret from a terminal without echoing it, asking twice and comparing, since nothing on screen shows what was typed. It rejects with `SecretPromptError` when the two entries differ, and when the input ends before a secret is entered, which is the one event that `Ctrl-C`, `Ctrl-D`, and a closed stream all share.
 
 ```ts
 import { promptSecret } from '@williamthorsen/toolbelt.secrets/candidate';
