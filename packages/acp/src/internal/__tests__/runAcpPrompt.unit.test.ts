@@ -2,7 +2,7 @@ import type { SessionUpdate } from '@agentclientprotocol/sdk/unstable';
 import { describe, expect, it } from 'vitest';
 
 import { createFakeAgent, type FakeAgentConfig, type ReceivedMessage } from '../../test-utils/createFakeAgent.ts';
-import type { RunEvent, RunPromptOptions } from '../../types/run.ts';
+import type { PermissionPolicy, RunEvent, RunPromptOptions } from '../../types/run.ts';
 import { runAcpPrompt } from '../runAcpPrompt.ts';
 
 const OPTIONS: RunPromptOptions = { agent: { command: 'unused' }, cwd: '/work', prompt: 'hello' };
@@ -127,6 +127,67 @@ describe(runAcpPrompt, () => {
     });
   });
 
+  describe('permission mode', () => {
+    const modes = {
+      currentModeId: 'auto',
+      availableModes: [
+        { id: 'auto', name: 'Auto' },
+        { id: 'default', name: 'Default' },
+      ],
+    };
+    const options = { ...OPTIONS, agent: { command: 'x', permissionModeId: 'default' } };
+
+    it("sets the profile's mode when the session is in another", async () => {
+      const { agent, received } = createFakeAgent({ modes });
+
+      await Array.fromAsync(runAcpPrompt(agent, options));
+
+      expect(received.map(({ method }) => method)).toStrictEqual([
+        'initialize',
+        'session/new',
+        'session/set_mode',
+        'session/prompt',
+      ]);
+      expect(findParams(received, 'session/set_mode')).toStrictEqual({
+        sessionId: 'fake-session',
+        modeId: 'default',
+      });
+    });
+
+    it("leaves the mode alone when the session is already in the profile's mode", async () => {
+      const { agent, received } = createFakeAgent({ modes: { ...modes, currentModeId: 'default' } });
+
+      await Array.fromAsync(runAcpPrompt(agent, options));
+
+      expect(findParams(received, 'session/set_mode')).toBeUndefined();
+    });
+
+    it('leaves the mode alone when the profile names none', async () => {
+      const { agent, received } = createFakeAgent({ modes });
+
+      await Array.fromAsync(runAcpPrompt(agent, OPTIONS));
+
+      expect(findParams(received, 'session/set_mode')).toBeUndefined();
+    });
+
+    it("rejects, without prompting, when the session does not list the profile's mode", async () => {
+      const { agent, received } = createFakeAgent({ modes });
+      const unlisted = { ...OPTIONS, agent: { command: 'x', permissionModeId: 'ask' } };
+
+      await expect(Array.fromAsync(runAcpPrompt(agent, unlisted))).rejects.toThrow(
+        'The session does not list the permission mode "ask"; it lists "auto", "default".',
+      );
+      expect(findParams(received, 'session/prompt')).toBeUndefined();
+    });
+
+    it('rejects, without prompting, when the agent reports no modes', async () => {
+      const { agent, received } = createFakeAgent();
+
+      await expect(Array.fromAsync(runAcpPrompt(agent, options))).rejects.toThrow('it lists no modes');
+      expect(findParams(received, 'session/prompt')).toBeUndefined();
+    });
+  });
+
   describe('permission requests', () => {
     it('refuses a request with its reject-once option', async () => {
       const { agent, received } = createFakeAgent({ permissionRequest: PERMISSION_REQUEST });
@@ -148,6 +209,81 @@ describe(runAcpPrompt, () => {
       await Array.fromAsync(runAcpPrompt(agent, OPTIONS));
 
       expect(findParams(received, 'session/request_permission')).toStrictEqual({ outcome: { outcome: 'cancelled' } });
+    });
+
+    it('gives the policy the request and grants it once when the policy allows it', async () => {
+      const { agent, received } = createFakeAgent({ permissionRequest: PERMISSION_REQUEST });
+      const requests: unknown[] = [];
+      const permissionPolicy: PermissionPolicy = (request) => {
+        requests.push(request);
+        return 'allow';
+      };
+
+      await Array.fromAsync(runAcpPrompt(agent, { ...OPTIONS, permissionPolicy }));
+
+      expect(requests).toStrictEqual([{ ...PERMISSION_REQUEST, sessionId: 'fake-session' }]);
+      expect(findParams(received, 'session/request_permission')).toStrictEqual({
+        outcome: { outcome: 'selected', optionId: 'allow' },
+      });
+    });
+
+    it('waits for a policy that answers asynchronously', async () => {
+      const { agent, received } = createFakeAgent({ permissionRequest: PERMISSION_REQUEST });
+      const permissionPolicy: PermissionPolicy = async () => {
+        await new Promise((resolve) => setImmediate(resolve));
+        return 'allow' as const;
+      };
+
+      await Array.fromAsync(runAcpPrompt(agent, { ...OPTIONS, permissionPolicy }));
+
+      expect(findParams(received, 'session/request_permission')).toStrictEqual({
+        outcome: { outcome: 'selected', optionId: 'allow' },
+      });
+    });
+
+    it.for([
+      { title: 'rejects it', verdict: 'reject' },
+      { title: 'returns nothing', verdict: undefined },
+      // A JavaScript caller can return a value that the type excludes.
+      { title: 'returns a value outside the type', verdict: 'always' },
+    ])('refuses the request once when the policy $title', async ({ verdict }) => {
+      const { agent, received } = createFakeAgent({ permissionRequest: PERMISSION_REQUEST });
+      // @ts-expect-error -- one case returns a value outside `PermissionVerdict`.
+      const permissionPolicy: PermissionPolicy = () => verdict;
+
+      await Array.fromAsync(runAcpPrompt(agent, { ...OPTIONS, permissionPolicy }));
+
+      expect(findParams(received, 'session/request_permission')).toStrictEqual({
+        outcome: { outcome: 'selected', optionId: 'reject' },
+      });
+    });
+
+    it.for([
+      { title: 'no allow-once option', kinds: ['reject_once'] as const },
+      { title: 'only options that apply always', kinds: ['allow_always', 'reject_always'] as const },
+    ])('answers cancelled when the policy allows a request that offers $title', async ({ kinds }) => {
+      const permissionRequest = {
+        ...PERMISSION_REQUEST,
+        options: kinds.map((kind) => ({ optionId: kind, name: kind, kind })),
+      };
+      const { agent, received } = createFakeAgent({ permissionRequest });
+
+      await Array.fromAsync(runAcpPrompt(agent, { ...OPTIONS, permissionPolicy: () => 'allow' }));
+
+      expect(findParams(received, 'session/request_permission')).toStrictEqual({ outcome: { outcome: 'cancelled' } });
+    });
+
+    it('answers cancelled, then rejects with the error, when the policy throws', async () => {
+      const { agent, received } = createFakeAgent({ permissionRequest: PERMISSION_REQUEST });
+      const permissionPolicy: PermissionPolicy = () => {
+        throw new Error('policy failed');
+      };
+
+      await expect(Array.fromAsync(runAcpPrompt(agent, { ...OPTIONS, permissionPolicy }))).rejects.toThrow(
+        'policy failed',
+      );
+      expect(findParams(received, 'session/request_permission')).toStrictEqual({ outcome: { outcome: 'cancelled' } });
+      expect(findParams(received, 'session/cancel')).toBeDefined();
     });
   });
 
@@ -188,6 +324,62 @@ describe(runAcpPrompt, () => {
       expect(findParams(received, 'session/cancel')).toStrictEqual({ sessionId: 'fake-session' });
       expect(findParams(received, 'session/request_permission')).toStrictEqual({ outcome: { outcome: 'cancelled' } });
       expect(events.at(-1)).toStrictEqual({ type: 'stopped', stopReason: 'cancelled' });
+    });
+
+    it('does not consult the policy about a request raised after the cancellation', async () => {
+      const { agent } = createFakeAgent({
+        updates: [TEXT_UPDATE],
+        holdUntilCancel: true,
+        permissionRequest: PERMISSION_REQUEST,
+      });
+      const controller = new AbortController();
+      let callCount = 0;
+      const permissionPolicy: PermissionPolicy = () => {
+        callCount += 1;
+        return 'allow';
+      };
+
+      await collectAbortingOnFirstEvent(
+        runAcpPrompt(agent, { ...OPTIONS, signal: controller.signal, permissionPolicy }),
+        controller,
+      );
+
+      expect(callCount).toBe(0);
+    });
+
+    it("aborts a pending policy's signal and answers its request with cancelled", async () => {
+      const { agent, received } = createFakeAgent({ permissionRequest: PERMISSION_REQUEST });
+      const controller = new AbortController();
+      let policySignal: AbortSignal | undefined;
+      const permissionPolicy: PermissionPolicy = (_request, { signal }) => {
+        policySignal = signal;
+        controller.abort(new Error('stop'));
+        return new Promise<never>(() => {});
+      };
+
+      const events = await Array.fromAsync(
+        runAcpPrompt(agent, { ...OPTIONS, signal: controller.signal, permissionPolicy }),
+      );
+
+      expect(policySignal?.aborted).toBe(true);
+      expect(findParams(received, 'session/request_permission')).toStrictEqual({ outcome: { outcome: 'cancelled' } });
+      expect(events).toStrictEqual([{ type: 'stopped', stopReason: 'end_turn' }]);
+    });
+
+    it("aborts a pending policy's signal when the consumer stops iterating", async () => {
+      const { agent } = createFakeAgent({ updates: [TEXT_UPDATE], permissionRequest: PERMISSION_REQUEST });
+      const { promise: started, resolve } = Promise.withResolvers<AbortSignal>();
+      const permissionPolicy: PermissionPolicy = (_request, { signal }) => {
+        resolve(signal);
+        return new Promise<never>(() => {});
+      };
+      await using run = runAcpPrompt(agent, { ...OPTIONS, permissionPolicy });
+
+      await run.next();
+      const policySignal = await started;
+      await run.return(undefined);
+
+      expect(policySignal.aborted).toBe(true);
     });
 
     it('rejects with the reason when the agent does not stop within the grace period', async () => {
