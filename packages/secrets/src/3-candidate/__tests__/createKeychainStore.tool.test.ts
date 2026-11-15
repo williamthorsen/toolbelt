@@ -1,13 +1,15 @@
-import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 
 import { makeFixture } from '@williamthorsen/toolbelt.vitest/candidate';
 import { describe, expect, it as baseIt } from 'vitest';
 
-import { canCreateKeychain, createTempKeychain, type TempKeychain } from '../../test-utils/createTempKeychain.ts';
+import {
+  canCreateKeychain,
+  createTempKeychain,
+  seedKeychainItem,
+  type TempKeychain,
+} from '../../test-utils/createTempKeychain.ts';
 import { createKeychainStore } from '../createKeychainStore.ts';
-
-const SECURITY_PATH = '/usr/bin/security';
 
 // Unique per run, so an assertion about the default keychain cannot collide with an item already stored there.
 const SERVICE_PREFIX = `tb-secret-test-${randomUUID().slice(0, 8)}`;
@@ -67,7 +69,7 @@ describe.skipIf(!canCreateKeychain)(createKeychainStore, () => {
 
   it('removes an item once, then reports it absent', ({ keychain }) => {
     const store = createKeychainStore({ keychain: keychain.path });
-    seedItem(keychain.path, PLAIN_SERVICE, '', PLAIN_VALUE);
+    seedKeychainItem(keychain.path, { service: PLAIN_SERVICE, value: PLAIN_VALUE });
 
     expect(store.deleteSecret({ service: PLAIN_SERVICE })).toBe(true);
     expect(store.deleteSecret({ service: PLAIN_SERVICE })).toBe(false);
@@ -114,7 +116,7 @@ describe.skipIf(!canCreateKeychain)(createKeychainStore, () => {
 
     it('replaces a secret already stored under the same service and account', ({ keychain }) => {
       const store = createKeychainStore({ keychain: keychain.path });
-      seedItem(keychain.path, PLAIN_SERVICE, '', PLAIN_VALUE);
+      seedKeychainItem(keychain.path, { service: PLAIN_SERVICE, value: PLAIN_VALUE });
 
       store.setSecret({ service: PLAIN_SERVICE }, 'replacement');
 
@@ -142,29 +144,15 @@ function createSeededKeychain(): TempKeychain {
   using stack = new DisposableStack();
   const keychain = stack.use(createTempKeychain());
 
-  seedItem(keychain.path, PLAIN_SERVICE, '', PLAIN_VALUE);
-  seedItem(keychain.path, HEX_SERVICE, 'me@example.com', TAB_SECRET);
-  seedItem(keychain.path, SHARED_SERVICE, 'first', 'first value');
-  seedItem(keychain.path, SHARED_SERVICE, 'second', 'second value');
+  seedKeychainItem(keychain.path, { service: PLAIN_SERVICE, value: PLAIN_VALUE });
+  seedKeychainItem(keychain.path, { account: 'me@example.com', service: HEX_SERVICE, value: TAB_SECRET });
+  seedKeychainItem(keychain.path, { account: 'first', service: SHARED_SERVICE, value: 'first value' });
+  seedKeychainItem(keychain.path, { account: 'second', service: SHARED_SERVICE, value: 'second value' });
 
   // Release the keychain from the stack, so that it outlives this call once seeding succeeds.
   stack.move();
 
   return keychain;
-}
-
-/** Runs `security`, raising what it wrote when it fails, so that a broken fixture is not read as a result. */
-function runSecurity(args: string[]): void {
-  execFileSync(SECURITY_PATH, args, { encoding: 'utf8', stdio: 'pipe' });
-}
-
-/**
- * Places one fixture item in a keychain. Seeding passes the value on argv, which the store itself refuses to
- * do: These are fixtures rather than secrets, and passing them this way keeps the seeding independent of the
- * write under test.
- */
-function seedItem(keychain: string, service: string, account: string, value: string): void {
-  runSecurity(['add-generic-password', '-U', '-a', account, '-s', service, '-w', value, keychain]);
 }
 
 // endregion | Helpers

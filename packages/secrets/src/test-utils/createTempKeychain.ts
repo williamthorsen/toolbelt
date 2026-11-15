@@ -44,6 +44,22 @@ export function createTempKeychain(): TempKeychain {
   };
 }
 
+/**
+ * Places one fixture item in a keychain. Seeding passes the value on argv, which the store itself refuses to
+ * do: These are fixtures rather than secrets, and passing them this way keeps the seeding independent of the
+ * write under test.
+ *
+ * @internal
+ */
+export function seedKeychainItem(
+  keychainPath: string,
+  item: { readonly account?: string; readonly service: string; readonly value: string },
+): void {
+  const { account = '', service, value } = item;
+
+  runSecurity(['add-generic-password', '-U', '-a', account, '-s', service, '-w', value, keychainPath]);
+}
+
 /** A keychain containing one test's items, deleted when the scope that created it ends. */
 export interface TempKeychain extends Disposable {
   /** Path of the keychain file, which every `security` call names. */
