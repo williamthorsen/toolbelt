@@ -45,6 +45,11 @@
   "scripts": {
     "prepublishOnly": "nmr build"
   },
+  "dependencies": {
+    "@agentclientprotocol/sdk": "2.6.0",
+    "@williamthorsen/toolbelt.errors": "workspace:*",
+    "@williamthorsen/toolbelt.guards": "workspace:*"
+  },
   "engines": {
     "node": ">=24.0.0"
   },
