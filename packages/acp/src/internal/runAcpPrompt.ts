@@ -4,7 +4,9 @@ import {
   type ContentBlock,
   type Cost,
   McpOverAcpProvider,
+  type McpServer as McpServerDeclaration,
   methods,
+  type NewSessionRequest,
   PROTOCOL_VERSION,
   type RequestPermissionRequest,
   type RequestPermissionResponse,
@@ -81,7 +83,7 @@ export async function* runAcpPrompt(
         );
       }
 
-      const { authMethodId, sessionMeta } = options.agent;
+      const { authMethodId } = options.agent;
       if (authMethodId !== undefined && (initialized.authMethods ?? []).some(({ id }) => id === authMethodId)) {
         await context.request(methods.agent.authenticate, { methodId: authMethodId });
       }
@@ -93,13 +95,10 @@ export async function* runAcpPrompt(
 
       const instructions = options.instructions ?? '';
       const hasSystemPrompt = isNonNullable(initialized.agentCapabilities?.sessionCapabilities?.systemPrompt);
-      const { sessionId, modes } = await context.request(methods.agent.session.new, {
-        cwd: options.cwd,
-        mcpServers: toolServing.mcpServers,
-        ...(sessionMeta !== undefined && { _meta: { ...sessionMeta } }),
-        ...(instructions !== '' &&
-          hasSystemPrompt && { systemPrompt: { mode: 'append', content: [toTextBlock(instructions)] } }),
-      });
+      const { sessionId, modes } = await context.request(
+        methods.agent.session.new,
+        buildNewSessionRequest(options, toolServing.mcpServers, hasSystemPrompt ? instructions : ''),
+      );
 
       const modeId = findModeToSet(modes, options.agent.permissionModeId);
       if (modeId !== undefined) await context.request(methods.agent.session.setMode, { sessionId, modeId });
@@ -192,6 +191,21 @@ async function answerPermission(
   const wantedKind = verdict === 'allow' ? 'allow_once' : 'reject_once';
   const option = request.options.find(({ kind }) => kind === wantedKind);
   return option === undefined ? CANCELLED : { outcome: { outcome: 'selected', optionId: option.optionId } };
+}
+
+/** Builds the `session/new` request, sending `systemPrompt` as the appended system prompt unless it is empty. */
+function buildNewSessionRequest(
+  options: RunPromptOptions,
+  mcpServers: McpServerDeclaration[],
+  systemPrompt: string,
+): NewSessionRequest {
+  const { sessionMeta } = options.agent;
+  return {
+    cwd: options.cwd,
+    mcpServers,
+    ...(sessionMeta !== undefined && { _meta: { ...sessionMeta } }),
+    ...(systemPrompt !== '' && { systemPrompt: { mode: 'append', content: [toTextBlock(systemPrompt)] } }),
+  };
 }
 
 /** Calls the policy and returns its verdict, or the error that it threw, so that an abandoned call cannot reject. */
