@@ -41,9 +41,9 @@ describe(parseSecurityPassword, () => {
   });
 
   it('throws on a malformed hex run rather than returning the bytes that it could read', async () => {
-    expect((await captureError(SecretStoreError, () => parse('password: 0x61096  "a"'))).message).toMatch(
-      /Malformed hexadecimal password/,
-    );
+    const { message } = await captureError(SecretStoreError, () => parse('password: 0x61096  "a"'));
+
+    expect(message).toMatch(/Malformed hexadecimal password/);
   });
 
   it('keeps a malformed hex value out of the error message', async () => {
@@ -62,9 +62,9 @@ describe(parseSecurityPassword, () => {
   });
 
   it('throws on a value that is neither form', async () => {
-    expect((await captureError(SecretStoreError, () => parse('password: unquoted'))).message).toMatch(
-      /Unquoted password/,
-    );
+    const { message } = await captureError(SecretStoreError, () => parse('password: unquoted'));
+
+    expect(message).toMatch(/Unquoted password/);
   });
 
   it('keeps an unquoted value out of the error message', async () => {

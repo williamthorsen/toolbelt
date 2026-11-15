@@ -10,8 +10,8 @@ describe(assertMacosPlatform, () => {
   });
 
   it.each([['linux'], ['win32']])('names the platform that it rejects: %s', async (platform) => {
-    expect((await captureError(SecretStoreError, () => assertMacosPlatform(platform))).message).toMatch(
-      new RegExp(String.raw`This platform is ${platform}\.`),
-    );
+    const { message } = await captureError(SecretStoreError, () => assertMacosPlatform(platform));
+
+    expect(message).toMatch(new RegExp(String.raw`This platform is ${platform}\.`));
   });
 });

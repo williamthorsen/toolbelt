@@ -19,7 +19,9 @@ describe(runSecurity, () => {
     const launchError = Object.assign(new Error('spawnSync /usr/bin/security ENOENT'), { code: 'ENOENT' });
     mockSpawnResult({ error: launchError, status: null });
 
-    await expect(captureError(SecretStoreError, () => runSecurity([]))).resolves.toStrictEqual(
+    const error = await captureError(SecretStoreError, () => runSecurity([]));
+
+    expect(error).toStrictEqual(
       expect.objectContaining({
         cause: launchError,
         message: 'Could not run /usr/bin/security: spawnSync /usr/bin/security ENOENT',
@@ -30,7 +32,9 @@ describe(runSecurity, () => {
   it('throws when the run was killed before it exited', async () => {
     mockSpawnResult({ signal: 'SIGKILL', status: null });
 
-    expect((await captureError(SecretStoreError, () => runSecurity([]))).message).toMatch(/killed before it exited/);
+    const { message } = await captureError(SecretStoreError, () => runSecurity([]));
+
+    expect(message).toMatch(/killed before it exited/);
   });
 });
 
