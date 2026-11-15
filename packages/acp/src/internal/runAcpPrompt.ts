@@ -81,7 +81,7 @@ export async function* runAcpPrompt(
         );
       }
 
-      const { authMethodId } = options.agent;
+      const { authMethodId, sessionMeta } = options.agent;
       if (authMethodId !== undefined && (initialized.authMethods ?? []).some(({ id }) => id === authMethodId)) {
         await context.request(methods.agent.authenticate, { methodId: authMethodId });
       }
@@ -96,6 +96,7 @@ export async function* runAcpPrompt(
       const { sessionId, modes } = await context.request(methods.agent.session.new, {
         cwd: options.cwd,
         mcpServers: toolServing.mcpServers,
+        ...(sessionMeta !== undefined && { _meta: { ...sessionMeta } }),
         ...(instructions !== '' &&
           hasSystemPrompt && { systemPrompt: { mode: 'append', content: [toTextBlock(instructions)] } }),
       });

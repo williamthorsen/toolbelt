@@ -75,6 +75,15 @@ describe(runAcpPrompt, () => {
     expect(findParams(received, 'session/prompt')).toMatchObject({ prompt: [{ type: 'text', text: 'hello' }] });
   });
 
+  it("sends the profile's session meta as the session's `_meta`", async () => {
+    const { agent, received } = createFakeAgent();
+    const sessionMeta = { claudeCode: { options: { settingSources: [] } } };
+
+    await Array.fromAsync(runAcpPrompt(agent, { ...OPTIONS, agent: { command: 'x', sessionMeta } }));
+
+    expect(findParams(received, 'session/new')).toStrictEqual({ cwd: '/work', mcpServers: [], _meta: sessionMeta });
+  });
+
   it('rejects an agent that answers a version other than 1', async () => {
     const { agent, received } = createFakeAgent({ protocolVersion: 2 });
 
