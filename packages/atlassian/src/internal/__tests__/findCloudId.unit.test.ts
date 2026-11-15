@@ -34,10 +34,7 @@ describe(findCloudId, () => {
   it('throws when the endpoint does not return OK', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response('', { status: 404 }));
 
-    const reading = findCloudId('acme.atlassian.net', fetchImpl);
-
-    await expect(reading).rejects.toThrow(JiraSettingError);
-    await expect(reading).rejects.toThrow('returned 404');
+    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toThrow('returned 404');
   });
 
   it('raises a request error for a gateway incident, which a caller retries rather than corrects', async () => {
@@ -57,12 +54,10 @@ describe(findCloudId, () => {
     );
   });
 
-  it('leaves a 4xx as a plain error, which names the site that the caller corrects', async () => {
+  it('reports a 4xx as a setting error, which names the site that the caller corrects', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response('', { status: 404 }));
 
-    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.not.toMatchObject({
-      name: 'JiraRequestError',
-    });
+    await expect(findCloudId('acme.atlassian.net', fetchImpl)).rejects.toBeInstanceOf(JiraSettingError);
   });
 
   it('reports the parsed body of a gateway incident that answers in JSON', async () => {
