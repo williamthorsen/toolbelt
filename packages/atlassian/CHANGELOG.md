@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.9.0 — 2026-11-15
+
+### 🎉 Features
+
+- Adds `JiraSettingError`, which `resolveJiraSite`, `resolveJiraEmail`, `resolveJiraToken`, and `resolveJiraBaseUrl` throw when a site, email, or token is missing, when a site is not a host, or when the site's tenant-info endpoint answers 4xx. (#646)
+- Adds `JiraTokenCommandError`, which `findJiraTokenSource` and `resolveJiraToken` throw when the configured token command cannot run, is killed, or exits non-zero. (#646)
+- Adds `ProjectSpecError`, which `parseProjectSpec` throws for every fault in a spec, including a non-list `aliases` value that previously threw a `TypeError`. (#646)
+- Adds `JiraRefusalError`, which `readProjectConfiguration`, `buildWorkflowUpdatePayload`, and `applyWorkflowUpdate` throw before writing anything when a project is in a state that the package does not support or when a workflow write would drop a status or a transition or leave a status unreachable. (#646)
+- Throw typed errors for the anticipated failures in toolbelt.secrets (#647)
+
+  Adds `SecretStoreError` and `SecretPromptError` to `@williamthorsen/toolbelt.secrets/candidate` and replaces the plain `Error` that the package threw for each expected keychain or prompt failure with one of them, so that a caller can tell such a failure from a bug in the package. It leaves the error messages unchanged.
+
+### 🧪 Tests
+
+- Adds a case to `runTokenCommand.tool.test.ts` that requires `runTokenCommand` to throw exactly ``The token command `exit 3` exited 3`` when the command exits non-zero and leaves stderr empty. (#644)
+
 ## 0.8.4 — 2026-11-15
 
 ### 🐛 Bug fixes

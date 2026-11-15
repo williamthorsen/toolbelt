@@ -1,5 +1,53 @@
 [
   {
+    "version": "0.9.0",
+    "date": "2026-11-15",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds `JiraSettingError`, which `resolveJiraSite`, `resolveJiraEmail`, `resolveJiraToken`, and `resolveJiraBaseUrl` throw when a site, email, or token is missing, when a site is not a host, or when the site's tenant-info endpoint answers 4xx. (#646)",
+            "hash": "8d16b618527b699801c99562e8a422799ba5f0e4",
+            "entry": 1
+          },
+          {
+            "description": "Adds `JiraTokenCommandError`, which `findJiraTokenSource` and `resolveJiraToken` throw when the configured token command cannot run, is killed, or exits non-zero. (#646)",
+            "hash": "8d16b618527b699801c99562e8a422799ba5f0e4",
+            "entry": 2
+          },
+          {
+            "description": "Adds `ProjectSpecError`, which `parseProjectSpec` throws for every fault in a spec, including a non-list `aliases` value that previously threw a `TypeError`. (#646)",
+            "hash": "8d16b618527b699801c99562e8a422799ba5f0e4",
+            "entry": 3
+          },
+          {
+            "description": "Adds `JiraRefusalError`, which `readProjectConfiguration`, `buildWorkflowUpdatePayload`, and `applyWorkflowUpdate` throw before writing anything when a project is in a state that the package does not support or when a workflow write would drop a status or a transition or leave a status unreachable. (#646)",
+            "hash": "8d16b618527b699801c99562e8a422799ba5f0e4",
+            "entry": 4
+          },
+          {
+            "description": "Throw typed errors for the anticipated failures in toolbelt.secrets (#647)",
+            "body": "Adds `SecretStoreError` and `SecretPromptError` to `@williamthorsen/toolbelt.secrets/candidate` and replaces the plain `Error` that the package threw for each expected keychain or prompt failure with one of them, so that a caller can tell such a failure from a bug in the package. It leaves the error messages unchanged.",
+            "hash": "06a97fc63ca84b0c0068312dae677a6f405bbd05"
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Adds a case to `runTokenCommand.tool.test.ts` that requires `runTokenCommand` to throw exactly ``The token command `exit 3` exited 3`` when the command exits non-zero and leaves stderr empty. (#644)",
+            "hash": "f3c70223abe96ade4546172145788c612439dad2",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.8.4",
     "date": "2026-11-15",
     "sections": [

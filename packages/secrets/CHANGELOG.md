@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.7.0 — 2026-11-15
+
+### 🎉 Features
+
+- Adds `SecretStoreError`, which `createKeychainStore` and every store method now throw when the keychain is unavailable on the platform, the `security` command cannot run, is killed, or exits non-zero, its output cannot be parsed, or a write cannot be verified or was not stored intact. (#647)
+- Adds `SecretPromptError`, which `promptSecret` now throws when the two entries differ or when the input ends before a secret is entered. (#647)
+- Sets the `name` of `UnstorableSecretError` to "UnstorableSecretError", so that a logged or serialized instance no longer identifies itself as `Error`. (#647)
+
+### 🧪 Tests
+
+- Adds `seedKeychainItem` to `test-utils/createTempKeychain.ts` and seeds the fixture items in `createKeychainStore.tool.test.ts` through it, which removes that test's own copies of `SECURITY_PATH` and `runSecurity`. (#643)
+
+### 📚 Documentation
+
+- Adds `<!-- readme-type: library -->` to the published packages' READMEs that lacked a type marker and `<!-- readme-type: internal -->` to the `adoption` and `tools` READMEs. (#645)
+
 ## 0.6.4 — 2026-11-15
 
 ### 🐛 Bug fixes
