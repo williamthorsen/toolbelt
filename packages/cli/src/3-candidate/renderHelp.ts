@@ -3,12 +3,6 @@ import { formatReservedFlagLabel, HELP_FLAG, listReservedFlags } from './reserve
 import { resolveLongName } from './resolveLongName.ts';
 import type { FlagDefinition, FlagSchema, OperandDefinition } from './types.ts';
 
-/** Options of `renderHelp`. */
-export interface RenderHelpOptions {
-  /** Appends the `-V, --version` line to the options. */
-  version?: boolean;
-}
-
 /**
  * Returns the help page of a command or a group, without a trailing newline. `invocation` is the
  * space-joined command path, such as `thor-jira issue list`.
@@ -63,14 +57,18 @@ export function renderHelp<C>(node: CommandNode<C>, invocation: string, options:
   return sections.join('\n\n');
 }
 
+/** Options of `renderHelp`. */
+export interface RenderHelpOptions {
+  /** Appends the `-V, --version` line to the options. */
+  version?: boolean;
+}
+
 // region | Helpers
 
 interface Block {
   title: string;
   rows: Row[];
 }
-
-type Row = [label: string, description: string];
 
 function formatFlagRow(key: string, definition: FlagDefinition): Row {
   const longName = `--${resolveLongName(key, definition)}`;
@@ -96,5 +94,7 @@ function listOptionRows(flags: FlagSchema, hasVersion: boolean): Row[] {
   for (const flag of listReservedFlags(hasVersion)) rows.push([formatReservedFlagLabel(flag), flag.description]);
   return rows;
 }
+
+type Row = [label: string, description: string];
 
 // endregion | Helpers

@@ -11,16 +11,6 @@ import type { FlagDefinition, FlagSchema, OperandDefinition, ParseOptions, Parse
 import { validateSpec } from './validateSpec.ts';
 
 /**
- * Options of the parse that `createCli` runs. A group may stop at the first flag that it does not claim, and a
- * flag that it does not claim within a cluster splits the cluster: The group keeps the flags before it.
- */
-interface ParseModeOptions extends ParseOptions {
-  /** Long names that the caller handles before parsing, which an unknown option may still be suggested as. */
-  reservedLongNames?: readonly string[];
-  stopAtUnclaimedFlag?: boolean;
-}
-
-/**
  * Parses arguments strictly against a spec and returns typed flags and operands.
  *
  * Throws a plain `Error` on an invalid spec and a `ParseError` on the first offending argument: an unknown flag, with
@@ -133,6 +123,15 @@ function assignOperands(positionals: string[], definitions: readonly OperandDefi
   return operands;
 }
 
+function checkChoice(value: string, choices: readonly string[] | undefined, label: string): void {
+  if (choices === undefined || choices.includes(value)) return;
+  throw new ParseError(
+    'invalid-choice',
+    value,
+    `Invalid value for ${label}: ${value}. Expected one of: ${choices.join(', ')}`,
+  );
+}
+
 /** Returns the long option nearest to an unknown `--` option, spelled with its dashes. */
 function findLongNameSuggestion(
   token: { name: string; rawName: string },
@@ -150,13 +149,14 @@ function initialValue(definition: FlagDefinition): unknown[] | false | undefined
   return definition.type === 'boolean' ? false : undefined;
 }
 
-function checkChoice(value: string, choices: readonly string[] | undefined, label: string): void {
-  if (choices === undefined || choices.includes(value)) return;
-  throw new ParseError(
-    'invalid-choice',
-    value,
-    `Invalid value for ${label}: ${value}. Expected one of: ${choices.join(', ')}`,
-  );
+/**
+ * Options of the parse that `createCli` runs. A group may stop at the first flag that it does not claim, and a
+ * flag that it does not claim within a cluster splits the cluster: The group keeps the flags before it.
+ */
+interface ParseModeOptions extends ParseOptions {
+  /** Long names that the caller handles before parsing, which an unknown option may still be suggested as. */
+  reservedLongNames?: readonly string[];
+  stopAtUnclaimedFlag?: boolean;
 }
 
 /** Validates and converts one flag occurrence. */
