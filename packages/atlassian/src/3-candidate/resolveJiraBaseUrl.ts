@@ -10,7 +10,8 @@ const GATEWAY_ORIGIN = 'https://api.atlassian.com';
  * fallback that this offers: A scoped token sent there is ignored rather than rejected.
  *
  * Throws `JiraSettingError` for a blank site, a site that is not a host, and a host whose tenant-info endpoint
- * answers 4xx. A tenant-info 5xx throws `JiraRequestError`, and a 2xx that it cannot read throws `JiraResponseError`.
+ * answers 4xx. A tenant-info 5xx throws `JiraRequestError`, a 2xx that it cannot read throws `JiraResponseError`,
+ * and a request that does not reach the host throws `JiraTransportError`.
  *
  * @category Jira
  * @experimental
