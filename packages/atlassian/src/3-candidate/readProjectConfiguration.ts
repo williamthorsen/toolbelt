@@ -3,6 +3,7 @@ import { isRecord } from '@williamthorsen/toolbelt.objects';
 import { readArrayField } from '../internal/readArrayField.ts';
 import { readEvery } from '../internal/readEvery.ts';
 import type { JiraRequest } from './createTokenTransport.ts';
+import { JiraRefusalError } from './JiraRefusalError.ts';
 import { JiraResponseError } from './JiraResponseError.ts';
 import type {
   ProjectConfiguration,
@@ -32,7 +33,7 @@ const TEAM_MANAGED_STYLE = 'next-gen';
  *   them reconciled and reported green.
  * - A response that it cannot read. A missing field is a refusal, not a default.
  *
- * A refusal of the project's state throws a plain `Error`, and an unreadable response throws `JiraResponseError`.
+ * A refusal of the project's state throws `JiraRefusalError`, and an unreadable response throws `JiraResponseError`.
  *
  * @category Jira
  * @experimental
@@ -80,7 +81,7 @@ async function readBoard(
     });
   }
   if (values.length === 0) {
-    throw new Error(`Project ${projectKey} has no board.`);
+    throw new JiraRefusalError(`Project ${projectKey} has no board.`);
   }
 
   const boards = readEvery(values, readBoardEntry);
@@ -97,12 +98,12 @@ async function readBoard(
   );
   const [board] = owned;
   if (board === undefined) {
-    throw new Error(
+    throw new JiraRefusalError(
       `Project ${projectKey} resolves to no board of its own (the query returned ${boards.length}). Refusing, since another project's board would take this project's feature writes and backlog moves.`,
     );
   }
   if (owned.length > 1) {
-    throw new Error(
+    throw new JiraRefusalError(
       `Project ${projectKey} resolves to ${owned.length} boards of its own. This reconciler configures one board, so an ambiguous set is refused rather than half-configured.`,
     );
   }
@@ -242,7 +243,7 @@ async function readProject(request: JiraRequest, projectKey: string, key: string
   // unreadable style is refused alongside a company-managed one: A project that this cannot classify is not one
   // to write to.
   if (style !== TEAM_MANAGED_STYLE) {
-    throw new Error(
+    throw new JiraRefusalError(
       `Project ${projectKey} is not team-managed (style: ${typeof style === 'string' ? style : 'absent'}). Refusing to write, since a status renamed in a company-managed project is renamed in every project on the site that uses it.`,
     );
   }
@@ -292,7 +293,7 @@ async function readWorkflow(
     throw new JiraResponseError({ message: `Project ${projectKey} returned no 'workflows' array.`, url: response.url });
   }
   if (workflows.length !== 1) {
-    throw new Error(
+    throw new JiraRefusalError(
       `Project ${projectKey} resolves its ${issueTypeIds.length} issue types to ${workflows.length} workflows. This reconciler writes one workflow, so a project that uses several is refused rather than half-reconciled.`,
     );
   }

@@ -1,10 +1,12 @@
+import { JiraRefusalError } from './JiraRefusalError.ts';
 import type { Workflow } from './ProjectConfiguration.ts';
 import type { WorkflowUpdatePayload } from './WorkflowUpdatePayload.ts';
 
 /**
  * Refuses a payload that would drop a status or a transition in the workflow, or leave a status with no
- * transition into it. `POST /rest/api/3/workflows/update` replaces the graph wholesale, and none of the three
- * fails loudly: Each leaves work items in a state out of which nothing can move them.
+ * transition into it, throwing `JiraRefusalError`. `POST /rest/api/3/workflows/update` replaces the graph
+ * wholesale, and none of the three fails loudly: Each leaves work items in a state out of which nothing can move
+ * them.
  *
  * @category Jira
  * @experimental
@@ -16,14 +18,18 @@ export function assertGraphPreserved(workflow: Workflow, payload: WorkflowUpdate
   const references = new Set(updated.statuses.map((status) => status.statusReference));
   for (const status of workflow.statuses) {
     if (!references.has(status.statusReference)) {
-      throw new Error(`Refusing to write: Status ${status.statusReference} would be dropped from the workflow.`);
+      throw new JiraRefusalError(
+        `Refusing to write: Status ${status.statusReference} would be dropped from the workflow.`,
+      );
     }
   }
 
   const transitionIds = new Set(updated.transitions.map((transition) => transition.id));
   for (const transition of workflow.transitions) {
     if (!transitionIds.has(transition.id)) {
-      throw new Error(`Refusing to write: Transition ${transition.id} (${transition.name}) would be dropped.`);
+      throw new JiraRefusalError(
+        `Refusing to write: Transition ${transition.id} (${transition.name}) would be dropped.`,
+      );
     }
   }
 
@@ -35,6 +41,6 @@ export function assertGraphPreserved(workflow: Workflow, payload: WorkflowUpdate
   const heldBefore = new Set(workflow.statuses.map((status) => status.statusReference));
   for (const reference of references) {
     if (targeted.has(reference) || (heldBefore.has(reference) && !targetedBefore.has(reference))) continue;
-    throw new Error(`Refusing to write: Status ${reference} would be left with no transition into it.`);
+    throw new JiraRefusalError(`Refusing to write: Status ${reference} would be left with no transition into it.`);
   }
 }
