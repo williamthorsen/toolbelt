@@ -14,4 +14,10 @@ describe(runTokenCommand, () => {
   it('throws naming the command and its stderr on a non-zero exit', () => {
     expect(() => runTokenCommand('printf "denied" >&2; exit 3')).toThrow(/exited 3: denied/);
   });
+
+  it('throws naming the command and its status alone when stderr is empty', () => {
+    expect(() => runTokenCommand('exit 3')).toThrow(
+      expect.objectContaining({ message: 'The token command `exit 3` exited 3' }),
+    );
+  });
 });
