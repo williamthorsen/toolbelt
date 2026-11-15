@@ -102,6 +102,24 @@ describe(formatCrashReport, () => {
     expect(formatCrashReport('demo', wrapper)).toBe('demo: internal error: all\n  errors[0]: { code: 7 }\n');
   });
 
+  it('indents every line of a wrapped multi-line description', () => {
+    const wrapper = new AggregateError([buildError('line one\nline two'), { code: 7, path: 'x'.repeat(80) }], 'all');
+    delete wrapper.stack;
+
+    expect(formatCrashReport('demo', wrapper).split('\n')).toStrictEqual([
+      'demo: internal error: all',
+      '  errors[0]: line one',
+      '  line two',
+      '      at first (a.ts:1:1)',
+      '      at second (b.ts:2:2)',
+      '  errors[1]: {',
+      '    code: 7,',
+      `    path: '${'x'.repeat(80)}'`,
+      '  }',
+      '',
+    ]);
+  });
+
   it('reports a value reached both as a wrapped error and as a cause once', () => {
     const shared = buildError('shared');
     const wrapper = new AggregateError([shared, shared], 'all', { cause: shared });

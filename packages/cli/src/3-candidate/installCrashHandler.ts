@@ -45,7 +45,7 @@ export function formatCrashReport(name: string, value: unknown): string {
  */
 function appendReport(lines: string[], label: string, value: unknown, depth: number, seen: Set<unknown>): void {
   const indent = '  '.repeat(depth);
-  lines.push(`${indent}${label}${describeValue(value)}`);
+  lines.push(`${indent}${label}${describeValue(value).split('\n').join(`\n${indent}`)}`);
   if (!isError(value)) return;
   lines.push(...listFrames(value).map((frame) => `${indent}${frame}`));
 
