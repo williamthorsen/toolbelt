@@ -1,0 +1,55 @@
+{
+  "name": "@williamthorsen/toolbelt.acp",
+  "version": "0.1.0",
+  "description": "An Agent Client Protocol client that runs an app's prompts on agent harnesses such as Claude Code and the Antigravity CLI.",
+  "keywords": [
+    "acp",
+    "agent-client-protocol",
+    "agents",
+    "esm",
+    "toolbelt",
+    "typescript"
+  ],
+  "homepage": "https://github.com/williamthorsen/toolbelt/tree/main/packages/acp#readme",
+  "bugs": {
+    "url": "https://github.com/williamthorsen/toolbelt/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/williamthorsen/toolbelt.git",
+    "directory": "packages/acp"
+  },
+  "license": "ISC",
+  "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/4-release/index.js"
+    },
+    "./candidate": {
+      "import": "./dist/esm/3-candidate/index.js"
+    },
+    "./draft": {
+      "import": "./dist/esm/2-draft/index.js"
+    },
+    "./proposed": {
+      "import": "./dist/esm/1-proposed/index.js"
+    }
+  },
+  "files": [
+    "dist/*",
+    "CHANGELOG.md",
+    ".meta/changelog.json"
+  ],
+  "scripts": {
+    "prepublishOnly": "nmr build"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
+}
