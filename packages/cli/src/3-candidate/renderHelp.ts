@@ -1,4 +1,5 @@
 import type { CommandNode } from './nodes.ts';
+import { formatReservedFlagLabel, HELP_FLAG, listReservedFlags } from './reserved-flags.ts';
 import { resolveLongName } from './resolveLongName.ts';
 import type { FlagDefinition, FlagSchema, OperandDefinition } from './types.ts';
 
@@ -56,7 +57,7 @@ export function renderHelp<C>(node: CommandNode<C>, invocation: string, options:
     ),
   ];
   if (node.kind === 'group' && Object.keys(node.commands).length > 0) {
-    sections.push(`Run '${invocation} <command> --help' for a command's options.`);
+    sections.push(`Run '${invocation} <command> --${HELP_FLAG.long}' for a command's options.`);
   }
   if (node.epilog !== undefined) sections.push(node.epilog);
   return sections.join('\n\n');
@@ -92,8 +93,7 @@ function formatValueLabel(definition: FlagDefinition): string {
 
 function listOptionRows(flags: FlagSchema, hasVersion: boolean): Row[] {
   const rows = Object.entries(flags).map(([key, definition]) => formatFlagRow(key, definition));
-  rows.push(['-h, --help', 'Print this help']);
-  if (hasVersion) rows.push(['-V, --version', 'Print the version']);
+  for (const flag of listReservedFlags(hasVersion)) rows.push([formatReservedFlagLabel(flag), flag.description]);
   return rows;
 }
 

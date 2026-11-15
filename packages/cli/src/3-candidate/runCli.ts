@@ -4,7 +4,7 @@ import { findCloseMatch } from '@williamthorsen/toolbelt.strings/candidate';
 
 import type { BoundCommand, BoundGroup, CommandNode, RunResult, Writer } from './nodes.ts';
 import { renderHelp } from './renderHelp.ts';
-import { HELP_FLAG, listReservedFlags, VERSION_FLAG } from './reserved-flags.ts';
+import { formatReservedFlagLabel, HELP_FLAG, listReservedFlags, VERSION_FLAG } from './reserved-flags.ts';
 import { resolveLongName } from './resolveLongName.ts';
 import { findFlagEntry, tokenizeArgs } from './tokenizeArgs.ts';
 import type { FlagSchema } from './types.ts';
@@ -74,7 +74,7 @@ export async function runCli<C>(
     if (error.suggestion !== undefined) {
       stderr.write(`Did you mean '${error.suggestion}'?\n`);
     }
-    stderr.write(`Try '${walk.scope.join(' ')} --help'.\n`);
+    stderr.write(`Try '${walk.scope.join(' ')} --${HELP_FLAG.long}'.\n`);
     return USAGE_EXIT_CODE;
   }
 
@@ -165,7 +165,9 @@ interface Walk {
 function assertVersionUnreserved(flags: FlagSchema): void {
   for (const [key, definition] of Object.entries(flags)) {
     if (resolveLongName(key, definition) === VERSION_FLAG.long || definition.short === VERSION_FLAG.short) {
-      throw new Error(`Flag '${key}' collides with -V, --version, which the root reserves when given a version.`);
+      throw new Error(
+        `Flag '${key}' collides with ${formatReservedFlagLabel(VERSION_FLAG)}, which the root reserves when given a version.`,
+      );
     }
   }
 }
