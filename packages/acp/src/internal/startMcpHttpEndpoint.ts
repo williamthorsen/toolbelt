@@ -79,7 +79,8 @@ function readFetchRequest(request: IncomingMessage, response: ServerResponse, ho
   const headers = new Headers();
   for (const [name, value] of Object.entries(request.headers)) {
     if (value === undefined) continue;
-    for (const item of Array.isArray(value) ? value : [value]) headers.append(name, item);
+    const items = Array.isArray(value) ? value : [value];
+    for (const item of items) headers.append(name, item);
   }
 
   const aborted = new AbortController();
@@ -110,7 +111,7 @@ async function serveRequest(request: IncomingMessage, response: ServerResponse, 
 
   try {
     const answer = await context.handler.fetch(readFetchRequest(request, response, context.expectedHost));
-    response.writeHead(answer.status, [...answer.headers.entries()].flat());
+    response.writeHead(answer.status, Array.from(answer.headers).flat());
     if (answer.body === null) {
       response.end();
       return;

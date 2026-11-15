@@ -67,7 +67,7 @@ describe(startMcpHttpEndpoint, () => {
     const endpoint = await startMcpHttpEndpoint(createGreetingToolServer());
     await endpoint[Symbol.asyncDispose]();
 
-    await expect(fetch(endpoint.url, { method: 'POST', body: '{}' })).rejects.toThrow();
+    await expect(fetch(endpoint.url, { method: 'POST', body: '{}' })).rejects.toThrow('fetch failed');
   });
 });
 
