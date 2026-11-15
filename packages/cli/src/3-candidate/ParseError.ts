@@ -1,4 +1,4 @@
-import { UsageError } from './UsageError.ts';
+import { UsageError, type UsageErrorOptions } from './UsageError.ts';
 
 /** Discriminates the failure modes that `parseArgs` reports. */
 export type ParseErrorKind =
@@ -20,7 +20,7 @@ export class ParseError extends UsageError {
   readonly kind: ParseErrorKind;
   readonly token: string;
 
-  constructor(kind: ParseErrorKind, token: string, message: string, options?: ErrorOptions) {
+  constructor(kind: ParseErrorKind, token: string, message: string, options?: UsageErrorOptions) {
     super(message, options);
     this.name = 'ParseError';
     this.kind = kind;

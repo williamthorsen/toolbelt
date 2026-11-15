@@ -2,6 +2,7 @@ import path from 'node:path';
 import process from 'node:process';
 
 import { describeError } from '@williamthorsen/toolbelt.errors';
+import { findCloseMatch } from '@williamthorsen/toolbelt.strings/candidate';
 
 import { ParseError } from './ParseError.ts';
 import { resolveLongName } from './resolveLongName.ts';
@@ -10,23 +11,26 @@ import type { FlagDefinition, FlagSchema, OperandDefinition, ParseOptions, Parse
 import { validateSpec } from './validateSpec.ts';
 
 /**
- * Options of the parse that a group runs, which may also stop at the first flag that it does not claim. A
+ * Options of the parse that `createCli` runs. A group may stop at the first flag that it does not claim, and a
  * flag that it does not claim within a cluster splits the cluster: The group keeps the flags before it.
  */
 interface ParseModeOptions extends ParseOptions {
+  /** Long names that the caller handles before parsing, which an unknown option may still be suggested as. */
+  reservedLongNames?: readonly string[];
   stopAtUnclaimedFlag?: boolean;
 }
 
 /**
  * Parses arguments strictly against a spec and returns typed flags and operands.
  *
- * Throws a plain `Error` on an invalid spec and a `ParseError` on the first offending argument: an unknown
- * flag; a value-taking flag without a value (absent, empty as `--flag=`, or the next argument when it starts
- * with `-` and is not `-` itself); a boolean flag given a value; a positional beyond the declared operands;
- * a missing required operand; a value outside `choices`; or a value on which `parse` throws. A repeated flag
- * takes its last value, unless it declares `multiple`, which collects every value in order. An absent boolean
- * flag is `false`, an absent `multiple` flag is `[]`, an absent value flag takes its `default` or is `undefined`,
- * an absent optional operand is `undefined`, and an absent variadic operand is `[]`.
+ * Throws a plain `Error` on an invalid spec and a `ParseError` on the first offending argument: an unknown flag, with
+ * the nearest long name as its `suggestion` when it is a misspelt `--` option; a value-taking flag without a value
+ * (absent, empty as `--flag=`, or the next argument when it starts with `-` and is not `-` itself); a boolean flag
+ * given a value; a positional beyond the declared operands; a missing required operand; a value outside `choices`; or a
+ * value on which `parse` throws. A repeated flag takes its last value, unless it declares `multiple`, which collects
+ * every value in order. An absent boolean flag is `false`, an absent `multiple` flag is `[]`, an absent value flag
+ * takes its `default` or is `undefined`, an absent optional operand is `undefined`, and an absent variadic operand is
+ * `[]`.
  * @category CLI
  * @stage candidate
  */
@@ -82,7 +86,9 @@ export function parseValidatedArgs<S extends FlagSchema, O extends readonly Oper
         rest = splitAtOption(argv, token.index, precedingInArgument);
         break;
       }
-      throw new ParseError('unknown-flag', token.rawName, `Unknown option: ${token.rawName}`);
+      throw new ParseError('unknown-flag', token.rawName, `Unknown option: ${token.rawName}`, {
+        suggestion: findLongNameSuggestion(token, flagsByName.keys(), options.reservedLongNames),
+      });
     }
     const value = readFlagValue(token, entry.key, entry.definition, baseDir);
     const collected = flags[entry.key];
@@ -125,6 +131,17 @@ function assignOperands(positionals: string[], definitions: readonly OperandDefi
     operands[definition.name] = value;
   }
   return operands;
+}
+
+/** Returns the long option nearest to an unknown `--` option, spelled with its dashes. */
+function findLongNameSuggestion(
+  token: { name: string; rawName: string },
+  longNames: Iterable<string>,
+  reservedLongNames: readonly string[] = [],
+): string | undefined {
+  if (!token.rawName.startsWith('--')) return undefined;
+  const match = findCloseMatch(token.name, [...longNames, ...reservedLongNames].toSorted());
+  return match === undefined ? undefined : `--${match}`;
 }
 
 /** Returns the value of an absent flag that does not declare a `default`. */

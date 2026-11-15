@@ -4,6 +4,7 @@ import { findCloseMatch } from '@williamthorsen/toolbelt.strings/candidate';
 
 import type { BoundCommand, BoundGroup, CommandNode, RunResult, Writer } from './nodes.ts';
 import { renderHelp } from './renderHelp.ts';
+import { HELP_FLAG, listReservedFlags, VERSION_FLAG } from './reserved-flags.ts';
 import { resolveLongName } from './resolveLongName.ts';
 import { findFlagEntry, tokenizeArgs } from './tokenizeArgs.ts';
 import type { FlagSchema } from './types.ts';
@@ -11,9 +12,6 @@ import { UsageError } from './UsageError.ts';
 
 /** The exit code that `runCli` returns on a usage error. */
 const USAGE_EXIT_CODE = 2;
-
-const HELP_FLAG = { long: 'help', short: 'h' };
-const VERSION_FLAG = { long: 'version', short: 'V' };
 
 /** Options of `runCli`. */
 export interface RunCliOptions<C> {
@@ -39,7 +37,8 @@ export interface RunCliOptions<C> {
  *
  * A `UsageError`, whether from parsing, from an unknown or missing command, or thrown by a `deriveContext` or a
  * `run`, is written to `stderr` as `<name>: <message>`, followed by a pointer to help for the scope reached so
- * far, and returns 2; an unknown command near a known one adds a `Did you mean` line. Any other error propagates.
+ * far, and returns 2; a usage error that has a `suggestion`, such as an unknown command or long option near a
+ * known one, adds a `Did you mean` line between the two. Any other error propagates.
  * A `run` result that is not a number maps to 0, and a number other than an integer from 0 to 255 throws a plain
  * `Error`. It writes only to the writers that it is given and never calls `process.exit`.
  * @category CLI
@@ -72,7 +71,7 @@ export async function runCli<C>(
   } catch (error: unknown) {
     if (!(error instanceof UsageError)) throw error;
     stderr.write(`${name}: ${error.message}\n`);
-    if (error instanceof UnknownCommandError && error.suggestion !== undefined) {
+    if (error.suggestion !== undefined) {
       stderr.write(`Did you mean '${error.suggestion}'?\n`);
     }
     stderr.write(`Try '${walk.scope.join(' ')} --help'.\n`);
@@ -91,15 +90,11 @@ export async function runCli<C>(
 
     while ('enter' in current) {
       const { node } = current;
-      const requested = scanGroupScope(
-        remaining,
-        node.flags,
-        node.defaultCommand !== undefined,
-        isRoot && state.hasVersion,
-      );
+      const withVersion = isRoot && state.hasVersion;
+      const requested = scanGroupScope(remaining, node.flags, node.defaultCommand !== undefined, withVersion);
       if (requested !== undefined) return writeRequested(requested, node, isRoot, state);
 
-      const entry = current.enter(remaining, state.baseDir);
+      const entry = current.enter(remaining, state.baseDir, listReservedLongNames(withVersion));
       const [token] = entry.rest;
       if (token !== undefined && isCommandToken(token)) {
         const child = entry.bindCommand(token);
@@ -120,12 +115,19 @@ export async function runCli<C>(
     }
 
     const { node } = current;
+    const withVersion = isRoot && state.hasVersion;
     if (!node.passthrough) {
-      const requested = scanCommandScope(remaining, node.flags, isRoot && state.hasVersion);
+      const requested = scanCommandScope(remaining, node.flags, withVersion);
       if (requested !== undefined) return writeRequested(requested, node, isRoot, state);
     }
 
-    const result = await current.invoke({ args: remaining, stdout, stderr, baseDir: state.baseDir });
+    const result = await current.invoke({
+      args: remaining,
+      stdout,
+      stderr,
+      baseDir: state.baseDir,
+      reservedLongNames: listReservedLongNames(withVersion),
+    });
     return validateExitCode(result);
   }
 
@@ -144,12 +146,9 @@ export async function runCli<C>(
 
 /** Reports an unknown command token, with the closest command when one is near enough to suggest. */
 class UnknownCommandError extends UsageError {
-  readonly suggestion: string | undefined;
-
   constructor(token: string, names: readonly string[]) {
-    super(`Unknown command: ${token}`);
+    super(`Unknown command: ${token}`, { suggestion: findCloseMatch(token, names.toSorted()) });
     this.name = 'UnknownCommandError';
-    this.suggestion = findCloseMatch(token, names.toSorted());
   }
 }
 
@@ -174,6 +173,11 @@ function assertVersionUnreserved(flags: FlagSchema): void {
 /** Reports whether a token names a command: a positional other than the `--` terminator. */
 function isCommandToken(token: string): boolean {
   return token === '-' || !token.startsWith('-');
+}
+
+/** Returns the long names that `runCli` intercepts in a scope. */
+function listReservedLongNames(withVersion: boolean): string[] {
+  return listReservedFlags(withVersion).map((flag) => flag.long);
 }
 
 /** Finds a help or version request among the arguments before `--`. */
@@ -207,7 +211,7 @@ function scanScope(
   withVersion: boolean,
   endsScope: (token: { kind: string }, isClaimed: boolean) => boolean,
 ): Requested | undefined {
-  const reserved = withVersion ? [HELP_FLAG, VERSION_FLAG] : [HELP_FLAG];
+  const reserved = listReservedFlags(withVersion);
   const { tokens, flagsByName } = tokenizeArgs(args, flags, reserved);
 
   const names = new Set<string>();

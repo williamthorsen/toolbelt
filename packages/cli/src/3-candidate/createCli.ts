@@ -183,8 +183,8 @@ function buildCommand<C>(
     passthrough: false,
     bind: (context): BoundCommand => ({
       node: command,
-      invoke: ({ args, stdout, stderr, baseDir }) => {
-        const parsed = parseValidatedArgs(args, { flags, operands }, { baseDir });
+      invoke: ({ args, stdout, stderr, baseDir, reservedLongNames }) => {
+        const parsed = parseValidatedArgs(args, { flags, operands }, { baseDir, reservedLongNames });
         return run({ flags: parsed.flags, operands: parsed.operands, context, stdout, stderr });
       },
     }),
@@ -217,9 +217,10 @@ function buildGroup<S extends FlagSchema, C, C2>(
     defaultCommand,
     bind: (context): BoundGroup => ({
       node: group,
-      enter: (args, baseDir) => {
+      enter: (args, baseDir, reservedLongNames) => {
         const parsed = parseValidatedArgs(args, definition, {
           baseDir,
+          reservedLongNames,
           stopAtPositional: true,
           stopAtUnclaimedFlag: defaultCommand !== undefined,
         });

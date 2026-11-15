@@ -1,3 +1,4 @@
+import { HELP_FLAG } from './reserved-flags.ts';
 import { resolveLongName } from './resolveLongName.ts';
 import type { FlagSchema, OperandDefinition } from './types.ts';
 
@@ -15,8 +16,8 @@ export function validateSpec(spec: { flags?: FlagSchema; operands?: readonly Ope
 // region | Helpers
 
 function validateFlags(flags: FlagSchema): void {
-  const longNames = new Set<string>(['help']);
-  const shortNames = new Set<string>(['h']);
+  const longNames = new Set<string>([HELP_FLAG.long]);
+  const shortNames = new Set<string>([HELP_FLAG.short]);
 
   for (const [key, definition] of Object.entries(flags)) {
     if (definition.long === undefined && !CAMEL_CASE_KEY.test(key)) {

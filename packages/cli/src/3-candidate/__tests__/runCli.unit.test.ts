@@ -56,6 +56,12 @@ const tool = rootCli.defineGroup({
         throw new UsageError('Bad input');
       },
     }),
+    hint: defineCommand({
+      summary: 'Fail with a suggestion',
+      run: () => {
+        throw new UsageError('Unknown format: jsno', { suggestion: 'json' });
+      },
+    }),
     crash: defineCommand({
       summary: 'Crash',
       run: () => {
@@ -183,6 +189,25 @@ describe(runCli, () => {
         code: 2,
         stdout: '',
         stderr: expect.stringContaining('-V'),
+      });
+    });
+
+    it('is suggested for a misspelling at a versioned root alone', async () => {
+      await expect(run(['--versio'], tool, { version })).resolves.toStrictEqual({
+        code: 2,
+        stdout: '',
+        stderr: "tool: Unknown option: --versio\nDid you mean '--version'?\nTry 'tool --help'.\n",
+      });
+      expect((await run(['--versio'], tool)).stderr).not.toContain('Did you mean');
+      expect((await run(['issue', 'list', '--versio'], tool, { version })).stderr).not.toContain('Did you mean');
+    });
+
+    it('is suggested for a misspelling on a versioned root command', async () => {
+      const command = defineCommand({ summary: 'S', run: () => 0 });
+
+      await expect(run(['--versio'], command, { version })).resolves.toMatchObject({
+        code: 2,
+        stderr: expect.stringContaining("Did you mean '--version'?\n"),
       });
     });
 
@@ -327,6 +352,43 @@ describe(runCli, () => {
         code: 2,
         stdout: '',
         stderr: "tool: Unknown command: isue\nDid you mean 'issue'?\nTry 'tool --help'.\n",
+      });
+    });
+
+    it('suggests the closest long option between the error and the help pointer', async () => {
+      await expect(run(['issue', 'list', '--al'], tool)).resolves.toStrictEqual({
+        code: 2,
+        stdout: '',
+        stderr: "tool: Unknown option: --al\nDid you mean '--all'?\nTry 'tool issue list --help'.\n",
+      });
+    });
+
+    it('suggests --help, which runCli reserves', async () => {
+      await expect(run(['issue', 'list', '--hlep'], tool)).resolves.toMatchObject({
+        code: 2,
+        stderr: expect.stringContaining("Did you mean '--help'?\n"),
+      });
+    });
+
+    it('suggests a group flag that is misspelt before the command token', async () => {
+      await expect(run(['--qiuet', 'issue', 'list'], tool)).resolves.toMatchObject({
+        code: 2,
+        stderr: "tool: Unknown option: --qiuet\nDid you mean '--quiet'?\nTry 'tool --help'.\n",
+      });
+    });
+
+    it('omits the suggestion for an option far from every long name', async () => {
+      const { code, stderr } = await run(['issue', 'list', '--bogus'], tool);
+
+      expect(code).toBe(2);
+      expect(stderr).not.toContain('Did you mean');
+    });
+
+    it('writes the suggestion of a UsageError thrown by run', async () => {
+      await expect(run(['hint'], tool)).resolves.toStrictEqual({
+        code: 2,
+        stdout: '',
+        stderr: "tool: Unknown format: jsno\nDid you mean 'json'?\nTry 'tool hint --help'.\n",
       });
     });
 
