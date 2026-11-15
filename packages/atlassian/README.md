@@ -42,7 +42,7 @@ const response = await request('GET', '/rest/api/3/myself');
 
 ### The base URL
 
-`resolveJiraBaseUrl` returns `https://api.atlassian.com/ex/jira/<cloudId>`, the gateway against which a scoped API token authenticates. When no `cloudId` is given, it is read from the site's `_edge/tenant_info` endpoint, which responds without authentication. A 2xx tenant-info response that is not JSON or that lacks a `cloudId` throws `JiraResponseError`, described under ["Errors"](#errors).
+`resolveJiraBaseUrl` returns `https://api.atlassian.com/ex/jira/<cloudId>`, the gateway against which a scoped API token authenticates. When no `cloudId` is given, it is read from the site's `_edge/tenant_info` endpoint, which responds without authentication. A tenant-info 4xx, which shows that the host is not an Atlassian site, throws `JiraSettingError`, and a 2xx response that is not JSON or that lacks a `cloudId` throws `JiraResponseError`; both are described under ["Errors"](#errors).
 
 Requests against the site URL (`https://acme.atlassian.net`) are not offered as a fallback. Atlassian ignores a scoped token sent there rather than rejecting it, so the request would return an anonymous response instead of failing.
 
@@ -118,6 +118,8 @@ The acting user still needs the Jira permissions that the calls demand, which th
 Three error types separate a Jira that answered from a Jira that did not, and an answer that this package can read from one that it cannot. `JiraRequestError` reports a status outside 2xx and has `body`, `label`, `method`, `path`, `reason`, `status`, and `url`, so that a caller branches on those rather than parsing the message; `reason` is the classification that ["Diagnosing a rejected request"](https://github.com/williamthorsen/toolbelt/blob/main/packages/atlassian/docs/diagnosing-rejected-requests.md) tabulates. `JiraTransportError` reports a request that never arrived and has the `url` at which it was aimed, with the fault that the runtime raised as its `cause`. `JiraResponseError` reports a 2xx response that does not have the shape that its reader reads, a missing list field included, and has the `url` that returned it.
 
 The split matters because node's `fetch` reports every transport failure as `TypeError: fetch failed` and names the reason on `cause` alone. Reading the chain turns that into `getaddrinfo ENOTFOUND acme.atlassian.net`, and a retry is worth attempting for the second type and never for the first.
+
+Four more types mark the failures that a caller anticipates before or instead of a request, so that a command line reports them and lets any other thrown value propagate as a bug. `JiraSettingError` reports a site, base URL, email, or token that cannot be resolved. `JiraTokenCommandError` reports a configured token command that cannot run, is killed, or exits non-zero. `ProjectSpecError` reports a spec that `parseProjectSpec` rejects. `JiraRefusalError` reports a project in a state that this package does not write to, or a workflow write that would drop a status or a transition or leave a status unreachable; nothing has been written when it is thrown.
 
 ### The project spec
 
