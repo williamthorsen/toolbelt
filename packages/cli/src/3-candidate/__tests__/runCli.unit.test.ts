@@ -336,6 +336,35 @@ describe(runCli, () => {
       });
     });
 
+    it('suggests the closest long option between the error and the help pointer', async () => {
+      await expect(run(['issue', 'list', '--al'], tool)).resolves.toStrictEqual({
+        code: 2,
+        stdout: '',
+        stderr: "tool: Unknown option: --al\nDid you mean '--all'?\nTry 'tool issue list --help'.\n",
+      });
+    });
+
+    it('suggests --help, which runCli reserves', async () => {
+      await expect(run(['issue', 'list', '--hlep'], tool)).resolves.toMatchObject({
+        code: 2,
+        stderr: expect.stringContaining("Did you mean '--help'?\n"),
+      });
+    });
+
+    it('suggests a group flag that is misspelt before the command token', async () => {
+      await expect(run(['--qiuet', 'issue', 'list'], tool)).resolves.toMatchObject({
+        code: 2,
+        stderr: "tool: Unknown option: --qiuet\nDid you mean '--quiet'?\nTry 'tool --help'.\n",
+      });
+    });
+
+    it('omits the suggestion for an option far from every long name', async () => {
+      const { code, stderr } = await run(['issue', 'list', '--bogus'], tool);
+
+      expect(code).toBe(2);
+      expect(stderr).not.toContain('Did you mean');
+    });
+
     it('writes the suggestion of a UsageError thrown by run', async () => {
       await expect(run(['hint'], tool)).resolves.toStrictEqual({
         code: 2,

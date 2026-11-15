@@ -254,6 +254,25 @@ describe(parseArgs, () => {
         token: 'extra',
       });
     });
+
+    it.each([
+      ['a misspelt option', ['--verbos'], '--verbose'],
+      ['a misspelt option with an inline value', ['--outptu=x'], '--output'],
+      ['a misspelt derived long name', ['--dry-rn'], '--dry-run'],
+    ])('suggests the nearest long name for %s', (_label, argv, suggestion) => {
+      expect(captureParseError(() => parseArgs(argv, { flags: mixedFlags }))).toMatchObject({
+        kind: 'unknown-flag',
+        suggestion,
+      });
+    });
+
+    it.each([
+      ['an unknown short option', ['-x']],
+      ['an option far from every long name', ['--unknown']],
+      ['--help, which a standalone parse does not reserve', ['--hlep']],
+    ])('does not suggest a name for %s', (_label, argv) => {
+      expect(captureParseError(() => parseArgs(argv, { flags: mixedFlags })).suggestion).toBeUndefined();
+    });
   });
 
   describe('operands', () => {
