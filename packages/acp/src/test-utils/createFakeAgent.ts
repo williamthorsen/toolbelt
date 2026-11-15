@@ -43,7 +43,7 @@ export interface ReceivedMessage {
 /** Creates an ACP agent that answers per `config` and records what it receives. */
 export function createFakeAgent(config: FakeAgentConfig = {}): { agent: AgentApp; received: ReceivedMessage[] } {
   const received: ReceivedMessage[] = [];
-  let cancel = Promise.withResolvers<void>();
+  let cancel = Promise.withResolvers<undefined>();
 
   const app = agent({ name: 'fake-agent' })
     .onRequest(methods.agent.initialize, ({ params }) => {
@@ -65,17 +65,19 @@ export function createFakeAgent(config: FakeAgentConfig = {}): { agent: AgentApp
     })
     .onNotification(methods.agent.session.cancel, ({ params }) => {
       received.push({ method: methods.agent.session.cancel, params });
-      cancel.resolve();
+      cancel.resolve(undefined);
     })
     .onRequest(methods.agent.session.prompt, async ({ params, client }) => {
       received.push({ method: methods.agent.session.prompt, params });
-      cancel = Promise.withResolvers<void>();
+      cancel = Promise.withResolvers<undefined>();
       const { sessionId } = params;
 
-      for (const update of config.updates ?? []) {
+      const updates = config.updates ?? [];
+      for (const update of updates) {
         await client.notify(methods.client.session.update, { sessionId, update });
       }
 
+      /** Raises the configured permission request and records the client's answer. */
       async function requestPermission(): Promise<void> {
         if (config.permissionRequest === undefined) return;
         const response: RequestPermissionResponse = await client.request(methods.client.session.requestPermission, {
@@ -97,7 +99,7 @@ export function createFakeAgent(config: FakeAgentConfig = {}): { agent: AgentApp
       await requestPermission();
       return {
         stopReason: config.stopReason ?? 'end_turn',
-        ...(config.usage === undefined ? {} : { usage: config.usage }),
+        ...(config.usage !== undefined && { usage: config.usage }),
       };
     });
 

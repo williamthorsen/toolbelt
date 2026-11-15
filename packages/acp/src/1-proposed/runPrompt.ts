@@ -3,6 +3,7 @@ import { Readable, Writable } from 'node:stream';
 import { setTimeout as sleep } from 'node:timers/promises';
 
 import { ndJsonStream } from '@agentclientprotocol/sdk/unstable';
+import { describeError } from '@williamthorsen/toolbelt.errors';
 
 import { runAcpPrompt } from '../internal/runAcpPrompt.ts';
 import type { RunEvent, RunPromptOptions } from '../types/run.ts';
@@ -66,6 +67,7 @@ export async function* runPrompt(options: RunPromptOptions): AsyncGenerator<RunE
     await stopProcess();
   }
 
+  /** Closes the agent's stdin, then terminates it, escalating to `SIGKILL` after the grace period. */
   async function stopProcess(): Promise<void> {
     child.stdin.end();
     if (isRunning()) child.kill('SIGTERM');
@@ -74,20 +76,23 @@ export async function* runPrompt(options: RunPromptOptions): AsyncGenerator<RunE
     await exited;
   }
 
+  /** Reports whether the agent process started and has not exited. */
   function isRunning(): boolean {
     return child.pid !== undefined && child.exitCode === null && child.signalCode === null;
   }
 }
 
 // region | Helpers
+/** Builds the error that a failed run rejects with, naming the command and quoting its stderr. */
 function buildFailure(command: string, cause: unknown, exitDetail: string | undefined, stderr: string): Error {
-  const reason = cause instanceof Error ? cause.message : String(cause);
+  const reason = describeError(cause);
   const lines = [`The agent \`${command}\` failed${exitDetail === undefined ? '' : ` (${exitDetail})`}: ${reason}`];
   const trimmed = stderr.trim();
   if (trimmed !== '') lines.push(`Its stderr ended with:\n${trimmed}`);
   return new Error(lines.join('\n'), { cause });
 }
 
+/** Describes how the process ended, by exit code or by signal. */
 function describeExit(code: number | null, signal: NodeJS.Signals | null): string {
   return code === null ? `killed by ${signal ?? 'a signal'}` : `exited ${code}`;
 }

@@ -11,7 +11,7 @@ import {
 } from '@agentclientprotocol/sdk/unstable';
 
 import type { RunEvent, RunPromptOptions } from '../types/run.ts';
-import { createEventQueue } from './createEventQueue.ts';
+import { createEventQueue, type EventQueue } from './createEventQueue.ts';
 
 /** Timing that a test shortens. */
 export interface AcpRunSettings {
@@ -37,9 +37,7 @@ export async function* runAcpPrompt(
   signal?.throwIfAborted();
 
   const queue = createEventQueue<RunEvent>();
-  const halt = Promise.withResolvers<never>();
-  // The race below observes the rejection; this covers a halt that comes before the race starts.
-  halt.promise.catch(() => {});
+  const halt = new AbortController();
   let lastCost: Cost | undefined;
   let isCancelling = false;
   let cancelTimer: NodeJS.Timeout | undefined;
@@ -55,6 +53,7 @@ export async function* runAcpPrompt(
     .onRequest(methods.client.session.requestPermission, ({ params }) => refusePermission(params, isCancelling));
 
   const run = app.connectWith(target, async (context) => {
+    /** Runs the handshake, opens the session, and sends the prompt, pushing the stop when the turn ends. */
     async function converse(): Promise<void> {
       const initialized = await context.request(methods.agent.initialize, {
         protocolVersion: PROTOCOL_VERSION,
@@ -76,9 +75,8 @@ export async function* runAcpPrompt(
       const { sessionId } = await context.request(methods.agent.session.new, {
         cwd: options.cwd,
         mcpServers: [],
-        ...(instructions !== '' && hasSystemPrompt
-          ? { systemPrompt: { mode: 'append', content: [toTextBlock(instructions)] } }
-          : {}),
+        ...(instructions !== '' &&
+          hasSystemPrompt && { systemPrompt: { mode: 'append', content: [toTextBlock(instructions)] } }),
       });
 
       signal?.throwIfAborted();
@@ -92,7 +90,7 @@ export async function* runAcpPrompt(
         isCancelling = true;
         void context.notify(methods.agent.session.cancel, { sessionId });
         cancelTimer = setTimeout(() => {
-          halt.reject(signal?.reason);
+          halt.abort(signal?.reason);
         }, settings.cancelGraceMs);
       };
       if (signal?.aborted === true) onAbort();
@@ -101,42 +99,61 @@ export async function* runAcpPrompt(
       queue.push({
         type: 'stopped',
         stopReason,
-        ...(isPresent(usage) ? { usage } : {}),
-        ...(lastCost === undefined ? {} : { cost: lastCost }),
+        ...(isPresent(usage) && { usage }),
+        ...(lastCost !== undefined && { cost: lastCost }),
       });
     }
 
-    await Promise.race([converse(), halt.promise]);
+    await Promise.race([converse(), rejectOnAbort(halt.signal)]);
   });
 
+  /** Abandons the run before the prompt is sent, and cancels the turn after. */
   function abort(): void {
-    if (onAbort === undefined) halt.reject(signal?.reason);
+    if (onAbort === undefined) halt.abort(signal?.reason);
     else onAbort();
   }
   signal?.addEventListener('abort', abort, { once: true });
 
-  run.then(
-    () => {
-      queue.close();
-    },
-    (error: unknown) => {
-      queue.fail(error);
-    },
-  );
+  const settled = endQueueWith(run, queue);
 
   try {
     yield* queue;
   } finally {
     signal?.removeEventListener('abort', abort);
     clearTimeout(cancelTimer);
-    halt.reject(new Error('The run was ended by its consumer.'));
-    await run.catch(() => {});
+    halt.abort(new Error('The run was ended by its consumer.'));
+    await settled;
   }
 }
 
 // region | Helpers
+/** Closes the queue when the run resolves, and fails it with the run's error when the run rejects. */
+async function endQueueWith(run: Promise<void>, queue: EventQueue<RunEvent>): Promise<void> {
+  try {
+    await run;
+    queue.close();
+  } catch (error) {
+    queue.fail(error);
+  }
+}
+
+/** Narrows away the `null` and `undefined` that ACP uses interchangeably for an absent field. */
 function isPresent<T>(value: T | null | undefined): value is T {
   return value !== undefined && value !== null;
+}
+
+/** Returns a promise that rejects with the signal's reason once it aborts. */
+function rejectOnAbort(signal: AbortSignal): Promise<never> {
+  const { promise, reject } = Promise.withResolvers<never>();
+  if (signal.aborted) reject(signal.reason);
+  signal.addEventListener(
+    'abort',
+    () => {
+      reject(signal.reason);
+    },
+    { once: true },
+  );
+  return promise;
 }
 
 /** Refuses a request once, or reports the turn as cancelled while a cancellation is under way. */
@@ -146,6 +163,7 @@ function refusePermission(request: RequestPermissionRequest, isCancelling: boole
   return { outcome: { outcome: 'selected', optionId: rejection.optionId } };
 }
 
+/** Wraps text as an ACP text content block. */
 function toTextBlock(text: string): ContentBlock {
   return { type: 'text', text };
 }

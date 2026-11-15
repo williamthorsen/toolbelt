@@ -91,10 +91,12 @@ describe(runAcpPrompt, () => {
     });
 
     it('rejects when authentication fails', async () => {
-      const { agent } = createFakeAgent({ authMethods, failAuthenticate: true });
+      const { agent, received } = createFakeAgent({ authMethods, failAuthenticate: true });
       const options = { ...OPTIONS, agent: { command: 'x', authMethodId: 'oauth-personal' } };
 
-      await expect(Array.fromAsync(runAcpPrompt(agent, options))).rejects.toThrow();
+      // The SDK answers an error thrown by an agent's handler with JSON-RPC's generic internal error.
+      await expect(Array.fromAsync(runAcpPrompt(agent, options))).rejects.toThrow('Internal error');
+      expect(findParams(received, 'session/new')).toBeUndefined();
     });
   });
 
@@ -161,7 +163,7 @@ describe(runAcpPrompt, () => {
     it('rejects with the reason, without prompting, when the signal aborts during the handshake', async () => {
       const { agent, received } = createFakeAgent();
       const controller = new AbortController();
-      const run = runAcpPrompt(agent, { ...OPTIONS, signal: controller.signal });
+      await using run = runAcpPrompt(agent, { ...OPTIONS, signal: controller.signal });
 
       const first = run.next();
       controller.abort(new Error('stop'));
@@ -191,7 +193,7 @@ describe(runAcpPrompt, () => {
     it('rejects with the reason when the agent does not stop within the grace period', async () => {
       const { agent } = createFakeAgent({ updates: [TEXT_UPDATE], ignoreCancel: true });
       const controller = new AbortController();
-      const run = runAcpPrompt(agent, { ...OPTIONS, signal: controller.signal }, { cancelGraceMs: 10 });
+      await using run = runAcpPrompt(agent, { ...OPTIONS, signal: controller.signal }, { cancelGraceMs: 10 });
 
       await run.next();
       controller.abort(new Error('stop'));
@@ -215,6 +217,7 @@ async function collectAbortingOnFirstEvent(
   return events;
 }
 
+/** Returns the params of the first message received for `method`. */
 function findParams(received: readonly ReceivedMessage[], method: string): unknown {
   return received.find((message) => message.method === method)?.params;
 }

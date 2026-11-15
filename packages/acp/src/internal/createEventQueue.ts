@@ -14,7 +14,7 @@ export interface EventQueue<T extends object> extends AsyncIterable<T> {
  */
 export function createEventQueue<T extends object>(): EventQueue<T> {
   const buffer: T[] = [];
-  let ending: { error: unknown } | 'closed' | undefined;
+  let ending: 'closed' | undefined | { error: unknown };
   let wake: (() => void) | undefined;
 
   function wakeConsumer(): void {
@@ -37,7 +37,7 @@ export function createEventQueue<T extends object>(): EventQueue<T> {
       wakeConsumer();
     },
     async *[Symbol.asyncIterator]() {
-      while (true) {
+      for (;;) {
         const value = buffer.shift();
         if (value !== undefined) {
           yield value;
@@ -45,9 +45,11 @@ export function createEventQueue<T extends object>(): EventQueue<T> {
         }
         if (ending === 'closed') return;
         if (ending !== undefined) throw ending.error;
-        await new Promise<void>((resolve) => {
-          wake = resolve;
-        });
+        const { promise, resolve } = Promise.withResolvers<undefined>();
+        wake = () => {
+          resolve(undefined);
+        };
+        await promise;
       }
     },
   };

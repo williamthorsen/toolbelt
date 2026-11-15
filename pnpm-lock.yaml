@@ -249,6 +249,9 @@ importers:
       '@agentclientprotocol/sdk':
         specifier: 2.6.0
         version: 2.6.0(zod@4.6.7)
+      '@williamthorsen/toolbelt.errors':
+        specifier: workspace:*
+        version: link:../errors
 
   packages/adoption:
     devDependencies:

@@ -61,6 +61,7 @@ describe(runPrompt, () => {
 });
 
 // region | Helpers
+/** Builds options that run the fake agent process with `config`. */
 function buildOptions(config: FakeAgentConfig): RunPromptOptions {
   return {
     agent: {

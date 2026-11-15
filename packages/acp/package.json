@@ -45,14 +45,15 @@
   "scripts": {
     "prepublishOnly": "nmr build"
   },
+  "dependencies": {
+    "@agentclientprotocol/sdk": "2.6.0",
+    "@williamthorsen/toolbelt.errors": "workspace:*"
+  },
   "engines": {
     "node": ">=24.0.0"
   },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
-  },
-  "dependencies": {
-    "@agentclientprotocol/sdk": "2.6.0"
   }
 }

@@ -22,6 +22,7 @@ if (config.exitBeforeInitialize === undefined) {
 }
 
 // region | Helpers
+/** Reads the fake agent's configuration from the environment. */
 function readConfig(): FakeAgentConfig {
   const raw = process.env['FAKE_AGENT_CONFIG'];
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- test scaffolding; the test that spawns this file writes the config.
