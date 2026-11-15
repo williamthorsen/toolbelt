@@ -1,3 +1,7 @@
+import { describeError } from '@williamthorsen/toolbelt.errors';
+
+import { SecretStoreError } from '../3-candidate/SecretStoreError.ts';
+
 const HEX_FORM_PATTERN = /^0x(?<hex>(?:[\dA-Fa-f]{2})+)(?:\s|$)/;
 const PASSWORD_LINE_PATTERN = /^password: ?(?<value>.*)$/m;
 
@@ -14,7 +18,9 @@ const QUOTE = '"';
  */
 export function parseSecurityPassword(stderr: string): string {
   const value = PASSWORD_LINE_PATTERN.exec(stderr)?.groups?.['value'];
-  if (value === undefined) throw new Error(`No password line in the output of \`security\`: ${summarize(stderr)}`);
+  if (value === undefined) {
+    throw new SecretStoreError(`No password line in the output of \`security\`: ${summarize(stderr)}`);
+  }
 
   if (value.startsWith(HEX_PREFIX)) return decodeHexForm(value);
   if (value === '') return '';
@@ -28,12 +34,18 @@ export function parseSecurityPassword(stderr: string): string {
 function decodeHexForm(value: string): string {
   const hex = HEX_FORM_PATTERN.exec(value)?.groups?.['hex'];
   if (hex === undefined) {
-    throw new Error(
+    throw new SecretStoreError(
       `Malformed hexadecimal password in the output of \`security\`: a value of ${value.length} characters that does not continue 0x with pairs of hex digits`,
     );
   }
 
-  return new TextDecoder('utf-8', { fatal: true }).decode(Buffer.from(hex, 'hex'));
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(Buffer.from(hex, 'hex'));
+  } catch (error) {
+    throw new SecretStoreError(`Undecodable password in the output of \`security\`: ${describeError(error)}`, {
+      cause: error,
+    });
+  }
 }
 
 /**
@@ -44,7 +56,7 @@ function decodeHexForm(value: string): string {
 function readQuotedForm(value: string): string {
   const end = value.lastIndexOf(QUOTE);
   if (!value.startsWith(QUOTE) || end === 0) {
-    throw new Error(
+    throw new SecretStoreError(
       `Unquoted password in the output of \`security\`: a value of ${value.length} characters that is not enclosed in double quotes`,
     );
   }

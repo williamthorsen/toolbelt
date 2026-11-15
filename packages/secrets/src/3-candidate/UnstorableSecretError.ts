@@ -7,4 +7,10 @@
  * @experimental
  * @stage candidate
  */
-export class UnstorableSecretError extends Error {}
+export class UnstorableSecretError extends Error {
+  constructor(message: string, options?: ErrorOptions) {
+    super(message, options);
+
+    this.name = 'UnstorableSecretError';
+  }
+}

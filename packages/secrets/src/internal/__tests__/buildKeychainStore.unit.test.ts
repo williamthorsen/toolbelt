@@ -1,5 +1,7 @@
+import { captureError } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, it } from 'vitest';
 
+import { SecretStoreError } from '../../3-candidate/SecretStoreError.ts';
 import { buildKeychainStore } from '../buildKeychainStore.ts';
 import type { SecurityResult, SecurityRunner } from '../runSecurity.ts';
 
@@ -51,13 +53,15 @@ describe(buildKeychainStore, () => {
       expect(buildKeychainStore(spy.run).findSecret(QUERY)).toBeUndefined();
     });
 
-    it('throws when the keystore could not be reached, which is not absence', () => {
+    it('throws when the keystore could not be reached, which is not absence', async () => {
       const spy = createRunnerSpy({
         exitCode: 36,
         stderr: 'security: SecKeychainUnlock: User interaction is not allowed.\n',
       });
 
-      expect(() => buildKeychainStore(spy.run).findSecret(QUERY)).toThrow(/User interaction is not allowed/);
+      const { message } = await captureError(SecretStoreError, () => buildKeychainStore(spy.run).findSecret(QUERY));
+
+      expect(message).toMatch(/User interaction is not allowed/);
     });
   });
 
@@ -136,21 +140,29 @@ describe(buildKeychainStore, () => {
       ]);
     });
 
-    it('throws when the stored secret differs from the one written', () => {
+    it('throws when the stored secret differs from the one written', async () => {
       const spy = createWriteSpy('s3cr');
 
-      expect(() => buildKeychainStore(spy.run).setSecret(QUERY, 's3cret')).toThrow(
+      const { message } = await captureError(SecretStoreError, () =>
+        buildKeychainStore(spy.run).setSecret(QUERY, 's3cret'),
+      );
+
+      expect(message).toMatch(
         'The secret was written but not stored intact: 6 characters went in and 4 characters came back.',
       );
     });
 
-    it('throws when nothing was stored at all', () => {
+    it('throws when nothing was stored at all', async () => {
       const spy = createWriteSpy('s3cret', {}, { exitCode: 44 });
 
-      expect(() => buildKeychainStore(spy.run).setSecret(QUERY, 's3cret')).toThrow(/nothing was stored/);
+      const { message } = await captureError(SecretStoreError, () =>
+        buildKeychainStore(spy.run).setSecret(QUERY, 's3cret'),
+      );
+
+      expect(message).toMatch(/nothing was stored/);
     });
 
-    it('reports a verification that could not run, so that a caller does not read a completed write as a failed one', () => {
+    it('reports a verification that could not run, so that a caller does not read a completed write as a failed one', async () => {
       const spy = createWriteSpy(
         's3cret',
         {},
@@ -160,16 +172,20 @@ describe(buildKeychainStore, () => {
         },
       );
 
-      expect(() => buildKeychainStore(spy.run).setSecret(QUERY, 's3cret')).toThrow(
-        /written but could not be read back to verify it.*User interaction is not allowed/s,
+      const { message } = await captureError(SecretStoreError, () =>
+        buildKeychainStore(spy.run).setSecret(QUERY, 's3cret'),
       );
+
+      expect(message).toMatch(/written but could not be read back to verify it.*User interaction is not allowed/s);
     });
 
-    it('sets what the failed verification reported as the cause', () => {
+    it('sets what the failed verification reported as the cause', async () => {
       const spy = createWriteSpy('s3cret', {}, { exitCode: 36, stderr: 'security: SecKeychainUnlock: locked.\n' });
 
+      const error = await captureError(SecretStoreError, () => buildKeychainStore(spy.run).setSecret(QUERY, 's3cret'));
+
       // The message names the write's outcome, so the read's own failure survives only as the cause.
-      expect(() => buildKeychainStore(spy.run).setSecret(QUERY, 's3cret')).toThrow(
+      expect(error).toStrictEqual(
         expect.objectContaining({ cause: expect.objectContaining({ message: expect.stringMatching(/locked/) }) }),
       );
     });
@@ -196,13 +212,17 @@ describe(buildKeychainStore, () => {
       expect(spy.calls[0]?.input).toBe('add-generic-password -U -a "" -s "token" -X 610a62\n');
     });
 
-    it('throws what `security` reported when the write failed', () => {
+    it('throws what `security` reported when the write failed', async () => {
       const spy = createWriteSpy('s3cret', {
         exitCode: 45,
         stderr: 'security: SecKeychainItemCreateFromContent: duplicate\n',
       });
 
-      expect(() => buildKeychainStore(spy.run).setSecret(QUERY, 's3cret')).toThrow(/duplicate/);
+      const { message } = await captureError(SecretStoreError, () =>
+        buildKeychainStore(spy.run).setSecret(QUERY, 's3cret'),
+      );
+
+      expect(message).toMatch(/duplicate/);
     });
   });
 });

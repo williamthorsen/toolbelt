@@ -1,13 +1,16 @@
 import readline from 'node:readline/promises';
 import { Writable } from 'node:stream';
 
+import { SecretPromptError } from './SecretPromptError.ts';
+
 const CONFIRM_PROMPT = 'Retype secret: ';
 const SECRET_PROMPT = 'Secret: ';
 
 /**
  * Reads a secret from a terminal without echoing it, asking twice and comparing, since nothing on screen shows
  * what was typed. `security` has a prompt of its own, but it fills a 128-byte buffer and returns nothing to
- * verify, so the secret is read here instead.
+ * verify, so the secret is read here instead. Rejects with `SecretPromptError` when the entries differ or the
+ * input ends before a secret is entered.
  *
  * @category Secrets
  * @experimental
@@ -30,7 +33,7 @@ export async function promptSecret(input: NodeJS.ReadableStream, output: NodeJS.
     const secret = await ask(reader, output, abandoned.signal, SECRET_PROMPT);
     const confirmation = await ask(reader, output, abandoned.signal, CONFIRM_PROMPT);
 
-    if (secret !== confirmation) throw new Error('The two entries differ. Nothing was stored.');
+    if (secret !== confirmation) throw new SecretPromptError('The two entries differ. Nothing was stored.');
 
     return secret;
   } finally {
@@ -57,7 +60,9 @@ async function ask(
   } catch (error) {
     output.write('\n');
 
-    throw signal.aborted ? new Error('The prompt ended before a secret was entered. Nothing was stored.') : error;
+    throw signal.aborted
+      ? new SecretPromptError('The prompt ended before a secret was entered. Nothing was stored.')
+      : error;
   }
 }
 
