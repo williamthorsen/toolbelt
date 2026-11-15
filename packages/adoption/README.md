@@ -1,3 +1,5 @@
+<!-- readme-type: internal -->
+
 # @williamthorsen/toolbelt.adoption
 
 Shared scaffolding for the toolbelt packages' ReadyUp adoption kits. Private to this monorepo: It exports its
