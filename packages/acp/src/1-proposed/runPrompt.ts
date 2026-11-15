@@ -15,14 +15,16 @@ const TERMINATE_GRACE_MS = 2000;
  * Starts the agent that `options.agent` describes, runs one prompt on it through ACP v1, and yields the turn's
  * updates followed by a `stopped` event.
  *
- * The client authenticates with the profile's method when the agent lists it, sends `instructions` as an
- * appended system prompt when the agent supports one and ahead of the prompt otherwise, sets the session to the
- * profile's permission mode, and answers each permission request through `permissionPolicy`, refusing every
- * request when there is none. Aborting `signal` before the prompt is sent rejects with the signal's reason;
- * aborting it afterwards cancels the turn, which ends with a `cancelled` stop, or rejects with the reason when
- * the agent does not stop within 10 seconds. Any other failure rejects with an `AgentRunError`, a policy that
- * throws included, which also cancels the turn. The agent process is stopped when the run ends, however it
- * ends, including when the consumer stops iterating.
+ * The client authenticates with the profile's method when the agent lists it, sends `instructions` as an appended
+ * system prompt when the agent supports one and ahead of the prompt otherwise, sets the session to the profile's
+ * permission mode, and answers each permission request through `permissionPolicy`, refusing every request when there
+ * is none. The client serves `tools` for the run over the first MCP transport that the agent advertises: the ACP
+ * connection itself, then an HTTP endpoint on `127.0.0.1` that answers only the run's bearer token, and otherwise a
+ * stdio bridge that the agent runs with this process's Node. Aborting `signal` before the prompt is sent rejects
+ * with the signal's reason; aborting it afterwards cancels the turn, which ends with a `cancelled` stop, or rejects
+ * with the reason when the agent does not stop within 10 seconds. Any other failure rejects with an `AgentRunError`,
+ * a policy that throws included, which also cancels the turn. The agent process is stopped when the run ends,
+ * however it ends, including when the consumer stops iterating.
  *
  * @category ACP
  * @stage proposed

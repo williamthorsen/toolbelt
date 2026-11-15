@@ -2,6 +2,11 @@ import {
   agent,
   type AgentApp,
   type AuthMethod,
+  type HasConnectionContext,
+  isMcpServerAcp,
+  type McpCapabilities,
+  McpOverAcpCaller,
+  type McpServer as McpServerDeclaration,
   methods,
   PROTOCOL_VERSION,
   type RequestPermissionRequest,
@@ -11,6 +16,8 @@ import {
   type StopReason,
   type Usage,
 } from '@agentclientprotocol/sdk/unstable';
+import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client';
+import { getDefaultEnvironment, StdioClientTransport } from '@modelcontextprotocol/client/stdio';
 
 /** How a fake agent answers each request of a run. Every field is optional, and the defaults make a run succeed. */
 export interface FakeAgentConfig {
@@ -21,6 +28,13 @@ export interface FakeAgentConfig {
   readonly authMethods?: readonly AuthMethod[];
   readonly failAuthenticate?: boolean;
   readonly advertiseSystemPrompt?: boolean;
+  /** Returned from `initialize` as the agent's MCP capabilities. */
+  readonly mcpCapabilities?: McpCapabilities;
+  /**
+   * The tool to call, without arguments, on the first MCP server that `session/new` declared, once the prompt
+   * arrives and before the configured updates. The text of its result is sent as an `agent_message_chunk`.
+   */
+  readonly callTool?: { readonly name: string };
   /** Returned from `session/new` as given; a later `session/set_mode` is recorded and does not change it. */
   readonly modes?: SessionModeState;
   /** Sent in order once the prompt arrives. */
@@ -49,6 +63,8 @@ export interface ReceivedMessage {
 export function createFakeAgent(config: FakeAgentConfig = {}): { agent: AgentApp; received: ReceivedMessage[] } {
   const received: ReceivedMessage[] = [];
   let cancel = Promise.withResolvers<undefined>();
+  let declaredServers: readonly McpServerDeclaration[] = [];
+  const mcpCaller = new McpOverAcpCaller({ clientInfo: { name: 'fake-agent', version: '1.0.0' } });
 
   const app = agent({ name: 'fake-agent' })
     .onRequest(methods.agent.initialize, async ({ params }) => {
@@ -56,7 +72,10 @@ export function createFakeAgent(config: FakeAgentConfig = {}): { agent: AgentApp
       if (config.holdInitialize === true) await new Promise<never>(() => {});
       return {
         protocolVersion: config.protocolVersion ?? PROTOCOL_VERSION,
-        agentCapabilities: config.advertiseSystemPrompt === true ? { sessionCapabilities: { systemPrompt: {} } } : {},
+        agentCapabilities: {
+          ...(config.advertiseSystemPrompt === true && { sessionCapabilities: { systemPrompt: {} } }),
+          ...(config.mcpCapabilities !== undefined && { mcpCapabilities: config.mcpCapabilities }),
+        },
         authMethods: [...(config.authMethods ?? [])],
       };
     })
@@ -67,6 +86,7 @@ export function createFakeAgent(config: FakeAgentConfig = {}): { agent: AgentApp
     })
     .onRequest(methods.agent.session.new, ({ params }) => {
       received.push({ method: methods.agent.session.new, params });
+      declaredServers = params.mcpServers;
       return { sessionId: 'fake-session', ...(config.modes !== undefined && { modes: config.modes }) };
     })
     .onRequest(methods.agent.session.setMode, ({ params }) => {
@@ -81,6 +101,14 @@ export function createFakeAgent(config: FakeAgentConfig = {}): { agent: AgentApp
       received.push({ method: methods.agent.session.prompt, params });
       cancel = Promise.withResolvers<undefined>();
       const { sessionId } = params;
+
+      if (config.callTool !== undefined) {
+        const text = await callDeclaredTool(declaredServers[0], config.callTool.name, client, mcpCaller);
+        await client.notify(methods.client.session.update, {
+          sessionId,
+          update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text } },
+        });
+      }
 
       const updates = config.updates ?? [];
       for (const update of updates) {
@@ -111,7 +139,60 @@ export function createFakeAgent(config: FakeAgentConfig = {}): { agent: AgentApp
         stopReason: config.stopReason ?? 'end_turn',
         ...(config.usage !== undefined && { usage: config.usage }),
       };
-    });
+    })
+    .onNotification(methods.agent.mcp.message, mcpCaller.handleNotification);
 
   return { agent: app, received };
 }
+
+// region | Helpers
+/** Calls `toolName` on a declared server through the server's transport, and returns its result's text. */
+async function callDeclaredTool(
+  server: McpServerDeclaration | undefined,
+  toolName: string,
+  client: HasConnectionContext,
+  mcpCaller: McpOverAcpCaller,
+): Promise<string> {
+  if (server === undefined) throw new Error('The session declared no MCP server.');
+  if (isMcpServerAcp(server)) {
+    const outcome = await mcpCaller.request(client, server.serverId, 'tools/call', { name: toolName, arguments: {} });
+    if (!('result' in outcome)) throw new Error(`The tool call failed: ${outcome.error.message}`);
+    return readResultText(outcome.result);
+  }
+
+  const mcpClient = new Client({ name: 'fake-agent', version: '1.0.0' });
+  const transport =
+    'command' in server
+      ? new StdioClientTransport({
+          command: server.command,
+          args: server.args,
+          env: {
+            ...getDefaultEnvironment(),
+            ...Object.fromEntries(server.env.map(({ name, value }) => [name, value])),
+          },
+        })
+      : new StreamableHTTPClientTransport(new URL(server.url), {
+          requestInit: { headers: Object.fromEntries(server.headers.map(({ name, value }) => [name, value])) },
+        });
+  await mcpClient.connect(transport);
+  try {
+    return readResultText(await mcpClient.callTool({ name: toolName, arguments: {} }));
+  } finally {
+    await mcpClient.close();
+  }
+}
+
+/** Joins the text blocks of a tool result. */
+function readResultText(result: unknown): string {
+  if (typeof result !== 'object' || result === null || !('content' in result) || !Array.isArray(result.content)) {
+    throw new Error('The tool result has no content.');
+  }
+  return result.content
+    .map((block: unknown) =>
+      typeof block === 'object' && block !== null && 'text' in block && typeof block.text === 'string'
+        ? block.text
+        : '',
+    )
+    .join('');
+}
+// endregion | Helpers

@@ -5,6 +5,7 @@ import type {
   StopReason,
   Usage,
 } from '@agentclientprotocol/sdk/unstable';
+import type { McpServerFactory } from '@modelcontextprotocol/server';
 
 /**
  * The command that starts an agent harness as an ACP agent, the sign-in method that it is given, and the
@@ -45,6 +46,14 @@ export type PermissionPolicy = (
   context: PermissionPolicyContext,
 ) => PermissionVerdict | undefined | Promise<PermissionVerdict | undefined>;
 
+/** The MCP server through which the app gives the agent its tools. */
+export interface ToolServer {
+  /** The server's name in the session, under which the agent lists its tools. */
+  readonly name: string;
+  /** Returns a fresh server for each MCP request, with the app's tools registered on it. */
+  readonly createServer: McpServerFactory;
+}
+
 /** What `runPrompt` runs, and where. */
 export interface RunPromptOptions {
   readonly agent: AgentProfile;
@@ -53,6 +62,11 @@ export interface RunPromptOptions {
   readonly prompt: string;
   /** Sent as the session's system prompt when the agent supports one, and ahead of the prompt otherwise. */
   readonly instructions?: string;
+  /**
+   * Served to the agent for the run, over the first MCP transport that the agent advertises among ACP, HTTP, and
+   * stdio. Without one, the session has no MCP servers.
+   */
+  readonly tools?: ToolServer;
   /** Answers the agent's permission requests. Without one, every request is refused. */
   readonly permissionPolicy?: PermissionPolicy;
   /** Cancels the turn once the prompt is sent, and abandons the run before that. */

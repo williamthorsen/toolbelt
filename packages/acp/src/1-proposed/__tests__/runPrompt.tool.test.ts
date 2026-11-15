@@ -7,6 +7,11 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 import type { FakeAgentConfig } from '../../test-utils/createFakeAgent.ts';
+import {
+  createGreetingToolServer,
+  GREETING_TEXT,
+  GREETING_TOOL_NAME,
+} from '../../test-utils/createGreetingToolServer.ts';
 import type { RunPromptOptions } from '../../types/run.ts';
 import { runPrompt } from '../runPrompt.ts';
 
@@ -22,6 +27,22 @@ describe(runPrompt, () => {
 
     expect(events).toStrictEqual([
       { type: 'update', update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'hi' } } },
+      { type: 'stopped', stopReason: 'end_turn' },
+    ]);
+  });
+
+  it('serves the tools through the stdio bridge to an agent that advertises no MCP transport', async () => {
+    const options = buildOptions({ callTool: { name: GREETING_TOOL_NAME } });
+
+    const events = await Array.fromAsync(
+      runPrompt({ ...options, tools: { name: 'app', createServer: createGreetingToolServer() } }),
+    );
+
+    expect(events).toStrictEqual([
+      {
+        type: 'update',
+        update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: GREETING_TEXT } },
+      },
       { type: 'stopped', stopReason: 'end_turn' },
     ]);
   });
