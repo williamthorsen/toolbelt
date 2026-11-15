@@ -1,4 +1,4 @@
-import { tmpdir } from 'node:os';
+import { homedir } from 'node:os';
 import path from 'node:path';
 
 import type { AgentProfile } from '../types/run.ts';
@@ -9,7 +9,7 @@ export interface AntigravityProfileOptions {
   readonly command?: string;
   /**
    * The absolute path of the directory from which the CLI reads its configuration in place of `~/.gemini`, and to
-   * which it writes its session state. Defaults to `toolbelt.acp-antigravity` in the system's temporary directory.
+   * which it writes its session state. Defaults to `~/.cache/toolbelt.acp/antigravity`, which the CLI creates.
    */
   readonly geminiDir?: string;
 }
@@ -27,7 +27,7 @@ export interface AntigravityProfileOptions {
 export function antigravityProfile(options: AntigravityProfileOptions = {}): AgentProfile {
   return {
     command: options.command ?? 'agy',
-    args: ['acp', '--gemini-dir', options.geminiDir ?? path.join(tmpdir(), 'toolbelt.acp-antigravity')],
+    args: ['acp', '--gemini-dir', options.geminiDir ?? path.join(homedir(), '.cache', 'toolbelt.acp', 'antigravity')],
     authMethodId: 'oauth-personal',
     permissionModeId: 'default',
   };

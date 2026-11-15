@@ -1,4 +1,4 @@
-import { tmpdir } from 'node:os';
+import { homedir } from 'node:os';
 import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
@@ -30,7 +30,7 @@ describe(antigravityProfile, () => {
   it('starts agy on PATH with a configuration directory of its own, signed in personally, in the asking mode', () => {
     expect(antigravityProfile()).toStrictEqual({
       command: 'agy',
-      args: ['acp', '--gemini-dir', path.join(tmpdir(), 'toolbelt.acp-antigravity')],
+      args: ['acp', '--gemini-dir', path.join(homedir(), '.cache', 'toolbelt.acp', 'antigravity')],
       authMethodId: 'oauth-personal',
       permissionModeId: 'default',
     });
