@@ -14,8 +14,9 @@ export interface AgentRunErrorDetails {
 /**
  * The error that `runPrompt` rejects with when the agent cannot be started, breaks the protocol, or exits during
  * the run. `cause` holds the underlying error: a spawn error whose `code` names the system error, such as
- * `ENOENT` for a command that is not installed, or the SDK's `RequestError`, whose `code` is the JSON-RPC error
- * code that the agent answered with.
+ * `ENOENT` for a command that is not installed; the SDK's `RequestError`, whose `code` is the JSON-RPC error
+ * code that the agent answered with; or an `Error` without a `code`, for an agent that answered another protocol
+ * version or whose connection closed. An agent that exited is recognized by `exitCode` or `signal`.
  *
  * @category ACP
  * @stage proposed

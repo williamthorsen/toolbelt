@@ -54,11 +54,11 @@ export async function* runPrompt(options: RunPromptOptions): AsyncGenerator<RunE
   try {
     yield* runAcpPrompt(stream, options);
   } catch (error) {
+    if (signal?.aborted === true && error === signal.reason) throw error;
     // A connection that fails because the agent died closes before the process reports its exit.
     await awaitWithin(exited, EXIT_SETTLE_MS);
     const { exitCode, signalCode } = child;
     await stopProcess();
-    if (signal?.aborted === true && error === signal.reason) throw error;
     throw new AgentRunError(
       {
         command: agent.command,
