@@ -3,21 +3,26 @@ import { parseArgs as nodeParseArgs } from 'node:util';
 import { resolveLongName } from './resolveLongName.ts';
 import type { FlagDefinition, FlagSchema } from './types.ts';
 
+/** One token of `node:util.parseArgs` in non-strict mode. */
+export type ArgToken = NonNullable<ReturnType<typeof nodeParseArgs<NodeParseConfig>>['tokens']>[number];
+
+/**
+ * Finds the flag that an option token names. A single-dash token matches only through its declared short
+ * name, since the tokenizer reports an unknown `-x` under the name `x`, which may be another flag's long name.
+ */
+export function findFlagEntry(
+  flagsByName: ReadonlyMap<string, FlagEntry>,
+  token: { name: string; rawName: string },
+): FlagEntry | undefined {
+  const entry = flagsByName.get(token.name);
+  if (entry === undefined || token.rawName.startsWith('--')) return entry;
+  return entry.definition.short === token.rawName.slice(1) ? entry : undefined;
+}
+
 /** A flag of the schema, found by the long name that the tokenizer reports. */
 export interface FlagEntry {
   key: string;
   definition: FlagDefinition;
-}
-
-/** One token of `node:util.parseArgs` in non-strict mode. */
-export type ArgToken = NonNullable<ReturnType<typeof nodeParseArgs<NodeParseConfig>>['tokens']>[number];
-
-interface NodeParseConfig {
-  args: string[];
-  options: Record<string, { type: 'boolean' | 'string'; short?: string }>;
-  strict: false;
-  allowPositionals: true;
-  tokens: true;
 }
 
 /**
@@ -53,15 +58,14 @@ export function tokenizeArgs(
   return { tokens, flagsByName };
 }
 
-/**
- * Finds the flag that an option token names. A single-dash token matches only through its declared short
- * name, since the tokenizer reports an unknown `-x` under the name `x`, which may be another flag's long name.
- */
-export function findFlagEntry(
-  flagsByName: ReadonlyMap<string, FlagEntry>,
-  token: { name: string; rawName: string },
-): FlagEntry | undefined {
-  const entry = flagsByName.get(token.name);
-  if (entry === undefined || token.rawName.startsWith('--')) return entry;
-  return entry.definition.short === token.rawName.slice(1) ? entry : undefined;
+// region | Helpers
+
+interface NodeParseConfig {
+  args: string[];
+  options: Record<string, { type: 'boolean' | 'string'; short?: string }>;
+  strict: false;
+  allowPositionals: true;
+  tokens: true;
 }
+
+// endregion | Helpers

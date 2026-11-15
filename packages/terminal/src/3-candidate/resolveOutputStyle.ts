@@ -5,14 +5,6 @@ import {
   type OutputStyle,
 } from './detectOutputStyle.ts';
 
-export const OUTPUT_STYLE_SETTINGS = ['auto', ...OUTPUT_STYLES] as const;
-
-/** Everything a flag or an environment variable accepts, `auto` standing for whatever detection reports. */
-export type OutputStyleSetting = (typeof OUTPUT_STYLE_SETTINGS)[number];
-
-// The settings widened to strings, so that an arbitrary input can be tested for membership without a cast.
-const ACCEPTED_SETTINGS: ReadonlySet<string> = new Set<string>(OUTPUT_STYLE_SETTINGS);
-
 // The argument after which every remaining argument is positional.
 const POSITIONAL_TERMINATOR = '--';
 
@@ -31,6 +23,23 @@ export function describeInvalidOutputStyle(invalid: InvalidOutputStyle): string 
 
   return `${source} must be one of: ${OUTPUT_STYLE_SETTINGS.join(', ')} (got ${JSON.stringify(value)})`;
 }
+
+export interface InvalidOutputStyle {
+  /** The flag or environment variable that named the value, spelled as the caller spells it. */
+  readonly source: string;
+  readonly value: string;
+}
+
+export const OUTPUT_STYLE_SETTINGS = ['auto', ...OUTPUT_STYLES] as const;
+
+export interface OutputStyleResolution {
+  /** The first rejected value, absent when every source named a setting or named nothing. */
+  readonly invalid?: InvalidOutputStyle | undefined;
+  readonly style: OutputStyle;
+}
+
+/** Everything a flag or an environment variable accepts, `auto` standing for whatever detection reports. */
+export type OutputStyleSetting = (typeof OUTPUT_STYLE_SETTINGS)[number];
 
 /**
  * Resolves the style to render in: the flag, else the environment variable, else detection.
@@ -74,18 +83,6 @@ export function resolveOutputStyle(options: ResolveOutputStyleOptions): OutputSt
   return invalid === undefined ? { style } : { invalid, style };
 }
 
-export interface InvalidOutputStyle {
-  /** The flag or environment variable that named the value, spelled as the caller spells it. */
-  readonly source: string;
-  readonly value: string;
-}
-
-export interface OutputStyleResolution {
-  /** The first rejected value, absent when every source named a setting or named nothing. */
-  readonly invalid?: InvalidOutputStyle | undefined;
-  readonly style: OutputStyle;
-}
-
 export interface ResolveOutputStyleOptions extends DetectOutputStyleOptions {
   /** Raw arguments, scanned before any parse; at a CLI's entry point these are `process.argv.slice(2)`. */
   readonly argv: readonly string[];
@@ -96,6 +93,9 @@ export interface ResolveOutputStyleOptions extends DetectOutputStyleOptions {
 }
 
 // region | Helpers
+
+// The settings widened to strings, so that an arbitrary input can be tested for membership without a cast.
+const ACCEPTED_SETTINGS: ReadonlySet<string> = new Set<string>(OUTPUT_STYLE_SETTINGS);
 
 /**
  * Finds the value that an invocation gives the flag, scanning raw argv ahead of any parse.

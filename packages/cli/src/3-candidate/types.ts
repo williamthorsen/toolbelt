@@ -1,3 +1,6 @@
+/** Requires each flag's `default`, when declared, to have the flag's value type. */
+export type CheckedFlags<S extends FlagSchema> = S & { readonly [K in keyof S]: { default?: FlagDefault<S[K]> } };
+
 /** Declares one flag: its value type, its documentation, and how it is spelled on the command line. */
 export interface FlagDefinition {
   type: 'boolean' | 'string' | 'path';
@@ -31,23 +34,6 @@ export interface OperandDefinition {
   choices?: readonly string[];
 }
 
-/** Declares the flags and operands that `parseArgs` accepts. */
-export interface ParseSpec<
-  S extends FlagSchema = FlagSchema,
-  O extends readonly OperandDefinition[] = readonly OperandDefinition[],
-> {
-  flags?: CheckedFlags<S>;
-  operands?: O;
-}
-
-/** Options that control where paths resolve and where parsing stops. */
-export interface ParseOptions {
-  /** The directory against which a path flag resolves; defaults to the working directory. */
-  baseDir?: string;
-  /** Stops at the first positional or `--` and returns it and everything after it, unparsed, in `rest`. */
-  stopAtPositional?: boolean;
-}
-
 /** Infers each flag's parsed value from its definition. */
 export type ParsedFlags<S extends FlagSchema> = {
   -readonly [K in keyof S]: S[K] extends { type: 'boolean' }
@@ -68,6 +54,14 @@ export type ParsedOperands<O extends readonly OperandDefinition[]> = {
       : OperandValue<D>;
 };
 
+/** Options that control where paths resolve and where parsing stops. */
+export interface ParseOptions {
+  /** The directory against which a path flag resolves; defaults to the working directory. */
+  baseDir?: string;
+  /** Stops at the first positional or `--` and returns it and everything after it, unparsed, in `rest`. */
+  stopAtPositional?: boolean;
+}
+
 /** The typed result of `parseArgs`. */
 export interface ParseResult<
   S extends FlagSchema = FlagSchema,
@@ -79,10 +73,16 @@ export interface ParseResult<
   rest: string[];
 }
 
-// region | Helpers
+/** Declares the flags and operands that `parseArgs` accepts. */
+export interface ParseSpec<
+  S extends FlagSchema = FlagSchema,
+  O extends readonly OperandDefinition[] = readonly OperandDefinition[],
+> {
+  flags?: CheckedFlags<S>;
+  operands?: O;
+}
 
-/** Requires each flag's `default`, when declared, to have the flag's value type. */
-export type CheckedFlags<S extends FlagSchema> = S & { readonly [K in keyof S]: { default?: FlagDefault<S[K]> } };
+// region | Helpers
 
 /**
  * Leaves the default of an erased definition unconstrained, since its value type is not known, and forbids one on

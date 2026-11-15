@@ -132,13 +132,13 @@ describe(defineGroup, () => {
 
 // region | Helpers
 
-function enter(bound: BoundGroup, args: string[]) {
-  return bound.enter(args, '/base', []);
-}
-
 function asCommand(bound: BoundCommand | BoundGroup | undefined): BoundCommand {
   if (bound === undefined || !('invoke' in bound)) throw new Error('Expected a command.');
   return bound;
+}
+
+function enter(bound: BoundGroup, args: string[]) {
+  return bound.enter(args, '/base', []);
 }
 
 async function invoke(bound: BoundCommand, args: string[]): Promise<unknown> {

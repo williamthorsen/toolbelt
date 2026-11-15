@@ -13,20 +13,6 @@ import { UsageError } from './UsageError.ts';
 /** The exit code that `runCli` returns on a usage error. */
 const USAGE_EXIT_CODE = 2;
 
-/** Options of `runCli`. */
-export interface RunCliOptions<C> {
-  /** The invocation name, which begins every usage line and every scope. */
-  name: string;
-  /** The context that the root receives. */
-  context: C;
-  stdout: Writer;
-  stderr: Writer;
-  /** The directory against which path flags resolve; defaults to the working directory. */
-  baseDir?: string;
-  /** Returns the version that `-V`/`--version` prints at the root; without it, the root does not reserve them. */
-  version?: () => string;
-}
-
 /**
  * Runs a command tree against arguments and resolves to the exit code.
  *
@@ -142,24 +128,21 @@ export async function runCli<C>(
   }
 }
 
+/** Options of `runCli`. */
+export interface RunCliOptions<C> {
+  /** The invocation name, which begins every usage line and every scope. */
+  name: string;
+  /** The context that the root receives. */
+  context: C;
+  stdout: Writer;
+  stderr: Writer;
+  /** The directory against which path flags resolve; defaults to the working directory. */
+  baseDir?: string;
+  /** Returns the version that `-V`/`--version` prints at the root; without it, the root does not reserve them. */
+  version?: () => string;
+}
+
 // region | Helpers
-
-/** Reports an unknown command token, with the closest command when one is near enough to suggest. */
-class UnknownCommandError extends UsageError {
-  constructor(token: string, names: readonly string[]) {
-    super(`Unknown command: ${token}`, { suggestion: findCloseMatch(token, names.toSorted()) });
-    this.name = 'UnknownCommandError';
-  }
-}
-
-type Requested = 'help' | 'version';
-
-/** The state of one walk: where paths resolve, whether the root is versioned, and the scope reached so far. */
-interface Walk {
-  baseDir: string;
-  hasVersion: boolean;
-  scope: string[];
-}
 
 /** Throws a plain `Error` when a versioned root declares `--version` or `-V` itself. */
 function assertVersionUnreserved(flags: FlagSchema): void {
@@ -181,6 +164,8 @@ function isCommandToken(token: string): boolean {
 function listReservedLongNames(withVersion: boolean): string[] {
   return listReservedFlags(withVersion).map((flag) => flag.long);
 }
+
+type Requested = 'help' | 'version';
 
 /** Finds a help or version request among the arguments before `--`. */
 function scanCommandScope(args: readonly string[], flags: FlagSchema, withVersion: boolean): Requested | undefined {
@@ -239,6 +224,14 @@ function scanScope(
   return undefined;
 }
 
+/** Reports an unknown command token, with the closest command when one is near enough to suggest. */
+class UnknownCommandError extends UsageError {
+  constructor(token: string, names: readonly string[]) {
+    super(`Unknown command: ${token}`, { suggestion: findCloseMatch(token, names.toSorted()) });
+    this.name = 'UnknownCommandError';
+  }
+}
+
 /**
  * Maps a result that is not a number to 0, since a `void` handler may return any value, and throws a plain
  * `Error` on a number other than an integer from 0 to 255.
@@ -247,6 +240,13 @@ function validateExitCode(result: Awaited<RunResult>): number {
   if (typeof result !== 'number') return 0;
   if (Number.isSafeInteger(result) && result >= 0 && result <= 255) return result;
   throw new Error(`A command returned an invalid exit code: ${String(result)}`);
+}
+
+/** The state of one walk: where paths resolve, whether the root is versioned, and the scope reached so far. */
+interface Walk {
+  baseDir: string;
+  hasVersion: boolean;
+  scope: string[];
 }
 
 // endregion | Helpers

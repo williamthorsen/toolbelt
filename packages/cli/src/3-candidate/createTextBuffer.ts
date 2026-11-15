@@ -1,11 +1,5 @@
 import type { Writer } from './nodes.ts';
 
-/** A writer that accumulates everything written to it. */
-export interface TextBuffer extends Writer {
-  /** Everything written so far, in order. */
-  readonly text: string;
-}
-
 /**
  * Creates a writer that accumulates what is written to it, such as to capture what `runCli` writes to
  * `stdout` or `stderr`.
@@ -24,4 +18,10 @@ export function createTextBuffer(): TextBuffer {
       text += chunk;
     },
   };
+}
+
+/** A writer that accumulates everything written to it. */
+export interface TextBuffer extends Writer {
+  /** Everything written so far, in order. */
+  readonly text: string;
 }

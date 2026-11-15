@@ -3,42 +3,7 @@ import { parseValidatedArgs } from './parseArgs.ts';
 import type { CheckedFlags, FlagSchema, OperandDefinition, ParsedFlags, ParsedOperands, ParseSpec } from './types.ts';
 import { validateSpec } from './validateSpec.ts';
 
-/** The input of a command's `run`. */
-export interface CommandInput<S extends FlagSchema, O extends readonly OperandDefinition[], C> {
-  flags: ParsedFlags<S>;
-  operands: ParsedOperands<O>;
-  context: C;
-  stdout: Writer;
-  stderr: Writer;
-}
-
-/** The input of a passthrough command's `run`, whose arguments arrive unparsed. */
-export interface PassthroughInput<C> {
-  args: string[];
-  context: C;
-  stdout: Writer;
-  stderr: Writer;
-}
-
-/** Defines a command that runs with the context `C`. */
-export interface DefineCommand<C> {
-  (definition: PassthroughDefinition<C>): Command<C>;
-  // eslint-disable-next-line @typescript-eslint/no-generated-empty-object-type -- A command without flags parses to an empty `flags` object.
-  <const S extends FlagSchema = Record<never, never>, const O extends readonly OperandDefinition[] = []>(
-    definition: CommandDefinition<S, O, C>,
-  ): Command<C>;
-}
-
-/**
- * Defines a group whose commands run with the context `C`, or, with `deriveContext`, with the context that it
- * returns from the group's parsed flags and `C`.
- */
-export interface DefineGroup<C> {
-  // eslint-disable-next-line @typescript-eslint/no-generated-empty-object-type -- A group without flags parses to an empty `flags` object.
-  <const S extends FlagSchema = Record<never, never>>(definition: PlainGroupDefinition<S, C>): Group<C>;
-  // eslint-disable-next-line @typescript-eslint/no-generated-empty-object-type -- A group without flags parses to an empty `flags` object.
-  <C2, const S extends FlagSchema = Record<never, never>>(definition: DerivedGroupDefinition<S, C, C2>): Group<C>;
-}
+const contextFree = createCli<unknown>();
 
 /** The fields of a command definition other than its passthrough-specific ones. */
 export interface CommandDefinition<S extends FlagSchema, O extends readonly OperandDefinition[], C>
@@ -47,21 +12,13 @@ export interface CommandDefinition<S extends FlagSchema, O extends readonly Oper
   run: (input: CommandInput<S, O, C>) => RunResult;
 }
 
-/** A command definition whose arguments arrive unparsed, help flags included. */
-export interface PassthroughDefinition<C> extends Documentation {
-  passthrough: true;
-  run: (input: PassthroughInput<C>) => RunResult;
-}
-
-/** The fields of a group definition other than its commands and `deriveContext`. */
-export interface GroupDefinition<S extends FlagSchema> extends Documentation {
-  /** Global options of the group, accepted only before its command token. */
-  flags?: CheckedFlags<S>;
-  /**
-   * Runs when the group's level has no command token, as though its name preceded the first flag that the
-   * group's flags do not claim, splitting a cluster at that flag: `-qw` is read as `-q -w`.
-   */
-  defaultCommand?: string;
+/** The input of a command's `run`. */
+export interface CommandInput<S extends FlagSchema, O extends readonly OperandDefinition[], C> {
+  flags: ParsedFlags<S>;
+  operands: ParsedOperands<O>;
+  context: C;
+  stdout: Writer;
+  stderr: Writer;
 }
 
 /**
@@ -105,14 +62,21 @@ export function createCli<C>(): { defineCommand: DefineCommand<C>; defineGroup: 
   return { defineCommand, defineGroup };
 }
 
-const contextFree = createCli<unknown>();
-
 /**
  * Defines a command that does not read a context. It nests under any group, since its context is `unknown`.
  * @category CLI
  * @stage candidate
  */
 export const defineCommand: DefineCommand<unknown> = contextFree.defineCommand;
+
+/** Defines a command that runs with the context `C`. */
+export interface DefineCommand<C> {
+  (definition: PassthroughDefinition<C>): Command<C>;
+  // eslint-disable-next-line @typescript-eslint/no-generated-empty-object-type -- A command without flags parses to an empty `flags` object.
+  <const S extends FlagSchema = Record<never, never>, const O extends readonly OperandDefinition[] = []>(
+    definition: CommandDefinition<S, O, C>,
+  ): Command<C>;
+}
 
 /**
  * Defines a group whose commands do not read a context, unless its `deriveContext` supplies one.
@@ -121,30 +85,43 @@ export const defineCommand: DefineCommand<unknown> = contextFree.defineCommand;
  */
 export const defineGroup: DefineGroup<unknown> = contextFree.defineGroup;
 
-// region | Helpers
-
-interface Documentation {
-  /** One line, shown in the parent group's `Commands:` block and as the fallback description. */
-  summary: string;
-  description?: string;
-  /** Free text appended verbatim to the help page. */
-  epilog?: string;
+/**
+ * Defines a group whose commands run with the context `C`, or, with `deriveContext`, with the context that it
+ * returns from the group's parsed flags and `C`.
+ */
+export interface DefineGroup<C> {
+  // eslint-disable-next-line @typescript-eslint/no-generated-empty-object-type -- A group without flags parses to an empty `flags` object.
+  <const S extends FlagSchema = Record<never, never>>(definition: PlainGroupDefinition<S, C>): Group<C>;
+  // eslint-disable-next-line @typescript-eslint/no-generated-empty-object-type -- A group without flags parses to an empty `flags` object.
+  <C2, const S extends FlagSchema = Record<never, never>>(definition: DerivedGroupDefinition<S, C, C2>): Group<C>;
 }
 
-/**
- * A group definition whose commands receive the group's own context type. Its optional `deriveContext` gives the
- * callback contextual types when this overload is tried first, before the derived overload.
- */
-type PlainGroupDefinition<S extends FlagSchema, C> = GroupDefinition<S> & {
-  deriveContext?: (flags: ParsedFlags<S>, context: C) => C;
-  commands: Record<string, CommandNode<C>>;
-};
+/** The fields of a group definition other than its commands and `deriveContext`. */
+export interface GroupDefinition<S extends FlagSchema> extends Documentation {
+  /** Global options of the group, accepted only before its command token. */
+  flags?: CheckedFlags<S>;
+  /**
+   * Runs when the group's level has no command token, as though its name preceded the first flag that the
+   * group's flags do not claim, splitting a cluster at that flag: `-qw` is read as `-q -w`.
+   */
+  defaultCommand?: string;
+}
 
-/** A group definition whose commands receive the context that `deriveContext` returns. */
-type DerivedGroupDefinition<S extends FlagSchema, C, C2> = GroupDefinition<S> & {
-  deriveContext: (flags: ParsedFlags<S>, context: C) => C2;
-  commands: Record<string, CommandNode<C2>>;
-};
+/** A command definition whose arguments arrive unparsed, help flags included. */
+export interface PassthroughDefinition<C> extends Documentation {
+  passthrough: true;
+  run: (input: PassthroughInput<C>) => RunResult;
+}
+
+/** The input of a passthrough command's `run`, whose arguments arrive unparsed. */
+export interface PassthroughInput<C> {
+  args: string[];
+  context: C;
+  stdout: Writer;
+  stderr: Writer;
+}
+
+// region | Helpers
 
 function buildCommand<C>(
   definition: PassthroughDefinition<C> | CommandDefinition<FlagSchema, readonly OperandDefinition[], C>,
@@ -234,5 +211,28 @@ function buildGroup<S extends FlagSchema, C, C2>(
   };
   return group;
 }
+
+/** A group definition whose commands receive the context that `deriveContext` returns. */
+type DerivedGroupDefinition<S extends FlagSchema, C, C2> = GroupDefinition<S> & {
+  deriveContext: (flags: ParsedFlags<S>, context: C) => C2;
+  commands: Record<string, CommandNode<C2>>;
+};
+
+interface Documentation {
+  /** One line, shown in the parent group's `Commands:` block and as the fallback description. */
+  summary: string;
+  description?: string;
+  /** Free text appended verbatim to the help page. */
+  epilog?: string;
+}
+
+/**
+ * A group definition whose commands receive the group's own context type. Its optional `deriveContext` gives the
+ * callback contextual types when this overload is tried first, before the derived overload.
+ */
+type PlainGroupDefinition<S extends FlagSchema, C> = GroupDefinition<S> & {
+  deriveContext?: (flags: ParsedFlags<S>, context: C) => C;
+  commands: Record<string, CommandNode<C>>;
+};
 
 // endregion | Helpers
