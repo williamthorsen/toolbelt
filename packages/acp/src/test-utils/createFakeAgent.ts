@@ -13,6 +13,8 @@ import {
 
 /** How a fake agent answers each request of a run. Every field is optional, and the defaults make a run succeed. */
 export interface FakeAgentConfig {
+  /** Leaves `initialize` unanswered, as a command that does not speak ACP does. */
+  readonly holdInitialize?: boolean;
   /** The version that `initialize` answers. Defaults to the SDK's v1. */
   readonly protocolVersion?: number;
   readonly authMethods?: readonly AuthMethod[];
@@ -46,8 +48,9 @@ export function createFakeAgent(config: FakeAgentConfig = {}): { agent: AgentApp
   let cancel = Promise.withResolvers<undefined>();
 
   const app = agent({ name: 'fake-agent' })
-    .onRequest(methods.agent.initialize, ({ params }) => {
+    .onRequest(methods.agent.initialize, async ({ params }) => {
       received.push({ method: methods.agent.initialize, params });
+      if (config.holdInitialize === true) await new Promise<never>(() => {});
       return {
         protocolVersion: config.protocolVersion ?? PROTOCOL_VERSION,
         agentCapabilities: config.advertiseSystemPrompt === true ? { sessionCapabilities: { systemPrompt: {} } } : {},

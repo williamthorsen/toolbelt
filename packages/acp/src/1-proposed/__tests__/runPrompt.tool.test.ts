@@ -1,6 +1,7 @@
-import { mkdtempSync, readFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { setTimeout as delay } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 
 import { describe, expect, it } from 'vitest';
@@ -28,13 +29,17 @@ describe(runPrompt, () => {
   it('rejects with the end of stderr when the agent exits before the handshake', async () => {
     const options = buildOptions({ exitBeforeInitialize: { stderr: 'not signed in', code: 3 } });
 
-    await expect(Array.fromAsync(runPrompt(options))).rejects.toThrow(/exited 3[\s\S]*not signed in/);
+    await expect(Array.fromAsync(runPrompt(options))).rejects.toThrow(
+      expect.objectContaining({ name: 'AgentRunError', exitCode: 3, stderrTail: 'not signed in' }),
+    );
   });
 
   it('rejects naming the command when it cannot be started', async () => {
     const options: RunPromptOptions = { agent: { command: 'no-such-agent-command' }, cwd: tmpdir(), prompt: 'x' };
 
-    await expect(Array.fromAsync(runPrompt(options))).rejects.toThrow(/`no-such-agent-command` failed.*ENOENT/);
+    await expect(Array.fromAsync(runPrompt(options))).rejects.toThrow(
+      expect.objectContaining({ command: 'no-such-agent-command', cause: expect.objectContaining({ code: 'ENOENT' }) }),
+    );
   });
 
   it('stops the agent process when the consumer stops iterating', async () => {
@@ -48,6 +53,20 @@ describe(runPrompt, () => {
     for await (const _event of runPrompt(options)) break;
 
     const pid = Number(readFileSync(pidFile, 'utf8'));
+    expect(() => process.kill(pid, 0)).toThrow(expect.objectContaining({ code: 'ESRCH' }));
+  });
+
+  it("rejects with the signal's reason itself, and stops the agent, when the signal aborts during the handshake", async () => {
+    const pidFile = path.join(mkdtempSync(path.join(tmpdir(), 'acp-run-')), 'pid');
+    const controller = new AbortController();
+    const reason = new Error('stop');
+    await using run = runPrompt({ ...buildOptions({ pidFile, holdInitialize: true }), signal: controller.signal });
+
+    const first = run.next();
+    const pid = await readPidWhenWritten(pidFile);
+    controller.abort(reason);
+
+    await expect(first).rejects.toBe(reason);
     expect(() => process.kill(pid, 0)).toThrow(expect.objectContaining({ code: 'ESRCH' }));
   });
 
@@ -72,5 +91,17 @@ function buildOptions(config: FakeAgentConfig): RunPromptOptions {
     cwd: tmpdir(),
     prompt: 'hello',
   };
+}
+
+/** Polls for the pid that the fake agent process writes once it starts. */
+async function readPidWhenWritten(pidFile: string): Promise<number> {
+  for (;;) {
+    if (existsSync(pidFile)) {
+      const content = readFileSync(pidFile, 'utf8');
+      if (content !== '') return Number(content);
+    }
+    // eslint-disable-next-line sky-pilot/no-real-time-sleep -- the pid file is written by another process, which fake timers do not reach.
+    await delay(10);
+  }
 }
 // endregion | Helpers

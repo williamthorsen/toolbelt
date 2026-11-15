@@ -1,12 +1,11 @@
 import { spawn } from 'node:child_process';
 import { Readable, Writable } from 'node:stream';
-import { setTimeout as sleep } from 'node:timers/promises';
 
 import { ndJsonStream } from '@agentclientprotocol/sdk/unstable';
-import { describeError } from '@williamthorsen/toolbelt.errors';
 
 import { runAcpPrompt } from '../internal/runAcpPrompt.ts';
 import type { RunEvent, RunPromptOptions } from '../types/run.ts';
+import { AgentRunError } from './AgentRunError.ts';
 
 const STDERR_TAIL_BYTES = 8192;
 const EXIT_SETTLE_MS = 250;
@@ -20,9 +19,8 @@ const TERMINATE_GRACE_MS = 2000;
  * appended system prompt when the agent supports one and ahead of the prompt otherwise, and refuses every
  * permission request. Aborting `signal` before the prompt is sent rejects with the signal's reason; aborting it
  * afterwards cancels the turn, which ends with a `cancelled` stop, or rejects with the reason when the agent does
- * not stop within 10 seconds. Any other failure rejects with an error that contains the end of the agent's
- * stderr. The agent process is stopped when the run ends, however it ends, including when the consumer stops
- * iterating.
+ * not stop within 10 seconds. Any other failure rejects with an `AgentRunError`. The agent process is stopped
+ * when the run ends, however it ends, including when the consumer stops iterating.
  *
  * @category ACP
  * @stage proposed
@@ -57,12 +55,19 @@ export async function* runPrompt(options: RunPromptOptions): AsyncGenerator<RunE
     yield* runAcpPrompt(stream, options);
   } catch (error) {
     // A connection that fails because the agent died closes before the process reports its exit.
-    await Promise.race([exited, sleep(EXIT_SETTLE_MS)]);
-    const exitedEarly = child.exitCode !== null || child.signalCode !== null;
-    const exitDetail = exitedEarly ? describeExit(child.exitCode, child.signalCode) : undefined;
+    await awaitWithin(exited, EXIT_SETTLE_MS);
+    const { exitCode, signalCode } = child;
     await stopProcess();
     if (signal?.aborted === true && error === signal.reason) throw error;
-    throw buildFailure(agent.command, spawnError ?? error, exitDetail, stderrTail.toString('utf8'));
+    throw new AgentRunError(
+      {
+        command: agent.command,
+        exitCode: exitCode ?? undefined,
+        signal: signalCode ?? undefined,
+        stderrTail: stderrTail.toString('utf8'),
+      },
+      { cause: spawnError ?? error },
+    );
   } finally {
     await stopProcess();
   }
@@ -71,7 +76,7 @@ export async function* runPrompt(options: RunPromptOptions): AsyncGenerator<RunE
   async function stopProcess(): Promise<void> {
     child.stdin.end();
     if (isRunning()) child.kill('SIGTERM');
-    await Promise.race([exited, sleep(TERMINATE_GRACE_MS)]);
+    await awaitWithin(exited, TERMINATE_GRACE_MS);
     if (isRunning()) child.kill('SIGKILL');
     await exited;
   }
@@ -83,17 +88,16 @@ export async function* runPrompt(options: RunPromptOptions): AsyncGenerator<RunE
 }
 
 // region | Helpers
-/** Builds the error that a failed run rejects with, naming the command and quoting its stderr. */
-function buildFailure(command: string, cause: unknown, exitDetail: string | undefined, stderr: string): Error {
-  const reason = describeError(cause);
-  const lines = [`The agent \`${command}\` failed${exitDetail === undefined ? '' : ` (${exitDetail})`}: ${reason}`];
-  const trimmed = stderr.trim();
-  if (trimmed !== '') lines.push(`Its stderr ended with:\n${trimmed}`);
-  return new Error(lines.join('\n'), { cause });
-}
-
-/** Describes how the process ended, by exit code or by signal. */
-function describeExit(code: number | null, signal: NodeJS.Signals | null): string {
-  return code === null ? `killed by ${signal ?? 'a signal'}` : `exited ${code}`;
+/** Waits for `promise` to settle or for `timeoutMs` to pass, whichever comes first, and clears its timer. */
+async function awaitWithin(promise: Promise<void>, timeoutMs: number): Promise<void> {
+  const { promise: timeout, resolve } = Promise.withResolvers<undefined>();
+  const timer = setTimeout(() => {
+    resolve(undefined);
+  }, timeoutMs);
+  try {
+    await Promise.race([promise, timeout]);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 // endregion | Helpers

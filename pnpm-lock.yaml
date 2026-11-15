@@ -252,6 +252,9 @@ importers:
       '@williamthorsen/toolbelt.errors':
         specifier: workspace:*
         version: link:../errors
+      '@williamthorsen/toolbelt.guards':
+        specifier: workspace:*
+        version: link:../guards
 
   packages/adoption:
     devDependencies:

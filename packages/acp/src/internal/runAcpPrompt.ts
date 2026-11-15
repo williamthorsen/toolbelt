@@ -9,6 +9,7 @@ import {
   type RequestPermissionResponse,
   type Stream,
 } from '@agentclientprotocol/sdk/unstable';
+import { isNonNullable } from '@williamthorsen/toolbelt.guards';
 
 import type { RunEvent, RunPromptOptions } from '../types/run.ts';
 import { createEventQueue, type EventQueue } from './createEventQueue.ts';
@@ -71,7 +72,7 @@ export async function* runAcpPrompt(
       }
 
       const instructions = options.instructions ?? '';
-      const hasSystemPrompt = isPresent(initialized.agentCapabilities?.sessionCapabilities?.systemPrompt);
+      const hasSystemPrompt = isNonNullable(initialized.agentCapabilities?.sessionCapabilities?.systemPrompt);
       const { sessionId } = await context.request(methods.agent.session.new, {
         cwd: options.cwd,
         mcpServers: [],
@@ -99,7 +100,7 @@ export async function* runAcpPrompt(
       queue.push({
         type: 'stopped',
         stopReason,
-        ...(isPresent(usage) && { usage }),
+        ...(isNonNullable(usage) && { usage }),
         ...(lastCost !== undefined && { cost: lastCost }),
       });
     }
@@ -135,11 +136,6 @@ async function endQueueWith(run: Promise<void>, queue: EventQueue<RunEvent>): Pr
   } catch (error) {
     queue.fail(error);
   }
-}
-
-/** Narrows away the `null` and `undefined` that ACP uses interchangeably for an absent field. */
-function isPresent<T>(value: T | null | undefined): value is T {
-  return value !== undefined && value !== null;
 }
 
 /** Returns a promise that rejects with the signal's reason once it aborts. */
