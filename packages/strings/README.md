@@ -202,7 +202,7 @@ toCamelCase('dry-run'); // 'dryRun'
 toKebabCase('Darcula (Custom)'); // 'darcula-custom'
 ```
 
-Both split words the same way: Every character that is neither a letter nor a digit separates words and is dropped, a capital starts a new word, and an acronym stays whole. Converting a camelCase key to kebab case and back returns the key, unless the key contains an acronym, which comes back capitalized as a word (`parseHtmlString`).
+Both split words the same way: Every character that is neither a letter nor a digit separates words and is dropped, a capital starts a new word, an acronym stays whole, and a letter followed by a digit stays in the same word (`version2`). Converting a camelCase key to kebab case and back returns the key, unless the key contains an acronym, which comes back capitalized as a word (`parseHtmlString`).
 
 ## Adoption checks
 
