@@ -9,7 +9,7 @@ import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
 import { SCAFFOLDING_DIRS } from '../test-utils/scaffolding-dirs.ts';
 
 describe('Unindexed tier exports', () => {
-  it('every exported function or class that no tier index re-exports is tagged @internal and not @stage', () => {
+  it('every exported function or class that no tier index re-exports is tagged @internal and neither @category nor @stage', () => {
     const { checkedCount, mistaggedExports } = auditUnindexedExports(findMonorepoRoot());
 
     expect(mistaggedExports).toStrictEqual([]);
@@ -22,8 +22,8 @@ describe('Unindexed tier exports', () => {
 
 /**
  * Audits every exported function and class in a package's exported maturity tiers that none of its tier indexes
- * re-exports, reporting each one that lacks `@internal` or declares `@stage`. Such an export is published by no
- * subpath, so it has no maturity to declare.
+ * re-exports, reporting each one that lacks `@internal` or declares `@category` or `@stage`. Such an export is
+ * published by no subpath, so it has no maturity to declare.
  */
 function auditUnindexedExports(monorepoRoot: string): { checkedCount: number; mistaggedExports: string[] } {
   const mistaggedExports: string[] = [];
@@ -61,7 +61,7 @@ function auditUnindexedExports(monorepoRoot: string): { checkedCount: number; mi
         checkedCount += 1;
 
         const tagNames = new Set(ts.getJSDocTags(declaration).map((tag) => tag.tagName.text));
-        if (!tagNames.has('internal') || tagNames.has('stage')) {
+        if (!tagNames.has('internal') || tagNames.has('category') || tagNames.has('stage')) {
           mistaggedExports.push(`${path.relative(monorepoRoot, sourceFile)}: ${symbol.name}`);
         }
       }
