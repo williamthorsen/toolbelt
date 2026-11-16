@@ -35,4 +35,22 @@ describe(readAnswer, () => {
 
     await expect(answering).resolves.toBeUndefined();
   });
+
+  it('resolves to a last line that ends without a newline', async () => {
+    const input = new PassThrough();
+
+    const answering = readAnswer('Proceed? ', { input, output: new PassThrough() });
+    input.end('yes');
+
+    await expect(answering).resolves.toBe('yes');
+  });
+
+  it('resolves to undefined on each call once the input has ended', async () => {
+    const input = new PassThrough();
+    const output = new PassThrough();
+    input.end();
+
+    await expect(readAnswer('First? ', { input, output })).resolves.toBeUndefined();
+    await expect(readAnswer('Second? ', { input, output })).resolves.toBeUndefined();
+  });
 });
