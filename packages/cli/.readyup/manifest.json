@@ -33,7 +33,7 @@
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "a8c9ffb5",
+          "hash": "00beca5f",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -83,6 +83,11 @@
           "path": "../../adoption/src/portable/readFunctionLiteral.ts"
         },
         {
+          "hash": "20833e21",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readImportBindings.ts"
+        },
+        {
           "hash": "81846f1a",
           "kind": "module",
           "path": "../../adoption/src/portable/readLiteral.ts"
@@ -103,7 +108,7 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "5d7fcf9b",
+          "hash": "1e314012",
           "kind": "module",
           "path": "../src/readiness/listParserSites.ts"
         }
@@ -113,7 +118,7 @@
       "readyupVersion": "0.46.3",
       "source": "kits/default.ts",
       "sourceHash": "6cbf5101",
-      "targetHash": "bb897821"
+      "targetHash": "2b669b37"
     }
   ]
 }
