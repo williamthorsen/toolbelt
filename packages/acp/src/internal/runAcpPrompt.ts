@@ -63,7 +63,7 @@ export async function* runAcpPrompt(
       queue.push({ type: 'update', update });
     })
     .onRequest(methods.client.session.requestPermission, ({ params }) =>
-      answerPermission(params, options.permissionPolicy, cancelling.signal, (error) => {
+      answerPermission(params, isPreapprovedCall, options.permissionPolicy, cancelling.signal, (error) => {
         policyFailure ??= { error };
         onAbort?.(error);
       }),
@@ -133,6 +133,13 @@ export async function* runAcpPrompt(
     await Promise.race([converse(), rejectOnAbort(halt.signal)]);
   });
 
+  /** Reports whether the request is a call of a tool on the run's tool server, and that server is preapproved. */
+  function isPreapprovedCall(request: RequestPermissionRequest): boolean {
+    const { tools } = options;
+    const { isToolServerCall } = options.agent;
+    return tools?.isPreapproved === true && isToolServerCall !== undefined && isToolServerCall(request, tools.name);
+  }
+
   /** Abandons the run before the prompt is sent, and cancels the turn after. */
   function abort(): void {
     if (onAbort === undefined) halt.abort(signal?.reason);
@@ -155,12 +162,14 @@ export async function* runAcpPrompt(
 
 // region | Helpers
 /**
- * Answers a permission request with the policy's decision, selecting only options that apply once. Answers
- * cancelled once `cancelling` aborts, when the request does not offer the option that the decision needs, and
- * when the policy throws, which is also reported to `failRun`.
+ * Answers a permission request with the policy's decision, or allows it without consulting the policy when
+ * `isPreapproved` reports it, selecting only options that apply once. Answers cancelled once `cancelling` aborts,
+ * when the request does not offer the option that the decision needs, and when the policy throws, which is also
+ * reported to `failRun`.
  */
 async function answerPermission(
   request: RequestPermissionRequest,
+  isPreapproved: (request: RequestPermissionRequest) => boolean,
   policy: PermissionPolicy | undefined,
   cancelling: AbortSignal,
   failRun: (error: unknown) => void,
@@ -168,7 +177,9 @@ async function answerPermission(
   if (cancelling.aborted) return CANCELLED;
 
   let verdict: unknown;
-  if (policy !== undefined) {
+  if (isPreapproved(request)) {
+    verdict = 'allow';
+  } else if (policy !== undefined) {
     const settled = new AbortController();
     const { promise: cancelled, resolve } = Promise.withResolvers<'cancelled'>();
     cancelling.addEventListener(

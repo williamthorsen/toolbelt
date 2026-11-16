@@ -62,6 +62,12 @@ export interface ToolServer {
   readonly name: string;
   /** Returns a fresh server for each MCP request, with the app's tools registered on it. */
   readonly createServer: McpServerFactory;
+  /**
+   * Allows once, without consulting `permissionPolicy`, each of the agent's permission requests that the profile's
+   * `isToolServerCall` identifies as a call of one of this server's tools. Allows nothing on a profile that cannot
+   * identify such calls.
+   */
+  readonly isPreapproved?: boolean;
 }
 
 /** What `runPrompt` runs, and where. */
