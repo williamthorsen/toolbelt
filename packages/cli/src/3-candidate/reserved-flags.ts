@@ -11,12 +11,20 @@ export const HELP_FLAG: ReservedFlag = { long: 'help', short: 'h', description: 
 /** The version flag, which `runCli` intercepts at the root when given a version. */
 export const VERSION_FLAG: ReservedFlag = { long: 'version', short: 'V', description: 'Print the version' };
 
-/** Returns a reserved flag's names as help and messages spell them, such as `-h, --help`. */
+/**
+ * Returns a reserved flag's names as help and messages spell them, such as `-h, --help`.
+ *
+ * @internal
+ */
 export function formatReservedFlagLabel(flag: ReservedFlag): string {
   return `-${flag.short}, --${flag.long}`;
 }
 
-/** Returns the flags that `runCli` intercepts in a scope, the version flag only where the scope reserves it. */
+/**
+ * Returns the flags that `runCli` intercepts in a scope, the version flag only where the scope reserves it.
+ *
+ * @internal
+ */
 export function listReservedFlags(withVersion: boolean): ReservedFlag[] {
   return withVersion ? [HELP_FLAG, VERSION_FLAG] : [HELP_FLAG];
 }

@@ -9,6 +9,8 @@ export type ArgToken = NonNullable<ReturnType<typeof nodeParseArgs<NodeParseConf
 /**
  * Finds the flag that an option token names. A single-dash token matches only through its declared short
  * name, since the tokenizer reports an unknown `-x` under the name `x`, which may be another flag's long name.
+ *
+ * @internal
  */
 export function findFlagEntry(
   flagsByName: ReadonlyMap<string, FlagEntry>,
@@ -28,6 +30,8 @@ export interface FlagEntry {
 /**
  * Tokenizes arguments leniently against a schema: An unknown flag becomes an option token rather than an
  * error. `extraBooleans` registers further boolean flags by long name and short name, such as `help` and `h`.
+ *
+ * @internal
  */
 export function tokenizeArgs(
   argv: readonly string[],

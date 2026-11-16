@@ -33,7 +33,11 @@ export function parseArgs<
   return parseValidatedArgs(argv, spec, options);
 }
 
-/** Parses arguments against a spec that has already been validated. */
+/**
+ * Parses arguments against a spec that has already been validated.
+ *
+ * @internal
+ */
 export function parseValidatedArgs<S extends FlagSchema, O extends readonly OperandDefinition[]>(
   argv: readonly string[],
   spec: ParseSpec<S, O>,
