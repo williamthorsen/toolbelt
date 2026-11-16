@@ -30,8 +30,9 @@ export interface AgentProfile {
    */
   readonly sessionMeta?: Readonly<Record<string, unknown>>;
   /**
-   * Reports whether a permission request is a call of a tool on the session's MCP server named `serverName`. A
-   * profile without one cannot identify such calls, so `ToolServer.isPreapproved` allows nothing on it.
+   * Reports whether a permission request is a call of a tool on the session's MCP server named `serverName`. A profile
+   * without one cannot identify such calls, so `ToolServer.isPreapproved` allows nothing on it. A predicate that throws
+   * cancels the turn and fails the run.
    */
   readonly isToolServerCall?: (request: RequestPermissionRequest, serverName: string) => boolean;
 }

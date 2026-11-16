@@ -393,6 +393,21 @@ describe(runAcpPrompt, () => {
       expect(findParams(received, 'session/request_permission')).toStrictEqual({ outcome: { outcome: 'cancelled' } });
     });
 
+    it("answers cancelled, then rejects with the error, when the profile's predicate throws", async () => {
+      const { agent, received } = createFakeAgent({ permissionRequest: APP_CALL });
+      const isToolServerCall = (): boolean => {
+        throw new Error('predicate failed');
+      };
+
+      await expect(
+        Array.fromAsync(
+          runAcpPrompt(agent, { ...PREAPPROVED_OPTIONS, agent: { command: 'unused', isToolServerCall } }),
+        ),
+      ).rejects.toThrow('predicate failed');
+      expect(findParams(received, 'session/request_permission')).toStrictEqual({ outcome: { outcome: 'cancelled' } });
+      expect(findParams(received, 'session/cancel')).toBeDefined();
+    });
+
     it("answers cancelled to a call of the run's own tools raised after the cancellation", async () => {
       const { agent, received } = createFakeAgent({
         updates: [TEXT_UPDATE],

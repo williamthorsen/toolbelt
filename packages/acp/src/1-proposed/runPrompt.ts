@@ -23,9 +23,9 @@ const TERMINATE_GRACE_MS = 2000;
  * endpoint on `127.0.0.1` that answers only the run's bearer token, and otherwise a stdio bridge that the agent runs
  * with this process's Node. Aborting `signal` before the prompt is sent rejects with the signal's reason; aborting it
  * afterwards cancels the turn, which ends with a `cancelled` stop, or rejects with the reason when the agent does not
- * stop within 10 seconds. Any other failure rejects with an `AgentRunError`, a policy that throws included, which also
- * cancels the turn. The agent process is stopped when the run ends, however it ends, including when the consumer stops
- * iterating.
+ * stop within 10 seconds. Any other failure rejects with an `AgentRunError`, a policy or a profile's `isToolServerCall`
+ * that throws included, which also cancels the turn. The agent process is stopped when the run ends, however it ends,
+ * including when the consumer stops iterating.
  *
  * @category ACP
  * @stage proposed

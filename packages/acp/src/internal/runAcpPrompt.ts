@@ -30,11 +30,11 @@ const DEFAULT_SETTINGS: AcpRunSettings = { cancelGraceMs: 10_000 };
 const CANCELLED: RequestPermissionResponse = { outcome: { outcome: 'cancelled' } };
 
 /**
- * Runs one prompt over an ACP connection to `target`, yielding the turn's updates and then its stop. The
- * connection closes when the turn stops, when the consumer stops iterating, or on a failure, which rejects the
- * iteration. An abort before the prompt is sent rejects with the signal's reason; one after it cancels the turn.
- * A permission policy that throws cancels the turn too, and the iteration then rejects with the policy's error.
- * The app's tools are served for the turn and stop being served when the connection closes.
+ * Runs one prompt over an ACP connection to `target`, yielding the turn's updates and then its stop. The connection
+ * closes when the turn stops, when the consumer stops iterating, or on a failure, which rejects the iteration. An abort
+ * before the prompt is sent rejects with the signal's reason; one after it cancels the turn. A permission policy or a
+ * profile's `isToolServerCall` that throws cancels the turn too, and the iteration then rejects with its error. The
+ * app's tools are served for the turn and stop being served when the connection closes.
  *
  * @internal
  */
@@ -52,7 +52,7 @@ export async function* runAcpPrompt(
   const cancelling = new AbortController();
   let cancelTimer: NodeJS.Timeout | undefined;
   let onAbort: ((reason: unknown) => void) | undefined;
-  let policyFailure: { readonly error: unknown } | undefined;
+  let permissionFailure: { readonly error: unknown } | undefined;
   const mcpProvider = new McpOverAcpProvider();
 
   const app = client({ name: '@williamthorsen/toolbelt.acp' })
@@ -64,7 +64,7 @@ export async function* runAcpPrompt(
     })
     .onRequest(methods.client.session.requestPermission, ({ params }) =>
       answerPermission(params, isPreapprovedCall, options.permissionPolicy, cancelling.signal, (error) => {
-        policyFailure ??= { error };
+        permissionFailure ??= { error };
         onAbort?.(error);
       }),
     )
@@ -121,7 +121,7 @@ export async function* runAcpPrompt(
       if (signal?.aborted === true) onAbort(signal.reason);
 
       const { stopReason, usage } = await responding;
-      if (policyFailure !== undefined) throw policyFailure.error;
+      if (permissionFailure !== undefined) throw permissionFailure.error;
       queue.push({
         type: 'stopped',
         stopReason,
@@ -163,9 +163,9 @@ export async function* runAcpPrompt(
 // region | Helpers
 /**
  * Answers a permission request with the policy's decision, or allows it without consulting the policy when
- * `isPreapproved` reports it, selecting only options that apply once. Answers cancelled once `cancelling` aborts,
- * when the request does not offer the option that the decision needs, and when the policy throws, which is also
- * reported to `failRun`.
+ * `isPreapproved` reports it, selecting only options that apply once. Answers cancelled once `cancelling` aborts, when
+ * the request does not offer the option that the decision needs, and when the policy or `isPreapproved` throws, which
+ * is also reported to `failRun`.
  */
 async function answerPermission(
   request: RequestPermissionRequest,
@@ -176,8 +176,16 @@ async function answerPermission(
 ): Promise<RequestPermissionResponse> {
   if (cancelling.aborted) return CANCELLED;
 
+  let isPreapprovedCall: boolean;
+  try {
+    isPreapprovedCall = isPreapproved(request);
+  } catch (error) {
+    failRun(error);
+    return CANCELLED;
+  }
+
   let verdict: unknown;
-  if (isPreapproved(request)) {
+  if (isPreapprovedCall) {
     verdict = 'allow';
   } else if (policy !== undefined) {
     const settled = new AbortController();
