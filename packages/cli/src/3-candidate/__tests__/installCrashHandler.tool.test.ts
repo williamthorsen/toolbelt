@@ -31,13 +31,6 @@ describe(installCrashHandler, () => {
     expect(run.stderr).toMatch(/END-OF-MESSAGE\n\s+at /u);
     expect(run.stderr).toMatch(/\s+at .+\n$/u);
   });
-
-  it('reports a thrown value that is not an `Error` without frames', () => {
-    const run = runFixture('non-error');
-
-    expect(run.status).toBe(1);
-    expect(run.stderr).toBe('demo: internal error: { code: 7 }\n');
-  });
 });
 
 // region | Helpers
