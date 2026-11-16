@@ -47,6 +47,14 @@ export interface GroupEntry {
   readonly bindCommand: (name: string) => BoundCommand | BoundGroup | undefined;
 }
 
+/** An example on a help page. */
+export interface HelpExample {
+  /** A shell line in which every `{invocation}` stands for the invocation of the page that shows it. */
+  readonly command: string;
+  /** Shown as a `# ` comment line above the command. */
+  readonly description?: string;
+}
+
 /** The arguments and effects with which `runCli` invokes a command. */
 export interface Invocation {
   readonly args: readonly string[];
@@ -56,6 +64,9 @@ export interface Invocation {
   /** The long names that `runCli` intercepts in the command's scope, which an unknown option may be suggested as. */
   readonly reservedLongNames: readonly string[];
 }
+
+/** The token in a `HelpExample` command that help replaces with the page's invocation. */
+export const INVOCATION_PLACEHOLDER = '{invocation}';
 
 /** What a command's `run` returns: an exit code, or nothing for 0, synchronously or as a promise. */
 // eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- `number | undefined` would reject a handler annotated `(): void`.
@@ -74,6 +85,7 @@ interface NodeDocs {
   readonly description: string | undefined;
   /** Free text appended verbatim to the help page. */
   readonly epilog: string | undefined;
+  readonly examples: readonly HelpExample[];
 }
 
 // endregion | Helpers

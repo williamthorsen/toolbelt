@@ -1,7 +1,21 @@
 import { describe, expect, it } from 'vitest';
 
 import type { FlagSchema, OperandDefinition } from '../types.ts';
-import { validateSpec } from '../validateSpec.ts';
+import { validateExamples, validateSpec } from '../validateSpec.ts';
+
+describe(validateExamples, () => {
+  it('accepts commands that contain the placeholder', () => {
+    expect(() =>
+      validateExamples([{ command: '{invocation} --quiet' }, { command: 'NO_COLOR=1 {invocation} | less' }]),
+    ).not.toThrow();
+  });
+
+  it('throws on a command without the placeholder, naming the command', () => {
+    expect(() => validateExamples([{ command: 'demo greet', description: 'Greet' }])).toThrow(
+      "Example 'demo greet' does not contain '{invocation}'.",
+    );
+  });
+});
 
 describe(validateSpec, () => {
   it('accepts a valid spec', () => {

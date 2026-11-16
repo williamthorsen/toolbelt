@@ -1,8 +1,21 @@
+import { type HelpExample, INVOCATION_PLACEHOLDER } from './nodes.ts';
 import { HELP_FLAG } from './reserved-flags.ts';
 import { resolveLongName } from './resolveLongName.ts';
 import type { FlagSchema, OperandDefinition } from './types.ts';
 
 const CAMEL_CASE_KEY = /^[a-z][a-z0-9]*(?:[A-Z][a-z0-9]+)*$/;
+
+/**
+ * Throws a plain `Error` on an example whose command lacks the invocation placeholder, which would show a tool
+ * name or a command path that help cannot keep current.
+ */
+export function validateExamples(examples: readonly HelpExample[]): void {
+  for (const { command } of examples) {
+    if (!command.includes(INVOCATION_PLACEHOLDER)) {
+      throw new Error(`Example '${command}' does not contain '${INVOCATION_PLACEHOLDER}'.`);
+    }
+  }
+}
 
 /**
  * Throws a plain `Error` on a definition that cannot be parsed or documented consistently. This is a
