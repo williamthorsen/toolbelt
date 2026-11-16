@@ -3,6 +3,11 @@ const CONSOLE_TERM = 'linux';
 
 /**
  * Detects the style that an environment calls for: rich only when output is written to a person's terminal.
+ * `resolveOutputStyle` falls back to it, and a CLI offering neither a flag nor an environment variable calls it
+ * directly.
+ *
+ * Rich requires all three signals to allow it, and anything else gives plain: `CI` unset, `''`, or `'false'`, the
+ * two denials matching exactly; the stream a terminal; and `TERM` anything but `linux`.
  *
  * Each signal catches what the others miss. `CI` catches a runner that allocates a pseudo-terminal, for which the
  * terminal check alone would emit emoji into a log that a reader cannot search with `grep`, and `''` or `'false'`
@@ -10,7 +15,8 @@ const CONSOLE_TERM = 'linux';
  * `grep`, whose environment does not set `CI`, and `CI` is not universal either, since Jenkins does not set it.
  * `TERM=linux` catches the Linux virtual console, a terminal outside CI that draws no emoji at all.
  *
- * `TERM=dumb` and `NO_COLOR` are not read: Each reports absent colour rather than absent Unicode.
+ * `TERM=dumb` and `NO_COLOR` are not read: Each reports absent colour rather than absent Unicode. A caller wanting
+ * plain output under either sets the flag or the environment variable that `resolveOutputStyle` reads.
  *
  * @category Terminal
  * @experimental

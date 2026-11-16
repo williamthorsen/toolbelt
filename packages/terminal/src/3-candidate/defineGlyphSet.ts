@@ -30,9 +30,18 @@ const RICH_WIDTH = 2;
  * emoji font, which is what a plain variant exists for. An empty plain variant is legal at width 0, which lets
  * a name have a rich decoration and no plain counterpart while still keeping its column.
  *
- * Throws on a violation, because a set is built from the author's own literals at module load: A violation is
- * a programming error rather than input whose complaint has to be rendered somehow. One error names every
- * violation, so the set is repaired in a single pass.
+ * Throws a `TypeError` on a violation, because a set is built from the author's own literals at module load: A
+ * violation is a programming error rather than input whose complaint has to be rendered somehow. One error names
+ * every violation, so the set is repaired in a single pass.
+ *
+ * @example
+ * const SOURCE_GLYPHS = defineGlyphSet({
+ *   directory: { plain: 'DIR', rich: '📁' },
+ *   package: { plain: 'PKG', rich: '📦' },
+ *   remote: { plain: 'NET', rich: '🌐' },
+ * });
+ * SOURCE_GLYPHS.rich.package; // { text: '📦', width: 2 }
+ * SOURCE_GLYPHS.plain.package; // { text: 'PKG', width: 3 }
  *
  * @category Terminal
  * @experimental
@@ -71,7 +80,9 @@ export interface GlyphVariants {
  * Reports the cells taken by the widest glyph in a record, which is the column width that aligns every one of them.
  *
  * Takes one style's record rather than a set and a style, so a caller passes what indexing already gave it. A
- * gutter is this width plus whatever separates the column from the text beside it.
+ * gutter is this width plus whatever separates the column from the text beside it. Deriving the width removes the
+ * hardcoded per-style constant that a CLI otherwise declares: Adding a status with a longer plain word widens the
+ * column on its own.
  *
  * @category Terminal
  * @experimental
