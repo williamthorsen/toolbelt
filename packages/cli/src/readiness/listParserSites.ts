@@ -4,6 +4,7 @@ import {
   type FunctionBody,
   getLineAtOffset,
   listFunctionBodies,
+  readImportBindings,
   readLiteral,
 } from '@williamthorsen/toolbelt.adoption';
 
@@ -20,12 +21,8 @@ const FLAG_COMPARISONS = [
 ];
 // A long flag, or a short flag of one letter. A bare `--` ends the options rather than naming one.
 const FLAG_NAME = /^(?:-[A-Za-z]|--[A-Za-z][\w-]*)$/;
-const IDENTIFIER = /^[A-Za-z_$][\w$]*$/;
-const IMPORT_STATEMENT = /\bimport\s+(?!type\b)(?<clause>[^;'"]*?)\s*\bfrom\s*(?<specifier>'[^'\n]*'|"[^"\n]*")/dg;
-const NAMESPACE_BINDING = /^\*\s*as\s+(?<name>[A-Za-z_$][\w$]*)$/;
-const NAMED_BINDING = /^(?<imported>[A-Za-z_$][\w$]*)(?:\s+as\s+(?<local>[A-Za-z_$][\w$]*))?$/;
-const PLATFORM_SPECIFIERS = new Set(['node:util', 'util']);
 const PLATFORM_EXPORT = 'parseArgs';
+const PLATFORM_SPECIFIERS = ['node:util', 'util'];
 
 /**
  * Lists the hand-rolled argument parsing in a source: each call to the platform's `parseArgs` from `node:util`,
@@ -82,7 +79,10 @@ function listFlagScans(code: string, source: string): Array<AdoptionSite<ParserS
 
 /** Lists each call to `parseArgs` through a binding imported from `node:util`. */
 function listPlatformParseCalls(code: string, source: string): Array<AdoptionSite<ParserSiteKind>> {
-  const { functions, namespaces } = readPlatformBindings(code, source);
+  const { functions, namespaces } = readImportBindings(code, source, {
+    exportName: PLATFORM_EXPORT,
+    specifiers: PLATFORM_SPECIFIERS,
+  });
   const callees = [
     ...[...functions].map((name) => String.raw`(?<![.\w$])${RegExp.escape(name)}`),
     ...[...namespaces].map((name) => String.raw`(?<![.\w$])${RegExp.escape(name)}\s*\.\s*${PLATFORM_EXPORT}`),
@@ -97,35 +97,6 @@ function listPlatformParseCalls(code: string, source: string): Array<AdoptionSit
       line: getLineAtOffset(source, match.index),
     }))
     .toArray();
-}
-
-/** Reads the local names through which a source reaches the platform's `parseArgs`. */
-function readPlatformBindings(code: string, source: string): { functions: Set<string>; namespaces: Set<string> } {
-  const functions = new Set<string>();
-  const namespaces = new Set<string>();
-
-  for (const match of code.matchAll(IMPORT_STATEMENT)) {
-    if (!PLATFORM_SPECIFIERS.has(readLiteral(source, match.indices?.groups?.['specifier']) ?? '')) continue;
-
-    const clause = match.groups?.['clause'] ?? '';
-    const braceStart = clause.indexOf('{');
-    const named = braceStart === -1 ? '' : clause.slice(braceStart + 1, clause.lastIndexOf('}'));
-    const unnamed = braceStart === -1 ? clause : clause.slice(0, braceStart);
-
-    for (const entry of unnamed.split(',')) {
-      const part = entry.trim();
-      const namespace = NAMESPACE_BINDING.exec(part)?.groups?.['name'];
-      if (namespace !== undefined) namespaces.add(namespace);
-      else if (IDENTIFIER.test(part)) namespaces.add(part);
-    }
-
-    for (const entry of named.split(',')) {
-      const binding = NAMED_BINDING.exec(entry.trim())?.groups;
-      if (binding?.['imported'] === PLATFORM_EXPORT) functions.add(binding['local'] ?? PLATFORM_EXPORT);
-    }
-  }
-
-  return { functions, namespaces };
 }
 
 // endregion | Helpers
