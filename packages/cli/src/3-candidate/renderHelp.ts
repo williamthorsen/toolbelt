@@ -1,4 +1,4 @@
-import type { CommandNode } from './nodes.ts';
+import { type CommandNode, type HelpExample, INVOCATION_PLACEHOLDER } from './nodes.ts';
 import { formatReservedFlagLabel, HELP_FLAG, listReservedFlags } from './reserved-flags.ts';
 import { resolveLongName } from './resolveLongName.ts';
 import type { FlagDefinition, FlagSchema, OperandDefinition } from './types.ts';
@@ -9,9 +9,11 @@ import type { FlagDefinition, FlagSchema, OperandDefinition } from './types.ts';
  *
  * The page contains the usage line, the description (else the summary), and then the `Commands:`,
  * `Arguments:`, and `Options:` blocks, each omitted when empty, then, on the page of a group with commands, a
- * line pointing to each command's own help, and the epilog verbatim. Entries appear in declaration order,
- * with `-h, --help` and then `-V, --version` last, and every block's descriptions share one column. A
- * passthrough command's page omits the blocks, since it does not parse its arguments.
+ * line pointing to each command's own help, then the `Examples:` block, and the epilog verbatim. Entries
+ * appear in declaration order, with `-h, --help` and then `-V, --version` last, and the descriptions of the
+ * blocks before the examples share one column. An example shows its description as a `# ` comment line above
+ * its command, in which every `{invocation}` is replaced by `invocation`. A passthrough command's page omits
+ * the arguments and options blocks, since it does not parse its arguments.
  * @category CLI
  * @stage candidate
  */
@@ -53,6 +55,7 @@ export function renderHelp<C>(node: CommandNode<C>, invocation: string, options:
   if (node.kind === 'group' && Object.keys(node.commands).length > 0) {
     sections.push(`Run '${invocation} <command> --${HELP_FLAG.long}' for a command's options.`);
   }
+  if (node.examples.length > 0) sections.push(formatExamples(node.examples, invocation));
   if (node.epilog !== undefined) sections.push(node.epilog);
   return sections.join('\n\n');
 }
@@ -68,6 +71,15 @@ export interface RenderHelpOptions {
 interface Block {
   title: string;
   rows: Row[];
+}
+
+/** Returns the `Examples:` block, outside the shared column, since a command line can be long. */
+function formatExamples(examples: readonly HelpExample[], invocation: string): string {
+  const lines = examples.flatMap(({ command, description }) => [
+    ...(description === undefined ? [] : [`# ${description}`]),
+    ...command.replaceAll(INVOCATION_PLACEHOLDER, () => invocation).split('\n'),
+  ]);
+  return ['Examples:', ...lines.map((line) => `  ${line}`)].join('\n');
 }
 
 function formatFlagRow(key: string, definition: FlagDefinition): Row {

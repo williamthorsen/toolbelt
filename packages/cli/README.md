@@ -27,6 +27,7 @@ const greet = defineCommand({
   summary: 'Print a greeting',
   flags: { loud: { type: 'boolean', description: 'Shout the greeting', short: 'l' } },
   operands: [{ name: 'name', description: 'Who to greet' }],
+  examples: [{ command: '{invocation} --loud Ada', description: 'Shout a greeting' }],
   run: ({ flags, operands, stdout }) => {
     const greeting = `Hello, ${operands.name}`;
     stdout.write(`${flags.loud ? greeting.toUpperCase() : greeting}\n`);
@@ -47,7 +48,7 @@ process.exitCode = await runCli(process.argv.slice(2), root, {
 ## The three parts
 
 - **`parseArgs(argv, spec, options?)`** parses arguments strictly against a schema of flags and operands, and infers their types from it: A `choices` list narrows a value to a union, `parse` converts it, `default` makes it non-optional, and `multiple` collects a repeated string or path flag into an array. It rejects an unknown flag, a missing or extra operand, and a value outside `choices`, each as a `ParseError`; an unknown `--` option near a declared long name carries that name as its `suggestion`.
-- **`renderHelp(node, invocation, options)`** returns the help page of a command or a group from the same definitions, so that help cannot drift from the flags that a command accepts. The page of a group with commands also names `<invocation> <command> --help`, before any epilog, as where each command's options are listed. Its `hasVersion` option appends the `-V, --version` line to the options, as `runCli` does on the page of a versioned root.
+- **`renderHelp(node, invocation, options)`** returns the help page of a command or a group from the same definitions, so that help cannot drift from the flags that a command accepts. The page of a group with commands also names `<invocation> <command> --help`, before any epilog, as where each command's options are listed. Its `hasVersion` option appends the `-V, --version` line to the options, as `runCli` does on the page of a versioned root. A definition's `examples` print in an `Examples:` block before any epilog, with every `{invocation}` in an example's `command` replaced by the page's invocation, so that an example stays correct wherever the command is mounted; `defineCommand` and `defineGroup` reject an example that lacks the placeholder.
 - **`runCli(argv, root, options)`** walks a tree of groups and commands, intercepts `-h`/`--help` at every level, reports any `UsageError` as `<name>: <message>`, where `<name>` is its `name` option, with a pointer to help, and resolves to the exit code. A usage error that has a `suggestion` adds `Did you mean '<suggestion>'?` before the pointer: An unknown command or `--` option near a known name has one, with `--help`, and `--version` at a versioned root, among the known names, and a `run` can pass one as `new UsageError(message, { suggestion })`. It writes only to the writers that it is given and never calls `process.exit`, so that a test can run a whole CLI in process.
 
 `defineCommand` and `defineGroup` build the tree and validate each definition when it is made, so that a duplicate flag or a misplaced operand fails at startup rather than when a user reaches it.

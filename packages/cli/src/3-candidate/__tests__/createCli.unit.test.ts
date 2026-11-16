@@ -20,6 +20,7 @@ describe(defineCommand, () => {
       summary: 'S',
       description: 'D',
       epilog: 'E',
+      examples: [{ command: '{invocation} x', description: 'X' }],
       flags: { quiet: { type: 'boolean', description: 'Q' } },
       operands: [{ name: 'target', description: 'T' }],
       run: () => 0,
@@ -30,6 +31,7 @@ describe(defineCommand, () => {
       summary: 'S',
       description: 'D',
       epilog: 'E',
+      examples: [{ command: '{invocation} x', description: 'X' }],
       passthrough: false,
       flags: { quiet: { type: 'boolean', description: 'Q' } },
       operands: [{ name: 'target', description: 'T' }],
@@ -70,10 +72,34 @@ describe(defineCommand, () => {
       defineCommand({ summary: 'S', flags: { help: { type: 'boolean', description: 'H' } }, run: () => 0 }),
     ).toThrow(/--help/);
   });
+
+  it('records no examples when none are declared', () => {
+    expect(defineCommand({ summary: 'S', run: () => 0 }).examples).toStrictEqual([]);
+  });
+
+  it('throws on an example without the invocation placeholder, passthrough or not', () => {
+    const examples = [{ command: 'tool run' }];
+
+    expect(() => defineCommand({ summary: 'S', examples, run: () => 0 })).toThrow(/\{invocation\}/);
+    expect(() => defineCommand({ summary: 'S', examples, passthrough: true, run: () => 0 })).toThrow(/\{invocation\}/);
+  });
 });
 
 describe(defineGroup, () => {
   const ping = defineCommand({ summary: 'Ping', run: () => 0 });
+
+  it('records its examples, or none', () => {
+    const examples = [{ command: '{invocation} ping' }];
+
+    expect(defineGroup({ summary: 'G', examples, commands: { ping } }).examples).toStrictEqual(examples);
+    expect(defineGroup({ summary: 'G', commands: { ping } }).examples).toStrictEqual([]);
+  });
+
+  it('throws on an example without the invocation placeholder', () => {
+    expect(() => defineGroup({ summary: 'G', examples: [{ command: 'tool ping' }], commands: { ping } })).toThrow(
+      /\{invocation\}/,
+    );
+  });
 
   it('throws on an empty command name', () => {
     expect(() => defineGroup({ summary: 'G', commands: { '': ping } })).toThrow(/empty or starts with a dash/);

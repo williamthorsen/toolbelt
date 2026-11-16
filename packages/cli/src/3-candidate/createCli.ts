@@ -1,7 +1,7 @@
-import type { BoundCommand, BoundGroup, Command, CommandNode, Group, RunResult, Writer } from './nodes.ts';
+import type { BoundCommand, BoundGroup, Command, CommandNode, Group, HelpExample, RunResult, Writer } from './nodes.ts';
 import { parseValidatedArgs } from './parseArgs.ts';
 import type { CheckedFlags, FlagSchema, OperandDefinition, ParsedFlags, ParsedOperands, ParseSpec } from './types.ts';
-import { validateSpec } from './validateSpec.ts';
+import { validateExamples, validateSpec } from './validateSpec.ts';
 
 const contextFree = createCli<unknown>();
 
@@ -126,10 +126,13 @@ export interface PassthroughInput<C> {
 function buildCommand<C>(
   definition: PassthroughDefinition<C> | CommandDefinition<FlagSchema, readonly OperandDefinition[], C>,
 ): Command<C> {
+  const examples = definition.examples ?? [];
+  validateExamples(examples);
   const documentation = {
     summary: definition.summary,
     description: definition.description,
     epilog: definition.epilog,
+    examples,
   };
 
   if (definition.passthrough === true) {
@@ -174,7 +177,9 @@ function buildGroup<S extends FlagSchema, C, C2>(
   deriveContext: (flags: ParsedFlags<S>, context: C) => C2,
 ): Group<C> {
   const { commands, defaultCommand } = definition;
+  const examples = definition.examples ?? [];
   validateSpec(definition);
+  validateExamples(examples);
   for (const name of Object.keys(commands)) {
     if (name === '' || name.startsWith('-')) {
       throw new Error(`Command name '${name}' is empty or starts with a dash.`);
@@ -189,6 +194,7 @@ function buildGroup<S extends FlagSchema, C, C2>(
     summary: definition.summary,
     description: definition.description,
     epilog: definition.epilog,
+    examples,
     flags: definition.flags ?? {},
     commands,
     defaultCommand,
@@ -224,6 +230,11 @@ interface Documentation {
   description?: string;
   /** Free text appended verbatim to the help page. */
   epilog?: string;
+  /**
+   * Shown in the help page's `Examples:` block, with every `{invocation}` in a command replaced by the page's
+   * invocation. Each command must contain the placeholder.
+   */
+  examples?: readonly HelpExample[];
 }
 
 /**

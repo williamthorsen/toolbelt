@@ -146,6 +146,57 @@ describe(renderHelp, () => {
     expect(page).toMatch(/Print this help\n\nRun 'v11y <command> --help' for a command's options\.\n\nEpilog$/);
   });
 
+  it('renders examples after the options, each description as a comment above its command', () => {
+    const examples = [{ command: '{invocation} --quiet', description: 'Run quietly' }, { command: '{invocation} x' }];
+
+    expect(renderHelp(makeCommand({ examples }), 'tool run')).toMatch(
+      /Print this help\n\nExamples:\n {2}# Run quietly\n {2}tool run --quiet\n {2}tool run x$/,
+    );
+  });
+
+  it('inserts the invocation literally, even when it contains a replacement pattern', () => {
+    expect(
+      renderHelp(makeCommand({ examples: [{ command: '{invocation}' }] }), '$&')
+        .split('\n')
+        .at(-1),
+    ).toBe('  $&');
+  });
+
+  it('replaces every placeholder and indents every line of a multi-line command', () => {
+    const command = '{invocation} list \\\n  | {invocation} apply';
+
+    expect(
+      renderHelp(makeCommand({ examples: [{ command }] }), 'tool db')
+        .split('\n')
+        .slice(-2),
+    ).toStrictEqual(['  tool db list \\', '    | tool db apply']);
+  });
+
+  it("places a group's examples after the pointer to its commands' help and before the epilog", () => {
+    const page = renderHelp(
+      makeGroup({ commands: { check: makeCommand({}) }, examples: [{ command: '{invocation} check' }], epilog: 'E' }),
+      'v11y',
+    );
+
+    expect(page).toMatch(/for a command's options\.\n\nExamples:\n {2}v11y check\n\nE$/);
+  });
+
+  it("keeps a long example out of the other blocks' column", () => {
+    const node = makeCommand({ flags: { quiet: { type: 'boolean', description: 'Quiet' } } });
+    const command = ['{invocation}', 'x'.repeat(80)].join(' ');
+
+    expect(renderHelp({ ...node, examples: [{ command }] }, 'tool')).toContain(renderHelp(node, 'tool'));
+  });
+
+  it('renders the examples of a passthrough command', () => {
+    expect(
+      renderHelp(
+        makeCommand({ passthrough: true, summary: 'Pass', examples: [{ command: '{invocation} -- ls' }] }),
+        'tool exec',
+      ),
+    ).toBe('Usage: tool exec [<args>...]\n\nPass\n\nExamples:\n  tool exec -- ls');
+  });
+
   it('omits the pointer from the page of a group without commands and from a command page', () => {
     expect(renderHelp(makeGroup({ defaultCommand: undefined }), 'v11y')).not.toContain('<command> --help');
     expect(renderHelp(makeCommand({}), 'v11y check')).not.toContain('<command> --help');
@@ -172,6 +223,7 @@ function makeCommand(fields: Partial<Command<unknown>>): Command<unknown> {
     summary: 'Summary',
     description: undefined,
     epilog: undefined,
+    examples: [],
     flags: {},
     operands: [],
     passthrough: false,
@@ -187,6 +239,7 @@ function makeGroup(fields: Partial<Group<unknown>>): Group<unknown> {
     summary: 'Summary',
     description: undefined,
     epilog: undefined,
+    examples: [],
     flags: {},
     commands: {},
     defaultCommand: 'check',
