@@ -28,6 +28,7 @@ export const ADOPTED_EXPORTS: readonly string[] = [
   'stripCommonIndent',
   'TextNode',
   'toCamelCase',
+  'toKebabCase',
   'toOrdinal',
   'toSortableName',
   'trimWhitespace',

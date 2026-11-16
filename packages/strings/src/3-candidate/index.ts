@@ -14,4 +14,5 @@ export { obfuscate } from './obfuscate.ts';
 export { slugify } from './slugify.ts';
 export { toLowerCase, toUpperCase, trim, trimEnd, trimStart } from './string-prototype-wrappers.ts';
 export { toCamelCase } from './toCamelCase.ts';
+export { toKebabCase } from './toKebabCase.ts';
 export { condenseWhitespace, removeWhitespace, trimWhitespace } from './whitespace-functions.ts';

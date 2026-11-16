@@ -309,6 +309,7 @@ var ADOPTED_EXPORTS = [
   "stripCommonIndent",
   "TextNode",
   "toCamelCase",
+  "toKebabCase",
   "toOrdinal",
   "toSortableName",
   "trimWhitespace"
