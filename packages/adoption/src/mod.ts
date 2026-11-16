@@ -33,5 +33,6 @@ export {
   readBalancedGroup,
 } from './portable/readBalancedGroup.ts';
 export { type FunctionLiteral, readFunctionLiteral } from './portable/readFunctionLiteral.ts';
+export { type ImportBindings, readImportBindings } from './portable/readImportBindings.ts';
 export { readLiteral } from './portable/readLiteral.ts';
 export { blankNonCode, getLineAtOffset } from 'readyup/check-utils';
