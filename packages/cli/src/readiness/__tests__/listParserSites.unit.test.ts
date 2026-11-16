@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 
 import { listParserSites } from '../listParserSites.ts';
 
-// A dispatcher of the shape that the toolbelt bins used before they adopted `runCli`.
+// A hand-rolled dispatcher, whose flag comparisons form a `flag-scan` site and whose `parseArgs` call forms a
+// `node-parse-args` site.
 const DISPATCHER = dedent`
   import { parseArgs } from 'node:util';
 

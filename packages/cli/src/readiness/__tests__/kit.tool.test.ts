@@ -6,7 +6,8 @@ const KIT_URL = new URL('../../../.readyup/kits/default.ts', import.meta.url);
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.cli', version: '1.0.0' });
 
-// A runner of the shape that the toolbelt bins used before they adopted `runCli`.
+// A hand-rolled runner, which both checks report: its flag comparisons under `no-hand-rolled-flag-scan` and its
+// `parseArgs` call under `no-node-parse-args`.
 const RUNNER = dedent`
   import { parseArgs } from 'node:util';
 
