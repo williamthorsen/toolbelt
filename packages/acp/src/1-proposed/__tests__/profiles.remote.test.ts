@@ -10,7 +10,7 @@ import {
   GREETING_TEXT,
   GREETING_TOOL_NAME,
 } from '../../test-utils/createGreetingToolServer.ts';
-import type { AgentProfile, PermissionPolicy, RunEvent } from '../../types/run.ts';
+import type { AgentProfile, RunEvent } from '../../types/run.ts';
 import { antigravityProfile } from '../antigravityProfile.ts';
 import { claudeCodeProfile } from '../claudeCodeProfile.ts';
 import { runPrompt } from '../runPrompt.ts';
@@ -141,17 +141,14 @@ function readReply(events: readonly RunEvent[]): string {
     .join('');
 }
 
-/** Runs the greeting prompt on `agent` with the greeting tool, allowing only requests that name the tool. */
+/** Runs the greeting prompt on `agent` with the greeting tool preapproved, refusing every other request. */
 async function runGreeting(agent: AgentProfile, cwd: string): Promise<RunEvent[]> {
-  const permissionPolicy: PermissionPolicy = ({ toolCall }) =>
-    JSON.stringify(toolCall).includes(GREETING_TOOL_NAME) ? 'allow' : 'reject';
   return Array.fromAsync(
     runPrompt({
       agent,
       cwd,
       prompt: PROMPT,
-      tools: { name: TOOL_SERVER_NAME, createServer: createGreetingToolServer() },
-      permissionPolicy,
+      tools: { name: TOOL_SERVER_NAME, createServer: createGreetingToolServer(), isPreapproved: true },
     }),
   );
 }

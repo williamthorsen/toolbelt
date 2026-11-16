@@ -29,6 +29,12 @@ export interface AgentProfile {
    * the settings that isolate the session from the user's own configuration.
    */
   readonly sessionMeta?: Readonly<Record<string, unknown>>;
+  /**
+   * Reports whether a permission request is a call of a tool on the session's MCP server named `serverName`. A profile
+   * without one cannot identify such calls, so `ToolServer.isPreapproved` allows nothing on it. A predicate that throws
+   * cancels the turn and fails the run.
+   */
+  readonly isToolServerCall?: (request: RequestPermissionRequest, serverName: string) => boolean;
 }
 
 /** What a policy decides about one permission request. */
@@ -57,6 +63,12 @@ export interface ToolServer {
   readonly name: string;
   /** Returns a fresh server for each MCP request, with the app's tools registered on it. */
   readonly createServer: McpServerFactory;
+  /**
+   * Allows once, without consulting `permissionPolicy`, each of the agent's permission requests that the profile's
+   * `isToolServerCall` identifies as a call of one of this server's tools. Allows nothing on a profile that cannot
+   * identify such calls.
+   */
+  readonly isPreapproved?: boolean;
 }
 
 /** What `runPrompt` runs, and where. */
