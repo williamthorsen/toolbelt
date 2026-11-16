@@ -120,7 +120,7 @@ export async function runCli<C>(
   /** Writes the help page or the version and returns which it wrote. */
   function writeRequested(requested: Requested, node: CommandNode<never>, isRoot: boolean, state: Walk): Requested {
     if (requested === 'help') {
-      stdout.write(`${renderHelp(node, state.scope.join(' '), { version: isRoot && state.hasVersion })}\n`);
+      stdout.write(`${renderHelp(node, state.scope.join(' '), { hasVersion: isRoot && state.hasVersion })}\n`);
     } else if (version !== undefined) {
       stdout.write(`${version()}\n`);
     }
