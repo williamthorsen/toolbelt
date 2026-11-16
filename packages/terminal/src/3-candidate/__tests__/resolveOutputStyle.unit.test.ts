@@ -70,12 +70,12 @@ describe(resolveOutputStyle, () => {
   });
 
   describe('the environment variable', () => {
-    it.each(['plain', 'rich'] as const)('is honoured when it names %s', (style) => {
-      expect(resolve([], { [ENV_VAR]: style }, PIPE).style).toBe(style);
-    });
-
-    it('outranks detection', () => {
-      expect(resolve([], { [ENV_VAR]: 'rich' }, PIPE).style).toBe('rich');
+    // Each case runs where detection would choose the other style.
+    it.each([
+      ['plain', TTY],
+      ['rich', PIPE],
+    ] as const)('outranks detection when it names %s', (style, isTty) => {
+      expect(resolve([], { [ENV_VAR]: style }, isTty).style).toBe(style);
     });
 
     it('is ignored when empty, so that an unset-looking export does not shadow detection', () => {
