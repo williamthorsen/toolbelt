@@ -37,11 +37,15 @@ function auditUnindexedExports(monorepoRoot: string): { checkedCount: number; mi
     const sourceFiles = tierDirectories.flatMap((tierDirectory) => [
       ...listSourceFiles(tierDirectory, SCAFFOLDING_DIRS),
     ]);
+    // Load only the tier sources: Export symbols resolve without the standard library or another package's types.
     const program = ts.createProgram(sourceFiles, {
       allowImportingTsExtensions: true,
       module: ts.ModuleKind.NodeNext,
       moduleResolution: ts.ModuleResolutionKind.NodeNext,
       noEmit: true,
+      noLib: true,
+      noResolve: true,
+      types: [],
     });
     const checker = program.getTypeChecker();
 
