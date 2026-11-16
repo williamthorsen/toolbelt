@@ -38,7 +38,7 @@ export function renderHelp<C>(node: CommandNode<C>, invocation: string, options:
   }
 
   if (node.kind === 'group' || !node.passthrough) {
-    blocks.push({ title: 'Options:', rows: listOptionRows(node.flags, options.version === true) });
+    blocks.push({ title: 'Options:', rows: listOptionRows(node.flags, options.hasVersion === true) });
   }
 
   const nonEmpty = blocks.filter((block) => block.rows.length > 0);
@@ -60,7 +60,7 @@ export function renderHelp<C>(node: CommandNode<C>, invocation: string, options:
 /** Options of `renderHelp`. */
 export interface RenderHelpOptions {
   /** Appends the `-V, --version` line to the options. */
-  version?: boolean;
+  hasVersion?: boolean;
 }
 
 // region | Helpers

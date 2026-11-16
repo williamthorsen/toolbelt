@@ -126,7 +126,7 @@ describe(renderHelp, () => {
 
     expect(renderHelp(node, 'tool').split('\n').at(-1)).toMatch(/^ {2}-h, --help {2}/);
     expect(renderHelp(node, 'tool')).not.toContain('--version');
-    expect(renderHelp(node, 'tool', { version: true }).split('\n').slice(-2)).toStrictEqual([
+    expect(renderHelp(node, 'tool', { hasVersion: true }).split('\n').slice(-2)).toStrictEqual([
       '  -h, --help     Print this help',
       '  -V, --version  Print the version',
     ]);
