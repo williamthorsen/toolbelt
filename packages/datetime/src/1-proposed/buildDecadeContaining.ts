@@ -1,5 +1,7 @@
 /**
  * Builds the decade containing a year: the ten years starting at the nearest multiple of 10 at or below it.
+ *
+ * @internal
  */
 export function buildDecadeContaining(year: number): Decade {
   const start = Math.floor(year / 10) * 10;

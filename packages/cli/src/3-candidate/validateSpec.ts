@@ -8,6 +8,8 @@ const CAMEL_CASE_KEY = /^[a-z][a-z0-9]*(?:[A-Z][a-z0-9]+)*$/;
 /**
  * Throws a plain `Error` on an example whose command lacks the invocation placeholder, which would show a tool
  * name or a command path that help cannot keep current.
+ *
+ * @internal
  */
 export function validateExamples(examples: readonly HelpExample[]): void {
   for (const { command } of examples) {
@@ -20,6 +22,8 @@ export function validateExamples(examples: readonly HelpExample[]): void {
 /**
  * Throws a plain `Error` on a definition that cannot be parsed or documented consistently. This is a
  * programmer error rather than a usage error, so it is reported when the definition is made.
+ *
+ * @internal
  */
 export function validateSpec(spec: { flags?: FlagSchema; operands?: readonly OperandDefinition[] }): void {
   validateFlags(spec.flags ?? {});

@@ -30,7 +30,11 @@ export function installCrashHandler(name: string): void {
   });
 }
 
-/** Formats the report that `installCrashHandler` writes for a thrown value. */
+/**
+ * Formats the report that `installCrashHandler` writes for a thrown value.
+ *
+ * @internal
+ */
 export function formatCrashReport(name: string, value: unknown): string {
   const lines: string[] = [];
   appendReport(lines, `${name}: internal error: `, value, 0, new Set([value]));

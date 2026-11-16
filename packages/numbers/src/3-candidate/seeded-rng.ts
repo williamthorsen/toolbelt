@@ -155,9 +155,7 @@ export class IntSeededRng extends SeededRng {
 /**
  * A `SeededRng` that returns integers in the range [1, 2 ** 32 - 1].
  *
- * @category Number
- * @experimental
- * @stage candidate
+ * @internal
  */
 export class Int32SeededRng extends SeededRng {
   /** Returns an integer derived from the current seed. */

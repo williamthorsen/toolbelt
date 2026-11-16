@@ -21,9 +21,7 @@ export function scale(value: number, toRange: Range, fromRange: Partial<Range> =
  * Scales a number from one range to another and rounds it to the nearest integer.
  * Throws a RangeError unless the target bounds are safe integers.
  *
- * @category Number
- * @experimental
- * @stage candidate
+ * @internal
  */
 export function scaleInt(value: number, toRange: Range, fromRange: Partial<IntegerRange> = {}): number {
   if (isNotSafeInteger(toRange.min) || isNotSafeInteger(toRange.max)) {
