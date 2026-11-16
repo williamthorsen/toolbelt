@@ -185,6 +185,35 @@ function readParameterText(source, head) {
   return group === void 0 ? void 0 : source.slice(group.start + 1, group.end - 1);
 }
 
+// ../adoption/src/portable/readImportBindings.ts
+var IDENTIFIER = /^[A-Za-z_$][\w$]*$/;
+var IMPORT_STATEMENT = /\bimport\s+(?!type\b)(?<clause>[^;'"]*?)\s*\bfrom\s*(?<specifier>'[^'\n]*'|"[^"\n]*")/dg;
+var NAMESPACE_BINDING = /^\*\s*as\s+(?<name>[A-Za-z_$][\w$]*)$/;
+var NAMED_BINDING = /^(?<imported>[A-Za-z_$][\w$]*)(?:\s+as\s+(?<local>[A-Za-z_$][\w$]*))?$/;
+function readImportBindings(code, source, target) {
+  const specifiers = new Set(target.specifiers);
+  const functions = /* @__PURE__ */ new Set();
+  const namespaces = /* @__PURE__ */ new Set();
+  for (const match of code.matchAll(IMPORT_STATEMENT)) {
+    if (!specifiers.has(readLiteral(source, match.indices?.groups?.["specifier"]) ?? "")) continue;
+    const clause = match.groups?.["clause"] ?? "";
+    const braceStart = clause.indexOf("{");
+    const named = braceStart === -1 ? "" : clause.slice(braceStart + 1, clause.lastIndexOf("}"));
+    const unnamed = braceStart === -1 ? clause : clause.slice(0, braceStart);
+    for (const entry of unnamed.split(",")) {
+      const part = entry.trim();
+      const namespace = NAMESPACE_BINDING.exec(part)?.groups?.["name"];
+      if (namespace !== void 0) namespaces.add(namespace);
+      else if (IDENTIFIER.test(part)) namespaces.add(part);
+    }
+    for (const entry of named.split(",")) {
+      const binding = NAMED_BINDING.exec(entry.trim())?.groups;
+      if (binding?.["imported"] === target.exportName) functions.add(binding["local"] ?? target.exportName);
+    }
+  }
+  return { functions, namespaces };
+}
+
 // ../adoption/src/mod.ts
 import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
 
@@ -212,12 +241,8 @@ var FLAG_COMPARISONS = [
   new RegExp(String.raw`\.(?:includes|indexOf)\(\s*${LITERAL}\s*\)`, "dg")
 ];
 var FLAG_NAME = /^(?:-[A-Za-z]|--[A-Za-z][\w-]*)$/;
-var IDENTIFIER = /^[A-Za-z_$][\w$]*$/;
-var IMPORT_STATEMENT = /\bimport\s+(?!type\b)(?<clause>[^;'"]*?)\s*\bfrom\s*(?<specifier>'[^'\n]*'|"[^"\n]*")/dg;
-var NAMESPACE_BINDING = /^\*\s*as\s+(?<name>[A-Za-z_$][\w$]*)$/;
-var NAMED_BINDING = /^(?<imported>[A-Za-z_$][\w$]*)(?:\s+as\s+(?<local>[A-Za-z_$][\w$]*))?$/;
-var PLATFORM_SPECIFIERS = /* @__PURE__ */ new Set(["node:util", "util"]);
 var PLATFORM_EXPORT = "parseArgs";
+var PLATFORM_SPECIFIERS = ["node:util", "util"];
 function listParserSites(source) {
   const code = blankNonCode(source);
   return [...listPlatformParseCalls(code, source), ...listFlagScans(code, source)].toSorted(
@@ -250,7 +275,10 @@ function listFlagScans(code, source) {
   }));
 }
 function listPlatformParseCalls(code, source) {
-  const { functions, namespaces } = readPlatformBindings(code, source);
+  const { functions, namespaces } = readImportBindings(code, source, {
+    exportName: PLATFORM_EXPORT,
+    specifiers: PLATFORM_SPECIFIERS
+  });
   const callees = [
     ...[...functions].map((name) => String.raw`(?<![.\w$])${RegExp.escape(name)}`),
     ...[...namespaces].map((name) => String.raw`(?<![.\w$])${RegExp.escape(name)}\s*\.\s*${PLATFORM_EXPORT}`)
@@ -261,28 +289,6 @@ function listPlatformParseCalls(code, source) {
     kind: "node-parse-args",
     line: getLineAtOffset(source, match.index)
   })).toArray();
-}
-function readPlatformBindings(code, source) {
-  const functions = /* @__PURE__ */ new Set();
-  const namespaces = /* @__PURE__ */ new Set();
-  for (const match of code.matchAll(IMPORT_STATEMENT)) {
-    if (!PLATFORM_SPECIFIERS.has(readLiteral(source, match.indices?.groups?.["specifier"]) ?? "")) continue;
-    const clause = match.groups?.["clause"] ?? "";
-    const braceStart = clause.indexOf("{");
-    const named = braceStart === -1 ? "" : clause.slice(braceStart + 1, clause.lastIndexOf("}"));
-    const unnamed = braceStart === -1 ? clause : clause.slice(0, braceStart);
-    for (const entry of unnamed.split(",")) {
-      const part = entry.trim();
-      const namespace = NAMESPACE_BINDING.exec(part)?.groups?.["name"];
-      if (namespace !== void 0) namespaces.add(namespace);
-      else if (IDENTIFIER.test(part)) namespaces.add(part);
-    }
-    for (const entry of named.split(",")) {
-      const binding = NAMED_BINDING.exec(entry.trim())?.groups;
-      if (binding?.["imported"] === PLATFORM_EXPORT) functions.add(binding["local"] ?? PLATFORM_EXPORT);
-    }
-  }
-  return { functions, namespaces };
 }
 
 // .readyup/kits/default.ts

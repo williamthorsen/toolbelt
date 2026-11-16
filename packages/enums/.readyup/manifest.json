@@ -32,7 +32,7 @@
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "a8c9ffb5",
+          "hash": "00beca5f",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -80,6 +80,11 @@
           "hash": "d20d533a",
           "kind": "module",
           "path": "../../adoption/src/portable/readFunctionLiteral.ts"
+        },
+        {
+          "hash": "20833e21",
+          "kind": "module",
+          "path": "../../adoption/src/portable/readImportBindings.ts"
         },
         {
           "hash": "81846f1a",
