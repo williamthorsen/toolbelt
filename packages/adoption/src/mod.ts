@@ -15,6 +15,7 @@ export {
   defineAdoptionKit,
 } from './kits/defineAdoptionKit.ts';
 export { condenseWhitespace } from './portable/condenseWhitespace.ts';
+export { findEnclosingBody } from './portable/findEnclosingBody.ts';
 export { type DirectoryAscent, listDirectoryAscents } from './portable/listDirectoryAscents.ts';
 export { type FunctionBody, listFunctionBodies } from './portable/listFunctionBodies.ts';
 export {
