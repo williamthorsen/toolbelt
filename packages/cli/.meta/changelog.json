@@ -1,5 +1,108 @@
 [
   {
+    "version": "0.11.0",
+    "date": "2026-11-16",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds a `suggestion` to the `ParseError` that `parseArgs` throws for an unknown `--` option near a declared long name, which `runCli` writes as a `Did you mean` line and which, under `runCli`, also covers `--help`, and `--version` at a root that is given a version. (#660)",
+            "hash": "36b83c22a2732039fe643241a83cab586fdc4d0b",
+            "entry": 1
+          },
+          {
+            "description": "Adds an optional `suggestion` to `UsageError`, set through the newly exported `UsageErrorOptions` as `new UsageError(message, { suggestion })`, which lets a `run` or `deriveContext` add a `Did you mean` line to any usage error that it throws. (#660)",
+            "hash": "36b83c22a2732039fe643241a83cab586fdc4d0b",
+            "entry": 2
+          },
+          {
+            "description": "Renames the `RenderHelpOptions.version` option of `renderHelp` to `hasVersion`, which names it as a flag that appends the `-V, --version` line rather than as the version string. (#677)",
+            "breaking": true,
+            "migration": "Replace `{ version: true }` with `{ hasVersion: true }` in each call to `renderHelp`, and remove any leftover `version` key, because `renderHelp` now ignores it and omits the `-V, --version` line without an error.",
+            "hash": "19aa268f053d6d320d1a7f34017585b3b44e0796",
+            "entry": 1
+          },
+          {
+            "description": "Adds an `examples` field to `defineCommand` and `defineGroup`, whose `HelpExample` entries `renderHelp` prints in an `Examples:` block with every `{invocation}` replaced by the page's invocation, and makes both functions throw on an example whose `command` lacks that placeholder. (#679)",
+            "hash": "629f8ac8a3e7d69a66c5647fe6ad8233caa426dd",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "🐛 Bug fixes",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Fixes the issue that the crash report written by `installCrashHandler` showed only the message of a `SuppressedError` or an `AggregateError`, and adds each wrapped error to the report under its wrapper, labelled `error:`, `suppressed:`, or `errors[n]:`, with that error's frames and `cause` chain. (#663)",
+            "hash": "9e9154dbce23d480a852d5737110eeb1cc8d6f8e",
+            "entry": 1
+          },
+          {
+            "description": "Fixes the issue that `readStreamText` called `setEncoding('utf8')` on the caller's stream. (#664)",
+            "hash": "edcb80c76149d8768626eca0f5fde0d5dc8b27d8",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Builds the reserved option rows in `renderHelp`, the `Try '… --help'` and `Run '… <command> --help'` hints, and the `-V, --version` collision error from `reserved-flags.ts`, which now declares each flag's help description and the shared label formatter `formatReservedFlagLabel`. (#661)",
+            "hash": "d27157e7d14be2c20544ba40831fadeea0702999",
+            "entry": 1
+          },
+          {
+            "description": "Reorders the top-level declarations of the `cli` and `terminal` candidate-tier modules to follow the layout rulebook's declaration order, moving declarations only. (#662)",
+            "hash": "e613c1a611bb8cf214dc677607f156f6f474aca4",
+            "entry": 1
+          },
+          {
+            "description": "Moves the cli kit's `readPlatformBindings` into `packages/adoption` as `readImportBindings`, which reads the local names through which a source imports a given export from any of the given module specifiers, and makes the `parseArgs` detector call it. (#666)",
+            "hash": "ac5ff04c0829f035a954325c99d13d781c1e2647",
+            "entry": 1
+          },
+          {
+            "description": "Renames the private `parseArgs` helper `initialValue` to `deriveInitialValue`, to follow the repository's verb-led naming convention. (#677)",
+            "hash": "19aa268f053d6d320d1a7f34017585b3b44e0796",
+            "entry": 3
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Narrows the usage-error tests in `runCli.unit.test.ts` to the fragment that each one claims, so that a rewording of the `Unknown option:` message, which `parseArgs.unit.test.ts` already asserts, or a change to the stderr format no longer fails them. (#659)",
+            "hash": "7f43d2628e837e1b3a454051f9fddb7d4fb193f4",
+            "entry": 1
+          },
+          {
+            "description": "Deletes the `installCrashHandler.tool.test.ts` case for a thrown non-`Error` value, along with its `non-error` fixture, because the `an object` case in `installCrashHandler.unit.test.ts` asserts the same report through `formatCrashReport` without starting a process. (#665)",
+            "hash": "96bb065a16f721b8d89a327922445127b22102d0",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Documents the `options` argument of `renderHelp` in the `toolbelt.cli` README, including the `hasVersion` option and its use by `runCli` on the help page of a versioned root. (#677)",
+            "hash": "19aa268f053d6d320d1a7f34017585b3b44e0796",
+            "entry": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.10.1",
     "date": "2026-11-15",
     "sections": [

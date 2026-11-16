@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.7.8 — 2026-11-16
+
+### 📦 Dependencies
+
+- Bumped `@williamthorsen/toolbelt.numbers` to 8.1.1
+- Bumped `@williamthorsen/toolbelt.strings` to 9.0.2
+
 ## 0.7.7 — 2026-11-15
 
 ### 🐛 Bug fixes

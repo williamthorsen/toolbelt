@@ -1,5 +1,27 @@
 [
   {
+    "version": "4.1.7",
+    "date": "2026-11-16",
+    "sections": [
+      {
+        "title": "📦 Dependencies",
+        "audience": "dev",
+        "items": [{ "description": "Bumped `@williamthorsen/toolbelt.numbers` to 8.1.1" }]
+      },
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Adds `<!-- readme-type: library -->` to the published packages' READMEs that lacked a type marker and `<!-- readme-type: internal -->` to the `adoption` and `tools` READMEs. (#645)",
+            "hash": "61c75e807c79d08c13c096737ec18eb7dd365417",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "4.1.6",
     "date": "2026-11-15",
     "sections": [

@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.11.0 — 2026-11-16
+
+### 🎉 Features
+
+- Adds a `suggestion` to the `ParseError` that `parseArgs` throws for an unknown `--` option near a declared long name, which `runCli` writes as a `Did you mean` line and which, under `runCli`, also covers `--help`, and `--version` at a root that is given a version. (#660)
+- Adds an optional `suggestion` to `UsageError`, set through the newly exported `UsageErrorOptions` as `new UsageError(message, { suggestion })`, which lets a `run` or `deriveContext` add a `Did you mean` line to any usage error that it throws. (#660)
+- 🚨 **Breaking:** Renames the `RenderHelpOptions.version` option of `renderHelp` to `hasVersion`, which names it as a flag that appends the `-V, --version` line rather than as the version string. (#677)
+- Adds an `examples` field to `defineCommand` and `defineGroup`, whose `HelpExample` entries `renderHelp` prints in an `Examples:` block with every `{invocation}` replaced by the page's invocation, and makes both functions throw on an example whose `command` lacks that placeholder. (#679)
+
+### 🐛 Bug fixes
+
+- Fixes the issue that the crash report written by `installCrashHandler` showed only the message of a `SuppressedError` or an `AggregateError`, and adds each wrapped error to the report under its wrapper, labelled `error:`, `suppressed:`, or `errors[n]:`, with that error's frames and `cause` chain. (#663)
+- Fixes the issue that `readStreamText` called `setEncoding('utf8')` on the caller's stream. (#664)
+
+### ♻️ Refactoring
+
+- Builds the reserved option rows in `renderHelp`, the `Try '… --help'` and `Run '… <command> --help'` hints, and the `-V, --version` collision error from `reserved-flags.ts`, which now declares each flag's help description and the shared label formatter `formatReservedFlagLabel`. (#661)
+- Reorders the top-level declarations of the `cli` and `terminal` candidate-tier modules to follow the layout rulebook's declaration order, moving declarations only. (#662)
+- Moves the cli kit's `readPlatformBindings` into `packages/adoption` as `readImportBindings`, which reads the local names through which a source imports a given export from any of the given module specifiers, and makes the `parseArgs` detector call it. (#666)
+- Renames the private `parseArgs` helper `initialValue` to `deriveInitialValue`, to follow the repository's verb-led naming convention. (#677)
+
+### 🧪 Tests
+
+- Narrows the usage-error tests in `runCli.unit.test.ts` to the fragment that each one claims, so that a rewording of the `Unknown option:` message, which `parseArgs.unit.test.ts` already asserts, or a change to the stderr format no longer fails them. (#659)
+- Deletes the `installCrashHandler.tool.test.ts` case for a thrown non-`Error` value, along with its `non-error` fixture, because the `an object` case in `installCrashHandler.unit.test.ts` asserts the same report through `formatCrashReport` without starting a process. (#665)
+
+### 📚 Documentation
+
+- Documents the `options` argument of `renderHelp` in the `toolbelt.cli` README, including the `hasVersion` option and its use by `runCli` on the help page of a versioned root. (#677)
+
 ## 0.10.1 — 2026-11-15
 
 ### 📦 Dependencies

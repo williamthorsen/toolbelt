@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.11.1 — 2026-11-16
+
+### ♻️ Refactoring
+
+- Move the cli kit's import-binding reader into adoption (#666)
+
+  Moves the import-binding reader out of the cli kit's parser detector and into `packages/adoption` as `readImportBindings`, which takes the export name and the module specifiers to read. With this move, `cli`'s `readiness/` contains only its detector and its export list. The change also recompiles the committed kits of the thirteen packages that bundle `packages/adoption`.
+
 ## 0.11.0 — 2026-11-15
 
 ### 🎉 Features

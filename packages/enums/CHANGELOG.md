@@ -2,15 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.0.4 — 2026-11-16
+
+### ♻️ Refactoring
+
+- Move the cli kit's import-binding reader into adoption (#666)
+
+  Moves the import-binding reader out of the cli kit's parser detector and into `packages/adoption` as `readImportBindings`, which takes the export name and the module specifiers to read. With this move, `cli`'s `readiness/` contains only its detector and its export list. The change also recompiles the committed kits of the thirteen packages that bundle `packages/adoption`.
+
+### 📚 Documentation
+
+- Adds `<!-- readme-type: library -->` to the published packages' READMEs that lacked a type marker and `<!-- readme-type: internal -->` to the `adoption` and `tools` READMEs. (#645)
+
 ## 4.0.3 — 2026-11-15
 
 ### 🧪 Tests
 
 - Changes the kit tool tests of `async`, `enums`, and `packaging` to select the check under test by id through `selectCheck` rather than as `kit.checks[0]`, which would run the wrong check without any report once a kit declared another check ahead of it. (#605)
-
-### 📦 Dependencies
-
-- Bumped `@williamthorsen/toolbelt.arrays` to 6.5.3
 
 ## 4.0.2 — 2026-11-13
 

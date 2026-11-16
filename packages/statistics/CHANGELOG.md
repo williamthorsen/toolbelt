@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.10.4 — 2026-11-16
+
+### 📦 Dependencies
+
+- Bumped `@williamthorsen/toolbelt.arrays` to 6.5.4
+- Bumped `@williamthorsen/toolbelt.numbers` to 8.1.1
+
+### 📚 Documentation
+
+- Adds `<!-- readme-type: library -->` to the published packages' READMEs that lacked a type marker and `<!-- readme-type: internal -->` to the `adoption` and `tools` READMEs. (#645)
+
 ## 0.10.3 — 2026-11-15
 
 ### 📦 Dependencies

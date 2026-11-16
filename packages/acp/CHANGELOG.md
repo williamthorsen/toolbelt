@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.0 — 2026-11-16
+
+### 🎉 Features
+
+- Adds `isPreapproved` to `ToolServer`, which makes `runPrompt` allow each call of that server's tools once without consulting `permissionPolicy`, on a profile that can identify such a call. (#680)
+- Adds an optional `isToolServerCall` to `AgentProfile`, which reports whether a permission request calls a tool on a named MCP server, and defines it in `claudeCodeProfile` and `antigravityProfile` but not in `codexProfile`; the Antigravity version matches the call's title, so it also accepts a server whose name extends the given one with `_`. (#680)
+
 ## 0.2.0 — 2026-11-15
 
 ### 🎉 Features

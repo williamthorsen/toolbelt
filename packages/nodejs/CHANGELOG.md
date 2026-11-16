@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.2.2 — 2026-11-16
+
+### 📦 Dependencies
+
+- Bumped `@williamthorsen/toolbelt.errors` to 0.11.1
+- Bumped `@williamthorsen/toolbelt.filesystem` to 0.11.2
+- Bumped `@williamthorsen/toolbelt.packaging` to 0.9.1
+
 ## 4.2.1 — 2026-11-15
 
 ### 🧪 Tests

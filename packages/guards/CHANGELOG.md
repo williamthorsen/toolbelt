@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.2.4 — 2026-11-16
+
+### ♻️ Refactoring
+
+- Move the cli kit's import-binding reader into adoption (#666)
+
+  Moves the import-binding reader out of the cli kit's parser detector and into `packages/adoption` as `readImportBindings`, which takes the export name and the module specifiers to read. With this move, `cli`'s `readiness/` contains only its detector and its export list. The change also recompiles the committed kits of the thirteen packages that bundle `packages/adoption`.
+
+### 📚 Documentation
+
+- Adds `<!-- readme-type: library -->` to the published packages' READMEs that lacked a type marker and `<!-- readme-type: internal -->` to the `adoption` and `tools` READMEs. (#645)
+
 ## 4.2.3 — 2026-11-12
 
 ### ♻️ Refactoring

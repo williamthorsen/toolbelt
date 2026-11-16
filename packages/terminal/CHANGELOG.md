@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.2 — 2026-11-16
+
+### ♻️ Refactoring
+
+- Reorders the top-level declarations of the `cli` and `terminal` candidate-tier modules to follow the layout rulebook's declaration order, moving declarations only. (#662)
+
 ## 0.3.1 — 2026-11-12
 
 ### Notes

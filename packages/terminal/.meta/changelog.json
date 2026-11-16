@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.3.2",
+    "date": "2026-11-16",
+    "sections": [
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Reorders the top-level declarations of the `cli` and `terminal` candidate-tier modules to follow the layout rulebook's declaration order, moving declarations only. (#662)",
+            "hash": "e613c1a611bb8cf214dc677607f156f6f474aca4",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.3.1",
     "date": "2026-11-12",
     "sections": [{ "title": "Notes", "audience": "dev", "items": [{ "description": "Forced version bump." }] }]
