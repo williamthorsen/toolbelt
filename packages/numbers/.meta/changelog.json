@@ -1,5 +1,33 @@
 [
   {
+    "version": "8.1.2",
+    "date": "2026-11-16",
+    "sections": [
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Move findEnclosingBody into packages/adoption (#686)",
+            "body": "Moves `findEnclosingBody`, which returns the innermost function body that contains an offset, from the `cli` kit's `listParserSites` into `packages/adoption` as a shared scanning primitive, and recompiles the kit bundles whose input lists the move changed.",
+            "hash": "462a3c1448151647ffbeec1285dcc863fd1a4767"
+          }
+        ]
+      },
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Tags the tier-module exports that the tier indexes of `arrays`, `cli`, `datetime`, and `numbers` do not re-export with `@internal`, and removes `@category`, `@stage`, and `@experimental` from those that declared them. (#684)",
+            "hash": "4c53f4ac0f9049dd398f3f9662f8f94770c65c20",
+            "entry": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "8.1.1",
     "date": "2026-11-16",
     "sections": [

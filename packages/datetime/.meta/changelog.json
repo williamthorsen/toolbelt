@@ -1,13 +1,30 @@
 [
   {
-    "version": "4.1.7",
+    "version": "4.1.8",
     "date": "2026-11-16",
     "sections": [
       {
         "title": "📦 Dependencies",
         "audience": "dev",
-        "items": [{ "description": "Bumped `@williamthorsen/toolbelt.numbers` to 8.1.1" }]
+        "items": [{ "description": "Bumped `@williamthorsen/toolbelt.numbers` to 8.1.2" }]
       },
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Tags the tier-module exports that the tier indexes of `arrays`, `cli`, `datetime`, and `numbers` do not re-export with `@internal`, and removes `@category`, `@stage`, and `@experimental` from those that declared them. (#684)",
+            "hash": "4c53f4ac0f9049dd398f3f9662f8f94770c65c20",
+            "entry": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "version": "4.1.7",
+    "date": "2026-11-16",
+    "sections": [
       {
         "title": "📚 Documentation",
         "audience": "dev",

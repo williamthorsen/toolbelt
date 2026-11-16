@@ -2,11 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
-## 4.1.7 — 2026-11-16
+## 4.1.8 — 2026-11-16
 
 ### 📦 Dependencies
 
-- Bumped `@williamthorsen/toolbelt.numbers` to 8.1.1
+- Bumped `@williamthorsen/toolbelt.numbers` to 8.1.2
+
+### 📚 Documentation
+
+- Tags the tier-module exports that the tier indexes of `arrays`, `cli`, `datetime`, and `numbers` do not re-export with `@internal`, and removes `@category`, `@stage`, and `@experimental` from those that declared them. (#684)
+
+## 4.1.7 — 2026-11-16
 
 ### 📚 Documentation
 

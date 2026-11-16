@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.12.0 — 2026-11-16
+
+### 🎉 Features
+
+- Adds `ignoreBrokenPipes`, which ignores the `EPIPE` error that stdout and stderr raise when the reader of a tool's output, such as `head`, exits first, and rethrows every other stream error to the handler that `installCrashHandler` registers. (#693)
+- Adds `readAnswer`, which writes a question to stderr and resolves to the line typed on stdin, or to `undefined` when input ends before an answer arrives. (#693)
+- Adds `isAffirmative`, which reports whether an answer is `y` or `yes`, in any case and ignoring surrounding whitespace. (#693)
+
+### ♻️ Refactoring
+
+- Moves the derivation of a flag's default long name in `@williamthorsen/toolbelt.cli` onto `toKebabCase`, which leaves the long name of every flag key accepted by the spec validation unchanged. (#685)
+- Moves `findEnclosingBody` from the `cli` kit's `listParserSites.ts` into `packages/adoption`, which exports it from `mod.ts` for any kit to import. (#686)
+
+### 🧪 Tests
+
+- Passes `createCli` and `parseArgs` to `describe()` in their type tests instead of a string, as the repo's test convention requires. (#682)
+- Replaces the real 20 ms delay in the late-producer test of `readStreamText` with a gate that the test releases, still asserting that the read does not settle before the producer writes, and drops the `cli` devDependency on `@williamthorsen/toolbelt.async`, which only that delay used. (#682)
+- Adds a tool test that runs a new `second-crash` fixture and asserts that `installCrashHandler` reports only the first crash and exits with status 1 when a second uncaught exception is raised while the first report flushes. (#683)
+- Rewrites the comments on the `RUNNER` fixture in `kit.tool.test.ts` and the `DISPATCHER` fixture in `listParserSites.unit.test.ts` to name what each fixture triggers (the `no-hand-rolled-flag-scan` and `no-node-parse-args` checks, and the `flag-scan` and `node-parse-args` sites), rather than the bins' history before `runCli`. (#692)
+
+### ⚙️ Tooling
+
+- Makes the `toolbelt.cli` ReadyUp adoption kit count calls to `ignoreBrokenPipes`, `readAnswer`, and `isAffirmative` toward adoption. (#693)
+
+### 📚 Documentation
+
+- Tags the tier-module exports that the tier indexes of `arrays`, `cli`, `datetime`, and `numbers` do not re-export with `@internal`, and removes `@category`, `@stage`, and `@experimental` from those that declared them. (#684)
+
 ## 0.11.0 — 2026-11-16
 
 ### 🎉 Features

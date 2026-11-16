@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.9.2 — 2026-11-16
+
+### ♻️ Refactoring
+
+- Move findEnclosingBody into packages/adoption (#686)
+
+  Moves `findEnclosingBody`, which returns the innermost function body that contains an offset, from the `cli` kit's `listParserSites` into `packages/adoption` as a shared scanning primitive, and recompiles the kit bundles whose input lists the move changed.
+
 ## 0.9.1 — 2026-11-16
 
 ### ♻️ Refactoring

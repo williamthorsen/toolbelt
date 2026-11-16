@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.acp",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "An Agent Client Protocol client that runs an app's prompts on agent harnesses such as Claude Code and the Antigravity CLI.",
   "keywords": [
     "acp",

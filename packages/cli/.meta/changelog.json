@@ -1,5 +1,96 @@
 [
   {
+    "version": "0.12.0",
+    "date": "2026-11-16",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds `ignoreBrokenPipes`, which ignores the `EPIPE` error that stdout and stderr raise when the reader of a tool's output, such as `head`, exits first, and rethrows every other stream error to the handler that `installCrashHandler` registers. (#693)",
+            "hash": "f64e86d5892ca93566edf7faf0afee1b9c933250",
+            "entry": 1
+          },
+          {
+            "description": "Adds `readAnswer`, which writes a question to stderr and resolves to the line typed on stdin, or to `undefined` when input ends before an answer arrives. (#693)",
+            "hash": "f64e86d5892ca93566edf7faf0afee1b9c933250",
+            "entry": 2
+          },
+          {
+            "description": "Adds `isAffirmative`, which reports whether an answer is `y` or `yes`, in any case and ignoring surrounding whitespace. (#693)",
+            "hash": "f64e86d5892ca93566edf7faf0afee1b9c933250",
+            "entry": 3
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Moves the derivation of a flag's default long name in `@williamthorsen/toolbelt.cli` onto `toKebabCase`, which leaves the long name of every flag key accepted by the spec validation unchanged. (#685)",
+            "hash": "52cba15fa0f85b3924f0c5f74b94383ce0a82e9b",
+            "entry": 3
+          },
+          {
+            "description": "Moves `findEnclosingBody` from the `cli` kit's `listParserSites.ts` into `packages/adoption`, which exports it from `mod.ts` for any kit to import. (#686)",
+            "hash": "462a3c1448151647ffbeec1285dcc863fd1a4767",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Passes `createCli` and `parseArgs` to `describe()` in their type tests instead of a string, as the repo's test convention requires. (#682)",
+            "hash": "ff41759ebb88a26a352fe2fbe897d2564f7990c2",
+            "entry": 1
+          },
+          {
+            "description": "Replaces the real 20 ms delay in the late-producer test of `readStreamText` with a gate that the test releases, still asserting that the read does not settle before the producer writes, and drops the `cli` devDependency on `@williamthorsen/toolbelt.async`, which only that delay used. (#682)",
+            "hash": "ff41759ebb88a26a352fe2fbe897d2564f7990c2",
+            "entry": 2
+          },
+          {
+            "description": "Adds a tool test that runs a new `second-crash` fixture and asserts that `installCrashHandler` reports only the first crash and exits with status 1 when a second uncaught exception is raised while the first report flushes. (#683)",
+            "hash": "7a0684ea72b42cc132db746b43039c7bb24ad015",
+            "entry": 1
+          },
+          {
+            "description": "Rewrites the comments on the `RUNNER` fixture in `kit.tool.test.ts` and the `DISPATCHER` fixture in `listParserSites.unit.test.ts` to name what each fixture triggers (the `no-hand-rolled-flag-scan` and `no-node-parse-args` checks, and the `flag-scan` and `node-parse-args` sites), rather than the bins' history before `runCli`. (#692)",
+            "hash": "c83147c595a899dcceb220e586f12d191563d963",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "⚙️ Tooling",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Makes the `toolbelt.cli` ReadyUp adoption kit count calls to `ignoreBrokenPipes`, `readAnswer`, and `isAffirmative` toward adoption. (#693)",
+            "hash": "f64e86d5892ca93566edf7faf0afee1b9c933250",
+            "entry": 4
+          }
+        ]
+      },
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Tags the tier-module exports that the tier indexes of `arrays`, `cli`, `datetime`, and `numbers` do not re-export with `@internal`, and removes `@category`, `@stage`, and `@experimental` from those that declared them. (#684)",
+            "hash": "4c53f4ac0f9049dd398f3f9662f8f94770c65c20",
+            "entry": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.11.0",
     "date": "2026-11-16",
     "sections": [

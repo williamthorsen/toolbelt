@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## 10.0.0 — 2026-11-16
+
+### 🎉 Features
+
+- Adds the `toKebabCase` function to `@williamthorsen/toolbelt.strings/candidate`, which converts text to lowercase words joined by `-` and keeps an acronym whole (`parseHTMLString` becomes `parse-html-string`). (#685)
+- 🚨 **Breaking:** Changes `toCamelCase` to split words as `toKebabCase` does: A capital after a lowercase letter or digit now starts a word (`helloWorld` stays `helloWorld` rather than becoming `helloworld`), an acronym is capitalized as one word (`parseHTMLString` becomes `parseHtmlString`), and every character that is neither a letter nor a digit separates words and is dropped (`a.b` becomes `aB`). (#685)
+
+### ♻️ Refactoring
+
+- Move findEnclosingBody into packages/adoption (#686)
+
+  Moves `findEnclosingBody`, which returns the innermost function body that contains an offset, from the `cli` kit's `listParserSites` into `packages/adoption` as a shared scanning primitive, and recompiles the kit bundles whose input lists the move changed.
+
 ## 9.0.2 — 2026-11-16
 
 ### ♻️ Refactoring

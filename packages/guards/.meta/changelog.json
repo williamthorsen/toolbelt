@@ -1,5 +1,22 @@
 [
   {
+    "version": "4.2.5",
+    "date": "2026-11-16",
+    "sections": [
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Move findEnclosingBody into packages/adoption (#686)",
+            "body": "Moves `findEnclosingBody`, which returns the innermost function body that contains an offset, from the `cli` kit's `listParserSites` into `packages/adoption` as a shared scanning primitive, and recompiles the kit bundles whose input lists the move changed.",
+            "hash": "462a3c1448151647ffbeec1285dcc863fd1a4767"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "4.2.4",
     "date": "2026-11-16",
     "sections": [

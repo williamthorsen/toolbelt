@@ -1,5 +1,40 @@
 [
   {
+    "version": "10.0.0",
+    "date": "2026-11-16",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds the `toKebabCase` function to `@williamthorsen/toolbelt.strings/candidate`, which converts text to lowercase words joined by `-` and keeps an acronym whole (`parseHTMLString` becomes `parse-html-string`). (#685)",
+            "hash": "52cba15fa0f85b3924f0c5f74b94383ce0a82e9b",
+            "entry": 1
+          },
+          {
+            "description": "Changes `toCamelCase` to split words as `toKebabCase` does: A capital after a lowercase letter or digit now starts a word (`helloWorld` stays `helloWorld` rather than becoming `helloworld`), an acronym is capitalized as one word (`parseHTMLString` becomes `parseHtmlString`), and every character that is neither a letter nor a digit separates words and is dropped (`a.b` becomes `aB`). (#685)",
+            "breaking": true,
+            "migration": "Pass `text.toLowerCase()` to `toCamelCase` to keep the earlier result for input that contains capitals, and expect punctuation other than spaces, hyphens, and underscores to be dropped rather than kept in the output.",
+            "hash": "52cba15fa0f85b3924f0c5f74b94383ce0a82e9b",
+            "entry": 2
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Move findEnclosingBody into packages/adoption (#686)",
+            "body": "Moves `findEnclosingBody`, which returns the innermost function body that contains an offset, from the `cli` kit's `listParserSites` into `packages/adoption` as a shared scanning primitive, and recompiles the kit bundles whose input lists the move changed.",
+            "hash": "462a3c1448151647ffbeec1285dcc863fd1a4767"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "9.0.2",
     "date": "2026-11-16",
     "sections": [
