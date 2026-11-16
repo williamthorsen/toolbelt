@@ -8,9 +8,7 @@ import { getItemAtIndexOrThrow } from './getItemAtIndexOrThrow.ts';
  * Throws a `RangeError` unless the cumulative weights are finite, ascending, non-negative, and non-empty, match
  * `nItems` in number, and end above 0.
  *
- * @category Array
- * @experimental
- * @stage candidate
+ * @internal
  */
 export function assertValidCumulativeWeights(weights: ReadonlyArray<number>, nItems = weights.length): void | never {
   assertFiniteWeights(weights);

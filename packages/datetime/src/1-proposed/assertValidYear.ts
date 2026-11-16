@@ -1,5 +1,7 @@
 /**
  * Throws a `RangeError` unless the year is a safe non-negative integer.
+ *
+ * @internal
  */
 export function assertValidYear(year: number): void | never {
   if (!Number.isSafeInteger(year) || year < 0) {

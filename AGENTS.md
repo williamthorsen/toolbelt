@@ -56,6 +56,7 @@ Four files record the new package: a `repoLabels.labels` entry in `.config/relea
 - Intra-package imports include an explicit `.ts` extension (`./shuffle.ts`). `allowImportingTsExtensions` is on and `nmr-compile` rewrites it at build time.
 - Exported functions in a maturity tier have JSDoc `@category` and `@stage {maturity}`, plus `@experimental` when applicable. Keep `@stage` in sync with the containing folder; `__tests__/stage-tag-alignment.app.unit.test.ts` enforces this.
 - Exported functions in `src/internal/` and `src/readiness/` have `@internal` instead. Neither is a maturity tier, so neither has an `@stage` value to take, and the alignment test derives a tier only from a `src/{n}-{tier}/` segment -- any `@stage` there is unvalidated by construction.
+- An exported function or class of a tier module that none of the package's tier indexes re-exports also has `@internal`, and neither `@category` nor `@stage`: Because no subpath publishes it, it has no maturity to declare. `__tests__/tier-export-tags.app.unit.test.ts` enforces this.
 - Tests live in `__tests__/` beside the source, named `{subject}.{tier}.test.ts`. `describe()` takes the function reference, not a string: `describe(shuffle, () => ...)`.
 - `expectTypeOf` is imported from `vitest`, which re-exports it bare. `expect-type` is deliberately undeclared, so a direct import does not resolve.
 - Dependency versions are pinned exactly (`savePrefix: ''` in `pnpm-workspace.yaml`). A specifier used in more than one manifest moves to that file's `catalog:` block, and every site reads `catalog:`.
