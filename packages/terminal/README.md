@@ -14,7 +14,7 @@ pnpm add @williamthorsen/toolbelt.terminal
 
 Requires Node.js 24 or later. The width functions wrap `wrap-ansi`, `cli-truncate`, `slice-ansi`, and `string-width`, which come to nine packages in all; npm scopes dependencies to the package rather than to the subpath, so a consumer installs them whichever subpath it imports.
 
-Every export is candidate tier: imported from `@williamthorsen/toolbelt.terminal/candidate` rather than the package root, and subject to change. Each export's doc comment states its edge cases and examples.
+Every export is candidate tier: imported from `@williamthorsen/toolbelt.terminal/candidate` rather than the package root, and subject to change. Each export's doc comment states its edge cases, and most give examples.
 
 ```ts
 import { resolveOutputStyle, STATUS_GLYPHS } from '@williamthorsen/toolbelt.terminal/candidate';
