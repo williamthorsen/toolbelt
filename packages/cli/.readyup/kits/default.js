@@ -121,6 +121,16 @@ function resolveScope(check, kitScope) {
   return check.pathFilter === void 0 ? kitScope : { noSourcesReason: check.noSourcesReason, pathFilter: check.pathFilter };
 }
 
+// ../adoption/src/portable/findEnclosingBody.ts
+function findEnclosingBody(bodies, offset) {
+  let enclosing;
+  for (const body of bodies) {
+    const contains = body.bodyStart <= offset && offset < body.bodyEnd;
+    if (contains && (enclosing === void 0 || body.bodyStart > enclosing.bodyStart)) enclosing = body;
+  }
+  return enclosing;
+}
+
 // ../adoption/src/portable/readBalancedGroup.ts
 var BRACES = { close: "}", open: "{" };
 var PARENTHESES = { close: ")", open: "(" };
@@ -248,14 +258,6 @@ function listParserSites(source) {
   return [...listPlatformParseCalls(code, source), ...listFlagScans(code, source)].toSorted(
     (left, right) => left.line - right.line
   );
-}
-function findEnclosingBody(bodies, offset) {
-  let enclosing;
-  for (const body of bodies) {
-    const contains = body.bodyStart <= offset && offset < body.bodyEnd;
-    if (contains && (enclosing === void 0 || body.bodyStart > enclosing.bodyStart)) enclosing = body;
-  }
-  return enclosing;
 }
 function listFlagScans(code, source) {
   const bodies = listFunctionBodies(code);

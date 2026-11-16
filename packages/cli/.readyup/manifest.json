@@ -33,7 +33,7 @@
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "00beca5f",
+          "hash": "a2e27a89",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -41,6 +41,11 @@
           "hash": "6fdaacac",
           "kind": "module",
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
+        },
+        {
+          "hash": "b25f157e",
+          "kind": "module",
+          "path": "../../adoption/src/portable/findEnclosingBody.ts"
         },
         {
           "hash": "0e239ee7",
@@ -108,7 +113,7 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "1e314012",
+          "hash": "1bb2b986",
           "kind": "module",
           "path": "../src/readiness/listParserSites.ts"
         }
@@ -118,7 +123,7 @@
       "readyupVersion": "0.46.3",
       "source": "kits/default.ts",
       "sourceHash": "6cbf5101",
-      "targetHash": "2b669b37"
+      "targetHash": "26ae0919"
     }
   ]
 }

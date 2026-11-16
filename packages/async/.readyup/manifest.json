@@ -32,7 +32,7 @@
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "00beca5f",
+          "hash": "a2e27a89",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -40,6 +40,11 @@
           "hash": "6fdaacac",
           "kind": "module",
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
+        },
+        {
+          "hash": "b25f157e",
+          "kind": "module",
+          "path": "../../adoption/src/portable/findEnclosingBody.ts"
         },
         {
           "hash": "0e239ee7",
