@@ -14,7 +14,7 @@ pnpm add @williamthorsen/toolbelt.strings
 
 Requires Node.js 24 or later.
 
-`dedent`, `pluralize`, `pluralizeWithCount`, and `stripCommonIndent` are release tier, imported from the package root. `findCloseMatch` and `hashString` are candidate tier: imported from `@williamthorsen/toolbelt.strings/candidate` rather than the package root, and subject to change.
+`dedent`, `pluralize`, `pluralizeWithCount`, and `stripCommonIndent` are release tier, imported from the package root. `findCloseMatch`, `hashString`, `toCamelCase`, and `toKebabCase` are candidate tier: imported from `@williamthorsen/toolbelt.strings/candidate` rather than the package root, and subject to change.
 
 ## `pluralize` and `pluralizeWithCount`
 
@@ -184,6 +184,25 @@ findCloseMatch('deploy', ['build', 'check', 'test']);
 ```
 
 A candidate qualifies when it is within 2 edits of the input and fewer edits away than the input has characters, counting an insertion, a deletion, a substitution, or a swap of adjacent characters as one edit. A tie goes to the earliest candidate, so the order of `candidates` sets the preference. The comparison is by code point and case-sensitive: Normalize both sides first for a case-insensitive match.
+
+## `toCamelCase` and `toKebabCase`
+
+```ts
+toCamelCase(text: string): string;
+toKebabCase(text: string): string;
+```
+
+Convert text between camelCase and kebab-case, such as a flag key and its long option name.
+
+```ts
+import { toCamelCase, toKebabCase } from '@williamthorsen/toolbelt.strings/candidate';
+
+toKebabCase('parseHTMLString'); // 'parse-html-string'
+toCamelCase('dry-run'); // 'dryRun'
+toKebabCase('Darcula (Custom)'); // 'darcula-custom'
+```
+
+Both split words the same way: Every character that is neither a letter nor a digit separates words and is dropped, a capital starts a new word, and an acronym stays whole. Converting a camelCase key to kebab case and back returns the key, unless the key contains an acronym, which comes back capitalized as a word (`parseHtmlString`).
 
 ## Adoption checks
 
