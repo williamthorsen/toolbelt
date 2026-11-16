@@ -21,6 +21,11 @@ const DEFAULT_ELLIPSIS = '…';
  * The text is expected to contain no line break: A break occupies no columns, so a result containing one is laid
  * out across lines that the width says nothing about.
  *
+ * @example
+ * truncateToWidth('abcdefgh', { width: 5 }); // 'abcd…'
+ * truncateToWidth('abcdefgh', { ellipsis: '...', width: 5 }); // 'ab...'
+ * truncateToWidth('abcdefgh', { ellipsis: '...', width: 2 }); // 'ab'
+ *
  * @category Terminal
  * @experimental
  * @stage candidate
@@ -48,7 +53,7 @@ export function truncateToWidth(text: string, options: TruncateToWidthOptions): 
 }
 
 export interface TruncateToWidthOptions {
-  /** What marks the cut, counted inside `width` and dropped when it does not fit there. */
+  /** What marks the cut, counted inside `width` and dropped when it does not fit there; `…`, one cell, by default. */
   readonly ellipsis?: string | undefined;
   /** The rendered width that the result fits. */
   readonly width: number;

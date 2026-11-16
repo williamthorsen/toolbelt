@@ -4,7 +4,8 @@ import wrapAnsi from 'wrap-ansi';
 const WHITESPACE_RUN = /\s+/gu;
 
 /**
- * Collapses whitespace and wraps text greedily to a width, indenting every line or every line after the first.
+ * Collapses whitespace and wraps text greedily to a width, indenting every line or every line after the first, and
+ * returns the lines joined by `\n`.
  *
  * `indent` reserves its columns inside `width` rather than adding to it, so `width` is a line's full rendered
  * width and a caller passes the terminal's own. `hanging` leaves the first line's reserved columns empty of
@@ -22,6 +23,15 @@ const WHITESPACE_RUN = /\s+/gu;
  *
  * Never throws. At an infinite width it wraps nothing, and at a width at or below zero, or one that is not a
  * number, it leaves one column for content. That floor discards nothing, since an over-long word already overflows.
+ *
+ * @example
+ * wrapToWidth('one two three four five', { indent: 4, width: 14 });
+ * // '    one two\n    three four\n    five'
+ *
+ * const indent = measureWidth(prefix);
+ * const [first = '', ...rest] = wrapToWidth(description, { hanging: true, indent, width }).split('\n');
+ * console.log(prefix + first);
+ * for (const line of rest) console.log(line);
  *
  * @category Terminal
  * @experimental

@@ -12,7 +12,12 @@ const POSITIONAL_TERMINATOR = '--';
 const STDIN_ARGUMENT = '-';
 
 /**
- * Composes the usage message for a source that named a style that does not exist.
+ * Composes the usage message for a source that named a style that does not exist, so that every CLI reports one in
+ * the same words.
+ *
+ * @example
+ * describeInvalidOutputStyle({ source: '--style', value: 'fancy' });
+ * // '--style must be one of: auto, plain, rich (got "fancy")'
  *
  * @category Terminal
  * @experimental
@@ -51,6 +56,12 @@ export type OutputStyleSetting = (typeof OUTPUT_STYLE_SETTINGS)[number];
  * render its complaint in some style, and a resolver that threw would leave it none. Resolution continues past such
  * a value, so the style comes from whatever the next source says.
  *
+ * @example
+ * resolveOutputStyle({ argv: ['--style', 'plain'], env: {}, flag: '--style', isTty: true });
+ * // { style: 'plain' }
+ * resolveOutputStyle({ argv: ['--style=fancy'], env: {}, flag: '--style', isTty: true });
+ * // { invalid: { source: '--style', value: 'fancy' }, style: 'rich' }
+ *
  * @category Terminal
  * @experimental
  * @stage candidate
@@ -88,7 +99,15 @@ export interface ResolveOutputStyleOptions extends DetectOutputStyleOptions {
   readonly argv: readonly string[];
   /** The environment variable holding a standing preference; omitting it drops that source from the chain. */
   readonly envVar?: string | undefined;
-  /** The flag naming a style for one invocation, leading dashes included; omitting it drops that source. */
+  /**
+   * The flag naming a style for one invocation, leading dashes included; omitting it drops that source.
+   *
+   * The flag is read from raw argv ahead of any parse, which lets a caller render its own parse failure in the style
+   * that the invocation asked for. Because the same argv then reaches `parseArgs`, the scan reads it the way
+   * `parseArgs` does: Both `--style plain` and `--style=plain` give a value, the `--` terminator ends the scan, and
+   * the last occurrence wins. A dash-led argument after a spaced flag is no value, `-` alone excepted, so
+   * `--style --verbose` leaves the flag contributing nothing and lets `parseArgs` raise the ambiguity itself.
+   */
   readonly flag?: string | undefined;
 }
 
@@ -97,17 +116,7 @@ export interface ResolveOutputStyleOptions extends DetectOutputStyleOptions {
 // The settings widened to strings, so that an arbitrary input can be tested for membership without a cast.
 const ACCEPTED_SETTINGS: ReadonlySet<string> = new Set<string>(OUTPUT_STYLE_SETTINGS);
 
-/**
- * Finds the value that an invocation gives the flag, scanning raw argv ahead of any parse.
- *
- * Reading it without `parseArgs` lets a caller render its own parse failure in the style that the invocation asked
- * for. Because the same argv is passed to `parseArgs` afterwards, the scan reads it the way `parseArgs` does: Both
- * `--style plain` and `--style=plain` give a value, the `--` terminator ends the scan, and the last occurrence wins.
- *
- * A dash-led argument after a spaced flag is no value, `-` alone excepted, because only the `=` form gives one.
- * `--style --verbose` therefore leaves the flag contributing nothing and the next source deciding, and `parseArgs`
- * raises the ambiguity itself instead of the caller complaining about the style vocabulary.
- */
+/** Finds the value that an invocation gives the flag, by the rules that `ResolveOutputStyleOptions.flag` states. */
 function findFlagValue(argv: readonly string[], flag: string): string | undefined {
   const assignment = `${flag}=`;
   let value: string | undefined;

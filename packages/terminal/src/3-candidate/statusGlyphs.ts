@@ -13,6 +13,7 @@ import { defineGlyphSet } from './defineGlyphSet.ts';
  * ⚠️, a CLI's usual first choice, is a code point plus a U+FE0F variation selector; 🟠 marks `warning` instead.
  *
  * Each plain glyph is an uppercase word rather than an ASCII symbol, so that `grep FAIL` finds a failure in a log.
+ * The plain column measures 5 cells and the rich column 2.
  */
 export const STATUS_GLYPHS = defineGlyphSet({
   blocked: { plain: 'BLOCK', rich: '🚫' },

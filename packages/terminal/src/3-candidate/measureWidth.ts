@@ -8,6 +8,11 @@ import stringWidth from 'string-width';
  * CJK-locale terminal draws it as two, and it is the reason `defineGlyphSet` refuses one in a plain glyph. Text
  * that may hold one is measured against the narrow reading here.
  *
+ * @example
+ * measureWidth('漢字'); // 4
+ * measureWidth('👨‍👩‍👧‍👦'); // 2
+ * measureWidth('\u{1B}[31mred\u{1B}[39m'); // 3
+ *
  * @category Terminal
  * @experimental
  * @stage candidate
