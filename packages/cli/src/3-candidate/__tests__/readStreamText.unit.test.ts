@@ -14,6 +14,20 @@ describe(readStreamText, () => {
     await expect(readStreamText(buildStream([]))).resolves.toBe('');
   });
 
+  it('decodes a multibyte sequence split across two chunks', async () => {
+    const bytes = Buffer.from('é');
+
+    await expect(readStreamText(buildStream([bytes.subarray(0, 1), bytes.subarray(1)]))).resolves.toBe('é');
+  });
+
+  it('leaves the encoding of the stream unchanged', async () => {
+    const stream = buildStream(['text']);
+
+    await readStreamText(stream);
+
+    expect(stream.readableEncoding).toBeNull();
+  });
+
   it('waits for a producer that has not yet written', async () => {
     await expect(readStreamText(Readable.from(emitLate('late'), { objectMode: false }))).resolves.toBe('late');
   });
@@ -22,7 +36,7 @@ describe(readStreamText, () => {
 // region | Helpers
 
 /** Builds a byte stream, rather than the object-mode stream to which `Readable.from` defaults, as a pipe is. */
-function buildStream(chunks: string[]): Readable {
+function buildStream(chunks: Array<Buffer | string>): Readable {
   return Readable.from(chunks, { objectMode: false });
 }
 
