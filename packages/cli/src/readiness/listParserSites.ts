@@ -1,6 +1,7 @@
 import {
   type AdoptionSite,
   blankNonCode,
+  findEnclosingBody,
   type FunctionBody,
   getLineAtOffset,
   listFunctionBodies,
@@ -44,16 +45,6 @@ export function listParserSites(source: string): Array<AdoptionSite<ParserSiteKi
 }
 
 // region | Helpers
-
-/** Returns the innermost function whose body contains an offset, if any does. */
-function findEnclosingBody(bodies: readonly FunctionBody[], offset: number): FunctionBody | undefined {
-  let enclosing: FunctionBody | undefined;
-  for (const body of bodies) {
-    const contains = body.bodyStart <= offset && offset < body.bodyEnd;
-    if (contains && (enclosing === undefined || body.bodyStart > enclosing.bodyStart)) enclosing = body;
-  }
-  return enclosing;
-}
 
 /** Lists one site per function, or for the file's top-level code, that compares a value against a flag. */
 function listFlagScans(code: string, source: string): Array<AdoptionSite<ParserSiteKind>> {
