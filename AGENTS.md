@@ -54,7 +54,8 @@ Four files record the new package: a `repoLabels.labels` entry in `.config/relea
 ## Code style
 
 - Intra-package imports include an explicit `.ts` extension (`./shuffle.ts`). `allowImportingTsExtensions` is on and `nmr-compile` rewrites it at build time.
-- Exported functions in a maturity tier have JSDoc `@category` and `@stage {maturity}`, plus `@experimental` when applicable. Keep `@stage` in sync with the containing folder; `__tests__/stage-tag-alignment.app.unit.test.ts` enforces this.
+- Functions re-exported by a maturity tier's `index.ts` have JSDoc `@category` and `@stage {maturity}`, plus `@experimental` when applicable. Keep `@stage` in sync with the containing folder; `__tests__/stage-tag-alignment.app.unit.test.ts` enforces this.
+- Exported functions in a maturity tier that its `index.ts` does not re-export take `@internal`.
 - Exported functions in `src/internal/` and `src/readiness/` have `@internal` instead. Neither is a maturity tier, so neither has an `@stage` value to take, and the alignment test derives a tier only from a `src/{n}-{tier}/` segment -- any `@stage` there is unvalidated by construction.
 - Tests live in `__tests__/` beside the source, named `{subject}.{tier}.test.ts`. `describe()` takes the function reference, not a string: `describe(shuffle, () => ...)`.
 - `expectTypeOf` is imported from `vitest`, which re-exports it bare. `expect-type` is deliberately undeclared, so a direct import does not resolve.
