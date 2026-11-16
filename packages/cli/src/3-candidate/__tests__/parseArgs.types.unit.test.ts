@@ -4,7 +4,7 @@ import { parseArgs } from '../parseArgs.ts';
 import type { FlagSchema } from '../types.ts';
 
 // Each call is wrapped in a function that is never invoked, since only its types are under test.
-describe('parseArgs types', () => {
+describe(parseArgs, () => {
   it('infers each flag type from its definition', () => {
     const parse = () =>
       parseArgs([], {

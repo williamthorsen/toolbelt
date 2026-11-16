@@ -13,7 +13,7 @@ interface LevelContext extends RootContext {
 }
 
 // Each definition is wrapped in a function that is never invoked, since only its types are under test.
-describe('createCli types', () => {
+describe(createCli, () => {
   it('infers flags and operands in run', () => {
     expectTypeOf(() =>
       createCli<RootContext>().defineCommand({
