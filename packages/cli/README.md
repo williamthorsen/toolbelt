@@ -115,6 +115,20 @@ import { readStreamText } from '@williamthorsen/toolbelt.cli/candidate';
 const input = process.stdin.isTTY ? undefined : await readStreamText(process.stdin);
 ```
 
+## Closed pipes and confirmation prompts
+
+`ignoreBrokenPipes` keeps a CLI quiet when the reader of its output exits first, as `head` does, and leaves every other stream error to `installCrashHandler`. `readAnswer` asks a question on stderr and resolves to the line typed on stdin, and `isAffirmative` reports whether that line is `y` or `yes`:
+
+```ts
+import { ignoreBrokenPipes, isAffirmative, readAnswer } from '@williamthorsen/toolbelt.cli/candidate';
+
+ignoreBrokenPipes();
+
+if (isAffirmative(await readAnswer('Delete 3 files? [y/N] '))) {
+  // Delete the files.
+}
+```
+
 ## Reporting crashes
 
 `runCli` rethrows every error that is not a `UsageError`. `installCrashHandler(name)` registers a process `uncaughtException` listener that reports such an error, whether thrown from a command, a top-level await, or an event listener, as `<name>: internal error: <message>` with its stack frames, its `cause` chain, and the errors that it wraps, then exits with code 1 once stderr has flushed. A `SuppressedError` reports its `error` and `suppressed` and an `AggregateError` its `errors`, each labelled by property name. Call it once, before `runCli`, as the usage example above does.
