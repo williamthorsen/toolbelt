@@ -31,6 +31,14 @@ describe(installCrashHandler, () => {
     expect(run.stderr).toMatch(/END-OF-MESSAGE\n\s+at /u);
     expect(run.stderr).toMatch(/\s+at .+\n$/u);
   });
+
+  it('reports only the first crash when a second is raised while the report flushes', () => {
+    const run = runFixture('second-crash');
+
+    expect(run.status).toBe(1);
+    expect(run.stderr).toMatch(/^demo: internal error: first crash\n\s+at /u);
+    expect(run.stderr).not.toContain('second crash');
+  });
 });
 
 // region | Helpers
