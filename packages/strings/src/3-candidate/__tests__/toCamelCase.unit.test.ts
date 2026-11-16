@@ -30,8 +30,8 @@ describe(toCamelCase, () => {
     expect(actual).toBe(expected);
   });
 
-  it('given mixed-case words, lowercases them before capitalizing each word after the first', () => {
-    const input = 'hELLo WoRLd';
+  it('given capitalized and uppercase words, lowercases them before capitalizing each word after the first', () => {
+    const input = 'Hello WORLD';
     const expected = 'helloWorld';
 
     const actual = toCamelCase(input);
@@ -48,9 +48,27 @@ describe(toCamelCase, () => {
     expect(actual).toBe(expected);
   });
 
-  it('does not preserve existing camel casing', () => {
+  it('treats an existing case transition as a word boundary', () => {
     const input = 'helloWorld';
-    const expected = 'helloworld';
+    const expected = 'helloWorld';
+
+    const actual = toCamelCase(input);
+
+    expect(actual).toBe(expected);
+  });
+
+  it('capitalizes an acronym as one word', () => {
+    const input = 'parseHTMLString';
+    const expected = 'parseHtmlString';
+
+    const actual = toCamelCase(input);
+
+    expect(actual).toBe(expected);
+  });
+
+  it('drops characters that are neither letters nor digits and treats them as word boundaries', () => {
+    const input = 'a.b (c/d)';
+    const expected = 'aBCD';
 
     const actual = toCamelCase(input);
 
