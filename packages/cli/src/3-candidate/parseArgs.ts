@@ -47,7 +47,7 @@ export function parseValidatedArgs<S extends FlagSchema, O extends readonly Oper
   const { tokens, flagsByName } = tokenizeArgs(argv, schema);
   const flags: Record<string, unknown> = {};
   for (const [key, definition] of Object.entries(schema)) {
-    flags[key] = 'default' in definition ? definition.default : initialValue(definition);
+    flags[key] = 'default' in definition ? definition.default : deriveInitialValue(definition);
   }
 
   const positionals: string[] = [];
@@ -132,6 +132,12 @@ function checkChoice(value: string, choices: readonly string[] | undefined, labe
   );
 }
 
+/** Returns the value of an absent flag that does not declare a `default`. */
+function deriveInitialValue(definition: FlagDefinition): unknown[] | false | undefined {
+  if (definition.multiple === true) return [];
+  return definition.type === 'boolean' ? false : undefined;
+}
+
 /** Returns the long option nearest to an unknown `--` option, spelled with its dashes. */
 function findLongNameSuggestion(
   token: { name: string; rawName: string },
@@ -141,12 +147,6 @@ function findLongNameSuggestion(
   if (!token.rawName.startsWith('--')) return undefined;
   const match = findCloseMatch(token.name, [...longNames, ...reservedLongNames].toSorted());
   return match === undefined ? undefined : `--${match}`;
-}
-
-/** Returns the value of an absent flag that does not declare a `default`. */
-function initialValue(definition: FlagDefinition): unknown[] | false | undefined {
-  if (definition.multiple === true) return [];
-  return definition.type === 'boolean' ? false : undefined;
 }
 
 /**
