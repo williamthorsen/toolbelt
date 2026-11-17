@@ -5,9 +5,10 @@ import { isError } from '@williamthorsen/toolbelt.errors';
 /**
  * Runs a call expected to fail and returns the `Error` that it threw or rejected with.
  *
- * Accepts a synchronous or an asynchronous call. Fails the test when the call completes normally or throws a
- * non-`Error`, so a regression that stops the failure is reported at this call rather than by a later assertion
- * running against `undefined`.
+ * Accepts a synchronous or an asynchronous call: The call's return value is awaited, so a thrown error and a
+ * rejected promise arrive by the same path, and the result is awaited either way. Fails the test when the call
+ * completes normally or throws a non-`Error`, so a regression that stops the failure is reported at this call rather
+ * than by a later assertion running against `undefined`.
  *
  * @category Testing
  * @experimental
@@ -16,8 +17,12 @@ import { isError } from '@williamthorsen/toolbelt.errors';
 export function captureError(run: () => unknown): Promise<Error>;
 /**
  * Runs a call expected to fail and returns the error that it threw or rejected with, narrowed to the expected
- * class. Fails the test when the call completes normally or throws anything else, setting what it did throw
- * as the failure's `cause`.
+ * class. The class may be an abstract base, which an error of any subclass satisfies.
+ *
+ * Fails the test when the call completes normally or throws anything else, with a message naming what happened:
+ * `Expected the call to throw, but it returned: 'ok'`, which names no class because nothing was compared against
+ * one, or `Expected the call to throw KitError, but it threw: TypeError: url is not a function`. A failure for a
+ * thrown value sets that value as its `cause`, so the real error's stack survives into the report.
  *
  * @category Testing
  * @experimental

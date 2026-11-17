@@ -17,8 +17,16 @@ const CONSOLE_STREAMS: Record<ConsoleMethod, 'stderr' | 'stdout'> = {
 
 /**
  * Captures everything written to stdout and stderr for the enclosing scope, restoring both streams when the
- * scope exits. A test runner replaces the global console, so console output goes to neither stream unless
- * `includeConsole` is set.
+ * scope exits. Only disposal restores them, so a capture bound with `const` rather than `using` leaves both streams
+ * swapped for the rest of the file.
+ *
+ * A test runner replaces the global console, so console output goes to neither stream unless `includeConsole` is
+ * set. Both streams' `isTTY` is saved and restored whether or not `isTty` is passed, and a stream that owned no
+ * `isTTY` owns none again afterwards.
+ *
+ * The streams and the console are swapped by assignment rather than spied on, so a capture nests with
+ * `silenceConsole` from `@williamthorsen/toolbelt.vitest` in either order: The innermost scope takes the output,
+ * and the outer one resumes intact when it exits.
  *
  * @category Testing
  * @experimental
@@ -77,9 +85,13 @@ export function captureStdio(options: CaptureStdioOptions = {}): CapturedStdio {
 
 /** Buffered output that a command wrote while a capture scope was open. */
 export interface CapturedStdio extends Disposable {
+  /** Everything written to stderr, joined. */
   readonly stderr: string;
+  /** The individual writes to stderr, copied on each read so that a later `reset()` does not empty it. */
   readonly stderrChunks: readonly string[];
+  /** Everything written to stdout, joined. */
   readonly stdout: string;
+  /** The individual writes to stdout, copied on each read so that a later `reset()` does not empty it. */
   readonly stdoutChunks: readonly string[];
   /** Empties both buffers, which a test comparing two invocations of one command needs between them. */
   reset(): void;
@@ -87,9 +99,16 @@ export interface CapturedStdio extends Disposable {
 
 /** Options for a capture scope. */
 export interface CaptureStdioOptions {
-  /** Whether to add console output to the stream buffers, which a command reporting through `console` needs. */
+  /**
+   * Whether to add console output to the stream buffers, which a command reporting through `console` needs. Output
+   * is routed as Node routes it: `debug`, `info`, and `log` join stdout, and `warn` and `error` join stderr, each
+   * call formatted through `util.format`. Off by default, which leaves console output going to the test reporter.
+   */
   includeConsole?: boolean;
-  /** Value that both streams report for `isTTY` while the scope is open, which exercises style detection. */
+  /**
+   * Value that both streams report for `isTTY` while the scope is open, which exercises style detection. It sets
+   * both because style detection reads the stream to which it writes; a test needing them to differ assigns directly.
+   */
   isTty?: boolean;
 }
 

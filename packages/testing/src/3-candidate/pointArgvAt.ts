@@ -3,7 +3,12 @@ import process from 'node:process';
 /**
  * Points `process.argv` at a set of CLI arguments for the enclosing scope and restores the previous value when
  * the scope exits. The caller passes the arguments alone, which `process.argv.slice(2)` reports;
- * `pointArgvAt` supplies the executable and script entries.
+ * `pointArgvAt` supplies the executable and script entries. Only disposal restores the previous value, so a scope
+ * bound with `const` rather than `using` leaves the arguments installed for the rest of the file.
+ *
+ * The scope assigns a new array rather than mutating the one that it found, so a module that captured
+ * `process.argv` before the scope opened keeps reporting what it captured. A spawned child receives the arguments
+ * that its own `spawn` call passes, not the ones installed here.
  *
  * @category Testing
  * @experimental
@@ -36,10 +41,16 @@ export function pointArgvAt(args: readonly string[], options: PointArgvAtOptions
 
 /** Options for an argv-pointing scope. */
 export interface PointArgvAtOptions {
-  /** Entry for `process.argv[0]`, which Node fills with the path of the running executable. */
+  /**
+   * Entry for `process.argv[0]`, which Node fills with the path of the running executable. Defaults to
+   * `process.execPath`.
+   */
   execPath?: string;
 
-  /** Entry for `process.argv[1]`, which Node fills with the path of the script that it is running. */
+  /**
+   * Entry for `process.argv[1]`, which Node fills with the path of the script that it is running. Defaults to the
+   * placeholder `script`, which names no file, so code deriving its own directory from it needs a real path here.
+   */
   scriptPath?: string;
 }
 
