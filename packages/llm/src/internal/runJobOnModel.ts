@@ -12,6 +12,7 @@ import {
 
 import { JobRunError } from '../1-proposed/JobRunError.ts';
 import type { Job, JobEvent, JobOutcome, JobTool, RunJobOptions, Usage } from '../types/job.ts';
+import { assertPositiveInteger } from './assertPositiveInteger.ts';
 
 /** What a run has counted so far. */
 interface RunProgress {
@@ -32,7 +33,7 @@ export async function runJobOnModel<Result>(
   model: LanguageModel,
   { signal, onEvent }: RunJobOptions = {},
 ): Promise<JobOutcome<Result>> {
-  assertValidMaxRounds(job.maxRounds);
+  assertPositiveInteger(job.maxRounds, 'maxRounds');
   signal?.throwIfAborted();
 
   // Ends the model's requests when a tool throws or the run fails.
@@ -87,13 +88,6 @@ function addUsage(a: Usage, b: Usage): Usage {
     cacheReadTokens: a.cacheReadTokens + b.cacheReadTokens,
     cacheWriteTokens: a.cacheWriteTokens + b.cacheWriteTokens,
   };
-}
-
-/** Throws a `RangeError` unless `maxRounds` is a positive integer. */
-function assertValidMaxRounds(maxRounds: number): void {
-  if (!Number.isSafeInteger(maxRounds) || maxRounds < 1) {
-    throw new RangeError(`maxRounds must be a positive integer; received ${maxRounds}.`);
-  }
 }
 
 /** Builds the outcome of a run that ended without failing. */

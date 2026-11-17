@@ -1,0 +1,41 @@
+import type { Job, ProviderConnection } from './job.ts';
+
+/**
+ * An operator's endpoint, served by `createJobHandler`, on which `runJob` runs a job. The endpoint runs its own job on
+ * its own provider connection; the page sends only the job's input.
+ */
+export interface EndpointConnection {
+  /** The URL that the handler serves. */
+  readonly url: string;
+  /** Headers added to the request, such as a bot-check token. A header here overrides the runner's own. */
+  readonly headers?: Readonly<Record<string, string>>;
+}
+
+/** The counter's decision on a job: allowed, or refused by the named limit. */
+export type JobCount = { readonly allowed: true } | { readonly allowed: false; readonly limit: string };
+
+/** How `createJobHandler` builds, caps, and admits the jobs that it runs. */
+export interface JobHandlerOptions<Result> {
+  /** The operator's provider connection, read once when the handler is created. */
+  readonly connection: ProviderConnection;
+  /** The longest input that the handler accepts, counted in UTF-16 code units (`string.length`); a positive integer. */
+  readonly maxInputLength: number;
+  /** The most rounds that any job runs, applied when it is lower than the job's own `maxRounds`; a positive integer. */
+  readonly maxRounds?: number;
+  /**
+   * Counts a job against the operator's limits before its first model request, and refuses it when a limit is
+   * reached. A throw refuses the job as well. It receives the request after the handler has read its body.
+   */
+  readonly countJob?: (request: Request) => Promise<JobCount>;
+  /**
+   * Receives each error that the handler withholds from the page: a failed job, a failed `createJob`, or a failed
+   * counter. The handler ignores a throw from it.
+   */
+  readonly onError?: (error: unknown) => void;
+  /** Builds a fresh job for a request's input. */
+  createJob(input: string): Job<Result>;
+}
+
+/** Why an endpoint refused a job before running it. */
+export type JobRefusalReason =
+  'counter-unavailable' | 'input-too-long' | 'invalid-body' | 'limit-reached' | 'method-not-allowed';

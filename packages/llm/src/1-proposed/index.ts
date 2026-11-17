@@ -1,3 +1,4 @@
+export type { EndpointConnection, JobCount, JobHandlerOptions, JobRefusalReason } from '../types/endpoint.ts';
 export type {
   AnthropicConnection,
   ApiKeyConnection,
@@ -10,6 +11,8 @@ export type {
   RunJobOptions,
   Usage,
 } from '../types/job.ts';
+export { createJobHandler } from './createJobHandler.ts';
 export { defineTool } from './defineTool.ts';
+export { JobRefusedError } from './JobRefusedError.ts';
 export { JobRunError } from './JobRunError.ts';
 export { runJob } from './runJob.ts';
