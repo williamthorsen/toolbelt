@@ -53,6 +53,25 @@ export interface TurnstileVerifierOptions {
   readonly expectedAction?: string;
 }
 
+/** How `createUpstashJobCounter` identifies a caller and caps the jobs counted in Upstash Redis. */
+export interface UpstashJobCounterOptions {
+  /** The database's REST URL. */
+  readonly url: string;
+  /** The database's REST token. */
+  readonly token: string;
+  /**
+   * Returns the caller's IP from a header that the host sets and a client cannot forge, such as `x-real-ip` on Vercel
+   * or `cf-connecting-ip` on Cloudflare. An absent or empty IP refuses the job as unavailable.
+   */
+  readonly readCallerIp: (request: Request) => string | undefined;
+  /** The most jobs that one IP runs in a UTC day; a positive integer. */
+  readonly perIpLimit: number;
+  /** The most jobs that all callers together run in a UTC day; a positive integer. */
+  readonly globalDailyLimit: number;
+  /** The prefix of the counters' keys, which lets several apps share one database; defaults to `llm-jobs`. */
+  readonly keyPrefix?: string;
+}
+
 /** Why an endpoint refused a job before running it. */
 export type JobRefusalReason =
   | 'bot-check-failed'
