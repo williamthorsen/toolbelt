@@ -229,6 +229,7 @@ import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
 
 // src/readiness/adoptedExports.ts
 var ADOPTED_EXPORTS = [
+  "CliError",
   "createCli",
   "createTextBuffer",
   "defineCommand",
