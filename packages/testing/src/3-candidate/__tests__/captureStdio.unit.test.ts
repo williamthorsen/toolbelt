@@ -238,9 +238,8 @@ describe(captureStdio, () => {
       console.info('before');
       {
         // rdy-ignore-next-line toolbelt.vitest/no-hand-rolled-console-silence -- toolbelt.testing cannot depend on toolbelt.vitest; the reverse edge closes a workspace cycle
-        const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
+        using _spy = vi.spyOn(console, 'info').mockImplementation(() => {});
         console.info('silenced');
-        spy.mockRestore();
       }
       console.info('after');
 
@@ -249,7 +248,7 @@ describe(captureStdio, () => {
 
     it('leaves an outer spy keeping the calls that it recorded', () => {
       // rdy-ignore-next-line toolbelt.vitest/no-hand-rolled-console-silence -- toolbelt.testing cannot depend on toolbelt.vitest; the reverse edge closes a workspace cycle
-      const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
+      using spy = vi.spyOn(console, 'info').mockImplementation(() => {});
 
       console.info('outer before');
       {
@@ -260,10 +259,7 @@ describe(captureStdio, () => {
       console.info('outer after');
 
       // rdy-ignore-next-line toolbelt.vitest/no-console-calls-read -- toolbelt.testing cannot depend on toolbelt.vitest; the reverse edge closes a workspace cycle
-      const calls = spy.mock.calls.flat();
-      spy.mockRestore();
-
-      expect(calls).toStrictEqual(['outer before', 'outer after']);
+      expect(spy.mock.calls.flat()).toStrictEqual(['outer before', 'outer after']);
     });
   });
 

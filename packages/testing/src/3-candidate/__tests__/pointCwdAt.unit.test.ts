@@ -1,7 +1,7 @@
 import path from 'node:path';
 import process from 'node:process';
 
-import { describe, expect, it, onTestFinished, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { createTempTree } from '../createTempTree.ts';
 import { pointCwdAt } from '../pointCwdAt.ts';
@@ -67,10 +67,9 @@ describe(pointCwdAt, () => {
     it('leaves an enclosing scope reporting its own directory when the move fails', () => {
       using tree = createTempTree({ 'inner/': '' });
       // A worker thread's `process.chdir` throws this way, and so does a directory removed after validation.
-      const chdirSpy = vi.spyOn(process, 'chdir').mockImplementation(() => {
+      using _chdirSpy = vi.spyOn(process, 'chdir').mockImplementation(() => {
         throw new Error('chdir is unavailable');
       });
-      onTestFinished(() => chdirSpy.mockRestore());
 
       using _outer = pointCwdAt(tree.dir);
 
