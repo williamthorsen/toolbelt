@@ -14,15 +14,16 @@ const NOTHING_TO_REPORT: FindingOutcome = { findings: [] };
 export type AdoptionCheck<Kind extends string> = AdoptionCheckFields<Kind> & CheckScope;
 
 export interface AdoptionKitSpec<Kind extends string> {
-  /** `NoInfer` fixes `Kind` to what `detect` produces, so each check's `kinds` is checked against it. */
+  /** `NoInfer` fixes `Kind` to what the detectors produce, so each check's `kinds` is checked against it. */
   checks: ReadonlyArray<AdoptionCheck<NoInfer<Kind>>>;
   description: string;
   /**
-   * Lists a source's sites. Blank the text with `blankNonCode` before the anchor scan, or an idiom written in a
-   * comment or a literal reports as one written in code. What `countPackageUsage` reads must stay unblanked:
-   * It matches the import specifier, which is a string literal.
+   * The functions that each list a source's sites, merged in line order. Each one blanks the text with
+   * `blankNonCode` before its anchor scan, or an idiom written in a comment or a literal reports as one written in
+   * code. What `countPackageUsage` reads must stay unblanked: It matches the import specifier, which is a string
+   * literal.
    */
-  detect: (text: string) => ReadonlyArray<AdoptionSite<Kind>>;
+  detectors: ReadonlyArray<(text: string) => ReadonlyArray<AdoptionSite<Kind>>>;
   /** The package's own callable exports. A call to one of them counts toward adoption. */
   exportNames: readonly string[];
   /**
@@ -43,9 +44,9 @@ export interface AdoptionSite<Kind extends string> {
 }
 
 /**
- * Assembles a package's adoption checks into a kit, given the detector and the checks that read it.
+ * Assembles a package's adoption checks into a kit, given the detectors and the checks that read them.
  *
- * A kit built here contains its detector and its advice and nothing else: The source sweep, the adoption count,
+ * A kit built here contains its detectors and its advice and nothing else: The source sweep, the adoption count,
  * the exemption covering the package's own implementation, and the finding report are shared, so a package
  * adopting these checks declares what it looks for rather than how the looking is done.
  *
@@ -108,8 +109,9 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
     return {
       adoptedCount: countPackageUsage(sources, adoptedPackage),
       findings: sources.flatMap((source) =>
-        spec
-          .detect(source.text)
+        spec.detectors
+          .flatMap((detect) => detect(source.text))
+          .toSorted((a, b) => a.line - b.line)
           .filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path))
           .map((site) => ({ ...site, path: source.path })),
       ),

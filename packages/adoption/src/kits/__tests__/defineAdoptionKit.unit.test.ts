@@ -18,7 +18,7 @@ const SPEC: AdoptionKitSpec<Kind> = {
     },
   ],
   description: 'Adoption checks for a project consuming @scope/pkg',
-  detect: () => [],
+  detectors: [() => []],
   exportNames: ['doThing'],
   noSourcesReason: 'the project contains no sources',
   packageName: '@scope/pkg',
