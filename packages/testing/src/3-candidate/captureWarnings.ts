@@ -58,30 +58,65 @@ interface WarningOptions {
 
 // region | Helpers
 
+/** Builds the error that Node throws for an argument of the wrong type, matching its class and code. */
+function buildInvalidArgumentError(name: string, expected: string): TypeError {
+  return Object.assign(new TypeError(`The "${name}" argument must be ${expected}.`), {
+    code: 'ERR_INVALID_ARG_TYPE',
+  });
+}
+
 /**
- * Builds the `Error` that Node emits for a call. A string becomes an `Error` named for its type; an `Error` is
- * emitted as given, and Node ignores the type and code passed with one. An argument in a position that Node reads
- * as a constructor for the stack trace is not a type or a code.
+ * Builds the `Error` that Node emits for a call, throwing the `TypeError` that Node throws for an argument that it
+ * rejects. Node checks the type and the code before the warning, so an `Error` passed with an invalid type or code
+ * is rejected too. A string becomes an `Error` named for its type; an `Error` is emitted as given, and Node ignores
+ * the valid type and code passed with one.
  */
-function buildWarning(warning: Error | string, typeOrOptions: unknown, code: unknown): Error {
+function buildWarning(warning: unknown, typeOrOptions: unknown, positionalCode: unknown): Error {
+  const { type, code, detail } = resolveOptions(typeOrOptions, positionalCode);
+
+  if (type !== undefined && typeof type !== 'string') throw buildInvalidArgumentError('type', 'of type string');
+  if (code !== undefined && typeof code !== 'string') throw buildInvalidArgumentError('code', 'of type string');
+
   // rdy-ignore-next-line toolbelt.errors/no-instanceof-error -- a caller-supplied argument, not a caught value
   if (warning instanceof Error) return warning;
-
-  const options = isWarningOptions(typeOrOptions) ? typeOrOptions : { type: typeOrOptions, code };
+  if (typeof warning !== 'string') {
+    throw buildInvalidArgumentError('warning', 'of type string or an instance of Error');
+  }
 
   return Object.assign(
     new Error(warning),
     // eslint-disable-next-line unicorn/no-error-property-assignment -- Node emits a plain `Error` renamed to the warning's type.
-    { name: typeof options.type === 'string' ? options.type : 'Warning' },
-    typeof options.code === 'string' ? { code: options.code } : {},
-    typeof options.detail === 'string' ? { detail: options.detail } : {},
+    { name: type === undefined || type === '' ? 'Warning' : type },
+    code === undefined ? {} : { code },
+    typeof detail === 'string' ? { detail } : {},
   );
+}
+
+/** Reads a function in the position of a code as a constructor for the stack trace, which leaves no code. */
+function ignoreConstructor(code: unknown): unknown {
+  return typeof code === 'function' ? undefined : code;
 }
 
 /** Reports whether a value is an options object rather than a type string or a constructor. */
 function isWarningOptions(value: unknown): value is WarningOptions {
   // rdy-ignore-next-line toolbelt.objects/no-hand-rolled-record-guard -- `objects` devDepends on `testing`
-  return typeof value === 'object' && value !== null;
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Reads the type, code, and detail from the arguments as Node does, before any is validated. An options object
+ * replaces the positional code, Node reads a falsy type in one as no type, and a function in the position of a type
+ * is a constructor for the stack trace, which leaves neither a type nor a code.
+ */
+function resolveOptions(typeOrOptions: unknown, positionalCode: unknown): WarningOptions {
+  if (isWarningOptions(typeOrOptions)) {
+    const { type, code, detail } = typeOrOptions;
+
+    return { type: type || undefined, code: ignoreConstructor(code), detail };
+  }
+  if (typeof typeOrOptions === 'function') return {};
+
+  return { type: typeOrOptions, code: ignoreConstructor(positionalCode) };
 }
 
 // endregion | Helpers
