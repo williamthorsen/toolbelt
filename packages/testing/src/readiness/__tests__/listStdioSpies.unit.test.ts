@@ -1,3 +1,4 @@
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { listStdioSpies } from '../listStdioSpies.ts';
@@ -59,13 +60,12 @@ describe(listStdioSpies, () => {
   });
 
   it('reports a spy on each stream, naming its line', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
-    const source = [
-      'beforeEach(() => {',
-      "  stdoutSpy = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);",
-      "  stderrSpy = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);",
-      '});',
-    ].join('\n');
+    const source = dedent`
+      beforeEach(() => {
+        stdoutSpy = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
+        stderrSpy = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+      });
+    `;
 
     expect(listStdioSpies(source)).toStrictEqual([
       { kind: 'hand-rolled-stdio-capture', line: 2 },
