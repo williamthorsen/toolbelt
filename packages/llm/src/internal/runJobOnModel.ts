@@ -1,7 +1,24 @@
-import { type LanguageModel, type LanguageModelUsage, stepCountIs, streamText, tool, type ToolSet } from 'ai';
+import { describeError } from '@williamthorsen/toolbelt.errors';
+import {
+  type FinishReason,
+  type LanguageModel,
+  type LanguageModelUsage,
+  stepCountIs,
+  streamText,
+  type TextStreamPart,
+  tool,
+  type ToolSet,
+} from 'ai';
 
 import { JobRunError } from '../1-proposed/JobRunError.ts';
-import type { Job, JobOutcome, JobTool, RunJobOptions, Usage } from '../types/job.ts';
+import type { Job, JobEvent, JobOutcome, JobTool, RunJobOptions, Usage } from '../types/job.ts';
+
+/** What a run has counted so far. */
+interface RunProgress {
+  rounds: number;
+  usage: Usage;
+  lastFinishReason: FinishReason | undefined;
+}
 
 const ZERO_USAGE: Usage = { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 };
 
@@ -41,30 +58,12 @@ export async function runJobOnModel<Result>(
     onError: () => {},
   });
 
-  let rounds = 0;
-  let usage = ZERO_USAGE;
+  const progress: RunProgress = { rounds: 0, usage: ZERO_USAGE, lastFinishReason: undefined };
   try {
     for await (const part of result.stream) {
-      switch (part.type) {
-        case 'text-delta':
-          onEvent?.({ type: 'text-delta', text: part.text });
-          break;
-        case 'tool-call':
-          onEvent?.({ type: 'tool-call', callId: part.toolCallId, toolName: part.toolName, input: part.input });
-          break;
-        case 'tool-result':
-          onEvent?.({ type: 'tool-result', callId: part.toolCallId, toolName: part.toolName, output: part.output });
-          break;
-        case 'finish-step': {
-          rounds += 1;
-          const roundUsage = convertUsage(part.usage);
-          usage = addUsage(usage, roundUsage);
-          onEvent?.({ type: 'round-finished', round: rounds, usage: roundUsage });
-          break;
-        }
-        case 'error':
-          throw part.error;
-      }
+      if (part.type === 'error') throw part.error;
+      const event = recordPart(part, progress);
+      if (event !== undefined) onEvent?.(event);
     }
   } catch (error) {
     controller.abort();
@@ -74,7 +73,7 @@ export async function runJobOnModel<Result>(
     throw selectRejection(undefined, toolFailure, signal);
   }
 
-  return buildOutcome(job, rounds, usage);
+  return buildOutcome(job, progress);
 }
 
 // region | Helpers
@@ -96,10 +95,12 @@ function assertValidMaxRounds(maxRounds: number): void {
 }
 
 /** Builds the outcome of a run that ended without failing. */
-function buildOutcome<Result>(job: Job<Result>, rounds: number, usage: Usage): JobOutcome<Result> {
+function buildOutcome<Result>(job: Job<Result>, { rounds, usage, lastFinishReason }: RunProgress): JobOutcome<Result> {
   const result = job.readResult();
   if (result !== undefined) return { status: 'completed', result, rounds, usage };
-  return { status: 'unfinished', reason: rounds >= job.maxRounds ? 'round-cap' : 'stopped', rounds, usage };
+  // Only a round that ended in tool calls would have been followed by another, had the cap allowed it.
+  const reason = rounds >= job.maxRounds && lastFinishReason === 'tool-calls' ? 'round-cap' : 'stopped';
+  return { status: 'unfinished', reason, rounds, usage };
 }
 
 /** Wraps each job tool as an AI SDK tool whose `execute` reports a throw before rethrowing it. */
@@ -131,6 +132,34 @@ function convertUsage(usage: LanguageModelUsage): Usage {
     cacheReadTokens: usage.inputTokenDetails.cacheReadTokens ?? 0,
     cacheWriteTokens: usage.inputTokenDetails.cacheWriteTokens ?? 0,
   };
+}
+
+/** Records a stream part in the run's progress and returns the event that it reports, if any. */
+function recordPart(part: TextStreamPart<ToolSet>, progress: RunProgress): JobEvent | undefined {
+  switch (part.type) {
+    case 'text-delta':
+      return { type: 'text-delta', text: part.text };
+    case 'tool-call':
+      return { type: 'tool-call', callId: part.toolCallId, toolName: part.toolName, input: part.input };
+    case 'tool-result':
+      return { type: 'tool-result', callId: part.toolCallId, toolName: part.toolName, output: part.output };
+    case 'tool-error':
+      return {
+        type: 'tool-error',
+        callId: part.toolCallId,
+        toolName: part.toolName,
+        message: describeError(part.error),
+      };
+    case 'finish-step': {
+      progress.rounds += 1;
+      progress.lastFinishReason = part.finishReason;
+      const usage = convertUsage(part.usage);
+      progress.usage = addUsage(progress.usage, usage);
+      return { type: 'round-finished', round: progress.rounds, usage };
+    }
+    default:
+      return undefined;
+  }
 }
 
 /** Chooses what a failed run rejects with: a tool's throw, then the caller's abort, then the error itself. */

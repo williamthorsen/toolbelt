@@ -55,6 +55,14 @@ describe(runJobOnModel, () => {
     expect(model.doStreamCalls).toHaveLength(2);
   });
 
+  it('reports a model that stops on the last allowed round as stopped, not as reaching the cap', async () => {
+    const model = new MockLanguageModelV4({ doStream: [buildRound(buildText('I give up.'), 'stop')] });
+
+    const outcome = await runJobOnModel({ ...createSubmitJob(), maxRounds: 1 }, model);
+
+    expect(outcome).toMatchObject({ status: 'unfinished', reason: 'stopped', rounds: 1 });
+  });
+
   it('reports a model that stops calling tools before the job has a result', async () => {
     const model = new MockLanguageModelV4({ doStream: [buildRound(buildText('I give up.'), 'stop')] });
 
@@ -63,17 +71,26 @@ describe(runJobOnModel, () => {
     expect(outcome).toMatchObject({ status: 'unfinished', reason: 'stopped', rounds: 1 });
   });
 
-  it("returns a tool's invalid input to the model rather than failing the run", async () => {
+  it("returns a tool's invalid input to the model and reports the call's error", async () => {
     const model = new MockLanguageModelV4({
       doStream: [
         buildRound([buildToolCall('c1', 'submit', { value: 5 })]),
         buildRound([buildToolCall('c2', 'submit', { value: 'done' })]),
       ],
     });
+    const events: JobEvent[] = [];
 
-    const outcome = await runJobOnModel(createSubmitJob(), model);
+    const outcome = await runJobOnModel(createSubmitJob(), model, {
+      onEvent: (event) => {
+        events.push(event);
+      },
+    });
 
     expect(outcome).toMatchObject({ status: 'completed', result: 'done', rounds: 2 });
+    expect(events.slice(0, 2)).toStrictEqual([
+      { type: 'tool-call', callId: 'c1', toolName: 'submit', input: { value: 5 } },
+      { type: 'tool-error', callId: 'c1', toolName: 'submit', message: expect.any(String) },
+    ]);
     expect(JSON.stringify(model.doStreamCalls[1]?.prompt)).toContain('c1');
   });
 

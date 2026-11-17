@@ -73,11 +73,16 @@ export interface RunJobOptions {
   readonly onEvent?: (event: JobEvent) => void;
 }
 
-/** Something that happened during a run. Every event is JSON-serializable. */
+/**
+ * Something that happened during a run. Every event is JSON-serializable. A `tool-call` is followed by its
+ * `tool-result`, or by a `tool-error` when the call fails: an input that fails the tool's schema returns to the model,
+ * and a throw from `execute` ends the run.
+ */
 export type JobEvent =
   | { readonly type: 'text-delta'; readonly text: string }
   | { readonly type: 'tool-call'; readonly callId: string; readonly toolName: string; readonly input: unknown }
   | { readonly type: 'tool-result'; readonly callId: string; readonly toolName: string; readonly output: unknown }
+  | { readonly type: 'tool-error'; readonly callId: string; readonly toolName: string; readonly message: string }
   | { readonly type: 'round-finished'; readonly round: number; readonly usage: Usage };
 
 /** Token counts. A count that the provider does not report is 0. */
@@ -89,8 +94,9 @@ export interface Usage {
 }
 
 /**
- * How a run ended: `completed` with the job's result, or `unfinished` because it reached `maxRounds` (`round-cap`)
- * or because the model stopped calling tools (`stopped`) before the job had a result. It is JSON-serializable.
+ * How a run ended: `completed` with the job's result, or `unfinished` because it reached `maxRounds` with the model
+ * still calling tools (`round-cap`) or because the model stopped calling tools (`stopped`) before the job had a
+ * result. It is JSON-serializable.
  */
 export type JobOutcome<Result> =
   | { readonly status: 'completed'; readonly result: Result; readonly rounds: number; readonly usage: Usage }

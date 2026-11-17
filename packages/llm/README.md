@@ -62,10 +62,10 @@ A `ProviderConnection` names the provider (`anthropic`, `google`, `openai`, or `
 
 ## Events
 
-`onEvent` receives a `text-delta`, `tool-call`, `tool-result`, or `round-finished` event as each happens. `round-finished` carries the round's token usage.
+`onEvent` receives a `text-delta`, `tool-call`, `tool-result`, `tool-error`, or `round-finished` event as each happens. Each `tool-call` is followed by its `tool-result` or its `tool-error`, and `round-finished` carries the round's token usage.
 
 ## Outcomes
 
-`runJob` resolves with `completed` and the result, or with `unfinished` and its reason: `round-cap` when the job reached `maxRounds`, or `stopped` when the model stopped calling tools first. Both report the rounds and the total usage, and both events and outcomes survive `JSON.stringify`.
+`runJob` resolves with `completed` and the result, or with `unfinished` and its reason: `round-cap` when the job reached `maxRounds` with the model still calling tools, or `stopped` when the model stopped calling tools first. Both report the rounds and the total usage, and both events and outcomes survive `JSON.stringify`.
 
 Aborting the `signal` rejects with the signal's reason. Any other failure, the provider's or a tool's, rejects with `JobRunError`, whose `cause` holds the underlying error.
