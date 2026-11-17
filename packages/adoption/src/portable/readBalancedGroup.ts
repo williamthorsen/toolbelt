@@ -11,6 +11,7 @@ export interface Delimiters {
 }
 
 export const BRACES: Delimiters = { close: '}', open: '{' };
+export const BRACKETS: Delimiters = { close: ']', open: '[' };
 export const PARENTHESES: Delimiters = { close: ')', open: '(' };
 
 /**

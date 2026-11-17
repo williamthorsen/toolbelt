@@ -3,7 +3,8 @@ import {
   blankNonCode,
   BRACES,
   condenseWhitespace,
-  type Delimiters,
+  findEnclosingBlockEnd,
+  findLiteralEnd,
   getLineAtOffset,
   PARENTHESES,
   readAnchoredWindow,
@@ -19,7 +20,6 @@ interface CatchCapture {
   target: string;
 }
 
-const BRACKETS: Delimiters = { close: ']', open: '[' };
 // A member chain reached directly or through optional chaining, optionally called optionally, and optionally
 // given type arguments. A type argument holding a parenthesis, as a function type would, goes unspanned. A
 // subscript, a parenthesized callee, and an immediately-invoked literal are each declined: The substitution
@@ -39,8 +39,6 @@ const LITERAL_INITIALIZER_TAIL = /^ ?(?: as [^;]+)?;/;
 // Far enough to clear an enclosing hook's opening line, which separates the declaration from the try
 // in the longest site this recognizes. Longer reaches past the block and binds an unrelated declaration.
 const LOOKBEHIND_LENGTH = 400;
-const SCALAR_LITERAL = /^(?:-?\.?\d(?:[eE][+-]|[\w.])*|(?:false|null|true|undefined)(?![\w$]))/;
-const STRING_DELIMITERS = new Set(['"', "'", '`']);
 const TRAILING_COMMA = /,$/;
 const TRAILING_SEMICOLON = /;$/;
 const TRY_ANCHOR = /\btry\s*\{/g;
@@ -94,41 +92,6 @@ export function listCaptureSites(source: string): Array<AdoptionSite<ErrorCaptur
 /** Escapes the one regex metacharacter that an identifier may contain. */
 function escapeIdentifier(name: string): string {
   return name.replaceAll('$', String.raw`\$`);
-}
-
-/**
- * Returns the offset of the closing brace of the block that encloses an offset, or nothing when no block
- * encloses it.
- */
-function findEnclosingBlockEnd(code: string, from: number): number | undefined {
-  let depth = 0;
-  for (let index = from; index < code.length; index += 1) {
-    if (code[index] === '{') depth += 1;
-    else if (code[index] === '}') {
-      if (depth === 0) return index;
-      depth -= 1;
-    }
-  }
-
-  return undefined;
-}
-
-/**
- * Returns the offset past the literal that opens a text, or nothing when the text opens with no literal.
- *
- * A string is already blanked, with its delimiters kept, so the next delimiter of its kind closes it.
- */
-function findLiteralEnd(text: string): number | undefined {
-  const opener = text[0];
-  if (opener === '{') return readBalancedGroup(text, 0, BRACES)?.end;
-  if (opener === '[') return readBalancedGroup(text, 0, BRACKETS)?.end;
-
-  if (opener !== undefined && STRING_DELIMITERS.has(opener)) {
-    const close = text.indexOf(opener, 1);
-    return close === -1 ? undefined : close + 1;
-  }
-
-  return SCALAR_LITERAL.exec(text)?.[0].length;
 }
 
 /**
