@@ -40,6 +40,21 @@ describe(defineAdoptionKit, () => {
     ]);
   });
 
+  it('merges the sites of every detector in line order', async () => {
+    const source = 'function first(x) {\n  return x;\n}\nfunction second(x) {\n  return x;\n}\n';
+    using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/a.ts': source });
+    using _cwd = pointCwdAt(tree.dir);
+
+    const [check] = listChecks(
+      buildSpec({
+        checks: [{ fix: 'fix it', id: 'no-either', kinds: ['clone', 'inline'], name: 'either check' }],
+        detectors: [detect, detectReturns],
+      }),
+    );
+
+    expect(listReportedFindings(await runCheck(check)).map(({ line }) => line)).toStrictEqual([1, 2, 4, 5]);
+  });
+
   it('spans every finding in the denominator, so a run’s checks share one fraction', async () => {
     using tree = createTrackedRepo({ 'package.json': MANIFEST, 'src/a.ts': CLONE, 'src/b.ts': INLINE });
     using _cwd = pointCwdAt(tree.dir);
@@ -230,7 +245,7 @@ function buildSpec(overrides: Partial<AdoptionKitSpec<Kind>> = {}): AdoptionKitS
       { fix: 'replace it', id: 'no-inline', kinds: ['inline'], name: 'inline check' },
     ],
     description: 'Adoption checks for a project consuming @scope/pkg',
-    detect,
+    detectors: [detect],
     exportNames: ['doThing'],
     noSourcesReason: 'the project contains no sources',
     packageName: '@scope/pkg',
@@ -265,6 +280,15 @@ function detect(text: string): Array<AdoptionSite<Kind>> {
     }
     return content.includes('.name') ? [{ kind: 'inline', line: index + 1 }] : [];
   });
+}
+
+/** Reports an `inline` on any line that returns a value. */
+function detectReturns(text: string): Array<AdoptionSite<Kind>> {
+  return text
+    .split('\n')
+    .flatMap((content, index): Array<AdoptionSite<Kind>> =>
+      content.trimStart().startsWith('return ') ? [{ kind: 'inline', line: index + 1 }] : [],
+    );
 }
 
 /** Lists the assembled kit's adoption checks, which the flat checklist contains in declaration order. */

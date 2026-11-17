@@ -72,7 +72,7 @@ function defineAdoptionKit(spec) {
     return {
       adoptedCount: countPackageUsage(sources, adoptedPackage),
       findings: sources.flatMap(
-        (source) => spec.detect(source.text).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
+        (source) => spec.detectors.flatMap((detect) => detect(source.text)).toSorted((a, b) => a.line - b.line).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
       ),
       sources
     };
@@ -273,7 +273,7 @@ var PACKAGE_NAME = "@williamthorsen/toolbelt.async";
 var README_URL = "https://github.com/williamthorsen/toolbelt/tree/main/packages/async#readme";
 var default_default = defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
-  detect: listSleepSites,
+  detectors: [listSleepSites],
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: "the project contains no JavaScript or TypeScript sources outside its bootstrap wrappers",
   packageName: PACKAGE_NAME,

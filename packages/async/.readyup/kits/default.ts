@@ -21,7 +21,7 @@ const README_URL = 'https://github.com/williamthorsen/toolbelt/tree/main/package
 
 export default defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
-  detect: listSleepSites,
+  detectors: [listSleepSites],
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: 'the project contains no JavaScript or TypeScript sources outside its bootstrap wrappers',
   packageName: PACKAGE_NAME,

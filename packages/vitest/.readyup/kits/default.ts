@@ -15,14 +15,16 @@
 import { defineAdoptionKit, isTestFile } from '@williamthorsen/toolbelt.adoption';
 
 import { ADOPTED_EXPORTS } from '../../src/readiness/adoptedExports.ts';
-import { listSites } from '../../src/readiness/listSites.ts';
+import { listConsoleSites } from '../../src/readiness/listConsoleSites.ts';
+import { listDisposalHooks } from '../../src/readiness/listDisposalHooks.ts';
+import { listExitMocks } from '../../src/readiness/listExitMocks.ts';
 
 const PACKAGE_NAME = '@williamthorsen/toolbelt.vitest';
 const README_URL = 'https://github.com/williamthorsen/toolbelt/tree/main/packages/vitest#readme';
 
 export default defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
-  detect: listSites,
+  detectors: [listExitMocks, listConsoleSites, listDisposalHooks],
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: 'the project contains no test files',
   packageName: PACKAGE_NAME,

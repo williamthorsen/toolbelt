@@ -28,7 +28,7 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "f7ac439a",
+          "hash": "c656f59e",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -113,7 +113,7 @@
           "path": "../../adoption/src/portable/readPathParts.ts"
         },
         {
-          "hash": "1f214cab",
+          "hash": "9a3a0316",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -128,11 +128,6 @@
           "path": "../src/readiness/listCaptureSites.ts"
         },
         {
-          "hash": "ce8a9e5b",
-          "kind": "module",
-          "path": "../src/readiness/listSites.ts"
-        },
-        {
           "hash": "c1a32761",
           "kind": "module",
           "path": "../src/readiness/listStdioSpies.ts"
@@ -142,8 +137,8 @@
       "path": "kits/default.js",
       "readyupVersion": "0.47.0",
       "source": "kits/default.ts",
-      "sourceHash": "1f214cab",
-      "targetHash": "47947cba"
+      "sourceHash": "9a3a0316",
+      "targetHash": "a170cb40"
     }
   ]
 }
