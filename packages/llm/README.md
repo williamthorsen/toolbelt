@@ -17,7 +17,7 @@ Requires Node.js 24 or later, or a browser. `zod` is a peer dependency, which np
 ## Usage
 
 ```ts
-import { runJob } from '@williamthorsen/toolbelt.llm/proposed';
+import { defineTool, runJob } from '@williamthorsen/toolbelt.llm/proposed';
 import { z } from 'zod';
 
 let greeting: string | undefined;
@@ -28,14 +28,14 @@ const outcome = await runJob(
     maxRounds: 3,
     readResult: () => greeting,
     tools: {
-      submit: {
+      submit: defineTool({
         description: 'Submits the greeting.',
         inputSchema: z.object({ greeting: z.string() }),
-        execute: (input: { greeting: string }) => {
+        execute: (input) => {
           greeting = input.greeting;
           return 'Submitted.';
         },
-      },
+      }),
     },
   },
   { provider: 'anthropic', model: 'claude-haiku-5-5', apiKey: userKey },
@@ -52,7 +52,7 @@ An app defines what a job needs, and `runJob` runs the model loop: It sends the 
 
 A `Job` holds the instructions, the input, the tools, a round cap (`maxRounds`, the most model requests that a run makes), and `readResult()`, which returns the result once the tools have produced one. The runner calls `readResult()` after each round and stops as soon as it returns a value.
 
-A tool's `inputSchema` is any schema that implements both [Standard Schema](https://standardschema.dev) and Standard JSON Schema, such as a zod 4 schema. The runner validates the model's input against it before `execute`, and returns invalid input to the model to correct. A tool reports an expected failure in its output; a tool that throws ends the run.
+A tool's `inputSchema` is any schema that implements both [Standard Schema](https://standardschema.dev) and Standard JSON Schema, such as a zod 4 schema. `defineTool` types a tool's `execute` input from its schema. The runner validates the model's input against it before `execute`, and returns invalid input to the model to correct. A tool reports an expected failure in its output; a tool that throws ends the run.
 
 Build a fresh job for each run, such as through a `createJob(input)` factory, so that the tools' state does not carry over.
 

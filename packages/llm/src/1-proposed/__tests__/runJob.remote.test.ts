@@ -4,6 +4,7 @@ import { assert, describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
 import type { Job, ProviderConnection } from '../../types/job.ts';
+import { defineTool } from '../defineTool.ts';
 import { runJob } from '../runJob.ts';
 
 const MODEL = 'claude-haiku-5-5';
@@ -40,14 +41,14 @@ function createGreetingJob(): Job<string> {
     maxRounds: 3,
     readResult: () => greeting,
     tools: {
-      submit: {
+      submit: defineTool({
         description: 'Submits the greeting.',
         inputSchema: z.object({ greeting: z.string() }),
-        execute: (input: { greeting: string }) => {
+        execute: (input) => {
           greeting = input.greeting;
           return 'Submitted.';
         },
-      },
+      }),
     },
   };
 }
