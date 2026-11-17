@@ -89,18 +89,13 @@ export function listCaptureSites(source: string): Array<AdoptionSite<ErrorCaptur
 
 // region | Helpers
 
-/** Escapes the one regex metacharacter that an identifier may contain. */
-function escapeIdentifier(name: string): string {
-  return name.replaceAll('$', String.raw`\$`);
-}
-
 /**
  * Returns the offset at which a text first assigns a name, or nothing when it never assigns one.
  *
  * An assertion past that offset reads whatever the assignment stored rather than the captured value.
  */
 function findReassignmentStart(text: string, name: string): number | undefined {
-  return new RegExp(String.raw`(?<![\w$.])${escapeIdentifier(name)}\s*=(?![=>])`).exec(text)?.index;
+  return new RegExp(String.raw`(?<![\w$.])${RegExp.escape(name)}\s*=(?![=>])`).exec(text)?.index;
 }
 
 /**
@@ -110,7 +105,7 @@ function findReassignmentStart(text: string, name: string): number | undefined {
  * `toBe` alone compares identity, so its pass shows that the value thrown is the literal itself.
  */
 function hasNonErrorLiteralAssertion(blockRest: string, target: string, before: string): boolean {
-  const assertion = new RegExp(String.raw`\bexpect\( ?${escapeIdentifier(target)} ?\) ?\.toBe\(`, 'g');
+  const assertion = new RegExp(String.raw`\bexpect\( ?${RegExp.escape(target)} ?\) ?\.toBe\(`, 'g');
 
   for (const match of blockRest.matchAll(assertion)) {
     const args = readBalancedGroup(blockRest, match.index + match[0].length - 1, PARENTHESES);
@@ -135,7 +130,7 @@ function hasNonErrorLiteralAssertion(blockRest: string, target: string, before: 
  * window from binding a name that some other statement in it happens to mention.
  */
 function hasOuterDeclaration(before: string, name: string): boolean {
-  return new RegExp(String.raw`\b(?:let|var) ${escapeIdentifier(name)}\b`).test(before);
+  return new RegExp(String.raw`\b(?:let|var) ${RegExp.escape(name)}\b`).test(before);
 }
 
 /**
@@ -146,7 +141,7 @@ function hasOuterDeclaration(before: string, name: string): boolean {
 function isBoundToNonErrorLiteral(before: string, name: string): boolean {
   if (!IDENTIFIER.test(name)) return false;
 
-  const declaration = new RegExp(String.raw`\bconst ${escapeIdentifier(name)}(?: ?:[^=;]*)? ?= ?`, 'g');
+  const declaration = new RegExp(String.raw`\bconst ${RegExp.escape(name)}(?: ?:[^=;]*)? ?= ?`, 'g');
   const nearest = before.matchAll(declaration).toArray().at(-1);
   if (nearest === undefined) return false;
 

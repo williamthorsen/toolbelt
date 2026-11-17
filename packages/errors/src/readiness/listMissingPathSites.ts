@@ -136,8 +136,9 @@ function isMissingPathCode(text: string | undefined): text is MissingPathCode {
 
 /** Reports whether an operand reads `code` off a parameter, directly or through a parenthesized cast. */
 function isParameterCode(operand: string, parameter: string): boolean {
-  const escaped = parameter.replaceAll('$', String.raw`\$`);
-  return operand === `${parameter}.code` || new RegExp(String.raw`^\(\s*${escaped}(?![\w$])`).test(operand);
+  return (
+    operand === `${parameter}.code` || new RegExp(String.raw`^\(\s*${RegExp.escape(parameter)}(?![\w$])`).test(operand)
+  );
 }
 
 /** Lists the functions whose whole body tests their own first parameter against both missing-path codes. */
