@@ -6,7 +6,7 @@ import { isError } from '@williamthorsen/toolbelt.errors';
 /**
  * Reports an uncaught error to stderr as `<name>: internal error: <message>`, followed by its stack frames
  * and a `caused by:` line with frames for each error in its `cause` chain, and exits with code 1 once the
- * report is flushed. It is the counterpart to `runCli`, which rethrows every error that is not a `UsageError`.
+ * report is flushed. It is the counterpart to `runCli`, which rethrows every error that is not a `CliError`.
  *
  * The errors that a `SuppressedError` or an `AggregateError` wraps are reported under it, indented one level
  * deeper and labelled `error:` and `suppressed:`, or `errors[0]:` and onward, each with its own frames and

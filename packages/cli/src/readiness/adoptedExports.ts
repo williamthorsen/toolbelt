@@ -4,6 +4,7 @@
  * @internal
  */
 export const ADOPTED_EXPORTS: readonly string[] = [
+  'CliError',
   'createCli',
   'createTextBuffer',
   'defineCommand',

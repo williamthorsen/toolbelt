@@ -2,6 +2,7 @@ import { captureStdio } from '@williamthorsen/toolbelt.testing/candidate';
 import { throwOnProcessExit } from '@williamthorsen/toolbelt.vitest/candidate';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { CliError } from '../CliError.ts';
 import { createCli, defineCommand, defineGroup } from '../createCli.ts';
 import { createTextBuffer } from '../createTextBuffer.ts';
 import type { CommandNode } from '../nodes.ts';
@@ -54,6 +55,12 @@ const tool = rootCli.defineGroup({
       summary: 'Fail',
       run: () => {
         throw new UsageError('Bad input');
+      },
+    }),
+    halt: defineCommand({
+      summary: 'Fail without a usage error',
+      run: () => {
+        throw new CliError('The keychain is locked; unlock it, then run tool halt again', { exitCode: 3 });
       },
     }),
     hint: defineCommand({
@@ -254,6 +261,22 @@ describe(runCli, () => {
         stderr: expect.stringMatching(/Unsupported style: loud\nTry 'tool --help'\.\n/),
       });
     });
+
+    it('reports a CliError from deriveContext without a pointer to help', async () => {
+      const root = rootCli.defineGroup({
+        summary: 'S',
+        deriveContext: () => {
+          throw new CliError('The host is unreachable');
+        },
+        commands: { ping: rootCli.defineCommand({ summary: 'Ping', run: () => 0 }) },
+      });
+
+      await expect(run(['ping'], root)).resolves.toStrictEqual({
+        code: 1,
+        stdout: '',
+        stderr: 'tool: The host is unreachable\n',
+      });
+    });
   });
 
   describe('default command', () => {
@@ -344,6 +367,14 @@ describe(runCli, () => {
       await expect(run(['fail'], tool)).resolves.toMatchObject({
         code: 2,
         stderr: expect.stringMatching(/Bad input\nTry 'tool fail --help'\.\n/),
+      });
+    });
+
+    it('reports a CliError thrown by run with its exit code and without a pointer to help', async () => {
+      await expect(run(['halt'], tool)).resolves.toStrictEqual({
+        code: 3,
+        stdout: '',
+        stderr: 'tool: The keychain is locked; unlock it, then run tool halt again\n',
       });
     });
 
