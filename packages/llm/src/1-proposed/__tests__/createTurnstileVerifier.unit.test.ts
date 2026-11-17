@@ -78,6 +78,16 @@ describe(createTurnstileVerifier, () => {
     ['a non-2xx status', () => new Response('', { status: 500 }), 'siteverify answered 500'],
     ['a body that is not JSON', () => new Response('<html>'), SyntaxError],
     ['a body without a boolean success', () => Response.json({ success: 'yes' }), 'without a boolean `success`'],
+    [
+      'a missing or invalid secret',
+      () => Response.json({ success: false, 'error-codes': ['invalid-input-secret'] }),
+      'invalid-input-secret',
+    ],
+    [
+      'a bad request or an internal error',
+      () => Response.json({ success: false, 'error-codes': ['bad-request', 'internal-error'] }),
+      'bad-request, internal-error',
+    ],
   ])('throws on %s', async (_label, respond, expected) => {
     using _fetchSpy = spyOnFetch(respond);
 
