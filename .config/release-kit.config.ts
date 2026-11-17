@@ -22,6 +22,7 @@ const config = defineConfig({
       'scope:git': { color: '00ff96' },
       'scope:guards': { color: '00ff96' },
       'scope:hof': { color: '00ff96' },
+      'scope:llm': { color: '00ff96' },
       'scope:nodejs': { color: '00ff96' },
       'scope:numbers': { color: '00ff96' },
       'scope:objects': { color: '00ff96' },

@@ -32,6 +32,7 @@
     "git": "scope:git",
     "guards": "scope:guards",
     "hof": "scope:hof",
+    "llm": "scope:llm",
     "nodejs": "scope:nodejs",
     "numbers": "scope:numbers",
     "objects": "scope:objects",
