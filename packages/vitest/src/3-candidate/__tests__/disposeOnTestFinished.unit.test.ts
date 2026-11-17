@@ -47,6 +47,9 @@ describe(disposeOnTestFinished, () => {
       expect(countOf(disposalLog, 'failed')).toBe(1);
     });
 
+    // Vitest documents `onTestFinished` as not running for a dynamically skipped test; the runner runs it, and this
+    // pins that. Reverse order under `sequence.hooks` cannot be pinned: Its default, `stack`, unwinds in reverse
+    // whether the runner reads the option or ignores it.
     it('disposes what a dynamically skipped test registered', (ctx) => {
       disposeOnTestFinished(makeProbe('skipped'));
 

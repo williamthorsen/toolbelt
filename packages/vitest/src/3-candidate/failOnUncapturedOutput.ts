@@ -9,9 +9,15 @@ const EXCERPT_LENGTH = 200;
  * capturing the output. The guard holds the output back, so the terminal stays clean, and the failure names
  * each stream or warning with the start of its text. Call it at the top level of a Vitest setup file.
  *
- * Output taken by `captureStdio`, `captureWarnings`, or a spy on the stream passes. Output made outside a test,
- * such as in `beforeAll` or while a file is collected, passes through unchanged. `console.*` is out of scope:
- * Vitest intercepts it.
+ * Output taken by `captureStdio`, `captureWarnings`, or a spy on the stream passes. The guard checks a test after
+ * its `afterEach` hooks and `onTestFinished` callbacks, whatever `sequence.hooks` says, so their output counts as
+ * the test's own.
+ *
+ * Output made outside a test, such as in `beforeAll` or while a file is collected, passes through unchanged.
+ * `console.*` is out of scope, because Vitest intercepts it; with `disableConsoleIntercept: true`, console output
+ * reaches the streams and fails the test. Output is attributed to the test running when it lands, so a timer or an
+ * unawaited promise writing during the next test fails that test, and under `it.concurrent` the failure goes to
+ * whichever running test finishes first.
  *
  * @category Testing
  * @experimental
