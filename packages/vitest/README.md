@@ -356,7 +356,7 @@ expect(exit.spy).not.toHaveBeenCalled();
 
 ### The exit code
 
-Node accepts an integer string and exits with its numeric value, so `process.exit('2')` reports `2` rather than being discarded. A call naming no code reports `undefined`.
+Node accepts an integer string and exits with its numeric value, so `process.exit('2')` reports `2` rather than being discarded. A call naming no code reports `undefined`. A code that Node rejects, such as `'abc'` or `1.5`, throws the `TypeError` or `RangeError` that Node throws, rather than a `ProcessExitError`.
 
 ### What it does not cover
 

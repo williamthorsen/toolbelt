@@ -51,6 +51,41 @@ describe(throwOnProcessExit, () => {
       expect(error.code).toBe(2);
     });
 
+    it.each([
+      { code: 'abc', ErrorClass: TypeError, errorCode: 'ERR_INVALID_ARG_TYPE' },
+      { code: '', ErrorClass: TypeError, errorCode: 'ERR_INVALID_ARG_TYPE' },
+      { code: true, ErrorClass: TypeError, errorCode: 'ERR_INVALID_ARG_TYPE' },
+      { code: '1.5', ErrorClass: RangeError, errorCode: 'ERR_OUT_OF_RANGE' },
+      { code: 1.5, ErrorClass: RangeError, errorCode: 'ERR_OUT_OF_RANGE' },
+      { code: NaN, ErrorClass: RangeError, errorCode: 'ERR_OUT_OF_RANGE' },
+      { code: Infinity, ErrorClass: RangeError, errorCode: 'ERR_OUT_OF_RANGE' },
+      { code: 2 ** 53, ErrorClass: RangeError, errorCode: 'ERR_OUT_OF_RANGE' },
+    ])('rejects a code of $code with $errorCode, as Node does', async ({ code, ErrorClass, errorCode }) => {
+      using _exit = throwOnProcessExit();
+
+      const error = await captureError(ErrorClass, () => callExit(code));
+
+      expect(error).toHaveProperty('code', errorCode);
+    });
+
+    it('leaves process.exitCode as it was when it rejects a code', async () => {
+      using _exitCode = presetExitCode(5);
+      using _exit = throwOnProcessExit();
+
+      await captureError(TypeError, () => callExit('abc'));
+
+      expect(process.exitCode).toBe(5);
+    });
+
+    it('leaves process.exitCode as it was when it accepts a code', async () => {
+      using _exitCode = presetExitCode(5);
+      using _exit = throwOnProcessExit();
+
+      await captureError(ProcessExitError, () => process.exit(2));
+
+      expect(process.exitCode).toBe(5);
+    });
+
     it('reports no code when the call named none', async () => {
       using _exit = throwOnProcessExit();
 
@@ -96,6 +131,11 @@ describe(throwOnProcessExit, () => {
 
 // region | Helpers
 
+/** Calls `process.exit` with a code that its declared parameter type may exclude. */
+function callExit(code: unknown): void {
+  Reflect.apply(process.exit.bind(process), undefined, [code]);
+}
+
 /**
  * Exits, declaring a `void` return so that a caller may place statements after the call.
  *
@@ -103,6 +143,17 @@ describe(throwOnProcessExit, () => {
  */
 function exitWith(code: number): void {
   process.exit(code);
+}
+
+/** Sets `process.exitCode` for the enclosing scope, clearing it when the scope exits. */
+function presetExitCode(code: number): Disposable {
+  process.exitCode = code;
+
+  return {
+    [Symbol.dispose]() {
+      process.exitCode = undefined;
+    },
+  };
 }
 
 // endregion | Helpers

@@ -10,6 +10,8 @@ import { type MockInstance, vi } from 'vitest';
  * asserts against a path never reached by the process in production. Nothing reports that: The suite passes
  * while covering code that cannot run.
  *
+ * A code that Node rejects throws the error that Node throws, rather than a `ProcessExitError`.
+ *
  * @category Testing
  * @experimental
  * @stage candidate
@@ -23,7 +25,7 @@ import { type MockInstance, vi } from 'vitest';
  */
 export function throwOnProcessExit(): MockedProcessExit {
   const spy = vi.spyOn(process, 'exit').mockImplementation((code) => {
-    throw new ProcessExitError(code);
+    throw new ProcessExitError(normalizeExitCode(code));
   });
 
   return {
@@ -61,3 +63,25 @@ export class ProcessExitError extends Error {
 export interface MockedProcessExit extends Disposable {
   spy: MockInstance<typeof process.exit>;
 }
+
+// region | Helpers
+
+/**
+ * Validates and normalizes an exit code through the `process.exitCode` setter, which applies the rules of
+ * `process.exit` and throws its errors, then restores the previous value.
+ */
+function normalizeExitCode(code: number | string | null | undefined): number | undefined {
+  const previous = process.exitCode;
+
+  try {
+    process.exitCode = code;
+    const normalized = process.exitCode;
+
+    return typeof normalized === 'number' ? normalized : undefined;
+  } finally {
+    // A leaked value would become the exit code of the process running the tests.
+    process.exitCode = previous;
+  }
+}
+
+// endregion | Helpers
