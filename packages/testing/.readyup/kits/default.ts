@@ -14,14 +14,15 @@
 import { defineAdoptionKit, isTestFile } from '@williamthorsen/toolbelt.adoption';
 
 import { ADOPTED_EXPORTS } from '../../src/readiness/adoptedExports.ts';
-import { listSites } from '../../src/readiness/listSites.ts';
+import { listCaptureSites } from '../../src/readiness/listCaptureSites.ts';
+import { listStdioSpies } from '../../src/readiness/listStdioSpies.ts';
 
 const PACKAGE_NAME = '@williamthorsen/toolbelt.testing';
 const README_URL = 'https://github.com/williamthorsen/toolbelt/tree/main/packages/testing#readme';
 
 export default defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
-  detect: listSites,
+  detectors: [listCaptureSites, listStdioSpies],
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: 'the project contains no test files',
   packageName: PACKAGE_NAME,

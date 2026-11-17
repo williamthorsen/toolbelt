@@ -5,7 +5,9 @@ import { fileURLToPath } from 'node:url';
 import { listJsTsSources } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { describe, expect, it } from 'vitest';
 
-import { listSites } from '../listSites.ts';
+import { listConsoleSites } from '../listConsoleSites.ts';
+import { listDisposalHooks } from '../listDisposalHooks.ts';
+import { listExitMocks } from '../listExitMocks.ts';
 
 const KITS_DIR = fileURLToPath(new URL('../../../.readyup/kits', import.meta.url));
 const READINESS_DIR = fileURLToPath(new URL('..', import.meta.url));
@@ -14,17 +16,24 @@ const TESTS_DIR = fileURLToPath(new URL('.', import.meta.url));
 /** The directories whose sources contain this package's own prose about the idioms. */
 const SWEPT_DIRS = [KITS_DIR, READINESS_DIR, TESTS_DIR];
 
-describe(listSites, () => {
-  // This kit sweeps tests, so the sweep here reads them too. Every fixture beside this file writes its idiom
-  // inside a literal, which the detector blanks rather than reporting as a site.
-  it('finds nothing in the sources describing what it looks for', () => {
-    const findings = listJsTsSources(SWEPT_DIRS).flatMap((file) =>
-      listSites(fs.readFileSync(file, 'utf8')).map((site) => `${path.basename(file)}:${site.line}`),
-    );
+/** The package's detectors, as its kit declares them. */
+const DETECTORS = [listExitMocks, listConsoleSites, listDisposalHooks];
 
-    expect(findings).toStrictEqual([]);
+for (const detect of DETECTORS) {
+  describe(detect, () => {
+    // This kit sweeps tests, so the sweep here reads them too. Every fixture beside this file writes its idiom
+    // inside a literal, which the detector blanks rather than reporting as a site.
+    it('finds nothing in the sources describing what it looks for', () => {
+      const findings = listJsTsSources(SWEPT_DIRS).flatMap((file) =>
+        detect(fs.readFileSync(file, 'utf8')).map((site) => `${path.basename(file)}:${site.line}`),
+      );
+
+      expect(findings).toStrictEqual([]);
+    });
   });
+}
 
+describe(listJsTsSources, () => {
   // Guard against a vacuous pass: A broken walk would report no findings either.
   it('sweeps the detector fixtures alongside the modules and the compiled kit', () => {
     const names = listJsTsSources(SWEPT_DIRS).map((file) => path.basename(file));
