@@ -18,20 +18,18 @@ const SWEPT_DIRS = [KITS_DIR, READINESS_DIR, TESTS_DIR];
 /** The package's detectors, as its kit declares them. */
 const DETECTORS = [listCaptureSites, listStdioSpies];
 
-for (const detect of DETECTORS) {
-  describe(detect, () => {
-    // This kit sweeps tests, so the sweep here reads them too. Every fixture beside this file writes its idiom
-    // inside a literal, which blanking erases before the scan reads it; one rewritten as literal code would put
-    // the package's own suite on its own report, and nothing in CI runs `rdy run --sources` to catch it.
-    it('finds nothing in the sources describing what it looks for', () => {
-      const findings = listJsTsSources(SWEPT_DIRS).flatMap((file) =>
-        detect(fs.readFileSync(file, 'utf8')).map((site) => `${path.basename(file)}:${site.line}`),
-      );
+describe.each(DETECTORS.map((detect) => ({ detect })))('$detect.name', ({ detect }) => {
+  // This kit sweeps tests, so the sweep here reads them too. Every fixture beside this file writes its idiom
+  // inside a literal, which blanking erases before the scan reads it; one rewritten as literal code would put
+  // the package's own suite on its own report, and nothing in CI runs `rdy run --sources` to catch it.
+  it('finds nothing in the sources describing what it looks for', () => {
+    const findings = listJsTsSources(SWEPT_DIRS).flatMap((file) =>
+      detect(fs.readFileSync(file, 'utf8')).map((site) => `${path.basename(file)}:${site.line}`),
+    );
 
-      expect(findings).toStrictEqual([]);
-    });
+    expect(findings).toStrictEqual([]);
   });
-}
+});
 
 describe(listJsTsSources, () => {
   // Guard against a vacuous pass: A broken walk would report no findings either.
