@@ -38,6 +38,18 @@ export async function handleJobRequest<Result>(
   }
 
   const onError = buildErrorReporter(options.onError);
+  if (options.checkBot !== undefined) {
+    let passed;
+    try {
+      passed = await options.checkBot(request);
+    } catch (error) {
+      onError(error);
+      return refuse('bot-check-unavailable', 'The bot check is unavailable.');
+    }
+    if (!passed) {
+      return refuse('bot-check-failed', 'The bot check failed.');
+    }
+  }
   if (options.countJob !== undefined) {
     let count;
     try {

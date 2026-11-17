@@ -21,6 +21,8 @@ export const JOB_FAILURE_BODY = { message: 'The job failed at the endpoint.' } a
 
 /** The HTTP status of each refusal. */
 export const REFUSAL_STATUSES: Readonly<Record<JobRefusalReason, number>> = {
+  'bot-check-failed': 403,
+  'bot-check-unavailable': 503,
   'counter-unavailable': 503,
   'input-too-long': 413,
   'invalid-body': 400,

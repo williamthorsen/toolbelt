@@ -23,13 +23,18 @@ export interface JobHandlerOptions<Result> {
   /** The most rounds that any job runs, applied when it is lower than the job's own `maxRounds`; a positive integer. */
   readonly maxRounds?: number;
   /**
+   * Checks that a request comes from a person rather than a bot, before the job is counted. `false` refuses the job,
+   * and a throw refuses it as unavailable. It receives the request after the handler has read its body.
+   */
+  readonly checkBot?: (request: Request) => Promise<boolean>;
+  /**
    * Counts a job against the operator's limits before its first model request, and refuses it when a limit is
    * reached. A throw refuses the job as well. It receives the request after the handler has read its body.
    */
   readonly countJob?: (request: Request) => Promise<JobCount>;
   /**
-   * Receives each error that the handler withholds from the page: a failed job, a failed `createJob`, or a failed
-   * counter. The handler ignores a throw from it.
+   * Receives each error that the handler withholds from the page: a failed job, a failed `createJob`, a failed bot
+   * check, or a failed counter. The handler ignores a throw from it.
    */
   readonly onError?: (error: unknown) => void;
   /** Builds a fresh job for a request's input. */
@@ -38,4 +43,10 @@ export interface JobHandlerOptions<Result> {
 
 /** Why an endpoint refused a job before running it. */
 export type JobRefusalReason =
-  'counter-unavailable' | 'input-too-long' | 'invalid-body' | 'limit-reached' | 'method-not-allowed';
+  | 'bot-check-failed'
+  | 'bot-check-unavailable'
+  | 'counter-unavailable'
+  | 'input-too-long'
+  | 'invalid-body'
+  | 'limit-reached'
+  | 'method-not-allowed';
