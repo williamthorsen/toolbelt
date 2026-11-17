@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.13.0 — 2026-11-17
+
+### 🎉 Features
+
+- Adds `CliError`, an error that `runCli` reports as `<name>: <message>` and then returns its `exitCode`, an integer from 1 to 255 that defaults to 1, without the pointer to help that a `UsageError`, now a subclass of `CliError`, still adds before it exits 2. (#714)
+
+### ♻️ Refactoring
+
+- Reduce listCaptureSites to its detector (#705)
+
+  Moves the generic scanning primitives `findEnclosingBlockEnd` and `findLiteralEnd` out of `testing`'s ReadyUp detector and into `packages/adoption`, and replaces the hand-rolled `$` escapes in the `testing` and `errors` detectors with the built-in `RegExp.escape`. The committed kit bundles and manifests are recompiled to match.
+
+- Let the kit assembler merge several detectors (#707)
+
+  Replaces `defineAdoptionKit`'s single `detect` function with a `detectors` array, and the assembler now merges the sites of every detector in line order. With the merge in `packages/adoption`, the `listSites` combiners that `testing` and `vitest` kept for that purpose are deleted, and every package's kit declares its detectors through the new option.
+
 ## 0.12.0 — 2026-11-16
 
 ### 🎉 Features

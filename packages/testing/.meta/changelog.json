@@ -1,5 +1,80 @@
 [
   {
+    "version": "0.8.7",
+    "date": "2026-11-17",
+    "sections": [
+      {
+        "title": "🐛 Bug fixes",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Fixes the issue that `captureWarnings` recorded an `emitWarning` call that Node rejects, such as `emitWarning(42)` or a call whose type or code is not a string, rather than throwing Node's `TypeError` with code `ERR_INVALID_ARG_TYPE`. (#712)",
+            "hash": "0eb2684c6ec46fd6286ef5d43de85719ec79221e",
+            "entry": 1
+          },
+          {
+            "description": "Fixes the issue that `captureWarnings` named a warning `''` when its type was the empty string, while Node names such a warning `Warning`. (#712)",
+            "hash": "0eb2684c6ec46fd6286ef5d43de85719ec79221e",
+            "entry": 2
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Moves `findEnclosingBlockEnd`, `findLiteralEnd`, and `BRACKETS` from `testing`'s `listCaptureSites` into `packages/adoption`, and replaces the hand-rolled `$` escapes in `listCaptureSites` and `errors`' `listMissingPathSites` with `RegExp.escape`. (#705)",
+            "hash": "9bba05a2e5167b0e33aec33970dc1e7418abe8f2",
+            "entry": 1
+          },
+          {
+            "description": "Replaces the `detect` option of `defineAdoptionKit` with a `detectors` array, whose sites the assembler merges in line order, and deletes the `listSites` combiners from `testing` and `vitest`. (#707)",
+            "hash": "d5c2aee3b6e2f93670b4e292a3970a2f3b6fe7f0",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Builds the fixture strings in the `packages/testing/src/readiness/__tests__/` tests with `dedent` from `@williamthorsen/toolbelt.strings`, now a devDependency of `toolbelt.testing`, and removes the eleven `toolbelt.strings/no-joined-line-array` suppressions that cited a dependency cycle that no longer exists. (#704)",
+            "hash": "dd558ff4ad03d5e427f6df050d4f55bc219e8173",
+            "entry": 1
+          },
+          {
+            "description": "Restores the spies in the `captureStdio`, `pointCwdAt`, and `outputGuard` tests through `using` declarations instead of `mockRestore()` calls, `onTestFinished`, and a hand-built `Disposable`, so that a failing assertion in the `captureStdio` tests no longer leaves `console.info` spied for the rest of the file. (#708)",
+            "hash": "382b0999c5051b1aef288366ff3859f25d4d8dc7",
+            "entry": 1
+          },
+          {
+            "description": "Replaces the ten per-method tests that check that a `TempTree` method throws on a path ascending out of the tree with one `it.each` table in `createTempTree.unit.test.ts`, and adds a row for `readJson`, which had not had a containment test. (#710)",
+            "hash": "928d8dd6a4afac061842c1bbf3fd36096c033662",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Replaces the per-export sections of `packages/testing/README.md` and `packages/vitest/README.md` with an export list and usage sections grouped by concern, and moves the edge cases that those sections stated into the exports' doc comments. (#713)",
+            "hash": "3e1952b24c0e1980df708bb67d4e89b46aa34706",
+            "entry": 1
+          },
+          {
+            "description": "Removes the claim in `packages/testing/README.md` that the package declares no dependencies. (#713)",
+            "hash": "3e1952b24c0e1980df708bb67d4e89b46aa34706",
+            "entry": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.8.6",
     "date": "2026-11-16",
     "sections": [

@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.2 — 2026-11-17
+
+### 🧪 Tests
+
+- Splits `runAcpPrompt.unit.test.ts` by aspect into the core file, `runAcpPrompt.permissions.unit.test.ts`, and `runAcpPrompt.tools.unit.test.ts`, which brings each under the 500-line `max-lines` limit, and moves their shared fixtures into `test-utils/runAcpPromptFixtures.ts`. (#716)
+
+### 📦 Dependencies
+
+- Bumped `@williamthorsen/toolbelt.errors` to 0.11.3
+- Bumped `@williamthorsen/toolbelt.guards` to 4.2.6
+
 ## 0.3.1 — 2026-11-16
 
 ### 📦 Dependencies

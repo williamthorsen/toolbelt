@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.filesystem",
-  "version": "0.11.3",
+  "version": "0.11.4",
   "description": "Filesystem utilities",
   "keywords": [
     "config-cascade",

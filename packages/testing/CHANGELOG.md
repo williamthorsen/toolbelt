@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.8.7 — 2026-11-17
+
+### 🐛 Bug fixes
+
+- Fixes the issue that `captureWarnings` recorded an `emitWarning` call that Node rejects, such as `emitWarning(42)` or a call whose type or code is not a string, rather than throwing Node's `TypeError` with code `ERR_INVALID_ARG_TYPE`. (#712)
+- Fixes the issue that `captureWarnings` named a warning `''` when its type was the empty string, while Node names such a warning `Warning`. (#712)
+
+### ♻️ Refactoring
+
+- Moves `findEnclosingBlockEnd`, `findLiteralEnd`, and `BRACKETS` from `testing`'s `listCaptureSites` into `packages/adoption`, and replaces the hand-rolled `$` escapes in `listCaptureSites` and `errors`' `listMissingPathSites` with `RegExp.escape`. (#705)
+- Replaces the `detect` option of `defineAdoptionKit` with a `detectors` array, whose sites the assembler merges in line order, and deletes the `listSites` combiners from `testing` and `vitest`. (#707)
+
+### 🧪 Tests
+
+- Builds the fixture strings in the `packages/testing/src/readiness/__tests__/` tests with `dedent` from `@williamthorsen/toolbelt.strings`, now a devDependency of `toolbelt.testing`, and removes the eleven `toolbelt.strings/no-joined-line-array` suppressions that cited a dependency cycle that no longer exists. (#704)
+- Restores the spies in the `captureStdio`, `pointCwdAt`, and `outputGuard` tests through `using` declarations instead of `mockRestore()` calls, `onTestFinished`, and a hand-built `Disposable`, so that a failing assertion in the `captureStdio` tests no longer leaves `console.info` spied for the rest of the file. (#708)
+- Replaces the ten per-method tests that check that a `TempTree` method throws on a path ascending out of the tree with one `it.each` table in `createTempTree.unit.test.ts`, and adds a row for `readJson`, which had not had a containment test. (#710)
+
+### 📚 Documentation
+
+- Replaces the per-export sections of `packages/testing/README.md` and `packages/vitest/README.md` with an export list and usage sections grouped by concern, and moves the edge cases that those sections stated into the exports' doc comments. (#713)
+- Removes the claim in `packages/testing/README.md` that the package declares no dependencies. (#713)
+
 ## 0.8.6 — 2026-11-16
 
 ### ♻️ Refactoring

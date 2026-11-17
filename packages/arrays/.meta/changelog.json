@@ -1,5 +1,27 @@
 [
   {
+    "version": "6.5.6",
+    "date": "2026-11-17",
+    "sections": [
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Reduce listCaptureSites to its detector (#705)",
+            "body": "Moves the generic scanning primitives `findEnclosingBlockEnd` and `findLiteralEnd` out of `testing`'s ReadyUp detector and into `packages/adoption`, and replaces the hand-rolled `$` escapes in the `testing` and `errors` detectors with the built-in `RegExp.escape`. The committed kit bundles and manifests are recompiled to match.",
+            "hash": "9bba05a2e5167b0e33aec33970dc1e7418abe8f2"
+          },
+          {
+            "description": "Let the kit assembler merge several detectors (#707)",
+            "body": "Replaces `defineAdoptionKit`'s single `detect` function with a `detectors` array, and the assembler now merges the sites of every detector in line order. With the merge in `packages/adoption`, the `listSites` combiners that `testing` and `vitest` kept for that purpose are deleted, and every package's kit declares its detectors through the new option.",
+            "hash": "d5c2aee3b6e2f93670b4e292a3970a2f3b6fe7f0"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "6.5.5",
     "date": "2026-11-16",
     "sections": [

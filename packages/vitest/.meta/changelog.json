@@ -1,5 +1,60 @@
 [
   {
+    "version": "0.13.8",
+    "date": "2026-11-17",
+    "sections": [
+      {
+        "title": "🐛 Bug fixes",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Fixes the issue that `throwOnProcessExit` threw a `ProcessExitError` for an exit code that Node rejects, such as `'abc'` or `1.5`, instead of the `TypeError` or `RangeError` that Node throws for that code. (#711)",
+            "hash": "94fe73d28fa27b6a7dfecffe359675d5da7242ca",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Reduce listCaptureSites to its detector (#705)",
+            "body": "Moves the generic scanning primitives `findEnclosingBlockEnd` and `findLiteralEnd` out of `testing`'s ReadyUp detector and into `packages/adoption`, and replaces the hand-rolled `$` escapes in the `testing` and `errors` detectors with the built-in `RegExp.escape`. The committed kit bundles and manifests are recompiled to match.",
+            "hash": "9bba05a2e5167b0e33aec33970dc1e7418abe8f2"
+          },
+          {
+            "description": "Replaces the `detect` option of `defineAdoptionKit` with a `detectors` array, whose sites the assembler merges in line order, and deletes the `listSites` combiners from `testing` and `vitest`. (#707)",
+            "hash": "d5c2aee3b6e2f93670b4e292a3970a2f3b6fe7f0",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Restores the spies in the `captureStdio`, `pointCwdAt`, and `outputGuard` tests through `using` declarations instead of `mockRestore()` calls, `onTestFinished`, and a hand-built `Disposable`, so that a failing assertion in the `captureStdio` tests no longer leaves `console.info` spied for the rest of the file. (#708)",
+            "hash": "382b0999c5051b1aef288366ff3859f25d4d8dc7",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Replaces the per-export sections of `packages/testing/README.md` and `packages/vitest/README.md` with an export list and usage sections grouped by concern, and moves the edge cases that those sections stated into the exports' doc comments. (#713)",
+            "hash": "3e1952b24c0e1980df708bb67d4e89b46aa34706",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.13.7",
     "date": "2026-11-16",
     "sections": [

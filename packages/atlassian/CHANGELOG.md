@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.9.3 — 2026-11-17
+
+### 📦 Dependencies
+
+- Bumped `@williamthorsen/toolbelt.errors` to 0.11.3
+- Bumped `@williamthorsen/toolbelt.objects` to 4.4.6
+- Bumped `@williamthorsen/toolbelt.secrets` to 0.7.3
+
 ## 0.9.2 — 2026-11-16
 
 ### 📦 Dependencies

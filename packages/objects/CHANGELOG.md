@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.4.6 — 2026-11-17
+
+### ♻️ Refactoring
+
+- Reduce listCaptureSites to its detector (#705)
+
+  Moves the generic scanning primitives `findEnclosingBlockEnd` and `findLiteralEnd` out of `testing`'s ReadyUp detector and into `packages/adoption`, and replaces the hand-rolled `$` escapes in the `testing` and `errors` detectors with the built-in `RegExp.escape`. The committed kit bundles and manifests are recompiled to match.
+
+- Let the kit assembler merge several detectors (#707)
+
+  Replaces `defineAdoptionKit`'s single `detect` function with a `detectors` array, and the assembler now merges the sites of every detector in line order. With the merge in `packages/adoption`, the `listSites` combiners that `testing` and `vitest` kept for that purpose are deleted, and every package's kit declares its detectors through the new option.
+
 ## 4.4.5 — 2026-11-16
 
 ### ♻️ Refactoring

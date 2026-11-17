@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.11.3 — 2026-11-17
+
+### ♻️ Refactoring
+
+- Moves `findEnclosingBlockEnd`, `findLiteralEnd`, and `BRACKETS` from `testing`'s `listCaptureSites` into `packages/adoption`, and replaces the hand-rolled `$` escapes in `listCaptureSites` and `errors`' `listMissingPathSites` with `RegExp.escape`. (#705)
+- Let the kit assembler merge several detectors (#707)
+
+  Replaces `defineAdoptionKit`'s single `detect` function with a `detectors` array, and the assembler now merges the sites of every detector in line order. With the merge in `packages/adoption`, the `listSites` combiners that `testing` and `vitest` kept for that purpose are deleted, and every package's kit declares its detectors through the new option.
+
 ## 0.11.2 — 2026-11-16
 
 ### ♻️ Refactoring

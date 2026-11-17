@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.13.8 — 2026-11-17
+
+### 🐛 Bug fixes
+
+- Fixes the issue that `throwOnProcessExit` threw a `ProcessExitError` for an exit code that Node rejects, such as `'abc'` or `1.5`, instead of the `TypeError` or `RangeError` that Node throws for that code. (#711)
+
+### ♻️ Refactoring
+
+- Reduce listCaptureSites to its detector (#705)
+
+  Moves the generic scanning primitives `findEnclosingBlockEnd` and `findLiteralEnd` out of `testing`'s ReadyUp detector and into `packages/adoption`, and replaces the hand-rolled `$` escapes in the `testing` and `errors` detectors with the built-in `RegExp.escape`. The committed kit bundles and manifests are recompiled to match.
+
+- Replaces the `detect` option of `defineAdoptionKit` with a `detectors` array, whose sites the assembler merges in line order, and deletes the `listSites` combiners from `testing` and `vitest`. (#707)
+
+### 🧪 Tests
+
+- Restores the spies in the `captureStdio`, `pointCwdAt`, and `outputGuard` tests through `using` declarations instead of `mockRestore()` calls, `onTestFinished`, and a hand-built `Disposable`, so that a failing assertion in the `captureStdio` tests no longer leaves `console.info` spied for the rest of the file. (#708)
+
+### 📚 Documentation
+
+- Replaces the per-export sections of `packages/testing/README.md` and `packages/vitest/README.md` with an export list and usage sections grouped by concern, and moves the edge cases that those sections stated into the exports' doc comments. (#713)
+
 ## 0.13.7 — 2026-11-16
 
 ### ♻️ Refactoring
