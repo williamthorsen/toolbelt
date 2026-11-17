@@ -29,6 +29,21 @@ describe(captureWarnings, () => {
       expected: { name: 'Warning', message: 'traced' },
     },
     {
+      label: 'a constructor in place of a code',
+      emit: () => process.emitWarning('traced', 'TracedWarning', captureWarnings),
+      expected: { name: 'TracedWarning', message: 'traced' },
+    },
+    {
+      label: 'an options object whose code is a constructor',
+      emit: () => callEmitWarning('traced', { type: 'TracedWarning', code: captureWarnings }),
+      expected: { name: 'TracedWarning', message: 'traced' },
+    },
+    {
+      label: 'a constructor in place of a type, followed by a non-string code',
+      emit: () => callEmitWarning('traced', captureWarnings, 7),
+      expected: { name: 'Warning', message: 'traced' },
+    },
+    {
       label: 'an empty type',
       emit: () => process.emitWarning('untyped', ''),
       expected: { name: 'Warning', message: 'untyped' },
