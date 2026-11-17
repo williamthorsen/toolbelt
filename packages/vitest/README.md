@@ -2,7 +2,7 @@
 
 # @williamthorsen/toolbelt.vitest
 
-Utilities for testing with Vitest.
+Utilities for testing with Vitest: scoping resources to a test or a fixture, silencing and reading the console, guarding against stray output, and mocking `process.exit`.
 
 <!-- section:release-notes --><!-- /section:release-notes -->
 
@@ -12,17 +12,36 @@ Utilities for testing with Vitest.
 pnpm add --save-dev @williamthorsen/toolbelt.vitest
 ```
 
-Requires Node.js 24 or later. Vitest is a peer dependency: The package uses the Vitest 4 or 5 that the consuming project already installs.
+Requires Node.js 24 or later. Vitest is a peer dependency: The package uses the Vitest 4 or 5 that the consuming project already installs. Runner-agnostic utilities, such as `captureStdio` and `createTempTree`, live in [`@williamthorsen/toolbelt.testing`](https://github.com/williamthorsen/toolbelt/tree/main/packages/testing#readme).
 
-`disposeOnTestFinished`, `failOnUncapturedOutput`, `listConsoleLines`, `makeFixture`, `silenceConsole`, and `throwOnProcessExit` are candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change.
-
-## `disposeOnTestFinished`
+Every export is candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change. Each export's doc comment states its edge cases.
 
 ```ts
-disposeOnTestFinished<T extends Disposable>(resource: T): T;
+import { silenceConsole } from '@williamthorsen/toolbelt.vitest/candidate';
+
+using silent = silenceConsole(['warn']);
+loadSettings({});
+expect(silent.warn).toHaveBeenCalledWith('No settings found; using defaults');
 ```
 
-Registers a `Disposable`'s disposal with the current test and returns it unchanged.
+## Exports
+
+- `disposeOnTestFinished`: Registers a `Disposable`'s disposal with the current test and returns it unchanged.
+- `failOnUncapturedOutput`: Fails each test that writes to stdout or stderr, or emits a warning, without capturing it.
+- `listConsoleLines`: Lists the lines received by a spied console method, one per call.
+- `makeFixture`: Adapts a `Disposable` factory into a Vitest fixture that disposes the value when its scope ends.
+- `silenceConsole` (`ConsoleMethod`): Silences console methods for a scope and returns the spy backing each one.
+- `throwOnProcessExit` (`MockedProcessExit`, `ProcessExitError`): Replaces `process.exit` for a scope with a mock that throws.
+
+## Choosing a lifetime
+
+A resource whose lifetime ends with the block that built it needs nothing from this package: Bind it with `using`. The other cases divide by lifetime, not by call site:
+
+- `disposeOnTestFinished` for a resource scoped to one test but built where `using` cannot hold it, such as a builder that returns a value derived from the resource.
+- `makeFixture` for a resource that a test reads, at any scope that `test.extend` supports, `file` and `worker` included.
+- `aroundEach` or `aroundAll` over a fixture, for a resource installed around a test rather than read by it.
+
+### Inside a builder
 
 ```ts
 import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
@@ -33,137 +52,11 @@ function buildSource(files: Record<string, string>, name = 'fixture'): SourceSpe
 
   return { id: name, name, origin: { kind: 'directory', location: tree.dir }, dir: tree.dir };
 }
-
-it('resolves a source directory', () => {
-  const source = buildSource({ 'skills/lint/SKILL.md': 'lint' });
-
-  expect(resolveSource(source).files).toHaveLength(1);
-});
 ```
 
-This function is most useful in the builder. It takes per-call arguments, which rules out building the resource with a no-argument factory; it returns a value derived from the resource rather than the resource itself, which leaves the caller nothing to bind with `using`; and the tree has to outlive the builder's own scope, which rules out `using` inside the builder: That would delete the tree before the test read a byte. Returning the value unchanged lets the construction be wrapped in place, leaving the call site with no lifetime code at all.
+The builder takes per-call arguments, it returns something other than the resource, and the tree has to outlive the builder's own scope, which rules out `using` inside it. Making the returned value `Disposable` instead distorts the type: A `Catalog` that also deletes temporary directories is the wrong shape, and a builder assembling several trees has several disposals to hand back rather than one.
 
-Making the returned value `Disposable` instead is the alternative, and it distorts the type: A `Catalog` that also deletes temporary directories is the wrong shape, and a builder assembling several trees has several disposals to hand back rather than one.
-
-### When to use it, and when to use `makeFixture`
-
-The two divide by lifetime, not by call site:
-
-- `disposeOnTestFinished` for a resource scoped to one test. It registers against whichever test is running, so it works from the test body and from `beforeEach` or `afterEach` alike.
-- [`makeFixture`](#makefixture) for a resource that outlives one test. Scope belongs to `test.extend` there, which supports `file` and `worker`.
-
-Outside a test entirely -- at module scope, in a `describe` body, or in `beforeAll` or `afterAll` -- there is no test to register against, and Vitest throws `Hook onTestFinished() can only be called inside a test`. A resource wanted at that scope is a fixture, so `makeFixture` is the answer there rather than a workaround here.
-
-### Order of disposal
-
-Several resources registered in one test dispose in reverse registration order, matching how `using` declarations unwind:
-
-```ts
-const tree = disposeOnTestFinished(createTempTree({ 'src/': '' }));
-const cwd = disposeOnTestFinished(pointCwdAt(tree.dir));
-```
-
-The working directory is restored before the directory into which it points is removed.
-
-### Where Vitest's documentation disagrees
-
-Vitest documents `onTestFinished` as honoring `sequence.hooks`, and as not running for a test cancelled by a dynamic `ctx.skip()`. The 4.1 runner does neither: It passes a literal for the finish hooks, so they unwind in reverse whatever that option says, and it runs them for a dynamically skipped test too. The suite pins the skip half: A runner that stopped disposing there fails here rather than at a consumer. It cannot pin the other: Because `sequence.hooks` defaults to `stack`, which means reverse whether the runner consults the option or ignores it, no test under that default can tell the two apart.
-
-## `failOnUncapturedOutput`
-
-```ts
-failOnUncapturedOutput(): void;
-```
-
-Fails each test that writes to `process.stdout` or `process.stderr`, or emits a process warning, without capturing the output. Vitest's `silent` option intercepts only `console.*`, so these writes otherwise print between the results of a passing run.
-
-Call it from a setup file:
-
-```ts
-// vitest.setup.ts
-import { failOnUncapturedOutput } from '@williamthorsen/toolbelt.vitest/candidate';
-
-failOnUncapturedOutput();
-```
-
-```ts
-// vitest.config.ts
-import { defineConfig } from 'vitest/config';
-
-export default defineConfig({
-  test: { setupFiles: ['./vitest.setup.ts'] },
-});
-```
-
-The guard holds the output back, so the terminal stays clean, and fails the test with a message naming each stream or warning and the start of its text:
-
-```text
-Error: The test produced output that no capture took:
-  stderr: "Retrying in 5s\n"
-```
-
-A test passes when it takes the output with `captureStdio` or `captureWarnings` from `@williamthorsen/toolbelt.testing`, or with a spy on the stream, because each replaces the function that the guard wraps.
-
-The guard checks a test after its `afterEach` hooks and `onTestFinished` callbacks have run, whatever `sequence.hooks` says, so output from either counts as the test's own.
-
-### Limits
-
-- Output made outside a test, such as in `beforeAll`, `afterAll`, or while a file is collected, passes through, because Vitest cannot tie it to a test.
-- `console.*` is out of scope, because Vitest intercepts it. With `disableConsoleIntercept: true`, console output goes to the streams, and the guard fails the test that wrote it.
-- The guard attributes output to the test running when it lands, not to the test that scheduled it. A timer or an unawaited promise from one test that writes during the next fails the next test, and under `it.concurrent` the failure goes to whichever running test finishes first.
-
-## `listConsoleLines`
-
-```ts
-listConsoleLines(spy: MockInstance): string[];
-```
-
-Lists the lines received by a spied console method, one per call.
-
-```ts
-import { listConsoleLines, silenceConsole } from '@williamthorsen/toolbelt.vitest/candidate';
-
-it('names the flag it could not parse', () => {
-  using silent = silenceConsole(['error']);
-
-  parseArgs(['--colour']);
-
-  expect(listConsoleLines(silent.error)).toStrictEqual(['unknown flag: --colour']);
-});
-```
-
-### Why it reads rather than captures
-
-`silenceConsole` already occupies the `vi.spyOn` slot for the method, and silences do not stack, so a second helper that installed its own spy would take that slot from it. A helper that reads the spy handed back by the silence composes with it instead: One call silences, the other reads, and either works without the other.
-
-That also means the two are separable. `listConsoleLines` reads a spy from `vi.spyOn(console, 'warn')` the same way, and a test that wants the recorded calls unrendered can still use `silent.warn`.
-
-### What a line contains
-
-`listConsoleLines` renders each call's arguments through `String` and joins them on a single space, which is how a console method separates them:
-
-```ts
-console.error('failed:', 3, new Error('boom'));
-// 'failed: 3 Error: boom'
-```
-
-`String` keeps that `Error` at its message rather than its stack. `String` also limits the rendering: An object renders as `[object Object]`, and a `%s` format specifier is not substituted. A test asserting on what the stream received, rather than on what the call was given, needs [`captureStdio`](https://github.com/williamthorsen/toolbelt/tree/main/packages/testing#capturestdio) in `@williamthorsen/toolbelt.testing`, which renders through `util.format`.
-
-A caller wanting one string joins the array:
-
-```ts
-expect(listConsoleLines(silent.info).join('\n')).toContain('--dry-run');
-```
-
-## `makeFixture`
-
-```ts
-makeFixture<T extends Disposable>(
-  build: () => T,
-): ({}, { onCleanup }: { onCleanup: (cleanup: () => void) => void }) => T;
-```
-
-Adapts a `Disposable` factory into a Vitest fixture that disposes the value when its scope ends.
+### As a fixture
 
 ```ts
 import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
@@ -177,51 +70,15 @@ it('resolves a path within the tree', ({ tree }) => {
 });
 ```
 
-The test receives the instance as a typed parameter, so a suite binding one needs no `let`, no guard against an unbuilt instance, and no `onCleanup` call of its own. Anything satisfying `Disposable` works, including `captureStdio` and `silenceConsole`:
+The test receives the instance as a typed parameter, so a suite needs no `let`, no guard against an unbuilt instance, and no `onCleanup` call of its own. The examples import `it as baseIt` and extend that, because `vitest/consistent-test-it` resolves an extended function to the name at which its chain is rooted, and `@williamthorsen/eslint-config-typescript` from 21.0.0 requires `it`.
 
-```ts
-const it = test
-  .extend('stdio', makeFixture(() => captureStdio({ isTty: false })))
-  .extend('silent', makeFixture(() => silenceConsole(['warn'])));
-```
+The alternative for a shared resource is a hook-registered handle: an object bound once at module level that registers its own `beforeEach` and `afterEach` and forwards every read to the current instance. A handle reads better, because a test names nothing in its signature, but it takes around forty lines per resource type: a guard against reads outside the scope, a forward per method, and an interface of its own. `makeFixture` needs no code per type, makes the out-of-scope read unrepresentable, and builds only for the tests that name it. Use a handle when one already exists for the resource and most of a file's tests touch it, and `makeFixture` otherwise.
 
-### When to use it
+A resource worth building once for a whole run belongs in `globalSetup`, which runs outside the workers.
 
-The question arises only for a resource that has to outlive a single test. One that does not needs no fixture:
+### Around a test
 
-```ts
-it('falls back to defaults', () => {
-  using silent = silenceConsole(['warn']);
-
-  loadSettings({});
-
-  expect(silent.warn).toHaveBeenCalled();
-});
-```
-
-`using` covers that case only when the resource's lifetime ends with the block that built it. One built inside a test by a helper that returns something else takes [`disposeOnTestFinished`](#disposeontestfinished) instead.
-
-For a resource shared across tests, the alternative is a hook-registered handle: an object bound once at module level that registers its own `beforeEach` and `afterEach` and forwards every read to the instance that the current scope built. A handle reads better, because a test names nothing in its signature:
-
-```ts
-const tree = useTempTree({ 'src/main.ts': 'export {};\n' });
-
-it('resolves a path within the tree', () => {
-  expect(tree.resolve('src/main.ts')).toBe(`${tree.dir}/src/main.ts`);
-});
-```
-
-That read site takes around forty lines of code per resource type: a guard reporting reads that happen outside the scope, a forward per method, and an interface of the handle's own, since a handle cannot forward `[Symbol.dispose]`. That code is worth writing across many suites and not within one.
-
-`makeFixture` needs no code per type. It makes the out-of-scope read unrepresentable rather than guarded, the value existing only as a test parameter, and it builds only for the tests that name it, whereas a handle's `beforeEach` builds for every test in the file.
-
-Use a handle when one already exists for the resource and most of a file's tests touch it, and `makeFixture` otherwise.
-
-A resource that the tests do not name -- one installed around a test rather than read by it -- is a third case, taken up in [Wrapping tests with `aroundEach` and `aroundAll`](#wrapping-tests-with-aroundeach-and-aroundall).
-
-### Wrapping tests with `aroundEach` and `aroundAll`
-
-A resource that a test reads is named by that test. A resource installed around a test is not: A pointed working directory exists to serve code resolving paths through `process.cwd()`, so the tests needing it receive no value and name no fixture, and a lazily built fixture leaves them running against the real working directory. A wrapping hook that requests the fixture builds it:
+A pointed working directory serves code that resolves paths through `process.cwd()`, so the tests that need it name no fixture, and a lazily built fixture would leave them running against the real directory. A wrapping hook that requests the fixture builds it for every test:
 
 ```ts
 const it = baseIt.extend('tree', makeFixture(() => createTempTree({ 'tsconfig.json': '{}\n' })));
@@ -233,31 +90,13 @@ it.aroundEach(async (runTest, { tree }) => {
 });
 ```
 
-The hook's own parameter list is the request, so the fixture builds for every test whether or not the test names it, and the resource's lifetime is a plain `using` that unwinds when the hook returns.
+`{ auto: true }` also builds a fixture for every test, and for a resource depending on no other it is the simpler answer. A resource built from another fixture cannot use `makeFixture`, which builds only a fixture without dependencies; the hook needs neither.
 
-`{ auto: true }` also builds a fixture for every test, and for a resource depending on no other it is the simpler answer, as [Scope](#scope) describes. It is not the answer for a resource built from another fixture: Because `makeFixture` cannot build a [dependent fixture](#fixtures-that-depend-on-other-fixtures) at all, a cwd pointed at a tree has to be hand-written with the disposal that entails. The hook needs neither.
-
-`aroundAll` is the file-scoped counterpart, over a `{ scope: 'file' }` fixture, and the shape is otherwise identical. Vitest gives a suite-level hook only file- and worker-scoped fixtures, and the types enforce it: A test-scoped fixture named there is not a property of the hook's context, and the error lists the fixtures that are. Past the types, the runner throws `FixtureDependencyError` and fails the suite, naming the test-scoped fixtures rather than the available ones.
-
-A hook registered at file level wraps every test in the file, not only the tests of the API on which it was registered. A file declaring a second extended API gets the hook over those tests too, and a hook requesting a fixture not declared by that API receives `undefined`: The failure appears as a `TypeError` thrown inside the hook and attributed to the test, naming the property that was read rather than the fixture that was missing. Registering the hook inside the `describe` containing the tests scopes it to them, which is the fix when one file needs both; one extended API per file avoids the question.
-
-The suite pins the `aroundEach` request, the `aroundAll` counterpart, and the file-level hook's scope over a second API, so a runner that stopped honoring one fails here rather than at a consumer. It does not pin the `TypeError` above, which can only be observed as a failing test.
-
-### Scope
-
-Because scope belongs to `test.extend` rather than to the adapter, `test`, `file`, and `worker` all work through it. A fixture is built only when a test names it, which keeps a temporary directory from being created for tests that never touch one. `{ auto: true }` opts out of that laziness, for a fixture such as a console silencer that should apply whether or not a test names it.
-
-`worker` scope extends past a single file only when the runner shares a worker between files, which Vitest's default isolation prevents: Each file takes its own process, so a worker-scoped fixture builds and disposes once per file exactly as a file-scoped one does. A resource worth building once for a whole run belongs in `globalSetup`, which runs outside the workers and gives up no isolation.
-
-Because a project setting `restoreMocks: true` restores every spy before each test, a `silenceConsole` fixture there has to be test-scoped: At `file` or `worker` scope its spies are restored from the second test onward, and the console goes unsilenced with nothing reported. `{ auto: true }` at test scope covers the apply-everywhere case. `createTempTree` and `captureStdio` are unaffected, neither going through `vi.spyOn`.
-
-### Naming the extended test function
-
-Because `vitest/consistent-test-it` resolves an extended function back to the name at which its chain was rooted, that root has to be the name that the rule's configuration expects. The examples here import `it as baseIt` and extend that, which satisfies `@williamthorsen/eslint-config-typescript` from 21.0.0 on, since that config requires `it` for every test call.
+`aroundAll` is the file-scoped counterpart, over a `{ scope: 'file' }` fixture: Vitest gives a suite-level hook only file- and worker-scoped fixtures, the types omit a test-scoped one from the hook's context, and the runner fails the suite with `FixtureDependencyError` past the types. A hook registered at file level wraps every test in the file, including those of a second extended API, where a fixture that the API does not declare arrives as `undefined`. Registering the hook inside the `describe` containing its tests scopes it to them.
 
 ### Fixtures that depend on other fixtures
 
-`makeFixture` serves a fixture that depends on no other fixture. Vitest discovers a fixture's dependencies by parsing the fixture function's source text for its destructuring pattern, so a fixture naming another one has to write that pattern itself, along with its own disposal:
+Vitest discovers a fixture's dependencies by parsing the fixture function's destructuring pattern, so a dependent fixture writes that pattern and its own disposal:
 
 ```ts
 const it = test
@@ -269,57 +108,43 @@ const it = test
   });
 ```
 
-`makeFixture` disposes what it builds; a fixture written as a plain callback, as `project` is here, calls `Symbol.dispose` through `onCleanup` itself. A dependent resource that only wraps the test needs no fixture of its own, and no disposal to write; see [Wrapping tests with `aroundEach` and `aroundAll`](#wrapping-tests-with-aroundeach-and-aroundall).
+## Console output
 
-Passing a wrapper that takes the context opaquely fails collection with `FixtureParseError`, naming the offending parameter.
-
-## `silenceConsole`
+`silenceConsole` returns the spy behind each silenced method, and `listConsoleLines` renders a spy's calls as lines. Because a silence already holds the `vi.spyOn` slot for the method, a helper that read by installing its own spy would take the slot from it; reading the spy handed back composes instead:
 
 ```ts
-silenceConsole<M extends ConsoleMethod = ConsoleMethod>(methods?: readonly M[]): Disposable & Record<M, MockInstance>;
-```
+import { listConsoleLines, silenceConsole } from '@williamthorsen/toolbelt.vitest/candidate';
 
-Silences the given console methods for the enclosing scope and returns the spy backing each one.
+it('names the flag it could not parse', () => {
+  using silent = silenceConsole(['error']);
 
-```ts
-import { silenceConsole } from '@williamthorsen/toolbelt.vitest/candidate';
+  parseArgs(['--colour']);
 
-it('falls back to defaults when settings are missing', () => {
-  using silent = silenceConsole(['warn']);
-
-  loadSettings({});
-
-  expect(silent.warn).toHaveBeenCalledWith('No settings found; using defaults');
+  expect(listConsoleLines(silent.error)).toStrictEqual(['unknown flag: --colour']);
 });
 ```
 
-Each spy records its calls while suppressing the output, so a console call can be asserted on without reaching the terminal. [`listConsoleLines`](#listconsolelines) renders those calls as the lines that the method would have written. Binding with `using` restores the originals when the block exits.
+## Stray output
 
-Called with no argument, it silences all five methods:
-
-```ts
-using _silent = silenceConsole();
-```
-
-`debug` is among them, so a `console.debug` added to diagnose a failing test goes quiet under the no-argument form. Name the methods explicitly to keep it audible.
-
-Silences do not stack. Because Vitest's `vi.spyOn` hands back the existing spy for a method already being spied on, a nested call that overlaps an outer one shares its spy: When the inner scope exits it restores the method for the outer scope too, and the calls recorded by the outer scope are gone. Overlap is most likely with the no-argument form, which claims every method.
-
-The return type narrows to exactly the methods requested, so one that was not silenced is absent from the record:
+Vitest's `silent` option intercepts only `console.*`, so a write to `process.stdout` or `process.stderr` prints between the results of a passing run. `failOnUncapturedOutput`, called from a setup file, holds that output back and fails the test that made it:
 
 ```ts
-using silent = silenceConsole(['error']);
+// vitest.setup.ts, listed under `test.setupFiles`
+import { failOnUncapturedOutput } from '@williamthorsen/toolbelt.vitest/candidate';
 
-silent.warn; // Property 'warn' does not exist
+failOnUncapturedOutput();
 ```
 
-## `throwOnProcessExit`
-
-```ts
-throwOnProcessExit(): Disposable & { spy: MockInstance<typeof process.exit> };
+```text
+Error: The test produced output that no capture took:
+  stderr: "Retrying in 5s\n"
 ```
 
-Replaces `process.exit` for the enclosing scope with an implementation that throws a `ProcessExitError` that contains the exit code.
+A test passes when it takes the output with `captureStdio` or `captureWarnings` from `@williamthorsen/toolbelt.testing`, or with a spy on the stream.
+
+## Process exit
+
+`throwOnProcessExit` replaces `process.exit` with a mock that throws a `ProcessExitError` containing the exit code:
 
 ```ts
 import { captureError } from '@williamthorsen/toolbelt.testing/candidate';
@@ -334,17 +159,9 @@ it('exits with code 1 on an unknown flag', async () => {
 });
 ```
 
-### Why it throws
+`process.exit` never returns, so a mock that returns breaks the one guarantee made by the call: Execution continues past the exit, and the test asserts against a path that the process never reaches in production. The type system agrees. `process.exit` returns `never`, and a function whose last statement is an exit is sound only because of it; a mock that throws satisfies `never` without a type assertion.
 
-`process.exit` never returns, so a mock that returns breaks the one guarantee made by the call. Execution continues past the exit, and the test asserts against a path never reached by the process in production. Nothing reports it: The suite passes while covering code that cannot run, and it keeps passing as that dead continuation grows.
-
-The type system says the same thing. `process.exit` is `(code?: number | string | null) => never`, and a function whose last statement is an exit is sound only because of that `never`. Replace it with a mock that returns and the function returns `undefined` while its signature promises a value. A mock that throws satisfies `never` naturally, which is why this one needs no type assertion and no `vi.fn` workaround.
-
-The compiler will not let a test observe the difference directly, either: Statements written after a `process.exit` call are unreachable, and TypeScript reports TS7027 rather than compiling them.
-
-### Asserting that nothing exited
-
-The thrown error covers every case except one -- proving a path does _not_ exit. That is what the spy is for:
+The spy proves that a path does _not_ exit:
 
 ```ts
 using exit = throwOnProcessExit();
@@ -353,18 +170,6 @@ parseArgsOrExit(['--dry-run'], schema);
 
 expect(exit.spy).not.toHaveBeenCalled();
 ```
-
-### The exit code
-
-Node accepts an integer string and exits with its numeric value, so `process.exit('2')` reports `2` rather than being discarded. A call naming no code reports `undefined`. A code that Node rejects, such as `'abc'` or `1.5`, throws the `TypeError` or `RangeError` that Node throws, rather than a `ProcessExitError`.
-
-### What it does not cover
-
-`process.exitCode = 1` is a separate mechanism. It sets the code with which the process will eventually exit and does not halt execution, so it needs no mock: Read the property after the call. Note that a leaked `process.exitCode` makes the whole Vitest run exit non-zero while every test passes: A test that sets one restores it.
-
-### Mocks do not stack
-
-For the reason `silenceConsole`'s do not: Because `vi.spyOn` hands back the existing spy for a method already being spied on, a nested call shares the outer one and restores `process.exit` for both when the inner scope exits.
 
 ## Adoption checks
 
@@ -401,7 +206,7 @@ A console capture whose parameter list names its arguments drops every argument 
 
 Only test files are read, which inverts the exemption that `@williamthorsen/toolbelt.errors` makes. That kit exempts tests because a test constructs error shapes deliberately; each of these idioms exists nowhere else.
 
-Only the five methods that [`silenceConsole`](#silenceconsole) covers are anchored, and only through `vi.spyOn`. A spy on `console.table` gets no advice, because the package has none to give, and an assignment such as `console.error = vi.fn()` is not read, because the same anchor matches a restore as readily as a mock.
+Only the five methods that `silenceConsole` covers are anchored, and only through `vi.spyOn`. A spy on `console.table` gets no advice, because the package has none to give, and an assignment such as `console.error = vi.fn()` is not read, because the same anchor matches a restore as readily as a mock.
 
 The kit reports a read of a spy's recorded calls once its receiver resolves to a console spy, either a name bound to one or a member of a `silenceConsole` result. It reports nothing for a read of any other spy's calls, and one chained straight onto the spy call binds no name, so the kit reports it at the spy's own site instead.
 
@@ -411,7 +216,7 @@ The kit reports a mock throwing a sentinel class declared by the same file once,
 
 The kit reports a disposal only from inside an `onTestFinished` callback, and only when the callback calls `[Symbol.dispose]()` itself. Both the imported hook and the one taken off the test context are anchors; `disposeOnTestFinished` is not, so the kit reports nothing for an adopting project's own calls. It reports a callback disposing alongside other cleanup too, since the disposal moves to the construction site whatever else the hook does.
 
-Everything else that anchor covers is silent rather than unclassified. Because the other two anchors are their idiom, a mock that the kit cannot read is still a site; `onTestFinished` only hosts one, and most calls to it clean up by other means. Counting those would put every cleanup hook in the project into the fraction shared by all the checks. A callback given as a bare reference and an unbound `resource[Symbol.dispose]` are declined on that footing, and an `AsyncDisposable` disposal has no advice to give besides: [`disposeOnTestFinished`](#disposeontestfinished) takes a sync `Disposable` alone.
+Everything else that anchor covers is silent rather than unclassified. Because the other two anchors are their idiom, a mock that the kit cannot read is still a site; `onTestFinished` only hosts one, and most calls to it clean up by other means. Counting those would put every cleanup hook in the project into the fraction shared by all the checks. A callback given as a bare reference and an unbound `resource[Symbol.dispose]` are declined on that footing, and an `AsyncDisposable` disposal has no advice to give besides: `disposeOnTestFinished` takes a sync `Disposable` alone.
 
 ### Silencing a reviewed site
 
