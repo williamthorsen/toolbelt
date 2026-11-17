@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 
-import { describe, expect, it } from 'vitest';
+import { assert, describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
 import type { Job, ProviderConnection } from '../../types/job.ts';
@@ -19,7 +19,7 @@ describe.skipIf(connection === undefined)('runJob on Anthropic', () => {
   it(
     'runs a job to its result through the browser and credential headers',
     async () => {
-      if (connection === undefined) throw new Error('Unreachable: the suite skips without a connection.');
+      assert(connection !== undefined, 'The suite skips without a connection.');
 
       const outcome = await runJob(createGreetingJob(), connection);
 
