@@ -182,7 +182,7 @@ it('warns that the option is deprecated', () => {
 });
 ```
 
-Each warning is the `Error` that Node would emit, with its `name`, `code`, and `detail`, and it is recorded during the `emitWarning` call. Node prints a warning on a later tick, so a `captureStdio` scope that has closed by then misses it, and the warning reaches the terminal anyway.
+Each warning is the `Error` that Node would emit, with its `name`, `code`, and `detail`, and it is recorded during the `emitWarning` call. Node prints a warning on a later tick, so a `captureStdio` scope that has closed by then misses it, and the warning reaches the terminal anyway. A call that Node rejects, such as `emitWarning(42)` or one whose type or code is not a string, throws a `TypeError` with Node's code `ERR_INVALID_ARG_TYPE` and records nothing.
 
 `reset()` empties the record. Because the capture replaces `process.emitWarning`, the `'warning'` event does not fire while the scope is open, and a `process.on('warning')` listener in the code under test does not run.
 
