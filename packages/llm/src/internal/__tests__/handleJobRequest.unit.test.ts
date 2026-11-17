@@ -160,6 +160,35 @@ describe(handleJobRequest, () => {
     expect(onError.mock.calls[0]?.[0]).toHaveProperty('cause', failure);
   });
 
+  it('ends the stream with the generic failure when onError throws', async () => {
+    const model = new MockLanguageModelV4({ doStream: () => Promise.reject(new Error('provider down')) });
+
+    const response = await handleJobRequest(buildPost({ input: 'x' }), { ...OPTIONS, onError: throwingOnError }, model);
+
+    await expect(readJobStream(response)).resolves.toStrictEqual([{ name: 'failure', data: JOB_FAILURE_BODY }]);
+  });
+
+  it.each([
+    ['503 when the counter throws', { countJob: () => Promise.reject(new Error('redis down')) }, 503],
+    [
+      '500 when createJob throws',
+      {
+        createJob: () => {
+          throw new Error('bad job');
+        },
+      },
+      500,
+    ],
+  ])('answers %s even when onError throws', async (_label, override, status) => {
+    const response = await handleJobRequest(
+      buildPost({ input: 'x' }),
+      { ...OPTIONS, ...override, onError: throwingOnError },
+      mockModel([]),
+    );
+
+    expect(response.status).toBe(status);
+  });
+
   it('stops the job without a failure when the reader cancels the stream', async () => {
     const run = await startPausedRun();
 
@@ -190,6 +219,11 @@ function buildPost(body: unknown, headers: Record<string, string> = {}, signal?:
     body: typeof body === 'string' ? body : JSON.stringify(body),
     ...(signal && { signal }),
   });
+}
+
+/** Throws, as an `onError` whose logger fails does. */
+function throwingOnError(): never {
+  throw new Error('logger down');
 }
 
 /** Creates a mock model that streams the given rounds in order. */

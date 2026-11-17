@@ -29,7 +29,7 @@ export interface JobHandlerOptions<Result> {
   readonly countJob?: (request: Request) => Promise<JobCount>;
   /**
    * Receives each error that the handler withholds from the page: a failed job, a failed `createJob`, or a failed
-   * counter.
+   * counter. The handler ignores a throw from it.
    */
   readonly onError?: (error: unknown) => void;
   /** Builds a fresh job for a request's input. */

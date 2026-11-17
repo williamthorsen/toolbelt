@@ -21,7 +21,7 @@ export async function handleJobRequest<Result>(
   options: JobHandlerOptions<Result>,
   model: LanguageModel,
 ): Promise<Response> {
-  const { maxInputLength, onError } = options;
+  const { maxInputLength } = options;
   if (request.method !== 'POST') {
     return refuse('method-not-allowed', 'The endpoint accepts only POST.', { allow: 'POST' });
   }
@@ -37,12 +37,13 @@ export async function handleJobRequest<Result>(
     return refuse('input-too-long', `The input exceeds ${maxInputLength} characters.`);
   }
 
+  const onError = buildErrorReporter(options.onError);
   if (options.countJob !== undefined) {
     let count;
     try {
       count = await options.countJob(request);
     } catch (error) {
-      onError?.(error);
+      onError(error);
       return refuse('counter-unavailable', 'The job counter is unavailable.');
     }
     if (!count.allowed) {
@@ -55,7 +56,7 @@ export async function handleJobRequest<Result>(
     job = capRounds(options.createJob(input), options.maxRounds);
     assertPositiveInteger(job.maxRounds, 'maxRounds');
   } catch (error) {
-    onError?.(error);
+    onError(error);
     return Response.json(JOB_FAILURE_BODY, { status: 500 });
   }
 
@@ -65,6 +66,17 @@ export async function handleJobRequest<Result>(
 }
 
 // region | Helpers
+/** Returns a reporter that passes an error to `onError` and ignores a throw from it. */
+function buildErrorReporter(onError: ((error: unknown) => void) | undefined): (error: unknown) => void {
+  return (error) => {
+    try {
+      onError?.(error);
+    } catch {
+      // The handler's response does not depend on the operator's callback.
+    }
+  };
+}
+
 /** Returns the job with its round cap lowered to `maxRounds`, delegating the rest to the job. */
 function capRounds<Result>(job: Job<Result>, maxRounds: number | undefined): Job<Result> {
   if (maxRounds === undefined || maxRounds >= job.maxRounds) return job;
@@ -109,7 +121,7 @@ async function pumpJob<Result>(
   model: LanguageModel,
   controller: ReadableStreamDefaultController<Uint8Array>,
   signals: { readonly request: AbortSignal; readonly cancel: AbortSignal },
-  onError: ((error: unknown) => void) | undefined,
+  onError: (error: unknown) => void,
 ): Promise<void> {
   const signal = AbortSignal.any([signals.request, signals.cancel]);
   const encoder = new TextEncoder();
@@ -121,7 +133,7 @@ async function pumpJob<Result>(
     send('outcome', await runJobOnModel(job, model, { signal, onEvent: (event) => send('job-event', event) }));
   } catch (error) {
     if (!signal.aborted) {
-      onError?.(error);
+      onError(error);
       send('failure', JOB_FAILURE_BODY);
     }
   }
@@ -133,7 +145,7 @@ function streamJob<Result>(
   job: Job<Result>,
   model: LanguageModel,
   requestSignal: AbortSignal,
-  onError: ((error: unknown) => void) | undefined,
+  onError: (error: unknown) => void,
 ): ReadableStream<Uint8Array> {
   const cancelController = new AbortController();
   return new ReadableStream<Uint8Array>({
