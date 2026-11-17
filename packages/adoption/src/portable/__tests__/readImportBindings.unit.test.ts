@@ -57,6 +57,7 @@ describe(readImportBindings, () => {
   });
 
   it('does not read an import written in a comment or a literal', () => {
+    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on adoption, so adoption cannot import dedent without a cycle
     const source = [
       "// import { parseArgs } from 'node:util';",
       'const text = "import { parseArgs } from \'node:util\'";',

@@ -1,3 +1,4 @@
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { type ErrorSiteKind, listErrorSites } from '../listErrorSites.ts';
@@ -41,13 +42,12 @@ describe(listErrorSites, () => {
   });
 
   it('names a negated narrowing that throws', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-    const source = [
-      'if (!(value instanceof Error)) {',
-      '  console.error(value);',
-      "  throw new TypeError('Expected an Error');",
-      '}',
-    ].join('\n');
+    const source = dedent`
+      if (!(value instanceof Error)) {
+        console.error(value);
+        throw new TypeError('Expected an Error');
+      }
+    `;
 
     expect(listKinds(source)).toStrictEqual(['assert']);
   });
@@ -65,44 +65,41 @@ describe(listErrorSites, () => {
   });
 
   it('names a locally defined describeError as a clone, once, with its function name', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-    const source = [
-      'export function describeError(error: unknown): string {',
-      '  if (error instanceof Error) return error.message;',
-      '  return String(error);',
-      '}',
-    ].join('\n');
+    const source = dedent`
+      export function describeError(error: unknown): string {
+        if (error instanceof Error) return error.message;
+        return String(error);
+      }
+    `;
 
     expect(listErrorSites(source)).toStrictEqual([{ kind: 'describe-clone', line: 2, symbol: 'describeError' }]);
   });
 
   it('names a three-arm description helper as a clone', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-    const source = [
-      'function toPanelMessage(error: unknown): string {',
-      '  if (error instanceof Error) {',
-      '    return error.message;',
-      '  }',
-      "  if (typeof error === 'string') {",
-      '    return error;',
-      '  }',
-      "  return 'An unexpected error occurred during panel creation.';",
-      '}',
-    ].join('\n');
+    const source = dedent`
+      function toPanelMessage(error: unknown): string {
+        if (error instanceof Error) {
+          return error.message;
+        }
+        if (typeof error === 'string') {
+          return error;
+        }
+        return 'An unexpected error occurred during panel creation.';
+      }
+    `;
 
     expect(listErrorSites(source)).toStrictEqual([{ kind: 'describe-clone', line: 2, symbol: 'toPanelMessage' }]);
   });
 
   it('leaves a function that composes rather than describes to the per-site classification', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-    const source = [
-      'function toDetail(error: unknown, parts: string[]): string {',
-      '  if (error instanceof Error) {',
-      '    parts.push(error.message);',
-      '  }',
-      '  return parts.join(separator);',
-      '}',
-    ].join('\n');
+    const source = dedent`
+      function toDetail(error: unknown, parts: string[]): string {
+        if (error instanceof Error) {
+          parts.push(error.message);
+        }
+        return parts.join(separator);
+      }
+    `;
 
     expect(listKinds(source)).toStrictEqual(['narrow']);
   });
@@ -116,22 +113,20 @@ describe(listErrorSites, () => {
   });
 
   it('reports every site in a file', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-    const source = [
-      'const message = error instanceof Error ? error.message : String(error);',
-      'const wrapped = value instanceof Error ? value : new Error(String(value));',
-      "const isErrno = error instanceof Error && 'code' in error;",
-    ].join('\n');
+    const source = dedent`
+      const message = error instanceof Error ? error.message : String(error);
+      const wrapped = value instanceof Error ? value : new Error(String(value));
+      const isErrno = error instanceof Error && 'code' in error;
+    `;
 
     expect(listKinds(source)).toStrictEqual(['describe-inline', 'coerce', 'narrow']);
   });
 
   it('names a missing-path test alongside the instanceof sites, in source order', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-    const source = [
-      "const isErrno = error instanceof Error && 'code' in error;",
-      "if (error.code === 'ENOENT') return;",
-    ].join('\n');
+    const source = dedent`
+      const isErrno = error instanceof Error && 'code' in error;
+      if (error.code === 'ENOENT') return;
+    `;
 
     expect(listErrorSites(source)).toStrictEqual([
       { kind: 'narrow', line: 1 },
@@ -152,12 +147,11 @@ describe(listErrorSites, () => {
   });
 
   it('leaves an instanceof Error inside a missing-path clone to the clone', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-    const source = [
-      'function isAbsent(error: unknown): boolean {',
-      "  return error instanceof Error && 'code' in error && (error.code === 'ENOENT' || error.code === 'ENOTDIR');",
-      '}',
-    ].join('\n');
+    const source = dedent`
+      function isAbsent(error: unknown): boolean {
+        return error instanceof Error && 'code' in error && (error.code === 'ENOENT' || error.code === 'ENOTDIR');
+      }
+    `;
 
     expect(listErrorSites(source)).toStrictEqual([{ kind: 'missing-path-clone', line: 1, symbol: 'isAbsent' }]);
   });
@@ -169,25 +163,23 @@ describe(listErrorSites, () => {
   });
 
   it('leaves an instanceof Error to the missing-path test that && continues across a line break', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-    const source = [
-      'if (',
-      '  error instanceof Error &&',
-      "  'code' in error",
-      "  && error.code === 'ENOENT'",
-      ') return;',
-    ].join('\n');
+    const source = dedent`
+      if (
+        error instanceof Error &&
+        'code' in error
+        && error.code === 'ENOENT'
+      ) return;
+    `;
 
     expect(listKinds(source)).toStrictEqual(['missing-path-partial']);
   });
 
   it('keeps an instanceof Error that a block, a ternary, or || separates from the missing-path test', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-    const source = [
-      "if (error instanceof Error) { if ('code' in error && error.code === 'ENOENT') return; }",
-      "const absent = error instanceof Error ? error.code === 'ENOENT' : false;",
-      "const either = error instanceof Error || error.code === 'ENOENT';",
-    ].join('\n');
+    const source = dedent`
+      if (error instanceof Error) { if ('code' in error && error.code === 'ENOENT') return; }
+      const absent = error instanceof Error ? error.code === 'ENOENT' : false;
+      const either = error instanceof Error || error.code === 'ENOENT';
+    `;
 
     expect(listKinds(source)).toStrictEqual([
       'narrow',
@@ -216,11 +208,10 @@ describe(listErrorSites, () => {
   });
 
   it('reports a site that the prose beside it never obscures', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-    const source = [
-      '// Falls back to instanceof Error where the guard is unavailable.',
-      'const message = error instanceof Error ? error.message : String(error);',
-    ].join('\n');
+    const source = dedent`
+      // Falls back to instanceof Error where the guard is unavailable.
+      const message = error instanceof Error ? error.message : String(error);
+    `;
 
     expect(listErrorSites(source)).toStrictEqual([{ kind: 'describe-inline', line: 2 }]);
   });
