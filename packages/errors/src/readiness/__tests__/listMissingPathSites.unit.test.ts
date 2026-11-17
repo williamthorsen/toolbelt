@@ -1,4 +1,5 @@
 import { blankNonCode } from '@williamthorsen/toolbelt.adoption';
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { listMissingPathSites, type MissingPathSiteKind } from '../listMissingPathSites.ts';
@@ -63,94 +64,87 @@ describe(listMissingPathSites, () => {
   });
 
   it('ignores a code named in a comment or a string, and a switch over the code', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-    const source = [
-      "// error.code === 'ENOENT' means the file is gone",
-      'const hint = "error.code === \'ENOENT\'";',
-      'switch (error.code) {',
-      "  case 'ENOENT':",
-      '    return;',
-      '}',
-    ].join('\n');
+    const source = dedent`
+      // error.code === 'ENOENT' means the file is gone
+      const hint = "error.code === 'ENOENT'";
+      switch (error.code) {
+        case 'ENOENT':
+          return;
+      }
+    `;
 
     expect(listKinds(source)).toStrictEqual([]);
   });
 
   it('names a helper testing its own parameter for both codes as a clone, once, with its name', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-    const source = [
-      'export function isNotFound(error: unknown): boolean {',
-      '  return (',
-      "    typeof error === 'object' &&",
-      '    error !== null &&',
-      "    'code' in error &&",
-      "    (error.code === 'ENOENT' || error.code === 'ENOTDIR')",
-      '  );',
-      '}',
-    ].join('\n');
+    const source = dedent`
+      export function isNotFound(error: unknown): boolean {
+        return (
+          typeof error === 'object' &&
+          error !== null &&
+          'code' in error &&
+          (error.code === 'ENOENT' || error.code === 'ENOTDIR')
+        );
+      }
+    `;
 
     expect(listSites(source)).toStrictEqual([{ kind: 'missing-path-clone', line: 1, symbol: 'isNotFound' }]);
   });
 
   it('names a helper testing the two codes in separate statements as a clone', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-    const source = [
-      'const isAbsent = (error: NodeJS.ErrnoException): boolean => {',
-      "  if (error.code === 'ENOENT') return true;",
-      "  return error.code === 'ENOTDIR';",
-      '};',
-    ].join('\n');
+    const source = dedent`
+      const isAbsent = (error: NodeJS.ErrnoException): boolean => {
+        if (error.code === 'ENOENT') return true;
+        return error.code === 'ENOTDIR';
+      };
+    `;
 
     expect(listSites(source)).toStrictEqual([{ kind: 'missing-path-clone', line: 1, symbol: 'isAbsent' }]);
   });
 
   it('reports a helper testing one code at its comparison, as partial', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-    const source = [
-      'function isNotFound(error: NodeJS.ErrnoException): boolean {',
-      "  return error.code === 'ENOENT';",
-      '}',
-    ].join('\n');
+    const source = dedent`
+      function isNotFound(error: NodeJS.ErrnoException): boolean {
+        return error.code === 'ENOENT';
+      }
+    `;
 
     expect(listSites(source)).toStrictEqual([{ kind: 'missing-path-partial', line: 2 }]);
   });
 
   it('leaves a helper that maps the codes to other values to the per-site report', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-    const source = [
-      'function label(error: NodeJS.ErrnoException): string {',
-      "  if (error.code === 'ENOENT') return 'missing';",
-      "  if (error.code === 'ENOTDIR') return 'not a directory';",
-      "  return 'other';",
-      '}',
-    ].join('\n');
+    const source = dedent`
+      function label(error: NodeJS.ErrnoException): string {
+        if (error.code === 'ENOENT') return 'missing';
+        if (error.code === 'ENOTDIR') return 'not a directory';
+        return 'other';
+      }
+    `;
 
     expect(listKinds(source)).toStrictEqual(['missing-path-partial', 'missing-path-partial']);
   });
 
   it('leaves a helper that negates the test to the per-site report', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-    const source = [
-      'function isPresent(error: NodeJS.ErrnoException): boolean {',
-      "  return error.code !== 'ENOENT' && error.code !== 'ENOTDIR';",
-      '}',
-    ].join('\n');
+    const source = dedent`
+      function isPresent(error: NodeJS.ErrnoException): boolean {
+        return error.code !== 'ENOENT' && error.code !== 'ENOTDIR';
+      }
+    `;
 
     expect(listKinds(source)).toStrictEqual(['missing-path-test']);
   });
 
   it('leaves a helper that does more than test, or tests another value, to the per-site report', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-    const source = [
-      'function readOptional(file: string): string | undefined {',
-      '  try {',
-      '    return fs.readFileSync(file, "utf8");',
-      '  } catch (error) {',
-      "    if (error.code === 'ENOENT' || error.code === 'ENOTDIR') return undefined;",
-      '    throw error;',
-      '  }',
-      '}',
-    ].join('\n');
+    const source = dedent`
+      function readOptional(file: string): string | undefined {
+        try {
+          return fs.readFileSync(file, "utf8");
+        } catch (error) {
+          if (error.code === 'ENOENT' || error.code === 'ENOTDIR') return undefined;
+          throw error;
+        }
+      }
+    `;
 
     expect(listKinds(source)).toStrictEqual(['missing-path-test']);
   });

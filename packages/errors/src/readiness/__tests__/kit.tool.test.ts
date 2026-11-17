@@ -7,6 +7,7 @@ import {
   selectCheck,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 const KIT_URL = new URL('../../../.readyup/kits/default.ts', import.meta.url);
@@ -14,49 +15,44 @@ const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.errors', version: '1.0.0' });
 
 const ASSERT = ['if (!(value instanceof Error)) {', "  throw new TypeError('Expected an Error');", '}', ''].join('\n');
-// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-const CLONE = [
-  'export function toMessage(error) {',
-  '  if (error instanceof Error) return error.message;',
-  '  return String(error);',
-  '}',
-  '',
-].join('\n');
+const CLONE = dedent`
+  export function toMessage(error) {
+    if (error instanceof Error) return error.message;
+    return String(error);
+  }
+
+`;
 const COERCE = 'export const wrapped = value instanceof Error ? value : new Error(String(value));\n';
 const DESCRIBE_INLINE = 'export const message = error instanceof Error ? error.message : String(error);\n';
 const NARROW = "export const isErrno = error instanceof Error && 'code' in error;\n";
-// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-const MISSING_PATH_CLONE = [
-  'export function isAbsent(error) {',
-  "  return error instanceof Error && 'code' in error && (error.code === 'ENOENT' || error.code === 'ENOTDIR');",
-  '}',
-  '',
-].join('\n');
+const MISSING_PATH_CLONE = dedent`
+  export function isAbsent(error) {
+    return error instanceof Error && 'code' in error && (error.code === 'ENOENT' || error.code === 'ENOTDIR');
+  }
+
+`;
 const MISSING_PATH_TEST = "export const absent = error.code === 'ENOENT' || error.code === 'ENOTDIR';\n";
 const MISSING_PATH_PARTIAL = "export const absent = error.code === 'ENOENT';\n";
 // The package's own isMissingPathError, containing the idiom that its missing-path clone check reports.
-// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-const OWN_IS_MISSING_PATH_ERROR = [
-  'export function isMissingPathError(error) {',
-  "  return typeof error === 'object' && error !== null && 'code' in error && (error.code === 'ENOENT' || error.code === 'ENOTDIR');",
-  '}',
-  '',
-].join('\n');
+const OWN_IS_MISSING_PATH_ERROR = dedent`
+  export function isMissingPathError(error) {
+    return typeof error === 'object' && error !== null && 'code' in error && (error.code === 'ENOENT' || error.code === 'ENOTDIR');
+  }
+
+`;
 // The package's own describeError, containing the idiom that its first check reports.
-// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-const OWN_DESCRIBE_ERROR = [
-  'export function describeError(error) {',
-  '  if (error instanceof Error) return error.message;',
-  '  return String(error);',
-  '}',
-  '',
-].join('\n');
-// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on errors through testing, so errors cannot import dedent without a cycle
-const ADOPTER = [
-  "import { describeError } from '@williamthorsen/toolbelt.errors';",
-  'export const message = describeError(error);',
-  '',
-].join('\n');
+const OWN_DESCRIBE_ERROR = dedent`
+  export function describeError(error) {
+    if (error instanceof Error) return error.message;
+    return String(error);
+  }
+
+`;
+const ADOPTER = dedent`
+  import { describeError } from '@williamthorsen/toolbelt.errors';
+  export const message = describeError(error);
+
+`;
 const EVERY_IDIOM = {
   'package.json': MANIFEST,
   'src/assert.ts': ASSERT,
