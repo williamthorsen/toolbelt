@@ -112,6 +112,64 @@ describe(handleJobRequest, () => {
     expect(onError).toHaveBeenCalledWith(failure);
   });
 
+  it('checks for a bot before counting the job, passing the request', async () => {
+    const request = buildPost({ input: 'x' });
+    const calls: string[] = [];
+    const checkBot = vi.fn(() => {
+      calls.push('checkBot');
+      return Promise.resolve(true);
+    });
+    const countJob = vi.fn(() => {
+      calls.push('countJob');
+      return Promise.resolve({ allowed: true } as const);
+    });
+
+    const response = await handleJobRequest(
+      request,
+      { ...OPTIONS, checkBot, countJob },
+      mockModel([buildRound([buildToolCall('c1', 'submit', { value: 'done' })])]),
+    );
+    await readJobStream(response);
+
+    expect(checkBot).toHaveBeenCalledWith(request);
+    expect(calls).toStrictEqual(['checkBot', 'countJob']);
+  });
+
+  it('refuses a job that the bot check fails, without counting it', async () => {
+    const model = mockModel([]);
+    const countJob = vi.fn(() => Promise.resolve({ allowed: true } as const));
+
+    const response = await handleJobRequest(
+      buildPost({ input: 'x' }),
+      { ...OPTIONS, checkBot: () => Promise.resolve(false), countJob },
+      model,
+    );
+
+    expect(response.status).toBe(403);
+    await expect(response.json()).resolves.toMatchObject({ reason: 'bot-check-failed' });
+    expect(countJob).not.toHaveBeenCalled();
+    expect(model.doStreamCalls).toHaveLength(0);
+  });
+
+  it('refuses a job when the bot check throws, reporting the error to onError without counting it', async () => {
+    const failure = new Error('siteverify down');
+    const onError = vi.fn();
+    const model = mockModel([]);
+    const countJob = vi.fn(() => Promise.resolve({ allowed: true } as const));
+
+    const response = await handleJobRequest(
+      buildPost({ input: 'x' }),
+      { ...OPTIONS, checkBot: () => Promise.reject(failure), countJob, onError },
+      model,
+    );
+
+    expect(response.status).toBe(503);
+    await expect(response.json()).resolves.toMatchObject({ reason: 'bot-check-unavailable' });
+    expect(onError).toHaveBeenCalledWith(failure);
+    expect(countJob).not.toHaveBeenCalled();
+    expect(model.doStreamCalls).toHaveLength(0);
+  });
+
   it('answers 500 with the generic failure when createJob throws, reporting the error to onError', async () => {
     const failure = new Error('bad job');
     const onError = vi.fn();

@@ -86,7 +86,39 @@ export const POST = createJobHandler({
 });
 ```
 
-The handler accepts only the job's input, so a caller can obtain the job's result and nothing else from the operator's key. It caps the input at `maxInputLength` and each job's rounds at the lower of `maxRounds` and the job's own, and calls the optional `countJob` before the first model request to enforce the operator's limits. It refuses a request with a JSON body that names the reason, which `runJob` reports as `JobRefusedError`; the doc comment of `createJobHandler` lists the statuses. A failure reaches the page without its details, which go to `onError`. The handler adds no CORS headers, so a page on another origin needs the function to add them.
+The handler accepts only the job's input, so a caller can obtain the job's result and nothing else from the operator's key. It caps the input at `maxInputLength` and each job's rounds at the lower of `maxRounds` and the job's own, and calls the optional `checkBot` and then `countJob` before the first model request to keep out bots and enforce the operator's limits. It refuses a request with a JSON body that names the reason, which `runJob` reports as `JobRefusedError`; the doc comment of `createJobHandler` lists the statuses. A failure reaches the page without its details, which go to `onError`. The handler adds no CORS headers, so a page on another origin needs the function to add them.
+
+## The guards
+
+An endpoint open to anyone spends the operator's key for anyone. Two optional factories build the handler's guards, and both refuse a job when their service fails or does not answer within 5 seconds:
+
+```ts
+import {
+  createJobHandler,
+  createTurnstileVerifier,
+  createUpstashJobCounter,
+} from '@williamthorsen/toolbelt.llm/proposed';
+
+export const POST = createJobHandler({
+  createJob,
+  connection,
+  maxInputLength: 10_000,
+  checkBot: createTurnstileVerifier({ secretKey: process.env.TURNSTILE_SECRET_KEY ?? '' }),
+  countJob: createUpstashJobCounter({
+    url: process.env.UPSTASH_REDIS_REST_URL ?? '',
+    token: process.env.UPSTASH_REDIS_REST_TOKEN ?? '',
+    readCallerIp: (request) => request.headers.get('x-real-ip') ?? undefined,
+    perIpLimit: 5,
+    globalDailyLimit: 200,
+  }),
+});
+```
+
+`createTurnstileVerifier` verifies a Cloudflare Turnstile token, read from the `cf-turnstile-response` header unless `header` names another, and can require the hostname and action for which the token was issued. A token is valid once, so the page gets a fresh one from the widget for each job and passes it in the `EndpointConnection`'s `headers`.
+
+`createUpstashJobCounter` counts each job in Upstash Redis against `perIpLimit` and `globalDailyLimit` over the UTC day, under keys that start with `keyPrefix` (`llm-jobs` by default). A refusal names the limit that applied, `per-ip-daily` or `global-daily`, in `JobRefusedError`'s `limit`. `readCallerIp` reads the caller's IP from a header that the host sets: `x-real-ip` on Vercel, `cf-connecting-ip` on Cloudflare. Do not read `x-forwarded-for`, which a client can set on some hosts to escape the per-IP limit.
+
+The guards bound who runs jobs, not what a job costs. Run the endpoint on a dedicated provider workspace with a monthly spend limit, on prepaid credits with auto-reload off, so that the provider stops the spending when the guards do not.
 
 ## The endpoint connection
 

@@ -54,6 +54,18 @@ describe(runJobAtEndpoint, () => {
     expect(error).toMatchObject({ status: 429, reason: 'limit-reached', limit: 'per-ip', message: body.message });
   });
 
+  it.each([
+    ['bot-check-failed', 403],
+    ['bot-check-unavailable', 503],
+  ])('rejects with JobRefusedError for a %s refusal', async (reason, status) => {
+    const body = { reason, message: 'The bot check did not pass.' };
+
+    const error = await captureRejection(run(Response.json(body, { status })));
+
+    expect(error).toBeInstanceOf(JobRefusedError);
+    expect(error).toMatchObject({ status, reason });
+  });
+
   it('rejects with JobRefusedError without a limit for a refusal that does not name one', async () => {
     const body = { reason: 'input-too-long', message: 'The input exceeds 20 characters.' };
 
