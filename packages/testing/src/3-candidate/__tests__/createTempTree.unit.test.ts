@@ -4,7 +4,7 @@ import path from 'node:path';
 
 import { describe, expect, it, vi } from 'vitest';
 
-import { createTempTree } from '../createTempTree.ts';
+import { createTempTree, type TempTree } from '../createTempTree.ts';
 
 describe(createTempTree, () => {
   it('creates a directory for a key ending in a separator', () => {
@@ -148,6 +148,28 @@ describe(createTempTree, () => {
   });
 });
 
+describe('TempTree path containment', () => {
+  type TreeCall = (tree: TempTree) => unknown;
+
+  it.each<[string, TreeCall]>([
+    ['exists', (tree) => tree.exists('../escaped.txt')],
+    ['list', (tree) => tree.list('..')],
+    ['listFiles', (tree) => tree.listFiles('..')],
+    ['mkdir', (tree) => tree.mkdir('../escaped')],
+    ['read', (tree) => tree.read('../escaped.txt')],
+    ['readJson', (tree) => tree.readJson('../escaped.json')],
+    ['resolve', (tree) => tree.resolve('..')],
+    ['rm', (tree) => tree.rm('../escaped.txt')],
+    ['symlink', (tree) => tree.symlink('../escaped.json', 'real.json')],
+    ['write', (tree) => tree.write('../escaped.txt', '')],
+    ['writeJson', (tree) => tree.writeJson('../escaped.json', {})],
+  ])('throws when %s is given a path that would ascend out of the tree', (_method, call) => {
+    using tree = createTempTree({});
+
+    expect(() => call(tree)).toThrow(/falls outside the temporary tree/);
+  });
+});
+
 describe('TempTree.exists', () => {
   it('returns true for a written file and false for a missing entry', () => {
     using tree = createTempTree({ 'package.json': '{}' });
@@ -161,14 +183,6 @@ describe('TempTree.exists', () => {
     tree.symlink('link.json', 'absent.json');
 
     expect(tree.exists('link.json')).toBe(false);
-  });
-
-  it('throws on a path that would ascend out of the tree', () => {
-    using tree = createTempTree({});
-
-    const exists = () => tree.exists('../escaped.txt');
-
-    expect(exists).toThrow(/falls outside the temporary tree/);
   });
 });
 
@@ -191,14 +205,6 @@ describe('TempTree.list', () => {
     const list = () => tree.list('absent');
 
     expect(list).toThrow(/ENOENT/);
-  });
-
-  it('throws on a path that would ascend out of the tree', () => {
-    using tree = createTempTree({});
-
-    const list = () => tree.list('..');
-
-    expect(list).toThrow(/falls outside the temporary tree/);
   });
 });
 
@@ -261,14 +267,6 @@ describe('TempTree.listFiles', () => {
 
     expect(listFiles).toThrow(/ENOTDIR/);
   });
-
-  it('throws on a path that would ascend out of the tree', () => {
-    using tree = createTempTree({});
-
-    const listFiles = () => tree.listFiles('..');
-
-    expect(listFiles).toThrow(/falls outside the temporary tree/);
-  });
 });
 
 describe('TempTree.mkdir', () => {
@@ -293,14 +291,6 @@ describe('TempTree.mkdir', () => {
 
     expect(fs.readFileSync(tree.resolve('packages/app/package.json'), 'utf8')).toBe('{}');
   });
-
-  it('throws on a path that would ascend out of the tree', () => {
-    using tree = createTempTree({});
-
-    const mkdir = () => tree.mkdir('../escaped');
-
-    expect(mkdir).toThrow(/falls outside the temporary tree/);
-  });
 });
 
 describe('TempTree.read', () => {
@@ -316,14 +306,6 @@ describe('TempTree.read', () => {
     const read = () => tree.read('absent.json');
 
     expect(read).toThrow(/ENOENT/);
-  });
-
-  it('throws on a path that would ascend out of the tree', () => {
-    using tree = createTempTree({});
-
-    const read = () => tree.read('../escaped.txt');
-
-    expect(read).toThrow(/falls outside the temporary tree/);
   });
 });
 
@@ -371,14 +353,6 @@ describe('TempTree.resolve', () => {
     expect(tree.resolve(path.join(tree.dir, 'app'))).toBe(path.join(tree.dir, 'app'));
   });
 
-  it('throws on a relative segment that would ascend out of the tree', () => {
-    using tree = createTempTree({});
-
-    const resolve = () => tree.resolve('..');
-
-    expect(resolve).toThrow(/falls outside the temporary tree/);
-  });
-
   it('throws on an absolute segment outside the tree', () => {
     using tree = createTempTree({});
 
@@ -409,14 +383,6 @@ describe('TempTree.rm', () => {
     using tree = createTempTree({});
 
     expect(() => tree.rm('absent.json')).not.toThrow();
-  });
-
-  it('throws on a path that would ascend out of the tree', () => {
-    using tree = createTempTree({});
-
-    const rm = () => tree.rm('../escaped.txt');
-
-    expect(rm).toThrow(/falls outside the temporary tree/);
   });
 });
 
@@ -536,14 +502,6 @@ describe('TempTree.symlink', () => {
       expect(symlinkSyncSpy).toHaveBeenCalledWith('absent.json', tree.resolve('link'), 'file');
     });
   });
-
-  it('throws on a link path that would ascend out of the tree', () => {
-    using tree = createTempTree({ 'real.json': 'real\n' });
-
-    const symlink = () => tree.symlink('../escaped.json', 'real.json');
-
-    expect(symlink).toThrow(/falls outside the temporary tree/);
-  });
 });
 
 describe('TempTree.write', () => {
@@ -579,14 +537,6 @@ describe('TempTree.write', () => {
     const filePath = tree.write('package.json', '{ "name": "new" }');
 
     expect(fs.readFileSync(filePath, 'utf8')).toBe('{ "name": "new" }');
-  });
-
-  it('throws on a path that would ascend out of the tree', () => {
-    using tree = createTempTree({});
-
-    const write = () => tree.write('../escaped.txt', 'contents');
-
-    expect(write).toThrow(/falls outside the temporary tree/);
   });
 });
 
@@ -642,14 +592,6 @@ describe('TempTree.writeJson', () => {
     expect(tree.writeJson('packages/app/package.json', { name: 'app' })).toBe(
       path.join(tree.dir, 'packages/app/package.json'),
     );
-  });
-
-  it('throws on a path that would ascend out of the tree', () => {
-    using tree = createTempTree({});
-
-    const writeJson = () => tree.writeJson('../escaped.json', { name: 'app' });
-
-    expect(writeJson).toThrow(/falls outside the temporary tree/);
   });
 
   // An optional binding left empty is passed to `writeJson` as `undefined`, which `unknown` accepts without complaint.
