@@ -22,18 +22,18 @@ export interface JobHandlerOptions<Result> {
   readonly maxInputLength: number;
   /** The most rounds that any job runs, applied when it is lower than the job's own `maxRounds`; a positive integer. */
   readonly maxRounds?: number;
-  /** Builds a fresh job for a request's input. */
-  createJob(input: string): Job<Result>;
   /**
    * Counts a job against the operator's limits before its first model request, and refuses it when a limit is
-   * reached. A throw refuses the job as well.
+   * reached. A throw refuses the job as well. It receives the request after the handler has read its body.
    */
-  countJob?(request: Request): Promise<JobCount>;
+  readonly countJob?: (request: Request) => Promise<JobCount>;
   /**
    * Receives each error that the handler withholds from the page: a failed job, a failed `createJob`, or a failed
    * counter.
    */
-  onError?(error: unknown): void;
+  readonly onError?: (error: unknown) => void;
+  /** Builds a fresh job for a request's input. */
+  createJob(input: string): Job<Result>;
 }
 
 /** Why an endpoint refused a job before running it. */

@@ -11,6 +11,7 @@ export type {
   RunJobOptions,
   Usage,
 } from '../types/job.ts';
+export { createJobHandler } from './createJobHandler.ts';
 export { defineTool } from './defineTool.ts';
 export { JobRefusedError } from './JobRefusedError.ts';
 export { JobRunError } from './JobRunError.ts';

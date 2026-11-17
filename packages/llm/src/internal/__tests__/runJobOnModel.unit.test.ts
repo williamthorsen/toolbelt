@@ -1,13 +1,12 @@
-import type { LanguageModelV4StreamPart, LanguageModelV4StreamResult } from '@ai-sdk/provider';
-import { convertArrayToReadableStream, MockLanguageModelV4 } from 'ai/test';
+import { MockLanguageModelV4 } from 'ai/test';
 import { describe, expect, it } from 'vitest';
-import { z } from 'zod';
 
 import { JobRunError } from '../../1-proposed/JobRunError.ts';
-import type { Job, JobEvent } from '../../types/job.ts';
+import { captureRejection } from '../../test-utils/captureRejection.ts';
+import { createSubmitJob } from '../../test-utils/createSubmitJob.ts';
+import { buildRound, buildText, buildToolCall, ROUND_USAGE } from '../../test-utils/mock-stream.ts';
+import type { JobEvent } from '../../types/job.ts';
 import { runJobOnModel } from '../runJobOnModel.ts';
-
-const ROUND_USAGE = { inputTokens: 10, outputTokens: 3, cacheReadTokens: 5, cacheWriteTokens: 1 };
 
 describe(runJobOnModel, () => {
   it('reports each event in order and completes on the round in which the result appears', async () => {
@@ -220,79 +219,3 @@ describe(runJobOnModel, () => {
     expect(JSON.parse(JSON.stringify({ events, outcome }))).toStrictEqual({ events, outcome });
   });
 });
-
-// region | Helpers
-/** Returns the error with which a promise rejects, failing when it resolves. */
-async function captureRejection(promise: Promise<unknown>): Promise<unknown> {
-  try {
-    await promise;
-  } catch (error) {
-    return error;
-  }
-  throw new Error('The promise resolved.');
-}
-
-/** Returns the stream parts of one text block. */
-function buildText(text: string): LanguageModelV4StreamPart[] {
-  return [
-    { type: 'text-start', id: 't' },
-    { type: 'text-delta', id: 't', delta: text },
-    { type: 'text-end', id: 't' },
-  ];
-}
-
-/** Returns one round's stream: its content, then a finish part that reports `ROUND_USAGE`. */
-function buildRound(
-  content: LanguageModelV4StreamPart[],
-  finishReason: 'stop' | 'tool-calls' = 'tool-calls',
-): LanguageModelV4StreamResult {
-  return {
-    stream: convertArrayToReadableStream<LanguageModelV4StreamPart>([
-      { type: 'stream-start', warnings: [] },
-      ...content,
-      {
-        type: 'finish',
-        finishReason: { unified: finishReason, raw: finishReason },
-        usage: {
-          inputTokens: { total: 10, noCache: 4, cacheRead: 5, cacheWrite: 1 },
-          outputTokens: { total: 3, text: 3, reasoning: undefined },
-        },
-      },
-    ]),
-  };
-}
-
-/** Returns a tool-call stream part with its input encoded as the provider sends it. */
-function buildToolCall(toolCallId: string, toolName: string, input: unknown): LanguageModelV4StreamPart {
-  return { type: 'tool-call', toolCallId, toolName, input: JSON.stringify(input) };
-}
-
-/**
- * Creates a job whose `submit` tool sets the result and whose `check` tool reports success, with any tool replaced
- * by an override's `execute`.
- */
-function createSubmitJob(overrides: { check?: () => unknown } = {}): Job<string> {
-  let result: string | undefined;
-  return {
-    instructions: 'Convert the input.',
-    input: 'Some prompt',
-    maxRounds: 5,
-    readResult: () => result,
-    tools: {
-      check: {
-        description: 'Checks a draft.',
-        inputSchema: z.object({ draft: z.string() }),
-        execute: overrides.check ?? (() => ({ ok: true })),
-      },
-      submit: {
-        description: 'Submits the result.',
-        inputSchema: z.object({ value: z.string() }),
-        execute: (input: { value: string }) => {
-          result = input.value;
-          return 'accepted';
-        },
-      },
-    },
-  };
-}
-// endregion | Helpers
