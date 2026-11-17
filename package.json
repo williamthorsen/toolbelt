@@ -45,7 +45,7 @@
     "typescript": "6.0.3",
     "v11y-check": "1.0.2",
     "vitest": "catalog:",
-    "zod": "4.6.7"
+    "zod": "catalog:"
   },
   "packageManager": "pnpm@12.21.0",
   "engines": {

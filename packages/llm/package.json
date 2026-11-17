@@ -43,6 +43,22 @@
   "scripts": {
     "prepublishOnly": "nmr build"
   },
+  "dependencies": {
+    "@ai-sdk/anthropic": "4.0.105",
+    "@ai-sdk/google": "4.0.121",
+    "@ai-sdk/openai": "4.0.118",
+    "@ai-sdk/openai-compatible": "3.0.92",
+    "@standard-schema/spec": "1.1.0",
+    "@williamthorsen/toolbelt.errors": "workspace:*",
+    "ai": "7.0.173"
+  },
+  "devDependencies": {
+    "@ai-sdk/provider": "4.0.38",
+    "zod": "catalog:"
+  },
+  "peerDependencies": {
+    "zod": "^4.1.8"
+  },
   "engines": {
     "node": ">=24.0.0"
   },
