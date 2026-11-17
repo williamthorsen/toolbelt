@@ -130,14 +130,6 @@ function condenseWhitespace(text) {
   return text.replaceAll(/\s+/g, " ");
 }
 
-// ../adoption/src/portable/readAnchoredWindow.ts
-function readAnchoredWindow(source, offset, lengths) {
-  return {
-    after: condenseWhitespace(source.slice(offset, offset + lengths.lookahead)),
-    before: condenseWhitespace(source.slice(Math.max(0, offset - lengths.lookbehind), offset))
-  };
-}
-
 // ../adoption/src/portable/readBalancedGroup.ts
 var BRACES = { close: "}", open: "{" };
 var PARENTHESES = { close: ")", open: "(" };
@@ -153,6 +145,14 @@ function readBalancedGroup(source, from, delimiters) {
     }
   }
   return void 0;
+}
+
+// ../adoption/src/portable/readAnchoredWindow.ts
+function readAnchoredWindow(source, offset, lengths) {
+  return {
+    after: condenseWhitespace(source.slice(offset, offset + lengths.lookahead)),
+    before: condenseWhitespace(source.slice(Math.max(0, offset - lengths.lookbehind), offset))
+  };
 }
 
 // ../adoption/src/portable/readLiteral.ts
@@ -287,8 +287,7 @@ function isMissingPathCode(text) {
   return MISSING_PATH_CODES.some((code) => code === text);
 }
 function isParameterCode(operand, parameter) {
-  const escaped = parameter.replaceAll("$", String.raw`\$`);
-  return operand === `${parameter}.code` || new RegExp(String.raw`^\(\s*${escaped}(?![\w$])`).test(operand);
+  return operand === `${parameter}.code` || new RegExp(String.raw`^\(\s*${RegExp.escape(parameter)}(?![\w$])`).test(operand);
 }
 function listClones(code, comparisons) {
   return listFunctionBodies(code).flatMap((fn) => {
