@@ -463,6 +463,9 @@ importers:
         specifier: 7.0.173
         version: 7.0.173(zod@4.6.7)
     devDependencies:
+      '@ai-sdk/provider':
+        specifier: 4.0.38
+        version: 4.0.38
       zod:
         specifier: 'catalog:'
         version: 4.6.7

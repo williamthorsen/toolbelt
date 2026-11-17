@@ -81,7 +81,9 @@ async function captureRequest(connection: ProviderConnection): Promise<{ url: UR
     return Promise.reject(new Error('request captured'));
   };
 
-  await expect(generateText({ model: createModel(connection, fetch), prompt: 'Hi', maxRetries: 0 })).rejects.toThrow();
+  await expect(generateText({ model: createModel(connection, fetch), prompt: 'Hi', maxRetries: 0 })).rejects.toThrow(
+    'request captured',
+  );
   if (captured === undefined) throw new Error('The model did not make a request.');
   return captured;
 }

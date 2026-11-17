@@ -10,3 +10,5 @@ export type {
   RunJobOptions,
   Usage,
 } from '../types/job.ts';
+export { JobRunError } from './JobRunError.ts';
+export { runJob } from './runJob.ts';
