@@ -1,3 +1,4 @@
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 import { listCaptureSites } from '../listCaptureSites.ts';
@@ -109,66 +110,62 @@ const LITERALS = [
 
 describe(listCaptureSites, () => {
   it('reports a capture, naming its line and the variable that it fills', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
-    const source = [
-      "const thrown = { code: 'ENOENT' };",
-      'let caught: unknown;',
-      '',
-      'try {',
-      '  assertIsError(thrown);',
-      '} catch (error) {',
-      '  caught = error;',
-      '}',
-    ].join('\n');
+    const source = dedent`
+      const thrown = { code: 'ENOENT' };
+      let caught: unknown;
+
+      try {
+        assertIsError(thrown);
+      } catch (error) {
+        caught = error;
+      }
+    `;
 
     expect(listCaptureSites(source)).toStrictEqual([{ kind: 'hand-rolled-error-capture', line: 4, symbol: 'caught' }]);
   });
 
   it('reaches a declaration made outside an enclosing hook', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
-    const source = [
-      'let thrown: unknown;',
-      '',
-      '// The call has to happen in the hook.',
-      'beforeAll(() => {',
-      '  try {',
-      "    disposeOnTestFinished(makeProbe('no-test'));",
-      '  } catch (error: unknown) {',
-      '    thrown = error;',
-      '  }',
-      '});',
-    ].join('\n');
+    const source = dedent`
+      let thrown: unknown;
+
+      // The call has to happen in the hook.
+      beforeAll(() => {
+        try {
+          disposeOnTestFinished(makeProbe('no-test'));
+        } catch (error: unknown) {
+          thrown = error;
+        }
+      });
+    `;
 
     expect(listCaptureSites(source)).toStrictEqual([{ kind: 'hand-rolled-error-capture', line: 5, symbol: 'thrown' }]);
   });
 
   it('reads a call that the formatter broke across lines, and a catch that casts', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
-    const source = [
-      'let error: Error | undefined;',
-      '',
-      'try {',
-      '  await loadRemoteKit({',
-      '    url,',
-      '  });',
-      '} catch (thrown) {',
-      '  error = thrown as Error;',
-      '}',
-    ].join('\n');
+    const source = dedent`
+      let error: Error | undefined;
+
+      try {
+        await loadRemoteKit({
+          url,
+        });
+      } catch (thrown) {
+        error = thrown as Error;
+      }
+    `;
 
     expect(listCaptureSites(source)).toStrictEqual([{ kind: 'hand-rolled-error-capture', line: 3, symbol: 'error' }]);
   });
 
   it('reads a construction as the single call that it is', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
-    const source = [
-      'let caught: unknown;',
-      'try {',
-      '  new Parser(text);',
-      '} catch (error) {',
-      '  caught = error;',
-      '}',
-    ].join('\n');
+    const source = dedent`
+      let caught: unknown;
+      try {
+        new Parser(text);
+      } catch (error) {
+        caught = error;
+      }
+    `;
 
     expect(listCaptureSites(source)).toStrictEqual([{ kind: 'hand-rolled-error-capture', line: 2, symbol: 'caught' }]);
   });
@@ -258,24 +255,23 @@ describe(listCaptureSites, () => {
   });
 
   it('claims a capture whose variable a later capture reassigns ahead of the literal assertion', () => {
-    // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
-    const source = [
-      "it('describes what it parses and rethrows the rest', () => {",
-      'let caught: unknown;',
-      'try {',
-      '  parse(text);',
-      '} catch (error) {',
-      '  caught = error;',
-      '}',
-      'expect(caught).toBeInstanceOf(SyntaxError);',
-      'try {',
-      '  assertIsError(thrown);',
-      '} catch (error) {',
-      '  caught = error;',
-      '}',
-      "expect(caught).toBe('ENOENT');",
-      '});',
-    ].join('\n');
+    const source = dedent`
+      it('describes what it parses and rethrows the rest', () => {
+      let caught: unknown;
+      try {
+        parse(text);
+      } catch (error) {
+        caught = error;
+      }
+      expect(caught).toBeInstanceOf(SyntaxError);
+      try {
+        assertIsError(thrown);
+      } catch (error) {
+        caught = error;
+      }
+      expect(caught).toBe('ENOENT');
+      });
+    `;
 
     expect(listCaptureSites(source)).toStrictEqual([{ kind: 'hand-rolled-error-capture', line: 3, symbol: 'caught' }]);
   });

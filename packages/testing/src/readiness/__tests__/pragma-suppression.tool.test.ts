@@ -1,15 +1,15 @@
 import path from 'node:path';
 
 import { type KitCheckReport, listKitCheckReports } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
-// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
-const ADOPTER = [
-  "import { captureError } from '@williamthorsen/toolbelt.testing';",
-  'const caught = await captureError(() => parseConfig(text));',
-  '',
-].join('\n');
+const ADOPTER = dedent`
+  import { captureError } from '@williamthorsen/toolbelt.testing';
+  const caught = await captureError(() => parseConfig(text));
+
+`;
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 const STDIO_SPY = "vi.spyOn(process.stdout, 'write').mockImplementation(() => true);\n";
 
@@ -28,17 +28,16 @@ describe('The testing adoption kit, run through rdy', () => {
 
 /** Builds a captured-error test source whose `try` line ends with the given pragma. */
 function buildCapture(pragma: string): string {
-  // rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
-  return [
-    'let caught: unknown;',
-    '',
-    `try {${pragma}`,
-    '  parseConfig(text);',
-    '} catch (error) {',
-    '  caught = error;',
-    '}',
-    '',
-  ].join('\n');
+  return dedent`
+    let caught: unknown;
+
+    try {${pragma}
+      parseConfig(text);
+    } catch (error) {
+      caught = error;
+    }
+
+  `;
 }
 
 /**

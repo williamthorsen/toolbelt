@@ -6,37 +6,35 @@ import {
   selectCheck,
   summarizeFraction,
 } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
 const KIT_URL = new URL('../../../.readyup/kits/default.ts', import.meta.url);
 const ERROR_CAPTURE_CHECK = 'no-hand-rolled-error-capture';
 const STDIO_CAPTURE_CHECK = 'no-hand-rolled-stdio-capture';
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
-// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
-const CAPTURE = [
-  'let caught: unknown;',
-  '',
-  'try {',
-  '  parseConfig(text);',
-  '} catch (error) {',
-  '  caught = error;',
-  '}',
-  '',
-].join('\n');
+const CAPTURE = dedent`
+  let caught: unknown;
+
+  try {
+    parseConfig(text);
+  } catch (error) {
+    caught = error;
+  }
+
+`;
 const STDIO_SPY = "vi.spyOn(process.stdout, 'write').mockImplementation(() => true);\n";
 const PUBLISHER_MANIFEST = JSON.stringify({ name: '@williamthorsen/toolbelt.testing', version: '1.0.0' });
-// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
-const ADOPTER = [
-  "import { captureError } from '@williamthorsen/toolbelt.testing';",
-  'const caught = await captureError(() => parseConfig(text));',
-  '',
-].join('\n');
-// rdy-ignore-next-line toolbelt.strings/no-joined-line-array -- toolbelt.strings depends on testing, so testing cannot import dedent without a cycle
-const STDIO_ADOPTER = [
-  "import { captureStdio } from '@williamthorsen/toolbelt.testing/candidate';",
-  'using stdio = captureStdio();',
-  '',
-].join('\n');
+const ADOPTER = dedent`
+  import { captureError } from '@williamthorsen/toolbelt.testing';
+  const caught = await captureError(() => parseConfig(text));
+
+`;
+const STDIO_ADOPTER = dedent`
+  import { captureStdio } from '@williamthorsen/toolbelt.testing/candidate';
+  using stdio = captureStdio();
+
+`;
 
 describe('The testing adoption kit', () => {
   it('reports an error capture, naming where it is', async () => {
