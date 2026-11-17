@@ -2,6 +2,7 @@ import process from 'node:process';
 
 import { findCloseMatch } from '@williamthorsen/toolbelt.strings/candidate';
 
+import { CliError } from './CliError.ts';
 import type { BoundCommand, BoundGroup, CommandNode, RunResult, Writer } from './nodes.ts';
 import { renderHelp } from './renderHelp.ts';
 import { formatReservedFlagLabel, HELP_FLAG, listReservedFlags, VERSION_FLAG } from './reserved-flags.ts';
@@ -9,9 +10,6 @@ import { resolveLongName } from './resolveLongName.ts';
 import { findFlagEntry, tokenizeArgs } from './tokenizeArgs.ts';
 import type { FlagSchema } from './types.ts';
 import { UsageError } from './UsageError.ts';
-
-/** The exit code that `runCli` returns on a usage error. */
-const USAGE_EXIT_CODE = 2;
 
 /**
  * Runs a command tree against arguments and resolves to the exit code.
@@ -21,10 +19,11 @@ const USAGE_EXIT_CODE = 2;
  * intercepts `-h`/`--help` at every level before parsing, so that help wins over a parse error at the same
  * level, except after a passthrough command's token; it intercepts `-V`/`--version` at the root alone.
  *
- * A `UsageError`, whether from parsing, from an unknown or missing command, or thrown by a `deriveContext` or a
- * `run`, is written to `stderr` as `<name>: <message>`, followed by a pointer to help for the scope reached so
- * far, and returns 2; a usage error that has a `suggestion`, such as an unknown command or long option near a
- * known one, adds a `Did you mean` line between the two. Any other error propagates.
+ * A `CliError` thrown by a `deriveContext` or a `run` is written to `stderr` as `<name>: <message>`, and `runCli`
+ * returns its `exitCode`. A `UsageError`, whether from parsing, from an unknown or missing command, or thrown by
+ * a command, is also followed by a pointer to help for the scope reached so far, and returns 2; a usage error that
+ * has a `suggestion`, such as an unknown command or long option near a known one, adds a `Did you mean` line
+ * between the two. Any other error propagates.
  * A `run` result that is not a number maps to 0, and a number other than an integer from 0 to 255 throws a plain
  * `Error`. It writes only to the writers that it is given and never calls `process.exit`.
  * @category CLI
@@ -55,13 +54,15 @@ export async function runCli<C>(
     if (outcome === 'help' || outcome === 'version') return 0;
     return outcome;
   } catch (error: unknown) {
-    if (!(error instanceof UsageError)) throw error;
+    if (!(error instanceof CliError)) throw error;
     stderr.write(`${name}: ${error.message}\n`);
-    if (error.suggestion !== undefined) {
-      stderr.write(`Did you mean '${error.suggestion}'?\n`);
+    if (error instanceof UsageError) {
+      if (error.suggestion !== undefined) {
+        stderr.write(`Did you mean '${error.suggestion}'?\n`);
+      }
+      stderr.write(`Try '${walk.scope.join(' ')} --${HELP_FLAG.long}'.\n`);
     }
-    stderr.write(`Try '${walk.scope.join(' ')} --${HELP_FLAG.long}'.\n`);
-    return USAGE_EXIT_CODE;
+    return error.exitCode;
   }
 
   /** Walks from the root to a command, writing help or the version when either is requested in scope. */
