@@ -68,4 +68,26 @@ A `ProviderConnection` names the provider (`anthropic`, `google`, `openai`, or `
 
 `runJob` resolves with `completed` and the result, or with `unfinished` and its reason: `round-cap` when the job reached `maxRounds` with the model still calling tools, or `stopped` when the model stopped calling tools first. Both report the rounds and the total usage, and both events and outcomes survive `JSON.stringify`.
 
-Aborting the `signal` rejects with the signal's reason. Any other failure, the provider's or a tool's, rejects with `JobRunError`, whose `cause` holds the underlying error.
+Aborting the `signal` rejects with the signal's reason. Any other failure, the provider's or a tool's, rejects with `JobRunError`, whose `cause` holds the underlying error. On an endpoint connection, a refusal rejects with `JobRefusedError`, and the endpoint withholds a failure's underlying error, as its doc comment describes.
+
+## The handler
+
+`createJobHandler` serves a job at the operator's endpoint, on the operator's key. It returns a fetch handler, `(Request) => Promise<Response>`, which a function on Vercel, Cloudflare Workers, or any runtime with web-standard `Request` and `Response` exports as it is:
+
+```ts
+import { createJobHandler } from '@williamthorsen/toolbelt.llm/proposed';
+
+export const POST = createJobHandler({
+  createJob,
+  connection: { provider: 'anthropic', model: 'claude-haiku-5-5', apiKey: operatorKey },
+  maxInputLength: 10_000,
+  maxRounds: 6,
+  onError: (error) => console.error(error),
+});
+```
+
+The handler accepts only the job's input, so a caller can obtain the job's result and nothing else from the operator's key. It caps the input at `maxInputLength` and each job's rounds at the lower of `maxRounds` and the job's own, and calls the optional `countJob` before the first model request to enforce the operator's limits. It refuses a request with a JSON body that names the reason, which `runJob` reports as `JobRefusedError`; the doc comment of `createJobHandler` lists the statuses. A failure reaches the page without its details, which go to `onError`. The handler adds no CORS headers, so a page on another origin needs the function to add them.
+
+## The endpoint connection
+
+An `EndpointConnection` names the handler's `url` and optional `headers`, such as a bot-check token. `runJob` then posts the job's input and reports the endpoint's events and outcome as described above, so the page runs the same job definition on either connection. Aborting the `signal` stops the job at the endpoint.
