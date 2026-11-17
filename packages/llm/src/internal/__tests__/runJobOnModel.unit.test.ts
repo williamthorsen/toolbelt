@@ -117,11 +117,20 @@ describe(runJobOnModel, () => {
       },
     });
 
-    const error = await captureRejection(runJobOnModel(job, model));
+    const events: JobEvent[] = [];
+
+    const error = await captureRejection(
+      runJobOnModel(job, model, {
+        onEvent: (event) => {
+          events.push(event);
+        },
+      }),
+    );
 
     expect(error).toBeInstanceOf(JobRunError);
     expect(error).toHaveProperty('cause', failure);
     expect(model.doStreamCalls).toHaveLength(1);
+    expect(events).toContainEqual({ type: 'tool-error', callId: 'c1', toolName: 'check', message: 'defect' });
   });
 
   it('rejects with JobRunError holding a provider error', async () => {

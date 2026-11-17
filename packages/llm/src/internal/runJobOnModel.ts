@@ -38,9 +38,11 @@ export async function runJobOnModel<Result>(
   // Ends the model's requests when a tool throws or the run fails.
   const controller = new AbortController();
   let toolFailure: { readonly error: unknown } | undefined;
-  function recordToolFailure(error: unknown): void {
+  function recordToolFailure(error: unknown, call: { readonly callId: string; readonly toolName: string }): void {
     toolFailure ??= { error };
     controller.abort();
+    // The abort ends the stream before the AI SDK reports the failed call, so report it here.
+    onEvent?.({ type: 'tool-error', ...call, message: describeError(error) });
   }
 
   const result = streamText({
@@ -104,18 +106,21 @@ function buildOutcome<Result>(job: Job<Result>, { rounds, usage, lastFinishReaso
 }
 
 /** Wraps each job tool as an AI SDK tool whose `execute` reports a throw before rethrowing it. */
-function buildToolSet(tools: Job<unknown>['tools'], onToolFailure: (error: unknown) => void): ToolSet {
+function buildToolSet(
+  tools: Job<unknown>['tools'],
+  onToolFailure: (error: unknown, call: { readonly callId: string; readonly toolName: string }) => void,
+): ToolSet {
   return Object.fromEntries(
     Object.entries(tools).map(([name, jobTool]: [string, JobTool]) => [
       name,
       tool({
         description: jobTool.description,
         inputSchema: jobTool.inputSchema,
-        execute: async (input: unknown) => {
+        execute: async (input: unknown, { toolCallId }) => {
           try {
             return await jobTool.execute(input);
           } catch (error) {
-            onToolFailure(error);
+            onToolFailure(error, { callId: toolCallId, toolName: name });
             throw error;
           }
         },
