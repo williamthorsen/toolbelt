@@ -57,7 +57,7 @@ function defineAdoptionKit(spec) {
     return {
       adoptedCount: countPackageUsage(sources, adoptedPackage),
       findings: sources.flatMap(
-        (source) => spec.detect(source.text).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
+        (source) => spec.detectors.flatMap((detect) => detect(source.text)).toSorted((a, b) => a.line - b.line).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
       ),
       sources
     };
@@ -281,17 +281,12 @@ function listStdioSpies(source) {
   return sites;
 }
 
-// src/readiness/listSites.ts
-function listSites(source) {
-  return [...listCaptureSites(source), ...listStdioSpies(source)].toSorted((a, b) => a.line - b.line);
-}
-
 // .readyup/kits/default.ts
 var PACKAGE_NAME = "@williamthorsen/toolbelt.testing";
 var README_URL = "https://github.com/williamthorsen/toolbelt/tree/main/packages/testing#readme";
 var default_default = defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
-  detect: listSites,
+  detectors: [listCaptureSites, listStdioSpies],
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: "the project contains no test files",
   packageName: PACKAGE_NAME,

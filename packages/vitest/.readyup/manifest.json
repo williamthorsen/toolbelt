@@ -34,7 +34,7 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "f7ac439a",
+          "hash": "c656f59e",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
@@ -119,7 +119,7 @@
           "path": "../../adoption/src/portable/readPathParts.ts"
         },
         {
-          "hash": "fb8be65b",
+          "hash": "4cf53c4c",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -152,19 +152,14 @@
           "hash": "5fff4be4",
           "kind": "module",
           "path": "../src/readiness/listExitMocks.ts"
-        },
-        {
-          "hash": "8a1ac135",
-          "kind": "module",
-          "path": "../src/readiness/listSites.ts"
         }
       ],
       "name": "default",
       "path": "kits/default.js",
       "readyupVersion": "0.47.0",
       "source": "kits/default.ts",
-      "sourceHash": "fb8be65b",
-      "targetHash": "4e356b76"
+      "sourceHash": "4cf53c4c",
+      "targetHash": "308937b8"
     }
   ]
 }
