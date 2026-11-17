@@ -6,7 +6,12 @@ import { swapProperty } from '../internal/swapProperty.ts';
  * Records every process warning emitted in the enclosing scope without printing it, restoring
  * `process.emitWarning` when the scope exits. Each warning is the `Error` that Node would emit, recorded when
  * `emitWarning` is called rather than on the later tick on which Node prints it. The `'warning'` event does not
- * fire while the scope is open, so a `process.on('warning')` listener in the code under test does not run.
+ * fire while the scope is open, so a `process.on('warning')` listener in the code under test does not run. Node
+ * prints a warning on a later tick, so a `captureStdio` scope that has closed by then does not take it, and without
+ * this capture the warning reaches the terminal.
+ *
+ * A call that Node rejects, such as `emitWarning(42)` or one whose type or code is not a string, throws a `TypeError`
+ * with Node's code `ERR_INVALID_ARG_TYPE` and records nothing.
  *
  * @category Testing
  * @experimental

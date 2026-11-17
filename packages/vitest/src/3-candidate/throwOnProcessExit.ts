@@ -10,7 +10,13 @@ import { type MockInstance, vi } from 'vitest';
  * asserts against a path never reached by the process in production. Nothing reports that: The suite passes
  * while covering code that cannot run.
  *
- * A code that Node rejects throws the error that Node throws, rather than a `ProcessExitError`.
+ * The error's `code` is the call's code as Node reads it: an integer string as its number, and no code as
+ * `undefined`. A code that Node rejects, such as `'abc'` or `1.5`, throws the error that Node throws, rather than a
+ * `ProcessExitError`.
+ *
+ * `process.exitCode` is not covered: Setting it does not halt execution, so the test reads it after the call and
+ * restores it, since a leaked value makes the whole Vitest run exit non-zero. Mocks do not stack: `vi.spyOn` returns
+ * the existing spy, so a nested call restores `process.exit` for both scopes when it exits.
  *
  * @category Testing
  * @experimental

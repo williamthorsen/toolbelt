@@ -8,7 +8,17 @@ const nativeCwd = process.cwd.bind(process);
 /**
  * Points `process.cwd()` at a directory for the enclosing scope and restores the prior state when the scope
  * exits. The default replaces `process.cwd` alone, leaving the process where it is; `chdir` moves the real
- * process, which a spawned child inherits and a worker thread refuses.
+ * process, which a spawned child inherits and code asking the OS rather than Node observes.
+ *
+ * On POSIX, a bare relative path handed to `fs` reads from the real directory under the replacement and from the
+ * pointed one under `chdir`; on Windows, Node resolves it through `process.cwd()` first, so both modes read from the
+ * pointed directory. `process.chdir` throws `ERR_WORKER_UNSUPPORTED_OPERATION` in a worker thread, so `chdir` needs
+ * Vitest's `pool: 'forks'`. Neither mode touches `process.env.PWD`.
+ *
+ * `dir` resolves through `realpathSync` in both modes, and a path naming no existing directory is rejected. A relative
+ * path resolves against the directory that `process.cwd()` reports, which an enclosing scope may already have pointed
+ * elsewhere. Each scope restores the state that it found, so scopes nest in any combination, and a move nested inside
+ * a replacement puts the process back where it really was.
  *
  * @category Testing
  * @experimental
@@ -64,10 +74,7 @@ export interface PointedCwd extends Disposable {
 
 // region | Helpers
 
-/**
- * Resolves `dir` to its realpath, rejecting a path that names no existing directory. A relative path resolves
- * against the directory that `process.cwd()` reports, which an enclosing scope may already have pointed elsewhere.
- */
+/** Resolves `dir` to its realpath, rejecting a path that names no existing directory. */
 function resolveDirectory(dir: string): string {
   const resolvedDir = fs.realpathSync(path.resolve(dir));
 

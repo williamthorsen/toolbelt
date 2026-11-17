@@ -6,9 +6,10 @@ import type { MockInstance } from 'vitest';
  * Reads the spy that `silenceConsole` returns, so the two compose; a `vi.spyOn` spy on a console method reads the
  * same way.
  *
- * Renders each call's arguments through `String` and joins them on a space: An `Error` appears as its message. A
- * test asserting on rendered stream output, format specifiers and inspected objects included, should use
- * `captureStdio` in `@williamthorsen/toolbelt.testing` instead.
+ * Renders each call's arguments through `String` and joins them on a space: An `Error` appears as its message, an
+ * object as `[object Object]`, and a `%s` format specifier is not substituted. A test asserting on rendered stream
+ * output should use `captureStdio` in `@williamthorsen/toolbelt.testing` instead, which renders through
+ * `util.format`.
  *
  * @category Testing
  * @experimental

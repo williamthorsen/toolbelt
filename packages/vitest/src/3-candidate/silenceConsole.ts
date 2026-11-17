@@ -4,7 +4,10 @@ const ALL_CONSOLE_METHODS = ['debug', 'error', 'info', 'log', 'warn'] as const;
 
 /**
  * Silences every console method for the enclosing scope, returning the spy backing each one and restoring
- * them all when the scope exits.
+ * them all when the scope exits. `debug` is among them, so a `console.debug` added to diagnose a failure goes quiet.
+ *
+ * Silences do not stack: `vi.spyOn` returns the existing spy for a method already spied on, so a nested silence
+ * shares the outer one's spies and restores the methods for both scopes when it exits.
  *
  * @category Testing
  * @experimental
@@ -13,7 +16,10 @@ const ALL_CONSOLE_METHODS = ['debug', 'error', 'info', 'log', 'warn'] as const;
 export function silenceConsole(): Disposable & Record<ConsoleMethod, MockInstance>;
 /**
  * Silences the given console methods for the enclosing scope, returning the spy backing each one and
- * restoring them all when the scope exits.
+ * restoring them all when the scope exits. The returned record contains only the requested methods.
+ *
+ * Silences do not stack: `vi.spyOn` returns the existing spy for a method already spied on, so a nested silence
+ * overlapping an outer one shares its spy and restores the method for both scopes when it exits.
  *
  * @category Testing
  * @experimental

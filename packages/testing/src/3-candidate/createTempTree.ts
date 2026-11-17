@@ -14,6 +14,10 @@ import path from 'node:path';
  *
  * `prefix` names the directory, so a tree outliving a crashed run still shows what made it.
  *
+ * Disposal is idempotent, and it removes a tree that a test made unwritable: It restores write permission across
+ * the tree and retries once before giving up. Because `Disposable` is declared in `lib.esnext.disposable.d.ts`
+ * alone, a consumer needs `ESNext.Disposable` in its `lib`.
+ *
  * @example
  * using tree = createTempTree({ '.git/': '', 'src/main.ts': 'export {};\n' });
  * tree.resolve('src/main.ts'); // '/private/var/folders/…/toolbelt-a1b2c3/src/main.ts'
@@ -163,7 +167,11 @@ export function createTempTree(
 }
 
 export interface CreateTempTreeOptions {
-  /** Leading text of the generated directory's name, to which a random suffix is appended. Defaults to `toolbelt-`. */
+  /**
+   * Leading text of the generated directory's name, to which a random suffix is appended. Defaults to `toolbelt-`.
+   * A prefix that would place the tree anywhere but directly inside the system temporary directory, one containing
+   * `/` or `\` or one that normalizes away (`''`, `'.'`, `'..'`), is rejected before anything is created.
+   */
   prefix?: string;
 }
 
@@ -190,7 +198,7 @@ export interface TempTree extends Disposable {
   /** Creates the directory at a tree-relative path, along with its parents, leaving an existing one as it is. */
   mkdir(entryPath: string): string;
 
-  /** Reads the file at a tree-relative path as UTF-8 text. */
+  /** Reads the file at a tree-relative path as UTF-8 text, raising `ENOENT` for a missing one; see `exists`. */
   read(entryPath: string): string;
 
   /**
@@ -218,7 +226,8 @@ export interface TempTree extends Disposable {
    *
    * The link type is the one portability difference. An absolute directory target is linked as a junction, which
    * Windows creates without the elevation needed by a directory symlink; a relative directory target is linked as a
-   * directory, which needs that elevation; every other target, a missing one included, is linked as a file.
+   * directory, which needs that elevation, because Node normalizes a junction's target to an absolute path; every
+   * other target, a missing one included, is linked as a file.
    */
   symlink(linkPath: string, targetPath: string): string;
 
@@ -234,7 +243,9 @@ export interface TempTree extends Disposable {
 
   /**
    * Writes `value` at a tree-relative path as two-space-indented JSON ending in a newline. A value with no JSON
-   * representation -- `undefined`, a function, a symbol -- is refused rather than written.
+   * representation -- `undefined`, a function, a symbol -- is refused rather than written, so an optional binding
+   * that arrived empty fails at this call rather than later as a parse error. A fixture needing exact bytes goes
+   * through `write`.
    */
   writeJson(entryPath: string, value: unknown): string;
 }
