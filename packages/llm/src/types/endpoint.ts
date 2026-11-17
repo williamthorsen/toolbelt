@@ -41,6 +41,18 @@ export interface JobHandlerOptions<Result> {
   createJob(input: string): Job<Result>;
 }
 
+/** How `createTurnstileVerifier` reads and verifies a request's Cloudflare Turnstile token. */
+export interface TurnstileVerifierOptions {
+  /** The widget's secret key. */
+  readonly secretKey: string;
+  /** The request header that holds the token; defaults to `cf-turnstile-response`. */
+  readonly header?: string;
+  /** The hostname on which the token must have been issued. */
+  readonly expectedHostname?: string;
+  /** The widget action for which the token must have been issued. */
+  readonly expectedAction?: string;
+}
+
 /** Why an endpoint refused a job before running it. */
 export type JobRefusalReason =
   | 'bot-check-failed'
