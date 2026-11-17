@@ -145,6 +145,11 @@ export function createFakeAgent(config: FakeAgentConfig = {}): { agent: AgentApp
   return { agent: app, received };
 }
 
+/** Returns the params of the first message received for `method`. */
+export function findParams(received: readonly ReceivedMessage[], method: string): unknown {
+  return received.find((message) => message.method === method)?.params;
+}
+
 // region | Helpers
 /** Calls `toolName` on a declared server through the server's transport, and returns its result's text. */
 async function callDeclaredTool(
