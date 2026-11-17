@@ -149,14 +149,6 @@ function condenseWhitespace(text) {
   return text.replaceAll(/\s+/g, " ");
 }
 
-// ../adoption/src/portable/readAnchoredWindow.ts
-function readAnchoredWindow(source, offset, lengths) {
-  return {
-    after: condenseWhitespace(source.slice(offset, offset + lengths.lookahead)),
-    before: condenseWhitespace(source.slice(Math.max(0, offset - lengths.lookbehind), offset))
-  };
-}
-
 // ../adoption/src/portable/readBalancedGroup.ts
 var PARENTHESES = { close: ")", open: "(" };
 function readBalancedGroup(source, from, delimiters) {
@@ -171,6 +163,14 @@ function readBalancedGroup(source, from, delimiters) {
     }
   }
   return void 0;
+}
+
+// ../adoption/src/portable/readAnchoredWindow.ts
+function readAnchoredWindow(source, offset, lengths) {
+  return {
+    after: condenseWhitespace(source.slice(offset, offset + lengths.lookahead)),
+    before: condenseWhitespace(source.slice(Math.max(0, offset - lengths.lookbehind), offset))
+  };
 }
 
 // ../adoption/src/portable/listTopLevelSpans.ts

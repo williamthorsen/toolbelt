@@ -34,7 +34,7 @@
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "a2e27a89",
+          "hash": "5fb19315",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -44,9 +44,19 @@
           "path": "../../adoption/src/portable/condenseWhitespace.ts"
         },
         {
+          "hash": "091339b6",
+          "kind": "module",
+          "path": "../../adoption/src/portable/findEnclosingBlockEnd.ts"
+        },
+        {
           "hash": "b25f157e",
           "kind": "module",
           "path": "../../adoption/src/portable/findEnclosingBody.ts"
+        },
+        {
+          "hash": "27748cb9",
+          "kind": "module",
+          "path": "../../adoption/src/portable/findLiteralEnd.ts"
         },
         {
           "hash": "0e239ee7",
@@ -79,7 +89,7 @@
           "path": "../../adoption/src/portable/readAnchoredWindow.ts"
         },
         {
-          "hash": "9ff7cd2c",
+          "hash": "07bfae17",
           "kind": "module",
           "path": "../../adoption/src/portable/readBalancedGroup.ts"
         },
@@ -139,7 +149,7 @@
       "readyupVersion": "0.47.0",
       "source": "kits/default.ts",
       "sourceHash": "af8cda5e",
-      "targetHash": "2e68a506"
+      "targetHash": "0089daab"
     }
   ]
 }

@@ -115,16 +115,22 @@ function condenseWhitespace(text) {
   return text.replaceAll(/\s+/g, " ");
 }
 
-// ../adoption/src/portable/readAnchoredWindow.ts
-function readAnchoredWindow(source, offset, lengths) {
-  return {
-    after: condenseWhitespace(source.slice(offset, offset + lengths.lookahead)),
-    before: condenseWhitespace(source.slice(Math.max(0, offset - lengths.lookbehind), offset))
-  };
+// ../adoption/src/portable/findEnclosingBlockEnd.ts
+function findEnclosingBlockEnd(code, from) {
+  let depth = 0;
+  for (let index = from; index < code.length; index += 1) {
+    if (code[index] === "{") depth += 1;
+    else if (code[index] === "}") {
+      if (depth === 0) return index;
+      depth -= 1;
+    }
+  }
+  return void 0;
 }
 
 // ../adoption/src/portable/readBalancedGroup.ts
 var BRACES = { close: "}", open: "{" };
+var BRACKETS = { close: "]", open: "[" };
 var PARENTHESES = { close: ")", open: "(" };
 function readBalancedGroup(source, from, delimiters) {
   const start = source.indexOf(delimiters.open, from);
@@ -138,6 +144,28 @@ function readBalancedGroup(source, from, delimiters) {
     }
   }
   return void 0;
+}
+
+// ../adoption/src/portable/findLiteralEnd.ts
+var SCALAR_LITERAL = /^(?:-?\.?\d(?:[eE][+-]|[\w.])*|(?:false|null|true|undefined)(?![\w$]))/;
+var STRING_DELIMITERS = /* @__PURE__ */ new Set(['"', "'", "`"]);
+function findLiteralEnd(text) {
+  const opener = text[0];
+  if (opener === "{") return readBalancedGroup(text, 0, BRACES)?.end;
+  if (opener === "[") return readBalancedGroup(text, 0, BRACKETS)?.end;
+  if (opener !== void 0 && STRING_DELIMITERS.has(opener)) {
+    const close = text.indexOf(opener, 1);
+    return close === -1 ? void 0 : close + 1;
+  }
+  return SCALAR_LITERAL.exec(text)?.[0].length;
+}
+
+// ../adoption/src/portable/readAnchoredWindow.ts
+function readAnchoredWindow(source, offset, lengths) {
+  return {
+    after: condenseWhitespace(source.slice(offset, offset + lengths.lookahead)),
+    before: condenseWhitespace(source.slice(Math.max(0, offset - lengths.lookbehind), offset))
+  };
 }
 
 // ../adoption/src/mod.ts
@@ -154,7 +182,6 @@ var ADOPTED_EXPORTS = [
 ];
 
 // src/readiness/listCaptureSites.ts
-var BRACKETS = { close: "]", open: "[" };
 var CALLEE = /^[\w$]+(?:\??\.[\w$]+)*(?:\?\.)?(?:<[^<>()]*>)?$/;
 var CALL_PREFIX = /^(?:await )?(?:new )?/;
 var CATCH_CLAUSE = /^\s*catch\s*\(/;
@@ -164,8 +191,6 @@ var IDENTIFIER = /^[\w$]+$/;
 var LITERAL_ARGUMENT_TAIL = /^(?: as .+)?$/;
 var LITERAL_INITIALIZER_TAIL = /^ ?(?: as [^;]+)?;/;
 var LOOKBEHIND_LENGTH = 400;
-var SCALAR_LITERAL = /^(?:-?\.?\d(?:[eE][+-]|[\w.])*|(?:false|null|true|undefined)(?![\w$]))/;
-var STRING_DELIMITERS = /* @__PURE__ */ new Set(['"', "'", "`"]);
 var TRAILING_COMMA = /,$/;
 var TRAILING_SEMICOLON = /;$/;
 var TRY_ANCHOR = /\btry\s*\{/g;
@@ -192,35 +217,11 @@ function listCaptureSites(source) {
   }
   return sites;
 }
-function escapeIdentifier(name) {
-  return name.replaceAll("$", String.raw`\$`);
-}
-function findEnclosingBlockEnd(code, from) {
-  let depth = 0;
-  for (let index = from; index < code.length; index += 1) {
-    if (code[index] === "{") depth += 1;
-    else if (code[index] === "}") {
-      if (depth === 0) return index;
-      depth -= 1;
-    }
-  }
-  return void 0;
-}
-function findLiteralEnd(text) {
-  const opener = text[0];
-  if (opener === "{") return readBalancedGroup(text, 0, BRACES)?.end;
-  if (opener === "[") return readBalancedGroup(text, 0, BRACKETS)?.end;
-  if (opener !== void 0 && STRING_DELIMITERS.has(opener)) {
-    const close = text.indexOf(opener, 1);
-    return close === -1 ? void 0 : close + 1;
-  }
-  return SCALAR_LITERAL.exec(text)?.[0].length;
-}
 function findReassignmentStart(text, name) {
-  return new RegExp(String.raw`(?<![\w$.])${escapeIdentifier(name)}\s*=(?![=>])`).exec(text)?.index;
+  return new RegExp(String.raw`(?<![\w$.])${RegExp.escape(name)}\s*=(?![=>])`).exec(text)?.index;
 }
 function hasNonErrorLiteralAssertion(blockRest, target, before) {
-  const assertion = new RegExp(String.raw`\bexpect\( ?${escapeIdentifier(target)} ?\) ?\.toBe\(`, "g");
+  const assertion = new RegExp(String.raw`\bexpect\( ?${RegExp.escape(target)} ?\) ?\.toBe\(`, "g");
   for (const match of blockRest.matchAll(assertion)) {
     const args = readBalancedGroup(blockRest, match.index + match[0].length - 1, PARENTHESES);
     if (args === void 0) continue;
@@ -230,11 +231,11 @@ function hasNonErrorLiteralAssertion(blockRest, target, before) {
   return false;
 }
 function hasOuterDeclaration(before, name) {
-  return new RegExp(String.raw`\b(?:let|var) ${escapeIdentifier(name)}\b`).test(before);
+  return new RegExp(String.raw`\b(?:let|var) ${RegExp.escape(name)}\b`).test(before);
 }
 function isBoundToNonErrorLiteral(before, name) {
   if (!IDENTIFIER.test(name)) return false;
-  const declaration = new RegExp(String.raw`\bconst ${escapeIdentifier(name)}(?: ?:[^=;]*)? ?= ?`, "g");
+  const declaration = new RegExp(String.raw`\bconst ${RegExp.escape(name)}(?: ?:[^=;]*)? ?= ?`, "g");
   const nearest = before.matchAll(declaration).toArray().at(-1);
   if (nearest === void 0) return false;
   const initializer = before.slice(nearest.index + nearest[0].length);
