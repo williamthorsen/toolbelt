@@ -610,6 +610,9 @@ importers:
       '@williamthorsen/toolbelt.errors':
         specifier: workspace:*
         version: link:../errors
+      '@williamthorsen/toolbelt.objects':
+        specifier: workspace:*
+        version: link:../objects
     devDependencies:
       '@williamthorsen/toolbelt.adoption':
         specifier: workspace:*
