@@ -44,9 +44,14 @@ async function auditCompiledKits(monorepoRoot: string): Promise<{ failures: stri
   return { failures: failures.toSorted((a, b) => a.localeCompare(b)), workspaceCount: bundles.length };
 }
 
-/** Reports why a compiled kit's checks fail to name themselves, or nothing when every one of them does. */
+/** Reports why a compiled kit fails to load or to name every check, or nothing when it does both. */
 async function findUnnamedChecks(bundlePath: string): Promise<string | undefined> {
-  const ids = await listCheckIds(bundlePath);
+  let ids: Array<string | undefined>;
+  try {
+    ids = await listCheckIds(bundlePath);
+  } catch (error) {
+    return `the bundle failed to load (${String(error)})`;
+  }
   if (ids.length === 0) return 'the bundle exposes no adoption checks';
 
   const unnamed = ids.filter((id) => id === undefined).length;
