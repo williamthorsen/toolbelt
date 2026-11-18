@@ -51,7 +51,7 @@ Five files record a package, and none is generated from another except where not
 
 Then add the workspace's importer to `pnpm-lock.yaml` by hand: Insert `packages/{domain}: {}` at its alphabetical position in the `importers` block. CI installs with `--frozen-lockfile`, which fails on a workspace that the block omits, and pnpm writes no importer for a workspace declaring no dependencies, so `pnpm install` does not add one whatever the failure advises. `pnpm install --frozen-lockfile` reproduces the failure while the entry is missing.
 
-`__tests__/package-registration.app.unit.test.ts` fails on a missing entry, or a map description that differs from the manifest, in any of the five, and `__tests__/published-package-shape.app.unit.test.ts` fails on a manifest, README, or changelog that still has the template's shape.
+`__tests__/package-registration.app.unit.test.ts` fails on an entry missing from any of the five, or on a map description that differs from the manifest's, and `__tests__/published-package-shape.app.unit.test.ts` fails on a manifest, README, or changelog that still has the template's shape.
 
 Two steps happen off the repo, and no test covers either: npm must already hold the package name, published as a placeholder, and it must know the package as a trusted publisher. Until both are done, the tag push publishes nothing. Both need an npm account with 2FA, so they fall to the maintainer rather than to the scaffolding pull request. The commands are in the root README, under the release instructions.
 
