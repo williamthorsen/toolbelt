@@ -4,12 +4,11 @@ import path from 'node:path';
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
-import { RELATIVE_SPECIFIER_PATTERN } from '../test-utils/collectReachableModuleSet.ts';
 import { createTempDir } from '../test-utils/createTempDir.ts';
 import { hasSourceFile } from '../test-utils/hasSourceFile.ts';
+import { listResolvedImports } from '../test-utils/listResolvedImports.ts';
 import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
 import { NON_SOURCE_DIRS } from '../test-utils/non-source-dirs.ts';
-import { resolveSpecifier } from '../test-utils/resolveSpecifier.ts';
 import { isScaffolding } from '../test-utils/scaffolding-dirs.ts';
 
 const PACKAGE_CONFIG_PATH = path.join('.config', 'nmr.config.ts');
@@ -113,13 +112,8 @@ function auditStrawmanImporters(monorepoRoot: string): { moduleCount: number; st
 
       moduleCount += 1;
 
-      const contents = fs.readFileSync(importer, 'utf8');
-
-      for (const [, specifier] of contents.matchAll(RELATIVE_SPECIFIER_PATTERN)) {
-        if (specifier === undefined) continue;
-
-        const target = resolveSpecifier(path.dirname(importer), specifier);
-        if (target !== undefined && isStrawman(target)) {
+      for (const target of listResolvedImports(importer)) {
+        if (isStrawman(target)) {
           strawmanImporters.push(`${path.relative(monorepoRoot, importer)} -> ${path.relative(monorepoRoot, target)}`);
         }
       }

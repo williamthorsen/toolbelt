@@ -1,13 +1,11 @@
-import fs from 'node:fs';
 import path from 'node:path';
 
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
-import { RELATIVE_SPECIFIER_PATTERN } from '../test-utils/collectReachableModuleSet.ts';
+import { listResolvedImports } from '../test-utils/listResolvedImports.ts';
 import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
 import { NON_SOURCE_DIRS } from '../test-utils/non-source-dirs.ts';
-import { resolveSpecifier } from '../test-utils/resolveSpecifier.ts';
 import { isScaffolding } from '../test-utils/scaffolding-dirs.ts';
 
 // The non-tier directories that are published: Every module in one is its own build entry point.
@@ -61,14 +59,7 @@ function indexImporters(sourceFiles: string[]): Map<string, string[]> {
   const importersByModule = new Map<string, string[]>();
 
   for (const importer of sourceFiles) {
-    const contents = fs.readFileSync(importer, 'utf8');
-
-    for (const [, specifier] of contents.matchAll(RELATIVE_SPECIFIER_PATTERN)) {
-      if (specifier === undefined) continue;
-
-      const target = resolveSpecifier(path.dirname(importer), specifier);
-      if (target === undefined) continue;
-
+    for (const target of listResolvedImports(importer)) {
       importersByModule.set(target, [...(importersByModule.get(target) ?? []), importer]);
     }
   }
