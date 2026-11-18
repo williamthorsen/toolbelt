@@ -4,6 +4,7 @@ import path from 'node:path';
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
+import { createTempDir, type TempDir } from '../test-utils/createTempDir.ts';
 import { isRecord } from '../test-utils/isRecord.ts';
 import { listPublishedWorkspaceDirectories, PRIVATE_WORKSPACES } from '../test-utils/private-workspaces.ts';
 import { readManifest } from '../test-utils/readManifest.ts';
@@ -17,6 +18,8 @@ const RELEASE_NOTES_MARKER = '<!-- section:release-notes -->';
 const TEMPLATE_CHANGELOG_ENTRY = '_template-v';
 // npm shows a package's description on its registry page. A clone that kept the template's would publish it there.
 const TEMPLATE_DESCRIPTION = 'Template for new workspace';
+
+const WORKSPACE_MANIFEST = "packages:\n  - 'packages/*'\n";
 
 describe('Published package shape', () => {
   it('every published workspace has the manifest that a scaffolded clone must have', () => {
@@ -39,6 +42,56 @@ describe('Published package shape', () => {
 
     expect(mismatches).toStrictEqual([]);
     expect(workspaceCount).toBeGreaterThan(0);
+  });
+
+  it('reports every manifest field of a clone that kept the template manifest', () => {
+    using tree = createTemplateCloneTree();
+
+    const { defects, workspaceCount } = auditPublishedManifests(tree.dir);
+
+    expect(defects).toStrictEqual([
+      "fixture: description is absent or still the template's",
+      `fixture: homepage is not ${HOMEPAGE_PREFIX}fixture#readme`,
+      `fixture: name is not ${PUBLISHED_NAME_PREFIX}fixture`,
+      `fixture: publishConfig is not { access: 'public', registry: '${NPM_REGISTRY}' }`,
+      'fixture: repository.directory is not packages/fixture',
+      "fixture: scripts declares build, which overrides the managed one with the template's no-op",
+      'fixture: scripts.prepublishOnly does not run nmr build',
+    ]);
+    expect(workspaceCount).toBe(1);
+  });
+
+  it('reports the title of a copied README even though its code fence quotes the release-notes marker', () => {
+    using tree = createTemplateCloneTree();
+
+    const { defects, workspaceCount } = auditPublishedDocuments(tree.dir);
+
+    expect(defects).toStrictEqual([
+      "fixture: CHANGELOG.md contains the template's own release history",
+      `fixture: README.md does not open with the title # ${PUBLISHED_NAME_PREFIX}fixture`,
+    ]);
+    expect(workspaceCount).toBe(1);
+  });
+
+  it('reports a private workspace that the declared private set omits', () => {
+    using tree = createTemplateCloneTree();
+
+    const { mismatches, workspaceCount } = auditPrivateSet(tree.dir);
+
+    expect(mismatches).toStrictEqual(['fixture: manifest declares private, and PRIVATE_WORKSPACES omits it']);
+    expect(workspaceCount).toBe(1);
+  });
+
+  it('reports a workspace that the declared private set names and whose manifest is not private', () => {
+    using tree = createTempDir({
+      'packages/tools/package.json': JSON.stringify({ name: 'tools' }),
+      'pnpm-workspace.yaml': WORKSPACE_MANIFEST,
+    });
+
+    const { mismatches, workspaceCount } = auditPrivateSet(tree.dir);
+
+    expect(mismatches).toStrictEqual(['tools: PRIVATE_WORKSPACES names it, and its manifest declares no private']);
+    expect(workspaceCount).toBe(1);
   });
 });
 
@@ -167,6 +220,21 @@ function auditPrivateSet(monorepoRoot: string): { mismatches: string[]; workspac
   }
 
   return { mismatches: mismatches.toSorted((a, b) => a.localeCompare(b)), workspaceCount };
+}
+
+/**
+ * Creates a tree whose one workspace, outside `PRIVATE_WORKSPACES`, holds verbatim copies of the real template's
+ * manifest, README, and changelog: a clone copied and never edited.
+ */
+function createTemplateCloneTree(): TempDir {
+  const templateDirectory = path.join(findMonorepoRoot(), 'packages', '_template');
+  const entries: Record<string, string> = { 'pnpm-workspace.yaml': WORKSPACE_MANIFEST };
+
+  for (const fileName of ['CHANGELOG.md', 'README.md', 'package.json']) {
+    entries[`packages/fixture/${fileName}`] = fs.readFileSync(path.join(templateDirectory, fileName), 'utf8');
+  }
+
+  return createTempDir(entries);
 }
 
 /** Reads one of a package's documentation files, reporting an absent file as `undefined`. */
