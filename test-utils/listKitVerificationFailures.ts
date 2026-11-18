@@ -34,7 +34,9 @@ export function listKitVerificationFailures(run: VerifyRun, kitWorkspaces: reado
       .map((project) => `${project.project}: rdy reported a failure without naming a kit (${describeExit(run)})`),
   ];
 
-  if (failures.length === 0 && (run.status !== 0 || run.signal !== null)) {
+  // An omitted workspace does not explain a failed run, so the exit detail is still needed beside it.
+  const isRunFailureUnexplained = failingKits.length === 0 && report.projects.every((project) => project.passed);
+  if (isRunFailureUnexplained && (run.status !== 0 || run.signal !== null)) {
     failures.push(`rdy verify failed without a failing project (${describeExit(run)})`);
   }
 

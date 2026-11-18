@@ -77,6 +77,15 @@ describe(listKitVerificationFailures, () => {
       'rdy verify failed without a failing project (exit 2)',
     ]);
   });
+
+  it('reports the exit and stderr of a failed run that verified no project', () => {
+    const run = buildRun({ kits: [], projects: [] }, { status: 1, stderr: 'config error\n' });
+
+    expect(listKitVerificationFailures(run, ['packages/a'])).toStrictEqual([
+      'packages/a: not verified by the recursive sweep',
+      'rdy verify failed without a failing project (exit 1; stderr: config error)',
+    ]);
+  });
 });
 
 // region | Helpers
