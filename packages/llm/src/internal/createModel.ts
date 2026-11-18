@@ -6,6 +6,11 @@ import type { LanguageModel } from 'ai';
 
 import type { AnthropicConnection, ProviderConnection } from '../types/job.ts';
 
+const BROWSER_NETWORK_FAILURES: ReadonlySet<string> = new Set([
+  'Failed to fetch',
+  'Load failed',
+  'NetworkError when attempting to fetch resource.',
+]);
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1';
 
 /**
@@ -14,19 +19,20 @@ const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1';
  *
  * @internal
  */
-export function createModel(connection: ProviderConnection, fetch?: typeof globalThis.fetch): LanguageModel {
+export function createModel(connection: ProviderConnection, baseFetch?: typeof globalThis.fetch): LanguageModel {
   const headers = { ...connection.headers };
+  const fetch = wrapFetch(baseFetch);
   switch (connection.provider) {
     case 'anthropic':
       return createAnthropic({
         ...buildAnthropicCredential(connection),
         headers: { ...buildAnthropicHeaders(connection), ...headers },
-        ...(fetch && { fetch }),
+        fetch,
       })(connection.model);
     case 'google':
-      return createGoogle({ apiKey: connection.apiKey, headers, ...(fetch && { fetch }) })(connection.model);
+      return createGoogle({ apiKey: connection.apiKey, headers, fetch })(connection.model);
     case 'openai':
-      return createOpenAI({ apiKey: connection.apiKey, headers, ...(fetch && { fetch }) })(connection.model);
+      return createOpenAI({ apiKey: connection.apiKey, headers, fetch })(connection.model);
     case 'openrouter':
       return createOpenAICompatible({
         name: 'openrouter',
@@ -34,7 +40,7 @@ export function createModel(connection: ProviderConnection, fetch?: typeof globa
         apiKey: connection.apiKey,
         headers,
         includeUsage: true,
-        ...(fetch && { fetch }),
+        fetch,
       })(connection.model);
   }
 }
@@ -51,6 +57,29 @@ function buildAnthropicHeaders(connection: AnthropicConnection): Record<string, 
     'anthropic-dangerous-direct-browser-access': 'true',
     // A bearer token from a provider CLI login is an OAuth token, which the API accepts only with this beta.
     ...(connection.authToken !== undefined && { 'anthropic-beta': 'oauth-2025-04-20' }),
+  };
+}
+
+/**
+ * Checks for the error with which a browser's `fetch` reports a blocked or failed request: a `TypeError` without a
+ * `cause`, whose message Chrome, Firefox, and Safari each word differently.
+ */
+function isBrowserNetworkFailure(error: unknown): boolean {
+  return error instanceof TypeError && error.cause === undefined && BROWSER_NETWORK_FAILURES.has(error.message);
+}
+
+/**
+ * Wraps `fetch` so that a browser's network failure reaches the AI SDK as the `fetch failed` error that it retries
+ * and reports as a request without a status.
+ */
+function wrapFetch(baseFetch: typeof globalThis.fetch | undefined): typeof globalThis.fetch {
+  return async (input, init) => {
+    try {
+      return await (baseFetch ?? globalThis.fetch)(input, init);
+    } catch (error) {
+      if (isBrowserNetworkFailure(error)) throw new TypeError('fetch failed', { cause: error });
+      throw error;
+    }
   };
 }
 // endregion | Helpers

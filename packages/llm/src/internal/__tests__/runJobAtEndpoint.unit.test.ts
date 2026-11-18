@@ -77,6 +77,7 @@ describe(runJobAtEndpoint, () => {
 
   it.each([
     ['a status that is not a refusal', new Response('Gateway timeout', { status: 504 }), 'responded with 504'],
+    ['an unauthorized status', new Response('Unauthorized', { status: 401 }), 'responded with 401'],
     ['a refusal status without a refusal body', new Response('Busy', { status: 429 }), 'responded with 429'],
     ['a failure event', buildStream(['job-event', EVENT], ['failure', JOB_FAILURE_BODY]), JOB_FAILURE_BODY.message],
     ['a stream that ends without an outcome', buildStream(['job-event', EVENT]), 'before the job finished'],
@@ -85,10 +86,10 @@ describe(runJobAtEndpoint, () => {
     const error = await captureRejection(run(response));
 
     expect(error).toBeInstanceOf(JobRunError);
-    expect(error).toHaveProperty('cause.message', expect.stringContaining(message));
+    expect(error).toMatchObject({ reason: 'failed', cause: { message: expect.stringContaining(message) } });
   });
 
-  it('rejects with JobRunError holding a network error', async () => {
+  it('rejects with an unreachable JobRunError holding a network error', async () => {
     const failure = new TypeError('fetch failed');
 
     const error = await captureRejection(
@@ -96,7 +97,7 @@ describe(runJobAtEndpoint, () => {
     );
 
     expect(error).toBeInstanceOf(JobRunError);
-    expect(error).toHaveProperty('cause', failure);
+    expect(error).toMatchObject({ reason: 'unreachable', cause: failure });
   });
 
   it('rejects with JobRunError holding an error that onEvent threw, and aborts the request', async () => {

@@ -106,3 +106,6 @@ export type JobOutcome<Result> =
       readonly rounds: number;
       readonly usage: Usage;
     };
+
+/** Why a job failed; see `JobRunError`. */
+export type JobFailureReason = 'credential-refused' | 'failed' | 'unreachable';

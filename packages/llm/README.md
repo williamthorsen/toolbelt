@@ -60,6 +60,34 @@ Build a fresh job for each run, such as through a `createJob(input)` factory, so
 
 A `ProviderConnection` names the provider (`anthropic`, `google`, `openai`, or `openrouter`), the model, the credential, and optional `headers`. The request goes straight from wherever `runJob` runs to the provider, so a user's key never reaches the operator's server. An Anthropic connection takes `apiKey` or `authToken`, a bearer token such as the `ant` CLI login's; the doc comment of `AnthropicConnection` lists the headers that the runner adds.
 
+## User connections
+
+A user supplies a credential in either of two ways, and `runJob` runs on it once the app adds a model: `runJob(job, { ...credential, model })`.
+
+- **Pasted key:** The app builds `{ provider, apiKey }` from a key that the user pastes for Anthropic, Google, OpenAI, or OpenRouter.
+- **OpenRouter connect:** `startOpenRouterConnect` returns the URL of OpenRouter's approval page, and `completeOpenRouterConnect` returns the credential on the page to which OpenRouter returns the user:
+
+```ts
+import { completeOpenRouterConnect, startOpenRouterConnect } from '@williamthorsen/toolbelt.llm/proposed';
+
+async function connect(): Promise<void> {
+  const url = await startOpenRouterConnect({ callbackUrl: location.href, limit: 5, expiration: '30-days' });
+  location.assign(url);
+}
+
+// On every load of the callback page:
+const credential = await completeOpenRouterConnect(location.href);
+if (credential !== undefined) history.replaceState(null, '', location.pathname);
+```
+
+Each approval issues a new key on the user's OpenRouter account, which stays valid until it expires or the user revokes it, so offer `limit` and `expiration`. The user can change both on OpenRouter's form.
+
+`createCredentialStore` keeps one credential per app. A credential saved without `remember` is kept in `sessionStorage` and is gone when the tab closes; a remembered one is kept in `localStorage` until `forget`. The key goes from the page straight to the provider, so the operator's server never sees it, but any script on the page, and any browser extension with access to it, can read it. Load no third-party scripts on such a page, and restrict where it can send a key with a Content Security Policy:
+
+```
+connect-src 'self' https://api.anthropic.com https://api.openai.com https://generativelanguage.googleapis.com https://openrouter.ai
+```
+
 ## Events
 
 `onEvent` receives a `text-delta`, `tool-call`, `tool-result`, `tool-error`, or `round-finished` event as each happens. Each `tool-call` is followed by its `tool-result` or its `tool-error`, and `round-finished` carries the round's token usage.
@@ -68,7 +96,7 @@ A `ProviderConnection` names the provider (`anthropic`, `google`, `openai`, or `
 
 `runJob` resolves with `completed` and the result, or with `unfinished` and its reason: `round-cap` when the job reached `maxRounds` with the model still calling tools, or `stopped` when the model stopped calling tools first. Both report the rounds and the total usage, and both events and outcomes survive `JSON.stringify`.
 
-Aborting the `signal` rejects with the signal's reason. Any other failure, the provider's or a tool's, rejects with `JobRunError`, whose `cause` holds the underlying error. On an endpoint connection, a refusal rejects with `JobRefusedError`, and the endpoint withholds a failure's underlying error, as its doc comment describes.
+Aborting the `signal` rejects with the signal's reason. Any other failure, the provider's or a tool's, rejects with `JobRunError`, whose `cause` holds the underlying error. Its `reason` tells the app what to report: `credential-refused` when the provider refused the key, with the provider's own `providerMessage`; `unreachable` when no response arrived, which is also how a browser reports a provider that refuses calls from a page; and `failed` otherwise. On an endpoint connection, a refusal rejects with `JobRefusedError`, and the endpoint withholds a failure's underlying error, as its doc comment describes.
 
 ## The handler
 
