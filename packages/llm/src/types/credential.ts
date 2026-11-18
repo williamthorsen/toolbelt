@@ -27,7 +27,9 @@ export interface CredentialStoreOptions {
 export interface CredentialStore {
   /** Returns the saved credential, preferring the session's copy, or `undefined` when none can be read. */
   read(): UserCredential | undefined;
-  /** Saves the credential for the tab's session, or in the browser when `remember` is true, replacing any other copy. */
+  /**
+   * Saves the credential for the tab's session, or in the browser when `remember` is true, replacing any other copy.
+   */
   save(credential: UserCredential, options: { readonly remember: boolean }): void;
   /** Removes the credential from both storages. */
   forget(): void;

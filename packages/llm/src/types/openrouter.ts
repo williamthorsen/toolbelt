@@ -20,7 +20,9 @@ export interface OpenRouterConnectOptions {
 
 /** The runtime that `completeOpenRouterConnect` uses. */
 export interface OpenRouterCallbackOptions {
-  /** The storage in which `startOpenRouterConnect` kept the flow's secrets; the browser's `sessionStorage` by default. */
+  /**
+   * The storage in which `startOpenRouterConnect` kept the flow's secrets; the browser's `sessionStorage` by default.
+   */
   readonly sessionStorage?: KeyValueStorage;
   /** Replaces the global `fetch` for the key exchange. */
   readonly fetch?: typeof globalThis.fetch;
