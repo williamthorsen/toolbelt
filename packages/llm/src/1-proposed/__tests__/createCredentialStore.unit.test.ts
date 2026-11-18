@@ -1,4 +1,4 @@
-import { describe, expect, expectTypeOf, it } from 'vitest';
+import { afterEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 
 import { createMemoryStorage } from '../../test-utils/createMemoryStorage.ts';
 import type { UserCredential } from '../../types/credential.ts';
@@ -9,6 +9,10 @@ const KEY = 'toolbelt.llm:app';
 const CREDENTIAL: UserCredential = { provider: 'openai', apiKey: 'sk-test' };
 
 describe(createCredentialStore, () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('keeps a credential for the session unless asked to remember it', () => {
     const { store, sessionStorage, localStorage } = buildStore();
 
@@ -72,6 +76,8 @@ describe(createCredentialStore, () => {
   });
 
   it('throws when the runtime has no storage and none was passed', () => {
+    vi.stubGlobal('sessionStorage', undefined);
+    vi.stubGlobal('localStorage', undefined);
     const store = createCredentialStore({ name: 'app' });
 
     expect(() => store.read()).toThrow(TypeError);

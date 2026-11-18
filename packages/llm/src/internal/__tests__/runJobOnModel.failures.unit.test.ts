@@ -79,6 +79,31 @@ describe(runJobOnModel, () => {
     },
   );
 
+  it.each(REFUSALS.map(([credential]) => credential.provider))(
+    'reports a %s key that a header cannot carry as failed, without a request',
+    async (provider) => {
+      const fetch = vi.fn<typeof globalThis.fetch>();
+      const model = createModel({ provider, apiKey: 'k\u{2019}', model: 'm' }, fetch);
+
+      const error = await captureRejection(runJobOnModel(createSubmitJob(), model));
+
+      expect(error).toMatchObject({ reason: 'failed' });
+      expect(fetch).not.toHaveBeenCalled();
+    },
+  );
+
+  it('reports a TypeError that fetch throws for its input as failed, without retrying', async () => {
+    const fetch = vi
+      .fn<typeof globalThis.fetch>()
+      .mockRejectedValue(new TypeError('Request cannot be constructed from a URL that includes credentials'));
+    const model = createModel({ provider: 'openai', apiKey: 'k', model: 'm' }, fetch);
+
+    const error = await captureRejection(runJobOnModel(createSubmitJob(), model));
+
+    expect(error).toMatchObject({ reason: 'failed' });
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
   it('reports a tool that throws a provider refusal as failed', async () => {
     const model = new MockLanguageModelV4({ doStream: [buildRound([buildToolCall('c1', 'check', { draft: 'a' })])] });
     const refusal = new APICallError({ message: 'revoked', url: 'u', requestBodyValues: {}, statusCode: 401 });
