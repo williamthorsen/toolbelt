@@ -41,16 +41,17 @@ The changelog starts empty: the title, and the line `All notable changes to this
 
 ## 3. Register the package
 
-Four files record a package, and none is generated from another except where noted:
+Five files record a package, and none is generated from another except where noted:
 
 - `.config/release-kit.config.ts`: Add `'scope:{domain}': { color: '00ff96' }` under `repoLabels.labels`. Leave the `workspaces` list alone. It contains only a workspace with a legacy tag prefix or an exclusion, and a new package has neither.
 - `.github/labels.yaml`: Regenerate it with `release-kit sync-labels generate`, which reads the entry added above.
 - `.meta/label-map.json`: Add `"{domain}": "scope:{domain}"` under `scopes`, by hand.
 - `AGENTS.md`: Add the domain to the list on the `packages/{domain}/` bullet.
+- `README.md` at the repo root: Add a row to the package map, at its alphabetical position, linking the package's README and repeating its `package.json` description exactly.
 
 Then add the workspace's importer to `pnpm-lock.yaml` by hand: Insert `packages/{domain}: {}` at its alphabetical position in the `importers` block. CI installs with `--frozen-lockfile`, which fails on a workspace that the block omits, and pnpm writes no importer for a workspace declaring no dependencies, so `pnpm install` does not add one whatever the failure advises. `pnpm install --frozen-lockfile` reproduces the failure while the entry is missing.
 
-`__tests__/package-registration.app.unit.test.ts` fails on a missing entry in any of the four, and `__tests__/published-package-shape.app.unit.test.ts` fails on a manifest, README, or changelog that still has the template's shape.
+`__tests__/package-registration.app.unit.test.ts` fails on an entry missing from any of the five, or on a map description that differs from the manifest's, and `__tests__/published-package-shape.app.unit.test.ts` fails on a manifest, README, or changelog that still has the template's shape.
 
 Two steps happen off the repo, and no test covers either: npm must already hold the package name, published as a placeholder, and it must know the package as a trusted publisher. Until both are done, the tag push publishes nothing. Both need an npm account with 2FA, so they fall to the maintainer rather than to the scaffolding pull request. The commands are in the root README, under the release instructions.
 

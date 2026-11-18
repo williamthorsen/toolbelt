@@ -1,6 +1,66 @@
 <!-- readme-type: monorepo-root -->
 
-# PNPM Node monorepo
+# Toolbelt
+
+TypeScript utility libraries, each published to npm as `@williamthorsen/toolbelt.{domain}`. Every package is ESM only and requires Node.js 24 or later.
+
+## Packages
+
+| Package                                                                | Description                                                                                                                |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| [`@williamthorsen/toolbelt.acp`](packages/acp/README.md)               | An Agent Client Protocol client that runs an app's prompts on agent harnesses such as Claude Code and the Antigravity CLI. |
+| [`@williamthorsen/toolbelt.arrays`](packages/arrays/README.md)         | Array utilities                                                                                                            |
+| [`@williamthorsen/toolbelt.async`](packages/async/README.md)           | Async utilities                                                                                                            |
+| [`@williamthorsen/toolbelt.atlassian`](packages/atlassian/README.md)   | Utilities for working with Atlassian Cloud                                                                                 |
+| [`@williamthorsen/toolbelt.cli`](packages/cli/README.md)               | A parser, help renderer, and command router for command-line tools                                                         |
+| [`@williamthorsen/toolbelt.datetime`](packages/datetime/README.md)     | Date and time utilities                                                                                                    |
+| [`@williamthorsen/toolbelt.dstructs`](packages/dstructs/README.md)     | Data-structure utilities                                                                                                   |
+| [`@williamthorsen/toolbelt.enums`](packages/enums/README.md)           | Functions for working with TypeScript enums                                                                                |
+| [`@williamthorsen/toolbelt.errors`](packages/errors/README.md)         | Utilities for working with errors                                                                                          |
+| [`@williamthorsen/toolbelt.filesystem`](packages/filesystem/README.md) | Filesystem utilities                                                                                                       |
+| [`@williamthorsen/toolbelt.git`](packages/git/README.md)               | Utilities for working with git                                                                                             |
+| [`@williamthorsen/toolbelt.guards`](packages/guards/README.md)         | TypeScript type guards                                                                                                     |
+| [`@williamthorsen/toolbelt.hof`](packages/hof/README.md)               | TypeScript higher-order functions                                                                                          |
+| [`@williamthorsen/toolbelt.llm`](packages/llm/README.md)               | Runs an LLM job in the page or at an operator's endpoint, on a credential of the user's or the operator's.                 |
+| [`@williamthorsen/toolbelt.nodejs`](packages/nodejs/README.md)         | Utilities for inspecting Node.js runtimes and toolchains                                                                   |
+| [`@williamthorsen/toolbelt.numbers`](packages/numbers/README.md)       | Utility functions for working with numbers                                                                                 |
+| [`@williamthorsen/toolbelt.objects`](packages/objects/README.md)       | Utilities for working with objects in JavaScript and TypeScript                                                            |
+| [`@williamthorsen/toolbelt.packaging`](packages/packaging/README.md)   | Package and project layout utilities: where a package or project boundary begins, and what its manifest declares           |
+| [`@williamthorsen/toolbelt.secrets`](packages/secrets/README.md)       | Utilities for storing and retrieving secrets in the OS credential store                                                    |
+| [`@williamthorsen/toolbelt.sets`](packages/sets/README.md)             | Functions for working with sets                                                                                            |
+| [`@williamthorsen/toolbelt.statistics`](packages/statistics/README.md) | Statistics utilities                                                                                                       |
+| [`@williamthorsen/toolbelt.strings`](packages/strings/README.md)       | String-handling utilities                                                                                                  |
+| [`@williamthorsen/toolbelt.terminal`](packages/terminal/README.md)     | Utilities for rendering command-line output to terminals, pipes, and CI logs                                               |
+| [`@williamthorsen/toolbelt.testing`](packages/testing/README.md)       | Runner-agnostic utilities for testing                                                                                      |
+| [`@williamthorsen/toolbelt.vitest`](packages/vitest/README.md)         | Utilities for testing with Vitest                                                                                          |
+
+## Maturity tiers
+
+Every package exposes each maturity tier of its API as a separate export subpath. A consumer picks the stability that it wants by the subpath that it imports.
+
+| Subpath      | Source directory | Meaning                                                           |
+| ------------ | ---------------- | ----------------------------------------------------------------- |
+| `/proposed`  | `1-proposed`     | May change at any time.                                           |
+| `/draft`     | `2-draft`        | The shape is chosen.                                              |
+| `/candidate` | `3-candidate`    | Expected to be stable. A breaking change bumps the major version. |
+| package root | `4-release`      | A contract. A breaking change follows a deprecation.              |
+
+Most packages hold their API in `/candidate`, and the package root of most exports nothing.
+
+### Moving an export between tiers
+
+| Move                | Criteria                                                                                                                                             |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| proposed → draft    | The shape is chosen (no breaking change since it entered the tier), and at least one consumer outside the package imports it.                        |
+| draft → candidate   | At least one external repo imports it, and it has had no breaking change in the last 30 days.                                                        |
+| candidate → release | At least two external repos import it, it has been in `3-candidate` for at least 90 days with no breaking change, and no open issue changes its API. |
+| release → candidate | A breaking change while in release within the last 90 days, or an open issue that proposes one.                                                      |
+
+A consumer outside the package includes a sibling workspace; an external repo is a repository other than this one.
+
+- A move is judged on value exports. A type moves with the value that it serves.
+- Disuse alone is neutral: An export that no consumer imports is neither demoted nor proposed for removal on that ground.
+- "Within the last 90 days" mirrors the promotion window, so a breaking change exactly 90 days old does not demote.
 
 ## Getting started
 

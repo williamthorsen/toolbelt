@@ -10,6 +10,8 @@ import { listPublishedWorkspaceDirectories } from '../test-utils/private-workspa
 
 // The bullet in AGENTS.md whose parenthesized list names every published domain.
 const DOMAIN_BULLET_PREFIX = '- `packages/{domain}/`:';
+// A row of the root README's package map: the package's README link, then its description. Prettier pads the cells.
+const PACKAGE_MAP_ROW_PATTERN = /^\|\s*\[[^\]]*\]\(packages\/([^/)]+)\/README\.md\)\s*\|\s*(.*?)\s*\|$/gm;
 // Matched by line rather than parsed: The root installs no YAML parser, and `release-kit sync-labels generate`
 // emits this file with a fixed shape.
 const LABEL_NAME_PATTERN = /^- name: (\S+)$/gm;
@@ -27,9 +29,10 @@ describe('Package registration', () => {
 // region | Helpers
 
 /**
- * Audits every published workspace against the four files that record a package: the release-kit label
- * configuration, the labels file generated from it, the label lookup that maps a commit scope to a label, and the
- * domain list in AGENTS.md. A scaffolding pull request that misses one of them is merged in silence.
+ * Audits every published workspace against the five files that record a package: the release-kit label
+ * configuration, the labels file generated from it, the label lookup that maps a commit scope to a label, the domain
+ * list in AGENTS.md, and the package map in the root README, whose description must match the manifest's. A
+ * scaffolding pull request that misses one of them is merged in silence.
  *
  * The check runs in one direction alone, so an entry naming no published workspace stays legal: Both
  * `.meta/label-map.json` and the label configuration hold lookups for private workspaces and for `root`.
@@ -39,6 +42,7 @@ function auditPackageRegistration(monorepoRoot: string): { unregistered: string[
   const documentedDomains = readDocumentedDomains(monorepoRoot);
   const generatedLabels = readGeneratedLabels(monorepoRoot);
   const mappedScopes = readMappedScopes(monorepoRoot);
+  const packageMap = readPackageMap(monorepoRoot);
 
   const unregistered: string[] = [];
   let workspaceCount = 0;
@@ -63,6 +67,16 @@ function auditPackageRegistration(monorepoRoot: string): { unregistered: string[
 
     if (!documentedDomains.has(workspace)) {
       unregistered.push(`${workspace}: AGENTS.md's domain list omits it`);
+    }
+
+    const mapDescription = packageMap.get(workspace);
+    const manifestDescription = readManifestDescription(packageDirectory);
+    if (mapDescription === undefined) {
+      unregistered.push(`${workspace}: README.md's package map omits it`);
+    } else if (mapDescription !== manifestDescription) {
+      unregistered.push(
+        `${workspace}: README.md's package map describes it as "${mapDescription}", and package.json as "${manifestDescription}"`,
+      );
     }
   }
 
@@ -107,6 +121,14 @@ function readGeneratedLabels(monorepoRoot: string): Set<string> {
   return labels;
 }
 
+/** Reads a workspace manifest's `description`, or an empty string when it declares none. */
+function readManifestDescription(packageDirectory: string): string {
+  const parsed: unknown = JSON.parse(fs.readFileSync(path.join(packageDirectory, 'package.json'), 'utf8'));
+  const description = isRecord(parsed) ? parsed['description'] : undefined;
+
+  return typeof description === 'string' ? description : '';
+}
+
 /** Reads the scope-to-label lookup that release-kit resolves a commit's scope through. */
 function readMappedScopes(monorepoRoot: string): Record<string, unknown> {
   const parsed: unknown = JSON.parse(fs.readFileSync(path.join(monorepoRoot, '.meta', 'label-map.json'), 'utf8'));
@@ -117,6 +139,23 @@ function readMappedScopes(monorepoRoot: string): Record<string, unknown> {
   }
 
   return scopes;
+}
+
+/** Reads the root README's package map as a lookup from domain to description. */
+function readPackageMap(monorepoRoot: string): Map<string, string> {
+  const contents = fs.readFileSync(path.join(monorepoRoot, 'README.md'), 'utf8');
+  const packageMap = new Map<string, string>();
+
+  for (const [, domain, description] of contents.matchAll(PACKAGE_MAP_ROW_PATTERN)) {
+    if (domain !== undefined && description !== undefined) packageMap.set(domain, description);
+  }
+
+  // Report a reformatted map as its own cause instead of as every workspace missing from it.
+  if (packageMap.size === 0) {
+    throw new Error(`README.md holds no line matching ${PACKAGE_MAP_ROW_PATTERN.source}`);
+  }
+
+  return packageMap;
 }
 
 // endregion | Helpers
