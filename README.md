@@ -34,6 +34,34 @@ TypeScript utility libraries, each published to npm as `@williamthorsen/toolbelt
 | [`@williamthorsen/toolbelt.testing`](packages/testing/README.md)       | Runner-agnostic utilities for testing                                                                                      |
 | [`@williamthorsen/toolbelt.vitest`](packages/vitest/README.md)         | Utilities for testing with Vitest                                                                                          |
 
+## Maturity tiers
+
+Every package exposes each maturity tier of its API as a separate export subpath. A consumer picks the stability that it wants by the subpath that it imports.
+
+| Subpath      | Source directory | Meaning                                                           |
+| ------------ | ---------------- | ----------------------------------------------------------------- |
+| `/proposed`  | `1-proposed`     | May change at any time.                                           |
+| `/draft`     | `2-draft`        | The shape is chosen.                                              |
+| `/candidate` | `3-candidate`    | Expected to be stable. A breaking change bumps the major version. |
+| package root | `4-release`      | A contract. A breaking change follows a deprecation.              |
+
+Most packages hold their API in `/candidate`, and the package root of most exports nothing.
+
+### Moving an export between tiers
+
+| Move                | Criteria                                                                                                                                             |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| proposed → draft    | The shape is chosen (no breaking change since it entered the tier), and at least one consumer outside the package imports it.                        |
+| draft → candidate   | At least one external repo imports it, and it has had no breaking change in the last 30 days.                                                        |
+| candidate → release | At least two external repos import it, it has been in `3-candidate` for at least 90 days with no breaking change, and no open issue changes its API. |
+| release → candidate | A breaking change while in release within the last 90 days, or an open issue that proposes one.                                                      |
+
+A consumer outside the package includes a sibling workspace; an external repo is a repository other than this one.
+
+- A move is judged on value exports. A type moves with the value that it serves.
+- Disuse alone is neutral: An export that no consumer imports is neither demoted nor proposed for removal on that ground.
+- "Within the last 90 days" mirrors the promotion window, so a breaking change exactly 90 days old does not demote.
+
 ## Getting started
 
 Prerequisites: The Node.js version pinned in `.tool-versions`, and a [standalone pnpm](https://pnpm.io/installation), which runs the version that `packageManager` in `package.json` pins.
