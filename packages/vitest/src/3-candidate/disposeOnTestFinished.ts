@@ -6,8 +6,8 @@ import { onTestFinished } from 'vitest';
  *
  * Disposal runs after the test, failure and a dynamic `ctx.skip()` included, in reverse registration order. It
  * registers against whichever test is running, so it works from the test body, `beforeEach`, and `afterEach`.
- * Outside a test -- at module scope, in a `describe` body, or in `beforeAll` or `afterAll` -- Vitest throws `Hook
- * onTestFinished() can only be called inside a test`; a resource wanted there is a fixture, for `makeFixture`.
+ * Outside a test -- at module scope, in a `describe` body, or in `beforeAll` or `afterAll` -- Vitest's
+ * `onTestFinished` throws; a resource wanted there is a fixture, for `makeFixture`.
  *
  * @category Testing
  * @experimental

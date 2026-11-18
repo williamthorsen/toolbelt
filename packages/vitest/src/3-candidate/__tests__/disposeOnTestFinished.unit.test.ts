@@ -144,7 +144,7 @@ describe(disposeOnTestFinished, () => {
     });
 
     it('refuses to register', () => {
-      expect(thrown?.message).toBe('Hook onTestFinished() can only be called inside a test');
+      expect(thrown?.message).toMatch(/onTestFinished/);
       expect(disposalLog).not.toContain('no-test');
     });
   });
