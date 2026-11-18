@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "@ai-sdk/provider": "4.0.38",
-    "zod": "catalog:"
+    "zod": "4.6.7"
   },
   "peerDependencies": {
     "zod": "^4.1.8"
