@@ -301,14 +301,14 @@ var default_default = defineAdoptionKit({
       id: "no-hand-rolled-error-capture",
       kinds: ["hand-rolled-error-capture"],
       severity: "recommend",
-      fix: `Replace each capture named above with captureError from ${PACKAGE_NAME}/candidate, which runs the call, hands back what it threw or rejected with, and narrows that to a class named by the caller. It fails the test when the call completes normally, so a regression that stops the failure reports itself instead of leaving a later assertion to report an absent value in its place, and the narrowing gives access to the error's own fields without a second assertion to get there. Reference: ${README_URL}`
+      fix: `Replace each capture named above with captureError from ${PACKAGE_NAME}, which runs the call, hands back what it threw or rejected with, and narrows that to a class named by the caller. It fails the test when the call completes normally, so a regression that stops the failure reports itself instead of leaving a later assertion to report an absent value in its place, and the narrowing gives access to the error's own fields without a second assertion to get there. Reference: ${README_URL}`
     },
     {
       name: "No test captures stdout or stderr by hand",
       id: "no-hand-rolled-stdio-capture",
       kinds: ["hand-rolled-stdio-capture"],
       severity: "recommend",
-      fix: `Replace each spy named above with captureStdio from ${PACKAGE_NAME}/candidate, binding it with using so that both streams are restored when the scope exits. Read the output from its stdout and stderr in place of each spy's mock.calls, or from stdoutChunks and stderrChunks when an assertion is about how the output was split into writes. Reference: ${README_URL}`
+      fix: `Replace each spy named above with captureStdio from ${PACKAGE_NAME}, binding it with using so that both streams are restored when the scope exits. Read the output from its stdout and stderr in place of each spy's mock.calls, or from stdoutChunks and stderrChunks when an assertion is about how the output was split into writes. Reference: ${README_URL}`
     }
   ]
 });
