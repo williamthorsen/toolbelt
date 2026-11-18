@@ -1,5 +1,7 @@
 import process from 'node:process';
 
+import { isRecord } from '@williamthorsen/toolbelt.objects';
+
 import { swapProperty } from '../internal/swapProperty.ts';
 
 /**
@@ -104,8 +106,7 @@ function ignoreConstructor(code: unknown): unknown {
 
 /** Reports whether a value is an options object rather than a type string or a constructor. */
 function isWarningOptions(value: unknown): value is WarningOptions {
-  // rdy-ignore-next-line toolbelt.objects/no-hand-rolled-record-guard -- `objects` devDepends on `testing`
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+  return isRecord(value);
 }
 
 /**
