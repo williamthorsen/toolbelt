@@ -25,7 +25,7 @@ export async function runJobAtEndpoint<Result>(
   // Ends the request, and with it the job at the endpoint, when the run fails here.
   const controller = new AbortController();
   try {
-    const response = await fetch(connection.url, {
+    const response = await requestJob(fetch, connection.url, {
       method: 'POST',
       headers: { accept: 'text/event-stream', 'content-type': 'application/json', ...connection.headers },
       body: JSON.stringify({ input: job.input }),
@@ -109,6 +109,15 @@ async function readRefusal(response: Response): Promise<JobRefusedError | JobRun
     }
   }
   return new JobRunError({ cause: new Error(`The endpoint responded with ${response.status}.`) });
+}
+
+/** Sends the job's request, reporting a request that gets no response as unreachable. */
+async function requestJob(fetch: typeof globalThis.fetch, url: string, init: RequestInit): Promise<Response> {
+  try {
+    return await fetch(url, init);
+  } catch (error) {
+    throw new JobRunError({ cause: error, reason: 'unreachable' });
+  }
 }
 
 /** Returns a string field of an object, or `undefined` when it is absent or not a string. */

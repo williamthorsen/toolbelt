@@ -14,19 +14,20 @@ const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1';
  *
  * @internal
  */
-export function createModel(connection: ProviderConnection, fetch?: typeof globalThis.fetch): LanguageModel {
+export function createModel(connection: ProviderConnection, baseFetch?: typeof globalThis.fetch): LanguageModel {
   const headers = { ...connection.headers };
+  const fetch = wrapFetch(baseFetch);
   switch (connection.provider) {
     case 'anthropic':
       return createAnthropic({
         ...buildAnthropicCredential(connection),
         headers: { ...buildAnthropicHeaders(connection), ...headers },
-        ...(fetch && { fetch }),
+        fetch,
       })(connection.model);
     case 'google':
-      return createGoogle({ apiKey: connection.apiKey, headers, ...(fetch && { fetch }) })(connection.model);
+      return createGoogle({ apiKey: connection.apiKey, headers, fetch })(connection.model);
     case 'openai':
-      return createOpenAI({ apiKey: connection.apiKey, headers, ...(fetch && { fetch }) })(connection.model);
+      return createOpenAI({ apiKey: connection.apiKey, headers, fetch })(connection.model);
     case 'openrouter':
       return createOpenAICompatible({
         name: 'openrouter',
@@ -34,7 +35,7 @@ export function createModel(connection: ProviderConnection, fetch?: typeof globa
         apiKey: connection.apiKey,
         headers,
         includeUsage: true,
-        ...(fetch && { fetch }),
+        fetch,
       })(connection.model);
   }
 }
@@ -51,6 +52,22 @@ function buildAnthropicHeaders(connection: AnthropicConnection): Record<string, 
     'anthropic-dangerous-direct-browser-access': 'true',
     // A bearer token from a provider CLI login is an OAuth token, which the API accepts only with this beta.
     ...(connection.authToken !== undefined && { 'anthropic-beta': 'oauth-2025-04-20' }),
+  };
+}
+
+/**
+ * Wraps `fetch` so that a network failure without a `cause`, which is how a browser reports a blocked or failed
+ * request, reaches the AI SDK as the `fetch failed` error that it retries and reports as a request without a status.
+ */
+function wrapFetch(baseFetch: typeof globalThis.fetch | undefined): typeof globalThis.fetch {
+  return async (input, init) => {
+    try {
+      return await (baseFetch ?? globalThis.fetch)(input, init);
+    } catch (error) {
+      if (error instanceof TypeError && error.cause === undefined)
+        throw new TypeError('fetch failed', { cause: error });
+      throw error;
+    }
   };
 }
 // endregion | Helpers

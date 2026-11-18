@@ -13,6 +13,7 @@ export type {
   ConnectionBase,
   Job,
   JobEvent,
+  JobFailureReason,
   JobOutcome,
   JobTool,
   ProviderConnection,

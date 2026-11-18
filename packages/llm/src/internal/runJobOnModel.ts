@@ -167,7 +167,7 @@ function selectRejection(
   toolFailure: { readonly error: unknown } | undefined,
   signal: AbortSignal | undefined,
 ): unknown {
-  if (toolFailure !== undefined) return new JobRunError({ cause: toolFailure.error });
+  if (toolFailure !== undefined) return new JobRunError({ cause: toolFailure.error, reason: 'failed' });
   if (signal?.aborted === true) return signal.reason;
   return new JobRunError({ cause: error });
 }
