@@ -61,7 +61,7 @@ Four files record the new package: a `repoLabels.labels` entry in `.config/relea
 - `expectTypeOf` is imported from `vitest`, which re-exports it bare. `expect-type` is deliberately undeclared, so a direct import does not resolve.
 - Dependency versions are pinned exactly (`savePrefix: ''` in `pnpm-workspace.yaml`). A specifier used in more than one manifest moves to that file's `catalog:` block, and every site reads `catalog:`.
 - External runtime dependencies are avoided rather than forbidden: Reach for one only when hand-rolling would be worse, and prefer a workspace helper when one fits.
-- Name a function by what it returns and what it does: `find*` for one result or none, `list*` for an array, otherwise the most specific accurate verb, with any other container named in the tail (`extractPlaceholderSet`). `get*` is the fallback for when no more specific verb is accurate, not the default.
+- Name a function by what it returns and what it does: `find*` for one result or none, `list*` for an array, `iterate*` for a generator, otherwise the most specific accurate verb, with any other container named in the tail (`extractPlaceholderSet`). `get*` is the fallback for when no more specific verb is accurate, not the default.
 - Scope-bound utilities are `using` + `Disposable`; one-shot helpers are plain functions. A `Disposable` composes upward into a hook-registering wrapper and the reverse does not, so it is the form to reach for when both would serve.
 
 ## Gotchas
