@@ -1,3 +1,4 @@
+export type { CredentialStore, CredentialStoreOptions, KeyValueStorage, UserCredential } from '../types/credential.ts';
 export type {
   EndpointConnection,
   JobCount,
@@ -18,6 +19,7 @@ export type {
   RunJobOptions,
   Usage,
 } from '../types/job.ts';
+export { createCredentialStore } from './createCredentialStore.ts';
 export { createJobHandler } from './createJobHandler.ts';
 export { createTurnstileVerifier } from './createTurnstileVerifier.ts';
 export { createUpstashJobCounter } from './createUpstashJobCounter.ts';
