@@ -19,6 +19,12 @@ export type {
   RunJobOptions,
   Usage,
 } from '../types/job.ts';
+export type {
+  OpenRouterCallbackOptions,
+  OpenRouterConnectOptions,
+  OpenRouterKeyExpiration,
+} from '../types/openrouter.ts';
+export { completeOpenRouterConnect } from './completeOpenRouterConnect.ts';
 export { createCredentialStore } from './createCredentialStore.ts';
 export { createJobHandler } from './createJobHandler.ts';
 export { createTurnstileVerifier } from './createTurnstileVerifier.ts';
@@ -26,4 +32,6 @@ export { createUpstashJobCounter } from './createUpstashJobCounter.ts';
 export { defineTool } from './defineTool.ts';
 export { JobRefusedError } from './JobRefusedError.ts';
 export { JobRunError } from './JobRunError.ts';
+export { OpenRouterConnectError } from './OpenRouterConnectError.ts';
 export { runJob } from './runJob.ts';
+export { startOpenRouterConnect } from './startOpenRouterConnect.ts';
