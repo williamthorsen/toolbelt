@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { createTempTree, pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
+import { pointCwdAt } from '@williamthorsen/toolbelt.testing';
+import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
 import { afterEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 
 import { findProjectRoot, type ProjectRoot } from '../findProjectRoot.ts';
