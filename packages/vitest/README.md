@@ -147,7 +147,7 @@ A test passes when it takes the output with `captureStdio` or `captureWarnings` 
 `throwOnProcessExit` replaces `process.exit` with a mock that throws a `ProcessExitError` containing the exit code:
 
 ```ts
-import { captureError } from '@williamthorsen/toolbelt.testing/candidate';
+import { captureError } from '@williamthorsen/toolbelt.testing';
 import { ProcessExitError, throwOnProcessExit } from '@williamthorsen/toolbelt.vitest/candidate';
 
 it('exits with code 1 on an unknown flag', async () => {
