@@ -4,8 +4,8 @@ import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/w
 import { describe, expect, it } from 'vitest';
 
 import { collectReachableModuleSet } from '../test-utils/collectReachableModuleSet.ts';
+import { iterateSourceFiles } from '../test-utils/iterateSourceFiles.ts';
 import { listExportedTierDirectories } from '../test-utils/listExportedTierDirectories.ts';
-import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
 import { SCAFFOLDING_DIRS } from '../test-utils/scaffolding-dirs.ts';
 
 describe('Maturity-tier modules', () => {
@@ -40,7 +40,7 @@ function auditTierModules(monorepoRoot: string): { moduleCount: number; unreacha
     );
 
     for (const tierDirectory of tierDirectories) {
-      for (const filePath of listSourceFiles(tierDirectory, SCAFFOLDING_DIRS)) {
+      for (const filePath of iterateSourceFiles(tierDirectory, SCAFFOLDING_DIRS)) {
         moduleCount += 1;
 
         if (!reached.has(filePath)) {

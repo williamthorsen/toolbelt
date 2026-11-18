@@ -4,8 +4,8 @@ import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/w
 import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 
+import { iterateSourceFiles } from '../test-utils/iterateSourceFiles.ts';
 import { listExportedTierDirectories } from '../test-utils/listExportedTierDirectories.ts';
-import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
 import { SCAFFOLDING_DIRS } from '../test-utils/scaffolding-dirs.ts';
 
 describe('Unindexed tier exports', () => {
@@ -35,7 +35,7 @@ function auditUnindexedExports(monorepoRoot: string): { checkedCount: number; mi
 
     const indexFiles = tierDirectories.map((tierDirectory) => path.join(tierDirectory, 'index.ts'));
     const sourceFiles = tierDirectories.flatMap((tierDirectory) => [
-      ...listSourceFiles(tierDirectory, SCAFFOLDING_DIRS),
+      ...iterateSourceFiles(tierDirectory, SCAFFOLDING_DIRS),
     ]);
     // Load only the tier sources: Export symbols resolve without the standard library or another package's types.
     const program = ts.createProgram(sourceFiles, {

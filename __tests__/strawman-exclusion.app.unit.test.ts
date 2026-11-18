@@ -6,8 +6,8 @@ import { describe, expect, it } from 'vitest';
 
 import { createTempDir } from '../test-utils/createTempDir.ts';
 import { hasSourceFile } from '../test-utils/hasSourceFile.ts';
+import { iterateSourceFiles } from '../test-utils/iterateSourceFiles.ts';
 import { listResolvedImports } from '../test-utils/listResolvedImports.ts';
-import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
 import { NON_SOURCE_DIRS } from '../test-utils/non-source-dirs.ts';
 import { isScaffolding } from '../test-utils/scaffolding-dirs.ts';
 import { STRAWMAN_TIER } from '../test-utils/tier-dirs.ts';
@@ -107,7 +107,7 @@ function auditStrawmanImporters(monorepoRoot: string): { moduleCount: number; st
   for (const packageDirectory of getWorkspacePackageDirs(monorepoRoot)) {
     const sourceDirectory = path.join(packageDirectory, 'src');
 
-    for (const importer of listSourceFiles(sourceDirectory, NON_SOURCE_DIRS)) {
+    for (const importer of iterateSourceFiles(sourceDirectory, NON_SOURCE_DIRS)) {
       if (isStrawman(importer) || isScaffolding(importer)) continue;
 
       moduleCount += 1;

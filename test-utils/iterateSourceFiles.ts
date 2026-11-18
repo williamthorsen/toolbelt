@@ -5,7 +5,7 @@ import path from 'node:path';
  * Yields every TypeScript source file under the given directory, descending into all but the excluded
  * directories. A directory that does not exist yields nothing.
  */
-export function* listSourceFiles(rootDir: string, excludedDirs: ReadonlySet<string>): Generator<string> {
+export function* iterateSourceFiles(rootDir: string, excludedDirs: ReadonlySet<string>): Generator<string> {
   if (!fs.existsSync(rootDir)) return;
 
   const pendingDirs = [rootDir];

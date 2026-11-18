@@ -3,8 +3,8 @@ import path from 'node:path';
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
+import { iterateSourceFiles } from '../test-utils/iterateSourceFiles.ts';
 import { listResolvedImports } from '../test-utils/listResolvedImports.ts';
-import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
 import { NON_SOURCE_DIRS } from '../test-utils/non-source-dirs.ts';
 import { isScaffolding } from '../test-utils/scaffolding-dirs.ts';
 import { TIER_DIR_PATTERN } from '../test-utils/tier-dirs.ts';
@@ -31,7 +31,7 @@ function auditBarrelImports(monorepoRoot: string): { barrelImports: string[]; fi
   let fileCount = 0;
 
   for (const packageDirectory of getWorkspacePackageDirs(monorepoRoot)) {
-    const sourceFiles = listSourceFiles(path.join(packageDirectory, 'src'), NON_SOURCE_DIRS);
+    const sourceFiles = iterateSourceFiles(path.join(packageDirectory, 'src'), NON_SOURCE_DIRS);
 
     for (const filePath of sourceFiles) {
       if (isScaffolding(filePath) || isTierIndex(filePath)) continue;

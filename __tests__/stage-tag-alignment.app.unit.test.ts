@@ -4,7 +4,7 @@ import path from 'node:path';
 import { findMonorepoRoot } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
-import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
+import { iterateSourceFiles } from '../test-utils/iterateSourceFiles.ts';
 import { TIER_DIR_PATTERN } from '../test-utils/tier-dirs.ts';
 
 const EXCLUDED_DIRS = new Set(['__tests__', 'dist', 'node_modules']);
@@ -30,7 +30,7 @@ function auditStageTags(monorepoRoot: string): { misalignments: string[]; tagCou
   const misalignments: string[] = [];
   let tagCount = 0;
 
-  const sourceFiles = listSourceFiles(path.join(monorepoRoot, 'packages'), EXCLUDED_DIRS);
+  const sourceFiles = iterateSourceFiles(path.join(monorepoRoot, 'packages'), EXCLUDED_DIRS);
 
   for (const filePath of sourceFiles) {
     const tier = extractTier(filePath);

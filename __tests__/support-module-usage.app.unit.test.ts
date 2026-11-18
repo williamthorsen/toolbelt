@@ -3,8 +3,8 @@ import path from 'node:path';
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
+import { iterateSourceFiles } from '../test-utils/iterateSourceFiles.ts';
 import { listResolvedImports } from '../test-utils/listResolvedImports.ts';
-import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
 import { NON_SOURCE_DIRS } from '../test-utils/non-source-dirs.ts';
 import { isScaffolding } from '../test-utils/scaffolding-dirs.ts';
 
@@ -30,7 +30,7 @@ describe('Support modules', () => {
  */
 function auditSupportModules(monorepoRoot: string): { moduleCount: number; unusedModules: string[] } {
   const sourceFiles = getWorkspacePackageDirs(monorepoRoot).flatMap((packageDirectory) => [
-    ...listSourceFiles(path.join(packageDirectory, 'src'), NON_SOURCE_DIRS),
+    ...iterateSourceFiles(path.join(packageDirectory, 'src'), NON_SOURCE_DIRS),
   ]);
   const importersByModule = indexImporters(sourceFiles);
 

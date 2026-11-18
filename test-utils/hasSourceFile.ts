@@ -1,4 +1,4 @@
-import { listSourceFiles } from './listSourceFiles.ts';
+import { iterateSourceFiles } from './iterateSourceFiles.ts';
 import { NON_SOURCE_DIRS } from './non-source-dirs.ts';
 
 /**
@@ -7,5 +7,5 @@ import { NON_SOURCE_DIRS } from './non-source-dirs.ts';
  * clone, and an audit keyed on it reaches a verdict that CI cannot reproduce.
  */
 export function hasSourceFile(directory: string): boolean {
-  return !listSourceFiles(directory, NON_SOURCE_DIRS).next().done;
+  return !iterateSourceFiles(directory, NON_SOURCE_DIRS).next().done;
 }

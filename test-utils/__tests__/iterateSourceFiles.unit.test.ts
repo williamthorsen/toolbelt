@@ -3,7 +3,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { createTempDir } from '../createTempDir.ts';
-import { listSourceFiles } from '../listSourceFiles.ts';
+import { iterateSourceFiles } from '../iterateSourceFiles.ts';
 
 const SOURCE_TREE = {
   '__tests__/covered.unit.test.ts': '',
@@ -11,11 +11,11 @@ const SOURCE_TREE = {
   'shallow.ts': '',
 };
 
-describe(listSourceFiles, () => {
+describe(iterateSourceFiles, () => {
   it('yields every TypeScript file under the directory', () => {
     using tree = createTempDir(SOURCE_TREE);
 
-    const found = [...listSourceFiles(tree.dir, new Set())].map((filePath) => path.relative(tree.dir, filePath));
+    const found = [...iterateSourceFiles(tree.dir, new Set())].map((filePath) => path.relative(tree.dir, filePath));
 
     expect(found.toSorted()).toStrictEqual([
       path.join('__tests__', 'covered.unit.test.ts'),
@@ -27,7 +27,7 @@ describe(listSourceFiles, () => {
   it('descends into no directory named in the excluded set', () => {
     using tree = createTempDir(SOURCE_TREE);
 
-    const found = [...listSourceFiles(tree.dir, new Set(['__tests__', 'nested']))];
+    const found = [...iterateSourceFiles(tree.dir, new Set(['__tests__', 'nested']))];
 
     expect(found).toStrictEqual([path.join(tree.dir, 'shallow.ts')]);
   });
@@ -35,7 +35,7 @@ describe(listSourceFiles, () => {
   it('yields nothing for a directory that does not exist', () => {
     using tree = createTempDir(SOURCE_TREE);
 
-    const found = [...listSourceFiles(path.join(tree.dir, 'absent'), new Set())];
+    const found = [...iterateSourceFiles(path.join(tree.dir, 'absent'), new Set())];
 
     expect(found).toStrictEqual([]);
   });
@@ -43,7 +43,7 @@ describe(listSourceFiles, () => {
   it('yields no file that is not a TypeScript source', () => {
     using tree = createTempDir({ ...SOURCE_TREE, 'notes.md': '' });
 
-    const found = [...listSourceFiles(tree.dir, new Set(['__tests__', 'nested']))];
+    const found = [...iterateSourceFiles(tree.dir, new Set(['__tests__', 'nested']))];
 
     expect(found).toStrictEqual([path.join(tree.dir, 'shallow.ts')]);
   });
