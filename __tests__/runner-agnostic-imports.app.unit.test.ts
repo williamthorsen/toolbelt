@@ -5,7 +5,7 @@ import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/w
 import { describe, expect, it } from 'vitest';
 
 import { isRecord } from '../test-utils/isRecord.ts';
-import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
+import { iterateSourceFiles } from '../test-utils/iterateSourceFiles.ts';
 import { readManifest } from '../test-utils/readManifest.ts';
 
 /** Fields that install the runner for a consumer. A `devDependencies` entry does not, so it exempts nothing. */
@@ -38,7 +38,7 @@ function auditRunnerImports(monorepoRoot: string): { fileCount: number; importer
   for (const packageDirectory of getWorkspacePackageDirs(monorepoRoot)) {
     if (declaresRunnerDependency(packageDirectory)) continue;
 
-    const sourceFiles = listSourceFiles(path.join(packageDirectory, 'src'), EXCLUDED_DIRS);
+    const sourceFiles = iterateSourceFiles(path.join(packageDirectory, 'src'), EXCLUDED_DIRS);
 
     for (const filePath of sourceFiles) {
       fileCount += 1;
