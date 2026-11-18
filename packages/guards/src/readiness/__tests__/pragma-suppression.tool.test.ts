@@ -20,10 +20,11 @@ describe('The guards adoption kit, run through rdy', () => {
   // The pragma uses the bare id because a `dir:` kit source has no namespace. A consumer running the kit
   // from the installed package writes `toolbelt.guards/no-assertion-clone`.
   it('drops a site covered by a qualified pragma from the named check alone', () => {
-    expect(runKit(buildGuard(' // rdy-ignore no-assertion-clone -- reviewed'))).toStrictEqual([
+    const reports = runKit(buildGuard(' // rdy-ignore no-assertion-clone -- reviewed'));
+
+    expect(reports.filter((report) => ['no-assertion-clone', 'no-predicate-clone'].includes(report.id))).toStrictEqual([
       { count: 1, detail: undefined, id: 'no-assertion-clone', passedCount: 1 },
       { count: 2, detail: undefined, id: 'no-predicate-clone', passedCount: 1 },
-      { count: 2, detail: undefined, id: 'no-number-guard-clone', passedCount: 1 },
     ]);
   });
 });

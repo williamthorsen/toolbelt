@@ -5,19 +5,23 @@ import { describe, expect, it } from 'vitest';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const RECORD = "export const ok = typeof value === 'object' && value !== null;";
-const OWN_PROPERTY = 'export const has = Object.prototype.hasOwnProperty.call(target, key);\n';
-const STRINGIFY = 'export const same = JSON.stringify(a) === JSON.stringify(b);\n';
 const ADOPTER = "import { isRecord } from '@williamthorsen/toolbelt.objects';\nisRecord(value);\n";
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 describe('The objects adoption kit, run through rdy', () => {
+  // Every check counts the same two sites, the adopting call and the pragma's site, so a count one lower than
+  // another check's shows that the pragma dropped the site from the named check alone.
+  //
   // A `dir:` kit source has no namespace, so the bare id stands. A consumer running the kit from the
   // installed package writes `toolbelt.objects/no-hand-rolled-record-guard`.
   it('drops a site covered by a qualified pragma from the named check alone', () => {
-    expect(runKit(`${RECORD} // rdy-ignore no-hand-rolled-record-guard -- reviewed\n`)).toStrictEqual([
-      { count: 4, detail: 'src/has.ts:1', id: 'no-hand-rolled-own-property', passedCount: 1 },
-      { count: 3, detail: undefined, id: 'no-hand-rolled-record-guard', passedCount: 1 },
-      { count: 4, detail: 'src/same.ts:1', id: 'no-stringify-comparison', passedCount: 1 },
+    const reports = runKit(`${RECORD} // rdy-ignore no-hand-rolled-record-guard -- reviewed\n`);
+
+    expect(
+      reports.filter((report) => ['no-hand-rolled-own-property', 'no-hand-rolled-record-guard'].includes(report.id)),
+    ).toStrictEqual([
+      { count: 2, detail: undefined, id: 'no-hand-rolled-own-property', passedCount: 1 },
+      { count: 1, detail: undefined, id: 'no-hand-rolled-record-guard', passedCount: 1 },
     ]);
   });
 });
@@ -36,8 +40,6 @@ function runKit(recordSource: string): KitCheckReport[] {
     'package.json': MANIFEST,
     'src/adopter.ts': ADOPTER,
     'src/guard.ts': recordSource,
-    'src/has.ts': OWN_PROPERTY,
-    'src/same.ts': STRINGIFY,
   });
 }
 
