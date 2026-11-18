@@ -1,6 +1,38 @@
 <!-- readme-type: monorepo-root -->
 
-# PNPM Node monorepo
+# Toolbelt
+
+TypeScript utility libraries, each published to npm as `@williamthorsen/toolbelt.{domain}`. Every package is ESM only and requires Node.js 24 or later.
+
+## Packages
+
+| Package                                                                | Description                                                                                                                |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| [`@williamthorsen/toolbelt.acp`](packages/acp/README.md)               | An Agent Client Protocol client that runs an app's prompts on agent harnesses such as Claude Code and the Antigravity CLI. |
+| [`@williamthorsen/toolbelt.arrays`](packages/arrays/README.md)         | Array utilities                                                                                                            |
+| [`@williamthorsen/toolbelt.async`](packages/async/README.md)           | Async utilities                                                                                                            |
+| [`@williamthorsen/toolbelt.atlassian`](packages/atlassian/README.md)   | Utilities for working with Atlassian Cloud                                                                                 |
+| [`@williamthorsen/toolbelt.cli`](packages/cli/README.md)               | A parser, help renderer, and command router for command-line tools                                                         |
+| [`@williamthorsen/toolbelt.datetime`](packages/datetime/README.md)     | Date and time utilities                                                                                                    |
+| [`@williamthorsen/toolbelt.dstructs`](packages/dstructs/README.md)     | Data-structure utilities                                                                                                   |
+| [`@williamthorsen/toolbelt.enums`](packages/enums/README.md)           | Functions for working with TypeScript enums                                                                                |
+| [`@williamthorsen/toolbelt.errors`](packages/errors/README.md)         | Utilities for working with errors                                                                                          |
+| [`@williamthorsen/toolbelt.filesystem`](packages/filesystem/README.md) | Filesystem utilities                                                                                                       |
+| [`@williamthorsen/toolbelt.git`](packages/git/README.md)               | Utilities for working with git                                                                                             |
+| [`@williamthorsen/toolbelt.guards`](packages/guards/README.md)         | TypeScript type guards                                                                                                     |
+| [`@williamthorsen/toolbelt.hof`](packages/hof/README.md)               | TypeScript higher-order functions                                                                                          |
+| [`@williamthorsen/toolbelt.llm`](packages/llm/README.md)               | Runs an LLM job in the page or at an operator's endpoint, on a credential of the user's or the operator's.                 |
+| [`@williamthorsen/toolbelt.nodejs`](packages/nodejs/README.md)         | Utilities for inspecting Node.js runtimes and toolchains                                                                   |
+| [`@williamthorsen/toolbelt.numbers`](packages/numbers/README.md)       | Utility functions for working with numbers                                                                                 |
+| [`@williamthorsen/toolbelt.objects`](packages/objects/README.md)       | Utilities for working with objects in JavaScript and TypeScript                                                            |
+| [`@williamthorsen/toolbelt.packaging`](packages/packaging/README.md)   | Package and project layout utilities: where a package or project boundary begins, and what its manifest declares           |
+| [`@williamthorsen/toolbelt.secrets`](packages/secrets/README.md)       | Utilities for storing and retrieving secrets in the OS credential store                                                    |
+| [`@williamthorsen/toolbelt.sets`](packages/sets/README.md)             | Functions for working with sets                                                                                            |
+| [`@williamthorsen/toolbelt.statistics`](packages/statistics/README.md) | Statistics utilities                                                                                                       |
+| [`@williamthorsen/toolbelt.strings`](packages/strings/README.md)       | String-handling utilities                                                                                                  |
+| [`@williamthorsen/toolbelt.terminal`](packages/terminal/README.md)     | Utilities for rendering command-line output to terminals, pipes, and CI logs                                               |
+| [`@williamthorsen/toolbelt.testing`](packages/testing/README.md)       | Runner-agnostic utilities for testing                                                                                      |
+| [`@williamthorsen/toolbelt.vitest`](packages/vitest/README.md)         | Utilities for testing with Vitest                                                                                          |
 
 ## Getting started
 
