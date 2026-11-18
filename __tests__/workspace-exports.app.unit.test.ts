@@ -7,10 +7,7 @@ import { describe, expect, it } from 'vitest';
 import { createTempDir } from '../test-utils/createTempDir.ts';
 import { hasSourceFile } from '../test-utils/hasSourceFile.ts';
 import { listExportTargets } from '../test-utils/listExportTargets.ts';
-
-const TIER_DIRECTORY_PATTERN = /^\d-[a-z]+$/;
-// The strawman tier is unexported by design, so it is the one tier that needs no export subpath.
-const UNEXPORTED_TIER = '0-strawman';
+import { STRAWMAN_TIER, TIER_DIR_PATTERN } from '../test-utils/tier-dirs.ts';
 
 const PACKAGE_MANIFEST = JSON.stringify({
   exports: { './candidate': { import: './dist/esm/3-candidate/index.js' } },
@@ -103,7 +100,7 @@ function auditWorkspaceExports(monorepoRoot: string): {
     }
 
     for (const tier of tiers) {
-      if (tier === UNEXPORTED_TIER) continue;
+      if (tier === STRAWMAN_TIER) continue;
 
       tierCount += 1;
       if (!exportedTiers.has(tier)) {
@@ -130,7 +127,7 @@ function listTierDirectories(packageDirectory: string): string[] {
 
   return fs
     .readdirSync(sourceDirectory, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && TIER_DIRECTORY_PATTERN.test(entry.name))
+    .filter((entry) => entry.isDirectory() && TIER_DIR_PATTERN.test(entry.name))
     .map((entry) => entry.name)
     .filter((tier) => hasSourceFile(path.join(sourceDirectory, tier)))
     .toSorted((a, b) => a.localeCompare(b));

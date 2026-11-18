@@ -10,10 +10,10 @@ import { listResolvedImports } from '../test-utils/listResolvedImports.ts';
 import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
 import { NON_SOURCE_DIRS } from '../test-utils/non-source-dirs.ts';
 import { isScaffolding } from '../test-utils/scaffolding-dirs.ts';
+import { STRAWMAN_TIER } from '../test-utils/tier-dirs.ts';
 
 const PACKAGE_CONFIG_PATH = path.join('.config', 'nmr.config.ts');
-const STRAWMAN_DIR = '0-strawman';
-const STRAWMAN_IGNORE_PATTERN = "'**/0-strawman/**'";
+const STRAWMAN_IGNORE_PATTERN = `'**/${STRAWMAN_TIER}/**'`;
 
 const PACKAGE_MANIFEST = JSON.stringify({ name: 'fixture' });
 const WORKSPACE_MANIFEST = "packages:\n  - 'packages/*'\n";
@@ -57,7 +57,7 @@ describe('The strawman tier', () => {
     const { strawmanCount, unexcludedPackages } = auditStrawmanExclusions(tree.dir);
 
     expect(unexcludedPackages).toStrictEqual([
-      `packages/fixture: holds src/${STRAWMAN_DIR} and no ${PACKAGE_CONFIG_PATH}`,
+      `packages/fixture: holds src/${STRAWMAN_TIER} and no ${PACKAGE_CONFIG_PATH}`,
     ]);
     expect(strawmanCount).toBe(1);
   });
@@ -79,7 +79,7 @@ function auditStrawmanExclusions(monorepoRoot: string): { strawmanCount: number;
   let strawmanCount = 0;
 
   for (const packageDirectory of getWorkspacePackageDirs(monorepoRoot)) {
-    if (!hasSourceFile(path.join(packageDirectory, 'src', STRAWMAN_DIR))) continue;
+    if (!hasSourceFile(path.join(packageDirectory, 'src', STRAWMAN_TIER))) continue;
 
     strawmanCount += 1;
 
@@ -87,7 +87,7 @@ function auditStrawmanExclusions(monorepoRoot: string): { strawmanCount: number;
     const configPath = path.join(packageDirectory, PACKAGE_CONFIG_PATH);
 
     if (!fs.existsSync(configPath)) {
-      unexcludedPackages.push(`${workspace}: holds src/${STRAWMAN_DIR} and no ${PACKAGE_CONFIG_PATH}`);
+      unexcludedPackages.push(`${workspace}: holds src/${STRAWMAN_TIER} and no ${PACKAGE_CONFIG_PATH}`);
     } else if (!fs.readFileSync(configPath, 'utf8').includes(STRAWMAN_IGNORE_PATTERN)) {
       unexcludedPackages.push(`${workspace}: ${PACKAGE_CONFIG_PATH} declares no ${STRAWMAN_IGNORE_PATTERN} pattern`);
     }
@@ -125,7 +125,7 @@ function auditStrawmanImporters(monorepoRoot: string): { moduleCount: number; st
 
 /** Reports whether a path passes through a strawman tier. */
 function isStrawman(filePath: string): boolean {
-  return filePath.split(path.sep).includes(STRAWMAN_DIR);
+  return filePath.split(path.sep).includes(STRAWMAN_TIER);
 }
 
 // endregion | Helpers

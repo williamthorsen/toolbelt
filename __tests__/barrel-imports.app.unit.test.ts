@@ -7,8 +7,7 @@ import { listResolvedImports } from '../test-utils/listResolvedImports.ts';
 import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
 import { NON_SOURCE_DIRS } from '../test-utils/non-source-dirs.ts';
 import { isScaffolding } from '../test-utils/scaffolding-dirs.ts';
-
-const TIER_DIRECTORY_PATTERN = /^\d-[a-z]+$/u;
+import { TIER_DIR_PATTERN } from '../test-utils/tier-dirs.ts';
 
 describe('Barrel imports', () => {
   it('only a tier index imports through an `index.ts`', () => {
@@ -55,7 +54,7 @@ function isTierIndex(filePath: string): boolean {
 
   return (
     path.basename(filePath) === 'index.ts' &&
-    TIER_DIRECTORY_PATTERN.test(path.basename(tierDirectory)) &&
+    TIER_DIR_PATTERN.test(path.basename(tierDirectory)) &&
     path.basename(path.dirname(tierDirectory)) === 'src'
   );
 }

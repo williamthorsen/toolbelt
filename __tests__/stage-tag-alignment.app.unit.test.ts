@@ -5,10 +5,10 @@ import { findMonorepoRoot } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
 import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
+import { TIER_DIR_PATTERN } from '../test-utils/tier-dirs.ts';
 
 const EXCLUDED_DIRS = new Set(['__tests__', 'dist', 'node_modules']);
 const STAGE_TAG_PATTERN = /@stage\s+(\S+)/g;
-const TIER_DIR_PATTERN = /^\d-(?<tier>[a-z]+)$/;
 
 describe('Maturity stage tags', () => {
   it('every @stage tag matches the maturity tier of its directory', () => {
