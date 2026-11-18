@@ -29,8 +29,7 @@ const CONSOLE_STREAMS: Record<ConsoleMethod, 'stderr' | 'stdout'> = {
  * and the outer one resumes intact when it exits.
  *
  * @category Testing
- * @experimental
- * @stage candidate
+ * @stage release
  *
  * @example
  * using stdio = captureStdio({ isTty: false });

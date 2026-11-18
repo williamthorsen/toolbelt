@@ -21,8 +21,7 @@ const nativeCwd = process.cwd.bind(process);
  * a replacement puts the process back where it really was.
  *
  * @category Testing
- * @experimental
- * @stage candidate
+ * @stage release
  *
  * @example
  * using tree = createTempTree({ 'src/': '', '.git/': '' });

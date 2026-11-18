@@ -2,8 +2,8 @@ import process from 'node:process';
 
 import { describe, expect, it } from 'vitest';
 
-import { captureError } from '../captureError.ts';
-import { captureStdio } from '../captureStdio.ts';
+import { captureError } from '../../4-release/captureError.ts';
+import { captureStdio } from '../../4-release/captureStdio.ts';
 import { captureWarnings } from '../captureWarnings.ts';
 
 describe(captureWarnings, () => {
