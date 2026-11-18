@@ -1,10 +1,6 @@
 import fs from 'node:fs';
-import path from 'node:path';
 
-import { resolveSpecifier } from './resolveSpecifier.ts';
-
-/** Matches the relative specifier of a static `from` clause, a side-effect import, or a dynamic import. */
-export const RELATIVE_SPECIFIER_PATTERN = /\b(?:from|import)\s*\(?\s*['"](\.\.?\/[^'"]*)['"]/gu;
+import { listResolvedImports } from './listResolvedImports.ts';
 
 /**
  * Walks an entry file's relative imports transitively, collecting every module that they reach, the entry itself
@@ -19,13 +15,7 @@ export function collectReachableModuleSet(entryFile: string): Set<string> {
     if (filePath === undefined || reached.has(filePath) || !fs.existsSync(filePath)) continue;
 
     reached.add(filePath);
-
-    for (const [, specifier] of fs.readFileSync(filePath, 'utf8').matchAll(RELATIVE_SPECIFIER_PATTERN)) {
-      if (specifier === undefined) continue;
-
-      const target = resolveSpecifier(path.dirname(filePath), specifier);
-      if (target !== undefined) pendingFiles.push(target);
-    }
+    pendingFiles.push(...listResolvedImports(filePath));
   }
 
   return reached;

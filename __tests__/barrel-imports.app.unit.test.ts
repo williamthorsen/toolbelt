@@ -1,13 +1,11 @@
-import fs from 'node:fs';
 import path from 'node:path';
 
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
-import { RELATIVE_SPECIFIER_PATTERN } from '../test-utils/collectReachableModuleSet.ts';
+import { listResolvedImports } from '../test-utils/listResolvedImports.ts';
 import { listSourceFiles } from '../test-utils/listSourceFiles.ts';
 import { NON_SOURCE_DIRS } from '../test-utils/non-source-dirs.ts';
-import { resolveSpecifier } from '../test-utils/resolveSpecifier.ts';
 import { isScaffolding } from '../test-utils/scaffolding-dirs.ts';
 
 const TIER_DIRECTORY_PATTERN = /^\d-[a-z]+$/u;
@@ -40,13 +38,8 @@ function auditBarrelImports(monorepoRoot: string): { barrelImports: string[]; fi
       if (isScaffolding(filePath) || isTierIndex(filePath)) continue;
       fileCount += 1;
 
-      const specifierMatches = fs.readFileSync(filePath, 'utf8').matchAll(RELATIVE_SPECIFIER_PATTERN);
-
-      for (const [, specifier] of specifierMatches) {
-        if (specifier === undefined) continue;
-
-        const target = resolveSpecifier(path.dirname(filePath), specifier);
-        if (target !== undefined && path.basename(target) === 'index.ts') {
+      for (const target of listResolvedImports(filePath)) {
+        if (path.basename(target) === 'index.ts') {
           barrelImports.push(`${path.relative(monorepoRoot, filePath)} -> ${path.relative(monorepoRoot, target)}`);
         }
       }
