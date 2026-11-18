@@ -26,12 +26,7 @@ Runner conventions (discovery, invocation, root vs. package registries, hooks) c
 
 **Compiler options.** Root `tsconfig.json` extends `@williamthorsen/tsconfig` (`@tsconfig/strictest` inlined, plus a Node-only layer at ES2025). Packages extend the root and declare no `compilerOptions`, containing only `$schema`, `extends`, and `include`.
 
-**Exports.** `package.json` maps each maturity tier to its own subpath:
-
-- default: `4-release`
-- `/candidate`: `3-candidate`
-- `/draft`: `2-draft`
-- `/proposed`: `1-proposed`
+**Exports.** `package.json` maps each exported maturity tier to its own subpath. The root `README.md`, section "Maturity tiers", states the mapping, what each tier means, and the criteria for moving an export between tiers.
 
 `0-strawman` is unexported, and a package holding one drops it from the build through `build.extraIgnorePatterns` in its own `.config/nmr.config.ts`, so it is not published either. `__tests__/workspace-exports.app.unit.test.ts` enforces the correspondence in both directions: Every export target names a tier holding an `index.ts`, and every tier but `0-strawman` has a subpath. A tier counts as present only when its directory contains a `.ts` file at any depth: Because git tracks files rather than directories, a directory emptied of its modules survives in a working tree and in no fresh clone, and an audit keyed on its existence alone reaches a verdict that CI cannot reproduce. A workspace with no populated tier directory, such as `tools`, is out of its scope.
 
