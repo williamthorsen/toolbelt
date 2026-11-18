@@ -5,13 +5,10 @@ import path from 'node:path';
 import { findMonorepoRoot, getWorkspacePackageDirs } from '@williamthorsen/nmr/workspace';
 import { describe, expect, it } from 'vitest';
 
-import { isRecord } from '../test-utils/isRecord.ts';
+import { listKitVerificationFailures } from '../test-utils/listKitVerificationFailures.ts';
 
 const MANIFEST_PATH = path.join('.readyup', 'manifest.json');
 const RDY_BIN_PATH = path.join('node_modules', '.bin', 'rdy');
-// Every verdict weighed by `isPassingVerdict`. A rebuild mismatch leaves the other three `ok`, so reporting a
-// subset can name none of what failed.
-const VERDICT_FIELDS = ['status', 'sourceStatus', 'inputsStatus', 'rebuildStatus'];
 
 describe('Compiled kit bundles', () => {
   it('every workspace with a kit contains a bundle current with its sources', () => {
@@ -31,67 +28,27 @@ describe('Compiled kit bundles', () => {
  * notices when a source that it inlines changes after the bundle was compiled -- least of all a source in another
  * workspace, which the kit's own package.json never mentions.
  *
- * Because this check discovers workspaces rather than listing them, it covers a package as soon as the package
- * gains a kit.
+ * One recursive `rdy verify` covers every workspace. `--rebuild` recompiles and compares bytes, which catches a
+ * toolchain change that the recorded hashes cannot: The same sources emit a different bundle under a different
+ * esbuild. Because this check discovers workspaces rather than listing them, it covers a package as soon as the
+ * package gains a kit.
  */
 function auditKitBundles(monorepoRoot: string): { failures: string[]; workspaceCount: number } {
-  const failures: string[] = [];
-  const kitDirectories = getWorkspacePackageDirs(monorepoRoot).filter((directory) =>
-    fs.existsSync(path.join(directory, MANIFEST_PATH)),
-  );
+  const kitWorkspaces = getWorkspacePackageDirs(monorepoRoot)
+    .filter((directory) => fs.existsSync(path.join(directory, MANIFEST_PATH)))
+    .map((directory) => path.relative(monorepoRoot, directory));
 
-  for (const directory of kitDirectories) {
-    const workspace = path.relative(monorepoRoot, directory);
-    const reason = verifyBundles(directory);
-    if (reason !== undefined) failures.push(`${workspace}: ${reason}`);
-  }
-
-  return { failures: failures.toSorted((a, b) => a.localeCompare(b)), workspaceCount: kitDirectories.length };
-}
-
-/**
- * Reports why a workspace's bundles fail verification, or nothing when they pass.
- *
- * `--rebuild` recompiles and compares bytes, which catches a toolchain change that the recorded hashes
- * cannot: The same sources emit a different bundle under a different esbuild.
- */
-function verifyBundles(directory: string): string | undefined {
-  const result = spawnSync(path.join(directory, RDY_BIN_PATH), ['verify', '--rebuild', '--json'], {
-    cwd: directory,
+  const result = spawnSync(path.join(monorepoRoot, RDY_BIN_PATH), ['verify', '--recursive', '--rebuild', '--json'], {
+    cwd: monorepoRoot,
     encoding: 'utf8',
   });
 
-  if (result.error !== undefined) return `rdy could not be run (${result.error.message})`;
-  if (result.status === 0) return undefined;
+  const failures =
+    result.error === undefined
+      ? listKitVerificationFailures(result, kitWorkspaces)
+      : [`rdy could not be run (${result.error.message})`];
 
-  return describeFailure(result.stdout) ?? `rdy verify exited ${String(result.status)}`;
-}
-
-/** Names each failing kit and every verdict behind it, from the JSON report. */
-function describeFailure(stdout: string): string | undefined {
-  let report: unknown;
-  try {
-    report = JSON.parse(stdout);
-  } catch {
-    return undefined;
-  }
-
-  if (!isRecord(report) || !Array.isArray(report['kits'])) return undefined;
-
-  return report['kits']
-    .filter((kit) => isRecord(kit))
-    .map((kit) => `${String(kit['name'])} (${describeVerdicts(kit)})`)
-    .join(', ');
-}
-
-/** Lists a kit's verdicts as reported, naming any that the report omits so that its absence is visible. */
-function describeVerdicts(kit: Record<string, unknown>): string {
-  return VERDICT_FIELDS.map((field) => `${field}=${readVerdict(kit[field])}`).join(', ');
-}
-
-/** Names a verdict, or its absence, without stringifying a shape never promised by the report. */
-function readVerdict(value: unknown): string {
-  return typeof value === 'string' ? value : 'unreported';
+  return { failures, workspaceCount: kitWorkspaces.length };
 }
 
 // endregion | Helpers
