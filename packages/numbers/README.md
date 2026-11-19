@@ -14,7 +14,7 @@ pnpm add @williamthorsen/toolbelt.numbers
 
 Requires Node.js 24 or later.
 
-`clamp`, `round`, `pickInteger`, and `indexIntoRange` are candidate tier: imported from `@williamthorsen/toolbelt.numbers/candidate` rather than the package root, and subject to change.
+`clamp` and `safeParseInteger` are release tier, imported from the package root. `round`, `pickInteger`, and `indexIntoRange` are candidate tier: imported from `@williamthorsen/toolbelt.numbers/candidate` rather than the package root, and subject to change.
 
 ## `clamp`
 
@@ -25,7 +25,7 @@ clamp(value: number, bounds: { min?: number; max?: number }): number;
 Returns the value constrained to the inclusive bounds; an omitted bound leaves that side unconstrained. `clamp` throws a `RangeError` for a reversed range or a `NaN` bound, whereas the `Math.max(min, Math.min(max, value))` idiom that it replaces returns a value for both. It passes a `NaN` value through.
 
 ```ts
-import { clamp } from '@williamthorsen/toolbelt.numbers/candidate';
+import { clamp } from '@williamthorsen/toolbelt.numbers';
 
 clamp(15, { min: 0, max: 10 }); // 10
 clamp(-5, { min: 0 }); // 0
