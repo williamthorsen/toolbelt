@@ -1,19 +1,5 @@
 import type { Maybe } from '../internal/internal.types.ts';
-
-/**
- * Returns true if the value is a string that represents a valid integer.
- *
- * @category Type Guards
- * @experimental
- * @stage candidate
- */
-export function isIntegerString(value: string | null | undefined): value is string {
-  if (value === null || value === undefined) {
-    return false;
-  }
-
-  return /^-?\d+$/.test(value.trim());
-}
+import { testIntegerString } from '../internal/testIntegerString.ts';
 
 /**
  * Attempts to parse an integer from a string and returns the parsed integer.
@@ -24,13 +10,12 @@ export function isIntegerString(value: string | null | undefined): value is stri
  * @returns The parsed integer or the fallback value.
  *
  * @category Type Guards
- * @experimental
- * @stage candidate
+ * @stage release
  */
 export function safeParseInteger(value: Maybe<string>, fallback: number | Error): number;
 export function safeParseInteger(value: Maybe<string>, fallback?: undefined): number | undefined;
 export function safeParseInteger(value: Maybe<string>, fallback?: number | Error): number | undefined {
-  if (!isIntegerString(value)) {
+  if (!testIntegerString(value)) {
     // rdy-ignore-next-line toolbelt.errors/no-instanceof-error -- a caller-supplied argument, not a caught value
     if (fallback instanceof Error) {
       throw fallback;
