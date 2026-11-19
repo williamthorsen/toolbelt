@@ -311,40 +311,40 @@ var default_default = defineAdoptionKit({
       name: "No test declares its own process-exit sentinel error",
       id: "no-exit-sentinel-clone",
       kinds: ["sentinel-clone"],
-      fix: `Delete the class named above and use throwOnProcessExit from ${PACKAGE_NAME}/candidate, whose ProcessExitError contains the code. One substitution replaces the class and the mock together. Reference: ${README_URL}`
+      fix: `Delete the class named above and use throwOnProcessExit from ${PACKAGE_NAME}, whose ProcessExitError contains the code. One substitution replaces the class and the mock together. Reference: ${README_URL}`
     },
     {
       name: "No test mocks process.exit without throwing",
       id: "no-non-throwing-exit-mock",
       kinds: ["non-throwing"],
-      fix: `Replace each mock named above with throwOnProcessExit from ${PACKAGE_NAME}/candidate. A mock that returns lets execution continue past the exit, so the test asserts against a path never reached by the process, and nothing reports it.`
+      fix: `Replace each mock named above with throwOnProcessExit from ${PACKAGE_NAME}. A mock that returns lets execution continue past the exit, so the test asserts against a path never reached by the process, and nothing reports it.`
     },
     {
       name: "No test hand-rolls a throwing or unreadable process-exit mock",
       id: "no-hand-rolled-exit-mock",
       kinds: ["throwing", "unclassified"],
       severity: "recommend",
-      fix: `Replace each mock named above with throwOnProcessExit from ${PACKAGE_NAME}/candidate, and assert the code on the thrown ProcessExitError. An unclassified mock is one that these checks could not read: an implementation given as a bare reference, attached away from the spy's own call chain, or whose parentheses never balance.`
+      fix: `Replace each mock named above with throwOnProcessExit from ${PACKAGE_NAME}, and assert the code on the thrown ProcessExitError. An unclassified mock is one that these checks could not read: an implementation given as a bare reference, attached away from the spy's own call chain, or whose parentheses never balance.`
     },
     {
       name: "No test captures only part of a console call",
       id: "no-lossy-console-capture",
       kinds: ["console-capture-lossy"],
-      fix: `Silence each method named above with silenceConsole from ${PACKAGE_NAME}/candidate and read it with listConsoleLines, which renders every argument of a call. A capture whose parameter list names its arguments drops the ones past them, so console.error('failed:', reason) asserts as 'failed:' and the test passes on a message that the console never wrote.`
+      fix: `Silence each method named above with silenceConsole from ${PACKAGE_NAME} and read it with listConsoleLines from ${PACKAGE_NAME}/candidate, which renders every argument of a call. A capture whose parameter list names its arguments drops the ones past them, so console.error('failed:', reason) asserts as 'failed:' and the test passes on a message that the console never wrote.`
     },
     {
       name: "No test hand-rolls a console capture",
       id: "no-hand-rolled-console-capture",
       kinds: ["console-capture", "console-unclassified"],
       severity: "recommend",
-      fix: `Replace each capture named above with silenceConsole from ${PACKAGE_NAME}/candidate and listConsoleLines, which renders each call's arguments through String and joins them on a space. An unclassified mock is one that these checks could not read: a spy with no implementation, an implementation given as a bare reference, attached away from the spy's own call chain, or whose delimiters never balance.`
+      fix: `Replace each capture named above with silenceConsole from ${PACKAGE_NAME} and listConsoleLines from ${PACKAGE_NAME}/candidate, which renders each call's arguments through String and joins them on a space. An unclassified mock is one that these checks could not read: a spy with no implementation, an implementation given as a bare reference, attached away from the spy's own call chain, or whose delimiters never balance.`
     },
     {
       name: "No test silences a console method by hand",
       id: "no-hand-rolled-console-silence",
       kinds: ["console-silence"],
       severity: "recommend",
-      fix: `Replace each spy named above with silenceConsole from ${PACKAGE_NAME}/candidate, binding it with using so that the methods are restored when the scope exits. It silences the methods that it is given and hands back the spy behind each one. Reference: ${README_URL}`
+      fix: `Replace each spy named above with silenceConsole from ${PACKAGE_NAME}, binding it with using so that the methods are restored when the scope exits. It silences the methods that it is given and hands back the spy behind each one. Reference: ${README_URL}`
     },
     {
       name: "No test reads a console spy's recorded calls",
@@ -358,7 +358,7 @@ var default_default = defineAdoptionKit({
       id: "no-hand-rolled-test-disposal",
       kinds: ["disposal-hook"],
       severity: "recommend",
-      fix: `Wrap each resource named above in disposeOnTestFinished from ${PACKAGE_NAME}/candidate, which registers the disposal and returns the resource at the type that it was given. Moving registration to the construction site removes the hook, and with it the unicorn/no-nonstandard-builtin-properties disable comment that the hand-written disposal contains when that rule is enabled, since unicorn's Symbol allowlist omits Symbol.dispose. Reference: ${README_URL}`
+      fix: `Wrap each resource named above in disposeOnTestFinished from ${PACKAGE_NAME}, which registers the disposal and returns the resource at the type that it was given. Moving registration to the construction site removes the hook, and with it the unicorn/no-nonstandard-builtin-properties disable comment that the hand-written disposal contains when that rule is enabled, since unicorn's Symbol allowlist omits Symbol.dispose. Reference: ${README_URL}`
     }
   ]
 });

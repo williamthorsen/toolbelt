@@ -128,7 +128,7 @@ describe('The vitest adoption kit', () => {
   });
 
   // The own-implementation exemption applies to a declaration exported under an adopted name, and this kit sweeps
-  // no file that could contain one: The package declares `silenceConsole` in `src/3-candidate/`, which `isTestFile`
+  // no file that could contain one: The package declares `silenceConsole` in `src/4-release/`, which `isTestFile`
   // never matches. So the repository publishing the utility is reported like any other consumer, which is why
   // its own suite shows findings.
   it('reports a silence in the publishing repository, which declares the utility elsewhere', async () => {
