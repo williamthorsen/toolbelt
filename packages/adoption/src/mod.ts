@@ -10,6 +10,7 @@ export {
 export { isArraySubscript, isManifestSearch } from './conventions/site-handoffs.ts';
 export {
   type AdoptionCheck,
+  type AdoptionDetector,
   type AdoptionKitSpec,
   type AdoptionSite,
   defineAdoptionKit,
