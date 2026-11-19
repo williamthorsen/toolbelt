@@ -1,4 +1,4 @@
-import { listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { listSiteLines } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { describe, expect, it } from 'vitest';
 
 import { listBiasedShuffleSites } from '../listBiasedShuffleSites.ts';
@@ -10,7 +10,7 @@ describe(listBiasedShuffleSites, () => {
       'const mixed = items.sort(() => 0.5 - Math.random());\n',
     ];
 
-    expect(sources.map((source) => listLines(source))).toStrictEqual([[1], [1]]);
+    expect(sources.map((source) => listSiteLines(listBiasedShuffleSites, source))).toStrictEqual([[1], [1]]);
   });
 
   it('claims a comparator ranking by a ternary on the draw', () => {
@@ -19,11 +19,13 @@ describe(listBiasedShuffleSites, () => {
       'const mixed = items.sort(() => (Math.random() > 0.5 ? 1 : -1));\n',
     ];
 
-    expect(sources.map((source) => listLines(source))).toStrictEqual([[1], [1]]);
+    expect(sources.map((source) => listSiteLines(listBiasedShuffleSites, source))).toStrictEqual([[1], [1]]);
   });
 
   it('claims a comparator declaring parameters that its body never reads', () => {
-    expect(listLines('const mixed = items.sort((a, b) => Math.random() - 0.5);\n')).toStrictEqual([1]);
+    expect(
+      listSiteLines(listBiasedShuffleSites, 'const mixed = items.sort((a, b) => Math.random() - 0.5);\n'),
+    ).toStrictEqual([1]);
   });
 
   it('claims a block body and an inline function alike', () => {
@@ -32,24 +34,26 @@ describe(listBiasedShuffleSites, () => {
       'const mixed = items.sort(function () {\n  return Math.random() - 0.5;\n});\n',
     ];
 
-    expect(sources.map((source) => listLines(source))).toStrictEqual([[1], [1]]);
+    expect(sources.map((source) => listSiteLines(listBiasedShuffleSites, source))).toStrictEqual([[1], [1]]);
   });
 
   it('claims the copying method as well as the mutating one', () => {
-    expect(listLines('const mixed = items.toSorted(() => Math.random() - 0.5);\n')).toStrictEqual([1]);
+    expect(
+      listSiteLines(listBiasedShuffleSites, 'const mixed = items.toSorted(() => Math.random() - 0.5);\n'),
+    ).toStrictEqual([1]);
   });
 
   it('claims a comparator broken across lines by a formatter, at the line on which the call opens', () => {
     const source = 'const mixed = items.sort(\n  () => Math.random() - 0.5,\n);\n';
 
-    expect(listLines(source)).toStrictEqual([1]);
+    expect(listSiteLines(listBiasedShuffleSites, source)).toStrictEqual([1]);
   });
 
   // The draw breaks ties among equal keys, which is a deliberate choice that `shuffle` does not reproduce.
   it('declines a comparator that ranks by its operands and draws only to break a tie', () => {
     const source = 'const ranked = rows.sort((a, b) => a.score - b.score || Math.random() - 0.5);\n';
 
-    expect(listLines(source)).toStrictEqual([]);
+    expect(listSiteLines(listBiasedShuffleSites, source)).toStrictEqual([]);
   });
 
   // A combinator's own arrow is not the argument's, so a draw inside it breaks ties within a primary ordering.
@@ -60,24 +64,26 @@ describe(listBiasedShuffleSites, () => {
       'const ranked = rows.sort((thenBy(byScore, () => Math.random() - 0.5)));\n',
     ];
 
-    expect(sources.filter((source) => listLines(source).length > 0)).toStrictEqual([]);
+    expect(sources.filter((source) => listSiteLines(listBiasedShuffleSites, source).length > 0)).toStrictEqual([]);
   });
 
   it('claims an arrow declaring a single parameter without parentheses', () => {
-    expect(listLines('const mixed = items.sort(a => Math.random() - 0.5);\n')).toStrictEqual([1]);
+    expect(
+      listSiteLines(listBiasedShuffleSites, 'const mixed = items.sort(a => Math.random() - 0.5);\n'),
+    ).toStrictEqual([1]);
   });
 
   it('claims an arrow with a return-type annotation', () => {
     const source = 'const mixed = items.sort((a: Row, b: Row): number => Math.random() - 0.5);\n';
 
-    expect(listLines(source)).toStrictEqual([1]);
+    expect(listSiteLines(listBiasedShuffleSites, source)).toStrictEqual([1]);
   });
 
   it('claims an inline function whose parameters contain braces of their own', () => {
     const source =
       'const mixed = items.sort(function (a: { n: number }, b: { n: number }) { return Math.random() - 0.5; });\n';
 
-    expect(listLines(source)).toStrictEqual([1]);
+    expect(listSiteLines(listBiasedShuffleSites, source)).toStrictEqual([1]);
   });
 
   // A parenthesis wrapping the whole comparator contains the arrow rather than opening it, and a cast puts its
@@ -88,7 +94,7 @@ describe(listBiasedShuffleSites, () => {
       'const mixed = items.sort(((a, b) => Math.random() - 0.5) as Comparator<Row>);\n',
     ];
 
-    expect(sources.map((source) => listLines(source))).toStrictEqual([[1], [1]]);
+    expect(sources.map((source) => listSiteLines(listBiasedShuffleSites, source))).toStrictEqual([[1], [1]]);
   });
 
   it('declines an ordinary comparator and a sort taking none', () => {
@@ -98,23 +104,16 @@ describe(listBiasedShuffleSites, () => {
       'const ranked = values.sort(byScore);\n',
     ];
 
-    expect(sources.filter((source) => listLines(source).length > 0)).toStrictEqual([]);
+    expect(sources.filter((source) => listSiteLines(listBiasedShuffleSites, source).length > 0)).toStrictEqual([]);
   });
 
   it('declines a draw that the source makes outside a comparator', () => {
-    expect(listLines('const jitter = Math.random() - 0.5;\n')).toStrictEqual([]);
+    expect(listSiteLines(listBiasedShuffleSites, 'const jitter = Math.random() - 0.5;\n')).toStrictEqual([]);
   });
 
   it('declines a method whose name merely ends in sort', () => {
-    expect(listLines('const mixed = index.resort(() => Math.random() - 0.5);\n')).toStrictEqual([]);
+    expect(
+      listSiteLines(listBiasedShuffleSites, 'const mixed = index.resort(() => Math.random() - 0.5);\n'),
+    ).toStrictEqual([]);
   });
 });
-
-// region | Helpers
-
-/** Lists the lines of the sites that the detector finds in a source, blanked as the kit blanks it. */
-function listLines(source: string): number[] {
-  return listSourceSites([listBiasedShuffleSites], source).map(({ line }) => line);
-}
-
-// endregion | Helpers
