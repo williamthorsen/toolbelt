@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const CAPITALIZE = 'export const label = word.charAt(0).toUpperCase() + word.slice(1);';
-const ADOPTER = "import { capitalize } from '@williamthorsen/toolbelt.strings/candidate';\ncapitalize(word);\n";
+const ADOPTER = "import { capitalize } from '@williamthorsen/toolbelt.strings';\ncapitalize(word);\n";
 const PACKAGE_DIR = path.resolve(import.meta.dirname, '../../..');
 
 describe('The strings adoption kit, run through rdy', () => {

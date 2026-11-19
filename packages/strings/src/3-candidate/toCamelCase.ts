@@ -1,5 +1,5 @@
+import { capitalize } from '../4-release/capitalize.ts';
 import { splitWords } from '../internal/splitWords.ts';
-import { capitalize } from './capitalize.ts';
 
 /**
  * Returns the camelCase version of the input string: the first word in lowercase, each later word capitalized.

@@ -14,7 +14,7 @@ pnpm add @williamthorsen/toolbelt.strings
 
 Requires Node.js 24 or later.
 
-`dedent`, `pluralize`, `pluralizeWithCount`, and `stripCommonIndent` are release tier, imported from the package root. `findCloseMatch`, `hashString`, `toCamelCase`, and `toKebabCase` are candidate tier: imported from `@williamthorsen/toolbelt.strings/candidate` rather than the package root, and subject to change.
+`capitalize`, `dedent`, `pluralize`, `pluralizeWithCount`, and `stripCommonIndent` are release tier, imported from the package root. `findCloseMatch`, `hashString`, `toCamelCase`, and `toKebabCase` are candidate tier: imported from `@williamthorsen/toolbelt.strings/candidate` rather than the package root, and subject to change.
 
 ## `pluralize` and `pluralizeWithCount`
 
