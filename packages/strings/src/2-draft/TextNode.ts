@@ -1,10 +1,10 @@
 import { getItemAtIndexOrThrow } from '@williamthorsen/toolbelt.arrays/candidate';
 import { IntSeededRng, pickInteger, type SeedOptions } from '@williamthorsen/toolbelt.numbers/candidate';
 
+import { enclose } from '../3-candidate/enclose.ts';
 import { segmentByDelimited } from '../internal/segmentByDelimited.ts';
 import { splitDelimited } from '../internal/splitDelimited.ts';
 import { validateDelimiters } from '../internal/validateDelimiters.ts';
-import { enclose } from './enclose.ts';
 
 const DELIMIT = {
   opening: '[',

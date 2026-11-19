@@ -1,4 +1,3 @@
-export { enclose } from './enclose.ts';
 export { pickVariants } from './pickVariants.ts';
 export { safeTrim } from './safeTrim.ts';
 export { TextNode } from './TextNode.ts';
