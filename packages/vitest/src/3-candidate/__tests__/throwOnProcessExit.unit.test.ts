@@ -1,6 +1,6 @@
 import process from 'node:process';
 
-import { captureError } from '@williamthorsen/toolbelt.testing/candidate';
+import { captureError } from '@williamthorsen/toolbelt.testing';
 import { describe, expect, expectTypeOf, it, type MockInstance, vi } from 'vitest';
 
 import { type MockedProcessExit, ProcessExitError, throwOnProcessExit } from '../throwOnProcessExit.ts';

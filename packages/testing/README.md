@@ -14,10 +14,10 @@ pnpm add --save-dev @williamthorsen/toolbelt.testing
 
 Requires Node.js 24 or later. The package imports no test-runner API, so it works under Vitest, Jest, and `node:test` alike. A utility that does need the Vitest API lives in `@williamthorsen/toolbelt.vitest` instead.
 
-Every export is candidate tier: imported from `@williamthorsen/toolbelt.testing/candidate` rather than the package root, and subject to change. Each export's doc comment states its edge cases.
+Release-tier exports import from the package root and candidate-tier exports from `@williamthorsen/toolbelt.testing/candidate`, as [Exports](#exports) lists them. The root README's [maturity tiers](https://github.com/williamthorsen/toolbelt#maturity-tiers) state what each tier guarantees. Each export's doc comment states its edge cases.
 
 ```ts
-import { captureStdio } from '@williamthorsen/toolbelt.testing/candidate';
+import { captureStdio } from '@williamthorsen/toolbelt.testing';
 
 using stdio = captureStdio();
 await routeCommand(['--version']);
@@ -26,12 +26,17 @@ expect(stdio.stdout).toMatch(/^\d+\.\d+\.\d+/u);
 
 ## Exports
 
+From the package root (release tier):
+
 - `captureError`: Runs a call expected to fail and returns its error, narrowed to an expected class.
 - `captureStdio` (`CapturedStdio`, `CaptureStdioOptions`): Captures what is written to stdout and stderr for a scope.
+- `pointCwdAt` (`PointCwdAtOptions`, `PointedCwd`): Points `process.cwd()` at a directory for a scope.
+
+From `/candidate` (candidate tier):
+
 - `captureWarnings` (`CapturedWarnings`): Records the process warnings emitted in a scope without printing them.
 - `createTempTree` (`CreateTempTreeOptions`, `TempTree`): Builds a throwaway directory tree that is removed when its binding leaves scope.
 - `pointArgvAt` (`PointArgvAtOptions`, `PointedArgv`): Points `process.argv` at a set of CLI arguments for a scope.
-- `pointCwdAt` (`PointCwdAtOptions`, `PointedCwd`): Points `process.cwd()` at a directory for a scope.
 
 Each scoped export returns a `Disposable`, so binding it with `using` is what restores the state that it changed.
 
@@ -40,7 +45,7 @@ Each scoped export returns a `Disposable`, so binding it with `using` is what re
 `captureError` receives a thrown error and a rejected promise by the same path, and fails the test when the call does not fail as expected:
 
 ```ts
-import { captureError } from '@williamthorsen/toolbelt.testing/candidate';
+import { captureError } from '@williamthorsen/toolbelt.testing';
 
 it('names every unresolvable import', async () => {
   const error = await captureError(UnresolvableKitImportsError, () => loadRemoteKit({ url }));
@@ -99,7 +104,8 @@ expect(captured.warnings).toMatchObject([{ name: 'DeprecationWarning', code: 'CF
 `createTempTree` builds a tree from a map of paths, a key ending in `/` being a directory, and its handle reads, writes, and removes entries through a check that keeps each path inside the tree. `pointCwdAt` and `pointArgvAt` point the process at it:
 
 ```ts
-import { createTempTree, pointArgvAt, pointCwdAt } from '@williamthorsen/toolbelt.testing/candidate';
+import { pointCwdAt } from '@williamthorsen/toolbelt.testing';
+import { createTempTree, pointArgvAt } from '@williamthorsen/toolbelt.testing/candidate';
 
 it('finds the project root from a relative start directory', () => {
   using tree = createTempTree({ '.git/': '', 'src/': '' });

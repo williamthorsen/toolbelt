@@ -1,7 +1,8 @@
 import { Buffer } from 'node:buffer';
 import process from 'node:process';
 
-import { captureStdio, captureWarnings } from '@williamthorsen/toolbelt.testing/candidate';
+import { captureStdio } from '@williamthorsen/toolbelt.testing';
+import { captureWarnings } from '@williamthorsen/toolbelt.testing/candidate';
 import { describe, expect, it, vi } from 'vitest';
 
 import { installOutputGuard } from '../outputGuard.ts';

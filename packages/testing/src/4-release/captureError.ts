@@ -11,8 +11,7 @@ import { isError } from '@williamthorsen/toolbelt.errors';
  * than by a later assertion running against `undefined`.
  *
  * @category Testing
- * @experimental
- * @stage candidate
+ * @stage release
  */
 export function captureError(run: () => unknown): Promise<Error>;
 /**
@@ -25,8 +24,7 @@ export function captureError(run: () => unknown): Promise<Error>;
  * thrown value sets that value as its `cause`, so the real error's stack survives into the report.
  *
  * @category Testing
- * @experimental
- * @stage candidate
+ * @stage release
  *
  * @example
  * const error = await captureError(UnresolvableKitImportsError, () => loadRemoteKit({ url }));

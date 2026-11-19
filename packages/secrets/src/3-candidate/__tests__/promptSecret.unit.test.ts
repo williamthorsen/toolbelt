@@ -1,6 +1,6 @@
 import { PassThrough } from 'node:stream';
 
-import { captureError } from '@williamthorsen/toolbelt.testing/candidate';
+import { captureError } from '@williamthorsen/toolbelt.testing';
 import { describe, expect, it } from 'vitest';
 
 import { promptSecret } from '../promptSecret.ts';

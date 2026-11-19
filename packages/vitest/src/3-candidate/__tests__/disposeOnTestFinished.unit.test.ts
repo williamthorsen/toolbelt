@@ -2,13 +2,8 @@
 import fs from 'node:fs';
 import process from 'node:process';
 
-import {
-  captureError,
-  captureStdio,
-  createTempTree,
-  pointCwdAt,
-  type TempTree,
-} from '@williamthorsen/toolbelt.testing/candidate';
+import { captureError, captureStdio, pointCwdAt } from '@williamthorsen/toolbelt.testing';
+import { createTempTree, type TempTree } from '@williamthorsen/toolbelt.testing/candidate';
 import { afterEach, beforeAll, beforeEach, describe, expect, expectTypeOf, it } from 'vitest';
 
 import { disposeOnTestFinished } from '../disposeOnTestFinished.ts';

@@ -3,7 +3,7 @@ import process from 'node:process';
 
 import { describe, expect, it } from 'vitest';
 
-import { createTempTree } from '../createTempTree.ts';
+import { createTempTree } from '../../3-candidate/createTempTree.ts';
 import { pointCwdAt } from '../pointCwdAt.ts';
 
 // Bound before any scope replaces `process.cwd`, so that a test can read where the process actually is.
