@@ -10,6 +10,8 @@ Functions for working with objects.
 
 Requires Node.js 24 or later.
 
+`isEqual`, `isObject`, `isPlainObject`, `isRecord`, and `isRecordOrArray` are release tier, imported from the package root. The rest are imported from their tier's subpath, such as `@williamthorsen/toolbelt.objects/candidate`, and subject to change.
+
 ## Adoption checks
 
 The package includes a ReadyUp kit, so a project that installs it can ask how far its adoption got:
@@ -24,7 +26,7 @@ A `hasOwnProperty` call made through `Object.prototype` is claimed. `Object.hasO
 
 A record guard is claimed when a conjunction pairs a test against the `object` tag with a test against `null`, in either order, and ends there or at a matching `!Array.isArray`. `isRecord` replaces the longer form and `isRecordOrArray` the shorter, and both return a type predicate, so the narrowing performed by the conjunction is preserved. A conjunction with a further operand, such as `typeof err === 'object' && err !== null && 'code' in err`, is not claimed: Adoption there is a rewrite rather than a substitution. `isPlainObject` answers the stricter question of whether a value has `Object.prototype` and nothing exotic, and no expression claimed by the kit asks it.
 
-An equality test between two `JSON.stringify` calls is claimed at `warn`, and its `!==` mirror with it. Comparing serializations answers the wrong question twice: Because the result is key-order dependent, two objects with the same entries in a different order compare unequal, and because a `Set` serializes as an empty object whatever it contains, any two `Set`s compare equal. `isEqual` from `/candidate` sorts keys and converts `Set`s to arrays before comparing. A call that the source compares against anything else is serializing rather than comparing, and is not claimed.
+An equality test between two `JSON.stringify` calls is claimed at `warn`, and its `!==` mirror with it. Comparing serializations answers the wrong question twice: Because the result is key-order dependent, two objects with the same entries in a different order compare unequal, and because a `Set` serializes as an empty object whatever it contains, any two `Set`s compare equal. `isEqual`, imported from the package root, sorts keys and converts `Set`s to arrays before comparing. A call that the source compares against anything else is serializing rather than comparing, and is not claimed.
 
 Bootstrap wrappers under `bin/` are exempt: Such a wrapper imports only builtins so that its build-first message survives an incomplete install, and importing this package there would replace that message with a module-resolution failure. Tests are exempt too, since they write these forms deliberately. A source declared generated or vendored by the project in its own `.gitattributes`, under `linguist-generated` or `linguist-vendored`, is exempt as well: The sweep drops it before the kit sees it, so committed bundler output yields no advice that anyone could act on. Because the sweep is readyup's, this holds on readyup 0.35.0 or later.
 

@@ -1,5 +1,4 @@
 export { hasOwnProperty } from './hasOwnProperty.ts';
-export { isEqual } from './isEqual.ts';
 export { isKeyOf } from './isKeyOf.ts';
 export { isScalar } from './isScalar.ts';
 export { objectFromKeys } from './objectFromKeys.ts';
