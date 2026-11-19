@@ -53,6 +53,15 @@ import {
   countPackageUsage,
   readTrackedSources
 } from "readyup/check-utils";
+
+// ../adoption/src/kits/listSourceSites.ts
+import { blankNonCode } from "readyup/check-utils";
+function listSourceSites(detectors, source) {
+  const code = blankNonCode(source);
+  return detectors.flatMap((detect) => detect(code, source)).toSorted((a, b) => a.line - b.line);
+}
+
+// ../adoption/src/kits/defineAdoptionKit.ts
 var NOT_A_REPO = "the project is not a git working tree, and these checks read the files that git tracks";
 var NOTHING_TO_REPORT = { findings: [] };
 function defineAdoptionKit(spec) {
@@ -94,7 +103,7 @@ function defineAdoptionKit(spec) {
     return {
       adoptedCount: countPackageUsage(sources, adoptedPackage),
       findings: sources.flatMap(
-        (source) => spec.detectors.flatMap((detect) => detect(source.text)).toSorted((a, b) => a.line - b.line).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
+        (source) => listSourceSites(spec.detectors, source.text).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
       ),
       sources
     };
@@ -285,7 +294,7 @@ function listTopLevelSpans(text, start = 0, end = text.length) {
 }
 
 // ../adoption/src/mod.ts
-import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
+import { blankNonCode as blankNonCode2, getLineAtOffset } from "readyup/check-utils";
 
 // src/readiness/adoptedExports.ts
 var ADOPTED_EXPORTS = [
@@ -315,10 +324,13 @@ var ADOPTED_EXPORTS = [
   "trimWhitespace"
 ];
 
-// src/readiness/listCapitalizeLines.ts
+// src/readiness/listCapitalizeSites.ts
 var CAPITALIZE_INLINE = /(?<![\w$.])(?<subject>[\w$]+(?:\.[\w$]+)*)\s*(?:\.charAt\(\s*0\s*\)|\[\s*0\s*\])\s*\.toUpperCase\(\)\s*(?:\+|\}\$\{)\s*\k<subject>\s*\.(?:slice|substring)\(\s*1\s*\)(?!\s*\.)/g;
-function listCapitalizeLines(source) {
-  return source.matchAll(CAPITALIZE_INLINE).map((match) => getLineAtOffset(source, match.index)).toArray();
+function listCapitalizeSites(code) {
+  return code.matchAll(CAPITALIZE_INLINE).map((match) => ({
+    kind: "capitalize-inline",
+    line: getLineAtOffset(code, match.index)
+  })).toArray();
 }
 
 // src/internal/indent-rules.ts
@@ -348,14 +360,14 @@ function findCommonPrefix(a, b) {
   return a.slice(0, length);
 }
 
-// src/readiness/listJoinedLineArrayLines.ts
+// src/readiness/listJoinedLineArraySites.ts
 var JOIN_TAIL = /\]\s*\.join\(\s*(?<separator>'[^'\n]*'|"[^"\n]*")\s*\)/dg;
 var QUOTED_ELEMENT = /^(?:'[^'\n]*'|"[^"\n]*")$/;
 var NEWLINE_ESCAPE = String.raw`\n`;
 var SUBSCRIPT_LOOKBEHIND = 32;
-function listJoinedLineArrayLines(code, source) {
+function listJoinedLineArraySites(code, source) {
   const templates = listTemplateLiterals(code);
-  const lines = [];
+  const sites = [];
   for (const match of code.matchAll(JOIN_TAIL)) {
     if (readLiteral(source, match.indices?.groups?.["separator"]) !== NEWLINE_ESCAPE) continue;
     const close = match.index;
@@ -375,9 +387,9 @@ function listJoinedLineArrayLines(code, source) {
     if (leadingTexts.length < elements.length) continue;
     const contentTexts = leadingTexts.filter((leadingText) => leadingText.hasContent).map(({ text }) => text);
     if (findCommonIndent(contentTexts) !== "") continue;
-    lines.push(getLineAtOffset(code, open));
+    sites.push({ kind: "joined-line-array", line: getLineAtOffset(code, open) });
   }
-  return lines;
+  return sites;
 }
 function findOpeningBracket(code, close) {
   let depth = 0;
@@ -413,21 +425,21 @@ function trimSpan(code, start, end) {
   return { end: trimmedEnd, start: trimmedStart };
 }
 
-// src/readiness/listLayoutBreakingTemplateLines.ts
+// src/readiness/listLayoutBreakingTemplateSites.ts
 var BLANK_LINE = /^[\t ]*\r?$/;
 var INLINE_SNAPSHOT_CALL = /InlineSnapshot\(\s*$/;
 var INLINE_SNAPSHOT_LOOKBEHIND = 64;
-function listLayoutBreakingTemplateLines(code, source) {
-  const lines = [];
+function listLayoutBreakingTemplateSites(code, source) {
+  const sites = [];
   for (const template of listTemplateLiterals(code)) {
     if (template.isTagged || isInlineSnapshotArgument(code, template.start)) continue;
     const openingIndent = findLineIndent(source.slice(findLineStart(source, template.start)));
     if (openingIndent === "") continue;
     const laterLines = listLaterContentLines(source, template);
     if (laterLines.length === 0 || findCommonIndent(laterLines).startsWith(openingIndent)) continue;
-    lines.push(getLineAtOffset(code, template.start));
+    sites.push({ kind: "layout-breaking-template", line: getLineAtOffset(code, template.start) });
   }
-  return lines;
+  return sites;
 }
 function findLineStart(source, offset) {
   return source.lastIndexOf("\n", offset - 1) + 1;
@@ -452,14 +464,14 @@ function listLaterContentLines(source, template) {
   return lines;
 }
 
-// src/readiness/listPluralizeLines.ts
+// src/readiness/listPluralizeSites.ts
 var QUOTED = `'[^']*'|"[^"]*"`;
 var PLURALIZE_TERNARY = new RegExp(
   String.raw`(?<op>===|!==)\s*1\s*\)*\s*\?\s*(?<first>${QUOTED})\s*:\s*(?<second>${QUOTED})`,
   "dg"
 );
-function listPluralizeLines(code, source) {
-  const lines = [];
+function listPluralizeSites(code, source) {
+  const sites = [];
   for (const match of code.matchAll(PLURALIZE_TERNARY)) {
     const first = readLiteral(source, match.indices?.groups?.["first"]);
     const second = readLiteral(source, match.indices?.groups?.["second"]);
@@ -468,24 +480,9 @@ function listPluralizeLines(code, source) {
     const singular = takesSingularFirst ? first : second;
     const plural = takesSingularFirst ? second : first;
     if (plural !== `${singular}s`) continue;
-    lines.push(getLineAtOffset(code, match.index));
+    sites.push({ kind: "pluralize-inline", line: getLineAtOffset(code, match.index) });
   }
-  return lines;
-}
-
-// src/readiness/listStringIdioms.ts
-function listStringIdioms(source) {
-  const code = blankNonCode(source);
-  const sites = [
-    ...toSites("capitalize-inline", listCapitalizeLines(code)),
-    ...toSites("joined-line-array", listJoinedLineArrayLines(code, source)),
-    ...toSites("layout-breaking-template", listLayoutBreakingTemplateLines(code, source)),
-    ...toSites("pluralize-inline", listPluralizeLines(code, source))
-  ];
-  return sites.toSorted((a, b) => a.line - b.line);
-}
-function toSites(kind, lines) {
-  return lines.map((line) => ({ kind, line }));
+  return sites;
 }
 
 // .readyup/kits/default.ts
@@ -493,7 +490,7 @@ var PACKAGE_NAME = "@williamthorsen/toolbelt.strings";
 var README_URL = "https://github.com/williamthorsen/toolbelt/tree/main/packages/strings#readme";
 var default_default = defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
-  detectors: [listStringIdioms],
+  detectors: [listCapitalizeSites, listJoinedLineArraySites, listLayoutBreakingTemplateSites, listPluralizeSites],
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: "the project contains no JavaScript or TypeScript sources outside the exempt paths",
   packageName: PACKAGE_NAME,

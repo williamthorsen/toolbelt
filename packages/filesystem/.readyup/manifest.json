@@ -28,12 +28,17 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "c656f59e",
+          "hash": "efb9d144",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "5fb19315",
+          "hash": "5eef3153",
+          "kind": "module",
+          "path": "../../adoption/src/kits/listSourceSites.ts"
+        },
+        {
+          "hash": "2ca035e9",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -113,7 +118,7 @@
           "path": "../../adoption/src/portable/readPathParts.ts"
         },
         {
-          "hash": "76584b5b",
+          "hash": "a638a9b4",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -123,27 +128,22 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "7dbe7aed",
+          "hash": "f3adff87",
           "kind": "module",
           "path": "../src/readiness/listAtomicWriteSites.ts"
         },
         {
-          "hash": "d8cb7bcf",
+          "hash": "e1e41d4c",
           "kind": "module",
           "path": "../src/readiness/listChainWalkSites.ts"
-        },
-        {
-          "hash": "35f27bfe",
-          "kind": "module",
-          "path": "../src/readiness/listFilesystemIdioms.ts"
         }
       ],
       "name": "default",
       "path": "kits/default.js",
       "readyupVersion": "0.47.1",
       "source": "kits/default.ts",
-      "sourceHash": "76584b5b",
-      "targetHash": "b20a5f23"
+      "sourceHash": "a638a9b4",
+      "targetHash": "d6b9d287"
     }
   ]
 }

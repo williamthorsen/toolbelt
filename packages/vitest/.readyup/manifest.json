@@ -34,12 +34,17 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "c656f59e",
+          "hash": "efb9d144",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "5fb19315",
+          "hash": "5eef3153",
+          "kind": "module",
+          "path": "../../adoption/src/kits/listSourceSites.ts"
+        },
+        {
+          "hash": "2ca035e9",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -139,17 +144,17 @@
           "path": "../src/readiness/classifyExitMock.ts"
         },
         {
-          "hash": "6a4e8f80",
+          "hash": "541947e1",
           "kind": "module",
           "path": "../src/readiness/listConsoleSites.ts"
         },
         {
-          "hash": "5c8a3503",
+          "hash": "aec4a7dd",
           "kind": "module",
           "path": "../src/readiness/listDisposalHooks.ts"
         },
         {
-          "hash": "5fff4be4",
+          "hash": "e5059b99",
           "kind": "module",
           "path": "../src/readiness/listExitMocks.ts"
         }
@@ -159,7 +164,7 @@
       "readyupVersion": "0.47.1",
       "source": "kits/default.ts",
       "sourceHash": "77b6754c",
-      "targetHash": "4101b46d"
+      "targetHash": "670e23b6"
     }
   ]
 }

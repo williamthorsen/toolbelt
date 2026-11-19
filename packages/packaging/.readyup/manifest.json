@@ -27,12 +27,17 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "c656f59e",
+          "hash": "efb9d144",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "5fb19315",
+          "hash": "5eef3153",
+          "kind": "module",
+          "path": "../../adoption/src/kits/listSourceSites.ts"
+        },
+        {
+          "hash": "2ca035e9",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -122,7 +127,7 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "f78c7a58",
+          "hash": "3e5db35c",
           "kind": "module",
           "path": "../src/readiness/listManifestSearchSites.ts"
         }
@@ -132,7 +137,7 @@
       "readyupVersion": "0.47.1",
       "source": "kits/default.ts",
       "sourceHash": "e2266f26",
-      "targetHash": "e1a6d9da"
+      "targetHash": "4c3b4d52"
     }
   ]
 }

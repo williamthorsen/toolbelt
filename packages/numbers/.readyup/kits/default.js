@@ -50,6 +50,15 @@ import {
   countPackageUsage,
   readTrackedSources
 } from "readyup/check-utils";
+
+// ../adoption/src/kits/listSourceSites.ts
+import { blankNonCode } from "readyup/check-utils";
+function listSourceSites(detectors, source) {
+  const code = blankNonCode(source);
+  return detectors.flatMap((detect) => detect(code, source)).toSorted((a, b) => a.line - b.line);
+}
+
+// ../adoption/src/kits/defineAdoptionKit.ts
 var NOT_A_REPO = "the project is not a git working tree, and these checks read the files that git tracks";
 var NOTHING_TO_REPORT = { findings: [] };
 function defineAdoptionKit(spec) {
@@ -91,7 +100,7 @@ function defineAdoptionKit(spec) {
     return {
       adoptedCount: countPackageUsage(sources, adoptedPackage),
       findings: sources.flatMap(
-        (source) => spec.detectors.flatMap((detect) => detect(source.text)).toSorted((a, b) => a.line - b.line).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
+        (source) => listSourceSites(spec.detectors, source.text).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
       ),
       sources
     };
@@ -201,7 +210,7 @@ function listTopLevelArguments(inner) {
 }
 
 // ../adoption/src/mod.ts
-import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
+import { blankNonCode as blankNonCode2, getLineAtOffset } from "readyup/check-utils";
 
 // src/readiness/adoptedExports.ts
 var ADOPTED_EXPORTS = [
@@ -220,25 +229,25 @@ var ADOPTED_EXPORTS = [
   "SeededRng"
 ];
 
-// src/readiness/listClampNestLines.ts
+// src/readiness/listClampNestSites.ts
 var BOUNDING_CALL = /\bMath\.(?<name>max|min)\s*\(/g;
 var NESTED_HEAD = { max: /^Math\.max\s*\(/, min: /^Math\.min\s*\(/ };
 var OPPOSITE = { max: "min", min: "max" };
-function listClampNestLines(source) {
-  const lines = [];
+function listClampNestSites(code) {
+  const sites = [];
   let claimedUntil = 0;
-  for (const match of source.matchAll(BOUNDING_CALL)) {
+  for (const match of code.matchAll(BOUNDING_CALL)) {
     if (match.index < claimedUntil) continue;
     const name = readBoundingName(match.groups?.["name"]);
     if (name === void 0) continue;
-    const group = readBalancedGroup(source, match.index, PARENTHESES);
+    const group = readBalancedGroup(code, match.index, PARENTHESES);
     if (group === void 0) continue;
-    const args = listTopLevelArguments(source.slice(group.start + 1, group.end - 1));
+    const args = listTopLevelArguments(code.slice(group.start + 1, group.end - 1));
     if (args.length !== 2 || args.every((argument) => !isBoundingCall(argument, OPPOSITE[name]))) continue;
     claimedUntil = group.end;
-    lines.push(getLineAtOffset(source, match.index));
+    sites.push({ kind: "clamp-nest", line: getLineAtOffset(code, match.index) });
   }
-  return lines;
+  return sites;
 }
 function isBoundingCall(argument, name) {
   const text = argument.trim();
@@ -251,53 +260,39 @@ function readBoundingName(name) {
   return name === "max" || name === "min" ? name : void 0;
 }
 
-// src/readiness/listRandomIntegerLines.ts
+// src/readiness/listRandomIntegerSites.ts
 var FLOORED_RANDOM = /\bMath\.floor\s*\(\s*Math\.random\s*\(\s*\)\s*\*/g;
 var WINDOW = { lookahead: 0, lookbehind: 80 };
-function listRandomIntegerLines(source) {
-  const lines = [];
-  for (const match of source.matchAll(FLOORED_RANDOM)) {
-    const { before } = readAnchoredWindow(source, match.index, WINDOW);
+function listRandomIntegerSites(code) {
+  const sites = [];
+  for (const match of code.matchAll(FLOORED_RANDOM)) {
+    const { before } = readAnchoredWindow(code, match.index, WINDOW);
     if (isArraySubscript(before)) continue;
-    lines.push(getLineAtOffset(source, match.index));
+    sites.push({ kind: "random-integer", line: getLineAtOffset(code, match.index) });
   }
-  return lines;
+  return sites;
 }
 
-// src/readiness/listRoundScaleLines.ts
+// src/readiness/listRoundScaleSites.ts
 var POWER_OF_TEN = String.raw`10\s*\*\*\s*[\w$]+|10+`;
 var ROUND_CALL = /\bMath\.round\s*\(/g;
 var TRAILING_FACTOR = new RegExp(String.raw`\*\s*(?<factor>${POWER_OF_TEN})\s*,?\s*$`);
 var LEADING_DIVISOR = new RegExp(String.raw`^\s*/\s*(?<divisor>${POWER_OF_TEN})(?![\w$.])`);
-function listRoundScaleLines(source) {
-  const lines = [];
-  for (const match of source.matchAll(ROUND_CALL)) {
-    const group = readBalancedGroup(source, match.index, PARENTHESES);
+function listRoundScaleSites(code) {
+  const sites = [];
+  for (const match of code.matchAll(ROUND_CALL)) {
+    const group = readBalancedGroup(code, match.index, PARENTHESES);
     if (group === void 0) continue;
-    const factor = TRAILING_FACTOR.exec(source.slice(group.start + 1, group.end - 1))?.groups?.["factor"];
+    const factor = TRAILING_FACTOR.exec(code.slice(group.start + 1, group.end - 1))?.groups?.["factor"];
     if (factor === void 0) continue;
-    const divisor = LEADING_DIVISOR.exec(source.slice(group.end))?.groups?.["divisor"];
+    const divisor = LEADING_DIVISOR.exec(code.slice(group.end))?.groups?.["divisor"];
     if (divisor === void 0 || !isSameFactor(factor, divisor)) continue;
-    lines.push(getLineAtOffset(source, match.index));
+    sites.push({ kind: "round-scale", line: getLineAtOffset(code, match.index) });
   }
-  return lines;
+  return sites;
 }
 function isSameFactor(factor, divisor) {
   return factor.replaceAll(/\s+/g, "") === divisor.replaceAll(/\s+/g, "");
-}
-
-// src/readiness/listMathIdioms.ts
-function listMathIdioms(source) {
-  const code = blankNonCode(source);
-  const sites = [
-    ...toSites("clamp-nest", listClampNestLines(code)),
-    ...toSites("random-integer", listRandomIntegerLines(code)),
-    ...toSites("round-scale", listRoundScaleLines(code))
-  ];
-  return sites.toSorted((a, b) => a.line - b.line);
-}
-function toSites(kind, lines) {
-  return lines.map((line) => ({ kind, line }));
 }
 
 // .readyup/kits/default.ts
@@ -305,7 +300,7 @@ var PACKAGE_NAME = "@williamthorsen/toolbelt.numbers";
 var README_URL = "https://github.com/williamthorsen/toolbelt/tree/main/packages/numbers#readme";
 var default_default = defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
-  detectors: [listMathIdioms],
+  detectors: [listClampNestSites, listRandomIntegerSites, listRoundScaleSites],
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: "the project contains no JavaScript or TypeScript sources outside the exempt paths",
   packageName: PACKAGE_NAME,

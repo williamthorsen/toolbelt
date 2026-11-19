@@ -36,6 +36,15 @@ import {
   countPackageUsage,
   readTrackedSources
 } from "readyup/check-utils";
+
+// ../adoption/src/kits/listSourceSites.ts
+import { blankNonCode } from "readyup/check-utils";
+function listSourceSites(detectors, source) {
+  const code = blankNonCode(source);
+  return detectors.flatMap((detect) => detect(code, source)).toSorted((a, b) => a.line - b.line);
+}
+
+// ../adoption/src/kits/defineAdoptionKit.ts
 var NOT_A_REPO = "the project is not a git working tree, and these checks read the files that git tracks";
 var NOTHING_TO_REPORT = { findings: [] };
 function defineAdoptionKit(spec) {
@@ -77,7 +86,7 @@ function defineAdoptionKit(spec) {
     return {
       adoptedCount: countPackageUsage(sources, adoptedPackage),
       findings: sources.flatMap(
-        (source) => spec.detectors.flatMap((detect) => detect(source.text)).toSorted((a, b) => a.line - b.line).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
+        (source) => listSourceSites(spec.detectors, source.text).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
       ),
       sources
     };
@@ -464,9 +473,6 @@ function readProbedName(parts) {
   return name === "" ? void 0 : name;
 }
 
-// ../adoption/src/mod.ts
-import { blankNonCode, getLineAtOffset as getLineAtOffset2 } from "readyup/check-utils";
-
 // src/readiness/adoptedExports.ts
 var ADOPTED_EXPORTS = [
   "findNearestManifest",
@@ -476,8 +482,8 @@ var ADOPTED_EXPORTS = [
 ];
 
 // src/readiness/listManifestSearchSites.ts
-function listManifestSearchSites(source) {
-  return listDirectoryAscents(blankNonCode(source), source).filter(({ probedNames }) => probedNames !== void 0 && isManifestSearch(probedNames)).map(({ line }) => ({ kind: "manifest-search", line }));
+function listManifestSearchSites(code, source) {
+  return listDirectoryAscents(code, source).filter(({ probedNames }) => probedNames !== void 0 && isManifestSearch(probedNames)).map(({ line }) => ({ kind: "manifest-search", line }));
 }
 
 // .readyup/kits/default.ts

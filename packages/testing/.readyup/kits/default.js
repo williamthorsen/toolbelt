@@ -16,6 +16,15 @@ import {
   countPackageUsage,
   readTrackedSources
 } from "readyup/check-utils";
+
+// ../adoption/src/kits/listSourceSites.ts
+import { blankNonCode } from "readyup/check-utils";
+function listSourceSites(detectors, source) {
+  const code = blankNonCode(source);
+  return detectors.flatMap((detect) => detect(code, source)).toSorted((a, b) => a.line - b.line);
+}
+
+// ../adoption/src/kits/defineAdoptionKit.ts
 var NOT_A_REPO = "the project is not a git working tree, and these checks read the files that git tracks";
 var NOTHING_TO_REPORT = { findings: [] };
 function defineAdoptionKit(spec) {
@@ -57,7 +66,7 @@ function defineAdoptionKit(spec) {
     return {
       adoptedCount: countPackageUsage(sources, adoptedPackage),
       findings: sources.flatMap(
-        (source) => spec.detectors.flatMap((detect) => detect(source.text)).toSorted((a, b) => a.line - b.line).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
+        (source) => listSourceSites(spec.detectors, source.text).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
       ),
       sources
     };
@@ -169,7 +178,7 @@ function readAnchoredWindow(source, offset, lengths) {
 }
 
 // ../adoption/src/mod.ts
-import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
+import { blankNonCode as blankNonCode2, getLineAtOffset } from "readyup/check-utils";
 
 // src/readiness/adoptedExports.ts
 var ADOPTED_EXPORTS = [
@@ -194,8 +203,7 @@ var LOOKBEHIND_LENGTH = 400;
 var TRAILING_COMMA = /,$/;
 var TRAILING_SEMICOLON = /;$/;
 var TRY_ANCHOR = /\btry\s*\{/g;
-function listCaptureSites(source) {
-  const code = blankNonCode(source);
+function listCaptureSites(code) {
   const sites = [];
   for (const match of code.matchAll(TRY_ANCHOR)) {
     const block = readBalancedGroup(code, match.index, BRACES);
@@ -271,8 +279,7 @@ function readCatchCapture(tail) {
 
 // src/readiness/listStdioSpies.ts
 var SPY = /\bvi\s*\.\s*spyOn\(\s*process\s*\.\s*std(?:err|out)\s*,\s*(['"])write\1\s*,?\s*\)/g;
-function listStdioSpies(source) {
-  const code = blankNonCode(source);
+function listStdioSpies(code, source) {
   const sites = [];
   for (const match of source.matchAll(SPY)) {
     if (code[match.index] !== source[match.index]) continue;

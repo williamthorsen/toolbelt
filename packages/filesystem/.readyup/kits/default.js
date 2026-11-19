@@ -36,6 +36,15 @@ import {
   countPackageUsage,
   readTrackedSources
 } from "readyup/check-utils";
+
+// ../adoption/src/kits/listSourceSites.ts
+import { blankNonCode } from "readyup/check-utils";
+function listSourceSites(detectors, source) {
+  const code = blankNonCode(source);
+  return detectors.flatMap((detect) => detect(code, source)).toSorted((a, b) => a.line - b.line);
+}
+
+// ../adoption/src/kits/defineAdoptionKit.ts
 var NOT_A_REPO = "the project is not a git working tree, and these checks read the files that git tracks";
 var NOTHING_TO_REPORT = { findings: [] };
 function defineAdoptionKit(spec) {
@@ -77,7 +86,7 @@ function defineAdoptionKit(spec) {
     return {
       adoptedCount: countPackageUsage(sources, adoptedPackage),
       findings: sources.flatMap(
-        (source) => spec.detectors.flatMap((detect) => detect(source.text)).toSorted((a, b) => a.line - b.line).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
+        (source) => listSourceSites(spec.detectors, source.text).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
       ),
       sources
     };
@@ -505,7 +514,7 @@ function readParameterText(source, head) {
 }
 
 // ../adoption/src/mod.ts
-import { blankNonCode, getLineAtOffset as getLineAtOffset2 } from "readyup/check-utils";
+import { blankNonCode as blankNonCode2, getLineAtOffset as getLineAtOffset2 } from "readyup/check-utils";
 
 // src/readiness/adoptedExports.ts
 var ADOPTED_EXPORTS = [
@@ -563,23 +572,13 @@ function listChainWalkSites(code, source) {
   });
 }
 
-// src/readiness/listFilesystemIdioms.ts
-function listFilesystemIdioms(source) {
-  const code = blankNonCode(source);
-  const sites = [
-    ...listAtomicWriteSites(code),
-    ...listChainWalkSites(code, source)
-  ];
-  return sites.toSorted((a, b) => a.line - b.line);
-}
-
 // .readyup/kits/default.ts
 var PACKAGE_NAME = "@williamthorsen/toolbelt.filesystem";
 var PACKAGING_README_URL = "https://github.com/williamthorsen/toolbelt/tree/main/packages/packaging#readme";
 var README_URL = "https://github.com/williamthorsen/toolbelt/tree/main/packages/filesystem#readme";
 var default_default = defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
-  detectors: [listFilesystemIdioms],
+  detectors: [listAtomicWriteSites, listChainWalkSites],
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: "the project contains no JavaScript or TypeScript sources outside the exempt paths",
   packageName: PACKAGE_NAME,

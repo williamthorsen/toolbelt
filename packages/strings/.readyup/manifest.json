@@ -30,12 +30,17 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "c656f59e",
+          "hash": "efb9d144",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "5fb19315",
+          "hash": "5eef3153",
+          "kind": "module",
+          "path": "../../adoption/src/kits/listSourceSites.ts"
+        },
+        {
+          "hash": "2ca035e9",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -115,7 +120,7 @@
           "path": "../../adoption/src/portable/readPathParts.ts"
         },
         {
-          "hash": "d0388e49",
+          "hash": "93064b75",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -130,37 +135,32 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "a4467bfc",
+          "hash": "97278f69",
           "kind": "module",
-          "path": "../src/readiness/listCapitalizeLines.ts"
+          "path": "../src/readiness/listCapitalizeSites.ts"
         },
         {
-          "hash": "394b3715",
+          "hash": "28700bf2",
           "kind": "module",
-          "path": "../src/readiness/listJoinedLineArrayLines.ts"
+          "path": "../src/readiness/listJoinedLineArraySites.ts"
         },
         {
-          "hash": "a73baa16",
+          "hash": "c0277aed",
           "kind": "module",
-          "path": "../src/readiness/listLayoutBreakingTemplateLines.ts"
+          "path": "../src/readiness/listLayoutBreakingTemplateSites.ts"
         },
         {
-          "hash": "34ba7637",
+          "hash": "63cb6a3d",
           "kind": "module",
-          "path": "../src/readiness/listPluralizeLines.ts"
-        },
-        {
-          "hash": "5cc4cf4a",
-          "kind": "module",
-          "path": "../src/readiness/listStringIdioms.ts"
+          "path": "../src/readiness/listPluralizeSites.ts"
         }
       ],
       "name": "default",
       "path": "kits/default.js",
       "readyupVersion": "0.47.1",
       "source": "kits/default.ts",
-      "sourceHash": "d0388e49",
-      "targetHash": "7b46512e"
+      "sourceHash": "93064b75",
+      "targetHash": "a4782262"
     }
   ]
 }
