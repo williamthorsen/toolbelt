@@ -1,4 +1,5 @@
 import { isPlainObject, type PlainObject } from '../4-release/is-object.ts';
+import { type CompareKeys, compareKeysAscending, listEnumerableSymbolEntries } from '../internal/keyOrder.ts';
 
 /**
  * Returns a new object whose string keys are sorted alphabetically or by a custom comparator function, followed by
@@ -8,10 +9,7 @@ import { isPlainObject, type PlainObject } from '../4-release/is-object.ts';
  * @experimental
  * @stage draft
  */
-export function sortKeys<T extends PlainObject>(
-  value: T,
-  compare: CompareKeys = (keyA, keyB) => (keyA < keyB ? -1 : 1),
-): T {
+export function sortKeys<T extends PlainObject>(value: T, compare: CompareKeys = compareKeysAscending): T {
   if (!isPlainObject(value)) {
     return value;
   }
@@ -33,7 +31,7 @@ export function sortKeys<T extends PlainObject>(
  * @experimental
  * @stage draft
  */
-export function sortObjectKeys<T>(value: T, compare: CompareKeys = (keyA, keyB) => (keyA < keyB ? -1 : 1)): T {
+export function sortObjectKeys<T>(value: T, compare: CompareKeys = compareKeysAscending): T {
   if (Array.isArray(value)) {
     // The copy keeps every element, each replaced by a sorted copy of the same type.
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -54,17 +52,3 @@ export function sortObjectKeys<T>(value: T, compare: CompareKeys = (keyA, keyB) 
 
   return value;
 }
-
-type CompareKeys = (keyA: string, keyB: string) => number;
-
-// region | Helpers
-
-/** Lists the own enumerable symbol-keyed entries of an object in own-key order. */
-function listEnumerableSymbolEntries(value: object): Array<[symbol, unknown]> {
-  // Call the prototype's method: A null-prototype object does not inherit it.
-  return Object.getOwnPropertySymbols(value)
-    .filter((key) => Object.prototype.propertyIsEnumerable.call(value, key))
-    .map((key): [symbol, unknown] => [key, Reflect.get(value, key)]);
-}
-
-// endregion | Helpers
