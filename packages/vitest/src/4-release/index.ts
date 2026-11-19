@@ -1,1 +1,4 @@
-export {};
+export { disposeOnTestFinished } from './disposeOnTestFinished.ts';
+export { makeFixture } from './makeFixture.ts';
+export { type ConsoleMethod, silenceConsole } from './silenceConsole.ts';
+export { type MockedProcessExit, ProcessExitError, throwOnProcessExit } from './throwOnProcessExit.ts';

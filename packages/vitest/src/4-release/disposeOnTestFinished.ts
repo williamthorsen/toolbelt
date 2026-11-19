@@ -11,7 +11,7 @@ import { onTestFinished } from 'vitest';
  *
  * @category Testing
  * @experimental
- * @stage candidate
+ * @stage release
  *
  * @example
  * function buildSource(files: Record<string, string>, name = 'fixture'): SourceSpec {
