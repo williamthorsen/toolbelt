@@ -6,8 +6,7 @@ export type CancellablePromise<T> = Promise<T> & { cancel: () => void };
  * Returns a cancellable promise that resolves after the specified number of milliseconds.
  *
  * @category Async
- * @experimental
- * @stage candidate
+ * @stage release
  */
 export function delay(ms: number): CancellablePromise<void> {
   let timeoutId: TimeoutId | undefined;

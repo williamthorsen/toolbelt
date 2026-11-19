@@ -10,6 +10,8 @@ Async utilities.
 
 Requires Node.js 24 or later.
 
+`delay` is release tier, imported from the package root. `debounce` and `flushMicrotasks` are candidate tier: imported from `@williamthorsen/toolbelt.async/candidate` rather than the package root, and subject to change.
+
 ## Adoption checks
 
 The package includes a ReadyUp kit, so a project that installs it can ask how far its adoption got:
@@ -20,7 +22,7 @@ rdy run --sources
 
 The kit reads the project's tracked sources and reports every hand-rolled sleep in them, each counted against the calls that the project already makes into this package. It reports at `recommend` and never at `warn` or `error`, because a hand-rolled sleep is correct code that `delay` expresses better, not a defect.
 
-A promise is claimed when its executor sets a timer and does nothing else. `delay` from `/candidate` replaces it and returns a promise with a `cancel` that clears the timer and settles at once, which the hand-rolled form offers no way to do: A caller that finishes early still waits out the whole delay, and in a test the pending timer keeps the event loop open past the assertion that it was waiting for.
+A promise is claimed when its executor sets a timer and does nothing else. `delay`, imported from the package root, replaces it and returns a promise with a `cancel` that clears the timer and settles at once, which the hand-rolled form offers no way to do: A caller that finishes early still waits out the whole delay, and in a test the pending timer keeps the event loop open past the assertion that it was waiting for.
 
 Because the kit claims the executor's whole body rather than a spelling, it admits the concise arrow, the braced body, and the `function` form together. Three neighbouring forms are declined, each for a reason of its own. A timer call taking a third argument settles the promise with that value, whereas `delay` settles with none. A callback that is not the executor's own parameter leaves a promise that never settles, so it is a defect rather than a sleep, and this kit is not the place to say so. A timeout callback that settles the promise _and_ does something else is no sleep either: Because `delay` runs nothing of its own when the timer fires, the substitution would drop that work. A callback wrapping the bare parameter in a function taking nothing is claimed, being the same sleep spelled longer.
 
