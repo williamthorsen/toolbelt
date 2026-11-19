@@ -1,3 +1,4 @@
+export { enclose } from './enclose.ts';
 export { findCloseMatch } from './findCloseMatch.ts';
 export { hashString, type HashStringOptions } from './hashString.ts';
 export {

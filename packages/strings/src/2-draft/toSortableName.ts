@@ -8,7 +8,7 @@ interface Options {
  * Returns the name unchanged if the index is not a split point inside it.
  * @category String
  * @experimental
- * @stage proposed
+ * @stage draft
  */
 export function toSortableName(
   name: string,
