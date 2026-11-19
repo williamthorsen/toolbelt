@@ -1,5 +1,58 @@
 [
   {
+    "version": "9.0.0",
+    "date": "2026-11-19",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Promotes `clamp` and its `ClampBounds` type to the release tier, which moves their import path from `@williamthorsen/toolbelt.numbers/candidate` to `@williamthorsen/toolbelt.numbers` and removes them from the `/candidate` subpath. (#764)",
+            "breaking": true,
+            "migration": "Import `clamp` and `ClampBounds` from `@williamthorsen/toolbelt.numbers` instead of `@williamthorsen/toolbelt.numbers/candidate`, and keep importing `round`, `pickInteger`, and `indexIntoRange` from `/candidate`, where they still live.",
+            "hash": "d42379d8c571e62b2222182c6e2b83ab505bee71",
+            "entry": 1
+          },
+          {
+            "description": "Promotes `safeParseInteger` to the release tier, which moves its import path from `@williamthorsen/toolbelt.numbers/candidate` to `@williamthorsen/toolbelt.numbers` and removes it from the `/candidate` subpath. (#764)",
+            "breaking": true,
+            "migration": "Import `safeParseInteger` from `@williamthorsen/toolbelt.numbers` instead of `@williamthorsen/toolbelt.numbers/candidate`, and keep importing `isIntegerString`, which `safeParseInteger` was previously exported beside, from `/candidate`, where it still lives.",
+            "hash": "d42379d8c571e62b2222182c6e2b83ab505bee71",
+            "entry": 2
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Moves the `blankNonCode` call from every adoption detector into `defineAdoptionKit`, whose detectors now take the `(code, source)` signature declared by the new `AdoptionDetector` type, and removes the five combiner modules (`listArrayIdioms`, `listFilesystemIdioms`, `listMathIdioms`, `listObjectIdioms`, `listStringIdioms`), so that a detector no longer has to blank its own source. (#766)",
+            "hash": "31550b6ce718093a01a1bd47b75d01afabe2f0de",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Narrows the `pragma-suppression.tool.test.ts` of seven adoption kits to the counts of the check that the pragma names and one other check, and drops the fixture files that only the other checks matched, so that a new check or a change to another check's `detail` no longer fails it. (#734)",
+            "hash": "7524c299b34a7b6df59bd476ba15da82c85b5b59",
+            "entry": 1
+          },
+          {
+            "description": "Adds `listSiteLines` to the `./test-utils` export of `packages/adoption` and uses it in the `arrays`, `numbers`, `objects`, and `strings` detector tests in place of their own copies of the same line-listing logic. (#766)",
+            "hash": "31550b6ce718093a01a1bd47b75d01afabe2f0de",
+            "entry": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "8.1.3",
     "date": "2026-11-17",
     "sections": [

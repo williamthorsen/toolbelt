@@ -1,5 +1,71 @@
 [
   {
+    "version": "11.0.0",
+    "date": "2026-11-19",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Promotes `capitalize` to the release tier, which moves its import path from `@williamthorsen/toolbelt.strings/candidate` to `@williamthorsen/toolbelt.strings` and removes it from the `/candidate` subpath. (#763)",
+            "breaking": true,
+            "migration": "Import `capitalize` from `@williamthorsen/toolbelt.strings` instead of `@williamthorsen/toolbelt.strings/candidate`, and keep importing `findCloseMatch`, `hashString`, `toCamelCase`, and `toKebabCase` from `/candidate`, where they still live.",
+            "hash": "2451b74677fbdf68a7657b11e9612c16f8b8a577",
+            "entry": 4
+          },
+          {
+            "description": "Promote clamp and safeParseInteger to the release tier (#764)",
+            "body": "Promotes `clamp`, its `ClampBounds` type, and `safeParseInteger` in `@williamthorsen/toolbelt.numbers` from the candidate tier to the release tier, which moves their import path from the `/candidate` subpath to the package root and removes them from `/candidate`.",
+            "breaking": true,
+            "hash": "d42379d8c571e62b2222182c6e2b83ab505bee71"
+          },
+          {
+            "description": "Promotes `safeTrim` and `toSortableName` from `@williamthorsen/toolbelt.strings/proposed` to `@williamthorsen/toolbelt.strings/draft`, which leaves the `/proposed` subpath without any exports. (#772)",
+            "breaking": true,
+            "migration": "Import `safeTrim` and `toSortableName` from `@williamthorsen/toolbelt.strings/draft` instead of `@williamthorsen/toolbelt.strings/proposed`.",
+            "hash": "a47401293b6e7e51f3de2233cb9cfd0bdc6675be",
+            "entry": 1
+          },
+          {
+            "description": "Promotes `enclose` from `@williamthorsen/toolbelt.strings/draft` to `@williamthorsen/toolbelt.strings/candidate`. (#772)",
+            "breaking": true,
+            "migration": "Import `enclose` from `@williamthorsen/toolbelt.strings/candidate` instead of `@williamthorsen/toolbelt.strings/draft`.",
+            "hash": "a47401293b6e7e51f3de2233cb9cfd0bdc6675be",
+            "entry": 2
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Moves the `blankNonCode` call from every adoption detector into `defineAdoptionKit`, whose detectors now take the `(code, source)` signature declared by the new `AdoptionDetector` type, and removes the five combiner modules (`listArrayIdioms`, `listFilesystemIdioms`, `listMathIdioms`, `listObjectIdioms`, `listStringIdioms`), so that a detector no longer has to blank its own source. (#766)",
+            "hash": "31550b6ce718093a01a1bd47b75d01afabe2f0de",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Narrows the `pragma-suppression.tool.test.ts` of seven adoption kits to the counts of the check that the pragma names and one other check, and drops the fixture files that only the other checks matched, so that a new check or a change to another check's `detail` no longer fails it. (#734)",
+            "hash": "7524c299b34a7b6df59bd476ba15da82c85b5b59",
+            "entry": 1
+          },
+          {
+            "description": "Adds `listSiteLines` to the `./test-utils` export of `packages/adoption` and uses it in the `arrays`, `numbers`, `objects`, and `strings` detector tests in place of their own copies of the same line-listing logic. (#766)",
+            "hash": "31550b6ce718093a01a1bd47b75d01afabe2f0de",
+            "entry": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "10.0.1",
     "date": "2026-11-17",
     "sections": [

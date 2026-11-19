@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.10.0 — 2026-11-19
+
+### 🎉 Features
+
+- 🚨 **Breaking:** Promote testing's captureError, captureStdio, and pointCwdAt to the release tier (#760)
+
+  Promotes `captureError`, `captureStdio`, and `pointCwdAt` in `@williamthorsen/toolbelt.testing` to the release tier, so that they import from the package root and no longer from `/candidate`. The package's ReadyUp kit now names the root in the fix advice that it gives for hand-rolled error and stdio capture.
+
+- 🚨 **Breaking:** Promotes `findPackageRoot` and `resolveSelfVersion` to the release tier, which moves their import path from `@williamthorsen/toolbelt.packaging/candidate` to `@williamthorsen/toolbelt.packaging` and removes them from the `/candidate` subpath. (#762)
+- 🚨 **Breaking:** Moves `findProjectRoot`, `DEFAULT_ROOT_MARKERS`, and the types `FindProjectRootOptions`, `ProjectRoot`, and `ProjectRootSource` from the root entry point of `@williamthorsen/toolbelt.packaging` to its `/candidate` subpath, which marks them as subject to change. (#765)
+
+### ♻️ Refactoring
+
+- Moves the `blankNonCode` call from every adoption detector into `defineAdoptionKit`, whose detectors now take the `(code, source)` signature declared by the new `AdoptionDetector` type, and removes the five combiner modules (`listArrayIdioms`, `listFilesystemIdioms`, `listMathIdioms`, `listObjectIdioms`, `listStringIdioms`), so that a detector no longer has to blank its own source. (#766)
+
 ## 0.9.3 — 2026-11-17
 
 ### ♻️ Refactoring

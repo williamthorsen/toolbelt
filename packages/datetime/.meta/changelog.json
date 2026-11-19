@@ -1,5 +1,31 @@
 [
   {
+    "version": "5.0.0",
+    "date": "2026-11-19",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Moves `Timestamp` and `TimeUnit` from `@williamthorsen/toolbelt.datetime/draft` to `@williamthorsen/toolbelt.datetime/candidate`, which also exports their option and input types `TimestampInput`, `TimestampOptions`, `TimeUnitConversionOptions`, and `TimeUnitLabelOptions`. (#773)",
+            "breaking": true,
+            "migration": "Import `Timestamp` and `TimeUnit` from `@williamthorsen/toolbelt.datetime/candidate` instead of `@williamthorsen/toolbelt.datetime/draft`.",
+            "hash": "fef3f0dee582c97dcd9e16fbf226602e013b14a6",
+            "entry": 1
+          },
+          {
+            "description": "Moves `startTimer` from `@williamthorsen/toolbelt.datetime/proposed` to `@williamthorsen/toolbelt.datetime/draft`. (#773)",
+            "breaking": true,
+            "migration": "Import `startTimer` from `@williamthorsen/toolbelt.datetime/draft` instead of `@williamthorsen/toolbelt.datetime/proposed`.",
+            "hash": "fef3f0dee582c97dcd9e16fbf226602e013b14a6",
+            "entry": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "4.1.9",
     "date": "2026-11-17",
     "sections": [
@@ -14,11 +40,6 @@
     "version": "4.1.8",
     "date": "2026-11-16",
     "sections": [
-      {
-        "title": "📦 Dependencies",
-        "audience": "dev",
-        "items": [{ "description": "Bumped `@williamthorsen/toolbelt.numbers` to 8.1.2" }]
-      },
       {
         "title": "📚 Documentation",
         "audience": "dev",

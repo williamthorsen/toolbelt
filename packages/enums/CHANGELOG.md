@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.0.7 — 2026-11-19
+
+### ♻️ Refactoring
+
+- Moves the `blankNonCode` call from every adoption detector into `defineAdoptionKit`, whose detectors now take the `(code, source)` signature declared by the new `AdoptionDetector` type, and removes the five combiner modules (`listArrayIdioms`, `listFilesystemIdioms`, `listMathIdioms`, `listObjectIdioms`, `listStringIdioms`), so that a detector no longer has to blank its own source. (#766)
+
 ## 4.0.6 — 2026-11-17
 
 ### ♻️ Refactoring

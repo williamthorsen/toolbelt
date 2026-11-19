@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.2.1",
+    "date": "2026-11-19",
+    "sections": [
+      {
+        "title": "📦 Dependencies",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Remove the unused root devDependencies rimraf and zod (#749)",
+            "body": "Removes the root devDependencies `rimraf` and `zod`, which nothing at the root uses. Because `packages/llm` is now the only manifest that declares `zod`, it pins version 4.6.7 directly, and the `zod` entry is dropped from the `catalog:` block in `pnpm-workspace.yaml`.",
+            "hash": "f7472941976c90c23dd586d5bcc39d93d1329a1d"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.2.0",
     "date": "2026-11-18",
     "sections": [

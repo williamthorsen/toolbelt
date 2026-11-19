@@ -1,5 +1,48 @@
 [
   {
+    "version": "0.10.0",
+    "date": "2026-11-19",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Promote testing's captureError, captureStdio, and pointCwdAt to the release tier (#760)",
+            "body": "Promotes `captureError`, `captureStdio`, and `pointCwdAt` in `@williamthorsen/toolbelt.testing` to the release tier, so that they import from the package root and no longer from `/candidate`. The package's ReadyUp kit now names the root in the fix advice that it gives for hand-rolled error and stdio capture.",
+            "breaking": true,
+            "hash": "f0f7606a1a4f75c6add14fde1704180088d86944"
+          },
+          {
+            "description": "Promotes `findPackageRoot` and `resolveSelfVersion` to the release tier, which moves their import path from `@williamthorsen/toolbelt.packaging/candidate` to `@williamthorsen/toolbelt.packaging` and removes them from the `/candidate` subpath. (#762)",
+            "breaking": true,
+            "migration": "Import `findPackageRoot` and `resolveSelfVersion` from `@williamthorsen/toolbelt.packaging` instead of `@williamthorsen/toolbelt.packaging/candidate`, and keep importing `findNearestManifest` from `/candidate`, where it still lives.",
+            "hash": "f919cc1875191eee7b49ce7e7aacfbc930af3ea3",
+            "entry": 1
+          },
+          {
+            "description": "Moves `findProjectRoot`, `DEFAULT_ROOT_MARKERS`, and the types `FindProjectRootOptions`, `ProjectRoot`, and `ProjectRootSource` from the root entry point of `@williamthorsen/toolbelt.packaging` to its `/candidate` subpath, which marks them as subject to change. (#765)",
+            "breaking": true,
+            "migration": "Import `findProjectRoot`, `DEFAULT_ROOT_MARKERS`, `FindProjectRootOptions`, `ProjectRoot`, and `ProjectRootSource` from `@williamthorsen/toolbelt.packaging/candidate` instead of `@williamthorsen/toolbelt.packaging`.",
+            "hash": "e285205b818bdb2317d4608c7483f69d83a14ca8",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Moves the `blankNonCode` call from every adoption detector into `defineAdoptionKit`, whose detectors now take the `(code, source)` signature declared by the new `AdoptionDetector` type, and removes the five combiner modules (`listArrayIdioms`, `listFilesystemIdioms`, `listMathIdioms`, `listObjectIdioms`, `listStringIdioms`), so that a detector no longer has to blank its own source. (#766)",
+            "hash": "31550b6ce718093a01a1bd47b75d01afabe2f0de",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.9.3",
     "date": "2026-11-17",
     "sections": [

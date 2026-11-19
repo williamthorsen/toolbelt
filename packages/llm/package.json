@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.llm",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Runs an LLM job in the page or at an operator's endpoint, on a credential of the user's or the operator's.",
   "keywords": [
     "esm",

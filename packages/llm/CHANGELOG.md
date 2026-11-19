@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.1 — 2026-11-19
+
+### 📦 Dependencies
+
+- Remove the unused root devDependencies rimraf and zod (#749)
+
+  Removes the root devDependencies `rimraf` and `zod`, which nothing at the root uses. Because `packages/llm` is now the only manifest that declares `zod`, it pins version 4.6.7 directly, and the `zod` entry is dropped from the `catalog:` block in `pnpm-workspace.yaml`.
+
 ## 0.2.0 — 2026-11-18
 
 ### 🎉 Features

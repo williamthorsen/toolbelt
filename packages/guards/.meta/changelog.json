@@ -1,5 +1,33 @@
 [
   {
+    "version": "4.2.7",
+    "date": "2026-11-19",
+    "sections": [
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Moves the `blankNonCode` call from every adoption detector into `defineAdoptionKit`, whose detectors now take the `(code, source)` signature declared by the new `AdoptionDetector` type, and removes the five combiner modules (`listArrayIdioms`, `listFilesystemIdioms`, `listMathIdioms`, `listObjectIdioms`, `listStringIdioms`), so that a detector no longer has to blank its own source. (#766)",
+            "hash": "31550b6ce718093a01a1bd47b75d01afabe2f0de",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Narrows the `pragma-suppression.tool.test.ts` of seven adoption kits to the counts of the check that the pragma names and one other check, and drops the fixture files that only the other checks matched, so that a new check or a change to another check's `detail` no longer fails it. (#734)",
+            "hash": "7524c299b34a7b6df59bd476ba15da82c85b5b59",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "4.2.6",
     "date": "2026-11-17",
     "sections": [

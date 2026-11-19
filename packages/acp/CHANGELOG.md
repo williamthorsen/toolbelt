@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.3 — 2026-11-19
+
+### 📦 Dependencies
+
+- Bumped `@williamthorsen/toolbelt.errors` to 0.11.4
+- Bumped `@williamthorsen/toolbelt.guards` to 4.2.7
+
 ## 0.3.2 — 2026-11-17
 
 ### 🧪 Tests

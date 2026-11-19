@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.14.0 — 2026-11-19
+
+### 🎉 Features
+
+- 🚨 **Breaking:** Promote testing's captureError, captureStdio, and pointCwdAt to the release tier (#760)
+
+  Promotes `captureError`, `captureStdio`, and `pointCwdAt` in `@williamthorsen/toolbelt.testing` to the release tier, so that they import from the package root and no longer from `/candidate`. The package's ReadyUp kit now names the root in the fix advice that it gives for hand-rolled error and stdio capture.
+
+- 🚨 **Breaking:** Promote vitest's silenceConsole, disposeOnTestFinished, makeFixture, throwOnProcessExit, and ProcessExitError to the release tier (#761)
+
+  Promotes `silenceConsole`, `disposeOnTestFinished`, `makeFixture`, and `throwOnProcessExit`, with `ProcessExitError`, `ConsoleMethod`, and `MockedProcessExit`, in `@williamthorsen/toolbelt.vitest` to the release tier, which moves their import path from `@williamthorsen/toolbelt.vitest/candidate` to the package root. Updates the fix texts in the package's adoption kit to name the package root as the import path for those functions.
+
+### ♻️ Refactoring
+
+- Moves the `blankNonCode` call from every adoption detector into `defineAdoptionKit`, whose detectors now take the `(code, source)` signature declared by the new `AdoptionDetector` type, and removes the five combiner modules (`listArrayIdioms`, `listFilesystemIdioms`, `listMathIdioms`, `listObjectIdioms`, `listStringIdioms`), so that a detector no longer has to blank its own source. (#766)
+
 ## 0.13.0 — 2026-11-17
 
 ### 🎉 Features

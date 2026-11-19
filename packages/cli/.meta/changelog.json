@@ -1,5 +1,40 @@
 [
   {
+    "version": "0.14.0",
+    "date": "2026-11-19",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Promote testing's captureError, captureStdio, and pointCwdAt to the release tier (#760)",
+            "body": "Promotes `captureError`, `captureStdio`, and `pointCwdAt` in `@williamthorsen/toolbelt.testing` to the release tier, so that they import from the package root and no longer from `/candidate`. The package's ReadyUp kit now names the root in the fix advice that it gives for hand-rolled error and stdio capture.",
+            "breaking": true,
+            "hash": "f0f7606a1a4f75c6add14fde1704180088d86944"
+          },
+          {
+            "description": "Promote vitest's silenceConsole, disposeOnTestFinished, makeFixture, throwOnProcessExit, and ProcessExitError to the release tier (#761)",
+            "body": "Promotes `silenceConsole`, `disposeOnTestFinished`, `makeFixture`, and `throwOnProcessExit`, with `ProcessExitError`, `ConsoleMethod`, and `MockedProcessExit`, in `@williamthorsen/toolbelt.vitest` to the release tier, which moves their import path from `@williamthorsen/toolbelt.vitest/candidate` to the package root. Updates the fix texts in the package's adoption kit to name the package root as the import path for those functions.",
+            "breaking": true,
+            "hash": "85cf81bd280087b8e53ed017237e4b3d33c47bc8"
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Moves the `blankNonCode` call from every adoption detector into `defineAdoptionKit`, whose detectors now take the `(code, source)` signature declared by the new `AdoptionDetector` type, and removes the five combiner modules (`listArrayIdioms`, `listFilesystemIdioms`, `listMathIdioms`, `listObjectIdioms`, `listStringIdioms`), so that a detector no longer has to blank its own source. (#766)",
+            "hash": "31550b6ce718093a01a1bd47b75d01afabe2f0de",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.13.0",
     "date": "2026-11-17",
     "sections": [

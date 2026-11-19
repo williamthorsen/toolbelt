@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 5.0.0 — 2026-11-19
+
+### 🎉 Features
+
+- 🚨 **Breaking:** Moves `Timestamp` and `TimeUnit` from `@williamthorsen/toolbelt.datetime/draft` to `@williamthorsen/toolbelt.datetime/candidate`, which also exports their option and input types `TimestampInput`, `TimestampOptions`, `TimeUnitConversionOptions`, and `TimeUnitLabelOptions`. (#773)
+- 🚨 **Breaking:** Moves `startTimer` from `@williamthorsen/toolbelt.datetime/proposed` to `@williamthorsen/toolbelt.datetime/draft`. (#773)
+
 ## 4.1.9 — 2026-11-17
 
 ### 📦 Dependencies
@@ -9,10 +16,6 @@ All notable changes to this project will be documented in this file.
 - Bumped `@williamthorsen/toolbelt.numbers` to 8.1.3
 
 ## 4.1.8 — 2026-11-16
-
-### 📦 Dependencies
-
-- Bumped `@williamthorsen/toolbelt.numbers` to 8.1.2
 
 ### 📚 Documentation
 

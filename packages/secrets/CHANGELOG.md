@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.8.0 — 2026-11-19
+
+### 🎉 Features
+
+- 🚨 **Breaking:** Promote testing's captureError, captureStdio, and pointCwdAt to the release tier (#760)
+
+  Promotes `captureError`, `captureStdio`, and `pointCwdAt` in `@williamthorsen/toolbelt.testing` to the release tier, so that they import from the package root and no longer from `/candidate`. The package's ReadyUp kit now names the root in the fix advice that it gives for hand-rolled error and stdio capture.
+
+- 🚨 **Breaking:** Promote vitest's silenceConsole, disposeOnTestFinished, makeFixture, throwOnProcessExit, and ProcessExitError to the release tier (#761)
+
+  Promotes `silenceConsole`, `disposeOnTestFinished`, `makeFixture`, and `throwOnProcessExit`, with `ProcessExitError`, `ConsoleMethod`, and `MockedProcessExit`, in `@williamthorsen/toolbelt.vitest` to the release tier, which moves their import path from `@williamthorsen/toolbelt.vitest/candidate` to the package root. Updates the fix texts in the package's adoption kit to name the package root as the import path for those functions.
+
 ## 0.7.3 — 2026-11-17
 
 ### 📦 Dependencies

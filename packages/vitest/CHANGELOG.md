@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.14.0 — 2026-11-19
+
+### 🎉 Features
+
+- 🚨 **Breaking:** Promote testing's captureError, captureStdio, and pointCwdAt to the release tier (#760)
+
+  Promotes `captureError`, `captureStdio`, and `pointCwdAt` in `@williamthorsen/toolbelt.testing` to the release tier, so that they import from the package root and no longer from `/candidate`. The package's ReadyUp kit now names the root in the fix advice that it gives for hand-rolled error and stdio capture.
+
+- 🚨 **Breaking:** Promotes `silenceConsole`, `disposeOnTestFinished`, `makeFixture`, and `throwOnProcessExit`, with `ProcessExitError`, `ConsoleMethod`, and `MockedProcessExit`, to the release tier of `@williamthorsen/toolbelt.vitest`, which exports them from the package root and no longer from `/candidate`. (#761)
+- Updates the fix texts of the `@williamthorsen/toolbelt.vitest` adoption kit to point to the package root for the promoted functions, and to `/candidate` only for `listConsoleLines`. (#761)
+
+### ♻️ Refactoring
+
+- Moves the `blankNonCode` call from every adoption detector into `defineAdoptionKit`, whose detectors now take the `(code, source)` signature declared by the new `AdoptionDetector` type, and removes the five combiner modules (`listArrayIdioms`, `listFilesystemIdioms`, `listMathIdioms`, `listObjectIdioms`, `listStringIdioms`), so that a detector no longer has to blank its own source. (#766)
+
+### 🧪 Tests
+
+- Narrows the `pragma-suppression.tool.test.ts` of seven adoption kits to the counts of the check that the pragma names and one other check, and drops the fixture files that only the other checks matched, so that a new check or a change to another check's `detail` no longer fails it. (#734)
+- Changes the `disposeOnTestFinished` test to check that the error thrown outside a test mentions `onTestFinished`, instead of matching Vitest's full message, and removes the quoted message from the function's JSDoc. (#736)
+
 ## 0.13.8 — 2026-11-17
 
 ### 🐛 Bug fixes

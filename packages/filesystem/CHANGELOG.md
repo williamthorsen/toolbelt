@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.12.0 — 2026-11-19
+
+### 🎉 Features
+
+- 🚨 **Breaking:** Demote findProjectRoot to the candidate tier (#765)
+
+  Moves `findProjectRoot` and its companion exports in `@williamthorsen/toolbelt.packaging` from the release tier to the candidate tier, because a recent breaking change to `findProjectRoot` disqualifies it from the release tier under the repo's maturity criteria. Consumers import it from `@williamthorsen/toolbelt.packaging/candidate`, where its API may still change.
+
+- 🚨 **Breaking:** Moves `loadConfigCascade` and its types `CascadeStopReason`, `ConfigCascade`, `ConfigEntry`, and `LoadConfigCascadeOptions` from the `@williamthorsen/toolbelt.filesystem` root entry point to the `@williamthorsen/toolbelt.filesystem/candidate` subpath, whose API is subject to change. (#774)
+
+### ♻️ Refactoring
+
+- Moves the `blankNonCode` call from every adoption detector into `defineAdoptionKit`, whose detectors now take the `(code, source)` signature declared by the new `AdoptionDetector` type, and removes the five combiner modules (`listArrayIdioms`, `listFilesystemIdioms`, `listMathIdioms`, `listObjectIdioms`, `listStringIdioms`), so that a detector no longer has to blank its own source. (#766)
+
 ## 0.11.4 — 2026-11-17
 
 ### ♻️ Refactoring

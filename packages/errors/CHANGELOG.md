@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.11.4 — 2026-11-19
+
+### ♻️ Refactoring
+
+- Moves the `blankNonCode` call from every adoption detector into `defineAdoptionKit`, whose detectors now take the `(code, source)` signature declared by the new `AdoptionDetector` type, and removes the five combiner modules (`listArrayIdioms`, `listFilesystemIdioms`, `listMathIdioms`, `listObjectIdioms`, `listStringIdioms`), so that a detector no longer has to blank its own source. (#766)
+
+### 🧪 Tests
+
+- Replaces the joined line arrays that build fixture sources in the `errors` readiness tests with `dedent` templates, importing `@williamthorsen/toolbelt.strings` as a new devDependency and removing the `toolbelt.strings/no-joined-line-array` pragmas that cited an import cycle through `testing`. (#725)
+- Narrows the `pragma-suppression.tool.test.ts` of seven adoption kits to the counts of the check that the pragma names and one other check, and drops the fixture files that only the other checks matched, so that a new check or a change to another check's `detail` no longer fails it. (#734)
+
 ## 0.11.3 — 2026-11-17
 
 ### ♻️ Refactoring

@@ -1,5 +1,40 @@
 [
   {
+    "version": "0.9.0",
+    "date": "2026-11-19",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Promotes `captureError`, `captureStdio`, and `pointCwdAt`, with their types, to the release tier of `@williamthorsen/toolbelt.testing`, the stable API exported from the package root, and removes them from the `/candidate` subpath. (#760)",
+            "breaking": true,
+            "migration": "Change each import of `captureError`, `captureStdio`, `pointCwdAt`, or their types from `@williamthorsen/toolbelt.testing/candidate` to `@williamthorsen/toolbelt.testing`, and split an import that also names a candidate export, such as `createTempTree` or `pointArgvAt`, into one statement per subpath.",
+            "hash": "f0f7606a1a4f75c6add14fde1704180088d86944",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Replaces the hand-rolled record guard in `captureWarnings` with `isRecord` from `@williamthorsen/toolbelt.objects` and removes the suppression of `toolbelt.objects/no-hand-rolled-record-guard` that the guard needed. (#735)",
+            "hash": "394ef1e230efe0c5c3b8df29d0fe19c24b40daaf",
+            "entry": 1
+          },
+          {
+            "description": "Moves the `blankNonCode` call from every adoption detector into `defineAdoptionKit`, whose detectors now take the `(code, source)` signature declared by the new `AdoptionDetector` type, and removes the five combiner modules (`listArrayIdioms`, `listFilesystemIdioms`, `listMathIdioms`, `listObjectIdioms`, `listStringIdioms`), so that a detector no longer has to blank its own source. (#766)",
+            "hash": "31550b6ce718093a01a1bd47b75d01afabe2f0de",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.8.7",
     "date": "2026-11-17",
     "sections": [

@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.9.0 — 2026-11-19
+
+### 🎉 Features
+
+- 🚨 **Breaking:** Promotes `captureError`, `captureStdio`, and `pointCwdAt`, with their types, to the release tier of `@williamthorsen/toolbelt.testing`, the stable API exported from the package root, and removes them from the `/candidate` subpath. (#760)
+
+### ♻️ Refactoring
+
+- Replaces the hand-rolled record guard in `captureWarnings` with `isRecord` from `@williamthorsen/toolbelt.objects` and removes the suppression of `toolbelt.objects/no-hand-rolled-record-guard` that the guard needed. (#735)
+- Moves the `blankNonCode` call from every adoption detector into `defineAdoptionKit`, whose detectors now take the `(code, source)` signature declared by the new `AdoptionDetector` type, and removes the five combiner modules (`listArrayIdioms`, `listFilesystemIdioms`, `listMathIdioms`, `listObjectIdioms`, `listStringIdioms`), so that a detector no longer has to blank its own source. (#766)
+
 ## 0.8.7 — 2026-11-17
 
 ### 🐛 Bug fixes

@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## 11.0.0 — 2026-11-19
+
+### 🎉 Features
+
+- 🚨 **Breaking:** Promotes `capitalize` to the release tier, which moves its import path from `@williamthorsen/toolbelt.strings/candidate` to `@williamthorsen/toolbelt.strings` and removes it from the `/candidate` subpath. (#763)
+- 🚨 **Breaking:** Promote clamp and safeParseInteger to the release tier (#764)
+
+  Promotes `clamp`, its `ClampBounds` type, and `safeParseInteger` in `@williamthorsen/toolbelt.numbers` from the candidate tier to the release tier, which moves their import path from the `/candidate` subpath to the package root and removes them from `/candidate`.
+
+- 🚨 **Breaking:** Promotes `safeTrim` and `toSortableName` from `@williamthorsen/toolbelt.strings/proposed` to `@williamthorsen/toolbelt.strings/draft`, which leaves the `/proposed` subpath without any exports. (#772)
+- 🚨 **Breaking:** Promotes `enclose` from `@williamthorsen/toolbelt.strings/draft` to `@williamthorsen/toolbelt.strings/candidate`. (#772)
+
+### ♻️ Refactoring
+
+- Moves the `blankNonCode` call from every adoption detector into `defineAdoptionKit`, whose detectors now take the `(code, source)` signature declared by the new `AdoptionDetector` type, and removes the five combiner modules (`listArrayIdioms`, `listFilesystemIdioms`, `listMathIdioms`, `listObjectIdioms`, `listStringIdioms`), so that a detector no longer has to blank its own source. (#766)
+
+### 🧪 Tests
+
+- Narrows the `pragma-suppression.tool.test.ts` of seven adoption kits to the counts of the check that the pragma names and one other check, and drops the fixture files that only the other checks matched, so that a new check or a change to another check's `detail` no longer fails it. (#734)
+- Adds `listSiteLines` to the `./test-utils` export of `packages/adoption` and uses it in the `arrays`, `numbers`, `objects`, and `strings` detector tests in place of their own copies of the same line-listing logic. (#766)
+
 ## 10.0.1 — 2026-11-17
 
 ### ♻️ Refactoring

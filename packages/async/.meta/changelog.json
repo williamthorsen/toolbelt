@@ -1,5 +1,35 @@
 [
   {
+    "version": "4.0.0",
+    "date": "2026-11-19",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Promotes `delay` to the release tier, which moves its import path from `@williamthorsen/toolbelt.async/candidate` to `@williamthorsen/toolbelt.async` and removes it from the `/candidate` subpath, and exports its `CancellablePromise` return type from the package root. (#763)",
+            "breaking": true,
+            "migration": "Import `delay` from `@williamthorsen/toolbelt.async` instead of `@williamthorsen/toolbelt.async/candidate`, and keep importing `debounce` and `flushMicrotasks` from `/candidate`, where they still live.",
+            "hash": "2451b74677fbdf68a7657b11e9612c16f8b8a577",
+            "entry": 2
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Moves the `blankNonCode` call from every adoption detector into `defineAdoptionKit`, whose detectors now take the `(code, source)` signature declared by the new `AdoptionDetector` type, and removes the five combiner modules (`listArrayIdioms`, `listFilesystemIdioms`, `listMathIdioms`, `listObjectIdioms`, `listStringIdioms`), so that a detector no longer has to blank its own source. (#766)",
+            "hash": "31550b6ce718093a01a1bd47b75d01afabe2f0de",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "3.4.6",
     "date": "2026-11-17",
     "sections": [

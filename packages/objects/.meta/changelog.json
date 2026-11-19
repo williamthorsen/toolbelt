@@ -1,5 +1,58 @@
 [
   {
+    "version": "5.0.0",
+    "date": "2026-11-19",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Promotes `isEqual` to the release tier, which moves its import path from `@williamthorsen/toolbelt.objects/candidate` to `@williamthorsen/toolbelt.objects` and removes it from the `/candidate` subpath. (#763)",
+            "breaking": true,
+            "migration": "Import `isEqual` from `@williamthorsen/toolbelt.objects` instead of `@williamthorsen/toolbelt.objects/candidate`, and keep importing the other candidate helpers, such as `hasOwnProperty`, from `/candidate`, where they still live.",
+            "hash": "2451b74677fbdf68a7657b11e9612c16f8b8a577",
+            "entry": 3
+          },
+          {
+            "description": "Moves `mapToObject` and `sortObjectKeys` from `@williamthorsen/toolbelt.objects/draft` to `@williamthorsen/toolbelt.objects/candidate` and removes both functions from `/draft`. (#775)",
+            "breaking": true,
+            "migration": "Import `mapToObject` and `sortObjectKeys` from `@williamthorsen/toolbelt.objects/candidate` instead of `/draft`, and keep `sortKeys` in a separate import from `/draft`, because it was not moved.",
+            "hash": "f7da864278d3d9dce76445a5385a9f11f9e8a512",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "♻️ Refactoring",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Moves the `blankNonCode` call from every adoption detector into `defineAdoptionKit`, whose detectors now take the `(code, source)` signature declared by the new `AdoptionDetector` type, and removes the five combiner modules (`listArrayIdioms`, `listFilesystemIdioms`, `listMathIdioms`, `listObjectIdioms`, `listStringIdioms`), so that a detector no longer has to blank its own source. (#766)",
+            "hash": "31550b6ce718093a01a1bd47b75d01afabe2f0de",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Narrows the `pragma-suppression.tool.test.ts` of seven adoption kits to the counts of the check that the pragma names and one other check, and drops the fixture files that only the other checks matched, so that a new check or a change to another check's `detail` no longer fails it. (#734)",
+            "hash": "7524c299b34a7b6df59bd476ba15da82c85b5b59",
+            "entry": 1
+          },
+          {
+            "description": "Adds `listSiteLines` to the `./test-utils` export of `packages/adoption` and uses it in the `arrays`, `numbers`, `objects`, and `strings` detector tests in place of their own copies of the same line-listing logic. (#766)",
+            "hash": "31550b6ce718093a01a1bd47b75d01afabe2f0de",
+            "entry": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "4.4.6",
     "date": "2026-11-17",
     "sections": [
