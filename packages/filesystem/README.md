@@ -108,6 +108,8 @@ findDirectoryChainMatch('/home/dev/app/src', ['.git']);
 
 ## `loadConfigCascade`
 
+Candidate tier: Imported from `@williamthorsen/toolbelt.filesystem/candidate` rather than the package root, and subject to change.
+
 ```ts
 loadConfigCascade<TConfig>(options: {
   fileNames: ReadonlyArray<string>;
@@ -121,7 +123,7 @@ loadConfigCascade<TConfig>(options: {
 Loads every config file between `startDir` and `stopAtDir`, nearest first, and passes each default export through `parseConfig`.
 
 ```ts
-import { loadConfigCascade } from '@williamthorsen/toolbelt.filesystem';
+import { loadConfigCascade } from '@williamthorsen/toolbelt.filesystem/candidate';
 
 const { entries } = await loadConfigCascade({
   fileNames: ['stack.config.mjs'],
