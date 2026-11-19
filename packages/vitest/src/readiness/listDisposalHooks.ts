@@ -1,4 +1,4 @@
-import { blankNonCode, getLineAtOffset, PARENTHESES, readBalancedGroup } from '@williamthorsen/toolbelt.adoption';
+import { getLineAtOffset, PARENTHESES, readBalancedGroup } from '@williamthorsen/toolbelt.adoption';
 
 export interface DisposalHook {
   kind: DisposalHookKind;
@@ -28,8 +28,7 @@ const DISPOSAL = /\[\s*Symbol\s*\.\s*dispose\s*\]\s*\(/;
  *
  * @internal
  */
-export function listDisposalHooks(source: string): DisposalHook[] {
-  const code = blankNonCode(source);
+export function listDisposalHooks(code: string): DisposalHook[] {
   const hooks: DisposalHook[] = [];
 
   for (const match of code.matchAll(HOOK)) {

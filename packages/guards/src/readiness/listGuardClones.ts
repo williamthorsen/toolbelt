@@ -1,9 +1,4 @@
-import {
-  type AdoptionSite,
-  blankNonCode,
-  getLineAtOffset,
-  listFunctionBodies,
-} from '@williamthorsen/toolbelt.adoption';
+import { type AdoptionSite, getLineAtOffset, listFunctionBodies } from '@williamthorsen/toolbelt.adoption';
 
 import { type AssertionCloneKind, findAssertionClone } from './findAssertionClone.ts';
 import { findPredicateClone, type PredicateCloneKind } from './findPredicateClone.ts';
@@ -18,15 +13,12 @@ export type GuardCloneKind = AssertionCloneKind | PredicateCloneKind;
  * entire body, and the value tested has to be the function's own first parameter. A function testing anything
  * else is a domain helper that the published guard could not replace, and reporting it would be noise.
  *
- * The source is blanked before the bodies are read, so a guard written in a comment or a string is invisible
- * here. Because blanking preserves every offset, a reported line still names the same line in the source, and
- * the predicate detector can read its compared tag from the unblanked source.
+ * Takes the code blanked by the kit assembler, so a guard written in a comment or a string is not one, and the
+ * predicate detector reads its compared tag from the source beneath.
  *
  * @internal
  */
-export function listGuardClones(source: string): Array<AdoptionSite<GuardCloneKind>> {
-  const code = blankNonCode(source);
-
+export function listGuardClones(code: string, source: string): Array<AdoptionSite<GuardCloneKind>> {
   return listFunctionBodies(code).flatMap((fn) => {
     const parameter = fn.firstParameter;
     if (parameter === undefined) return [];

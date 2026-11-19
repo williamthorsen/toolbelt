@@ -1,3 +1,4 @@
+import { listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
@@ -38,17 +39,17 @@ const DECLINED = [
 
 describe(listSleepSites, () => {
   it('claims every spelling of a bare sleep', () => {
-    const unclaimed = CLAIMED.filter((source) => listSleepSites(source).length !== 1);
+    const unclaimed = CLAIMED.filter((source) => listSourceSites([listSleepSites], source).length !== 1);
 
     expect(unclaimed).toStrictEqual([]);
   });
 
   it('reports the kind that the kit checks against', () => {
-    expect(listSleepSites(CLAIMED[0] ?? '')).toStrictEqual([{ kind: 'hand-rolled-sleep', line: 1 }]);
+    expect(listSourceSites([listSleepSites], CLAIMED[0] ?? '')).toStrictEqual([{ kind: 'hand-rolled-sleep', line: 1 }]);
   });
 
   it('declines a promise that sets a timer and does something else besides', () => {
-    const claimed = DECLINED.filter((source) => listSleepSites(source).length > 0);
+    const claimed = DECLINED.filter((source) => listSourceSites([listSleepSites], source).length > 0);
 
     expect(claimed).toStrictEqual([]);
   });
@@ -56,13 +57,13 @@ describe(listSleepSites, () => {
   it('names the line that contains the construction', () => {
     const source = ['const before = 1;', '', 'await new Promise((resolve) => setTimeout(resolve, 50));'].join('\n');
 
-    expect(listSleepSites(source)).toStrictEqual([{ kind: 'hand-rolled-sleep', line: 3 }]);
+    expect(listSourceSites([listSleepSites], source)).toStrictEqual([{ kind: 'hand-rolled-sleep', line: 3 }]);
   });
 
   it('spans a construction that a formatter broke across lines', () => {
     const source = ['await new Promise((resolve) =>', '  setTimeout(resolve, 50),', ');'].join('\n');
 
-    expect(listSleepSites(source)).toStrictEqual([{ kind: 'hand-rolled-sleep', line: 1 }]);
+    expect(listSourceSites([listSleepSites], source)).toStrictEqual([{ kind: 'hand-rolled-sleep', line: 1 }]);
   });
 
   it('reports each of several sleeps in one source', () => {
@@ -71,14 +72,18 @@ describe(listSleepSites, () => {
       await new Promise((resolve) => setTimeout(resolve, 20));
     `;
 
-    expect(listSleepSites(source).map((site) => site.line)).toStrictEqual([1, 2]);
+    expect(listSourceSites([listSleepSites], source).map((site) => site.line)).toStrictEqual([1, 2]);
   });
 
   it('does not claim the idiom written in a comment', () => {
-    expect(listSleepSites('// await new Promise((resolve) => setTimeout(resolve, 50));')).toStrictEqual([]);
+    expect(
+      listSourceSites([listSleepSites], '// await new Promise((resolve) => setTimeout(resolve, 50));'),
+    ).toStrictEqual([]);
   });
 
   it('does not claim the idiom written in a string', () => {
-    expect(listSleepSites("const sample = 'new Promise((resolve) => setTimeout(resolve, 50))';")).toStrictEqual([]);
+    expect(
+      listSourceSites([listSleepSites], "const sample = 'new Promise((resolve) => setTimeout(resolve, 50))';"),
+    ).toStrictEqual([]);
   });
 });

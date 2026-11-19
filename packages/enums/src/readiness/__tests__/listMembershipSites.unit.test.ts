@@ -1,3 +1,4 @@
+import { listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
@@ -36,17 +37,19 @@ const DECLINED = [
 
 describe(listMembershipSites, () => {
   it('claims every spelling of a search of the values', () => {
-    const unclaimed = CLAIMED.filter((source) => listMembershipSites(source).length !== 1);
+    const unclaimed = CLAIMED.filter((source) => listSourceSites([listMembershipSites], source).length !== 1);
 
     expect(unclaimed).toStrictEqual([]);
   });
 
   it('reports the kind that the kit checks against', () => {
-    expect(listMembershipSites(CLAIMED[0] ?? '')).toStrictEqual([{ kind: 'values-includes', line: 1 }]);
+    expect(listSourceSites([listMembershipSites], CLAIMED[0] ?? '')).toStrictEqual([
+      { kind: 'values-includes', line: 1 },
+    ]);
   });
 
   it('declines code that reads the values without searching them, or searches something else', () => {
-    const claimed = DECLINED.filter((source) => listMembershipSites(source).length > 0);
+    const claimed = DECLINED.filter((source) => listSourceSites([listMembershipSites], source).length > 0);
 
     expect(claimed).toStrictEqual([]);
   });
@@ -54,14 +57,17 @@ describe(listMembershipSites, () => {
   it('names the line that holds the values call', () => {
     const source = ['const before = 1;', '', 'const known = Object.values(Color).includes(value);'].join('\n');
 
-    expect(listMembershipSites(source)).toStrictEqual([{ kind: 'values-includes', line: 3 }]);
+    expect(listSourceSites([listMembershipSites], source)).toStrictEqual([{ kind: 'values-includes', line: 3 }]);
   });
 
   it('spans a test that a formatter broke across lines, at the line of the values call', () => {
     const direct = ['const known = Object.values(Color)', '  .includes(value);'].join('\n');
     const asserted = ['const known = (', '  Object.values(Color) as string[]', ').includes(value);'].join('\n');
 
-    expect([...listMembershipSites(direct), ...listMembershipSites(asserted)]).toStrictEqual([
+    expect([
+      ...listSourceSites([listMembershipSites], direct),
+      ...listSourceSites([listMembershipSites], asserted),
+    ]).toStrictEqual([
       { kind: 'values-includes', line: 1 },
       { kind: 'values-includes', line: 2 },
     ]);
@@ -70,7 +76,7 @@ describe(listMembershipSites, () => {
   it('declines a call argument that a formatter moved onto its own line', () => {
     const source = ['const known = wrap(', '  Object.values(Color) as string[],', ').includes(value);'].join('\n');
 
-    expect(listMembershipSites(source)).toStrictEqual([]);
+    expect(listSourceSites([listMembershipSites], source)).toStrictEqual([]);
   });
 
   it('reports each of several tests in one source', () => {
@@ -79,14 +85,18 @@ describe(listMembershipSites, () => {
       const second = Object.values(Shade).includes(value);
     `;
 
-    expect(listMembershipSites(source).map((site) => site.line)).toStrictEqual([1, 2]);
+    expect(listSourceSites([listMembershipSites], source).map((site) => site.line)).toStrictEqual([1, 2]);
   });
 
   it('does not claim the idiom written in a comment', () => {
-    expect(listMembershipSites('// const known = Object.values(Color).includes(value);')).toStrictEqual([]);
+    expect(
+      listSourceSites([listMembershipSites], '// const known = Object.values(Color).includes(value);'),
+    ).toStrictEqual([]);
   });
 
   it('does not claim the idiom written in a string', () => {
-    expect(listMembershipSites("const sample = 'Object.values(Color).includes(value)';")).toStrictEqual([]);
+    expect(
+      listSourceSites([listMembershipSites], "const sample = 'Object.values(Color).includes(value)';"),
+    ).toStrictEqual([]);
   });
 });

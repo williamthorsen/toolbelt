@@ -14,14 +14,16 @@
 import { defineAdoptionKit, isAdoptableSource } from '@williamthorsen/toolbelt.adoption';
 
 import { ADOPTED_EXPORTS } from '../../src/readiness/adoptedExports.ts';
-import { listObjectIdioms } from '../../src/readiness/listObjectIdioms.ts';
+import { listOwnPropertyCallSites } from '../../src/readiness/listOwnPropertyCallSites.ts';
+import { listRecordSites } from '../../src/readiness/listRecordSites.ts';
+import { listStringifyCompareSites } from '../../src/readiness/listStringifyCompareSites.ts';
 
 const PACKAGE_NAME = '@williamthorsen/toolbelt.objects';
 const README_URL = 'https://github.com/williamthorsen/toolbelt/tree/main/packages/objects#readme';
 
 export default defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
-  detectors: [listObjectIdioms],
+  detectors: [listOwnPropertyCallSites, listRecordSites, listStringifyCompareSites],
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: 'the project contains no JavaScript or TypeScript sources outside the exempt paths',
   packageName: PACKAGE_NAME,

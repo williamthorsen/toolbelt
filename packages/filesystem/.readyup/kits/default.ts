@@ -18,7 +18,8 @@
 import { defineAdoptionKit, isAdoptableSource } from '@williamthorsen/toolbelt.adoption';
 
 import { ADOPTED_EXPORTS } from '../../src/readiness/adoptedExports.ts';
-import { listFilesystemIdioms } from '../../src/readiness/listFilesystemIdioms.ts';
+import { listAtomicWriteSites } from '../../src/readiness/listAtomicWriteSites.ts';
+import { listChainWalkSites } from '../../src/readiness/listChainWalkSites.ts';
 
 const PACKAGE_NAME = '@williamthorsen/toolbelt.filesystem';
 const PACKAGING_README_URL = 'https://github.com/williamthorsen/toolbelt/tree/main/packages/packaging#readme';
@@ -26,7 +27,7 @@ const README_URL = 'https://github.com/williamthorsen/toolbelt/tree/main/package
 
 export default defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
-  detectors: [listFilesystemIdioms],
+  detectors: [listAtomicWriteSites, listChainWalkSites],
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: 'the project contains no JavaScript or TypeScript sources outside the exempt paths',
   packageName: PACKAGE_NAME,

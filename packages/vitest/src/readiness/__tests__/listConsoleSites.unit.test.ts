@@ -1,3 +1,4 @@
+import { listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
@@ -5,44 +6,44 @@ import { listConsoleSites } from '../listConsoleSites.ts';
 
 describe(listConsoleSites, () => {
   it('reports nothing for a file holding no console idiom', () => {
-    expect(listConsoleSites("it('works', () => {});")).toStrictEqual([]);
+    expect(listSourceSites([listConsoleSites], "it('works', () => {});")).toStrictEqual([]);
   });
 
   describe('the spy anchor', () => {
     it('names a hand-rolled silence', () => {
       const source = `vi.spyOn(console, 'warn').mockImplementation(() => {});`;
 
-      expect(listConsoleSites(source)).toStrictEqual([{ kind: 'console-silence', line: 1 }]);
+      expect(listSourceSites([listConsoleSites], source)).toStrictEqual([{ kind: 'console-silence', line: 1 }]);
     });
 
     it('names a lossy capture', () => {
       const source = `vi.spyOn(console, 'error').mockImplementation((message) => { lines.push(message); });`;
 
-      expect(listConsoleSites(source)).toStrictEqual([{ kind: 'console-capture-lossy', line: 1 }]);
+      expect(listSourceSites([listConsoleSites], source)).toStrictEqual([{ kind: 'console-capture-lossy', line: 1 }]);
     });
 
     it('names a capture keeping every argument', () => {
       const source = `vi.spyOn(console, 'log').mockImplementation((...args) => { lines.push(args); });`;
 
-      expect(listConsoleSites(source)).toStrictEqual([{ kind: 'console-capture', line: 1 }]);
+      expect(listSourceSites([listConsoleSites], source)).toStrictEqual([{ kind: 'console-capture', line: 1 }]);
     });
 
     it('names a spy with no implementation', () => {
       const source = `vi.spyOn(console, 'debug');`;
 
-      expect(listConsoleSites(source)).toStrictEqual([{ kind: 'console-unclassified', line: 1 }]);
+      expect(listSourceSites([listConsoleSites], source)).toStrictEqual([{ kind: 'console-unclassified', line: 1 }]);
     });
 
     it('matches the spy however it is spaced or quoted', () => {
       const source = `vi.spyOn( console , "info" ).mockImplementation(() => {});`;
 
-      expect(listConsoleSites(source)).toStrictEqual([{ kind: 'console-silence', line: 1 }]);
+      expect(listSourceSites([listConsoleSites], source)).toStrictEqual([{ kind: 'console-silence', line: 1 }]);
     });
 
     it('declines a method for which the package has no advice', () => {
       const source = `vi.spyOn(console, 'table').mockImplementation(() => {});`;
 
-      expect(listConsoleSites(source)).toStrictEqual([]);
+      expect(listSourceSites([listConsoleSites], source)).toStrictEqual([]);
     });
 
     it('reports every spy in a file', () => {
@@ -51,7 +52,7 @@ describe(listConsoleSites, () => {
         vi.spyOn(console, 'warn').mockImplementation((message) => { lines.push(message); });
       `;
 
-      expect(listConsoleSites(source).map((site) => site.kind)).toStrictEqual([
+      expect(listSourceSites([listConsoleSites], source).map((site) => site.kind)).toStrictEqual([
         'console-silence',
         'console-capture-lossy',
       ]);
@@ -66,7 +67,7 @@ describe(listConsoleSites, () => {
         expect(spy.mock.calls).toHaveLength(1);
       `;
 
-      expect(listConsoleSites(source)).toStrictEqual([
+      expect(listSourceSites([listConsoleSites], source)).toStrictEqual([
         { kind: 'console-silence', line: 1 },
         { kind: 'console-calls-read', line: 3 },
       ]);
@@ -78,7 +79,7 @@ describe(listConsoleSites, () => {
         expect(spy.mock.lastCall).toStrictEqual(['deprecated']);
       `;
 
-      expect(listConsoleSites(source)).toStrictEqual([
+      expect(listSourceSites([listConsoleSites], source)).toStrictEqual([
         { kind: 'console-unclassified', line: 1 },
         { kind: 'console-calls-read', line: 2 },
       ]);
@@ -90,7 +91,7 @@ describe(listConsoleSites, () => {
         expect(silent.warn.mock.calls).toHaveLength(1);
       `;
 
-      expect(listConsoleSites(source)).toStrictEqual([{ kind: 'console-calls-read', line: 2 }]);
+      expect(listSourceSites([listConsoleSites], source)).toStrictEqual([{ kind: 'console-calls-read', line: 2 }]);
     });
 
     it('resolves a binding broken across lines by a formatter', () => {
@@ -100,7 +101,7 @@ describe(listConsoleSites, () => {
         expect(spy.mock.calls).toHaveLength(1);
       `;
 
-      expect(listConsoleSites(source)).toStrictEqual([
+      expect(listSourceSites([listConsoleSites], source)).toStrictEqual([
         { kind: 'console-silence', line: 2 },
         { kind: 'console-calls-read', line: 3 },
       ]);
@@ -115,7 +116,7 @@ describe(listConsoleSites, () => {
         it('warns', () => { expect(spy.mock.calls).toHaveLength(1); });
       `;
 
-      expect(listConsoleSites(source)).toStrictEqual([
+      expect(listSourceSites([listConsoleSites], source)).toStrictEqual([
         { kind: 'console-silence', line: 3 },
         { kind: 'console-calls-read', line: 5 },
       ]);
@@ -127,7 +128,7 @@ describe(listConsoleSites, () => {
         expect(spy.mock.calls).toHaveLength(1);
       `;
 
-      expect(listConsoleSites(source)).toStrictEqual([
+      expect(listSourceSites([listConsoleSites], source)).toStrictEqual([
         { kind: 'console-silence', line: 1 },
         { kind: 'console-calls-read', line: 2 },
       ]);
@@ -139,7 +140,7 @@ describe(listConsoleSites, () => {
         expect(spy.mock.calls).toHaveLength(1);
       `;
 
-      expect(listConsoleSites(source)).toStrictEqual([{ kind: 'console-silence', line: 1 }]);
+      expect(listSourceSites([listConsoleSites], source)).toStrictEqual([{ kind: 'console-silence', line: 1 }]);
     });
 
     it('declines a read of a spy that is not a console spy', () => {
@@ -148,7 +149,7 @@ describe(listConsoleSites, () => {
         expect(existsSyncSpy.mock.calls).toHaveLength(2);
       `;
 
-      expect(listConsoleSites(source)).toStrictEqual([]);
+      expect(listSourceSites([listConsoleSites], source)).toStrictEqual([]);
     });
 
     it('declines a member read whose owner is not a silenceConsole result', () => {
@@ -157,7 +158,7 @@ describe(listConsoleSites, () => {
         expect(mocks.error.mock.calls).toHaveLength(1);
       `;
 
-      expect(listConsoleSites(source)).toStrictEqual([]);
+      expect(listSourceSites([listConsoleSites], source)).toStrictEqual([]);
     });
 
     it('declines a read of a spy on a method for which the package has no advice', () => {
@@ -166,7 +167,7 @@ describe(listConsoleSites, () => {
         expect(spy.mock.calls).toHaveLength(1);
       `;
 
-      expect(listConsoleSites(source)).toStrictEqual([]);
+      expect(listSourceSites([listConsoleSites], source)).toStrictEqual([]);
     });
   });
 
@@ -177,7 +178,7 @@ describe(listConsoleSites, () => {
       vi.spyOn(console, 'error').mockImplementation(() => {});
     `;
 
-    expect(listConsoleSites(source)).toStrictEqual([
+    expect(listSourceSites([listConsoleSites], source)).toStrictEqual([
       { kind: 'console-calls-read', line: 2 },
       { kind: 'console-silence', line: 3 },
     ]);
@@ -192,7 +193,7 @@ describe(listConsoleSites, () => {
       "const pattern = /vi.spyOn(console, 'error')/;\n",
     ];
 
-    expect(sources.map(listConsoleSites)).toStrictEqual(sources.map(() => []));
+    expect(sources.map((source) => listSourceSites([listConsoleSites], source))).toStrictEqual(sources.map(() => []));
   });
 
   it('finds no read in a comment about one', () => {
@@ -201,6 +202,6 @@ describe(listConsoleSites, () => {
       // Read spy.mock.calls to assert on what was written.
     `;
 
-    expect(listConsoleSites(source)).toStrictEqual([{ kind: 'console-silence', line: 1 }]);
+    expect(listSourceSites([listConsoleSites], source)).toStrictEqual([{ kind: 'console-silence', line: 1 }]);
   });
 });

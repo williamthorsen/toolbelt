@@ -1,0 +1,100 @@
+import { listSiteLines } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { describe, expect, it } from 'vitest';
+
+import { listLayoutBreakingTemplateSites } from '../listLayoutBreakingTemplateSites.ts';
+
+describe(listLayoutBreakingTemplateSites, () => {
+  it('claims usage text that drops to column 0 inside a call, at the line on which it opens', () => {
+    const source = 'function help() {\n  console.info(`Usage: tool <command>\nCommands:\n  init  Set up\n`);\n}\n';
+
+    expect(listSiteLines(listLayoutBreakingTemplateSites, source)).toStrictEqual([2]);
+  });
+
+  it('claims markup whose closing tag drops to column 0', () => {
+    const source = 'function render() {\n  return `\n    <div>\n      <p>${text}</p>\n</div>`;\n}\n';
+
+    expect(listSiteLines(listLayoutBreakingTemplateSites, source)).toStrictEqual([2]);
+  });
+
+  it('claims a template whose text opens a line with an interpolation at column 0', () => {
+    expect(
+      listSiteLines(listLayoutBreakingTemplateSites, 'function f() {\n  return `\n${heading}\n    detail\n  `;\n}\n'),
+    ).toStrictEqual([2]);
+  });
+
+  it('claims text indented with spaces beneath a line indented with a tab', () => {
+    expect(
+      listSiteLines(listLayoutBreakingTemplateSites, 'function f() {\n\treturn `\n    first\n    second\n\t`;\n}\n'),
+    ).toStrictEqual([2]);
+  });
+
+  it('declines a template opened at column 0', () => {
+    expect(
+      listSiteLines(listLayoutBreakingTemplateSites, 'export const HELP = `\nUsage: tool <command>\n`;\n'),
+    ).toStrictEqual([]);
+  });
+
+  it('declines a template whose text keeps the indentation of the line on which it opens', () => {
+    expect(
+      listSiteLines(
+        listLayoutBreakingTemplateSites,
+        'function f() {\n  const text = `\n    first\n    second\n  `;\n}\n',
+      ),
+    ).toStrictEqual([]);
+  });
+
+  it('declines a template written on one line', () => {
+    expect(
+      listSiteLines(listLayoutBreakingTemplateSites, 'function f() {\n  const text = `first`;\n}\n'),
+    ).toStrictEqual([]);
+  });
+
+  it('declines a template containing nothing but its closing line', () => {
+    expect(listSiteLines(listLayoutBreakingTemplateSites, 'function f() {\n  const text = `\n`;\n}\n')).toStrictEqual(
+      [],
+    );
+  });
+
+  it.each([
+    ['String.raw', 'String.raw'],
+    ['an existing dedent', 'dedent'],
+  ])('declines a template tagged with %s', (_label, tag) => {
+    expect(
+      listSiteLines(listLayoutBreakingTemplateSites, `function f() {\n  const text = ${tag}\`\nfirst\n\`;\n}\n`),
+    ).toStrictEqual([]);
+  });
+
+  it.each([['toMatchInlineSnapshot'], ['toThrowErrorMatchingInlineSnapshot']])(
+    'declines the argument of %s, whose indentation Vitest manages',
+    (matcher) => {
+      expect(
+        listSiteLines(
+          listLayoutBreakingTemplateSites,
+          `it('works', () => {\n  expect(value).${matcher}(\`\nfirst\n\`);\n});\n`,
+        ),
+      ).toStrictEqual([]);
+    },
+  );
+
+  // A line that begins inside an interpolation is laid out as code, whatever the text around it.
+  it('declines a consistently indented template containing a multi-line interpolation', () => {
+    const source = 'function f() {\n  const text = `\n    first ${format(\nvalue,\n)}\n    second\n  `;\n}\n';
+
+    expect(listSiteLines(listLayoutBreakingTemplateSites, source)).toStrictEqual([]);
+  });
+
+  it('declines a consistently indented template with Windows line endings', () => {
+    expect(
+      listSiteLines(
+        listLayoutBreakingTemplateSites,
+        'function f() {\r\n  const text = `\r\n    first\r\n  `;\r\n}\r\n',
+      ),
+    ).toStrictEqual([]);
+  });
+
+  it('declines a template written in a comment', () => {
+    expect(
+      listSiteLines(listLayoutBreakingTemplateSites, 'function f() {\n  // const text = `\nfirst\n`;\n}\n'),
+    ).toStrictEqual([]);
+  });
+});

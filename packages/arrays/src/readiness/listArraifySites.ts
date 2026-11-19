@@ -1,0 +1,44 @@
+import { type AdoptionSite, getLineAtOffset } from '@williamthorsen/toolbelt.adoption';
+
+// The subject is captured once and matched again in both branches, which makes the ternary a wrap
+// rather than a choice between two unrelated values. `\s*` is at every joint because the expression has no
+// fixed-width span to bound and a formatter may wrap it at any of them. Each bare backreference has a
+// trailing lookahead, so that a branch reading `xs` or `x.tail` is not mistaken for the subject `x`.
+const SUBJECT = String.raw`(?<subject>[\w$]+(?:\.[\w$]+)*)`;
+const SUBJECT_AGAIN = String.raw`\k<subject>(?![\w$.])`;
+const WRAPPED = String.raw`\[\s*\k<subject>\s*\]`;
+const PASSED_THROUGH = String.raw`(?:${SUBJECT_AGAIN}|\[\s*\.\.\.\s*\k<subject>\s*\])`;
+const IS_ARRAY_CALL = String.raw`Array\s*\.\s*isArray\s*\(\s*${SUBJECT}\s*\)`;
+
+const ARRAIFY_TERNARY = new RegExp(
+  String.raw`(?<![\w$.])${IS_ARRAY_CALL}\s*\?\s*${PASSED_THROUGH}\s*:\s*${WRAPPED}`,
+  'g',
+);
+const NEGATED_ARRAIFY_TERNARY = new RegExp(
+  String.raw`(?<![\w$.])!\s*${IS_ARRAY_CALL}\s*\?\s*${WRAPPED}\s*:\s*${PASSED_THROUGH}`,
+  'g',
+);
+
+/**
+ * Lists every hand-rolled array wrap in a source file.
+ *
+ * Takes the code blanked by the kit assembler, so a ternary written in a comment or a literal is not one.
+ *
+ * Both polarities are claimed, and in each the array branch may pass the value through or spread it into a new
+ * array. The spread is the one form from which the substitution is exact; the other two return the value
+ * itself, which is the limit named by the kit's advice.
+ *
+ * Each polarity is matched in a pass of its own, which leaves the lines out of order; they are sorted before
+ * they are returned.
+ *
+ * @internal
+ */
+export function listArraifySites(code: string): Array<AdoptionSite<'arraify-inline'>> {
+  return [ARRAIFY_TERNARY, NEGATED_ARRAIFY_TERNARY]
+    .flatMap((pattern) => code.matchAll(pattern).toArray())
+    .map((match): AdoptionSite<'arraify-inline'> => ({
+      kind: 'arraify-inline',
+      line: getLineAtOffset(code, match.index),
+    }))
+    .toSorted((a, b) => a.line - b.line);
+}

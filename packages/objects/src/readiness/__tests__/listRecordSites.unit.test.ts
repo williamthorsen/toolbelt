@@ -1,0 +1,151 @@
+import { listSiteLines } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { dedent } from '@williamthorsen/toolbelt.strings';
+import { describe, expect, it } from 'vitest';
+
+import { listRecordSites } from '../listRecordSites.ts';
+
+describe(listRecordSites, () => {
+  it('claims the conjunction alone, which isRecordOrArray replaces', () => {
+    expect(listSiteLines(listRecordSites, "const ok = typeof value === 'object' && value !== null;\n")).toStrictEqual([
+      1,
+    ]);
+  });
+
+  it('claims the conjunction closing with the array exclusion, which isRecord replaces', () => {
+    const source = "const ok = typeof value === 'object' && value !== null && !Array.isArray(value);\n";
+
+    expect(listSiteLines(listRecordSites, source)).toStrictEqual([1]);
+  });
+
+  it('claims the reversed operand order', () => {
+    expect(listSiteLines(listRecordSites, "const ok = value !== null && typeof value === 'object';\n")).toStrictEqual([
+      1,
+    ]);
+  });
+
+  it('claims the reversed order closing with the array exclusion', () => {
+    const source = "const ok = value !== null && typeof value === 'object' && !Array.isArray(value);\n";
+
+    expect(listSiteLines(listRecordSites, source)).toStrictEqual([1]);
+  });
+
+  // `typeof` yields 'undefined' for an absent value, so the loose test excludes exactly what the strict one does.
+  it('claims a loose null test', () => {
+    expect(listSiteLines(listRecordSites, "const ok = typeof value === 'object' && value != null;\n")).toStrictEqual([
+      1,
+    ]);
+  });
+
+  it('claims a double-quoted tag', () => {
+    expect(listSiteLines(listRecordSites, 'const ok = typeof value === "object" && value !== null;\n')).toStrictEqual([
+      1,
+    ]);
+  });
+
+  it('claims a subject reached through a member expression', () => {
+    expect(
+      listSiteLines(listRecordSites, "const ok = typeof this.value === 'object' && this.value !== null;\n"),
+    ).toStrictEqual([1]);
+  });
+
+  it('claims a conjunction broken across lines by a formatter, at the line on which it opens', () => {
+    const source = "const ok =\n  typeof value === 'object' &&\n  value !== null &&\n  !Array.isArray(value);\n";
+
+    expect(listSiteLines(listRecordSites, source)).toStrictEqual([2]);
+  });
+
+  // The idiom is still an exact substitution when an earlier operand precedes it.
+  it('claims the idiom as the tail of a longer conjunction', () => {
+    expect(
+      listSiteLines(listRecordSites, "const ok = ready && typeof value === 'object' && value !== null;\n"),
+    ).toStrictEqual([1]);
+  });
+
+  it('claims a negated group', () => {
+    expect(
+      listSiteLines(listRecordSites, "const no = !(typeof value === 'object' && value !== null);\n"),
+    ).toStrictEqual([1]);
+  });
+
+  it('claims a conjunction followed by a disjunction, which ends it', () => {
+    expect(
+      listSiteLines(listRecordSites, "const ok = typeof value === 'object' && value !== null || fallback;\n"),
+    ).toStrictEqual([1]);
+  });
+
+  it('claims each of several guards in one source', () => {
+    const source = dedent`
+      const a = typeof x === 'object' && x !== null;
+      const b = typeof y === 'object' && y !== null && !Array.isArray(y);
+
+    `;
+
+    expect(listSiteLines(listRecordSites, source)).toStrictEqual([1, 2]);
+  });
+
+  // Adoption at these sites is a rewrite rather than a substitution, which is the noise excluded by the boundary.
+  it('declines a conjunction continuing into a property probe', () => {
+    expect(
+      listSiteLines(listRecordSites, "const ok = typeof err === 'object' && err !== null && 'code' in err;\n"),
+    ).toStrictEqual([]);
+  });
+
+  // Each operand order is matched by a pattern of its own, so a tail edit to one leaves the other unguarded.
+  it('declines a reversed-order conjunction continuing into a property probe', () => {
+    expect(
+      listSiteLines(listRecordSites, "const ok = err !== null && typeof err === 'object' && 'code' in err;\n"),
+    ).toStrictEqual([]);
+  });
+
+  it('declines a reversed-order conjunction continuing past the array exclusion', () => {
+    const source = "const ok = v !== null && typeof v === 'object' && !Array.isArray(v) && 'lanes' in v;\n";
+
+    expect(listSiteLines(listRecordSites, source)).toStrictEqual([]);
+  });
+
+  it('declines a conjunction continuing past the array exclusion', () => {
+    const source = "const ok = typeof v === 'object' && v !== null && !Array.isArray(v) && 'lanes' in v;\n";
+
+    expect(listSiteLines(listRecordSites, source)).toStrictEqual([]);
+  });
+
+  it('declines a conjunction whose continuation a formatter wrapped', () => {
+    const source = "const ok =\n  typeof err === 'object' &&\n  err !== null &&\n  'code' in err;\n";
+
+    expect(listSiteLines(listRecordSites, source)).toStrictEqual([]);
+  });
+
+  it('declines a conjunction whose two operands test different subjects', () => {
+    expect(listSiteLines(listRecordSites, "const ok = typeof value === 'object' && other !== null;\n")).toStrictEqual(
+      [],
+    );
+  });
+
+  it('declines an array exclusion naming a different subject', () => {
+    const source = "const ok = typeof value === 'object' && value !== null && !Array.isArray(other);\n";
+
+    expect(listSiteLines(listRecordSites, source)).toStrictEqual([]);
+  });
+
+  it('declines a test against another type tag', () => {
+    expect(listSiteLines(listRecordSites, "const ok = typeof value === 'function' && value !== null;\n")).toStrictEqual(
+      [],
+    );
+  });
+
+  it('declines a null test that the source does not pair with a type test', () => {
+    expect(listSiteLines(listRecordSites, 'const ok = value !== null && value !== undefined;\n')).toStrictEqual([]);
+  });
+
+  it('declines the idiom written in a comment', () => {
+    expect(
+      listSiteLines(listRecordSites, "// typeof value === 'object' && value !== null\nconst ok = true;\n"),
+    ).toStrictEqual([]);
+  });
+
+  it('declines the idiom written in a string literal', () => {
+    expect(
+      listSiteLines(listRecordSites, 'const advice = "typeof value === \'object\' && value !== null";\n'),
+    ).toStrictEqual([]);
+  });
+});

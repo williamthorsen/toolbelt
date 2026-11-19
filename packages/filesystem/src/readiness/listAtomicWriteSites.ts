@@ -35,8 +35,7 @@ interface RenameClaim {
  * Lists every hand-rolled atomic write in a source, which is a function body that writes a path stored in a binding
  * and renames that same binding.
  *
- * Takes the blanked code produced by `listFilesystemIdioms`, which blanks comments and literals, so a write inside
- * one does not count.
+ * Takes the code blanked by the kit assembler, so a write inside a comment or a literal does not count.
  *
  * The finding requires the pairing: A write alone, a rename alone, and a rename of a path that the body copied
  * rather than wrote each leave the body unreported. A body with two pairings is reported twice, since each rename

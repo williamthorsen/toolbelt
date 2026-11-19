@@ -14,14 +14,17 @@
 import { defineAdoptionKit, isAdoptableSource, isAdoptableSourceOrTest } from '@williamthorsen/toolbelt.adoption';
 
 import { ADOPTED_EXPORTS } from '../../src/readiness/adoptedExports.ts';
-import { listStringIdioms } from '../../src/readiness/listStringIdioms.ts';
+import { listCapitalizeSites } from '../../src/readiness/listCapitalizeSites.ts';
+import { listJoinedLineArraySites } from '../../src/readiness/listJoinedLineArraySites.ts';
+import { listLayoutBreakingTemplateSites } from '../../src/readiness/listLayoutBreakingTemplateSites.ts';
+import { listPluralizeSites } from '../../src/readiness/listPluralizeSites.ts';
 
 const PACKAGE_NAME = '@williamthorsen/toolbelt.strings';
 const README_URL = 'https://github.com/williamthorsen/toolbelt/tree/main/packages/strings#readme';
 
 export default defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
-  detectors: [listStringIdioms],
+  detectors: [listCapitalizeSites, listJoinedLineArraySites, listLayoutBreakingTemplateSites, listPluralizeSites],
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: 'the project contains no JavaScript or TypeScript sources outside the exempt paths',
   packageName: PACKAGE_NAME,

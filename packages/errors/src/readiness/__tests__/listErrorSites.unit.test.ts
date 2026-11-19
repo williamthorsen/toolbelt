@@ -1,3 +1,4 @@
+import { listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
@@ -5,7 +6,7 @@ import { type ErrorSiteKind, listErrorSites } from '../listErrorSites.ts';
 
 /** Names the kind of every site in a source, on which each case asserts. */
 function listKinds(source: string): ErrorSiteKind[] {
-  return listErrorSites(source).map((site) => site.kind);
+  return listSourceSites([listErrorSites], source).map((site) => site.kind);
 }
 
 describe(listErrorSites, () => {
@@ -72,7 +73,9 @@ describe(listErrorSites, () => {
       }
     `;
 
-    expect(listErrorSites(source)).toStrictEqual([{ kind: 'describe-clone', line: 2, symbol: 'describeError' }]);
+    expect(listSourceSites([listErrorSites], source)).toStrictEqual([
+      { kind: 'describe-clone', line: 2, symbol: 'describeError' },
+    ]);
   });
 
   it('names a three-arm description helper as a clone', () => {
@@ -88,7 +91,9 @@ describe(listErrorSites, () => {
       }
     `;
 
-    expect(listErrorSites(source)).toStrictEqual([{ kind: 'describe-clone', line: 2, symbol: 'toPanelMessage' }]);
+    expect(listSourceSites([listErrorSites], source)).toStrictEqual([
+      { kind: 'describe-clone', line: 2, symbol: 'toPanelMessage' },
+    ]);
   });
 
   it('leaves a function that composes rather than describes to the per-site classification', () => {
@@ -109,7 +114,7 @@ describe(listErrorSites, () => {
       '\n',
     );
 
-    expect(listErrorSites(source)).toStrictEqual([{ kind: 'describe-inline', line: 3 }]);
+    expect(listSourceSites([listErrorSites], source)).toStrictEqual([{ kind: 'describe-inline', line: 3 }]);
   });
 
   it('reports every site in a file', () => {
@@ -128,7 +133,7 @@ describe(listErrorSites, () => {
       if (error.code === 'ENOENT') return;
     `;
 
-    expect(listErrorSites(source)).toStrictEqual([
+    expect(listSourceSites([listErrorSites], source)).toStrictEqual([
       { kind: 'narrow', line: 1 },
       { kind: 'missing-path-partial', line: 2 },
     ]);
@@ -153,7 +158,9 @@ describe(listErrorSites, () => {
       }
     `;
 
-    expect(listErrorSites(source)).toStrictEqual([{ kind: 'missing-path-clone', line: 1, symbol: 'isAbsent' }]);
+    expect(listSourceSites([listErrorSites], source)).toStrictEqual([
+      { kind: 'missing-path-clone', line: 1, symbol: 'isAbsent' },
+    ]);
   });
 
   it('keeps an instanceof Error that a statement ended by a line break separates from the missing-path test', () => {
@@ -192,7 +199,7 @@ describe(listErrorSites, () => {
   });
 
   it('finds no site in a source that never tests for an Error', () => {
-    expect(listErrorSites('export const answer = 42;')).toStrictEqual([]);
+    expect(listSourceSites([listErrorSites], 'export const answer = 42;')).toStrictEqual([]);
   });
 
   it('finds no site in prose about the operator', () => {
@@ -204,7 +211,7 @@ describe(listErrorSites, () => {
       String.raw`const pattern = /\binstanceof Error\b/g;` + '\n',
     ];
 
-    expect(sources.map(listErrorSites)).toStrictEqual(sources.map(() => []));
+    expect(sources.map((source) => listSourceSites([listErrorSites], source))).toStrictEqual(sources.map(() => []));
   });
 
   it('reports a site that the prose beside it never obscures', () => {
@@ -213,6 +220,6 @@ describe(listErrorSites, () => {
       const message = error instanceof Error ? error.message : String(error);
     `;
 
-    expect(listErrorSites(source)).toStrictEqual([{ kind: 'describe-inline', line: 2 }]);
+    expect(listSourceSites([listErrorSites], source)).toStrictEqual([{ kind: 'describe-inline', line: 2 }]);
   });
 });

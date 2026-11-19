@@ -31,6 +31,15 @@ import {
   countPackageUsage,
   readTrackedSources
 } from "readyup/check-utils";
+
+// ../adoption/src/kits/listSourceSites.ts
+import { blankNonCode } from "readyup/check-utils";
+function listSourceSites(detectors, source) {
+  const code = blankNonCode(source);
+  return detectors.flatMap((detect) => detect(code, source)).toSorted((a, b) => a.line - b.line);
+}
+
+// ../adoption/src/kits/defineAdoptionKit.ts
 var NOT_A_REPO = "the project is not a git working tree, and these checks read the files that git tracks";
 var NOTHING_TO_REPORT = { findings: [] };
 function defineAdoptionKit(spec) {
@@ -72,7 +81,7 @@ function defineAdoptionKit(spec) {
     return {
       adoptedCount: countPackageUsage(sources, adoptedPackage),
       findings: sources.flatMap(
-        (source) => spec.detectors.flatMap((detect) => detect(source.text)).toSorted((a, b) => a.line - b.line).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
+        (source) => listSourceSites(spec.detectors, source.text).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
       ),
       sources
     };
@@ -149,7 +158,7 @@ function readLiteral(source, span) {
 }
 
 // ../adoption/src/mod.ts
-import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
+import { blankNonCode as blankNonCode2, getLineAtOffset } from "readyup/check-utils";
 
 // src/readiness/adoptedExports.ts
 var ADOPTED_EXPORTS = [
@@ -173,13 +182,16 @@ var ADOPTED_EXPORTS = [
   "sortObjectKeys"
 ];
 
-// src/readiness/listOwnPropertyCallLines.ts
+// src/readiness/listOwnPropertyCallSites.ts
 var OWN_PROPERTY_CALL = /(?<![\w$.])Object\s*\.\s*prototype\s*\.\s*hasOwnProperty\s*\.\s*call\s*\(/g;
-function listOwnPropertyCallLines(source) {
-  return source.matchAll(OWN_PROPERTY_CALL).map((match) => getLineAtOffset(source, match.index)).toArray();
+function listOwnPropertyCallSites(code) {
+  return code.matchAll(OWN_PROPERTY_CALL).map((match) => ({
+    kind: "own-property-call",
+    line: getLineAtOffset(code, match.index)
+  })).toArray();
 }
 
-// src/readiness/listRecordLines.ts
+// src/readiness/listRecordSites.ts
 var OBJECT_TAG = "object";
 var SUBJECT = String.raw`[\w$]+(?:\.[\w$]+)*`;
 var QUOTED = String.raw`(?<literal>(?<quote>['"])[^'"\n]*\k<quote>)`;
@@ -192,41 +204,27 @@ var NULL_FIRST = new RegExp(
   String.raw`(?<![\w$.])(?<subject>${SUBJECT})\s*!==?\s*null\s*&&\s*typeof\s+\k<subject>\s*===\s*${QUOTED}${TAIL}`,
   "dg"
 );
-function listRecordLines(code, source) {
+function listRecordSites(code, source) {
   const lines = [TYPEOF_FIRST, NULL_FIRST].flatMap((pattern) => listLinesMatching(pattern, code, source));
-  return [...new Set(lines)].toSorted((a, b) => a - b);
+  return [...new Set(lines)].toSorted((a, b) => a - b).map((line) => ({ kind: "record-inline", line }));
 }
 function listLinesMatching(pattern, code, source) {
   return code.matchAll(pattern).filter((match) => readLiteral(source, match.indices?.groups?.["literal"]) === OBJECT_TAG).map((match) => getLineAtOffset(code, match.index)).toArray();
 }
 
-// src/readiness/listStringifyCompareLines.ts
+// src/readiness/listStringifyCompareSites.ts
 var STRINGIFY_CALL = /(?<![\w$.])JSON\s*\.\s*stringify\s*\(/g;
 var COMPARED_TO_STRINGIFY = /\s*[!=]==?\s*JSON\s*\.\s*stringify\s*\(/y;
-function listStringifyCompareLines(source) {
-  const lines = [];
-  for (const match of source.matchAll(STRINGIFY_CALL)) {
-    const argumentList = readBalancedGroup(source, match.index, PARENTHESES);
+function listStringifyCompareSites(code) {
+  const sites = [];
+  for (const match of code.matchAll(STRINGIFY_CALL)) {
+    const argumentList = readBalancedGroup(code, match.index, PARENTHESES);
     if (argumentList === void 0) continue;
     COMPARED_TO_STRINGIFY.lastIndex = argumentList.end;
-    if (!COMPARED_TO_STRINGIFY.test(source)) continue;
-    lines.push(getLineAtOffset(source, match.index));
+    if (!COMPARED_TO_STRINGIFY.test(code)) continue;
+    sites.push({ kind: "stringify-compare", line: getLineAtOffset(code, match.index) });
   }
-  return lines;
-}
-
-// src/readiness/listObjectIdioms.ts
-function listObjectIdioms(source) {
-  const code = blankNonCode(source);
-  const sites = [
-    ...toSites("own-property-call", listOwnPropertyCallLines(code)),
-    ...toSites("record-inline", listRecordLines(code, source)),
-    ...toSites("stringify-compare", listStringifyCompareLines(code))
-  ];
-  return sites.toSorted((a, b) => a.line - b.line);
-}
-function toSites(kind, lines) {
-  return lines.map((line) => ({ kind, line }));
+  return sites;
 }
 
 // .readyup/kits/default.ts
@@ -234,7 +232,7 @@ var PACKAGE_NAME = "@williamthorsen/toolbelt.objects";
 var README_URL = "https://github.com/williamthorsen/toolbelt/tree/main/packages/objects#readme";
 var default_default = defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
-  detectors: [listObjectIdioms],
+  detectors: [listOwnPropertyCallSites, listRecordSites, listStringifyCompareSites],
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: "the project contains no JavaScript or TypeScript sources outside the exempt paths",
   packageName: PACKAGE_NAME,

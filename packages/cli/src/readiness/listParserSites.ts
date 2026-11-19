@@ -1,6 +1,5 @@
 import {
   type AdoptionSite,
-  blankNonCode,
   findEnclosingBody,
   type FunctionBody,
   getLineAtOffset,
@@ -30,15 +29,13 @@ const PLATFORM_SPECIFIERS = ['node:util', 'util'];
  * and each function comparing a value against a flag-shaped literal.
  *
  * A function's comparisons report once, at the first of them, so that a parser handling many flags is one site.
- * Comparisons outside every named function report once for the file. The source is blanked before the scan, so an
- * idiom written in a comment or a literal is invisible here, while a compared literal's text is still read from
+ * Comparisons outside every named function report once for the file. The scan reads the code blanked by the kit
+ * assembler, so an idiom written in a comment or a literal is not one, and reads a compared literal's text from
  * the source beneath.
  *
  * @internal
  */
-export function listParserSites(source: string): Array<AdoptionSite<ParserSiteKind>> {
-  const code = blankNonCode(source);
-
+export function listParserSites(code: string, source: string): Array<AdoptionSite<ParserSiteKind>> {
   return [...listPlatformParseCalls(code, source), ...listFlagScans(code, source)].toSorted(
     (left, right) => left.line - right.line,
   );

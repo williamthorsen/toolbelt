@@ -1,3 +1,4 @@
+import { listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { describe, expect, it } from 'vitest';
 
 import { listGuardClones } from '../listGuardClones.ts';
@@ -261,7 +262,11 @@ describe(listGuardClones, () => {
 
 /** Names each reported clone by its kind, its line, and the function that it names. */
 function summarize(source: string): Array<{ kind: string; line: number; symbol: string | undefined }> {
-  return listGuardClones(source).map((site) => ({ kind: site.kind, line: site.line, symbol: site.symbol }));
+  return listSourceSites([listGuardClones], source).map((site) => ({
+    kind: site.kind,
+    line: site.line,
+    symbol: site.symbol,
+  }));
 }
 
 // endregion | Helpers

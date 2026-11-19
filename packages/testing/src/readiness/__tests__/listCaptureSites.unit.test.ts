@@ -1,3 +1,4 @@
+import { listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
@@ -121,7 +122,9 @@ describe(listCaptureSites, () => {
       }
     `;
 
-    expect(listCaptureSites(source)).toStrictEqual([{ kind: 'hand-rolled-error-capture', line: 4, symbol: 'caught' }]);
+    expect(listSourceSites([listCaptureSites], source)).toStrictEqual([
+      { kind: 'hand-rolled-error-capture', line: 4, symbol: 'caught' },
+    ]);
   });
 
   it('reaches a declaration made outside an enclosing hook', () => {
@@ -138,7 +141,9 @@ describe(listCaptureSites, () => {
       });
     `;
 
-    expect(listCaptureSites(source)).toStrictEqual([{ kind: 'hand-rolled-error-capture', line: 5, symbol: 'thrown' }]);
+    expect(listSourceSites([listCaptureSites], source)).toStrictEqual([
+      { kind: 'hand-rolled-error-capture', line: 5, symbol: 'thrown' },
+    ]);
   });
 
   it('reads a call that the formatter broke across lines, and a catch that casts', () => {
@@ -154,7 +159,9 @@ describe(listCaptureSites, () => {
       }
     `;
 
-    expect(listCaptureSites(source)).toStrictEqual([{ kind: 'hand-rolled-error-capture', line: 3, symbol: 'error' }]);
+    expect(listSourceSites([listCaptureSites], source)).toStrictEqual([
+      { kind: 'hand-rolled-error-capture', line: 3, symbol: 'error' },
+    ]);
   });
 
   it('reads a construction as the single call that it is', () => {
@@ -167,7 +174,9 @@ describe(listCaptureSites, () => {
       }
     `;
 
-    expect(listCaptureSites(source)).toStrictEqual([{ kind: 'hand-rolled-error-capture', line: 2, symbol: 'caught' }]);
+    expect(listSourceSites([listCaptureSites], source)).toStrictEqual([
+      { kind: 'hand-rolled-error-capture', line: 2, symbol: 'caught' },
+    ]);
   });
 
   it('reads a generic call and an optionally-called one as the single calls that they are', () => {
@@ -188,10 +197,10 @@ describe(listCaptureSites, () => {
       '}',
     ];
 
-    expect(listCaptureSites(generic.join('\n'))).toStrictEqual([
+    expect(listSourceSites([listCaptureSites], generic.join('\n'))).toStrictEqual([
       { kind: 'hand-rolled-error-capture', line: 2, symbol: 'caught' },
     ]);
-    expect(listCaptureSites(optional.join('\n'))).toStrictEqual([
+    expect(listSourceSites([listCaptureSites], optional.join('\n'))).toStrictEqual([
       { kind: 'hand-rolled-error-capture', line: 2, symbol: 'caught' },
     ]);
   });
@@ -199,21 +208,23 @@ describe(listCaptureSites, () => {
   it('reports every capture that a file contains', () => {
     const capture = ['let caught: unknown;', 'try {', '  parse(text);', '} catch (error) {', '  caught = error;', '}'];
 
-    expect(listCaptureSites([...capture, ...capture].join('\n'))).toHaveLength(2);
+    expect(listSourceSites([listCaptureSites], [...capture, ...capture].join('\n'))).toHaveLength(2);
   });
 
   it.each(UNCLAIMED)('claims nothing in $label', ({ source }) => {
-    expect(listCaptureSites(source.join('\n'))).toStrictEqual([]);
+    expect(listSourceSites([listCaptureSites], source.join('\n'))).toStrictEqual([]);
   });
 
   it('declines a capture whose test asserts the captured value toBe a literal bound to a const', () => {
     const source = buildAssertedCapture(["const thrown = { code: 'ENOENT' };"], 'expect(caught).toBe(thrown);');
 
-    expect(listCaptureSites(source)).toStrictEqual([]);
+    expect(listSourceSites([listCaptureSites], source)).toStrictEqual([]);
   });
 
   it.each(LITERALS)('declines a capture whose test asserts the captured value toBe the literal %s', (literal) => {
-    expect(listCaptureSites(buildAssertedCapture([], `expect(caught).toBe(${literal});`))).toStrictEqual([]);
+    expect(
+      listSourceSites([listCaptureSites], buildAssertedCapture([], `expect(caught).toBe(${literal});`)),
+    ).toStrictEqual([]);
   });
 
   it('reads a literal through a type annotation, a cast, and an argument that the formatter broke across lines', () => {
@@ -224,15 +235,15 @@ describe(listCaptureSites, () => {
     const cast = buildAssertedCapture(["const thrown = { code: 'ENOENT' } as const;"], 'expect(caught).toBe(thrown);');
     const broken = buildAssertedCapture([], ['expect(caught).toBe(', "  'ENOENT' as unknown,", ');'].join('\n'));
 
-    expect(listCaptureSites(annotated)).toStrictEqual([]);
-    expect(listCaptureSites(cast)).toStrictEqual([]);
-    expect(listCaptureSites(broken)).toStrictEqual([]);
+    expect(listSourceSites([listCaptureSites], annotated)).toStrictEqual([]);
+    expect(listSourceSites([listCaptureSites], cast)).toStrictEqual([]);
+    expect(listSourceSites([listCaptureSites], broken)).toStrictEqual([]);
   });
 
   it.each(STILL_CLAIMED)('claims a capture asserted toBe $label', ({ declarations, expected }) => {
     const source = buildAssertedCapture(declarations, `expect(caught).toBe(${expected});`);
 
-    expect(listCaptureSites(source)).toHaveLength(1);
+    expect(listSourceSites([listCaptureSites], source)).toHaveLength(1);
   });
 
   it('claims a capture whose literal assertion is negated, compares by equality, or names another variable', () => {
@@ -240,9 +251,9 @@ describe(listCaptureSites, () => {
     const equal = buildAssertedCapture([], "expect(caught).toStrictEqual({ code: 'ENOENT' });");
     const other = buildAssertedCapture([], "expect(caughtCode).toBe('ENOENT');");
 
-    expect(listCaptureSites(negated)).toHaveLength(1);
-    expect(listCaptureSites(equal)).toHaveLength(1);
-    expect(listCaptureSites(other)).toHaveLength(1);
+    expect(listSourceSites([listCaptureSites], negated)).toHaveLength(1);
+    expect(listSourceSites([listCaptureSites], equal)).toHaveLength(1);
+    expect(listSourceSites([listCaptureSites], other)).toHaveLength(1);
   });
 
   it('claims a capture whose literal assertion is in the following test', () => {
@@ -251,7 +262,9 @@ describe(listCaptureSites, () => {
       buildAssertedCapture([], "expect(caught).toBe('ENOENT');"),
     ].join('\n');
 
-    expect(listCaptureSites(source)).toStrictEqual([{ kind: 'hand-rolled-error-capture', line: 3, symbol: 'caught' }]);
+    expect(listSourceSites([listCaptureSites], source)).toStrictEqual([
+      { kind: 'hand-rolled-error-capture', line: 3, symbol: 'caught' },
+    ]);
   });
 
   it('claims a capture whose variable a later capture reassigns ahead of the literal assertion', () => {
@@ -273,7 +286,9 @@ describe(listCaptureSites, () => {
       });
     `;
 
-    expect(listCaptureSites(source)).toStrictEqual([{ kind: 'hand-rolled-error-capture', line: 3, symbol: 'caught' }]);
+    expect(listSourceSites([listCaptureSites], source)).toStrictEqual([
+      { kind: 'hand-rolled-error-capture', line: 3, symbol: 'caught' },
+    ]);
   });
 });
 

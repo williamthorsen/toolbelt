@@ -7,23 +7,30 @@ import {
   readTrackedSources,
 } from 'readyup/check-utils';
 
+import { listSourceSites } from './listSourceSites.ts';
+
 const NOT_A_REPO = 'the project is not a git working tree, and these checks read the files that git tracks';
 /** What a check reports when the project could not be read. The runner resolves it to a pass that contains nothing. */
 const NOTHING_TO_REPORT: FindingOutcome = { findings: [] };
 
 export type AdoptionCheck<Kind extends string> = AdoptionCheckFields<Kind> & CheckScope;
 
+/**
+ * Lists a source's sites, given the source blanked by `blankNonCode` and the source itself. A detector scans the
+ * code for its anchors, and reads a literal's contents from the source at the same offsets.
+ */
+export type AdoptionDetector<Kind extends string> = (code: string, source: string) => ReadonlyArray<AdoptionSite<Kind>>;
+
 export interface AdoptionKitSpec<Kind extends string> {
   /** `NoInfer` fixes `Kind` to what the detectors produce, so each check's `kinds` is checked against it. */
   checks: ReadonlyArray<AdoptionCheck<NoInfer<Kind>>>;
   description: string;
   /**
-   * The functions that each list a source's sites, merged in line order. Each one blanks the text with
-   * `blankNonCode` before its anchor scan, or an idiom written in a comment or a literal reports as one written in
-   * code. What `countPackageUsage` reads must stay unblanked: It matches the import specifier, which is a string
-   * literal.
+   * The functions that each list a source's sites, merged in line order. The kit blanks each source once and hands
+   * every detector both texts. What `countPackageUsage` reads stays unblanked: It matches the import specifier,
+   * which is a string literal.
    */
-  detectors: ReadonlyArray<(text: string) => ReadonlyArray<AdoptionSite<Kind>>>;
+  detectors: ReadonlyArray<AdoptionDetector<Kind>>;
   /** The package's own callable exports. A call to one of them counts toward adoption. */
   exportNames: readonly string[];
   /**
@@ -109,9 +116,7 @@ export function defineAdoptionKit<Kind extends string>(spec: AdoptionKitSpec<Kin
     return {
       adoptedCount: countPackageUsage(sources, adoptedPackage),
       findings: sources.flatMap((source) =>
-        spec.detectors
-          .flatMap((detect) => detect(source.text))
-          .toSorted((a, b) => a.line - b.line)
+        listSourceSites(spec.detectors, source.text)
           .filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path))
           .map((site) => ({ ...site, path: source.path })),
       ),

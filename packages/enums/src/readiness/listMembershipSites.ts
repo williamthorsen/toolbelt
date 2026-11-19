@@ -1,10 +1,4 @@
-import {
-  type AdoptionSite,
-  blankNonCode,
-  getLineAtOffset,
-  PARENTHESES,
-  readBalancedGroup,
-} from '@williamthorsen/toolbelt.adoption';
+import { type AdoptionSite, getLineAtOffset, PARENTHESES, readBalancedGroup } from '@williamthorsen/toolbelt.adoption';
 
 export type EnumIdiomKind = 'values-includes';
 
@@ -24,13 +18,11 @@ const WHITESPACE = /\s/;
  * Lists every hand-rolled enum membership test in a source file, which is a search of an enum's values for a
  * candidate value.
  *
- * The source is blanked before the anchor scan reads it, so a test written in a comment or a literal is
- * invisible here. Because blanking preserves every offset, a reported line matches the source.
+ * Takes the code blanked by the kit assembler, so a test written in a comment or a literal is not one.
  *
  * @internal
  */
-export function listMembershipSites(source: string): Array<AdoptionSite<EnumIdiomKind>> {
-  const code = blankNonCode(source);
+export function listMembershipSites(code: string): Array<AdoptionSite<EnumIdiomKind>> {
   const sites: Array<AdoptionSite<EnumIdiomKind>> = [];
 
   for (const match of code.matchAll(VALUES_CALL)) {

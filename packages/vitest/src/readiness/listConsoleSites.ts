@@ -1,4 +1,4 @@
-import { blankNonCode, getLineAtOffset, readAnchoredWindow } from '@williamthorsen/toolbelt.adoption';
+import { getLineAtOffset, readAnchoredWindow } from '@williamthorsen/toolbelt.adoption';
 
 import { classifyConsoleMock, type ConsoleMockKind } from './classifyConsoleMock.ts';
 
@@ -39,8 +39,7 @@ const WINDOW = { lookahead: 0, lookbehind: 64 };
  *
  * @internal
  */
-export function listConsoleSites(source: string): ConsoleSite[] {
-  const code = blankNonCode(source);
+export function listConsoleSites(code: string, source: string): ConsoleSite[] {
   const sites: ConsoleSite[] = [];
   const spyBindings = new Set<string>();
 

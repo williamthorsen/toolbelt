@@ -29,12 +29,17 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "c656f59e",
+          "hash": "efb9d144",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "5fb19315",
+          "hash": "5eef3153",
+          "kind": "module",
+          "path": "../../adoption/src/kits/listSourceSites.ts"
+        },
+        {
+          "hash": "2ca035e9",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -114,7 +119,7 @@
           "path": "../../adoption/src/portable/readPathParts.ts"
         },
         {
-          "hash": "0b77b2b5",
+          "hash": "2b44601c",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -124,32 +129,27 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "fffd3f01",
+          "hash": "e931d53d",
           "kind": "module",
-          "path": "../src/readiness/listObjectIdioms.ts"
+          "path": "../src/readiness/listOwnPropertyCallSites.ts"
         },
         {
-          "hash": "f2c8ebc0",
+          "hash": "fa52e311",
           "kind": "module",
-          "path": "../src/readiness/listOwnPropertyCallLines.ts"
+          "path": "../src/readiness/listRecordSites.ts"
         },
         {
-          "hash": "b68af0fe",
+          "hash": "e51ffe6b",
           "kind": "module",
-          "path": "../src/readiness/listRecordLines.ts"
-        },
-        {
-          "hash": "8ece88d9",
-          "kind": "module",
-          "path": "../src/readiness/listStringifyCompareLines.ts"
+          "path": "../src/readiness/listStringifyCompareSites.ts"
         }
       ],
       "name": "default",
       "path": "kits/default.js",
       "readyupVersion": "0.47.1",
       "source": "kits/default.ts",
-      "sourceHash": "0b77b2b5",
-      "targetHash": "699669a9"
+      "sourceHash": "2b44601c",
+      "targetHash": "8a47e496"
     }
   ]
 }

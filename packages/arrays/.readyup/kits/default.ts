@@ -14,14 +14,16 @@
 import { defineAdoptionKit, isAdoptableSource } from '@williamthorsen/toolbelt.adoption';
 
 import { ADOPTED_EXPORTS } from '../../src/readiness/adoptedExports.ts';
-import { listArrayIdioms } from '../../src/readiness/listArrayIdioms.ts';
+import { listArraifySites } from '../../src/readiness/listArraifySites.ts';
+import { listBiasedShuffleSites } from '../../src/readiness/listBiasedShuffleSites.ts';
+import { listRandomItemSites } from '../../src/readiness/listRandomItemSites.ts';
 
 const PACKAGE_NAME = '@williamthorsen/toolbelt.arrays';
 const README_URL = 'https://github.com/williamthorsen/toolbelt/tree/main/packages/arrays#readme';
 
 export default defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
-  detectors: [listArrayIdioms],
+  detectors: [listArraifySites, listBiasedShuffleSites, listRandomItemSites],
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: 'the project contains no JavaScript or TypeScript sources outside the exempt paths',
   packageName: PACKAGE_NAME,

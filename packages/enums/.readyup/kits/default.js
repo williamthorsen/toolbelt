@@ -31,6 +31,15 @@ import {
   countPackageUsage,
   readTrackedSources
 } from "readyup/check-utils";
+
+// ../adoption/src/kits/listSourceSites.ts
+import { blankNonCode } from "readyup/check-utils";
+function listSourceSites(detectors, source) {
+  const code = blankNonCode(source);
+  return detectors.flatMap((detect) => detect(code, source)).toSorted((a, b) => a.line - b.line);
+}
+
+// ../adoption/src/kits/defineAdoptionKit.ts
 var NOT_A_REPO = "the project is not a git working tree, and these checks read the files that git tracks";
 var NOTHING_TO_REPORT = { findings: [] };
 function defineAdoptionKit(spec) {
@@ -72,7 +81,7 @@ function defineAdoptionKit(spec) {
     return {
       adoptedCount: countPackageUsage(sources, adoptedPackage),
       findings: sources.flatMap(
-        (source) => spec.detectors.flatMap((detect) => detect(source.text)).toSorted((a, b) => a.line - b.line).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
+        (source) => listSourceSites(spec.detectors, source.text).filter((site) => (pathFiltersByKind.get(site.kind) ?? spec.pathFilter)(source.path)).map((site) => ({ ...site, path: source.path }))
       ),
       sources
     };
@@ -142,7 +151,7 @@ function readBalancedGroup(source, from, delimiters) {
 }
 
 // ../adoption/src/mod.ts
-import { blankNonCode, getLineAtOffset } from "readyup/check-utils";
+import { blankNonCode as blankNonCode2, getLineAtOffset } from "readyup/check-utils";
 
 // src/readiness/adoptedExports.ts
 var ADOPTED_EXPORTS = [
@@ -160,8 +169,7 @@ var MEMBER_CHAIN = /^\s*[A-Za-z_$][\w$]*(?:\s*\.\s*[A-Za-z_$][\w$]*)*\s*$/;
 var TYPE_ASSERTION = /\s*as\s+\S/y;
 var VALUES_CALL = /(?<![\w$.])Object\s*\.\s*values\s*(?:<[^<>()]*>\s*)?\(/g;
 var WHITESPACE = /\s/;
-function listMembershipSites(source) {
-  const code = blankNonCode(source);
+function listMembershipSites(code) {
   const sites = [];
   for (const match of code.matchAll(VALUES_CALL)) {
     const argument = readBalancedGroup(code, match.index + match[0].length - 1, PARENTHESES);

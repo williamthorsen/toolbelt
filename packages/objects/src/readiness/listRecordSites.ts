@@ -1,0 +1,55 @@
+import { type AdoptionSite, getLineAtOffset, readLiteral } from '@williamthorsen/toolbelt.adoption';
+
+const OBJECT_TAG = 'object';
+const SUBJECT = String.raw`[\w$]+(?:\.[\w$]+)*`;
+// A quoted literal of any content: Blanking replaces a literal's characters with spaces, so what it contains is
+// read from the unblanked source instead.
+const QUOTED = String.raw`(?<literal>(?<quote>['"])[^'"\n]*\k<quote>)`;
+// The array exclusion omitted by the shorter form, then the guard that ends the claim where the conjunction
+// does.
+// Both lengths are tried, and a further operand fails the lookahead at each. A site continuing into a
+// property probe goes unclaimed.
+const TAIL = String.raw`(?:\s*&&\s*!\s*Array\s*\.\s*isArray\s*\(\s*\k<subject>\s*\))?(?!\s*&&)`;
+// The pattern has `\s*` at every joint, so a conjunction wrapped by a formatter matches just as one left on a
+// line does.
+const TYPEOF_FIRST = new RegExp(
+  String.raw`(?<![\w$.])typeof\s+(?<subject>${SUBJECT})\s*===\s*${QUOTED}\s*&&\s*\k<subject>\s*!==?\s*null${TAIL}`,
+  'dg',
+);
+const NULL_FIRST = new RegExp(
+  String.raw`(?<![\w$.])(?<subject>${SUBJECT})\s*!==?\s*null\s*&&\s*typeof\s+\k<subject>\s*===\s*${QUOTED}${TAIL}`,
+  'dg',
+);
+
+/**
+ * Lists every hand-rolled record guard in a source file.
+ *
+ * Takes both texts. The conjunction is matched on the blanked code, in which a guard written in a comment is
+ * not one, and the compared literal is then read from the unblanked source at the offset reported by the match:
+ * Blanking replaces a literal's characters with spaces in place, which keeps the two texts aligned while only
+ * the unblanked one still contains the literal's text.
+ *
+ * Both operand orders count, and both lengths: the conjunction alone, which `isRecordOrArray` replaces, and
+ * the same conjunction closing with the array exclusion, which `isRecord` replaces. A conjunction with a
+ * further operand is declined, since adoption there is a rewrite rather than a substitution.
+ *
+ * @internal
+ */
+export function listRecordSites(code: string, source: string): Array<AdoptionSite<'record-inline'>> {
+  const lines = [TYPEOF_FIRST, NULL_FIRST].flatMap((pattern) => listLinesMatching(pattern, code, source));
+
+  return [...new Set(lines)].toSorted((a, b) => a - b).map((line) => ({ kind: 'record-inline', line }));
+}
+
+// region | Helpers
+
+/** Lists the line of every match whose compared literal reads as the object tag in the unblanked source. */
+function listLinesMatching(pattern: RegExp, code: string, source: string): number[] {
+  return code
+    .matchAll(pattern)
+    .filter((match) => readLiteral(source, match.indices?.groups?.['literal']) === OBJECT_TAG)
+    .map((match) => getLineAtOffset(code, match.index))
+    .toArray();
+}
+
+// endregion | Helpers

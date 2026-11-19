@@ -29,12 +29,17 @@
           "path": "../../adoption/src/conventions/site-handoffs.ts"
         },
         {
-          "hash": "c656f59e",
+          "hash": "efb9d144",
           "kind": "module",
           "path": "../../adoption/src/kits/defineAdoptionKit.ts"
         },
         {
-          "hash": "5fb19315",
+          "hash": "5eef3153",
+          "kind": "module",
+          "path": "../../adoption/src/kits/listSourceSites.ts"
+        },
+        {
+          "hash": "2ca035e9",
           "kind": "module",
           "path": "../../adoption/src/mod.ts"
         },
@@ -114,7 +119,7 @@
           "path": "../../adoption/src/portable/readPathParts.ts"
         },
         {
-          "hash": "c7732167",
+          "hash": "64b39b5c",
           "kind": "module",
           "path": "kits/default.ts"
         },
@@ -124,32 +129,27 @@
           "path": "../src/readiness/adoptedExports.ts"
         },
         {
-          "hash": "c0520c3b",
+          "hash": "dd652d6a",
           "kind": "module",
-          "path": "../src/readiness/listArraifyLines.ts"
+          "path": "../src/readiness/listArraifySites.ts"
         },
         {
-          "hash": "8844cb10",
+          "hash": "63e70bfe",
           "kind": "module",
-          "path": "../src/readiness/listArrayIdioms.ts"
+          "path": "../src/readiness/listBiasedShuffleSites.ts"
         },
         {
-          "hash": "1a677266",
+          "hash": "fb43a564",
           "kind": "module",
-          "path": "../src/readiness/listBiasedShuffleLines.ts"
-        },
-        {
-          "hash": "bc104f88",
-          "kind": "module",
-          "path": "../src/readiness/listRandomItemLines.ts"
+          "path": "../src/readiness/listRandomItemSites.ts"
         }
       ],
       "name": "default",
       "path": "kits/default.js",
       "readyupVersion": "0.47.1",
       "source": "kits/default.ts",
-      "sourceHash": "c7732167",
-      "targetHash": "aff67f88"
+      "sourceHash": "64b39b5c",
+      "targetHash": "aae131c5"
     }
   ]
 }

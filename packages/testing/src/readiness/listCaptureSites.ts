@@ -1,6 +1,5 @@
 import {
   type AdoptionSite,
-  blankNonCode,
   BRACES,
   condenseWhitespace,
   findEnclosingBlockEnd,
@@ -51,13 +50,11 @@ const TRY_ANCHOR = /\btry\s*\{/g;
  * variable, is not reported: The call threw something other than an `Error`, on which `captureError` fails the
  * test.
  *
- * Because the source is blanked before the anchor scan reads it, a try written in a comment or a literal is
- * invisible here. Blanking preserves every offset, which keeps each reported line number valid in the source.
+ * Takes the code blanked by the kit assembler, so a try written in a comment or a literal is not one.
  *
  * @internal
  */
-export function listCaptureSites(source: string): Array<AdoptionSite<ErrorCaptureKind>> {
-  const code = blankNonCode(source);
+export function listCaptureSites(code: string): Array<AdoptionSite<ErrorCaptureKind>> {
   const sites: Array<AdoptionSite<ErrorCaptureKind>> = [];
 
   for (const match of code.matchAll(TRY_ANCHOR)) {
