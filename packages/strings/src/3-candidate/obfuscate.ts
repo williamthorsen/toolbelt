@@ -1,4 +1,4 @@
-import { clamp } from '@williamthorsen/toolbelt.numbers/candidate';
+import { clamp } from '@williamthorsen/toolbelt.numbers';
 
 /**
  * Returns a string in which all but an optional number of characters at its extremes are replaced with asterisks.

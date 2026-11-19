@@ -3,8 +3,7 @@
  * A NaN value passes through, but a NaN bound or a min greater than max throws a RangeError.
  *
  * @category Number
- * @experimental
- * @stage candidate
+ * @stage release
  */
 export function clamp(value: number, bounds: ClampBounds): number {
   const { max = Infinity, min = -Infinity } = bounds;
