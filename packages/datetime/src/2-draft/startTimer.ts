@@ -8,7 +8,7 @@
  *
  * @category DateTime
  * @experimental
- * @stage proposed
+ * @stage draft
  */
 export function startTimer(): () => number {
   const startedAt = performance.now();

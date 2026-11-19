@@ -5,7 +5,7 @@ import { TimeUnit } from './TimeUnit.ts';
  *
  * @category DateTime
  * @experimental
- * @stage draft
+ * @stage candidate
  */
 export class Timestamp {
   private _format: TimestampFormatEnum;
