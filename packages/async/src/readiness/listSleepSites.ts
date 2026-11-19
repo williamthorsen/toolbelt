@@ -1,6 +1,5 @@
 import {
   type AdoptionSite,
-  blankNonCode,
   condenseWhitespace,
   getLineAtOffset,
   listTopLevelArguments,
@@ -26,13 +25,11 @@ const TIMEOUT_CALL = /\bsetTimeout\s?\(/;
  * Lists every hand-rolled sleep in a source file, which is a promise whose executor sets a timer and does
  * nothing else.
  *
- * Because the source is blanked before the anchor scan reads it, a construction written in a comment or a literal
- * is invisible here. Blanking preserves every offset, which keeps each reported line number valid in the source.
+ * Takes the code blanked by the kit assembler, so a construction written in a comment or a literal is not one.
  *
  * @internal
  */
-export function listSleepSites(source: string): Array<AdoptionSite<AsyncIdiomKind>> {
-  const code = blankNonCode(source);
+export function listSleepSites(code: string): Array<AdoptionSite<AsyncIdiomKind>> {
   const sites: Array<AdoptionSite<AsyncIdiomKind>> = [];
 
   for (const match of code.matchAll(PROMISE_CONSTRUCTION)) {

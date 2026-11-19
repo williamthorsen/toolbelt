@@ -1,4 +1,4 @@
-import { blankNonCode, getLineAtOffset } from '@williamthorsen/toolbelt.adoption';
+import { getLineAtOffset } from '@williamthorsen/toolbelt.adoption';
 
 import { classifyExitMock, type ExitMockVerdict } from './classifyExitMock.ts';
 
@@ -21,8 +21,7 @@ const SPY = /\bvi\s*\.\s*spyOn\(\s*process\s*,\s*(['"])exit\1\s*\)/g;
  *
  * @internal
  */
-export function listExitMocks(source: string): ExitMock[] {
-  const code = blankNonCode(source);
+export function listExitMocks(code: string, source: string): ExitMock[] {
   const mocks: ExitMock[] = [];
 
   for (const match of source.matchAll(SPY)) {

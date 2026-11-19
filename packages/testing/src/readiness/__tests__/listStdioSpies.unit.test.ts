@@ -1,3 +1,4 @@
+import { listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
@@ -56,7 +57,7 @@ const UNCLAIMED = [
 
 describe(listStdioSpies, () => {
   it('reports nothing for a file containing no spy', () => {
-    expect(listStdioSpies("it('works', () => {});")).toStrictEqual([]);
+    expect(listSourceSites([listStdioSpies], "it('works', () => {});")).toStrictEqual([]);
   });
 
   it('reports a spy on each stream, naming its line', () => {
@@ -67,14 +68,14 @@ describe(listStdioSpies, () => {
       });
     `;
 
-    expect(listStdioSpies(source)).toStrictEqual([
+    expect(listSourceSites([listStdioSpies], source)).toStrictEqual([
       { kind: 'hand-rolled-stdio-capture', line: 2 },
       { kind: 'hand-rolled-stdio-capture', line: 3 },
     ]);
   });
 
   it.each(IMPLEMENTATIONS)('reports a spy with $label', ({ tail }) => {
-    expect(listStdioSpies(`vi.spyOn(process.stdout, 'write')${tail}`)).toStrictEqual([
+    expect(listSourceSites([listStdioSpies], `vi.spyOn(process.stdout, 'write')${tail}`)).toStrictEqual([
       { kind: 'hand-rolled-stdio-capture', line: 1 },
     ]);
   });
@@ -82,17 +83,17 @@ describe(listStdioSpies, () => {
   it('matches the spy however it is spaced or quoted', () => {
     const source = 'vi . spyOn( process . stderr , "write" ).mockReturnValue(true);';
 
-    expect(listStdioSpies(source)).toStrictEqual([{ kind: 'hand-rolled-stdio-capture', line: 1 }]);
+    expect(listSourceSites([listStdioSpies], source)).toStrictEqual([{ kind: 'hand-rolled-stdio-capture', line: 1 }]);
   });
 
   it('reads a spy that the formatter broke across lines', () => {
     const source = ['const spy = vi.spyOn(', '  process.stdout,', "  'write',", ');'].join('\n');
 
-    expect(listStdioSpies(source)).toStrictEqual([{ kind: 'hand-rolled-stdio-capture', line: 1 }]);
+    expect(listSourceSites([listStdioSpies], source)).toStrictEqual([{ kind: 'hand-rolled-stdio-capture', line: 1 }]);
   });
 
   it.each(UNCLAIMED)('claims nothing in $label', ({ source }) => {
-    expect(listStdioSpies(source.join('\n'))).toStrictEqual([]);
+    expect(listSourceSites([listStdioSpies], source.join('\n'))).toStrictEqual([]);
   });
 
   it('finds no spy in prose about one', () => {
@@ -104,6 +105,6 @@ describe(listStdioSpies, () => {
       "const pattern = /vi.spyOn(process.stdout, 'write')/;\n",
     ];
 
-    expect(sources.map(listStdioSpies)).toStrictEqual(sources.map(() => []));
+    expect(sources.map((source) => listSourceSites([listStdioSpies], source))).toStrictEqual(sources.map(() => []));
   });
 });

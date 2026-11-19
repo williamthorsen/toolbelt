@@ -1,4 +1,4 @@
-import { blankNonCode, getLineAtOffset, readAnchoredWindow } from '@williamthorsen/toolbelt.adoption';
+import { getLineAtOffset, readAnchoredWindow } from '@williamthorsen/toolbelt.adoption';
 
 import { classifySite, type SiteKind } from './classifySite.ts';
 import { listDescribeClones } from './listDescribeClones.ts';
@@ -26,14 +26,12 @@ const AND_AHEAD = /\s*&&/y;
  * site claims the `instanceof Error` that guards it in the same way, because the advice for the guard on its own
  * would name the wrong substitution.
  *
- * Because the source is blanked before the anchor scan reads it, an `instanceof Error` written in a comment, a
- * string, or a regular expression is invisible here. Blanking preserves every offset, which keeps each reported
- * line number valid in the source.
+ * Takes the code blanked by the kit assembler, so an `instanceof Error` written in a comment, a string, or a
+ * regular expression is not one. The missing-path scan reads each compared error code from the source beneath.
  *
  * @internal
  */
-export function listErrorSites(source: string): ErrorSite[] {
-  const code = blankNonCode(source);
+export function listErrorSites(code: string, source: string): ErrorSite[] {
   const clones = listDescribeClones(code);
   const missingPathSites = listMissingPathSites(source, code);
   const sites: Array<ErrorSite & { offset: number }> = missingPathSites.map(({ end: _end, start, ...site }) => ({

@@ -1,4 +1,4 @@
-import { type AdoptionSite, blankNonCode, getLineAtOffset } from '@williamthorsen/toolbelt.adoption';
+import { type AdoptionSite, getLineAtOffset } from '@williamthorsen/toolbelt.adoption';
 
 export type StdioSpyKind = 'hand-rolled-stdio-capture';
 
@@ -20,8 +20,7 @@ const SPY = /\bvi\s*\.\s*spyOn\(\s*process\s*\.\s*std(?:err|out)\s*,\s*(['"])wri
  *
  * @internal
  */
-export function listStdioSpies(source: string): Array<AdoptionSite<StdioSpyKind>> {
-  const code = blankNonCode(source);
+export function listStdioSpies(code: string, source: string): Array<AdoptionSite<StdioSpyKind>> {
   const sites: Array<AdoptionSite<StdioSpyKind>> = [];
 
   for (const match of source.matchAll(SPY)) {

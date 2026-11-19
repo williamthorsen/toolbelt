@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { listJsTsSources } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { listJsTsSources, listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { describe, expect, it } from 'vitest';
 
 import { listSleepSites } from '../listSleepSites.ts';
@@ -20,7 +20,9 @@ describe(listSleepSites, () => {
   // that spells one out.
   it('finds nothing in the sources describing what it looks for', () => {
     const findings = listJsTsSources(SWEPT_DIRS).flatMap((file) =>
-      listSleepSites(fs.readFileSync(file, 'utf8')).map((site) => `${path.basename(file)}:${site.line}`),
+      listSourceSites([listSleepSites], fs.readFileSync(file, 'utf8')).map(
+        (site) => `${path.basename(file)}:${site.line}`,
+      ),
     );
 
     expect(findings).toStrictEqual([]);

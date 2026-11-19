@@ -1,3 +1,4 @@
+import { listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
@@ -5,7 +6,7 @@ import { listExitMocks } from '../listExitMocks.ts';
 
 describe(listExitMocks, () => {
   it('reports nothing for a file holding no mock', () => {
-    expect(listExitMocks("it('works', () => {});")).toStrictEqual([]);
+    expect(listSourceSites([listExitMocks], "it('works', () => {});")).toStrictEqual([]);
   });
 
   it('names the line and the sentinel class declared by a clone', () => {
@@ -19,13 +20,15 @@ describe(listExitMocks, () => {
       });
     `;
 
-    expect(listExitMocks(source)).toStrictEqual([{ kind: 'sentinel-clone', line: 4, symbol: 'ExitError' }]);
+    expect(listSourceSites([listExitMocks], source)).toStrictEqual([
+      { kind: 'sentinel-clone', line: 4, symbol: 'ExitError' },
+    ]);
   });
 
   it('matches the spy however it is spaced or quoted', () => {
     const source = `vi.spyOn( process , "exit" ).mockImplementation(() => {});`;
 
-    expect(listExitMocks(source)).toStrictEqual([{ kind: 'non-throwing', line: 1 }]);
+    expect(listSourceSites([listExitMocks], source)).toStrictEqual([{ kind: 'non-throwing', line: 1 }]);
   });
 
   it('reports every mock in a file', () => {
@@ -36,7 +39,10 @@ describe(listExitMocks, () => {
       });
     `;
 
-    expect(listExitMocks(source).map((mock) => mock.kind)).toStrictEqual(['non-throwing', 'throwing']);
+    expect(listSourceSites([listExitMocks], source).map((mock) => mock.kind)).toStrictEqual([
+      'non-throwing',
+      'throwing',
+    ]);
   });
 
   it('finds no mock in prose about one', () => {
@@ -48,7 +54,7 @@ describe(listExitMocks, () => {
       "const pattern = /vi.spyOn(process, 'exit')/;\n",
     ];
 
-    expect(sources.map(listExitMocks)).toStrictEqual(sources.map(() => []));
+    expect(sources.map((source) => listSourceSites([listExitMocks], source))).toStrictEqual(sources.map(() => []));
   });
 
   it('declines a sentinel class that the file names only in a comment', () => {
@@ -59,13 +65,13 @@ describe(listExitMocks, () => {
       });
     `;
 
-    expect(listExitMocks(source)).toStrictEqual([{ kind: 'throwing', line: 2 }]);
+    expect(listSourceSites([listExitMocks], source)).toStrictEqual([{ kind: 'throwing', line: 2 }]);
   });
 
   it('reads a body running past any fixed window', () => {
     const padding = '  // padding padding padding padding padding padding\n'.repeat(9);
     const source = `vi.spyOn(process, 'exit').mockImplementation((code) => {\n${padding}  throw new Error('late');\n});`;
 
-    expect(listExitMocks(source).map((mock) => mock.kind)).toStrictEqual(['throwing']);
+    expect(listSourceSites([listExitMocks], source).map((mock) => mock.kind)).toStrictEqual(['throwing']);
   });
 });

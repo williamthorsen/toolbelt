@@ -1,3 +1,4 @@
+import { listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
@@ -199,25 +200,25 @@ const CHAIN_LOOP = dedent`
 
 describe(listManifestSearchSites, () => {
   it('reports an owning-package walk at the line on which its loop opens', () => {
-    expect([PROBE_IN_HEAD, PROBE_BY_RESOLVE].map((source) => listManifestSearchSites(source))).toStrictEqual([
-      [{ kind: 'manifest-search', line: 4 }],
-      [{ kind: 'manifest-search', line: 3 }],
-    ]);
+    expect(
+      [PROBE_IN_HEAD, PROBE_BY_RESOLVE].map((source) => listSourceSites([listManifestSearchSites], source)),
+    ).toStrictEqual([[{ kind: 'manifest-search', line: 4 }], [{ kind: 'manifest-search', line: 3 }]]);
   });
 
   it('reports a walk probing for a manifest through a constant or a binding declared in its loop', () => {
-    expect([PROBE_BY_CONSTANT, PROBE_BY_BINDING].map((source) => listManifestSearchSites(source))).toStrictEqual([
-      [{ kind: 'manifest-search', line: 6 }],
-      [{ kind: 'manifest-search', line: 2 }],
-    ]);
+    expect(
+      [PROBE_BY_CONSTANT, PROBE_BY_BINDING].map((source) => listSourceSites([listManifestSearchSites], source)),
+    ).toStrictEqual([[{ kind: 'manifest-search', line: 6 }], [{ kind: 'manifest-search', line: 2 }]]);
   });
 
   it('reports a walk probing for a manifest beside a repository marker', () => {
-    expect(listManifestSearchSites(PROBE_BESIDE_MARKER)).toStrictEqual([{ kind: 'manifest-search', line: 3 }]);
+    expect(listSourceSites([listManifestSearchSites], PROBE_BESIDE_MARKER)).toStrictEqual([
+      { kind: 'manifest-search', line: 3 },
+    ]);
   });
 
   it('reports nothing for a walk probing for a repository marker alone', () => {
-    expect(listManifestSearchSites(MARKER_ONLY)).toStrictEqual([]);
+    expect(listSourceSites([listManifestSearchSites], MARKER_ONLY)).toStrictEqual([]);
   });
 
   it('reports nothing for a walk probing for a manifest below the level, written in place or through a binding', () => {
@@ -228,15 +229,15 @@ describe(listManifestSearchSites, () => {
       NAMED_DEPENDENCY_BY_BINDING,
     ];
 
-    expect(sources.map((source) => listManifestSearchSites(source))).toStrictEqual([[], [], [], []]);
+    expect(sources.map((source) => listSourceSites([listManifestSearchSites], source))).toStrictEqual([[], [], [], []]);
   });
 
   it('reports nothing for a read of a manifest outside any loop', () => {
-    expect(listManifestSearchSites(LONE_MANIFEST_READ)).toStrictEqual([]);
+    expect(listSourceSites([listManifestSearchSites], LONE_MANIFEST_READ)).toStrictEqual([]);
   });
 
   it('reports nothing for a loop over a chain that another function lists', () => {
-    expect(listManifestSearchSites(CHAIN_LOOP)).toStrictEqual([]);
+    expect(listSourceSites([listManifestSearchSites], CHAIN_LOOP)).toStrictEqual([]);
   });
 
   it('finds nothing in prose about a manifest search', () => {
@@ -245,6 +246,6 @@ describe(listManifestSearchSites, () => {
       'const fix = "while (!existsSync(path.join(dir, \'package.json\'))) { dir = path.dirname(dir); }";\n',
     ];
 
-    expect(sources.map((source) => listManifestSearchSites(source))).toStrictEqual([[], []]);
+    expect(sources.map((source) => listSourceSites([listManifestSearchSites], source))).toStrictEqual([[], []]);
   });
 });

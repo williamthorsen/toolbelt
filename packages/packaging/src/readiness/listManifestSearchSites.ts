@@ -1,9 +1,4 @@
-import {
-  type AdoptionSite,
-  blankNonCode,
-  isManifestSearch,
-  listDirectoryAscents,
-} from '@williamthorsen/toolbelt.adoption';
+import { type AdoptionSite, isManifestSearch, listDirectoryAscents } from '@williamthorsen/toolbelt.adoption';
 
 export type ManifestSearchKind = 'manifest-search';
 
@@ -15,13 +10,13 @@ export type ManifestSearchKind = 'manifest-search';
  * `toolbelt.filesystem`'s kit declines the same walk. That kit claims a bare ascent and a walk probing root markers
  * alone.
  *
- * The source is blanked before the scan, so a walk written in a comment or a literal is invisible here, while each
- * probed name is still read from the source beneath.
+ * Takes the code blanked by the kit assembler, so a walk written in a comment or a literal is not one, and reads
+ * each probed name from the source beneath.
  *
  * @internal
  */
-export function listManifestSearchSites(source: string): Array<AdoptionSite<ManifestSearchKind>> {
-  return listDirectoryAscents(blankNonCode(source), source)
+export function listManifestSearchSites(code: string, source: string): Array<AdoptionSite<ManifestSearchKind>> {
+  return listDirectoryAscents(code, source)
     .filter(({ probedNames }) => probedNames !== undefined && isManifestSearch(probedNames))
     .map(({ line }): AdoptionSite<ManifestSearchKind> => ({ kind: 'manifest-search', line }));
 }

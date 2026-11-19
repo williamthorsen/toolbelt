@@ -1,3 +1,4 @@
+import { listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
@@ -20,7 +21,7 @@ const DISPATCHER = dedent`
 
 describe(listParserSites, () => {
   it('reports a dispatcher once for its flag comparisons and once for its parseArgs call', () => {
-    expect(listParserSites(DISPATCHER)).toStrictEqual([
+    expect(listSourceSites([listParserSites], DISPATCHER)).toStrictEqual([
       { kind: 'flag-scan', line: 5, symbol: 'dispatch' },
       { kind: 'node-parse-args', line: 7 },
     ]);
@@ -35,7 +36,7 @@ describe(listParserSites, () => {
       ["import util from 'node:util';", 'util.parseArgs({ args })'],
       ["import util, { inspect } from 'util';", 'util . parseArgs({ args })'],
     ])('reports a call through %s', (importLine, call) => {
-      const sites = listParserSites(`${importLine}\n\nconst parsed = ${call};\n`);
+      const sites = listSourceSites([listParserSites], `${importLine}\n\nconst parsed = ${call};\n`);
 
       expect(sites).toStrictEqual([{ kind: 'node-parse-args', line: 3 }]);
     });
@@ -50,7 +51,7 @@ describe(listParserSites, () => {
 
       `;
 
-      expect(listParserSites(source)).toStrictEqual([
+      expect(listSourceSites([listParserSites], source)).toStrictEqual([
         { kind: 'node-parse-args', line: 3 },
         { kind: 'node-parse-args', line: 4 },
       ]);
@@ -59,7 +60,7 @@ describe(listParserSites, () => {
     it('does not report a parseArgs that the source never imports from node:util', () => {
       const source = 'function parseArgs(args) {\n  return args;\n}\nparseArgs([]);\nother.parseArgs([]);\n';
 
-      expect(listParserSites(source)).toStrictEqual([]);
+      expect(listSourceSites([listParserSites], source)).toStrictEqual([]);
     });
 
     it('does not report a type-only import or an import written in a comment or a literal', () => {
@@ -71,7 +72,7 @@ describe(listParserSites, () => {
 
       `;
 
-      expect(listParserSites(source)).toStrictEqual([]);
+      expect(listSourceSites([listParserSites], source)).toStrictEqual([]);
     });
   });
 
@@ -86,13 +87,13 @@ describe(listParserSites, () => {
       "if (process.argv.includes('--verbose')) verbose = true;",
       "const at = args.indexOf('-o');",
     ])('reports %s', (line) => {
-      expect(listParserSites(`${line}\n`)).toStrictEqual([{ kind: 'flag-scan', line: 1 }]);
+      expect(listSourceSites([listParserSites], `${line}\n`)).toStrictEqual([{ kind: 'flag-scan', line: 1 }]);
     });
 
     it.each(["'--'", "'-'", "'---'", "'-12'", "'--9'", "'-ab'", "'help'"])(
       'does not report a comparison against %s',
       (literal) => {
-        expect(listParserSites(`if (arg === ${literal}) stop();\n`)).toStrictEqual([]);
+        expect(listSourceSites([listParserSites], `if (arg === ${literal}) stop();\n`)).toStrictEqual([]);
       },
     );
 
@@ -108,7 +109,7 @@ describe(listParserSites, () => {
 
       `;
 
-      expect(listParserSites(source)).toStrictEqual([
+      expect(listSourceSites([listParserSites], source)).toStrictEqual([
         { kind: 'flag-scan', line: 2, symbol: 'parseRoot' },
         { kind: 'flag-scan', line: 6, symbol: 'parseIssue' },
       ]);
@@ -118,7 +119,7 @@ describe(listParserSites, () => {
       const source =
         "const args = process.argv.slice(2);\nif (args.includes('--help')) help();\nif (args[0] === '-v') verbose();\n";
 
-      expect(listParserSites(source)).toStrictEqual([{ kind: 'flag-scan', line: 2 }]);
+      expect(listSourceSites([listParserSites], source)).toStrictEqual([{ kind: 'flag-scan', line: 2 }]);
     });
 
     it('attributes a comparison to the innermost named function', () => {
@@ -132,13 +133,15 @@ describe(listParserSites, () => {
 
       `;
 
-      expect(listParserSites(source)).toStrictEqual([{ kind: 'flag-scan', line: 3, symbol: 'inner' }]);
+      expect(listSourceSites([listParserSites], source)).toStrictEqual([
+        { kind: 'flag-scan', line: 3, symbol: 'inner' },
+      ]);
     });
 
     it('does not report a comparison written in a comment or a template literal', () => {
       const source = "// if (arg === '--help') help();\nconst doc = `if (arg === '--help') help();`;\n";
 
-      expect(listParserSites(source)).toStrictEqual([]);
+      expect(listSourceSites([listParserSites], source)).toStrictEqual([]);
     });
   });
 });
