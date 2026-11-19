@@ -6,7 +6,7 @@ import { round } from '@williamthorsen/toolbelt.numbers/candidate';
  *
  * @category DateTime
  * @experimental
- * @stage draft
+ * @stage candidate
  */
 export class TimeUnit {
   static readonly Millis = new TimeUnit(1, { singular: 'millisecond', abbrev: 'ms' });
