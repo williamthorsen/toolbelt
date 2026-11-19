@@ -4,7 +4,6 @@ export { findItemOrThrow } from './findItemOrThrow.ts';
 export { findWeightedIndex } from './findWeightedIndex.ts';
 export { getItemAtIndexOrThrow } from './getItemAtIndexOrThrow.ts';
 export { includes } from './includes.ts';
-export { listDuplicateItems } from './listDuplicateItems.ts';
 export { listUniqueItems } from './listUniqueItems.ts';
 export { makePickWeightedItemFromDistribution } from './makePickWeightedItemFromDistribution.ts';
 export { makeNullishCompare, nullishCompare } from './nullishCompare.ts';
