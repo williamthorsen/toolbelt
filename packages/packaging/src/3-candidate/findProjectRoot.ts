@@ -9,7 +9,7 @@ import { findDirectoryChainMatch } from '@williamthorsen/toolbelt.filesystem';
  * `.git` matches whether it is a directory (an ordinary clone) or a file (a worktree or submodule).
  *
  * @category Packaging
- * @stage release
+ * @stage candidate
  */
 export const DEFAULT_ROOT_MARKERS: ReadonlyArray<string> = [
   '.git',
@@ -31,7 +31,7 @@ export const DEFAULT_ROOT_MARKERS: ReadonlyArray<string> = [
  * findProjectRoot(import.meta.dirname);  // { marker: '.git', rootDir: '/home/dev/my-app', source: 'marker' }
  *
  * @category Packaging
- * @stage release
+ * @stage candidate
  * @throws If a marker is absolute or escapes its directory level.
  */
 export function findProjectRoot(startDir: string, options: FindProjectRootOptions = {}): ProjectRoot {
