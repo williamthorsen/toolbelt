@@ -14,7 +14,7 @@ import { listDirectoryChainMatches } from './directory-chain-matches.ts';
  *
  * The boundary is required, and the caller chooses it, which keeps this function free of any notion of what marks
  * a project: It never asks whether a directory contains a lockfile or a workspace manifest. When the boundary should
- * be a project root, `findProjectRoot` from `@williamthorsen/toolbelt.packaging` resolves one from markers.
+ * be a project root, `findProjectRoot` from `@williamthorsen/toolbelt.packaging/candidate` resolves one from markers.
  *
  * Each config is the module's default export as returned by `parseConfig`, which decides the entries' type. The
  * parser is the caller's, so one mechanism serves schemas that share no fields: Any validator adapts to it in one

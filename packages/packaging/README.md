@@ -18,6 +18,8 @@ Every export accesses the filesystem through `node:` builtins, so they run under
 
 ## `findProjectRoot`
 
+Candidate tier: Imported from `@williamthorsen/toolbelt.packaging/candidate` rather than the package root, and subject to change.
+
 ```ts
 findProjectRoot(startDir: string, options?: { markers?: ReadonlyArray<string> }): ProjectRoot;
 ```
@@ -42,7 +44,7 @@ type ProjectRoot =
 Passing `markers` replaces that list rather than extending it. Spread `DEFAULT_ROOT_MARKERS` to add to it:
 
 ```ts
-import { DEFAULT_ROOT_MARKERS, findProjectRoot } from '@williamthorsen/toolbelt.packaging';
+import { DEFAULT_ROOT_MARKERS, findProjectRoot } from '@williamthorsen/toolbelt.packaging/candidate';
 
 findProjectRoot(process.cwd(), { markers: [...DEFAULT_ROOT_MARKERS, 'deno.json'] });
 ```
