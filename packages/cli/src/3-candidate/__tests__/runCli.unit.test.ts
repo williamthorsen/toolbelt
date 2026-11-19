@@ -1,5 +1,5 @@
 import { captureStdio } from '@williamthorsen/toolbelt.testing';
-import { throwOnProcessExit } from '@williamthorsen/toolbelt.vitest/candidate';
+import { throwOnProcessExit } from '@williamthorsen/toolbelt.vitest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { CliError } from '../CliError.ts';

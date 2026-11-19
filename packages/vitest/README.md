@@ -14,10 +14,10 @@ pnpm add --save-dev @williamthorsen/toolbelt.vitest
 
 Requires Node.js 24 or later. Vitest is a peer dependency: The package uses the Vitest 4 or 5 that the consuming project already installs. Runner-agnostic utilities, such as `captureStdio` and `createTempTree`, live in [`@williamthorsen/toolbelt.testing`](https://github.com/williamthorsen/toolbelt/tree/main/packages/testing#readme).
 
-Every export is candidate tier: imported from `@williamthorsen/toolbelt.vitest/candidate` rather than the package root, and subject to change. Each export's doc comment states its edge cases.
+Release-tier exports import from the package root and candidate-tier exports from `@williamthorsen/toolbelt.vitest/candidate`, as [Exports](#exports) lists them. The root README's [maturity tiers](https://github.com/williamthorsen/toolbelt#maturity-tiers) state what each tier guarantees. Each export's doc comment states its edge cases.
 
 ```ts
-import { silenceConsole } from '@williamthorsen/toolbelt.vitest/candidate';
+import { silenceConsole } from '@williamthorsen/toolbelt.vitest';
 
 using silent = silenceConsole(['warn']);
 loadSettings({});
@@ -26,12 +26,17 @@ expect(silent.warn).toHaveBeenCalledWith('No settings found; using defaults');
 
 ## Exports
 
+From the package root (release tier):
+
 - `disposeOnTestFinished`: Registers a `Disposable`'s disposal with the current test and returns it unchanged.
-- `failOnUncapturedOutput`: Fails each test that writes to stdout or stderr, or emits a warning, without capturing it.
-- `listConsoleLines`: Lists the lines received by a spied console method, one per call.
 - `makeFixture`: Adapts a `Disposable` factory into a Vitest fixture that disposes the value when its scope ends.
 - `silenceConsole` (`ConsoleMethod`): Silences console methods for a scope and returns the spy backing each one.
 - `throwOnProcessExit` (`MockedProcessExit`, `ProcessExitError`): Replaces `process.exit` for a scope with a mock that throws.
+
+From `/candidate` (candidate tier):
+
+- `failOnUncapturedOutput`: Fails each test that writes to stdout or stderr, or emits a warning, without capturing it.
+- `listConsoleLines`: Lists the lines received by a spied console method, one per call.
 
 ## Choosing a lifetime
 
@@ -45,7 +50,7 @@ A resource whose lifetime ends with the block that built it needs nothing from t
 
 ```ts
 import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
-import { disposeOnTestFinished } from '@williamthorsen/toolbelt.vitest/candidate';
+import { disposeOnTestFinished } from '@williamthorsen/toolbelt.vitest';
 
 function buildSource(files: Record<string, string>, name = 'fixture'): SourceSpec {
   const tree = disposeOnTestFinished(createTempTree(files, { prefix: `compositor-${name}-` }));
@@ -60,7 +65,7 @@ The builder takes per-call arguments, it returns something other than the resour
 
 ```ts
 import { createTempTree } from '@williamthorsen/toolbelt.testing/candidate';
-import { makeFixture } from '@williamthorsen/toolbelt.vitest/candidate';
+import { makeFixture } from '@williamthorsen/toolbelt.vitest';
 import { expect, it as baseIt } from 'vitest';
 
 const it = baseIt.extend('tree', { scope: 'file' }, makeFixture(() => createTempTree({ 'src/main.ts': 'export {};\n' })));
@@ -113,7 +118,8 @@ const it = test
 `silenceConsole` returns the spy behind each silenced method, and `listConsoleLines` renders a spy's calls as lines. Because a silence already holds the `vi.spyOn` slot for the method, a helper that read by installing its own spy would take the slot from it; reading the spy handed back composes instead:
 
 ```ts
-import { listConsoleLines, silenceConsole } from '@williamthorsen/toolbelt.vitest/candidate';
+import { silenceConsole } from '@williamthorsen/toolbelt.vitest';
+import { listConsoleLines } from '@williamthorsen/toolbelt.vitest/candidate';
 
 it('names the flag it could not parse', () => {
   using silent = silenceConsole(['error']);
@@ -148,7 +154,7 @@ A test passes when it takes the output with `captureStdio` or `captureWarnings` 
 
 ```ts
 import { captureError } from '@williamthorsen/toolbelt.testing';
-import { ProcessExitError, throwOnProcessExit } from '@williamthorsen/toolbelt.vitest/candidate';
+import { ProcessExitError, throwOnProcessExit } from '@williamthorsen/toolbelt.vitest';
 
 it('exits with code 1 on an unknown flag', async () => {
   using _exit = throwOnProcessExit();

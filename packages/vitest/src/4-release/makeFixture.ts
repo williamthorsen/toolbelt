@@ -13,7 +13,7 @@
  *
  * @category Testing
  * @experimental
- * @stage candidate
+ * @stage release
  *
  * @example
  * import { it as baseIt } from 'vitest';

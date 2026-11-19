@@ -11,7 +11,7 @@ const ALL_CONSOLE_METHODS = ['debug', 'error', 'info', 'log', 'warn'] as const;
  *
  * @category Testing
  * @experimental
- * @stage candidate
+ * @stage release
  */
 export function silenceConsole(): Disposable & Record<ConsoleMethod, MockInstance>;
 /**
@@ -23,7 +23,7 @@ export function silenceConsole(): Disposable & Record<ConsoleMethod, MockInstanc
  *
  * @category Testing
  * @experimental
- * @stage candidate
+ * @stage release
  *
  * @example
  * using silent = silenceConsole(['warn']);

@@ -20,7 +20,7 @@ import { type MockInstance, vi } from 'vitest';
  *
  * @category Testing
  * @experimental
- * @stage candidate
+ * @stage release
  *
  * @example
  * using _exit = throwOnProcessExit();
@@ -48,7 +48,7 @@ export function throwOnProcessExit(): MockedProcessExit {
  *
  * @category Testing
  * @experimental
- * @stage candidate
+ * @stage release
  */
 export class ProcessExitError extends Error {
   readonly code: number | undefined;

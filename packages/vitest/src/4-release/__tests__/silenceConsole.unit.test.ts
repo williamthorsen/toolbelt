@@ -1,7 +1,7 @@
 /* eslint no-console: "off" */
 import { describe, expect, expectTypeOf, it, type MockInstance } from 'vitest';
 
-import { listConsoleLines } from '../listConsoleLines.ts';
+import { listConsoleLines } from '../../3-candidate/listConsoleLines.ts';
 import { type ConsoleMethod, silenceConsole } from '../silenceConsole.ts';
 
 describe(silenceConsole, () => {
