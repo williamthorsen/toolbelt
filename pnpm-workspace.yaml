@@ -7,8 +7,8 @@ allowBuilds:
 catalog:
   '@sindresorhus/is': 8.1.0
   esbuild: 0.28.2
-  readyup: 0.47.1
-  vitest: 5.1.0
+  readyup: 0.47.2
+  vitest: 5.1.1
 
 # Keep pnpm 11's 24h minimumReleaseAge soak (supply-chain protection), set explicitly to pin
 # the policy, but exclude first-party packages so that a freshly published version is

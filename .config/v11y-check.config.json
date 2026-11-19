@@ -8,12 +8,6 @@
         "id": "1244623",
         "reason": "Added by v11y sync at 2026-11-05 07:00:18 UTC",
         "url": "https://github.com/advisories/GHSA-g3hv-75wg-m249"
-      },
-      {
-        "addedAt": "2026-11-17T17:45:12.607Z",
-        "id": "1247710",
-        "reason": "Added by v11y sync at 2026-11-17 17:45:12 UTC",
-        "url": "https://github.com/advisories/GHSA-fc5q-39xc-vjpf"
       }
     ]
   },
