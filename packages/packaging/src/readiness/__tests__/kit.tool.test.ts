@@ -47,7 +47,7 @@ const OWN_FIND_PACKAGE_ROOT = dedent`
 
 `;
 const ADOPTER = dedent`
-  import { findPackageRoot } from '@williamthorsen/toolbelt.packaging/candidate';
+  import { findPackageRoot } from '@williamthorsen/toolbelt.packaging';
   export const packageRoot = () => findPackageRoot(import.meta.url);
 
 `;

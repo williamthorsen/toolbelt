@@ -11,8 +11,7 @@ import { resolveOwningManifest } from '../internal/resolveOwningManifest.ts';
  * resolveSelfVersion(import.meta.url); // '1.4.2'
  *
  * @category Packaging
- * @experimental
- * @stage candidate
+ * @stage release
  * @throws If the owning manifest declares no string version, if no ancestor manifest declares a name, or if
  * one is unreadable as JSON.
  */

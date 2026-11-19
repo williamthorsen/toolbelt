@@ -29,8 +29,8 @@ describe(findPackageRoot, () => {
     using tree = createTempTree({});
     tree.writeJson('package.json', { name: 'demo', version: '1.0.0' });
 
-    const fromSource = findPackageRoot(renderModuleUrl(tree.resolve('src/3-candidate/resolveSelfVersion.ts')));
-    const fromCompiled = findPackageRoot(renderModuleUrl(tree.resolve('dist/esm/3-candidate/resolveSelfVersion.js')));
+    const fromSource = findPackageRoot(renderModuleUrl(tree.resolve('src/4-release/resolveSelfVersion.ts')));
+    const fromCompiled = findPackageRoot(renderModuleUrl(tree.resolve('dist/esm/4-release/resolveSelfVersion.js')));
 
     expect(fromSource).toBe(tree.dir);
     expect(fromCompiled).toBe(tree.dir);
