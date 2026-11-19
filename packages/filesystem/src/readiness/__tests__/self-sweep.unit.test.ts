@@ -2,10 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { listJsTsSources } from '@williamthorsen/toolbelt.adoption/test-utils';
+import { listJsTsSources, listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { describe, expect, it } from 'vitest';
 
-import { listFilesystemIdioms } from '../listFilesystemIdioms.ts';
+import { listAtomicWriteSites } from '../listAtomicWriteSites.ts';
+import { listChainWalkSites } from '../listChainWalkSites.ts';
 
 const KITS_DIR = fileURLToPath(new URL('../../../.readyup/kits', import.meta.url));
 const READINESS_DIR = fileURLToPath(new URL('..', import.meta.url));
@@ -13,13 +14,15 @@ const READINESS_DIR = fileURLToPath(new URL('..', import.meta.url));
 /** The directories whose sources contain this package's own prose about the idioms. */
 const SWEPT_DIRS = [KITS_DIR, READINESS_DIR];
 
-describe(listFilesystemIdioms, () => {
+describe(listSourceSites, () => {
   // The kit sweeps its own declaration and readiness modules when it runs over this repo, and the compiled kit
   // inlines shared modules that the sweep also reaches, so an edit writing either idiom as code in any of them makes
   // the kit report a finding against its own package. Nothing in CI runs `rdy run --sources` to catch it.
   it('finds nothing in the sources describing what it looks for', () => {
     const findings = listJsTsSources(SWEPT_DIRS).flatMap((file) =>
-      listFilesystemIdioms(fs.readFileSync(file, 'utf8')).map((site) => `${path.basename(file)}:${site.line}`),
+      listSourceSites([listAtomicWriteSites, listChainWalkSites], fs.readFileSync(file, 'utf8')).map(
+        (site) => `${path.basename(file)}:${site.line}`,
+      ),
     );
 
     expect(findings).toStrictEqual([]);

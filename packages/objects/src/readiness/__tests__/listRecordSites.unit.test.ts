@@ -1,10 +1,10 @@
-import { blankNonCode } from '@williamthorsen/toolbelt.adoption';
+import { listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { dedent } from '@williamthorsen/toolbelt.strings';
 import { describe, expect, it } from 'vitest';
 
-import { listRecordLines } from '../listRecordLines.ts';
+import { listRecordSites } from '../listRecordSites.ts';
 
-describe(listRecordLines, () => {
+describe(listRecordSites, () => {
   it('claims the conjunction alone, which isRecordOrArray replaces', () => {
     expect(listLines("const ok = typeof value === 'object' && value !== null;\n")).toStrictEqual([1]);
   });
@@ -124,9 +124,9 @@ describe(listRecordLines, () => {
 
 // region | Helpers
 
-/** Blanks the source the way the merging detector does, which the scan reads. */
+/** Lists the lines of the sites that the detector finds in a source, blanked as the kit blanks it. */
 function listLines(source: string): number[] {
-  return listRecordLines(blankNonCode(source), source);
+  return listSourceSites([listRecordSites], source).map(({ line }) => line);
 }
 
 // endregion | Helpers

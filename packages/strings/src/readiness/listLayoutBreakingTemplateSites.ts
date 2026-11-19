@@ -1,4 +1,9 @@
-import { getLineAtOffset, listTemplateLiterals, type TemplateLiteral } from '@williamthorsen/toolbelt.adoption';
+import {
+  type AdoptionSite,
+  getLineAtOffset,
+  listTemplateLiterals,
+  type TemplateLiteral,
+} from '@williamthorsen/toolbelt.adoption';
 
 import { findCommonIndent, findLineIndent } from '../internal/indent-rules.ts';
 
@@ -9,7 +14,7 @@ const INLINE_SNAPSHOT_CALL = /InlineSnapshot\(\s*$/;
 const INLINE_SNAPSHOT_LOOKBEHIND = 64;
 
 /**
- * Lists the line of every untagged template literal whose text drops below the indentation of the line on which it
+ * Lists every untagged template literal whose text drops below the indentation of the line on which it
  * opens, the layout that an author settles for to keep source indentation out of a string.
  *
  * Takes both texts: Templates are located on the blanked code, and the indentation of their lines is read from the
@@ -23,8 +28,11 @@ const INLINE_SNAPSHOT_LOOKBEHIND = 64;
  *
  * @internal
  */
-export function listLayoutBreakingTemplateLines(code: string, source: string): number[] {
-  const lines: number[] = [];
+export function listLayoutBreakingTemplateSites(
+  code: string,
+  source: string,
+): Array<AdoptionSite<'layout-breaking-template'>> {
+  const sites: Array<AdoptionSite<'layout-breaking-template'>> = [];
 
   for (const template of listTemplateLiterals(code)) {
     if (template.isTagged || isInlineSnapshotArgument(code, template.start)) continue;
@@ -35,10 +43,10 @@ export function listLayoutBreakingTemplateLines(code: string, source: string): n
     const laterLines = listLaterContentLines(source, template);
     if (laterLines.length === 0 || findCommonIndent(laterLines).startsWith(openingIndent)) continue;
 
-    lines.push(getLineAtOffset(code, template.start));
+    sites.push({ kind: 'layout-breaking-template', line: getLineAtOffset(code, template.start) });
   }
 
-  return lines;
+  return sites;
 }
 
 // region | Helpers

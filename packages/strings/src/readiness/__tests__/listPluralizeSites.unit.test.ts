@@ -1,9 +1,9 @@
-import { blankNonCode } from '@williamthorsen/toolbelt.adoption';
+import { listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { describe, expect, it } from 'vitest';
 
-import { listPluralizeLines } from '../listPluralizeLines.ts';
+import { listPluralizeSites } from '../listPluralizeSites.ts';
 
-describe(listPluralizeLines, () => {
+describe(listPluralizeSites, () => {
   it('claims a literal pair whose plural is the singular plus s', () => {
     expect(listLines("const noun = count === 1 ? 'item' : 'items';\n")).toStrictEqual([1]);
   });
@@ -68,9 +68,9 @@ describe(listPluralizeLines, () => {
 
 // region | Helpers
 
-/** Runs the detector over a source and the blanked code that its caller would pass it. */
+/** Lists the lines of the sites that the detector finds in a source, blanked as the kit blanks it. */
 function listLines(source: string): number[] {
-  return listPluralizeLines(blankNonCode(source), source);
+  return listSourceSites([listPluralizeSites], source).map(({ line }) => line);
 }
 
 // endregion | Helpers

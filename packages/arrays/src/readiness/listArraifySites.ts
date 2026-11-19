@@ -1,4 +1,4 @@
-import { getLineAtOffset } from '@williamthorsen/toolbelt.adoption';
+import { type AdoptionSite, getLineAtOffset } from '@williamthorsen/toolbelt.adoption';
 
 // The subject is captured once and matched again in both branches, which makes the ternary a wrap
 // rather than a choice between two unrelated values. `\s*` is at every joint because the expression has no
@@ -20,10 +20,9 @@ const NEGATED_ARRAIFY_TERNARY = new RegExp(
 );
 
 /**
- * Lists the line of every hand-rolled array wrap in a source file.
+ * Lists every hand-rolled array wrap in a source file.
  *
- * Takes the blanked code produced by `listArrayIdioms`, so a ternary written in a comment or a literal is not
- * one.
+ * Takes the code blanked by the kit assembler, so a ternary written in a comment or a literal is not one.
  *
  * Both polarities are claimed, and in each the array branch may pass the value through or spread it into a new
  * array. The spread is the one form from which the substitution is exact; the other two return the value
@@ -34,9 +33,12 @@ const NEGATED_ARRAIFY_TERNARY = new RegExp(
  *
  * @internal
  */
-export function listArraifyLines(source: string): number[] {
+export function listArraifySites(code: string): Array<AdoptionSite<'arraify-inline'>> {
   return [ARRAIFY_TERNARY, NEGATED_ARRAIFY_TERNARY]
-    .flatMap((pattern) => source.matchAll(pattern).toArray())
-    .map((match) => getLineAtOffset(source, match.index))
-    .toSorted((a, b) => a - b);
+    .flatMap((pattern) => code.matchAll(pattern).toArray())
+    .map((match): AdoptionSite<'arraify-inline'> => ({
+      kind: 'arraify-inline',
+      line: getLineAtOffset(code, match.index),
+    }))
+    .toSorted((a, b) => a.line - b.line);
 }

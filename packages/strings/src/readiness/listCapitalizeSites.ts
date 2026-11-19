@@ -1,4 +1,4 @@
-import { getLineAtOffset } from '@williamthorsen/toolbelt.adoption';
+import { type AdoptionSite, getLineAtOffset } from '@williamthorsen/toolbelt.adoption';
 
 // The idiom, matched in one pass: a subject's first character upper-cased, joined to that same subject's tail.
 // `\s*` appears at every operator joint, because the expression has no fixed-width span to bound and a
@@ -13,19 +13,21 @@ const CAPITALIZE_INLINE =
   /(?<![\w$.])(?<subject>[\w$]+(?:\.[\w$]+)*)\s*(?:\.charAt\(\s*0\s*\)|\[\s*0\s*\])\s*\.toUpperCase\(\)\s*(?:\+|\}\$\{)\s*\k<subject>\s*\.(?:slice|substring)\(\s*1\s*\)(?!\s*\.)/g;
 
 /**
- * Lists the line of every hand-rolled capitalization in a source file.
+ * Lists every hand-rolled capitalization in a source file.
  *
- * Takes the blanked code produced by `listStringIdioms`, so a capitalization written in a comment or a literal is
- * not one.
+ * Takes the code blanked by the kit assembler, so a capitalization written in a comment or a literal is not one.
  *
  * Both first-character forms count, `charAt(0)` and `[0]`, as do both tails, `slice(1)` and `substring(1)`,
  * and both joins, `+` concatenation and adjacent template substitutions.
  *
  * @internal
  */
-export function listCapitalizeLines(source: string): number[] {
-  return source
+export function listCapitalizeSites(code: string): Array<AdoptionSite<'capitalize-inline'>> {
+  return code
     .matchAll(CAPITALIZE_INLINE)
-    .map((match) => getLineAtOffset(source, match.index))
+    .map((match): AdoptionSite<'capitalize-inline'> => ({
+      kind: 'capitalize-inline',
+      line: getLineAtOffset(code, match.index),
+    }))
     .toArray();
 }

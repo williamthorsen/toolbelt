@@ -1,4 +1,4 @@
-import { getLineAtOffset, readLiteral } from '@williamthorsen/toolbelt.adoption';
+import { type AdoptionSite, getLineAtOffset, readLiteral } from '@williamthorsen/toolbelt.adoption';
 
 const OBJECT_TAG = 'object';
 const SUBJECT = String.raw`[\w$]+(?:\.[\w$]+)*`;
@@ -22,7 +22,7 @@ const NULL_FIRST = new RegExp(
 );
 
 /**
- * Lists the line of every hand-rolled record guard in a source file.
+ * Lists every hand-rolled record guard in a source file.
  *
  * Takes both texts. The conjunction is matched on the blanked code, in which a guard written in a comment is
  * not one, and the compared literal is then read from the unblanked source at the offset reported by the match:
@@ -35,10 +35,10 @@ const NULL_FIRST = new RegExp(
  *
  * @internal
  */
-export function listRecordLines(code: string, source: string): number[] {
+export function listRecordSites(code: string, source: string): Array<AdoptionSite<'record-inline'>> {
   const lines = [TYPEOF_FIRST, NULL_FIRST].flatMap((pattern) => listLinesMatching(pattern, code, source));
 
-  return [...new Set(lines)].toSorted((a, b) => a - b);
+  return [...new Set(lines)].toSorted((a, b) => a - b).map((line) => ({ kind: 'record-inline', line }));
 }
 
 // region | Helpers

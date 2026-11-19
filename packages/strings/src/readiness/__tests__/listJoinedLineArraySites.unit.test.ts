@@ -1,9 +1,9 @@
-import { blankNonCode } from '@williamthorsen/toolbelt.adoption';
+import { listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { describe, expect, it } from 'vitest';
 
-import { listJoinedLineArrayLines } from '../listJoinedLineArrayLines.ts';
+import { listJoinedLineArraySites } from '../listJoinedLineArraySites.ts';
 
-describe(listJoinedLineArrayLines, () => {
+describe(listJoinedLineArraySites, () => {
   it('claims an array of string literals laid out one per line, at the line of its opening bracket', () => {
     expect(listLines("const text = [\n  'first',\n  '  second',\n].join('\\n');\n")).toStrictEqual([1]);
   });
@@ -89,9 +89,9 @@ describe(listJoinedLineArrayLines, () => {
 
 // region | Helpers
 
-/** Runs the detector over a source and the blanked code that its caller would pass it. */
+/** Lists the lines of the sites that the detector finds in a source, blanked as the kit blanks it. */
 function listLines(source: string): number[] {
-  return listJoinedLineArrayLines(blankNonCode(source), source);
+  return listSourceSites([listJoinedLineArraySites], source).map(({ line }) => line);
 }
 
 // endregion | Helpers

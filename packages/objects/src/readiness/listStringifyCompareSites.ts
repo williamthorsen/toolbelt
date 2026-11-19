@@ -1,4 +1,4 @@
-import { getLineAtOffset, PARENTHESES, readBalancedGroup } from '@williamthorsen/toolbelt.adoption';
+import { type AdoptionSite, getLineAtOffset, PARENTHESES, readBalancedGroup } from '@williamthorsen/toolbelt.adoption';
 
 const STRINGIFY_CALL = /(?<![\w$.])JSON\s*\.\s*stringify\s*\(/g;
 // What must follow the first call's argument list. Sticky, so it anchors at the offset reported by the
@@ -7,10 +7,9 @@ const STRINGIFY_CALL = /(?<![\w$.])JSON\s*\.\s*stringify\s*\(/g;
 const COMPARED_TO_STRINGIFY = /\s*[!=]==?\s*JSON\s*\.\s*stringify\s*\(/y;
 
 /**
- * Lists the line of every equality test between two `JSON.stringify` calls in a source file.
+ * Lists every equality test between two `JSON.stringify` calls in a source file.
  *
- * Takes the blanked code produced by `listObjectIdioms`, in which a comparison written in a comment or a literal
- * is not one.
+ * Takes the code blanked by the kit assembler, in which a comparison written in a comment or a literal is not one.
  *
  * The argument list is read as a balanced group rather than matched, because an argument may contain
  * parentheses of its own. Both equality operators count, strict and loose alike. A call compared against
@@ -18,18 +17,18 @@ const COMPARED_TO_STRINGIFY = /\s*[!=]==?\s*JSON\s*\.\s*stringify\s*\(/y;
  *
  * @internal
  */
-export function listStringifyCompareLines(source: string): number[] {
-  const lines: number[] = [];
+export function listStringifyCompareSites(code: string): Array<AdoptionSite<'stringify-compare'>> {
+  const sites: Array<AdoptionSite<'stringify-compare'>> = [];
 
-  for (const match of source.matchAll(STRINGIFY_CALL)) {
-    const argumentList = readBalancedGroup(source, match.index, PARENTHESES);
+  for (const match of code.matchAll(STRINGIFY_CALL)) {
+    const argumentList = readBalancedGroup(code, match.index, PARENTHESES);
     if (argumentList === undefined) continue;
 
     COMPARED_TO_STRINGIFY.lastIndex = argumentList.end;
-    if (!COMPARED_TO_STRINGIFY.test(source)) continue;
+    if (!COMPARED_TO_STRINGIFY.test(code)) continue;
 
-    lines.push(getLineAtOffset(source, match.index));
+    sites.push({ kind: 'stringify-compare', line: getLineAtOffset(code, match.index) });
   }
 
-  return lines;
+  return sites;
 }

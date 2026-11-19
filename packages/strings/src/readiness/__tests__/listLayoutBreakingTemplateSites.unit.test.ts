@@ -1,9 +1,9 @@
-import { blankNonCode } from '@williamthorsen/toolbelt.adoption';
+import { listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { describe, expect, it } from 'vitest';
 
-import { listLayoutBreakingTemplateLines } from '../listLayoutBreakingTemplateLines.ts';
+import { listLayoutBreakingTemplateSites } from '../listLayoutBreakingTemplateSites.ts';
 
-describe(listLayoutBreakingTemplateLines, () => {
+describe(listLayoutBreakingTemplateSites, () => {
   it('claims usage text that drops to column 0 inside a call, at the line on which it opens', () => {
     const source = 'function help() {\n  console.info(`Usage: tool <command>\nCommands:\n  init  Set up\n`);\n}\n';
 
@@ -72,9 +72,9 @@ describe(listLayoutBreakingTemplateLines, () => {
 
 // region | Helpers
 
-/** Runs the detector over a source and the blanked code that its caller would pass it. */
+/** Lists the lines of the sites that the detector finds in a source, blanked as the kit blanks it. */
 function listLines(source: string): number[] {
-  return listLayoutBreakingTemplateLines(blankNonCode(source), source);
+  return listSourceSites([listLayoutBreakingTemplateSites], source).map(({ line }) => line);
 }
 
 // endregion | Helpers

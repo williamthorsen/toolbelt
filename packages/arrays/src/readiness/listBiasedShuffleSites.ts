@@ -1,4 +1,5 @@
 import {
+  type AdoptionSite,
   BRACES,
   condenseWhitespace,
   getLineAtOffset,
@@ -16,10 +17,9 @@ const FUNCTION_KEYWORD = /^function\b/;
 const IDENTIFIER_CHARACTER = /[A-Za-z_$]/;
 
 /**
- * Lists the line of every biased shuffle in a source file.
+ * Lists every biased shuffle in a source file.
  *
- * Takes the blanked code produced by `listArrayIdioms`, so a comparator written in a comment or a literal is not
- * one.
+ * Takes the code blanked by the kit assembler, so a comparator written in a comment or a literal is not one.
  *
  * A comparator is claimed for what its body does not contain rather than for a spelling: Strip the draw and a
  * `return` from the body, and a residue with no identifier proves the body ordered on the draw alone. That
@@ -29,20 +29,20 @@ const IDENTIFIER_CHARACTER = /[A-Za-z_$]/;
  *
  * @internal
  */
-export function listBiasedShuffleLines(source: string): number[] {
-  const lines: number[] = [];
+export function listBiasedShuffleSites(code: string): Array<AdoptionSite<'biased-shuffle'>> {
+  const sites: Array<AdoptionSite<'biased-shuffle'>> = [];
 
-  for (const match of source.matchAll(SORT_CALL)) {
-    const group = readBalancedGroup(source, match.index, PARENTHESES);
+  for (const match of code.matchAll(SORT_CALL)) {
+    const group = readBalancedGroup(code, match.index, PARENTHESES);
     if (group === undefined) continue;
 
-    const argument = condenseWhitespace(source.slice(group.start + 1, group.end - 1));
+    const argument = condenseWhitespace(code.slice(group.start + 1, group.end - 1));
     if (!isRandomComparator(argument)) continue;
 
-    lines.push(getLineAtOffset(source, match.index));
+    sites.push({ kind: 'biased-shuffle', line: getLineAtOffset(code, match.index) });
   }
 
-  return lines;
+  return sites;
 }
 
 // region | Helpers

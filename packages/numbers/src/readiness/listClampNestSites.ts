@@ -1,4 +1,5 @@
 import {
+  type AdoptionSite,
   getLineAtOffset,
   listTopLevelArguments,
   PARENTHESES,
@@ -12,9 +13,9 @@ const NESTED_HEAD: Record<BoundingName, RegExp> = { max: /^Math\.max\s*\(/, min:
 const OPPOSITE: Record<BoundingName, BoundingName> = { max: 'min', min: 'max' };
 
 /**
- * Lists the line of every hand-rolled clamp in a source file.
+ * Lists every hand-rolled clamp in a source file.
  *
- * Takes the blanked code produced by `listMathIdioms`, so a clamp written in a comment or a literal is not one.
+ * Takes the code blanked by the kit assembler, so a clamp written in a comment or a literal is not one.
  *
  * A clamp is a two-argument `Math.max` containing a two-argument `Math.min`, or the mirror of that, with the
  * nested call in either argument position. Because the nested call's own anchor falls inside the outer call, it
@@ -25,27 +26,27 @@ const OPPOSITE: Record<BoundingName, BoundingName> = { max: 'min', min: 'max' };
  *
  * @internal
  */
-export function listClampNestLines(source: string): number[] {
-  const lines: number[] = [];
+export function listClampNestSites(code: string): Array<AdoptionSite<'clamp-nest'>> {
+  const sites: Array<AdoptionSite<'clamp-nest'>> = [];
   let claimedUntil = 0;
 
-  for (const match of source.matchAll(BOUNDING_CALL)) {
+  for (const match of code.matchAll(BOUNDING_CALL)) {
     if (match.index < claimedUntil) continue;
 
     const name = readBoundingName(match.groups?.['name']);
     if (name === undefined) continue;
 
-    const group = readBalancedGroup(source, match.index, PARENTHESES);
+    const group = readBalancedGroup(code, match.index, PARENTHESES);
     if (group === undefined) continue;
 
-    const args = listTopLevelArguments(source.slice(group.start + 1, group.end - 1));
+    const args = listTopLevelArguments(code.slice(group.start + 1, group.end - 1));
     if (args.length !== 2 || args.every((argument) => !isBoundingCall(argument, OPPOSITE[name]))) continue;
 
     claimedUntil = group.end;
-    lines.push(getLineAtOffset(source, match.index));
+    sites.push({ kind: 'clamp-nest', line: getLineAtOffset(code, match.index) });
   }
 
-  return lines;
+  return sites;
 }
 
 // region | Helpers

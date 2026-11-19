@@ -1,4 +1,5 @@
 import {
+  type AdoptionSite,
   getLineAtOffset,
   isArraySubscript,
   listTemplateLiterals,
@@ -26,7 +27,7 @@ const NEWLINE_ESCAPE = String.raw`\n`;
 const SUBSCRIPT_LOOKBEHIND = 32;
 
 /**
- * Lists the line of every array of line literals joined with a newline in a source file.
+ * Lists every array of line literals joined with a newline in a source file.
  *
  * Takes both texts: The array is matched on the blanked code, and the text of its separator and elements is read
  * from the source beneath at the same offsets.
@@ -38,9 +39,9 @@ const SUBSCRIPT_LOOKBEHIND = 32;
  *
  * @internal
  */
-export function listJoinedLineArrayLines(code: string, source: string): number[] {
+export function listJoinedLineArraySites(code: string, source: string): Array<AdoptionSite<'joined-line-array'>> {
   const templates = listTemplateLiterals(code);
-  const lines: number[] = [];
+  const sites: Array<AdoptionSite<'joined-line-array'>> = [];
 
   for (const match of code.matchAll(JOIN_TAIL)) {
     if (readLiteral(source, match.indices?.groups?.['separator']) !== NEWLINE_ESCAPE) continue;
@@ -68,10 +69,10 @@ export function listJoinedLineArrayLines(code: string, source: string): number[]
     const contentTexts = leadingTexts.filter((leadingText) => leadingText.hasContent).map(({ text }) => text);
     if (findCommonIndent(contentTexts) !== '') continue;
 
-    lines.push(getLineAtOffset(code, open));
+    sites.push({ kind: 'joined-line-array', line: getLineAtOffset(code, open) });
   }
 
-  return lines;
+  return sites;
 }
 
 // region | Helpers

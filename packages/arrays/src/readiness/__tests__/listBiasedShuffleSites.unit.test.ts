@@ -1,15 +1,16 @@
+import { listSourceSites } from '@williamthorsen/toolbelt.adoption/test-utils';
 import { describe, expect, it } from 'vitest';
 
-import { listBiasedShuffleLines } from '../listBiasedShuffleLines.ts';
+import { listBiasedShuffleSites } from '../listBiasedShuffleSites.ts';
 
-describe(listBiasedShuffleLines, () => {
+describe(listBiasedShuffleSites, () => {
   it('claims a comparator subtracting a half from the draw, and its mirror', () => {
     const sources = [
       'const mixed = items.sort(() => Math.random() - 0.5);\n',
       'const mixed = items.sort(() => 0.5 - Math.random());\n',
     ];
 
-    expect(sources.map((source) => listBiasedShuffleLines(source))).toStrictEqual([[1], [1]]);
+    expect(sources.map((source) => listLines(source))).toStrictEqual([[1], [1]]);
   });
 
   it('claims a comparator ranking by a ternary on the draw', () => {
@@ -18,11 +19,11 @@ describe(listBiasedShuffleLines, () => {
       'const mixed = items.sort(() => (Math.random() > 0.5 ? 1 : -1));\n',
     ];
 
-    expect(sources.map((source) => listBiasedShuffleLines(source))).toStrictEqual([[1], [1]]);
+    expect(sources.map((source) => listLines(source))).toStrictEqual([[1], [1]]);
   });
 
   it('claims a comparator declaring parameters that its body never reads', () => {
-    expect(listBiasedShuffleLines('const mixed = items.sort((a, b) => Math.random() - 0.5);\n')).toStrictEqual([1]);
+    expect(listLines('const mixed = items.sort((a, b) => Math.random() - 0.5);\n')).toStrictEqual([1]);
   });
 
   it('claims a block body and an inline function alike', () => {
@@ -31,24 +32,24 @@ describe(listBiasedShuffleLines, () => {
       'const mixed = items.sort(function () {\n  return Math.random() - 0.5;\n});\n',
     ];
 
-    expect(sources.map((source) => listBiasedShuffleLines(source))).toStrictEqual([[1], [1]]);
+    expect(sources.map((source) => listLines(source))).toStrictEqual([[1], [1]]);
   });
 
   it('claims the copying method as well as the mutating one', () => {
-    expect(listBiasedShuffleLines('const mixed = items.toSorted(() => Math.random() - 0.5);\n')).toStrictEqual([1]);
+    expect(listLines('const mixed = items.toSorted(() => Math.random() - 0.5);\n')).toStrictEqual([1]);
   });
 
   it('claims a comparator broken across lines by a formatter, at the line on which the call opens', () => {
     const source = 'const mixed = items.sort(\n  () => Math.random() - 0.5,\n);\n';
 
-    expect(listBiasedShuffleLines(source)).toStrictEqual([1]);
+    expect(listLines(source)).toStrictEqual([1]);
   });
 
   // The draw breaks ties among equal keys, which is a deliberate choice that `shuffle` does not reproduce.
   it('declines a comparator that ranks by its operands and draws only to break a tie', () => {
     const source = 'const ranked = rows.sort((a, b) => a.score - b.score || Math.random() - 0.5);\n';
 
-    expect(listBiasedShuffleLines(source)).toStrictEqual([]);
+    expect(listLines(source)).toStrictEqual([]);
   });
 
   // A combinator's own arrow is not the argument's, so a draw inside it breaks ties within a primary ordering.
@@ -59,24 +60,24 @@ describe(listBiasedShuffleLines, () => {
       'const ranked = rows.sort((thenBy(byScore, () => Math.random() - 0.5)));\n',
     ];
 
-    expect(sources.filter((source) => listBiasedShuffleLines(source).length > 0)).toStrictEqual([]);
+    expect(sources.filter((source) => listLines(source).length > 0)).toStrictEqual([]);
   });
 
   it('claims an arrow declaring a single parameter without parentheses', () => {
-    expect(listBiasedShuffleLines('const mixed = items.sort(a => Math.random() - 0.5);\n')).toStrictEqual([1]);
+    expect(listLines('const mixed = items.sort(a => Math.random() - 0.5);\n')).toStrictEqual([1]);
   });
 
   it('claims an arrow with a return-type annotation', () => {
     const source = 'const mixed = items.sort((a: Row, b: Row): number => Math.random() - 0.5);\n';
 
-    expect(listBiasedShuffleLines(source)).toStrictEqual([1]);
+    expect(listLines(source)).toStrictEqual([1]);
   });
 
   it('claims an inline function whose parameters contain braces of their own', () => {
     const source =
       'const mixed = items.sort(function (a: { n: number }, b: { n: number }) { return Math.random() - 0.5; });\n';
 
-    expect(listBiasedShuffleLines(source)).toStrictEqual([1]);
+    expect(listLines(source)).toStrictEqual([1]);
   });
 
   // A parenthesis wrapping the whole comparator contains the arrow rather than opening it, and a cast puts its
@@ -87,7 +88,7 @@ describe(listBiasedShuffleLines, () => {
       'const mixed = items.sort(((a, b) => Math.random() - 0.5) as Comparator<Row>);\n',
     ];
 
-    expect(sources.map((source) => listBiasedShuffleLines(source))).toStrictEqual([[1], [1]]);
+    expect(sources.map((source) => listLines(source))).toStrictEqual([[1], [1]]);
   });
 
   it('declines an ordinary comparator and a sort taking none', () => {
@@ -97,14 +98,23 @@ describe(listBiasedShuffleLines, () => {
       'const ranked = values.sort(byScore);\n',
     ];
 
-    expect(sources.filter((source) => listBiasedShuffleLines(source).length > 0)).toStrictEqual([]);
+    expect(sources.filter((source) => listLines(source).length > 0)).toStrictEqual([]);
   });
 
   it('declines a draw that the source makes outside a comparator', () => {
-    expect(listBiasedShuffleLines('const jitter = Math.random() - 0.5;\n')).toStrictEqual([]);
+    expect(listLines('const jitter = Math.random() - 0.5;\n')).toStrictEqual([]);
   });
 
   it('declines a method whose name merely ends in sort', () => {
-    expect(listBiasedShuffleLines('const mixed = index.resort(() => Math.random() - 0.5);\n')).toStrictEqual([]);
+    expect(listLines('const mixed = index.resort(() => Math.random() - 0.5);\n')).toStrictEqual([]);
   });
 });
+
+// region | Helpers
+
+/** Lists the lines of the sites that the detector finds in a source, blanked as the kit blanks it. */
+function listLines(source: string): number[] {
+  return listSourceSites([listBiasedShuffleSites], source).map(({ line }) => line);
+}
+
+// endregion | Helpers

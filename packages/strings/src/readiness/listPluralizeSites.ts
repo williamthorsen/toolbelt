@@ -1,4 +1,4 @@
-import { getLineAtOffset, readLiteral } from '@williamthorsen/toolbelt.adoption';
+import { type AdoptionSite, getLineAtOffset, readLiteral } from '@williamthorsen/toolbelt.adoption';
 
 const QUOTED = '\'[^\']*\'|"[^"]*"';
 // The ternary, anchored on its comparison against 1. `\)*` covers a parenthesized condition; a condition
@@ -9,7 +9,7 @@ const PLURALIZE_TERNARY = new RegExp(
 );
 
 /**
- * Lists the line of every hand-rolled pluralization in a source file.
+ * Lists every hand-rolled pluralization in a source file.
  *
  * Takes both texts. The ternary is matched on the blanked code, so a pluralization written in a comment is not
  * one, and the two literals are then read from the unblanked source at the offsets that match reports.
@@ -23,8 +23,8 @@ const PLURALIZE_TERNARY = new RegExp(
  *
  * @internal
  */
-export function listPluralizeLines(code: string, source: string): number[] {
-  const lines: number[] = [];
+export function listPluralizeSites(code: string, source: string): Array<AdoptionSite<'pluralize-inline'>> {
+  const sites: Array<AdoptionSite<'pluralize-inline'>> = [];
 
   for (const match of code.matchAll(PLURALIZE_TERNARY)) {
     const first = readLiteral(source, match.indices?.groups?.['first']);
@@ -36,8 +36,8 @@ export function listPluralizeLines(code: string, source: string): number[] {
     const plural = takesSingularFirst ? second : first;
     if (plural !== `${singular}s`) continue;
 
-    lines.push(getLineAtOffset(code, match.index));
+    sites.push({ kind: 'pluralize-inline', line: getLineAtOffset(code, match.index) });
   }
 
-  return lines;
+  return sites;
 }

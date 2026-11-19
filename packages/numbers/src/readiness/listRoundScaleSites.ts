@@ -1,4 +1,4 @@
-import { getLineAtOffset, PARENTHESES, readBalancedGroup } from '@williamthorsen/toolbelt.adoption';
+import { type AdoptionSite, getLineAtOffset, PARENTHESES, readBalancedGroup } from '@williamthorsen/toolbelt.adoption';
 
 // A power of ten written as a literal or as an exponentiation. The exponentiation alternative leads, so `10`
 // is not matched off the front of `10 ** n`.
@@ -9,9 +9,9 @@ const TRAILING_FACTOR = new RegExp(String.raw`\*\s*(?<factor>${POWER_OF_TEN})\s*
 const LEADING_DIVISOR = new RegExp(String.raw`^\s*/\s*(?<divisor>${POWER_OF_TEN})(?![\w$.])`);
 
 /**
- * Lists the line of every hand-rolled decimal rounding in a source file.
+ * Lists every hand-rolled decimal rounding in a source file.
  *
- * Takes the blanked code produced by `listMathIdioms`; a rounding written in a comment or a literal is not one.
+ * Takes the code blanked by the kit assembler; a rounding written in a comment or a literal is not one.
  *
  * The idiom scales a value by a power of ten, rounds, and scales back by the same power. Both sides must name
  * the same factor and it must be a power of ten: `Math.round(x * 3) / 3` rounds to thirds, which `round`
@@ -19,23 +19,23 @@ const LEADING_DIVISOR = new RegExp(String.raw`^\s*/\s*(?<divisor>${POWER_OF_TEN}
  *
  * @internal
  */
-export function listRoundScaleLines(source: string): number[] {
-  const lines: number[] = [];
+export function listRoundScaleSites(code: string): Array<AdoptionSite<'round-scale'>> {
+  const sites: Array<AdoptionSite<'round-scale'>> = [];
 
-  for (const match of source.matchAll(ROUND_CALL)) {
-    const group = readBalancedGroup(source, match.index, PARENTHESES);
+  for (const match of code.matchAll(ROUND_CALL)) {
+    const group = readBalancedGroup(code, match.index, PARENTHESES);
     if (group === undefined) continue;
 
-    const factor = TRAILING_FACTOR.exec(source.slice(group.start + 1, group.end - 1))?.groups?.['factor'];
+    const factor = TRAILING_FACTOR.exec(code.slice(group.start + 1, group.end - 1))?.groups?.['factor'];
     if (factor === undefined) continue;
 
-    const divisor = LEADING_DIVISOR.exec(source.slice(group.end))?.groups?.['divisor'];
+    const divisor = LEADING_DIVISOR.exec(code.slice(group.end))?.groups?.['divisor'];
     if (divisor === undefined || !isSameFactor(factor, divisor)) continue;
 
-    lines.push(getLineAtOffset(source, match.index));
+    sites.push({ kind: 'round-scale', line: getLineAtOffset(code, match.index) });
   }
 
-  return lines;
+  return sites;
 }
 
 // region | Helpers

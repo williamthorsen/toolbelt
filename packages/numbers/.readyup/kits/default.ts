@@ -14,14 +14,16 @@
 import { defineAdoptionKit, isAdoptableSource } from '@williamthorsen/toolbelt.adoption';
 
 import { ADOPTED_EXPORTS } from '../../src/readiness/adoptedExports.ts';
-import { listMathIdioms } from '../../src/readiness/listMathIdioms.ts';
+import { listClampNestSites } from '../../src/readiness/listClampNestSites.ts';
+import { listRandomIntegerSites } from '../../src/readiness/listRandomIntegerSites.ts';
+import { listRoundScaleSites } from '../../src/readiness/listRoundScaleSites.ts';
 
 const PACKAGE_NAME = '@williamthorsen/toolbelt.numbers';
 const README_URL = 'https://github.com/williamthorsen/toolbelt/tree/main/packages/numbers#readme';
 
 export default defineAdoptionKit({
   description: `Adoption checks for a project consuming ${PACKAGE_NAME}`,
-  detectors: [listMathIdioms],
+  detectors: [listClampNestSites, listRandomIntegerSites, listRoundScaleSites],
   exportNames: ADOPTED_EXPORTS,
   noSourcesReason: 'the project contains no JavaScript or TypeScript sources outside the exempt paths',
   packageName: PACKAGE_NAME,
