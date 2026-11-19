@@ -15,8 +15,7 @@ import { resolveOwningManifest } from '../internal/resolveOwningManifest.ts';
  * findPackageRoot(import.meta.url); // '/home/dev/my-app/node_modules/some-package'
  *
  * @category Packaging
- * @experimental
- * @stage candidate
+ * @stage release
  * @throws If no ancestor manifest declares a name, or if one is unreadable as JSON.
  */
 export function findPackageRoot(fromUrl: string): string {

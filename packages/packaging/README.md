@@ -60,8 +60,6 @@ A project root is not a package root: This answers "which checkout am I in", whe
 
 ## `findPackageRoot`
 
-Candidate tier: Imported from `@williamthorsen/toolbelt.packaging/candidate` rather than the package root, and subject to change.
-
 ```ts
 findPackageRoot(fromUrl: string): string;
 ```
@@ -71,7 +69,7 @@ Returns the directory of the package that owns a module, which is where assets p
 ```ts
 import path from 'node:path';
 
-import { findPackageRoot } from '@williamthorsen/toolbelt.packaging/candidate';
+import { findPackageRoot } from '@williamthorsen/toolbelt.packaging';
 
 const templatesDir = path.join(findPackageRoot(import.meta.url), 'templates');
 ```
@@ -114,8 +112,6 @@ A manifest that the predicate rejects is passed over, and the ascent continues. 
 
 ## `resolveSelfVersion`
 
-Candidate tier: Imported from `@williamthorsen/toolbelt.packaging/candidate` rather than the package root, and subject to change.
-
 ```ts
 resolveSelfVersion(fromUrl: string): string;
 ```
@@ -123,7 +119,7 @@ resolveSelfVersion(fromUrl: string): string;
 Returns the version declared by the package that owns a module: the supported way for a CLI to report its own version without hand-rolling a manifest lookup.
 
 ```ts
-import { resolveSelfVersion } from '@williamthorsen/toolbelt.packaging/candidate';
+import { resolveSelfVersion } from '@williamthorsen/toolbelt.packaging';
 
 console.log(`my-cli ${resolveSelfVersion(import.meta.url)}`);
 ```

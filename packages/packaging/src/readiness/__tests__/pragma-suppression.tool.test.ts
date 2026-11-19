@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 const MANIFEST = JSON.stringify({ name: 'fixture-project', version: '1.0.0' });
 const ADOPTER = dedent`
-  import { findPackageRoot } from '@williamthorsen/toolbelt.packaging/candidate';
+  import { findPackageRoot } from '@williamthorsen/toolbelt.packaging';
   export const packageRoot = () => findPackageRoot(import.meta.url);
 
 `;
