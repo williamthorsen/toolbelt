@@ -1,6 +1,6 @@
 import { pathToFileURL } from 'node:url';
 
-import { listDirectoryChainMatches } from './directory-chain-matches.ts';
+import { listDirectoryChainMatches } from '../4-release/directory-chain-matches.ts';
 
 /**
  * Loads every config file between a starting directory and `stopAtDir`, nearest first.
@@ -31,7 +31,7 @@ import { listDirectoryChainMatches } from './directory-chain-matches.ts';
  * });
  *
  * @category Filesystem
- * @stage release
+ * @stage candidate
  * @throws If a file name is absolute or escapes its level, if `stopAtDir` is off the chain, or if a matched
  * file has no default export. Rethrows whatever `parseConfig` throws, after which no farther file is imported.
  */
