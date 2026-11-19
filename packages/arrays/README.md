@@ -14,7 +14,7 @@ pnpm add @williamthorsen/toolbelt.arrays
 
 Requires Node.js 24 or later.
 
-`findItemOrThrow` and `getItemAtIndexOrThrow` are candidate tier: imported from `@williamthorsen/toolbelt.arrays/candidate` rather than the package root, and subject to change.
+`listDuplicateItems` is release tier, imported from the package root. `findItemOrThrow` and `getItemAtIndexOrThrow` are candidate tier: imported from `@williamthorsen/toolbelt.arrays/candidate` rather than the package root, and subject to change.
 
 ## `findItemOrThrow`
 

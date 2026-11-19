@@ -1,4 +1,4 @@
-import { capitalize } from '../3-candidate/capitalize.ts';
+import { capitalize } from '../4-release/capitalize.ts';
 
 /**
  * Derives the case change that turns `source` into `target` and returns a function that applies it to other text,

@@ -4,8 +4,7 @@
  * @todo: Compare to similar function from sugarbowl.
  *
  * @category Array
- * @experimental
- * @stage candidate
+ * @stage release
  */
 export function listDuplicateItems<T>(items: Iterable<T>): T[] {
   const duplicates = new Set<T>();

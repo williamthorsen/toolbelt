@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { flushMicrotasks } from '../../3-candidate/flushMicrotasks.ts';
 import { delay } from '../delay.ts';
-import { flushMicrotasks } from '../flushMicrotasks.ts';
 
 describe(delay, () => {
   beforeEach(() => {

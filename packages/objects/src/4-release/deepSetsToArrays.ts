@@ -1,4 +1,4 @@
-import { isRecord } from '../4-release/is-object.ts';
+import { isRecord } from './is-object.ts';
 
 /**
  * Converts every Set in a value to a sorted array, descending into arrays and records.

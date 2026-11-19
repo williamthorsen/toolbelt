@@ -19,7 +19,7 @@ const OWN_CAPITALIZE =
 const PLURALIZE = "export const noun = count === 1 ? 'item' : 'items';\n";
 const JOINED_ARRAY = "export const text = [\n  'first',\n  'second',\n].join('\\n');\n";
 const LAYOUT_TEMPLATE = 'export function help() {\n  return `Usage: tool\nCommands:\n`;\n}\n';
-const ADOPTER = "import { capitalize } from '@williamthorsen/toolbelt.strings/candidate';\ncapitalize(word);\n";
+const ADOPTER = "import { capitalize } from '@williamthorsen/toolbelt.strings';\ncapitalize(word);\n";
 const EVERY_IDIOM = {
   'package.json': MANIFEST,
   'src/__tests__/text.unit.test.ts': JOINED_ARRAY,
