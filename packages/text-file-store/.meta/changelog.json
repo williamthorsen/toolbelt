@@ -1,0 +1,45 @@
+[
+  {
+    "version": "0.2.0",
+    "date": "2026-11-22",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds the `FileStore` interface, whose `read`, `write`, and `remove` resolve to a result naming why an operation failed (a missing file, a name already held, a refused write, or a store out of reach) rather than throwing. (#780)",
+            "hash": "13bb96d73982b7eb3a779ef02c3f188869b7996a",
+            "entry": 1
+          },
+          {
+            "description": "Adds `createWebStorageFileStore`, which keeps each file under a key prefix in a Web Storage area such as `localStorage` and reports a write past the area's quota as refused. (#780)",
+            "hash": "13bb96d73982b7eb3a779ef02c3f188869b7996a",
+            "entry": 2
+          },
+          {
+            "description": "Adds `createHttpFileStore`, a `FileStore` client for a server that implements the HTTP protocol documented in the package README. (#780)",
+            "hash": "13bb96d73982b7eb3a779ef02c3f188869b7996a",
+            "entry": 3
+          },
+          {
+            "description": "Adds `createMemoryFileStore`, an in-memory `FileStore` with a clock independent of the system's and an `isUnreachable` flag that makes every method report the store as out of reach, for testing a caller's failure handling. (#780)",
+            "hash": "13bb96d73982b7eb3a779ef02c3f188869b7996a",
+            "entry": 4
+          }
+        ]
+      },
+      {
+        "title": "🏗️ Internal features",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Adds the empty `@williamthorsen/toolbelt.text-file-store` package, scaffolded from `packages/_template`, and registers it in the records that `__tests__/package-registration.app.unit.test.ts` checks and in the `pnpm-lock.yaml` importers. (#778)",
+            "hash": "894127844ad99365f70fad85d0c1a3a74d35482e",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  }
+]

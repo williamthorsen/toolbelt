@@ -1,5 +1,27 @@
 [
   {
+    "version": "0.3.0",
+    "date": "2026-11-22",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds an optional `Job.maxOutputTokens` to `@williamthorsen/toolbelt.llm`, which caps the output tokens of all of a job's rounds together and ends a run that reaches the cap as `unfinished` with the new reason `token-cap`. (#781)",
+            "hash": "9ff234252cfafd40b67cd80f80c539e3721c3ee7",
+            "entry": 1
+          },
+          {
+            "description": "Adds a `reserveJob` option to `createJobHandler`, which runs after `countJob` and either refuses the job with a 429 or grants it with an output-token cap and a `settle` callback that the handler calls exactly once with the job's status and usage, whether the job completes, ends unfinished, fails, or is cancelled. (#781)",
+            "hash": "9ff234252cfafd40b67cd80f80c539e3721c3ee7",
+            "entry": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.2.1",
     "date": "2026-11-19",
     "sections": [
