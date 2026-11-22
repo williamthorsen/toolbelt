@@ -1,4 +1,5 @@
 export { createHttpFileStore } from './createHttpFileStore.ts';
+export { createWebStorageFileStore } from './createWebStorageFileStore.ts';
 export type {
   FileStore,
   StoredFileEntry,
