@@ -32,7 +32,7 @@
     "@vitest/eslint-plugin": "1.6.28",
     "@williamthorsen/eslint-config-typescript": "23.1.0",
     "@williamthorsen/nmr": "2.3.1",
-    "@williamthorsen/release-kit": "18.6.1",
+    "@williamthorsen/release-kit": "18.7.0",
     "@williamthorsen/strict-lint": "16.0.1",
     "@williamthorsen/tsconfig": "0.14.1",
     "codeassembly": "0.21.0",
