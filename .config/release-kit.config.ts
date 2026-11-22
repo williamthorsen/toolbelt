@@ -33,6 +33,7 @@ const config = defineConfig({
       'scope:strings': { color: '00ff96' },
       'scope:terminal': { color: '00ff96' },
       'scope:testing': { color: '00ff96' },
+      'scope:text-file-store': { color: '00ff96' },
       'scope:tools': { color: '00ff96' },
       'scope:vitest': { color: '00ff96' },
     },
