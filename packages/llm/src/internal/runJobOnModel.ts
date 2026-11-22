@@ -15,6 +15,11 @@ import type { Job, JobEvent, JobOutcome, JobTool, RunJobOptions, Usage } from '.
 import { assertPositiveInteger } from './assertPositiveInteger.ts';
 import { addUsage, ZERO_USAGE } from './usage.ts';
 
+/** The part of an AI SDK step that the output cap reads. */
+interface StepUsage {
+  readonly usage: LanguageModelUsage;
+}
+
 /** What a run has counted so far. */
 interface RunProgress {
   rounds: number;
@@ -59,9 +64,9 @@ export async function runJobOnModel<Result>(
     stopWhen: [
       stepCountIs(job.maxRounds),
       () => job.readResult() !== undefined,
-      () => isTokenCapReached(job, progress),
+      ({ steps }) => job.maxOutputTokens !== undefined && sumOutputTokens(steps) >= job.maxOutputTokens,
     ],
-    ...(job.maxOutputTokens !== undefined && { prepareStep: buildCappedStep(job.maxOutputTokens, progress) }),
+    ...(job.maxOutputTokens !== undefined && { prepareStep: buildCappedStep(job.maxOutputTokens) }),
     abortSignal: signal === undefined ? controller.signal : AbortSignal.any([signal, controller.signal]),
     // The loop below reads every error from the stream; the default handler would also log it.
     onError: () => {},
@@ -86,8 +91,10 @@ export async function runJobOnModel<Result>(
 
 // region | Helpers
 /** Returns a `prepareStep` that limits each round's output to what remains of the cap. */
-function buildCappedStep(maxOutputTokens: number, progress: RunProgress): () => { maxOutputTokens: number } {
-  return () => ({ maxOutputTokens: maxOutputTokens - progress.usage.outputTokens });
+function buildCappedStep(
+  maxOutputTokens: number,
+): (options: { readonly steps: readonly StepUsage[] }) => { maxOutputTokens: number } {
+  return ({ steps }) => ({ maxOutputTokens: maxOutputTokens - sumOutputTokens(steps) });
 }
 
 /** Builds the outcome of a run that ended without failing. */
@@ -166,6 +173,11 @@ function recordPart(part: TextStreamPart<ToolSet>, progress: RunProgress): JobEv
     default:
       return undefined;
   }
+}
+
+/** Adds up the output tokens of the steps that the AI SDK recorded, counting an unreported count as 0. */
+function sumOutputTokens(steps: readonly StepUsage[]): number {
+  return steps.reduce((total, step) => total + (step.usage.outputTokens ?? 0), 0);
 }
 
 /** Chooses what a failed run rejects with: a tool's throw, then the caller's abort, then the error itself. */

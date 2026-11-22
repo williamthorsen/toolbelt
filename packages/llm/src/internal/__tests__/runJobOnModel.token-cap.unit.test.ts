@@ -35,6 +35,20 @@ describe(runJobOnModel, () => {
     expect(model.doStreamCalls).toHaveLength(2);
   });
 
+  it('ends a job whose output reaches the cap in a round that calls tools, before another round', async () => {
+    const model = new MockLanguageModelV4({
+      doStream: [
+        buildRound([buildToolCall('c1', 'check', { draft: 'a' })], 'tool-calls', 100),
+        buildRound(buildText('unreachable')),
+      ],
+    });
+
+    const outcome = await runJobOnModel({ ...createSubmitJob(), maxOutputTokens: 100 }, model);
+
+    expect(outcome).toMatchObject({ status: 'unfinished', reason: 'token-cap', rounds: 1 });
+    expect(model.doStreamCalls).toHaveLength(1);
+  });
+
   it('reports a job that reaches the cap on the round that produces its result as completed', async () => {
     const model = new MockLanguageModelV4({
       doStream: [buildRound([buildToolCall('c1', 'submit', { value: 'done' })], 'tool-calls', 100)],
