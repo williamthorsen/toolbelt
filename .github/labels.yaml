@@ -169,6 +169,9 @@
 - name: scope:testing
   color: 00ff96
   description: ''
+- name: scope:text-file-store
+  color: 00ff96
+  description: ''
 - name: scope:tools
   color: 00ff96
   description: ''

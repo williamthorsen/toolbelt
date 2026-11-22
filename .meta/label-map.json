@@ -43,6 +43,7 @@
     "strings": "scope:strings",
     "terminal": "scope:terminal",
     "testing": "scope:testing",
+    "text-file-store": "scope:text-file-store",
     "tools": "scope:tools",
     "vitest": "scope:vitest",
     "root": "scope:root"
