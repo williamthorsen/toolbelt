@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.0 — 2026-11-22
+
+### 🎉 Features
+
+- Makes `globalDailyLimit` optional in `createUpstashJobCounter`, which limits jobs per IP alone and does not keep a site-wide count when the option is omitted, for a site that bounds its spend with `reserveJob` instead. (#784)
+
 ## 0.3.0 — 2026-11-22
 
 ### 🎉 Features

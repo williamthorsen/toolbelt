@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.4.0",
+    "date": "2026-11-22",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Makes `globalDailyLimit` optional in `createUpstashJobCounter`, which limits jobs per IP alone and does not keep a site-wide count when the option is omitted, for a site that bounds its spend with `reserveJob` instead. (#784)",
+            "hash": "cae3a7979898f0e63b4da164499b38e706ffddf8",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.3.0",
     "date": "2026-11-22",
     "sections": [
