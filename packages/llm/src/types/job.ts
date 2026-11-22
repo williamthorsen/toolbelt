@@ -14,6 +14,11 @@ export interface Job<Result> {
   /** The most model requests that the run makes; a positive integer. */
   readonly maxRounds: number;
   /**
+   * The most output tokens that the run's rounds produce together; a positive integer. The runner limits each round
+   * to what remains of it. Without it, only the provider's own limit applies to each round.
+   */
+  readonly maxOutputTokens?: number;
+  /**
    * Returns the job's result once its tools have produced one, and `undefined` until then. The runner calls it
    * after each round and stops as soon as it returns a value. The result must be JSON-serializable.
    */
@@ -94,15 +99,16 @@ export interface Usage {
 }
 
 /**
- * How a run ended: `completed` with the job's result, or `unfinished` because it reached `maxRounds` with the model
- * still calling tools (`round-cap`) or because the model stopped calling tools (`stopped`) before the job had a
- * result. It is JSON-serializable.
+ * How a run ended: `completed` with the job's result, or `unfinished` because its output reached `maxOutputTokens`
+ * before the model stopped on its own (`token-cap`), because it reached `maxRounds` with the model still calling
+ * tools (`round-cap`), or because the model stopped calling tools (`stopped`) before the job had a result. It is
+ * JSON-serializable.
  */
 export type JobOutcome<Result> =
   | { readonly status: 'completed'; readonly result: Result; readonly rounds: number; readonly usage: Usage }
   | {
       readonly status: 'unfinished';
-      readonly reason: 'round-cap' | 'stopped';
+      readonly reason: 'round-cap' | 'stopped' | 'token-cap';
       readonly rounds: number;
       readonly usage: Usage;
     };

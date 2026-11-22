@@ -34,6 +34,7 @@ export async function runJobOnModel<Result>(
   { signal, onEvent }: RunJobOptions = {},
 ): Promise<JobOutcome<Result>> {
   assertPositiveInteger(job.maxRounds, 'maxRounds');
+  if (job.maxOutputTokens !== undefined) assertPositiveInteger(job.maxOutputTokens, 'maxOutputTokens');
   signal?.throwIfAborted();
 
   // Ends the model's requests when a tool throws or the run fails.
@@ -46,6 +47,7 @@ export async function runJobOnModel<Result>(
     onEvent?.({ type: 'tool-error', ...call, message: describeError(error) });
   }
 
+  const progress: RunProgress = { rounds: 0, usage: ZERO_USAGE, lastFinishReason: undefined };
   const result = streamText({
     model,
     instructions: {
@@ -55,13 +57,17 @@ export async function runJobOnModel<Result>(
     },
     prompt: job.input,
     tools: buildToolSet(job.tools, recordToolFailure),
-    stopWhen: [stepCountIs(job.maxRounds), () => job.readResult() !== undefined],
+    stopWhen: [
+      stepCountIs(job.maxRounds),
+      () => job.readResult() !== undefined,
+      () => isTokenCapReached(job, progress),
+    ],
+    ...(job.maxOutputTokens !== undefined && { prepareStep: buildCappedStep(job.maxOutputTokens, progress) }),
     abortSignal: signal === undefined ? controller.signal : AbortSignal.any([signal, controller.signal]),
     // The loop below reads every error from the stream; the default handler would also log it.
     onError: () => {},
   });
 
-  const progress: RunProgress = { rounds: 0, usage: ZERO_USAGE, lastFinishReason: undefined };
   try {
     for await (const part of result.stream) {
       if (part.type === 'error') throw part.error;
@@ -90,10 +96,17 @@ function addUsage(a: Usage, b: Usage): Usage {
   };
 }
 
+/** Returns a `prepareStep` that limits each round's output to what remains of the cap. */
+function buildCappedStep(maxOutputTokens: number, progress: RunProgress): () => { maxOutputTokens: number } {
+  return () => ({ maxOutputTokens: maxOutputTokens - progress.usage.outputTokens });
+}
+
 /** Builds the outcome of a run that ended without failing. */
-function buildOutcome<Result>(job: Job<Result>, { rounds, usage, lastFinishReason }: RunProgress): JobOutcome<Result> {
+function buildOutcome<Result>(job: Job<Result>, progress: RunProgress): JobOutcome<Result> {
+  const { rounds, usage, lastFinishReason } = progress;
   const result = job.readResult();
   if (result !== undefined) return { status: 'completed', result, rounds, usage };
+  if (isTokenCapReached(job, progress)) return { status: 'unfinished', reason: 'token-cap', rounds, usage };
   // Only a round that ended in tool calls would have been followed by another, had the cap allowed it.
   const reason = rounds >= job.maxRounds && lastFinishReason === 'tool-calls' ? 'round-cap' : 'stopped';
   return { status: 'unfinished', reason, rounds, usage };
@@ -131,6 +144,11 @@ function convertUsage(usage: LanguageModelUsage): Usage {
     cacheReadTokens: usage.inputTokenDetails.cacheReadTokens ?? 0,
     cacheWriteTokens: usage.inputTokenDetails.cacheWriteTokens ?? 0,
   };
+}
+
+/** Reports whether the run's output has reached the job's cap in a round that the model did not end on its own. */
+function isTokenCapReached(job: Job<unknown>, { usage, lastFinishReason }: RunProgress): boolean {
+  return job.maxOutputTokens !== undefined && usage.outputTokens >= job.maxOutputTokens && lastFinishReason !== 'stop';
 }
 
 /** Records a stream part in the run's progress and returns the event that it reports, if any. */
