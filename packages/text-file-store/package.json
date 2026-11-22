@@ -1,7 +1,7 @@
 {
   "name": "@williamthorsen/toolbelt.text-file-store",
   "version": "0.1.0",
-  "description": "A store of named text files, with HTTP and Web Storage backends",
+  "description": "A store of named text files, with Web Storage, HTTP, and memory backends",
   "keywords": [
     "esm",
     "http",
@@ -44,6 +44,9 @@
   ],
   "scripts": {
     "prepublishOnly": "nmr build"
+  },
+  "dependencies": {
+    "@williamthorsen/toolbelt.objects": "workspace:*"
   },
   "engines": {
     "node": ">=24.0.0"
