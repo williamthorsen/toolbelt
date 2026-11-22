@@ -85,6 +85,26 @@ describe(createUpstashJobCounter, () => {
     expect(redis.counts.keys().toArray()).toStrictEqual(['app:ip:2026-11-17:1.2.3.4', 'app:global:2026-11-17']);
   });
 
+  it('limits jobs per IP alone without a global cap, never counting a site-wide key', async () => {
+    using redis = spyOnUpstash();
+    const { globalDailyLimit: _globalDailyLimit, ...perIpOnly } = OPTIONS;
+    const countJob = createUpstashJobCounter(perIpOnly);
+
+    for (const ip of ['1.1.1.1', '2.2.2.2', '3.3.3.3', '4.4.4.4']) {
+      await expect(countJob(buildRequest(ip))).resolves.toStrictEqual({ allowed: true });
+    }
+    await countJob(buildRequest('1.1.1.1'));
+
+    await expect(countJob(buildRequest('1.1.1.1'))).resolves.toStrictEqual({ allowed: false, limit: 'per-ip-daily' });
+    expect(
+      redis.counts
+        .keys()
+        .filter((key) => key.includes(':global:'))
+        .toArray(),
+    ).toStrictEqual([]);
+    expect(redis.spy).toHaveBeenCalledTimes(6);
+  });
+
   it.each([
     ['absent', undefined],
     ['empty', ''],

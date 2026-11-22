@@ -7,12 +7,13 @@ const KEY_TTL_SECONDS = '172800';
 const TIMEOUT_MS = 5000;
 
 /**
- * Creates a `countJob` for `createJobHandler` that counts each job in Upstash Redis against a per-IP limit and a global
- * cap, both over the current UTC day. A job over the per-IP limit is refused as `per-ip-daily` without counting
- * against the global cap; one over the global cap is refused as `global-daily`. A refused job stays counted, and so
- * does a job that later fails. The counter throws, so that the handler refuses the job as unavailable, when the
- * request has no caller IP, or when Upstash fails, does not answer within 5 seconds, or answers with an error or an
- * unexpected body. Throws a `RangeError` when `perIpLimit` or `globalDailyLimit` is not a positive integer.
+ * Creates a `countJob` for `createJobHandler` that counts each job in Upstash Redis against a per-IP limit and, when
+ * `globalDailyLimit` is set, a global cap, both over the current UTC day. A job over the per-IP limit is refused as
+ * `per-ip-daily` without counting against the global cap; one over the global cap is refused as `global-daily`. A
+ * refused job stays counted, and so does a job that later fails. The counter throws, so that the handler refuses the
+ * job as unavailable, when the request has no caller IP, or when Upstash fails, does not answer within 5 seconds, or
+ * answers with an error or an unexpected body. Throws a `RangeError` when `perIpLimit` or a set `globalDailyLimit` is
+ * not a positive integer.
  *
  * @category LLM
  * @stage proposed
@@ -20,7 +21,8 @@ const TIMEOUT_MS = 5000;
  */
 export function createUpstashJobCounter(options: UpstashJobCounterOptions): (request: Request) => Promise<JobCount> {
   assertPositiveInteger(options.perIpLimit, 'perIpLimit');
-  assertPositiveInteger(options.globalDailyLimit, 'globalDailyLimit');
+  const { globalDailyLimit } = options;
+  if (globalDailyLimit !== undefined) assertPositiveInteger(globalDailyLimit, 'globalDailyLimit');
   const keyPrefix = options.keyPrefix ?? DEFAULT_KEY_PREFIX;
 
   return async (request) => {
@@ -31,7 +33,7 @@ export function createUpstashJobCounter(options: UpstashJobCounterOptions): (req
     if ((await countKey(options, `${keyPrefix}:ip:${day}:${ip}`)) > options.perIpLimit) {
       return { allowed: false, limit: 'per-ip-daily' };
     }
-    if ((await countKey(options, `${keyPrefix}:global:${day}`)) > options.globalDailyLimit) {
+    if (globalDailyLimit !== undefined && (await countKey(options, `${keyPrefix}:global:${day}`)) > globalDailyLimit) {
       return { allowed: false, limit: 'global-daily' };
     }
     return { allowed: true };
