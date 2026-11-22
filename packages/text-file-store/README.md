@@ -37,14 +37,14 @@ All exports are in the `/proposed` tier, and their shape may change in any relea
 
 `createHttpFileStore(basePath, fetch?)` reads and writes the files that a server serves under `basePath`, a path on the page's origin or an absolute URL. The server implements this protocol:
 
-| Request                                               | Success                                                         | Failure statuses that the client distinguishes |
-| ----------------------------------------------------- | --------------------------------------------------------------- | ---------------------------------------------- |
-| `GET {basePath}`                                      | `{ files: [{ name, modifiedAt }] }`                             | any, as a rejection                            |
-| `GET {basePath}/{name}`                               | `{ text }`                                                      | `404` missing                                  |
-| `PUT {basePath}/{name}`, `?replace=true` to overwrite | any `2xx`; the body is the text, as `text/plain; charset=utf-8` | `409` exists; `400`, `413`, `422` refused      |
-| `DELETE {basePath}/{name}`                            | any `2xx`, such as `204`                                        | `404` missing; `400`, `409` refused            |
+| Request                                                                                                   | Success                             | Failure statuses that the client distinguishes |
+| --------------------------------------------------------------------------------------------------------- | ----------------------------------- | ---------------------------------------------- |
+| `GET {basePath}`                                                                                          | `{ files: [{ name, modifiedAt }] }` | any, as a rejection                            |
+| `GET {basePath}/{name}`                                                                                   | `{ text }`                          | `404` missing                                  |
+| `PUT {basePath}/{name}` with the text as a `text/plain; charset=utf-8` body, `?replace=true` to overwrite | any `2xx`                           | `409` exists; `400`, `413`, `422` refused      |
+| `DELETE {basePath}/{name}`                                                                                | any `2xx`, such as `204`            | `404` missing; `400`, `409` refused            |
 
-`{name}` is URI-encoded. A failure answers `{ problems: [{ path, message }] }`, whose messages the client returns; any other failure, and a server out of reach, is unavailable.
+`{name}` is URI-encoded. A failure answers `{ problems: [{ path, message }] }`, whose messages the client returns. For `read`, `write`, and `remove`, any other failure, and a server out of reach, is unavailable.
 
 ### Memory
 
