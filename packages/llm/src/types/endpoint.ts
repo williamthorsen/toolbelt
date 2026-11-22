@@ -1,4 +1,4 @@
-import type { Job, ProviderConnection } from './job.ts';
+import type { Job, ProviderConnection, Usage } from './job.ts';
 
 /**
  * An operator's endpoint, served by `createJobHandler`, on which `runJob` runs a job. The endpoint runs its own job on
@@ -13,6 +13,29 @@ export interface EndpointConnection {
 
 /** The counter's decision on a job: allowed, or refused by the named limit. */
 export type JobCount = { readonly allowed: true } | { readonly allowed: false; readonly limit: string };
+
+/**
+ * The reservation's decision on a job: refused by the named limit, or granted with the most output tokens that the
+ * job may produce across its rounds, a positive integer, and the callback that settles the reservation. The handler
+ * calls `settle` exactly once, whether the job completes, ends unfinished, fails, or is cancelled, and awaits it
+ * before it ends the response; a throw from it goes to `onError`.
+ */
+export type JobReservation =
+  | {
+      readonly allowed: true;
+      readonly maxOutputTokens: number;
+      settle(settlement: JobSettlement): Promise<void> | void;
+    }
+  | { readonly allowed: false; readonly limit: string };
+
+/**
+ * How a reserved job ended, with the usage of every round that reported one. A `failed` or `cancelled` job's usage
+ * excludes the round in flight, whose usage the provider never reported.
+ */
+export interface JobSettlement {
+  readonly status: 'cancelled' | 'completed' | 'failed' | 'unfinished';
+  readonly usage: Usage;
+}
 
 /** How `createJobHandler` builds, caps, and admits the jobs that it runs. */
 export interface JobHandlerOptions<Result> {
@@ -33,8 +56,14 @@ export interface JobHandlerOptions<Result> {
    */
   readonly countJob?: (request: Request) => Promise<JobCount>;
   /**
+   * Reserves a job's budget after `countJob` and before its first model request. It refuses the job, or grants a
+   * reservation whose `maxOutputTokens` lowers the job's own cap and whose `settle` the handler calls once the job
+   * ends. A throw refuses the job as unavailable. It receives the request after the handler has read its body.
+   */
+  readonly reserveJob?: (request: Request) => Promise<JobReservation>;
+  /**
    * Receives each error that the handler withholds from the page: a failed job, a failed `createJob`, a failed bot
-   * check, or a failed counter. The handler ignores a throw from it.
+   * check, a failed counter, a failed reservation, or a failed settlement. The handler ignores a throw from it.
    */
   readonly onError?: (error: unknown) => void;
   /** Builds a fresh job for a request's input. */

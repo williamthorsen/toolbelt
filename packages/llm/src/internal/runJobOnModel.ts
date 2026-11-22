@@ -13,6 +13,7 @@ import {
 import { JobRunError } from '../1-proposed/JobRunError.ts';
 import type { Job, JobEvent, JobOutcome, JobTool, RunJobOptions, Usage } from '../types/job.ts';
 import { assertPositiveInteger } from './assertPositiveInteger.ts';
+import { addUsage, ZERO_USAGE } from './usage.ts';
 
 /** What a run has counted so far. */
 interface RunProgress {
@@ -20,8 +21,6 @@ interface RunProgress {
   usage: Usage;
   lastFinishReason: FinishReason | undefined;
 }
-
-const ZERO_USAGE: Usage = { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 };
 
 /**
  * Runs a job's model loop on a language model, one model request per round, and returns how it ended.
@@ -86,16 +85,6 @@ export async function runJobOnModel<Result>(
 }
 
 // region | Helpers
-/** Adds two usage counts field by field. */
-function addUsage(a: Usage, b: Usage): Usage {
-  return {
-    inputTokens: a.inputTokens + b.inputTokens,
-    outputTokens: a.outputTokens + b.outputTokens,
-    cacheReadTokens: a.cacheReadTokens + b.cacheReadTokens,
-    cacheWriteTokens: a.cacheWriteTokens + b.cacheWriteTokens,
-  };
-}
-
 /** Returns a `prepareStep` that limits each round's output to what remains of the cap. */
 function buildCappedStep(maxOutputTokens: number, progress: RunProgress): () => { maxOutputTokens: number } {
   return () => ({ maxOutputTokens: maxOutputTokens - progress.usage.outputTokens });

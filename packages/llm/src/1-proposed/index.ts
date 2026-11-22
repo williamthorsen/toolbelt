@@ -4,6 +4,8 @@ export type {
   JobCount,
   JobHandlerOptions,
   JobRefusalReason,
+  JobReservation,
+  JobSettlement,
   TurnstileVerifierOptions,
   UpstashJobCounterOptions,
 } from '../types/endpoint.ts';
