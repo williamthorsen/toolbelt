@@ -1,10 +1,21 @@
 import type { LanguageModel } from 'ai';
 
-import type { JobHandlerOptions, JobRefusalReason } from '../types/endpoint.ts';
-import type { Job } from '../types/job.ts';
+import type { JobHandlerOptions, JobRefusalReason, JobReservation, JobSettlement } from '../types/endpoint.ts';
+import type { Job, Usage } from '../types/job.ts';
 import { assertPositiveInteger } from './assertPositiveInteger.ts';
 import { encodeStreamEvent, JOB_FAILURE_BODY, type JobRefusalBody, REFUSAL_STATUSES } from './jobStream.ts';
 import { runJobOnModel } from './runJobOnModel.ts';
+import { addUsage, ZERO_USAGE } from './usage.ts';
+
+/** Settles the job's reservation, if any, at most once. */
+type Settle = (settlement: JobSettlement) => Promise<void>;
+
+/** What a job's stream reports to besides the page. */
+interface StreamContext {
+  readonly request: AbortSignal;
+  readonly onError: (error: unknown) => void;
+  readonly settle: Settle;
+}
 
 // JSON escapes a UTF-16 code unit in at most 6 bytes (`\uXXXX`), and the envelope `{"input":""}` takes a few more.
 const BYTES_PER_INPUT_UNIT = 6;
@@ -63,16 +74,35 @@ export async function handleJobRequest<Result>(
     }
   }
 
+  let reservation: Extract<JobReservation, { allowed: true }> | undefined;
+  if (options.reserveJob !== undefined) {
+    let reserved;
+    try {
+      reserved = await options.reserveJob(request);
+    } catch (error) {
+      onError(error);
+      return refuse('counter-unavailable', 'The job budget is unavailable.');
+    }
+    if (!reserved.allowed) {
+      return refuse('limit-reached', `The job limit "${reserved.limit}" is reached.`, {}, reserved.limit);
+    }
+    reservation = reserved;
+  }
+  const settle = buildSettler(reservation, onError);
+
   let job: Job<Result>;
   try {
-    job = capRounds(options.createJob(input), options.maxRounds);
+    if (reservation !== undefined) assertPositiveInteger(reservation.maxOutputTokens, 'maxOutputTokens');
+    job = capJob(options.createJob(input), options.maxRounds, reservation?.maxOutputTokens);
     assertPositiveInteger(job.maxRounds, 'maxRounds');
+    if (job.maxOutputTokens !== undefined) assertPositiveInteger(job.maxOutputTokens, 'maxOutputTokens');
   } catch (error) {
     onError(error);
+    await settle({ status: 'failed', usage: ZERO_USAGE });
     return Response.json(JOB_FAILURE_BODY, { status: 500 });
   }
 
-  return new Response(streamJob(job, model, request.signal, onError), {
+  return new Response(streamJob(job, model, { request: request.signal, onError, settle }), {
     headers: { 'cache-control': 'no-cache', 'content-type': 'text/event-stream' },
   });
 }
@@ -89,16 +119,49 @@ function buildErrorReporter(onError: ((error: unknown) => void) | undefined): (e
   };
 }
 
-/** Returns the job with its round cap lowered to `maxRounds`, delegating the rest to the job. */
-function capRounds<Result>(job: Job<Result>, maxRounds: number | undefined): Job<Result> {
-  if (maxRounds === undefined || maxRounds >= job.maxRounds) return job;
+/** Returns a settler that settles the reservation once and passes a failed settlement to `onError`. */
+function buildSettler(
+  reservation: Extract<JobReservation, { allowed: true }> | undefined,
+  onError: (error: unknown) => void,
+): Settle {
+  let isSettled = false;
+  return async (settlement) => {
+    if (reservation === undefined || isSettled) return;
+    isSettled = true;
+    try {
+      await reservation.settle(settlement);
+    } catch (error) {
+      onError(error);
+    }
+  };
+}
+
+/**
+ * Returns the job with its round cap lowered to `maxRounds` and its output cap lowered to `maxOutputTokens`, each
+ * when it is lower than the job's own, delegating the rest to the job.
+ */
+function capJob<Result>(
+  job: Job<Result>,
+  maxRounds: number | undefined,
+  maxOutputTokens: number | undefined,
+): Job<Result> {
+  const cappedRounds = lowerCap(job.maxRounds, maxRounds);
+  const cappedOutput =
+    job.maxOutputTokens === undefined ? maxOutputTokens : lowerCap(job.maxOutputTokens, maxOutputTokens);
+  if (cappedRounds === job.maxRounds && cappedOutput === job.maxOutputTokens) return job;
   return {
     instructions: job.instructions,
     input: job.input,
     tools: job.tools,
-    maxRounds,
+    maxRounds: cappedRounds,
+    ...(cappedOutput !== undefined && { maxOutputTokens: cappedOutput }),
     readResult: () => job.readResult(),
   };
+}
+
+/** Returns the lower of a job's own cap and the handler's, when the handler has one. */
+function lowerCap(own: number, cap: number | undefined): number {
+  return cap === undefined ? own : Math.min(own, cap);
 }
 
 /** Returns the body's `input`, or `undefined` when the body is not a JSON object with a string `input`. */
@@ -125,15 +188,15 @@ function refuse(
 }
 
 /**
- * Runs the job, enqueuing its events and then its outcome, or a generic failure unless the run was aborted, and
- * closes the stream unless the reader cancelled it.
+ * Runs the job, enqueuing its events and then its outcome, or a generic failure unless the run was aborted, settles
+ * its reservation, and closes the stream unless the reader cancelled it.
  */
 async function pumpJob<Result>(
   job: Job<Result>,
   model: LanguageModel,
   controller: ReadableStreamDefaultController<Uint8Array>,
   signals: { readonly request: AbortSignal; readonly cancel: AbortSignal },
-  onError: (error: unknown) => void,
+  { onError, settle }: Pick<StreamContext, 'onError' | 'settle'>,
 ): Promise<void> {
   const signal = AbortSignal.any([signals.request, signals.cancel]);
   const encoder = new TextEncoder();
@@ -141,28 +204,35 @@ async function pumpJob<Result>(
     if (!signals.cancel.aborted) controller.enqueue(encoder.encode(encodeStreamEvent(...event)));
   }
 
+  let usage: Usage = ZERO_USAGE;
+  let settlement: JobSettlement;
   try {
-    send('outcome', await runJobOnModel(job, model, { signal, onEvent: (event) => send('job-event', event) }));
+    const outcome = await runJobOnModel(job, model, {
+      signal,
+      onEvent: (event) => {
+        if (event.type === 'round-finished') usage = addUsage(usage, event.usage);
+        send('job-event', event);
+      },
+    });
+    send('outcome', outcome);
+    settlement = { status: outcome.status, usage: outcome.usage };
   } catch (error) {
+    settlement = { status: signal.aborted ? 'cancelled' : 'failed', usage };
     if (!signal.aborted) {
       onError(error);
       send('failure', JOB_FAILURE_BODY);
     }
   }
+  await settle(settlement);
   if (!signals.cancel.aborted) controller.close();
 }
 
 /** Returns a stream of the job's run, which stops when the request aborts or the reader cancels the stream. */
-function streamJob<Result>(
-  job: Job<Result>,
-  model: LanguageModel,
-  requestSignal: AbortSignal,
-  onError: (error: unknown) => void,
-): ReadableStream<Uint8Array> {
+function streamJob<Result>(job: Job<Result>, model: LanguageModel, context: StreamContext): ReadableStream<Uint8Array> {
   const cancelController = new AbortController();
   return new ReadableStream<Uint8Array>({
     start(controller) {
-      void pumpJob(job, model, controller, { request: requestSignal, cancel: cancelController.signal }, onError);
+      void pumpJob(job, model, controller, { request: context.request, cancel: cancelController.signal }, context);
     },
     cancel(reason) {
       cancelController.abort(reason);

@@ -4,10 +4,14 @@ import { convertArrayToReadableStream } from 'ai/test';
 /** The usage that every round built by `buildRound` reports, in the package's own shape. */
 export const ROUND_USAGE = { inputTokens: 10, outputTokens: 3, cacheReadTokens: 5, cacheWriteTokens: 1 };
 
-/** Returns one round's stream: its content, then a finish part that reports `ROUND_USAGE`. */
+/**
+ * Returns one round's stream: its content, then a finish part that reports `ROUND_USAGE`, with its output tokens
+ * replaced by `outputTokens` when given.
+ */
 export function buildRound(
   content: LanguageModelV4StreamPart[],
-  finishReason: 'stop' | 'tool-calls' = 'tool-calls',
+  finishReason: 'length' | 'stop' | 'tool-calls' = 'tool-calls',
+  outputTokens = ROUND_USAGE.outputTokens,
 ): LanguageModelV4StreamResult {
   return {
     stream: convertArrayToReadableStream<LanguageModelV4StreamPart>([
@@ -18,7 +22,7 @@ export function buildRound(
         finishReason: { unified: finishReason, raw: finishReason },
         usage: {
           inputTokens: { total: 10, noCache: 4, cacheRead: 5, cacheWrite: 1 },
-          outputTokens: { total: 3, text: 3, reasoning: undefined },
+          outputTokens: { total: outputTokens, text: outputTokens, reasoning: undefined },
         },
       },
     ]),

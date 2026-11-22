@@ -8,9 +8,10 @@ import type { JobHandlerOptions } from '../types/endpoint.ts';
  * and streams the job's events and outcome to `runJob` on an `EndpointConnection`. It refuses a request before any
  * model request with a JSON body naming the reason: 405 for a method other than `POST`, 400 for a body that is not a
  * JSON object with a string `input`, 413 for an input over `maxInputLength`, 403 when `checkBot` refuses, 429 when
- * `countJob` refuses, and 503 when `checkBot` or `countJob` throws. A failure after streaming starts reaches the page
- * as a generic failure, and its error goes to `onError`. The handler adds no CORS headers. Throws a `RangeError` when
- * `maxInputLength` or `maxRounds` is not a positive integer.
+ * `countJob` or `reserveJob` refuses, and 503 when `checkBot`, `countJob`, or `reserveJob` throws. It caps a reserved
+ * job's output at the reservation's `maxOutputTokens` and settles the reservation once the job ends. A failure after
+ * streaming starts reaches the page as a generic failure, and its error goes to `onError`. The handler adds no CORS
+ * headers. Throws a `RangeError` when `maxInputLength` or `maxRounds` is not a positive integer.
  *
  * @category LLM
  * @stage proposed
