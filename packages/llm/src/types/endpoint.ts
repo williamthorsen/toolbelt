@@ -95,8 +95,11 @@ export interface UpstashJobCounterOptions {
   readonly readCallerIp: (request: Request) => string | undefined;
   /** The most jobs that one IP runs in a UTC day; a positive integer. */
   readonly perIpLimit: number;
-  /** The most jobs that all callers together run in a UTC day; a positive integer. */
-  readonly globalDailyLimit: number;
+  /**
+   * The most jobs that all callers together run in a UTC day; a positive integer. Without it, the counter limits jobs
+   * per IP alone and does not keep a site-wide count, such as when `reserveJob` bounds the site's spend.
+   */
+  readonly globalDailyLimit?: number;
   /** The prefix of the counters' keys, which lets several apps share one database; defaults to `llm-jobs`. */
   readonly keyPrefix?: string;
 }
