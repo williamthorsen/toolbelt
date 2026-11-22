@@ -32,7 +32,7 @@ TypeScript utility libraries, each published to npm as `@williamthorsen/toolbelt
 | [`@williamthorsen/toolbelt.strings`](packages/strings/README.md)                 | String-handling utilities                                                                                                  |
 | [`@williamthorsen/toolbelt.terminal`](packages/terminal/README.md)               | Utilities for rendering command-line output to terminals, pipes, and CI logs                                               |
 | [`@williamthorsen/toolbelt.testing`](packages/testing/README.md)                 | Runner-agnostic utilities for testing                                                                                      |
-| [`@williamthorsen/toolbelt.text-file-store`](packages/text-file-store/README.md) | A store of named text files, with HTTP and Web Storage backends                                                            |
+| [`@williamthorsen/toolbelt.text-file-store`](packages/text-file-store/README.md) | A store of named text files, with Web Storage, HTTP, and memory backends                                                   |
 | [`@williamthorsen/toolbelt.vitest`](packages/vitest/README.md)                   | Utilities for testing with Vitest                                                                                          |
 
 ## Maturity tiers

@@ -1,7 +1,7 @@
 {
   "name": "@williamthorsen/toolbelt.text-file-store",
   "version": "0.1.0",
-  "description": "A store of named text files, with HTTP and Web Storage backends",
+  "description": "A store of named text files, with Web Storage, HTTP, and memory backends",
   "keywords": [
     "esm",
     "http",
