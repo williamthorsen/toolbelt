@@ -1,5 +1,22 @@
 [
   {
+    "version": "5.1.0",
+    "date": "2026-11-23",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds `formatRelativeTime` to `@williamthorsen/toolbelt.datetime/proposed`, a function that describes an ISO date relative to a caller-supplied `now`, such as \"3 days ago\" or \"in 2 hours\", in the largest unit that the elapsed time reaches and in an optional locale. (#787)",
+            "hash": "0a7233338fb87b0468e12893350a0fa91382cfda",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "5.0.0",
     "date": "2026-11-19",
     "sections": [

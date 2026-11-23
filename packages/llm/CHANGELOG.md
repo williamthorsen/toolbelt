@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.1 — 2026-11-23
+
+### ⚡ Performance
+
+- Reduces the input cost of a multi-round `runJob` on an Anthropic connection by marking the end of the conversation and of the previous round as prompt-cache breakpoints, so that each round reads the input and the earlier rounds from the cache rather than at the full input rate. (#788)
+
+### 📚 Documentation
+
+- Documents in the `Usage` doc comments and the `toolbelt.llm` README that `inputTokens` counts every input token, cache reads and writes included, and in the doc comments that the uncached input is `inputTokens - cacheReadTokens - cacheWriteTokens`. (#789)
+
 ## 0.4.0 — 2026-11-22
 
 ### 🎉 Features

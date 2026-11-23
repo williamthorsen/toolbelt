@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 5.1.0 — 2026-11-23
+
+### 🎉 Features
+
+- Adds `formatRelativeTime` to `@williamthorsen/toolbelt.datetime/proposed`, a function that describes an ISO date relative to a caller-supplied `now`, such as "3 days ago" or "in 2 hours", in the largest unit that the elapsed time reaches and in an optional locale. (#787)
+
 ## 5.0.0 — 2026-11-19
 
 ### 🎉 Features
