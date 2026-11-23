@@ -98,7 +98,7 @@ connect-src 'self' https://api.anthropic.com https://api.openai.com https://gene
 
 `runJob` resolves with `completed` and the result, or with `unfinished` and its reason: `token-cap` when the job's output reached `maxOutputTokens` before the model stopped on its own, `round-cap` when the job reached `maxRounds` with the model still calling tools, or `stopped` when the model stopped calling tools first. Both report the rounds and the total usage, and both events and outcomes survive `JSON.stringify`.
 
-Aborting the `signal` rejects with the signal's reason. Any other failure, the provider's or a tool's, rejects with `JobRunError`, whose `cause` holds the underlying error. Its `reason` tells the app what to report: `credential-refused` when the provider refused the key, with the provider's own `providerMessage`; `unreachable` when no response arrived, which is also how a browser reports a provider that refuses calls from a page; and `failed` otherwise. On an endpoint connection, a refusal rejects with `JobRefusedError`, and the endpoint withholds a failure's underlying error, as its doc comment describes.
+Aborting the `signal` rejects with the signal's reason. Any other failure, the provider's or a tool's, rejects with `JobRunError`, whose `cause` holds the underlying error. Its `reason` tells the app what to report: `credential-refused` when the provider refused the key, with the provider's own `providerMessage`; `unreachable` when no response arrived, which is also how a browser reports a provider that refuses calls from a page; and `failed` otherwise. On an endpoint connection, a refusal rejects with `JobRefusedError`, whose `details` hold what a refused reservation attached, and the endpoint withholds a failure's underlying error, as its doc comment describes.
 
 ## The handler
 
@@ -163,7 +163,7 @@ export const POST = createJobHandler({
   maxRounds: 6,
   reserveJob: async () => {
     const reserved = await tank.reserve(priceWorstCase(MAX_OUTPUT_TOKENS));
-    if (!reserved.ok) return { allowed: false, limit: 'site-budget' };
+    if (!reserved.ok) return { allowed: false, limit: 'site-budget', details: reserved.snapshot };
     return {
       allowed: true,
       maxOutputTokens: MAX_OUTPUT_TOKENS,
@@ -177,6 +177,8 @@ export const POST = createJobHandler({
 ```
 
 The handler calls `settle` exactly once, with the job's `status` (`completed`, `unfinished`, `failed`, or `cancelled`) and the `usage` of every round that reported one, and awaits it before it ends the response. A `failed` or `cancelled` job's usage excludes the round in flight, whose usage the provider never reported. A throw from `settle` goes to `onError`.
+
+A refusal may include `details`, a JSON-serializable value that the page receives unchanged as `JobRefusedError.details`, such as the tank's snapshot, which the page validates with tank's `parseSnapshot` to show when the balance next covers a job.
 
 The reservation caps the job's output, not its input, so the amount reserved covers the worst-case input as well. Each round sends the instructions and tool definitions, the input, and everything that earlier rounds produced, so a job's input over all its rounds is at most `maxRounds` × (instructions and tool definitions + input + `maxOutputTokens` + the tools' total output) tokens. The job's own code bounds each term.
 
