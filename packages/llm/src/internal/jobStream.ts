@@ -14,6 +14,7 @@ export interface JobRefusalBody {
   readonly reason: JobRefusalReason;
   readonly message: string;
   readonly limit?: string;
+  readonly details?: unknown;
 }
 
 /** The data of a `failure` event, and the body of a response to a job that failed before streaming. */

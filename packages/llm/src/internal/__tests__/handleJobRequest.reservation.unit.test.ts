@@ -49,6 +49,37 @@ describe(handleJobRequest, () => {
     expect(model.doStreamCalls).toHaveLength(0);
   });
 
+  it("includes the refusal's details in the body", async () => {
+    const details = { balance: 0, readyAt: '2026-11-23T05:00:00.000Z', nested: [1, null] };
+    const reserveJob = () => Promise.resolve({ allowed: false, limit: 'site-budget', details } as const);
+
+    const response = await handleJobRequest(buildPost(), { ...OPTIONS, reserveJob }, mockModel([]));
+
+    expect(response.status).toBe(429);
+    await expect(response.json()).resolves.toMatchObject({ limit: 'site-budget', details });
+  });
+
+  it('omits details from the body of a refusal that does not have any', async () => {
+    const reserveJob = () => Promise.resolve({ allowed: false, limit: 'site-budget' } as const);
+
+    const response = await handleJobRequest(buildPost(), { ...OPTIONS, reserveJob }, mockModel([]));
+
+    await expect(response.json()).resolves.not.toHaveProperty('details');
+  });
+
+  it('refuses without details that cannot be serialized, reporting the error to onError', async () => {
+    const onError = vi.fn();
+    const reserveJob = () => Promise.resolve({ allowed: false, limit: 'site-budget', details: 1n } as const);
+
+    const response = await handleJobRequest(buildPost(), { ...OPTIONS, reserveJob, onError }, mockModel([]));
+
+    expect(response.status).toBe(429);
+    const body: unknown = await response.json();
+    expect(body).toMatchObject({ reason: 'limit-reached', limit: 'site-budget' });
+    expect(body).not.toHaveProperty('details');
+    expect(onError).toHaveBeenCalledWith(expect.any(TypeError));
+  });
+
   it('refuses a job when the reservation throws, reporting the error to onError', async () => {
     const failure = new Error('redis down');
     const onError = vi.fn();

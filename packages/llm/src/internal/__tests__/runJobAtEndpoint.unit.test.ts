@@ -1,14 +1,23 @@
+import { MockLanguageModelV4 } from 'ai/test';
 import { describe, expect, it, vi } from 'vitest';
 
 import { JobRefusedError } from '../../1-proposed/JobRefusedError.ts';
 import { JobRunError } from '../../1-proposed/JobRunError.ts';
 import { captureRejection } from '../../test-utils/captureRejection.ts';
 import { createSubmitJob } from '../../test-utils/createSubmitJob.ts';
+import type { JobHandlerOptions } from '../../types/endpoint.ts';
 import type { JobEvent, JobOutcome } from '../../types/job.ts';
+import { handleJobRequest } from '../handleJobRequest.ts';
 import { encodeStreamEvent, JOB_FAILURE_BODY, type JobStreamEventName } from '../jobStream.ts';
 import { runJobAtEndpoint } from '../runJobAtEndpoint.ts';
 
 const CONNECTION = { url: 'https://app.example/api/job', headers: { 'x-bot-check': 'token' } };
+
+const HANDLER_OPTIONS: JobHandlerOptions<string> = {
+  connection: { provider: 'anthropic', model: 'claude-haiku-5-5', apiKey: 'unused' },
+  maxInputLength: 20,
+  createJob: (input) => ({ ...createSubmitJob(), input }),
+};
 
 const EVENT: JobEvent = { type: 'text-delta', text: 'Hi' };
 
@@ -64,6 +73,31 @@ describe(runJobAtEndpoint, () => {
 
     expect(error).toBeInstanceOf(JobRefusedError);
     expect(error).toMatchObject({ status, reason });
+  });
+
+  it.each([
+    ['an object', { balance: 0, readyAt: '2026-11-23T05:00:00.000Z', nested: [1, null] }],
+    ['null', null],
+  ])("passes a reservation refusal's details, %s, to JobRefusedError unchanged", async (_label, details) => {
+    const reserveJob = () => Promise.resolve({ allowed: false, limit: 'site-budget', details } as const);
+    const response = await handleJobRequest(
+      new Request(CONNECTION.url, { method: 'POST', body: JSON.stringify({ input: 'x' }) }),
+      { ...HANDLER_OPTIONS, reserveJob },
+      new MockLanguageModelV4(),
+    );
+
+    const error = await captureRejection(run(response));
+
+    expect(error).toBeInstanceOf(JobRefusedError);
+    expect(error).toHaveProperty('details', details);
+  });
+
+  it('rejects with JobRefusedError without details for a refusal that does not have any', async () => {
+    const body = { reason: 'limit-reached', message: 'The job limit "per-ip" is reached.', limit: 'per-ip' };
+
+    const error = await captureRejection(run(Response.json(body, { status: 429 })));
+
+    expect(error).not.toHaveProperty('details');
   });
 
   it('rejects with JobRefusedError without a limit for a refusal that does not name one', async () => {
