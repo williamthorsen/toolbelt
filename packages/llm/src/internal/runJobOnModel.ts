@@ -16,7 +16,7 @@ import type { Job, JobEvent, JobOutcome, JobTool, RunJobOptions, Usage } from '.
 import { assertPositiveInteger } from './assertPositiveInteger.ts';
 import { addUsage, ZERO_USAGE } from './usage.ts';
 
-/** Marks the end of the content before it as an Anthropic cache breakpoint. */
+/** The provider options that make the end of a message or of the instructions an Anthropic cache breakpoint. */
 const CACHE_BREAKPOINT = { anthropic: { cacheControl: { type: 'ephemeral' } } } as const;
 
 /** The part of an AI SDK step that the output cap reads. */
@@ -131,8 +131,8 @@ function buildToolSet(
 
 /**
  * Returns a `prepareStep` that marks the end of the conversation and the end of the previous round's request as cache
- * breakpoints, and limits each round's output to what remains of the cap, if any. The previous round's end is the
- * prefix that it wrote to the cache, so a round reads that prefix whatever the number of blocks that it added; with the
+ * breakpoints, and limits each round's output to what remains of the cap, if any. The previous round's end marks the
+ * prefix that the previous round wrote to the cache, which a round then reads however many blocks it adds. With the
  * instructions' breakpoint, a request has at most three, within Anthropic's limit of four.
  */
 function buildStepPreparer(maxOutputTokens: number | undefined): (options: {
@@ -218,6 +218,7 @@ function selectRejection(
   if (signal?.aborted === true) return signal.reason;
   return new JobRunError({ cause: error });
 }
+
 /** Returns the message without a cache breakpoint, keeping its other provider options. */
 function unmarkMessage(message: ModelMessage): ModelMessage {
   const anthropic = message.providerOptions?.['anthropic'];
