@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.5.0 — 2026-11-23
+
+### 🎉 Features
+
+- Adds an optional `details` value to a refused `reserveJob` result, which the handler includes in the 429 refusal body and `runJob` exposes unvalidated as `JobRefusedError.details`, and which the handler drops and reports to `onError` when it cannot be serialized. (#791)
+
 ## 0.4.1 — 2026-11-23
 
 ### ⚡ Performance
