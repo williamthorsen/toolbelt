@@ -10,6 +10,14 @@ import { addUsage, ZERO_USAGE } from './usage.ts';
 /** Settles the job's reservation, if any, at most once. */
 type Settle = (settlement: JobSettlement) => Promise<void>;
 
+/** What a refusal's response adds to its reason and message. */
+interface RefusalOptions {
+  readonly headers?: Record<string, string>;
+  readonly limit?: string;
+  readonly details?: unknown;
+  readonly onError?: (error: unknown) => void;
+}
+
 /** What a job's stream reports to besides the page. */
 interface StreamContext {
   readonly request: AbortSignal;
@@ -34,7 +42,7 @@ export async function handleJobRequest<Result>(
 ): Promise<Response> {
   const { maxInputLength } = options;
   if (request.method !== 'POST') {
-    return refuse('method-not-allowed', 'The endpoint accepts only POST.', { allow: 'POST' });
+    return refuse('method-not-allowed', 'The endpoint accepts only POST.', { headers: { allow: 'POST' } });
   }
   const contentLength = Number(request.headers.get('content-length') ?? 0);
   if (contentLength > BYTES_PER_INPUT_UNIT * maxInputLength + BODY_ENVELOPE_BYTES) {
@@ -70,7 +78,7 @@ export async function handleJobRequest<Result>(
       return refuse('counter-unavailable', 'The job counter is unavailable.');
     }
     if (!count.allowed) {
-      return refuse('limit-reached', `The job limit "${count.limit}" is reached.`, {}, count.limit);
+      return refuse('limit-reached', `The job limit "${count.limit}" is reached.`, { limit: count.limit });
     }
   }
 
@@ -84,7 +92,11 @@ export async function handleJobRequest<Result>(
       return refuse('counter-unavailable', 'The job budget is unavailable.');
     }
     if (!reserved.allowed) {
-      return refuse('limit-reached', `The job limit "${reserved.limit}" is reached.`, {}, reserved.limit);
+      return refuse('limit-reached', `The job limit "${reserved.limit}" is reached.`, {
+        limit: reserved.limit,
+        details: reserved.details,
+        onError,
+      });
     }
     reservation = reserved;
   }
@@ -176,15 +188,22 @@ async function readInput(request: Request): Promise<string | undefined> {
   return typeof body.input === 'string' ? body.input : undefined;
 }
 
-/** Builds a refusal's response, whose status follows from its reason. */
-function refuse(
-  reason: JobRefusalReason,
-  message: string,
-  headers: Record<string, string> = {},
-  limit?: string,
-): Response {
+/**
+ * Builds a refusal's response, whose status follows from its reason. `details` that cannot be serialized go to
+ * `onError`, and the refusal is sent without them.
+ */
+function refuse(reason: JobRefusalReason, message: string, options: RefusalOptions = {}): Response {
+  const { headers = {}, limit, details, onError } = options;
+  const init = { status: REFUSAL_STATUSES[reason], headers };
   const body: JobRefusalBody = { reason, message, ...(limit !== undefined && { limit }) };
-  return Response.json(body, { status: REFUSAL_STATUSES[reason], headers });
+  if (details !== undefined) {
+    try {
+      return Response.json({ ...body, details }, init);
+    } catch (error) {
+      onError?.(error);
+    }
+  }
+  return Response.json(body, init);
 }
 
 /**

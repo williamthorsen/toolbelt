@@ -18,7 +18,9 @@ export type JobCount = { readonly allowed: true } | { readonly allowed: false; r
  * The reservation's decision on a job: refused by the named limit, or granted with the most output tokens that the
  * job may produce across its rounds, a positive integer, and the callback that settles the reservation. The handler
  * calls `settle` exactly once, whether the job completes, ends unfinished, fails, or is cancelled, and awaits it
- * before it ends the response; a throw from it goes to `onError`.
+ * before it ends the response; a throw from it goes to `onError`. A refusal's `details`, a JSON-serializable value,
+ * reach the page unread as `JobRefusedError.details`; when they cannot be serialized, the error goes to `onError`
+ * and the refusal reaches the page without them.
  */
 export type JobReservation =
   | {
@@ -26,7 +28,7 @@ export type JobReservation =
       readonly maxOutputTokens: number;
       settle(settlement: JobSettlement): Promise<void> | void;
     }
-  | { readonly allowed: false; readonly limit: string };
+  | { readonly allowed: false; readonly limit: string; readonly details?: unknown };
 
 /**
  * How a reserved job ended, with the usage of every round that reported one. A `failed` or `cancelled` job's usage
