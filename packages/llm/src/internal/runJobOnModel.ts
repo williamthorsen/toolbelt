@@ -3,6 +3,7 @@ import {
   type FinishReason,
   type LanguageModel,
   type LanguageModelUsage,
+  type ModelMessage,
   stepCountIs,
   streamText,
   type TextStreamPart,
@@ -14,6 +15,9 @@ import { JobRunError } from '../1-proposed/JobRunError.ts';
 import type { Job, JobEvent, JobOutcome, JobTool, RunJobOptions, Usage } from '../types/job.ts';
 import { assertPositiveInteger } from './assertPositiveInteger.ts';
 import { addUsage, ZERO_USAGE } from './usage.ts';
+
+/** Marks the end of the content before it as an Anthropic cache breakpoint. */
+const CACHE_BREAKPOINT = { anthropic: { cacheControl: { type: 'ephemeral' } } } as const;
 
 /** The part of an AI SDK step that the output cap reads. */
 interface StepUsage {
@@ -57,7 +61,7 @@ export async function runJobOnModel<Result>(
     instructions: {
       role: 'system',
       content: job.instructions,
-      providerOptions: { anthropic: { cacheControl: { type: 'ephemeral' } } },
+      providerOptions: CACHE_BREAKPOINT,
     },
     prompt: job.input,
     tools: buildToolSet(job.tools, recordToolFailure),
@@ -66,7 +70,7 @@ export async function runJobOnModel<Result>(
       () => job.readResult() !== undefined,
       ({ steps }) => job.maxOutputTokens !== undefined && sumOutputTokens(steps) >= job.maxOutputTokens,
     ],
-    ...(job.maxOutputTokens !== undefined && { prepareStep: buildCappedStep(job.maxOutputTokens) }),
+    prepareStep: buildStepPreparer(job.maxOutputTokens),
     abortSignal: signal === undefined ? controller.signal : AbortSignal.any([signal, controller.signal]),
     // The loop below reads every error from the stream; the default handler would also log it.
     onError: () => {},
@@ -90,13 +94,6 @@ export async function runJobOnModel<Result>(
 }
 
 // region | Helpers
-/** Returns a `prepareStep` that limits each round's output to what remains of the cap. */
-function buildCappedStep(
-  maxOutputTokens: number,
-): (options: { readonly steps: readonly StepUsage[] }) => { maxOutputTokens: number } {
-  return ({ steps }) => ({ maxOutputTokens: maxOutputTokens - sumOutputTokens(steps) });
-}
-
 /** Builds the outcome of a run that ended without failing. */
 function buildOutcome<Result>(job: Job<Result>, progress: RunProgress): JobOutcome<Result> {
   const { rounds, usage, lastFinishReason } = progress;
@@ -132,6 +129,31 @@ function buildToolSet(
   );
 }
 
+/**
+ * Returns a `prepareStep` that marks the end of the conversation and the end of the previous round's request as cache
+ * breakpoints, and limits each round's output to what remains of the cap, if any. The previous round's end is the
+ * prefix that it wrote to the cache, so a round reads that prefix whatever the number of blocks that it added; with the
+ * instructions' breakpoint, a request has at most three, within Anthropic's limit of four.
+ */
+function buildStepPreparer(maxOutputTokens: number | undefined): (options: {
+  readonly steps: readonly StepUsage[];
+  readonly messages: ModelMessage[];
+}) => {
+  messages: ModelMessage[];
+  maxOutputTokens?: number;
+} {
+  let previousEnd: number | undefined;
+  return ({ steps, messages }) => {
+    const ends = new Set([previousEnd, messages.length - 1]);
+    previousEnd = messages.length - 1;
+    return {
+      // The returned messages carry forward to the next round, so clear the breakpoints that an earlier round set.
+      messages: messages.map((message, index) => (ends.has(index) ? markMessage(message) : unmarkMessage(message))),
+      ...(maxOutputTokens !== undefined && { maxOutputTokens: maxOutputTokens - sumOutputTokens(steps) }),
+    };
+  };
+}
+
 /** Converts the AI SDK's usage to the package's own, counting an unreported count as 0. */
 function convertUsage(usage: LanguageModelUsage): Usage {
   return {
@@ -145,6 +167,12 @@ function convertUsage(usage: LanguageModelUsage): Usage {
 /** Reports whether the run's output has reached the job's cap in a round that the model did not end on its own. */
 function isTokenCapReached(job: Job<unknown>, { usage, lastFinishReason }: RunProgress): boolean {
   return job.maxOutputTokens !== undefined && usage.outputTokens >= job.maxOutputTokens && lastFinishReason !== 'stop';
+}
+
+/** Returns a copy of the message that ends with a cache breakpoint. */
+function markMessage(message: ModelMessage): ModelMessage {
+  const { anthropic, ...others } = message.providerOptions ?? {};
+  return { ...message, providerOptions: { ...others, anthropic: { ...anthropic, ...CACHE_BREAKPOINT.anthropic } } };
 }
 
 /** Records a stream part in the run's progress and returns the event that it reports, if any. */
@@ -189,5 +217,12 @@ function selectRejection(
   if (toolFailure !== undefined) return new JobRunError({ cause: toolFailure.error, reason: 'failed' });
   if (signal?.aborted === true) return signal.reason;
   return new JobRunError({ cause: error });
+}
+/** Returns the message without a cache breakpoint, keeping its other provider options. */
+function unmarkMessage(message: ModelMessage): ModelMessage {
+  const anthropic = message.providerOptions?.['anthropic'];
+  if (anthropic?.['cacheControl'] === undefined) return message;
+  const { cacheControl: _cacheControl, ...rest } = anthropic;
+  return { ...message, providerOptions: { ...message.providerOptions, anthropic: rest } };
 }
 // endregion | Helpers

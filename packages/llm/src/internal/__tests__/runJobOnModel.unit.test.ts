@@ -1,3 +1,4 @@
+import type { LanguageModelV4Prompt } from '@ai-sdk/provider';
 import { MockLanguageModelV4 } from 'ai/test';
 import { describe, expect, it } from 'vitest';
 
@@ -7,6 +8,8 @@ import { createSubmitJob } from '../../test-utils/createSubmitJob.ts';
 import { buildRound, buildText, buildToolCall, ROUND_USAGE } from '../../test-utils/mock-stream.ts';
 import type { JobEvent } from '../../types/job.ts';
 import { runJobOnModel } from '../runJobOnModel.ts';
+
+const CACHE_BREAKPOINT = { anthropic: { cacheControl: { type: 'ephemeral' } } };
 
 describe(runJobOnModel, () => {
   it('reports each event in order and completes on the round in which the result appears', async () => {
@@ -101,8 +104,46 @@ describe(runJobOnModel, () => {
     expect(model.doStreamCalls[0]?.prompt[0]).toMatchObject({
       role: 'system',
       content: 'Convert the input.',
-      providerOptions: { anthropic: { cacheControl: { type: 'ephemeral' } } },
+      providerOptions: CACHE_BREAKPOINT,
     });
+  });
+
+  it("marks the end of the conversation and of the previous round's request as cache breakpoints", async () => {
+    const model = new MockLanguageModelV4({
+      doStream: [
+        buildRound([buildToolCall('c1', 'check', { draft: 'a' })]),
+        buildRound([buildToolCall('c2', 'check', { draft: 'b' })]),
+        buildRound([buildToolCall('c3', 'submit', { value: 'done' })]),
+      ],
+    });
+
+    await runJobOnModel(createSubmitJob(), model);
+
+    // The prompt's first entry is the system message; the conversation follows it.
+    expect(model.doStreamCalls.map((call) => listMarkedIndexes(call.prompt.slice(1)))).toStrictEqual([
+      [0],
+      [0, 2],
+      [2, 4],
+    ]);
+    expect(model.doStreamCalls[2]?.prompt[0]).toMatchObject({ providerOptions: CACHE_BREAKPOINT });
+  });
+
+  it('changes nothing in the prompt but the provider options of the conversation', async () => {
+    const model = new MockLanguageModelV4({
+      doStream: [
+        buildRound([buildToolCall('c1', 'check', { draft: 'a' })]),
+        buildRound([buildToolCall('c2', 'submit', { value: 'done' })]),
+      ],
+    });
+
+    await runJobOnModel(createSubmitJob(), model);
+
+    const prompt = model.doStreamCalls[1]?.prompt ?? [];
+    expect(prompt.slice(1).map(({ providerOptions: _providerOptions, ...message }) => message)).toStrictEqual([
+      { role: 'user', content: [{ type: 'text', text: expect.any(String) }] },
+      { role: 'assistant', content: [expect.objectContaining({ type: 'tool-call', toolCallId: 'c1' })] },
+      { role: 'tool', content: [expect.objectContaining({ type: 'tool-result', toolCallId: 'c1' })] },
+    ]);
   });
 
   it('rejects with JobRunError holding the error that a tool threw', async () => {
@@ -219,3 +260,12 @@ describe(runJobOnModel, () => {
     expect(JSON.parse(JSON.stringify({ events, outcome }))).toStrictEqual({ events, outcome });
   });
 });
+
+// region | Helpers
+/** Lists the indexes of the messages that end with an Anthropic cache breakpoint. */
+function listMarkedIndexes(messages: LanguageModelV4Prompt): number[] {
+  return messages
+    .map((message, index) => (message.providerOptions?.['anthropic']?.['cacheControl'] === undefined ? -1 : index))
+    .filter((index) => index >= 0);
+}
+// endregion | Helpers
