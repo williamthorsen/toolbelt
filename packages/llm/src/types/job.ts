@@ -90,11 +90,17 @@ export type JobEvent =
   | { readonly type: 'tool-error'; readonly callId: string; readonly toolName: string; readonly message: string }
   | { readonly type: 'round-finished'; readonly round: number; readonly usage: Usage };
 
-/** Token counts. A count that the provider does not report is 0. */
+/**
+ * Token counts. A count that the provider does not report is 0. The cache counts are parts of `inputTokens`, so the
+ * uncached input is `inputTokens - cacheReadTokens - cacheWriteTokens`.
+ */
 export interface Usage {
+  /** Total input tokens, the cache reads and the cache writes included. */
   readonly inputTokens: number;
   readonly outputTokens: number;
+  /** Input tokens read from the cache, counted in `inputTokens`. */
   readonly cacheReadTokens: number;
+  /** Input tokens written to the cache, counted in `inputTokens`. */
   readonly cacheWriteTokens: number;
 }
 
