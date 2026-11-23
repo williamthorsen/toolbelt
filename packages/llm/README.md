@@ -60,7 +60,7 @@ Build a fresh job for each run, such as through a `createJob(input)` factory, so
 
 A `ProviderConnection` names the provider (`anthropic`, `google`, `openai`, or `openrouter`), the model, the credential, and optional `headers`. The request goes straight from wherever `runJob` runs to the provider, so a user's key never reaches the operator's server. An Anthropic connection takes `apiKey` or `authToken`, a bearer token such as the `ant` CLI login's; the doc comment of `AnthropicConnection` lists the headers that the runner adds.
 
-On an Anthropic connection, the runner marks the instructions and the end of the conversation for prompt caching, so that each round reads the input and the earlier rounds from the cache rather than paying the full input rate for them again. A request to any other provider does not include cache marks. A job's `Usage` reports, in `cacheReadTokens` and `cacheWriteTokens`, how many of its input tokens were read from the cache and written to it.
+On an Anthropic connection, the runner marks the instructions and the end of the conversation for prompt caching, so that each round reads the input and the earlier rounds from the cache rather than paying the full input rate for them again. A request to any other provider does not include cache marks. A job's `Usage` counts every input token in `inputTokens`, and reports in `cacheReadTokens` and `cacheWriteTokens` how many of those were read from the cache and written to it: The cache counts are parts of `inputTokens`, not counts to add to it.
 
 ## User connections
 
