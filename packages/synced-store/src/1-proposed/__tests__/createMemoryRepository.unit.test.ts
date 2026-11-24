@@ -24,6 +24,16 @@ describe(createMemoryRepository, () => {
     ]);
   });
 
+  it('rejects a value that a JSON round trip would change, and changes nothing', async () => {
+    const repository = createMemoryRepository();
+
+    await expect(repository.apply([{ kind: 'part', name: 'rates', stamp: STAMP, value: [1, NaN] }])).rejects.toThrow(
+      TypeError,
+    );
+
+    await expect(repository.load()).resolves.toStrictEqual([]);
+  });
+
   it('rejects a batch with a malformed version, and changes nothing', async () => {
     const repository = createMemoryRepository();
     const valid: Version = { kind: 'part', name: 'names', stamp: STAMP, value: 'Ann' };

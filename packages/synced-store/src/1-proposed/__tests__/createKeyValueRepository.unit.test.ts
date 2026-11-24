@@ -69,6 +69,17 @@ describe(createKeyValueRepository, () => {
     await expect(createKeyValueRepository(store, { key: KEY }).load()).rejects.toThrow(/"replica"/u);
   });
 
+  it('rejects a value that a JSON round trip would change, without writing', async () => {
+    const store = createMemoryKeyValueStore();
+    const repository = createKeyValueRepository(store, { key: KEY });
+
+    await expect(repository.apply([{ kind: 'part', name: 'rates', stamp: STAMP, value: Infinity }])).rejects.toThrow(
+      TypeError,
+    );
+
+    await expect(store.getItem(KEY)).resolves.toBeUndefined();
+  });
+
   it('rejects a malformed version without writing', async () => {
     const store = createMemoryKeyValueStore();
     const repository = createKeyValueRepository(store, { key: KEY });

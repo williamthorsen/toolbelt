@@ -4,7 +4,9 @@ export const MAX_STAMP_TIME = Date.parse('9999-12-31T23:59:59.999Z');
 /** The largest counter that a stamp's four hexadecimal digits can express. */
 export const MAX_STAMP_COUNTER = 0xffff;
 
-const STAMP_PATTERN = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)_([\da-f]{4})_([\s\S]+)$/u;
+const DEVICE_ID_PATTERN = /^[!-~]+$/u;
+
+const STAMP_PATTERN = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)_([\da-f]{4})_([!-~]+)$/u;
 
 /** The fields of a change stamp. */
 export interface StampFields {
@@ -22,6 +24,16 @@ export interface StampFields {
  */
 export function formatStamp({ time, counter, deviceId }: StampFields): string {
   return `${new Date(time).toISOString()}_${counter.toString(16).padStart(4, '0')}_${deviceId}`;
+}
+
+/**
+ * Returns true if the device id is one or more printable ASCII characters other than the space. Within ASCII, the
+ * UTF-16 order of `compareStamps` and the byte order of a SQL binary collation agree.
+ *
+ * @internal
+ */
+export function isDeviceId(deviceId: string): boolean {
+  return DEVICE_ID_PATTERN.test(deviceId);
 }
 
 /**

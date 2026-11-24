@@ -1,3 +1,4 @@
+import { copyVersions } from '../internal/copyVersions.ts';
 import { parseVersions } from '../internal/parseVersions.ts';
 import { throwIfAborted } from '../internal/throwIfAborted.ts';
 import { mergeVersions } from './mergeVersion.ts';
@@ -12,7 +13,8 @@ export interface KeyValueRepositoryOptions {
 /**
  * Creates a `SyncedRepository` that keeps its document under one key of a `KeyValueStore`, so that each `apply` is
  * one write. The applies of one repository run one at a time, so that neither loses the other's versions; an apply
- * whose signal aborts while it waits rejects without writing. `load` throws a `TypeError` naming the key when the
+ * whose signal aborts while it waits rejects without writing, as does one whose version is malformed or whose value
+ * would not survive a JSON round trip unchanged. `load` throws a `TypeError` naming the key when the
  * stored value is not an array of versions.
  *
  * @category Sync
@@ -30,7 +32,7 @@ export function createKeyValueRepository(store: KeyValueStore, { key }: KeyValue
     },
     async apply(versions, options) {
       throwIfAborted(options?.signal);
-      const incoming = parseVersions(JSON.stringify(versions), 'The versions');
+      const incoming = copyVersions(versions);
       const previous = queue;
       const write = (async () => {
         await previous;

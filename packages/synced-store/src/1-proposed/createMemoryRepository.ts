@@ -1,4 +1,4 @@
-import { parseVersions } from '../internal/parseVersions.ts';
+import { copyVersions } from '../internal/copyVersions.ts';
 import { throwIfAborted } from '../internal/throwIfAborted.ts';
 import { formatUnitKey, mergeVersion } from './mergeVersion.ts';
 import type { SyncedRepository } from './ports.ts';
@@ -6,7 +6,8 @@ import type { Version } from './types.ts';
 
 /**
  * Creates a `SyncedRepository` that keeps its document in memory, copying each version on the way in and out. `apply`
- * rejects with a `TypeError`, and changes nothing, when a version is malformed or its value is not JSON.
+ * rejects with a `TypeError`, and changes nothing, when a version is malformed or its value would not survive a JSON
+ * round trip unchanged.
  *
  * @category Sync
  * @experimental
@@ -38,9 +39,3 @@ export function createMemoryRepository(initial: readonly Version[] = []): Synced
     }
   }
 }
-
-// region | Helpers
-function copyVersions(versions: readonly Version[]): Version[] {
-  return parseVersions(JSON.stringify(versions), 'The versions');
-}
-// endregion | Helpers

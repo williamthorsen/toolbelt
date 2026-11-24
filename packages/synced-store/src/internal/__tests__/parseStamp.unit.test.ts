@@ -13,6 +13,7 @@ describe(parseStamp, () => {
 
   it.each([
     ['an empty device id', '2026-11-24T14:40:07.123Z_0000_'],
+    ['a device id outside ASCII', '2026-11-24T14:40:07.123Z_0000_\u{10000}'],
     ['a counter in upper case', '2026-11-24T14:40:07.123Z_00FF_a'],
     ['a time without milliseconds', '2026-11-24T14:40:07Z_0000_a'],
     ['a time that does not exist', '2026-02-30T14:40:07.123Z_0000_a'],

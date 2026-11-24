@@ -82,8 +82,12 @@ describe(HybridClock, () => {
     expect(new HybridClock({ deviceId: 'a' }).last).toBeUndefined();
   });
 
-  it('throws on an empty device id', () => {
-    expect(() => new HybridClock({ deviceId: '' })).toThrow(TypeError);
+  it.each([
+    ['an empty device id', ''],
+    ['a device id with a space', 'device a'],
+    ['a device id outside ASCII', 'appareil-é'],
+  ])('throws on %s', (_label, deviceId) => {
+    expect(() => new HybridClock({ deviceId })).toThrow(TypeError);
   });
 
   it('throws on observing a malformed stamp', () => {

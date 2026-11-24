@@ -29,7 +29,7 @@ The exports are in `/proposed`, which may change at any time. The store that add
 
 ## Documents and versions
 
-A document has named parts, each saved whole, and named collections of items keyed by id. Each part and each item is a unit, and the document is stored as one version per unit. Every version has a change stamp, which `HybridClock` issues; a deletion of an item is stored as a tombstone.
+A document has named parts, each saved whole, and named collections of items keyed by id. Each part and each item is a unit, and the document is stored as one version per unit. Every version has a change stamp, which `HybridClock` issues; a deletion of an item is stored as a tombstone. A value is JSON that survives a round trip unchanged: The bundled repositories reject `NaN`, `Infinity`, an `undefined` member, and an object other than a plain one.
 
 ## The merge rule
 
@@ -38,7 +38,7 @@ A document has named parts, each saved whole, and named collections of items key
 - A tombstone beats any value, whatever their stamps: An amendment never restores a deleted item.
 - Otherwise the version with the greater stamp wins, whichever arrives last.
 
-The rule gives the same result for any order of the same versions, applied any number of times, so a replica and a remote that receive the same versions keep the same document.
+The rule gives the same result for any order of the same versions, applied any number of times, so a replica and a remote that receive the same versions keep the same document. That holds while each stamp identifies one version: A device persists its clock's `last` and passes it to the next `HybridClock`, so that a wall clock set back across a restart cannot make it issue a stamp twice.
 
 ## Ports
 
@@ -49,7 +49,7 @@ The rule gives the same result for any order of the same versions, applied any n
 
 - `load` returns the current version of every unit, tombstones included, in any order.
 - `apply` merges a batch of versions under the merge rule, all or none.
-- A stamp compares by its UTF-16 code units, as `compareStamps` does. In SQL, compare stamps with a binary collation, such as `COLLATE "C"` in PostgreSQL; another collation orders some stamps differently.
+- A stamp compares by its UTF-16 code units, as `compareStamps` does. In SQL, compare stamps with a binary collation, such as `COLLATE "C"` in PostgreSQL; another collation orders some stamps differently. A stamp is ASCII, since its device id is printable ASCII without spaces, so the two orders agree.
 - A call whose signal is already aborted rejects and changes nothing.
 
 `listRepositoryContractCases` and `listKeyValueStoreContractCases` return the checks that every implementation passes. They do not depend on a test runner; each check throws when the implementation fails it:

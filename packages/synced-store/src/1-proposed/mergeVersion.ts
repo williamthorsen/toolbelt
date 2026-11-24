@@ -17,9 +17,10 @@ export function formatUnitKey(version: Version): string {
 
 /**
  * Returns the version of one unit that the merge rule keeps. A tombstone beats any value; otherwise the greater stamp
- * wins, and equal stamps keep `current`. The rule is commutative, associative, and idempotent, so that every replica
- * that receives the same versions, in any order and any number of times, keeps the same one. Throws a `TypeError`
- * when the two versions belong to different units.
+ * wins, and equal stamps keep `current`. While each stamp identifies one version, the rule is commutative,
+ * associative, and idempotent, so that every replica that receives the same versions, in any order and any number of
+ * times, keeps the same one; two different versions of a unit with one stamp make the result depend on their order.
+ * Throws a `TypeError` when the two versions belong to different units.
  *
  * @category Sync
  * @experimental

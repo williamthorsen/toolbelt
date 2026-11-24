@@ -1,10 +1,13 @@
-import { formatStamp, MAX_STAMP_COUNTER, MAX_STAMP_TIME, parseStamp } from '../internal/parseStamp.ts';
+import { formatStamp, isDeviceId, MAX_STAMP_COUNTER, MAX_STAMP_TIME, parseStamp } from '../internal/parseStamp.ts';
 
 /** Options for a `HybridClock`. */
 export interface HybridClockOptions {
-  /** Identifies the device; a non-empty string that no other device uses. */
+  /** Identifies the device: printable ASCII characters other than the space, which no other device uses. */
   deviceId: string;
-  /** A stamp from an earlier clock's `last`, which this clock resumes after. */
+  /**
+   * A stamp from an earlier clock's `last`, which this clock resumes after. A device persists it across restarts, so
+   * that a wall clock set back while the device was off cannot make it issue a stamp twice.
+   */
   last?: string | undefined;
   /** Returns the wall-clock time in milliseconds since the epoch. Defaults to `Date.now`. */
   now?: () => number;
@@ -25,8 +28,8 @@ export class HybridClock {
   #time = -Infinity;
 
   constructor({ deviceId, last, now = Date.now }: HybridClockOptions) {
-    if (deviceId === '') {
-      throw new TypeError('A device id must not be empty');
+    if (!isDeviceId(deviceId)) {
+      throw new TypeError(`A device id must be printable ASCII without spaces: ${JSON.stringify(deviceId)}`);
     }
     this.deviceId = deviceId;
     this.#now = now;
