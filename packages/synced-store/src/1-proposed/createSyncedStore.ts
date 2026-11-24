@@ -64,8 +64,14 @@ export function createSyncedStore<TSchema extends StoreSchema>({
         const current = await loadDevice();
         const versions = copyVersions(changes.map((change) => buildVersion(change, current.clock.issue())));
         const outbox = mergeInto(current.outbox, versions).units;
-        await saveDeviceRecord(current, outbox);
-        await replica.apply(versions);
+        try {
+          await saveDeviceRecord(current, outbox);
+          await replica.apply(versions);
+        } catch (error) {
+          // Storage may hold the new outbox; the reload on next use repairs the replica from it.
+          device = undefined;
+          throw error;
+        }
         replaceDevice({ ...current, outbox, units: mergeInto(current.units, versions).units });
       });
       notify();
@@ -82,6 +88,8 @@ export function createSyncedStore<TSchema extends StoreSchema>({
   };
 
   function sync(): Promise<void> {
+    // Join a queued run also in the gap after the active run settles and before the queued run begins.
+    if (queuedRun !== undefined) return queuedRun;
     const active = activeRun;
     if (active === undefined) return beginRun();
     queuedRun ??= (async () => {

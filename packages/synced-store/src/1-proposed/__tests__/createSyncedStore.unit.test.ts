@@ -201,6 +201,56 @@ describe(createSyncedStore, () => {
     expect(loads).toBe(2);
   });
 
+  it('joins the queued run when called after the active run settles and before the queued run begins', async () => {
+    const inner = createMemoryRepository();
+    let loads = 0;
+    const remote: SyncedRepository = {
+      apply: (versions, options) => inner.apply(versions, options),
+      load(options) {
+        loads += 1;
+        return inner.load(options);
+      },
+    };
+    const store = createSyncedStore<GameSchema>(buildOptions({ remote }));
+    await store.read();
+
+    const first = store.sync();
+    // Awaits `first` before the queued run does, so its call lands in the gap between the two runs.
+    const late = (async () => {
+      await first;
+      await store.sync();
+    })();
+    const queued = store.sync();
+
+    await Promise.all([first, late, queued]);
+    expect(loads).toBe(2);
+  });
+
+  it('keeps on the device a write whose replica write fails after its outbox entry is stored', async () => {
+    const storage = createMemoryKeyValueStore();
+    let isReplicaFailing = false;
+    const failing: KeyValueStore = {
+      getItem: (key) => storage.getItem(key),
+      async setItem(key, value) {
+        if (isReplicaFailing && key === 'game/replica') throw new Error('Quota exceeded');
+        await storage.setItem(key, value);
+      },
+      removeItem: (key) => storage.removeItem(key),
+    };
+    const remote = createSwitchableRemote(createMemoryRepository());
+    remote.mode = 'offline';
+    const store = createSyncedStore<GameSchema>(buildOptions({ storage: failing, remote }));
+
+    isReplicaFailing = true;
+    await expect(store.write([{ kind: 'part', name: 'names', value: { player: 'Ann' } }])).rejects.toThrow(
+      'Quota exceeded',
+    );
+    isReplicaFailing = false;
+    await store.write([{ kind: 'item', collection: 'entries', id: 'e1', value: { score: 1 } }]);
+
+    await expect(store.read()).resolves.toMatchObject({ parts: { names: { player: 'Ann' } }, unsentCount: 2 });
+  });
+
   it('rejects the first use with a TypeError while the stored device record is malformed', async () => {
     const storage = createMemoryKeyValueStore();
     await storage.setItem('game/device', '{');

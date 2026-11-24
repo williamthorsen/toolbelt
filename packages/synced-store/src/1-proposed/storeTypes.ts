@@ -44,7 +44,8 @@ export interface SyncedStore<TSchema extends StoreSchema> {
   read(): Promise<StoreState<TSchema>>;
   /**
    * Applies the changes to the device together, and resolves once they are stored there, without waiting for the
-   * remote. Rejects with a `TypeError`, and changes nothing, when a value would not survive a JSON round trip.
+   * remote. Rejects with a `TypeError`, and changes nothing, when a value would not survive a JSON round trip. A write
+   * that storage rejects may still have been kept, and then appears in the state on the store's next use.
    */
   write(changes: readonly StoreChange<TSchema>[]): Promise<void>;
   /**
