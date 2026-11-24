@@ -2,12 +2,35 @@ import { describe, expect, it } from 'vitest';
 
 import { createKeyValueRepository } from '../createKeyValueRepository.ts';
 import { createMemoryKeyValueStore } from '../createMemoryKeyValueStore.ts';
+import type { KeyValueStore } from '../ports.ts';
 import type { Version } from '../types.ts';
 
 const KEY = 'replica';
 const STAMP = '2026-11-24T14:40:07.123Z_0000_a';
 
 describe(createKeyValueRepository, () => {
+  it('does not touch the store until its first load or apply', () => {
+    const calls: string[] = [];
+    const watched: KeyValueStore = {
+      getItem(key) {
+        calls.push(`getItem ${key}`);
+        return Promise.resolve(undefined);
+      },
+      setItem(key) {
+        calls.push(`setItem ${key}`);
+        return Promise.resolve();
+      },
+      removeItem(key) {
+        calls.push(`removeItem ${key}`);
+        return Promise.resolve();
+      },
+    };
+
+    createKeyValueRepository(watched, { key: KEY });
+
+    expect(calls).toStrictEqual([]);
+  });
+
   it('keeps both of two concurrent applies', async () => {
     const repository = createKeyValueRepository(createMemoryKeyValueStore(), { key: KEY });
     const names = buildPart('names');
