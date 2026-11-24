@@ -1,6 +1,6 @@
 {
   "name": "@williamthorsen/toolbelt.synced-store",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A store that works offline and converges across devices, over ports that the consumer implements",
   "keywords": [
     "esm",

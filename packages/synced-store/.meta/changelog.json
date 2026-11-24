@@ -1,0 +1,50 @@
+[
+  {
+    "version": "0.2.0",
+    "date": "2026-11-24",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds `mergeVersion` and `mergeVersions`, which keep a deletion over any value and otherwise the version with the greater change stamp, giving the same document for any order in which a device or a remote receives the same versions. (#796)",
+            "hash": "d3b89f367421a2d73963e76d009d44511f6b7719",
+            "entry": 1
+          },
+          {
+            "description": "Adds `HybridClock`, which issues change stamps that increase on one device even when its wall clock goes backward, and `compareStamps`, which orders stamps as a SQL binary collation such as PostgreSQL's `COLLATE \"C\"` does. (#796)",
+            "hash": "d3b89f367421a2d73963e76d009d44511f6b7719",
+            "entry": 2
+          },
+          {
+            "description": "Adds the `SyncedRepository` and `KeyValueStore` interfaces, with `listRepositoryContractCases` and `listKeyValueStoreContractCases`, which return checks that run under any test runner and throw when an implementation breaks the contract. (#796)",
+            "hash": "d3b89f367421a2d73963e76d009d44511f6b7719",
+            "entry": 3
+          },
+          {
+            "description": "Adds `createMemoryRepository` and `createKeyValueRepository`, which keep a document in memory or under one key of a `KeyValueStore` such as AsyncStorage and reject a value that a JSON round trip would change, and `createMemoryKeyValueStore`. (#796)",
+            "hash": "d3b89f367421a2d73963e76d009d44511f6b7719",
+            "entry": 4
+          },
+          {
+            "description": "Adds `createSyncedStore` to `@williamthorsen/toolbelt.synced-store/proposed`, a store whose `write()` keeps changes on the device without waiting for the remote and whose `sync()` sends them to the consumer's `SyncedRepository` and merges the remote's document, failing each request after `requestTimeoutMs`. (#797)",
+            "hash": "5690648ec532bda5fb3f426febce6afc0fc152e0",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "🏗️ Internal features",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Adds the empty `packages/synced-store` workspace, published as `@williamthorsen/toolbelt.synced-store` at version 0.1.0, with the four tier subpaths of `packages/_template`, each exporting nothing, and registers it in the release-kit labels, the label map, the root `README.md` package map, the `AGENTS.md` domain list, and the `importers` block of `pnpm-lock.yaml`. (#794)",
+            "hash": "d84981f6bd7eec4193fc0727d976b9e027e26153",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  }
+]
