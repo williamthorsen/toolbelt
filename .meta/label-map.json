@@ -41,6 +41,7 @@
     "sets": "scope:sets",
     "statistics": "scope:statistics",
     "strings": "scope:strings",
+    "synced-store": "scope:synced-store",
     "terminal": "scope:terminal",
     "testing": "scope:testing",
     "text-file-store": "scope:text-file-store",
