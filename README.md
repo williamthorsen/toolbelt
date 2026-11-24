@@ -30,6 +30,7 @@ TypeScript utility libraries, each published to npm as `@williamthorsen/toolbelt
 | [`@williamthorsen/toolbelt.sets`](packages/sets/README.md)                       | Functions for working with sets                                                                                            |
 | [`@williamthorsen/toolbelt.statistics`](packages/statistics/README.md)           | Statistics utilities                                                                                                       |
 | [`@williamthorsen/toolbelt.strings`](packages/strings/README.md)                 | String-handling utilities                                                                                                  |
+| [`@williamthorsen/toolbelt.synced-store`](packages/synced-store/README.md)       | A store that works offline and converges across devices, over ports that the consumer implements                           |
 | [`@williamthorsen/toolbelt.terminal`](packages/terminal/README.md)               | Utilities for rendering command-line output to terminals, pipes, and CI logs                                               |
 | [`@williamthorsen/toolbelt.testing`](packages/testing/README.md)                 | Runner-agnostic utilities for testing                                                                                      |
 | [`@williamthorsen/toolbelt.text-file-store`](packages/text-file-store/README.md) | A store of named text files, with Web Storage, HTTP, and memory backends                                                   |

@@ -31,6 +31,7 @@ const config = defineConfig({
       'scope:sets': { color: '00ff96' },
       'scope:statistics': { color: '00ff96' },
       'scope:strings': { color: '00ff96' },
+      'scope:synced-store': { color: '00ff96' },
       'scope:terminal': { color: '00ff96' },
       'scope:testing': { color: '00ff96' },
       'scope:text-file-store': { color: '00ff96' },
