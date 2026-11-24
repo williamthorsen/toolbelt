@@ -17,15 +17,39 @@ Requires Node.js 24 or later.
 ## Usage
 
 ```ts
-import { createMemoryRepository, HybridClock } from '@williamthorsen/toolbelt.synced-store/proposed';
+import {
+  createMemoryKeyValueStore,
+  createMemoryRepository,
+  createSyncedStore,
+} from '@williamthorsen/toolbelt.synced-store/proposed';
 
-const clock = new HybridClock({ deviceId: 'device-a' });
-await createMemoryRepository().apply([{ kind: 'part', name: 'names', stamp: clock.issue(), value: { player: 'Ann' } }]);
+const store = createSyncedStore<{ parts: { names: { player: string } }; collections: {} }>({
+  key: 'game',
+  storage: createMemoryKeyValueStore(), // AsyncStorage on a device
+  remote: createMemoryRepository(), // the consumer's own SyncedRepository
+});
+await store.write([{ kind: 'part', name: 'names', value: { player: 'Ann' } }]);
+const { parts, unsentCount } = await store.read();
 ```
 
 The package keeps a document on the device and on a remote that the consumer already has, such as its own database functions. Unlike a sync engine, it does not own the data model or need a server of its own: The consumer implements two small ports, and a merge rule that a remote can apply in SQL decides every conflict.
 
-The exports are in `/proposed`, which may change at any time. The store that adds an outbox and sync over these ports is tracked in [#795](https://github.com/williamthorsen/toolbelt/issues/795).
+The exports are in `/proposed`, which may change at any time.
+
+## The store
+
+`createSyncedStore` keeps the document on the device and syncs it with the remote. The consumer supplies:
+
+- `storage`: a `KeyValueStore`, such as AsyncStorage, which keeps the device's copy of the document and its unsent changes.
+- `remote`: a `SyncedRepository` that the consumer implements over its own service.
+- `key`: the prefix of the store's keys in `storage`, unique per store.
+- A schema type, which maps each part and each collection to the type of its values. The store checks that each value it writes is JSON; checking the values that it reads is the consumer's.
+
+A write is stored on the device and resolves without waiting for the remote. The store then tries to sync, and a sync sends the unsent changes and merges the remote's document into the device's. Each request fails after `requestTimeoutMs` (10 seconds by default), and a pending request does not delay a write. `read()` returns the document with its `unsentCount` and the `syncError` of the last sync, and `subscribe` calls a listener with each new state.
+
+The store does not watch connectivity or retry on a timer. Call `sync()` when the app reconnects and when it returns to the foreground.
+
+Creating the store touches neither storage nor the remote, so it can be created during a static web render; the first `read`, `write`, or `sync` loads the device's data. A device id is created on first use with `crypto.randomUUID`; on React Native without a polyfill, pass `createDeviceId`.
 
 ## Documents and versions
 
