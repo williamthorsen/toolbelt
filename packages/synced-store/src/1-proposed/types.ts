@@ -29,3 +29,10 @@ export interface ItemTombstone {
 
 /** A version of one unit of a document: a part, or an item of a collection. */
 export type Version = PartVersion | ItemVersion | ItemTombstone;
+
+/** A named check that an implementation of a port passes, which throws when the implementation fails it. */
+export interface ContractCase<TSubject> {
+  name: string;
+  /** Runs the check on subjects returned by `create`, each a fresh and empty one. */
+  run(create: () => Promise<TSubject>): Promise<void>;
+}
