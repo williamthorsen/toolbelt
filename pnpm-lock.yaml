@@ -583,6 +583,9 @@ importers:
 
   packages/synced-store:
     dependencies:
+      '@williamthorsen/toolbelt.guards':
+        specifier: workspace:*
+        version: link:../guards
       '@williamthorsen/toolbelt.objects':
         specifier: workspace:*
         version: link:../objects

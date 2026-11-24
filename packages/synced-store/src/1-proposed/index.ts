@@ -1,4 +1,6 @@
 export { compareStamps } from './compareStamps.ts';
+export { createMemoryKeyValueStore } from './createMemoryKeyValueStore.ts';
+export { createMemoryRepository } from './createMemoryRepository.ts';
 export { HybridClock, type HybridClockOptions } from './HybridClock.ts';
 export { listKeyValueStoreContractCases } from './listKeyValueStoreContractCases.ts';
 export { listRepositoryContractCases } from './listRepositoryContractCases.ts';
