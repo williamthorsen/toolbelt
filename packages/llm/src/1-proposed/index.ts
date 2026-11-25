@@ -22,6 +22,7 @@ export type {
   RunJobOptions,
   Usage,
 } from '../types/job.ts';
+export type { ListedModel, ListModelsOptions, ModelListing } from '../types/models.ts';
 export type {
   OpenRouterCallbackOptions,
   OpenRouterConnectOptions,
@@ -35,6 +36,7 @@ export { createUpstashJobCounter } from './createUpstashJobCounter.ts';
 export { defineTool } from './defineTool.ts';
 export { JobRefusedError } from './JobRefusedError.ts';
 export { JobRunError } from './JobRunError.ts';
+export { listModels } from './listModels.ts';
 export { OpenRouterConnectError } from './OpenRouterConnectError.ts';
 export { runJob } from './runJob.ts';
 export { startOpenRouterConnect } from './startOpenRouterConnect.ts';

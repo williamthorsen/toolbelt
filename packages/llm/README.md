@@ -90,6 +90,18 @@ Each approval issues a new key on the user's OpenRouter account, which stays val
 connect-src 'self' https://api.anthropic.com https://api.openai.com https://generativelanguage.googleapis.com https://openrouter.ai
 ```
 
+## Model lists
+
+`listModels` lists the models that a credential's provider offers, so that a Model field can suggest them before a job runs:
+
+```ts
+import { listModels } from '@williamthorsen/toolbelt.llm/proposed';
+
+const listing = await listModels(credential, { signal: AbortSignal.timeout(10_000) });
+```
+
+A `listed` result contains each model's `id` and `label`. A `refused` result means that the provider does not accept the key. An `unavailable` result contains a `reason`; keep accepting a typed id then, because the list could not be read. OpenRouter's list is public, so it does not check the key.
+
 ## Events
 
 `onEvent` receives a `text-delta`, `tool-call`, `tool-result`, `tool-error`, or `round-finished` event as each happens. Each `tool-call` is followed by its `tool-result` or its `tool-error`, and `round-finished` carries the round's token usage.
