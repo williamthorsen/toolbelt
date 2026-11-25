@@ -46,7 +46,7 @@
     "prepublishOnly": "nmr build"
   },
   "dependencies": {
-    "@agentclientprotocol/sdk": "2.9.1",
+    "@agentclientprotocol/sdk": "2.12.0",
     "@williamthorsen/toolbelt.errors": "workspace:*",
     "@williamthorsen/toolbelt.guards": "workspace:*"
   },
