@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.6.0",
+    "date": "2026-11-26",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds `listModels` to `@williamthorsen/toolbelt.llm/proposed`, which follows every page of the model list from Anthropic, Google, OpenAI, or OpenRouter and resolves as `listed`, `refused` when the provider does not accept the key, or `unavailable` when the list cannot be read. (#799)",
+            "hash": "c180a97607dcaa2ce4f149094d1625d89fad0e79",
+            "entry": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.5.0",
     "date": "2026-11-23",
     "sections": [

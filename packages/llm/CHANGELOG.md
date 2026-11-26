@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.6.0 — 2026-11-26
+
+### 🎉 Features
+
+- Adds `listModels` to `@williamthorsen/toolbelt.llm/proposed`, which follows every page of the model list from Anthropic, Google, OpenAI, or OpenRouter and resolves as `listed`, `refused` when the provider does not accept the key, or `unavailable` when the list cannot be read. (#799)
+
 ## 0.5.0 — 2026-11-23
 
 ### 🎉 Features
