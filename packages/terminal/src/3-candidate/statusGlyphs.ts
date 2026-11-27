@@ -8,15 +8,17 @@ import { defineGlyphSet } from './defineGlyphSet.ts';
  * lightness that an emoji font does not guarantee. `detectOutputStyle` chooses rich output for an interactive
  * terminal outside CI, so those readers see these glyphs rather than the plain words. The two remaining circles
  * mark `info` and `warning`, whose blue and orange separate on the axis that red-green colour blindness leaves
- * intact.
+ * intact. 🔄 marks `changed`, an outcome in which the command altered the machine; it shares ⏩'s blue square and
+ * differs from it by the arrows inside.
  *
  * ⚠️, a CLI's usual first choice, is a code point plus a U+FE0F variation selector; 🟠 marks `warning` instead.
  *
  * Each plain glyph is an uppercase word rather than an ASCII symbol, so that `grep FAIL` finds a failure in a log.
- * The plain column measures 5 cells and the rich column 2.
+ * The plain column measures 6 cells and the rich column 2.
  */
 export const STATUS_GLYPHS = defineGlyphSet({
   blocked: { plain: 'BLOCK', rich: '🚫' },
+  changed: { plain: 'CHANGE', rich: '🔄' },
   failed: { plain: 'FAIL', rich: '❌' },
   info: { plain: 'INFO', rich: '🔵' },
   passed: { plain: 'PASS', rich: '✅' },

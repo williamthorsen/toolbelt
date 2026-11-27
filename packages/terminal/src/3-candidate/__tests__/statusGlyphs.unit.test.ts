@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { measureGlyphColumn } from '../defineGlyphSet.ts';
 import { STATUS_GLYPHS } from '../statusGlyphs.ts';
 
-const STATUS_NAMES = ['blocked', 'failed', 'info', 'passed', 'skipped', 'warning'] as const;
+const STATUS_NAMES = ['blocked', 'changed', 'failed', 'info', 'passed', 'skipped', 'warning'] as const;
 
 describe('STATUS_GLYPHS', () => {
   it('gives every status a glyph in each style', () => {
@@ -17,8 +17,8 @@ describe('STATUS_GLYPHS', () => {
 
   // The widths from which a caller derives a gutter, locked so that adding a longer plain word widens the
   // column visibly rather than silently.
-  it('measures 5 cells for the plain column and 2 for the rich one', () => {
-    expect(measureGlyphColumn(STATUS_GLYPHS.plain)).toBe(5);
+  it('measures 6 cells for the plain column and 2 for the rich one', () => {
+    expect(measureGlyphColumn(STATUS_GLYPHS.plain)).toBe(6);
     expect(measureGlyphColumn(STATUS_GLYPHS.rich)).toBe(2);
   });
 });
