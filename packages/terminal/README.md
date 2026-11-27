@@ -57,7 +57,7 @@ const gutter = measureGlyphColumn(glyphs) + 1;
 const { text, width } = glyphs.passed;
 console.log(text + ' '.repeat(gutter - width) + 'every check passed');
 // rich:  ✅ every check passed
-// plain: PASS  every check passed
+// plain: PASS   every check passed
 ```
 
 Because a set is indexed by the style that `resolveOutputStyle` returns, selecting a variant needs no function.
@@ -70,6 +70,18 @@ Because a set is indexed by the style that `resolveOutputStyle` returns, selecti
 Each rule admits only code points whose width is fixed. Every code point that the rich rule admits has `East_Asian_Width=Wide`, and every printable ASCII code point has `East_Asian_Width=Narrow`, so 2 and `.length` are the measured widths rather than assumed ones. The regional indicators are the one `Emoji_Presentation=Yes` range left out, each being narrow alone and occupying two cells only in the pair that forms a flag.
 
 Each of ⚠️, ℹ️, and ⏭️ is refused as a code point plus U+FE0F; `STATUS_GLYPHS` uses 🟠 for `warning` in place of ⚠️. On the plain side `'→'` is refused as `East_Asian_Width=Ambiguous`, which measures one cell or two by locale, and `'✓'` is refused although it measures one everywhere, because a plain variant exists to survive a CI log, a `grep`, a screen reader, and a terminal with no emoji font, and `'✓'` survives none of the last. An empty plain variant is legal at width 0, which lets a name keep its column with no plain word.
+
+`STATUS_GLYPHS` gives each status below a glyph in both styles. Its plain column measures 6 cells and its rich column 2.
+
+| Status    | Rich | Plain    | Use when                                                          |
+| --------- | ---- | -------- | ----------------------------------------------------------------- |
+| `blocked` | 🚫   | `BLOCK`  | the step cannot run until something else is done                  |
+| `changed` | 🔄   | `CHANGE` | the command altered the machine: installed, set, or moved a thing |
+| `failed`  | ❌   | `FAIL`   | the step failed                                                   |
+| `info`    | 🔵   | `INFO`   | a context line that reports no outcome                            |
+| `passed`  | ✅   | `PASS`   | the check passed, or the state already matched                    |
+| `skipped` | ⏩   | `SKIP`   | the step did not run                                              |
+| `warning` | 🟠   | `WARN`   | the step succeeded with a problem worth reading                   |
 
 The alternatives cover less. `figures` has had no release since 2024-03 and falls back to legacy Windows console glyphs rather than ASCII, and `log-symbols` offers four symbols fixed at import. Neither pairs a rich glyph with a plain one, and neither reports a width, so a caller measures with `measureWidth` or guesses.
 
