@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.0 — 2026-11-27
+
+### 🎉 Features
+
+- Adds a `changed` status to `STATUS_GLYPHS`, shown as 🔄 in rich output and `CHANGE` in plain output, for a command that installed, set, or moved something, and widens the plain column from 5 cells to 6 to fit the longer word. (#801)
+
+### 🧪 Tests
+
+- Replaces the two overlapping environment-variable cases in `resolveOutputStyle.unit.test.ts` with one case per style, each run on the stream for which detection chooses the other style, so that each case fails unless the variable outranks detection. (#690)
+
+### 📚 Documentation
+
+- Removes the nine per-export sections from `packages/terminal/README.md` and moves the facts that only those sections stated into each export's doc comment, adding `@example` blocks to seven of the exports. (#681)
+- Opens `packages/terminal/README.md` with a note that every export is imported from the `/candidate` subpath and a minimal example that resolves an output style and prints a status glyph. (#681)
+
 ## 0.3.2 — 2026-11-16
 
 ### ♻️ Refactoring

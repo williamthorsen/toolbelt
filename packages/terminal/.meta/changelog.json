@@ -1,5 +1,49 @@
 [
   {
+    "version": "0.4.0",
+    "date": "2026-11-27",
+    "sections": [
+      {
+        "title": "🎉 Features",
+        "audience": "all",
+        "items": [
+          {
+            "description": "Adds a `changed` status to `STATUS_GLYPHS`, shown as 🔄 in rich output and `CHANGE` in plain output, for a command that installed, set, or moved something, and widens the plain column from 5 cells to 6 to fit the longer word. (#801)",
+            "hash": "8a14d5126dd1fafdbf77fa974818864103322e0d",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "🧪 Tests",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Replaces the two overlapping environment-variable cases in `resolveOutputStyle.unit.test.ts` with one case per style, each run on the stream for which detection chooses the other style, so that each case fails unless the variable outranks detection. (#690)",
+            "hash": "96b4c7dea6bbdb54eb6ded1c8ec52e87fc1aa8ef",
+            "entry": 1
+          }
+        ]
+      },
+      {
+        "title": "📚 Documentation",
+        "audience": "dev",
+        "items": [
+          {
+            "description": "Removes the nine per-export sections from `packages/terminal/README.md` and moves the facts that only those sections stated into each export's doc comment, adding `@example` blocks to seven of the exports. (#681)",
+            "hash": "a2100d6746859dd8d4d131fe0c0df9987b29b797",
+            "entry": 1
+          },
+          {
+            "description": "Opens `packages/terminal/README.md` with a note that every export is imported from the `/candidate` subpath and a minimal example that resolves an output style and prints a status glyph. (#681)",
+            "hash": "a2100d6746859dd8d4d131fe0c0df9987b29b797",
+            "entry": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.3.2",
     "date": "2026-11-16",
     "sections": [
